@@ -4,18 +4,19 @@
 // Bus numbers never appear here: they are allocated per compile by the audio layer (L2) and are not data.
 import * as B from './bind.js';
 import { parseSelector } from './lanes.js';
+import { LAYERS, pickerKind, defaultWhat } from './lanes-pick.js';
+export { LAYERS, pickerKind, defaultWhat };
 
 const FIX = { split: 'p', branch: 'p', send: 'p', selection: 'g', capture: 'q' };
 export const SITE_KINDS = Object.keys(FIX);
 export const SEL_OPS = ['fx', 'send', 'mute', 'solo', 'gain', 'orbit', 'capture'];
 // what a capture records, by picker kind (LANES 6.1): a tap ref gives events only
-export const LAYERS = ['events', 'audio', 'level'];
 // recall facets, by recorded layer (LANES 6.3 and 3: facet = ev | audio | level | onset | gate | control-name)
 export const FACET_LAYER = { ev: 'events', onset: 'events', gate: 'events', audio: 'audio', level: 'level' };
 export const FACETS = ['ev', 'audio', 'level', 'onset', 'gate'];
 export const facetsOf = (what) => FACETS.filter((f) => what.includes(FACET_LAYER[f]));
-// default `what` of a capture whose options do not say: audio pickers record everything, an event tap records events
-export const defaultWhat = (picker) => (/^[\w$-]+\/[\w-]+$/.test(String(picker)) && !/[\s&|!()#*]/.test(String(picker)) ? ['events'] : [...LAYERS]);
+// same text as the runtime's refusal of recall("name:facet") on a layer the capture does not record (lanes-capture.js)
+export const E_CAPTURE_FACET = (name, facet, what) => `E_CAPTURE_LAYER: recall("${name}:${facet}") needs the ${FACET_LAYER[facet]} layer, but capture "${name}" records ${what.join(', ')}`;
 export const facetWire = (facet) => (facet === 'audio' ? { port: 'audio', type: 'audio' } : facet === 'level' ? { port: 'level', type: 'signal' } : { port: 'ev', type: 'pattern' });
 
 // ---------------------------------------------------------------- site ids

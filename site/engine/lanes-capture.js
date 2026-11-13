@@ -4,16 +4,15 @@
 //   - audio helpers that need no browser: levelOf (RMS per 1/64 cycle), frames, budgets; the browser half (render the picked lanes, register `cap_<name>`) is
 //     host code that calls L.captures.setAudio.
 // Strudel and superdough are used through public API only. Nothing here changes a program that does not call capture / recall / .from.
+import { LAYERS, pickerKind, defaultWhat } from './lanes-pick.js';
 import { statements, calls, scan, parseSelector, matcher, EXT, check as checkLanes } from './lanes.js';
 
 const code = (c, m) => Object.assign(new Error(`${c}: ${m}`), { code: c });
-export const LAYERS = ['events', 'audio', 'level'];
+export { LAYERS, pickerKind, defaultWhat };
 export const FACET_LAYER = { ev: 'events', onset: 'events', gate: 'events', audio: 'audio', level: 'level' };
 export const LIMITS = { maxSeconds: 32, maxHaps: 20000, levelPerCycle: 64, guard: 1, memoryMB: 96, memoryMBSmall: 32, sr: 48000 };
 export const memoryLimit = (deviceMemory) => (deviceMemory != null && deviceMemory <= 4 ? LIMITS.memoryMBSmall : LIMITS.memoryMB) * 1024 * 1024;
 export const frames = (cycles, cps, sr) => Math.round(cycles / cps * sr);
-export const pickerKind = (p) => (p === 'master' ? 'master' : /^bus:[\w-]+$/.test(p) ? 'bus' : /^[\w$-]+\/[\w-]+$/.test(p) ? 'tap' : 'selector');
-export const defaultWhat = (picker) => (pickerKind(picker) === 'tap' ? ['events'] : pickerKind(picker) === 'selector' ? [...LAYERS] : ['audio', 'level']);
 const NAME = /^[A-Za-z_][\w-]*$/;
 
 // ---------------------------------------------------------------- literals and points (static; the runtime prefers hooks.parsers.point)

@@ -12,6 +12,7 @@ import * as M from '../../site/model.js';
 import * as A from '../../site/engine/atoms.js';
 import * as B from '../../site/engine/bind.js';
 import * as LD from '../../site/engine/lanes-data.js';
+import * as LC from '../../site/engine/lanes-capture.js';
 import * as LI from '../../site/lanes-intellisense.js';
 import { createPads } from '../../site/engine/pads.js';
 import { validate } from '../../site/engine/validate.js';
@@ -239,5 +240,39 @@ const NM = process.env.STRUDEL_MODULES;
   assert.equal(fixed, cases[1][1]); assert.equal(M.graph(M.parse(fixed)).refused, undefined); assert.equal(M.generate(M.parse(fixed)), fixed);
   const tn = M.graph(M.parse(fixed)).nodes.find((n) => n.id === 'tap:inner'); assert.ok(tn.export && !tn.local, 'exported lane-level tap is not local');
   pass(`Export tap (#82): ${cases.length} cases agree between graph().refused, checkWire, the engine check${rt ? ' and the runtime (read resolves with events / is refused)' : ' (runtime skipped: STRUDEL_MODULES)'}; after the fix the refusal is gone and the tap node is exported, not local`);
+}
+
+// ---- Capture picker kinds: model ports == runtime-recorded facets == offered completions (one source of truth: engine/lanes-pick.js)
+{
+  assert.equal(LD.defaultWhat, LC.defaultWhat); assert.equal(LD.pickerKind, LC.pickerKind);
+  const isrc = rd('../../site/intellisense.js'); const i0 = isrc.indexOf('function argContext'), i1 = isrc.indexOf('api.argContext = argContext');
+  const argContext = new Function(isrc.slice(i0, i1) + '; return argContext;')(), data = strudelJson;
+  const W = 'window: "1b..3b"', base = 'a: s("bd")\n';
+  const cases = [['lane', 'capture("g", "a", { ' + W + ' })', ['events', 'audio', 'level'], ['ev', 'audio', 'level', 'onset', 'gate']],
+    ['tag selection', 'capture("g", "#a | drums", { ' + W + ' })', ['events', 'audio', 'level'], ['ev', 'audio', 'level', 'onset', 'gate']],
+    ['master', 'capture("g", "master", { ' + W + ' })', ['audio', 'level'], ['audio', 'level']],
+    ['bus', 'capture("g", "bus:verb", { ' + W + ' })', ['audio', 'level'], ['audio', 'level']],
+    ['tap', 'capture("g", "a/kick", { ' + W + ' })', ['events'], ['ev', 'onset', 'gate']],
+    ['explicit what', 'capture("g", "master", { ' + W + ', what: ["audio"] })', ['audio'], ['audio']]];
+  const portOf = { events: 'ev', audio: 'audio', level: 'level' };
+  for (const [name, line, what, facets] of cases) {
+    const src = base + line + '\n', rec = LC.analyze(src).captures.find((c) => c.name === 'g');
+    assert.deepEqual(rec.what, what, name + ': runtime records');
+    const node = M.graph(M.parse(src)).nodes.find((n) => n.id === 'capture:g'); assert.deepEqual(node.what, what, name + ': node what');
+    assert.deepEqual(node.ports.out.map((p) => p.name), what.map((l) => portOf[l]), name + ': model ports == recorded layers');
+    const before = src + 'z: recall("g:', doc = before + '")', model = M.parse(doc);
+    const offR = LI.complete({ text: before, pos: before.length, doc, arg: argContext(before, before.length) }, data, model.tracks || model.captures ? model : LI.textModel(doc)), offered = offR ? offR.options.map((o) => o.label) : [];
+    assert.deepEqual(offered, facets, name + ': offered completions'); assert.deepEqual(LD.facetsOf(rec.what), facets, name + ': facetsOf(runtime what)');
+  }
+  // recall of a facet the capture does not record: refused in the model with the runtime's code, no wire
+  for (const pk of ['master', 'bus:verb']) {
+    const src = base + `capture("g", "${pk}", { ${W} })\nz: recall("g:ev")\n`, g = M.graph(M.parse(src));
+    assert.equal(g.refused?.[0]?.code, 'E_CAPTURE_LAYER', pk + ': model refuses'); assert.ok(!g.wires.some((w) => w.from.node === 'capture:g'), pk + ': no wire');
+    const cw = M.checkWire(M.parse(src), 'capture:g', 'track:z', 'ev'); assert.equal(cw.ok, false); assert.equal(cw.code, 'E_CAPTURE_LAYER');
+    assert.equal(M.checkWire(M.parse(src), 'capture:g', 'track:z', 'audio').ok, true);
+    assert.equal(M.generate(M.parse(src)), src, pk + ': round trip');
+  }
+  const okSrc = base + `capture("g", "master", { ${W} })\nz: recall("g:audio")\n`; assert.equal(M.graph(M.parse(okSrc)).refused, undefined);
+  pass('Capture pickers: model ports == runtime-recorded layers == offered facets for lane, tag selection, master, bus, tap, explicit what; recall("g:ev") on master/bus refused in the model (E_CAPTURE_LAYER) and by checkWire');
 }
 console.log('lanes L4 done');

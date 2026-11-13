@@ -775,7 +775,7 @@ export function graph(model) {
     for (const t of model.tracks || []) { // capture readers: recall("name:facet") and .from("name") anywhere in the lane
       if (t.chain == null && t.source == null) continue;
       const text = t.src !== undefined ? t.src : emitTrack(t), tn = `track:${t.name}`;
-      for (const m of text.matchAll(/\brecall\(\s*["']([\w-]+)(?::([\w-]+))?/g)) { const cn = byId.get(`capture:${m[1]}`); if (cn) { const w = LD.facetWire(m[2] || 'ev'); wire(w.type, cn.id, w.port, tn, 'recall'); } }
+      for (const m of text.matchAll(/\brecall\(\s*["']([\w-]+)(?::([\w-]+))?/g)) { const cn = byId.get(`capture:${m[1]}`); if (cn) { const fc = m[2] || 'ev', ly = LD.FACET_LAYER[fc]; if (ly && !cn.what.includes(ly)) { refused.push({ code: 'E_CAPTURE_LAYER', message: LD.E_CAPTURE_FACET(m[1], fc, cn.what), capture: m[1], facet: fc, lane: t.name }); continue; } const w = LD.facetWire(fc); wire(w.type, cn.id, w.port, tn, 'recall'); } }
       for (const m of text.matchAll(/\.from\(\s*["']([\w-]+)["']/g)) { const cn = byId.get(`capture:${m[1]}`); if (cn) wire('audio', cn.id, 'audio', tn, 'from'); }
     }
   }
@@ -783,9 +783,10 @@ export function graph(model) {
 
 const hasLanes = (m) => (m.tracks || []).some(t => LANE_KEYS.some(k => t[k] !== undefined)) || !!(m.selections && m.selections.length) || !!(m.captures && Object.keys(m.captures).length);
 // every wire proposed by the UI goes through this: a source inside a split branch cannot feed another lane (E_LANE_CROSS); the fixes are applyOp operations
-export function checkWire(model, fromNode, toNode) {
+export function checkWire(model, fromNode, toNode, facet) {
   const g = graph(model), byId = new Map(g.nodes.map(n => [n.id, n])), a = byId.get(fromNode), b = byId.get(toNode);
   if (!a || !b) return { ok: false, code: 'E_NO_NODE', message: 'E_NO_NODE: unknown node' };
+  if (a.kind === 'capture' && facet && LD.FACET_LAYER[facet] && !a.what.includes(LD.FACET_LAYER[facet])) return { ok: false, code: 'E_CAPTURE_LAYER', message: LD.E_CAPTURE_FACET(a.name, facet, a.what), capture: a.name, facet };
   const laneName = (n) => (n.kind === 'track' ? n.name : n.lane || (n.parent ? String(n.parent).replace(/^track:/, '') : null));
   const la = laneName(a), lb = laneName(b);
   if (a.branch !== undefined && la && lb && la !== lb) {

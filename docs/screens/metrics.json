@@ -555,10 +555,10 @@
  },
  "recipes_audible": 46,
  "graph": {
-  "date": "2026-11-13T14:19:29.940Z",
+  "date": "2026-11-13T14:55:17.512Z",
   "shell": {
    "graph_files_requested_with_shell": 0,
-   "shell_same_origin_bytes": 1057228
+   "shell_same_origin_bytes": 1136078
   },
   "two_views": {
    "added": [
@@ -591,7 +591,7 @@
   },
   "targets": {
    "zoom_100": {
-    "n": 22,
+    "n": 23,
     "ports": 4,
     "min_w": 46.3,
     "min_h": 44,
@@ -602,7 +602,7 @@
     "small": []
    },
    "zoom_85": {
-    "n": 22,
+    "n": 23,
     "ports": 4,
     "min_w": 46.3,
     "min_h": 44,
@@ -654,12 +654,12 @@
   },
   "contrast_light_390": {
    "min": 7.34,
-   "n": 119,
+   "n": 120,
    "worst": "button.gx-tab \"Code\" rgb(77, 84, 93) on rgb(251,250,247)"
   },
   "contrast_dark_390": {
    "min": 7.11,
-   "n": 119,
+   "n": 120,
    "worst": "button.gx-tab \"Code\" rgb(154, 163, 174) on rgb(18,22,27)"
   },
   "perf": {
@@ -677,43 +677,43 @@
    "pan": {
     "n": 240,
     "mean_ms": 16.67,
-    "p95_ms": 16.8,
+    "p95_ms": 16.7,
     "p95_vsync_ms": 16.67,
     "dropped_pct": 0,
     "max_ms": 16.8
    },
    "zoom": {
-    "n": 228,
-    "mean_ms": 17.54,
+    "n": 227,
+    "mean_ms": 17.62,
     "p95_ms": 16.8,
     "p95_vsync_ms": 16.67,
-    "dropped_pct": 3.5,
-    "max_ms": 83.4
+    "dropped_pct": 4,
+    "max_ms": 83.3
    },
    "all": {
-    "n": 468,
-    "mean_ms": 17.09,
+    "n": 467,
+    "mean_ms": 17.13,
     "p95_ms": 16.8,
     "p95_vsync_ms": 16.67,
-    "dropped_pct": 1.7,
-    "max_ms": 83.4
+    "dropped_pct": 1.9,
+    "max_ms": 83.3
    },
    "cpu4x": {
     "pan": {
-     "n": 228,
-     "mean_ms": 17.62,
-     "p95_ms": 33.3,
-     "p95_vsync_ms": 33.33,
-     "dropped_pct": 5.7,
-     "max_ms": 33.4
+     "n": 239,
+     "mean_ms": 16.74,
+     "p95_ms": 16.8,
+     "p95_vsync_ms": 16.67,
+     "dropped_pct": 0.4,
+     "max_ms": 33.3
     },
     "zoom": {
-     "n": 65,
-     "mean_ms": 63.59,
-     "p95_ms": 100.1,
-     "p95_vsync_ms": 100,
-     "dropped_pct": 100,
-     "max_ms": 516.6
+     "n": 88,
+     "mean_ms": 45.64,
+     "p95_ms": 66.7,
+     "p95_vsync_ms": 66.67,
+     "dropped_pct": 73.9,
+     "max_ms": 516.5
     }
    }
   },
@@ -725,7 +725,7 @@
   },
   "contrast_dark_1440": {
    "min": 7.11,
-   "n": 75,
+   "n": 76,
    "worst": "button.gx-tab \"Outline\" rgb(154, 163, 174) on rgb(18,22,27)"
   },
   "animations_normal": 2,
@@ -1260,7 +1260,7 @@
   }
  ],
  "atoms_ui": {
-  "date": "2026-11-13T14:41:14.300Z",
+  "date": "2026-11-13T14:55:46.348Z",
   "derived_edit": {
    "added": [
     "k2: s(atoms.kick4({ n: 6 })).gain(0.5)"
@@ -1363,125 +1363,53 @@
   },
   "lazy": {
    "declared_5000": {
-    "first_paint_ms": 709.4,
+    "first_paint_ms": 263.2,
     "dom_cards": 3,
     "scene_cards": 3
    },
    "declared_3": {
-    "first_paint_ms": 123.7,
+    "first_paint_ms": 70.4,
     "dom_cards": 3
    },
-   "delta_pct": 473.5,
+   "delta_pct": 273.9,
    "rounds": [
     {
      "small": {
-      "ms": 267,
+      "ms": 70.4,
       "dom_cards": 3,
       "scene_cards": 3
      },
      "big": {
-      "ms": 707.2,
+      "ms": 360.7,
       "dom_cards": 3,
       "scene_cards": 3
      }
     },
     {
      "small": {
-      "ms": 80.3,
+      "ms": 186,
       "dom_cards": 3,
       "scene_cards": 3
      },
      "big": {
-      "ms": 850.6,
+      "ms": 256.5,
       "dom_cards": 3,
       "scene_cards": 3
      }
     },
     {
      "small": {
-      "ms": 123.7,
+      "ms": 67.9,
       "dom_cards": 3,
       "scene_cards": 3
      },
      "big": {
-      "ms": 709.4,
+      "ms": 263.2,
       "dom_cards": 3,
       "scene_cards": 3
      }
     }
    ]
-  },
-  "shell": {
-   "note": "same-origin bytes on first load (literals + atoms ready), uncompressed as served; base = HEAD before #64",
-   "base_bytes": 1189385,
-   "now_bytes": 1191123,
-   "delta_bytes": 1738,
-   "changed": {
-    "atoms-site.js": 1738
-   },
-   "lazy_files": {
-    "atoms-ui.js": 30602,
-    "atoms-ui.css": 5586,
-    "atoms-pop.js": 9534
-   }
-  },
-  "lighthouse_mobile": {
-   "note": "lighthouse 12, mobile, simulate; 4 alternating runs each",
-   "shell_now": [
-    {
-     "performance": 64,
-     "accessibility": 100,
-     "FCP": 3070
-    },
-    {
-     "performance": 64,
-     "accessibility": 100,
-     "FCP": 3049
-    },
-    {
-     "performance": 65,
-     "accessibility": 100,
-     "FCP": 3065
-    },
-    {
-     "performance": 67,
-     "accessibility": 100,
-     "FCP": 2525
-    }
-   ],
-   "shell_base": [
-    {
-     "performance": 65,
-     "accessibility": 100,
-     "FCP": 2909
-    },
-    {
-     "performance": 67,
-     "accessibility": 100,
-     "FCP": 2442
-    },
-    {
-     "performance": 67,
-     "accessibility": 100,
-     "FCP": 2549
-    },
-    {
-     "performance": 66,
-     "accessibility": 100,
-     "FCP": 2709
-    }
-   ],
-   "graph_now": {
-    "performance": 49,
-    "accessibility": 98,
-    "FCP": 3015
-   },
-   "graph_base": {
-    "performance": 48,
-    "accessibility": 98,
-    "FCP": 3086
-   },
-   "reference_accessibility": 100
   }
  }
 }

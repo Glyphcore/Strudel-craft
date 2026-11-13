@@ -11,6 +11,7 @@ import { createPads } from '../../site/engine/pads.js';
 import { createControls } from '../../site/engine/controls.js';
 import { bootRuntime } from '../hooks/fixtures/rt.mjs';
 
+const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
 const rd = (p) => fs.readFileSync(new URL(p, import.meta.url), 'utf8');
 const pass = (m) => console.log('PASS ' + m);
 const skip = (m, why) => console.log(`SKIP ${m}: ${why}`);
@@ -142,31 +143,12 @@ const IDS = A.reconcile({}, ENV);
 }
 
 // ---------------------------------------------------------------- Box: model round trip
-const EXAMPLES = {
-  'example 1 (extraction result, bindings one per line)': `atom("kick",     { type: "name",   body: "kick" })
-atom("kickEnv",  { type: "tapref", from: atoms.kick.facet("env") })
-atom("fx",       { type: "slot",   body: "fx" })
-atom("drop",     { type: "point",  body: "17b" })
-hooks.bind(atoms.fx, "murk", atoms.drop.before())
-hooks.bind(atoms.fx, "open", atoms.drop.after())
-$: s("bd*4").bank("RolandTR909").tap(atoms.kick)
-$: note("c2*8").s("sawtooth").wire("gain", atoms.kickEnv, { range: [1, 0.3], op: "mul" })
-`,
-  'example 2 (partial application)': `atom("hats", { type: "mini", params: { n: { shape: "number", min: 1, max: 32, step: 1, default: 8 }, snd: { shape: "sound", default: "hh" } }, body: "\${snd}*\${n}" })
-atom("hats16", { type: "mini", from: atoms.hats({ n: 16 }) })     // params left: snd
-$: s(atoms.hats16({ snd: "oh" }))                                  // "oh*16"
-`,
-  'example 3 (composition)': `atom("kick4",    { type: "mini", params: { n: { shape: "number", min: 1, max: 16, step: 1, default: 4 } }, body: "bd*\${n}" })
-atom("backbeat", { type: "mini", body: "~ sd ~ sd" })
-atom("fill",     { type: "mini", body: "[sd sd]" })
-$: s(atoms.kick4.stack(atoms.backbeat).seq(atoms.fill).slow(2))
-`,
-  'example 4 (harmony)': `atom("key",   { type: "scale", params: { root: { shape: "note", default: "c" } }, body: "\${root}:minor" })
-atom("turn",  { type: "progression", body: "<Cm7 Fm7 G7 Cm7>" })
-$: n("0 2 4 6").scale(atoms.key({ root: "d" }))
-$: chord(atoms.turn).voicing()
-`,
-};
+// the ATOMS section 13 examples 1-4, read byte-for-byte from the doc (no reformatting, no added declarations)
+const DOC = fs.readFileSync(new URL('../../docs/ATOMS.md', import.meta.url), 'utf8');
+const SEC13 = DOC.slice(DOC.indexOf('## 13. Worked examples'), DOC.indexOf('## 14.'));
+const BLOCKS = [...SEC13.matchAll(/```js\n([\s\S]*?)```/g)].map((x) => x[1]);
+assert.equal(BLOCKS.length, 4);
+const EXAMPLES = Object.fromEntries(['example 1 (extraction)', 'example 2 (partial application)', 'example 3 (composition)', 'example 4 (harmony)'].map((n, i) => [n, BLOCKS[i]]));
 {
   const seen = [];
   for (const [name, code] of Object.entries(EXAMPLES)) {
@@ -174,17 +156,23 @@ $: chord(atoms.turn).voicing()
     assert.equal(MD.generate(m), code, `round trip differs for ${name}`);
     assert.deepEqual(validate(schema, m), [], `${name} does not validate`);
     assert.deepEqual(A.checkModel(m), []);
+    if (!m.atoms) { // example 3 uses atoms it does not declare: parse keeps the text, the compile pass reports it at evaluate time
+      assert.throws(() => A.compile(code, A.buildEnv(code, {}, { diag: [] })), (e) => e.code === 'E_ATOM_UNKNOWN' || /E_ATOM_UNKNOWN/.test(e.message));
+      seen.push(`${name}: undeclared atoms kept as text, E_ATOM_UNKNOWN at compile`); continue;
+    }
     const refs = A.modelRefs(m);
     assert.ok(refs.length > 0 && refs.every((r) => m.atoms[r.atom]));             // ids, resolved against model.atoms
     // the model holds refs, not copies: no atom body string appears outside `atoms` and the verbatim source text
-    const json = JSON.stringify({ ...m, atoms: undefined, header: undefined, tracks: (m.tracks || []).map(({ src, ...t }) => t) });
+    const json = JSON.stringify({ ...m, atoms: undefined, header: undefined, tracks: (m.tracks || []).map(({ src, ...t }) => t).filter((t) => JSON.stringify(t).includes('$atom')), bindings: (m.bindings || []).filter((b) => JSON.stringify(b).includes('$atom')) }); // the `before` half of example 1 legitimately holds the plain strings
     for (const id of Object.keys(m.atoms)) { const a = m.atoms[id]; if (typeof a.body === 'string') assert.ok(!json.includes(`"${a.body}"`), `${name}: the string "${a.body}" is copied at a reference position`); }
     seen.push(`${name}: ${Object.keys(m.atoms).length} atoms, ${refs.length} refs`);
   }
-  const m1 = MD.parse(EXAMPLES['example 1 (extraction result, bindings one per line)']);
-  assert.deepEqual(m1.bindings[0].slot, { $atom: m1.bindings[0].slot.$atom });
-  assert.deepEqual(m1.bindings[0].gate, { $atom: m1.bindings[0].gate.$atom, ops: [['before']] });
-  box(`Model round trip: generate(parse(code)) is byte-identical for the ATOMS section 13 examples (${seen.join('; ')}); every parsed model validates against model.v1.json, holds { $atom } refs at the reference positions and no copy of the atoms' strings`);
+  const m1 = MD.parse(EXAMPLES['example 1 (extraction)']);
+  const b1 = m1.bindings.filter((b) => isObj(b.slot));                           // the `after` half; the `before` half holds plain strings
+  assert.equal(b1.length, 2);
+  assert.deepEqual(b1[0].slot, { $atom: b1[0].slot.$atom });
+  assert.deepEqual(b1[0].gate, { $atom: b1[0].gate.$atom, ops: [['before']] });
+  box(`Model round trip: generate(parse(code)) is byte-identical for the ATOMS section 13 examples 1-4 read verbatim from docs/ATOMS.md (${seen.join('; ')}); every parsed model validates against model.v1.json, holds { $atom } refs at the reference positions and no copy of the atoms' strings`);
 }
 
 // ---------------------------------------------------------------- Box: reference data

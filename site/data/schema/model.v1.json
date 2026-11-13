@@ -67,6 +67,16 @@
    "type": "string",
    "description": "verbatim non-hook header code (setcpm, samples, helpers)"
   },
+  "hookSrc": {
+   "type": "array",
+   "description": "verbatim hook statements with their position among the layers (at = number of tracks before it); re-emitted unchanged while they still describe the registry, canonical form otherwise",
+   "items": {
+    "type": "object",
+    "required": ["at", "src"],
+    "additionalProperties": false,
+    "properties": { "at": { "type": "integer", "minimum": 0 }, "src": { "type": "string" } }
+   }
+  },
   "markers": {
    "type": "object",
    "additionalProperties": {

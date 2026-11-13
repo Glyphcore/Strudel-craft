@@ -292,7 +292,10 @@ export function parse(text) {
     const last = i === n - 1;
     const stmtEnd = st.end + (body[st.end] === '\r' && body[st.end + 1] === '\n' ? 2 : body[st.end] === '\n' ? 1 : 0);
     if (analyseRegistry(st, body, m) || (() => { const inst = analyseInst(st, body); if (inst) (m.instances ||= []).push(inst); return !!inst; })()) {
-      structural = true; pos = stmtEnd; return;
+      // keep the statement's verbatim text and its position among the layers, so a no-edit generate() moves nothing
+      const end = last ? body.length : stmtEnd;
+      (m.hookSrc ||= []).push({ at: (m.tracks || []).length, src: body.slice(pos, end) });
+      structural = true; pos = end; return;
     }
     const segEnd = last ? body.length : st.end, src = body.slice(pos, segEnd);
     pos = segEnd;
@@ -339,6 +342,26 @@ function emitTrack(t) {
   if (t.ns) s += '.ns(' + JSON.stringify(t.ns) + ')';
   return s;
 }
+const REG_KEYS = ['markers', 'scopes', 'slots', 'defs', 'vars', 'bindings', 'instances'];
+// the registry the kept hook statements (model.hookSrc) say: re-analysed from their text with the document's atom environment
+function hookRegistry(list, text) {
+  const m = {};
+  for (const h of list) {
+    let ast; try { ast = parseJs(h.src); } catch { return null; }
+    for (const st of ast.body) {
+      if (analyseRegistry(st, h.src, m)) continue;
+      const inst = analyseInst(st, h.src); if (!inst) return null; (m.instances ||= []).push(inst);
+    }
+  }
+  return m;
+}
+// hookSrc is used only while it still describes the model's registry exactly; any op that touched a hook statement makes it stale and the canonical form is emitted
+function hooksVerbatim(model) {
+  const list = model.hookSrc; if (!Array.isArray(list) || !list.length) return false;
+  const m = hookRegistry(list); if (!m) return false;
+  const pick = (x) => JSON.stringify(sortKeys(REG_KEYS.map(k => x[k] && Object.keys(x[k]).length !== 0 ? x[k] : undefined)));
+  return pick(m) === pick(model);
+}
 export function generate(model) {
   ATOMS = atomsFromModel(model);
   let out = model.header || '';
@@ -351,6 +374,8 @@ export function generate(model) {
     const declared = new Set([...text.matchAll(/\batom\s*\(\s*["']([^"']+)["']/g)].map(x => x[1]));
     for (const a of Object.values(model.atoms)) if (!declared.has(a.name)) line(emitAtomDecl(a));
   }
+  const keep = hooksVerbatim(model);
+  if (!keep) {
   for (const [k, v] of Object.entries(model.markers || {})) line(call('marker', k, v));
   for (const [k, v] of Object.entries(model.scopes || {})) line(call('scope', k, v));
   for (const [k, v] of Object.entries(model.slots || {})) line(call('slot', k, v));
@@ -374,10 +399,14 @@ export function generate(model) {
   for (const i of model.instances || []) {
     const { component, ...rest } = i; line('$: ' + call('inst', component, { as: rest.as, ...rest }));
   }
-  for (const t of model.tracks || []) {
+  }
+  const kept = (i) => { if (keep) for (const h of model.hookSrc) if (h.at === i) out += h.src; };
+  (model.tracks || []).forEach((t, i) => {
+    kept(i);
     const sync = trackSync(t);
     if (sync) out += t.src; else line(emitTrack(t));
-  }
+  });
+  if (keep) for (const h of model.hookSrc) if (h.at >= (model.tracks || []).length) out += h.src;
   if (model.layout && Object.keys(model.layout).length) {
     sep(); out += '// @model-layout ' + JSON.stringify(sortKeys(model.layout)) + '\n';
   }

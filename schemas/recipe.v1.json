@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://glyphcore.github.io/Strudel-craft/schemas/recipe.v1.json",
+  "title": "Strudel Craft recipe (take capture state), version 1",
+  "description": "A take as data that regenerates its audio from scratch. Forward only: hosts read version 1 and reject anything else. Design: docs/CAPTURE.md. Pins follow docs/PACK_SPEC.md sections 8 and 9.",
+  "type": "object",
+  "required": ["format", "version", "id", "name", "created", "includes", "timing", "random", "state", "events", "deps", "outputs"],
+  "additionalProperties": false,
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "audioOut": {
+      "type": "object", "required": ["sha256", "sr", "frames", "how", "encoding"],
+      "properties": {
+        "sha256": { "$ref": "#/$defs/hash", "description": "sha256 of the interleaved little-endian float32 L,R frames" },
+        "sr": { "type": "integer", "minimum": 8000 }, "frames": { "type": "integer", "minimum": 1 },
+        "how": { "enum": ["realtime", "offline"] }, "encoding": { "const": "f32le-interleaved" },
+        "haps": { "type": "integer" }, "fails": { "type": "integer" }
+      }
+    }
+  },
+  "properties": {
+    "format": { "const": "strudel-craft/recipe" },
+    "version": { "const": 1 },
+    "id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "created": { "type": "string", "format": "date-time" },
+    "includes": { "type": "object", "required": ["audio", "events", "code"], "properties": { "audio": { "type": "boolean" }, "events": { "type": "boolean" }, "code": { "type": "boolean" } }, "additionalProperties": false },
+    "timing": {
+      "type": "object", "required": ["cps", "start", "stop", "cycles", "loop", "mode", "exact"],
+      "properties": {
+        "cps": { "type": "number", "exclusiveMinimum": 0 }, "start": { "type": "number" }, "stop": { "type": "number" }, "cycles": { "type": "number" },
+        "loop": { "type": "boolean" }, "mode": { "enum": ["free", "cycles", "until"] }, "exact": { "type": "boolean" }, "fold": { "type": "boolean" }, "preRoll": { "type": "number" }
+      }
+    },
+    "random": { "type": "object", "required": ["seed"], "properties": { "seed": { "type": "integer" }, "note": { "type": "string" } } },
+    "state": {
+      "description": "Code-state; null when includes.code is false",
+      "oneOf": [
+        { "type": "null" },
+        { "type": "object", "required": ["source", "controls", "settings"],
+          "properties": {
+            "source": { "type": "object", "required": ["kind", "code", "resolved", "atoms"], "properties": { "kind": { "type": "string" }, "title": { "type": "string" }, "code": { "type": "string" }, "resolved": { "type": "string" }, "atoms": { "type": "array", "items": { "type": "string" } } } },
+            "controls": { "description": "controls engine model (controls with values and ranges, maps, automation lanes)" },
+            "sites": { "type": "array", "description": "AST control sites (id, path, label, param, type, value, range)" },
+            "perform": { "description": "Perform model (pad banks = hook bindings, boards, maps)" },
+            "modRanges": { "oneOf": [{ "type": "null" }, { "type": "object", "required": ["path", "sha256"], "properties": { "path": { "type": "string" }, "sha256": { "$ref": "#/$defs/hash" } } }] },
+            "settings": { "type": "object", "description": "sound-affecting settings: tempo, masterDb, follow, transport range" }
+          } }
+      ]
+    },
+    "events": {
+      "description": "Event stream; null when includes.events is false",
+      "oneOf": [
+        { "type": "null" },
+        { "type": "object", "required": ["pads", "controls", "lanes"],
+          "properties": {
+            "pads": { "type": "array", "items": { "type": "object", "required": ["cycle", "pad", "op"] } },
+            "controls": { "type": "array", "items": { "type": "object", "required": ["cycle", "control", "value"] } },
+            "lanes": { "type": "object" }, "performance": { "type": "object" }, "bank": {}, "targets": { "type": "object" }
+          } }
+      ]
+    },
+    "deps": {
+      "type": "object", "required": ["strudel", "superdough", "site", "packs", "samples", "vox"],
+      "properties": {
+        "strudel": { "type": "object", "required": ["url", "name", "version", "sha256"], "properties": { "url": { "type": "string" }, "name": { "type": "string" }, "version": { "type": "string" }, "sha256": { "oneOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }] } } },
+        "superdough": { "type": "object", "required": ["name", "version"] },
+        "site": { "type": "object", "required": ["build"], "properties": { "build": { "type": "string" }, "date": { "type": "string" } } },
+        "packs": { "type": "array", "description": "lock entries (PACK_SPEC 9.2) plus ingredient hashes", "items": { "type": "object", "required": ["id", "version", "source", "manifest", "ingredients"],
+          "properties": { "id": { "type": "string" }, "version": { "type": "string" }, "source": { "type": "string", "description": "file:, https:, or github:owner/repo@<40-hex commit>/path; never a branch or tag" }, "manifest": { "$ref": "#/$defs/hash" }, "tier": { "type": "string" },
+            "ingredients": { "type": "array", "items": { "type": "object", "required": ["id", "kind"], "properties": { "id": { "type": "string" }, "kind": { "type": "string" }, "hash": { "oneOf": [{ "$ref": "#/$defs/hash" }, { "type": "null" }] }, "code": { "type": "boolean" } } } } } } },
+        "samples": { "type": "array", "items": { "type": "object", "required": ["bank", "source", "url", "sha256"], "properties": { "bank": { "type": "string" }, "source": { "type": "string", "pattern": "^github:[^@]+@[0-9a-f]{40}/" }, "url": { "type": "string" }, "sha256": { "$ref": "#/$defs/hash" } } } },
+        "vox": { "type": "array", "items": { "type": "object", "required": ["bank", "url", "sha256"], "properties": { "bank": { "type": "string" }, "url": { "type": "string" }, "sha256": { "$ref": "#/$defs/hash" } } } }
+      }
+    },
+    "outputs": { "type": "object", "properties": { "capture": { "$ref": "#/$defs/audioOut" }, "render": { "$ref": "#/$defs/audioOut" } }, "additionalProperties": false }
+  }
+}

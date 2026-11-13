@@ -19,6 +19,7 @@ const PANES = {
   syntax: { title: 'Syntax', find: () => $('#syntax') },
   history: { title: 'History', make: historyPane },
   tracker: { title: 'Tracker', find: () => $('#tracker') },
+  record: { title: 'Record', find: () => $('#capSheet') },
 };
 const DEFAULTS = {
   Code: { rows: [[{ id: 'recipes', w: 1 }, { id: 'editor', w: 2 }]], key: 'Alt+1' },

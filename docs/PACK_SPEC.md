@@ -258,6 +258,8 @@ Array order is load order and tie-break order. Three lock layers exist at run ti
 | user | browser `localStorage` `sc.packs.lock` (so it is in history); CLI: a project's own `packs.lock.json` | the user, through the pack sheet or `packs add` |
 | session | memory | `packs.add()` with a local folder; ad hoc `--pack DIR` |
 
+> Recipes (#72, [CAPTURE.md](CAPTURE.md)) reuse these pins: a recorded take lists every pack it used as a lock entry (source at a commit, `manifest` hash) plus each ingredient's hash, and Remake verifies them before anything loads. A mismatch is refused with the ref named.
+
 ### 9.3 Precedence, override, collisions
 
 1. A qualified id always resolves to its own pack. Nothing overrides it.

@@ -747,7 +747,14 @@ window.strudelCraft.transport = { play: () => play(), stop: () => stop(), toggle
     else await Engine.load();
     if (src.samples && !Engine.samplesLoaded) { for (const m of SAMPLE_MAPS) await window.samples(m); Engine.samplesLoaded = true; }
     const sch = Engine.scheduler; return { pattern: sch && sch.pattern, cps: (sch && sch.cps) || S.tempo / 240, code: src.code, title: src.title, kind: src.kind };
-  } };
+  },
+  /* Remake (capture.js): compile a recipe's program without touching the editors; stops the transport first */
+  async compileCode(code) {
+    if (S.playing) stop();
+    await Engine.load(); await Engine.idle(code, () => true, 'rack');
+    const sch = Engine.scheduler; return { pattern: sch && sch.pattern, cps: (sch && sch.cps) || S.tempo / 240 };
+  },
+  async loadSampleMap(map) { await Engine.load(); await window.samples(map); } };
 window.strudelCraft.engineState = () => ({ ...Engine.state, scheduler: Engine.scheduler, playing: S.playing, srcView: S.srcView || 'rack' });
 window.__sc = { S, Engine, Bus, play, stop, select, setView, History, toggleStack };
 document.addEventListener('DOMContentLoaded', boot);

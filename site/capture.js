@@ -1,26 +1,29 @@
-/* Audio capture: record what the transport plays (Rack or Stack) as loopable takes, keep them on the device, download them.
-   Tap: an AudioWorklet (Blob module; ScriptProcessor fallback) hangs off the master bus GainNode from app.js (post master level,
-   so a take is what is heard). Its output is silent and goes to the destination only to be pulled, so the mix is unchanged.
-   Modes: free (until you stop), cycles (N cycles cut on sample frames mapped from the scheduler clock, so the clip loops),
-   until stopped (capped by the play-time limit). Count-in and pre-roll. Exact: offline render of N cycles (OfflineAudioContext).
-   Takes: IndexedDB "sc-capture" (records {meta, audio}); settings: localStorage sc.capture.* (history-friendly, no audio).
-   API: window.strudelCraft.capture = { open, close, toggle, configure(opts), record(opts), stop, toggleRec, renderExact(n), list, get, remove, rename,
-   encodeWav(take, bits), sidecar(take), fileName(take, ext), download(id, fmt), state } */
+/* Record panel: one arm, one transport, one timeline of takes. A single Record captures, per the include boxes, the master audio,
+   the lane / pad / control event stream and the code-state. Every take is a recipe (recipe.js, schemas/recipe.v1.json): versioned
+   JSON that regenerates the result from scratch, with optional audio blobs as its outputs. Remake re-renders a recipe offline and checks
+   the output against the stored audio hash. Imported recipes are inert data until Remake, after the user approves their dependencies.
+   Tap: an AudioWorklet (Blob module; ScriptProcessor fallback) on the master bus GainNode from app.js, post master level; its output is
+   silent and only pulled, so the mix is unchanged. Cycles mode cuts on sample frames mapped from the scheduler clock.
+   Storage: IndexedDB "sc-recipes" (recipe.js); settings: localStorage sc.record.* (history-friendly, no audio).
+   API: window.strudelCraft.capture = { open, close, toggle, configure, record, stop, toggleRec, renderExact, remake, importRecipe, exportRecipe,
+   download, list, get, remove, rename, encodeWav, opts, state } */
+import { FORMAT, VERSION, audioHash, collectDeps, validate, refsOf, verify, trusted, grant, store, pruneLegacy, sha256 } from './recipe.js';
 const sc = (window.strudelCraft = window.strudelCraft || {});
 const $ = (s, r = document) => r.querySelector(s);
-const get = (k, d) => { try { const v = localStorage.getItem('sc.capture.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
-const set = (k, v) => { try { localStorage.setItem('sc.capture.' + k, JSON.stringify(v)); } catch (e) { /* private mode */ } };
+const get = (k, d) => { try { const v = localStorage.getItem('sc.record.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
+const set = (k, v) => { try { localStorage.setItem('sc.record.' + k, JSON.stringify(v)); } catch (e) { /* private mode */ } };
 const toast = (m, o) => sc.ui && sc.ui.toast(m, o);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const fmtT = (s) => { s = Math.max(0, s); const m = Math.floor(s / 60); const x = s - m * 60; return m + ':' + (x < 10 ? '0' : '') + x.toFixed(1); };
 const safe = (s) => (String(s || 'take').trim().replace(/[^\w.-]+/g, '-').replace(/^-+|-+$/g, '') || 'take').slice(0, 60);
 const numStr = (x) => String(+(+x).toFixed(3));
+const short = (h) => (h ? String(h).replace('sha256:', '').slice(0, 12) : '-');
 
 const opts = {
   mode: get('mode', 'cycles'), n: get('n', 2), countIn: get('countIn', 0), preRoll: get('preRoll', 0),
-  name: get('name', 'take'), bits: get('bits', 16), fold: get('fold', true),
+  name: get('name', 'take'), bits: get('bits', 16), fold: get('fold', true), audio: get('audio', true), events: get('events', true), code: get('code', true),
 };
-const st = { phase: 'idle', startFrame: 0, endFrame: 0, startCycle: 0, chunks: [], peak: 0, hold: 0, tap: null, tapCtx: null, info: null, cap: 0, open: false, rendering: false };
+const st = { phase: 'idle', startFrame: 0, endFrame: 0, startCycle: 0, chunks: [], peak: 0, hold: 0, tap: null, tapCtx: null, open: false, rendering: false, run: {}, ev: null };
 
 /* ---------- tap ---------- */
 const WORKLET = `class ScCaptureTap extends AudioWorkletProcessor{constructor(){super();this.n=0;this.B=4096;this.L=new Float32Array(this.B);this.R=new Float32Array(this.B);this.f0=0;this.on=true;this.port.onmessage=(e)=>{this.on=!!e.data.on;if(!this.on)this.n=0;}}
@@ -59,6 +62,7 @@ function onChunk(f0, L, R) {
   let p = 0; for (let i = 0; i < L.length; i += 4) { const a = Math.abs(L[i]), b = Math.abs(R[i]); if (a > p) p = a; if (b > p) p = b; }
   st.peak = Math.max(st.peak * 0.85, p); st.hold = Math.max(st.hold, p);
   st.chunks.push({ f0, L, R });
+  if (st.phase === 'recording') sampleEvents();
   const keepFrom = st.phase === 'recording' || st.phase === 'waiting' ? Math.min(st.startFrame, f0) - opts.preRoll * sr() - 8192 : f0 - (opts.preRoll + 1) * sr();
   while (st.chunks.length > 1 && st.chunks[0].f0 + st.chunks[0].L.length < keepFrom) st.chunks.shift();
   if (st.phase === 'recording' && st.endFrame && f0 + L.length >= st.endFrame) finish('done');
@@ -88,14 +92,64 @@ async function waitTicking(ms = 4000) {
   return false;
 }
 
+/* superdough keeps filter / compressor / supersaw nodes in module-wide WeakRef pools that ignore the context (nodePools.mjs). Two scoped fixes,
+   nothing page-wide survives the render:
+   - offline -> live: while our superdough() calls run, a connect() wrapper (installed for the render only, restored in finally) collects the
+     offline context's nodes; before startRendering their own Symbol keys (superdough's POOL_KEY) are deleted, so on release they are torn
+     down instead of pooled and the live context never gets one back.
+   - live -> offline: a hap whose pooled node belongs to the live context throws InvalidAccessError; the failed call consumed (popped) that
+     stale node, so the hap is retried (up to 64 times) until the pool hands out a fresh offline node. */
+function collectNodes(ctx) {
+  const prev = AudioNode.prototype.connect, seen = new Set();
+  AudioNode.prototype.connect = function (dest, ...rest) { if (this.context === ctx) seen.add(this); if (dest instanceof AudioNode && dest.context === ctx) seen.add(dest); return prev.call(this, dest, ...rest); };
+  return { seen, restore() { if (AudioNode.prototype.connect !== prev) AudioNode.prototype.connect = prev; } };
+}
+function unpool(nodes) { let n = 0; for (const node of nodes) for (const sym of Object.getOwnPropertySymbols(node)) { try { delete node[sym]; n++; } catch (e) { /* frozen */ } } return n; }
+
+/* ---------- events + code-state ---------- */
+function nowCycle() { const ck = clock(); return ck && st.tapCtx ? ck.cycleAt(st.tapCtx.currentTime) : 0; }
+function sampleEvents() {
+  const C = sc.perform && sc.perform.controls; if (!C || !st.ev) return; const c = +nowCycle().toFixed(4);
+  for (const x of C.list()) { const v = x.value; if (v == null || typeof v === 'object') continue; if (st.ev.last.get(x.name) !== v) { st.ev.last.set(x.name, v); st.ev.controls.push({ cycle: c, control: x.name, value: v }); } }
+}
+const lsj = (k) => { try { return JSON.parse(localStorage.getItem('sc.' + k)); } catch (e) { return null; } };
+let modHash = null;
+/* everything that shapes the sound besides the deps: program (as played, with atoms resolved), controls (values, ranges, maps, lanes),
+   AST control sites, the Perform model (pads = hook bindings, maps), mod ranges, sound-affecting settings */
+async function codeState(srcOverride) {
+  const T = sc.transport, src = srcOverride || (T && T.source()) || { code: '' };
+  let resolved = src.code; try { if (sc.atoms && sc.atoms.inline) resolved = sc.atoms.inline(src.code); } catch (e) { /* keep */ }
+  const C = sc.perform && sc.perform.controls;
+  let sites = []; try { sites = (sc.binder && sc.binder.sites ? sc.binder.sites(src.kind === 'stack' ? 'stack' : 'rack') : []).map((s) => ({ id: s.id, path: s.path, label: s.label, param: s.param, type: s.type, value: s.value, range: s.range })); } catch (e) { sites = []; }
+  if (!modHash) try { modHash = sha256(new Uint8Array(await (await fetch('data/mod_ranges.json')).arrayBuffer())); } catch (e) { modHash = null; }
+  return JSON.parse(JSON.stringify({
+    source: { kind: src.kind || 'solo', title: src.title || '', code: src.code || '', resolved, atoms: [...new Set((src.code || '').match(/\batoms\.[\w.]+/g) || [])] },
+    controls: C ? C.toModel() : null, aliases: C && C.labelOf ? Object.fromEntries(C.list().map((x) => [C.labelOf(x.name), x.name]).filter(([l]) => l)) : {}, sites, perform: lsj('perform'), modRanges: modHash ? { path: 'data/mod_ranges.json', sha256: await modHash } : null,
+    settings: { tempo: lsj('tempo'), masterDb: T ? T.masterDb : null, follow: lsj('follow'), range: { start: lsj('range.start'), end: lsj('range.end'), loop: lsj('range.loop'), unit: lsj('range.unit') } },
+  }));
+}
+function padEvents(c0, c1) {
+  const fr = (x) => { const m = /^(-?\d+)(?:\/(\d+))?$/.exec(String(x)); return m ? +m[1] / +(m[2] || 1) : +x; };
+  return ((sc.perform && sc.perform.journal) || []).map((e) => ({ cycle: fr(e.cycle), pad: e.pad, op: e.op, args: e.args || {} })).filter((e) => e.pad && e.cycle >= c0 - 1e-9 && e.cycle < c1 - 1e-9);
+}
+const seed32 = () => crypto.getRandomValues(new Uint32Array(1))[0] | 0;
+function newId() { return 'rc' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+async function uniqueName(base) { const names = new Set((await store.list()).map((r) => r.recipe.name)); let n = safe(base), i = 2; const b = n; while (names.has(n)) n = b + '-' + i++; return n; }
+async function buildRecipe({ name, includes, timing, state, events, outputs = {} }) {
+  const deps = await collectDeps(state ? state.source.code : '');
+  return { format: FORMAT, version: VERSION, id: newId(), name: await uniqueName(name), created: new Date().toISOString(), includes, timing,
+    random: { seed: seed32(), note: 'Math.random is seeded with this value during offline renders (noise, random phases); Strudel rand is cycle-deterministic' },
+    state: includes.code ? state : null, events: includes.events ? events : null, deps, outputs };
+}
+
 /* ---------- record ---------- */
-/* run: one-off overrides that are not persisted ({mode, n, countIn, name, at: absolute start cycle, from: motion take id});
-   resolves with the saved take (or null) */
+/* run: one-off overrides that are not persisted ({mode, n, countIn, name, at: absolute start cycle, step}); resolves with the saved record */
 async function record(o = {}, run = {}) {
   if (st.phase !== 'idle') return null; /* busy: use stop() or toggleRec() */
   if (o && Object.keys(o).length) configure(o);
-  const ru = st.run = { mode: run.mode || opts.mode, n: Math.max(1, (run.n || opts.n) | 0), countIn: run.countIn != null ? run.countIn : opts.countIn, preRoll: run.mode ? 0 : opts.preRoll, name: run.name || opts.name, at: run.at, step: run.step, from: run.from };
+  const ru = st.run = { mode: run.mode || opts.mode, n: Math.max(1, (run.n || opts.n) | 0), countIn: run.countIn != null ? run.countIn : opts.countIn, preRoll: run.mode ? 0 : opts.preRoll, name: run.name || opts.name, at: run.at, step: run.step };
   const done = st.done = new Promise((r) => { st.resolve = r; });
+  if (!opts.audio && !opts.events && !opts.code) { toast('Tick at least one of Audio, Events, Code-state', { kind: 'error' }); st.resolve(null); return null; }
   if (st.rendering) { toast('Rendering, wait a moment', { kind: 'info' }); st.resolve(null); return null; }
   const T = sc.transport; if (!T) { st.resolve(null); return null; }
   st.phase = 'arming'; sync();
@@ -110,24 +164,30 @@ async function record(o = {}, run = {}) {
     let startT, startCycle = null;
     if (ru.at != null) { startCycle = ru.at; while (ck.timeOf(startCycle) < now) startCycle += ru.step || ru.n; startT = ck.timeOf(startCycle); }
     else if (ru.mode === 'cycles' || k > 0) { startCycle = Math.ceil(c - 1e-6) + k; startT = ck.timeOf(startCycle); } else startT = now;
-    st.startCycle = startCycle; st.cps = ck.cps;
+    st.startCycle = startCycle; st.c0 = startCycle != null ? startCycle : ck.cycleAt(startT); st.cps = ck.cps;
     const pre = ru.mode === 'cycles' ? 0 : Math.max(0, +ru.preRoll || 0);
     const first = st.chunks.length ? st.chunks[0].f0 : Math.round(now * rate);
     st.startFrame = Math.max(first, Math.round((startT - pre) * rate)); st.recFrame = Math.round(startT * rate);
     if (ru.mode === 'cycles') st.endFrame = st.recFrame + Math.round(ru.n / ck.cps * rate);
     else if (ru.mode === 'until') { const r = sc.range && sc.range.state; const capS = r ? Math.max(1, r.maxMin * 60 + (r.extra || 0) - (r.elapsed || 0)) : 600; st.endFrame = st.recFrame + Math.round(capS * rate); }
     else st.endFrame = 0;
-    st.src = T.source(); st.hold = 0; st.phase = 'waiting'; st.t0 = performance.now();
+    st.src = T.source(); st.state = opts.code || opts.audio ? await codeState(st.src) : null;
+    st.ev = opts.events ? { controls: [], last: new Map() } : null;
+    st.hold = 0; st.phase = 'waiting'; st.t0 = performance.now();
     sync(); loop();
   } catch (e) { st.phase = 'idle'; sync(); toast('Record: ' + (e.message || e), { kind: 'error' }); st.resolve(null); }
   return done;
 }
 function toggleRec() { return st.phase === 'idle' ? record() : stop(); }
-/* set capture options from code or the palette; persisted (sc.capture.*) and reflected in the sheet */
+/* set options from code or the palette; persisted (sc.record.*) and reflected in the panel */
 function configure(o = {}) {
   for (const k of Object.keys(opts)) if (o[k] !== undefined) { opts[k] = k === 'name' ? safe(o[k]) : typeof opts[k] === 'number' ? +o[k] : typeof opts[k] === 'boolean' ? !!o[k] : o[k]; set(k, opts[k]); }
   opts.n = Math.max(1, Math.min(64, opts.n | 0));
-  if (el.w) { for (const r of el.w.querySelectorAll('.cap-seg input')) r.checked = String(opts[r.name.slice(4)]) === r.value; $('#capCount').value = String(opts.countIn); $('#capPre').value = String(opts.preRoll); $('#capName').value = opts.name; $('#capFold').checked = opts.fold; }
+  if (el.w) {
+    for (const r of el.w.querySelectorAll('.cap-seg input')) r.checked = String(opts[r.name.slice(4)]) === r.value;
+    $('#capCount').value = String(opts.countIn); $('#capPre').value = String(opts.preRoll); $('#capName').value = opts.name; $('#capFold').checked = opts.fold;
+    for (const k of ['audio', 'events', 'code']) $('#capInc_' + k).checked = opts[k];
+  }
   sync(); return { ...opts };
 }
 function stop() {
@@ -141,6 +201,7 @@ function loop() {
     if (st.phase === 'idle' && !st.open) { rafOn = false; return; }
     if (st.phase === 'idle' && opts.preRoll > 0 && sc.transport && sc.transport.playing && sc.transport.bus && st.tapCtx !== sc.transport.bus.ctx && !st.attaching) { st.attaching = true; attachTap().finally(() => { st.attaching = false; }); }
     if (st.phase === 'waiting' && st.tapCtx && st.tapCtx.currentTime * sr() >= st.recFrame) { st.phase = 'recording'; sync(); }
+    if (st.phase === 'recording') sampleEvents();
     if ((st.phase === 'recording' || st.phase === 'waiting') && sc.transport && !sc.transport.playing) finish('transport');
     draw();
     st.raf = document.hidden ? setTimeout(step, 250) : requestAnimationFrame(step);
@@ -156,56 +217,73 @@ async function finish(why) {
   const last = st.chunks.length ? st.chunks[st.chunks.length - 1] : null; const have = last ? last.f0 + last.L.length : st.startFrame;
   if (!end || why !== 'done' || end > have) end = Math.min(end || have, have);
   st.phase = 'saving'; sync();
-  const { L, R } = slice(st.startFrame, end);
-  if (L.length < rate * 0.05) { st.phase = 'idle'; sync(); toast('Nothing captured', { kind: 'error' }); st.resolve(null); return; }
-  const recLen = end - st.recFrame; const cycles = recLen / rate * st.cps;
-  const ru = st.run, exact = ru.mode === 'cycles' && why === 'done'; let take = null;
+  const ru = st.run, exact = ru.mode === 'cycles' && why === 'done';
+  const recLen = Math.max(0, end - st.recFrame); const c0 = st.c0, c1 = exact ? c0 + ru.n : c0 + recLen / rate * st.cps;
+  let rec = null;
   try {
-    take = await save({ L, R, sr: rate, cycles: exact ? ru.n : +cycles.toFixed(3), cps: st.cps, mode: ru.mode, exact, loop: exact, how: 'realtime', name: ru.name, from: ru.from,
-      preRoll: (st.recFrame - st.startFrame) / rate, startCycle: st.startCycle, why });
-    toast(`Saved ${take.meta.name} (${fmtT(L.length / rate)})`, { kind: 'ok' });
-  } catch (e) { toast('Could not save take: ' + e.message, { kind: 'error' }); }
-  st.resolve(take);
-  st.phase = 'idle'; if (!(opts.preRoll > 0)) st.chunks = []; sync(); renderTakes();
+    if (recLen < rate * 0.05) throw new Error('Nothing captured');
+    const audio = opts.audio ? slice(st.startFrame, end) : null;
+    const includes = { audio: !!opts.audio, events: !!opts.events, code: !!opts.code };
+    const C = sc.perform && sc.perform.controls;
+    const events = includes.events ? { pads: padEvents(c0, c1), controls: st.ev ? st.ev.controls : [], lanes: C ? (C.toModel().automation || {}) : {} } : null;
+    const timing = { cps: +(+st.cps).toFixed(6), start: +c0.toFixed(6), stop: +c1.toFixed(6), cycles: +(c1 - c0).toFixed(6), loop: exact, mode: ru.mode, exact, fold: !!opts.fold, preRoll: (st.recFrame - st.startFrame) / rate };
+    const recipe = await buildRecipe({ name: ru.name, includes, timing, state: st.state, events });
+    rec = { id: recipe.id, recipe, audio: {} };
+    if (audio) { rec.audio.capture = { L: audio.L, R: audio.R, sr: rate }; recipe.outputs.capture = { sha256: await audioHash(audio.L, audio.R), sr: rate, frames: audio.L.length, how: 'realtime', encoding: 'f32le-interleaved' }; }
+    await store.put(rec);
+    /* reference render: an exact take with code-state gets an offline render whose hash Remake checks (stops the transport) */
+    if (audio && includes.code && exact) {
+      st.phase = 'idle'; sync();
+      const out = await renderRecipe(recipe, { sr: rate });
+      if (out) { rec.audio.render = { L: out.L, R: out.R, sr: out.sr }; recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails }; await store.put(rec); }
+    }
+    toast(`Take saved: ${recipe.name}. Download`, { kind: 'ok', ms: 6000, onClick: () => download(recipe.id, 'recipe') });
+  } catch (e) { toast((e.message === 'Nothing captured' ? '' : 'Could not save take: ') + e.message, { kind: 'error' }); rec = null; }
+  st.phase = 'idle'; if (!(opts.preRoll > 0)) st.chunks = []; st.ev = null; sync(); renderTakes(); st.resolve(rec);
 }
 
-/* ---------- exact offline render ---------- */
-/* superdough keeps filter / compressor / supersaw nodes in module-wide WeakRef pools that ignore the context (nodePools.mjs). Two scoped fixes,
-   nothing page-wide survives the render:
-   - offline -> live: while our superdough() calls run, a connect() wrapper (installed for the render only, restored in finally) collects the
-     offline context's nodes; before startRendering their own Symbol keys (superdough's POOL_KEY) are deleted, so on release they are torn
-     down instead of pooled and the live context never gets one back.
-   - live -> offline: a hap whose pooled node belongs to the live context throws InvalidAccessError; the failed call consumed (popped) that
-     stale node, so the hap is retried (up to 64 times) until the pool hands out a fresh offline node. */
-function collectNodes(ctx) {
-  const prev = AudioNode.prototype.connect, seen = new Set();
-  AudioNode.prototype.connect = function (dest, ...rest) { if (this.context === ctx) seen.add(this); if (dest instanceof AudioNode && dest.context === ctx) seen.add(dest); return prev.call(this, dest, ...rest); };
-  return { seen, restore() { if (AudioNode.prototype.connect !== prev) AudioNode.prototype.connect = prev; } };
-}
-function unpool(nodes) { let n = 0; for (const node of nodes) for (const sym of Object.getOwnPropertySymbols(node)) { try { delete node[sym]; n++; } catch (e) { /* frozen */ } } return n; }
-async function renderExact(n = opts.n) {
-  const W = window; const T = sc.transport;
-  if (st.rendering || st.phase !== 'idle') return;
-  if (!W.OfflineAudioContext) { toast('This browser has no OfflineAudioContext: use Record (cycles)', { kind: 'error' }); return; }
+/* ---------- offline render of a recipe (Remake, reference render, exact render) ---------- */
+function mulberry(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+async function renderRecipe(recipe, { sr: rateIn } = {}) {
+  const W = window, T = sc.transport, S = recipe.state;
+  if (!S) throw new Error('This take has no code-state, so it cannot be rendered');
+  if (st.rendering) throw new Error('A render is already running');
+  if (!W.OfflineAudioContext) throw new Error('This browser has no OfflineAudioContext');
   st.rendering = true; sync();
-  let live = null, ctl = null, swapped = false, wasRunning = false, col = null;
+  const C = () => sc.perform && sc.perform.controls;
+  let live = null, ctl = null, swapped = false, wasRunning = false, col = null, prevCtl = null, rnd = null;
   try {
-    const info = await T.compile();
-    if (!info.pattern) throw new Error('No pattern compiled');
+    /* labels -> AST control ids (ctl("cut") reads the site id it was bound to when recorded); the aliases must exist before the program
+       declares its controls, so the Perform tools are loaded first with an empty program */
+    if (S.aliases && Object.keys(S.aliases).length) { if (!C()) await T.compileCode('silence'); if (C() && C().alias) for (const [label, id] of Object.entries(S.aliases)) { try { C().alias(label, id); } catch (e) { /* keep */ } } }
+    const info = await T.compileCode(S.source.code);
+    if (!info.pattern) throw new Error('The program did not compile to a pattern');
+    if (C() && S.controls) {
+      /* exact control state: the model (specs, maps, lanes) plus a value history of just the start value and the recorded, cycle-stamped
+         control events; the previous model and histories come back in finally */
+      const c = C(); prevCtl = { model: c.toModel(), hist: Object.fromEntries(c.list().map((x) => [x.name, c.history ? c.history(x.name) : null])) };
+      try { c.load(JSON.parse(JSON.stringify(S.controls))); } catch (e) { /* a same-named control with another spec stays; Remake then reports a differing hash */ }
+      if (c.setHistory) for (const [n, spec] of Object.entries(S.controls.controls || {})) {
+        const v0 = spec.value !== undefined ? spec.value : spec.default; const evs = ((recipe.events && recipe.events.controls) || []).filter((e) => e.control === n);
+        c.setHistory(n, [{ cycle: -Infinity, value: v0 }, ...evs.map((e) => ({ cycle: e.cycle, value: e.value }))]);
+      }
+    }
     for (const f of ['setAudioContext', 'getAudioContext', 'superdough', 'loadWorklets', 'getSuperdoughAudioController', 'setSuperdoughAudioController']) if (typeof W[f] !== 'function') throw new Error('Strudel offline API missing: ' + f);
-    if (T.playing) { T.stop(); await new Promise((r) => setTimeout(r, 150)); } /* let in-flight live superdough() calls (async) finish on the live context */
-    const cps = info.cps; n = Math.max(1, n | 0);
+    const { cps, start, stop: end } = recipe.timing;
     live = W.getAudioContext(); ctl = W.getSuperdoughAudioController();
     /* freeze the live clock: superdough's onended cleanups create nodes on the current context, so no live source may end while the offline one is current */
     wasRunning = live.state === 'running'; if (wasRunning) await live.suspend();
-    const rate = live.sampleRate, frames = Math.round(n / cps * rate), tail = opts.fold ? Math.round(Math.min(4, n / cps) * rate) : 0;
+    const rate = rateIn || (recipe.outputs.render && recipe.outputs.render.sr) || (recipe.outputs.capture && recipe.outputs.capture.sr) || live.sampleRate;
+    const frames = Math.round((end - start) / cps * rate), tail = recipe.timing.fold ? Math.round(Math.min(4, (end - start) / cps) * rate) : 0;
     const off = new OfflineAudioContext(2, frames + tail, rate);
+    /* seeded Math.random for the render only (noise buffers, random phases); restored in finally */
+    rnd = Math.random; Math.random = mulberry(recipe.random.seed);
     W.setAudioContext(off); W.setSuperdoughAudioController(null); swapped = true;
     try { await W.loadWorklets(); } catch (e) { /* worklet effects unavailable offline */ }
-    const haps = info.pattern.queryArc(0, n, { _cps: cps }).filter((h) => h.hasOnset()).sort((a, b) => a.whole.begin.valueOf() - b.whole.begin.valueOf());
+    const haps = info.pattern.queryArc(start, end, { _cps: cps }).filter((h) => h.hasOnset()).sort((a, b) => a.whole.begin.valueOf() - b.whole.begin.valueOf());
     let fails = 0, retries = 0; col = collectNodes(off);
     for (const h of haps) {
-      h.ensureObjectValue && h.ensureObjectValue(); const t = h.whole.begin.valueOf() / cps;
+      h.ensureObjectValue && h.ensureObjectValue(); const t = (h.whole.begin.valueOf() - start) / cps;
       for (let k = 0; ; k++) {
         try { await W.superdough(h.value, t, h.duration / cps, cps, h.whole.begin.valueOf()); break; }
         catch (e) { if (e && e.name === 'InvalidAccessError' && k < 64) { retries++; continue; } fails++; break; }
@@ -216,137 +294,101 @@ async function renderExact(n = opts.n) {
     await new Promise((r) => setTimeout(r, 300)); /* let the offline onended cleanups run while the offline context is still current */
     W.setAudioContext(live); W.setSuperdoughAudioController(ctl); swapped = false;
     const L = buf.getChannelData(0).slice(0, frames), R = (buf.numberOfChannels > 1 ? buf.getChannelData(1) : buf.getChannelData(0)).slice(0, frames);
-    const g = T.masterDb <= -60 ? 0 : Math.pow(10, (T.masterDb || 0) / 20); /* master level, so exact and realtime takes match */
     if (tail) { const tl = buf.getChannelData(0), tr = buf.numberOfChannels > 1 ? buf.getChannelData(1) : tl; for (let i = 0; i < tail && i < frames; i++) { L[i] += tl[frames + i]; R[i] += tr[frames + i]; } }
-    if (g !== 1) for (let i = 0; i < frames; i++) { L[i] *= g; R[i] *= g; }
-    const take = await save({ L, R, sr: rate, cycles: n, cps, mode: 'cycles', exact: true, loop: true, how: 'offline', fold: !!tail, src: { kind: info.kind, title: info.title, code: info.code }, haps: haps.length, fails, retries });
-    toast(`Rendered ${take.meta.name}: ${n} cycles, ${frames} frames${fails ? `, ${fails} events failed offline` : ''}`, { kind: fails ? 'info' : 'ok' });
-  } catch (e) { toast('Render: ' + (e.message || e), { kind: 'error' }); }
-  finally { if (col) col.restore(); if (swapped) { try { W.setAudioContext(live); W.setSuperdoughAudioController(ctl); } catch (e) { /* restore */ } } if (wasRunning && live) live.resume().catch(() => {}); st.rendering = false; sync(); renderTakes(); }
+    const db = S.settings && S.settings.masterDb != null ? S.settings.masterDb : (T.masterDb || 0); const g = db <= -60 ? 0 : Math.pow(10, db / 20); /* master level, so renders match realtime takes */
+    if (g !== 1) for (let i = 0; i < frames; i++) { L[i] = Math.fround(L[i] * g); R[i] = Math.fround(R[i] * g); }
+    return { L, R, sr: rate, haps: haps.length, fails, retries };
+  } finally {
+    if (rnd) Math.random = rnd;
+    if (col) col.restore();
+    if (swapped) { try { W.setAudioContext(live); W.setSuperdoughAudioController(ctl); } catch (e) { /* restore */ } }
+    if (prevCtl && C()) { try { const c = C(); c.load(prevCtl.model); if (c.setHistory) for (const [n, h] of Object.entries(prevCtl.hist)) if (h && h.length) c.setHistory(n, h); } catch (e) { /* keep */ } }
+    if (wasRunning && live) live.resume().catch(() => {});
+    st.rendering = false; sync();
+  }
 }
-
-/* ---------- store (IndexedDB "sc-capture", object store "takes": {meta, audio}) ---------- */
-const DB = new Promise((res) => {
-  try { const rq = indexedDB.open('sc-capture', 1); rq.onupgradeneeded = () => rq.result.createObjectStore('takes', { keyPath: 'meta.id' }); rq.onsuccess = () => res(rq.result); rq.onerror = () => res(null); } catch (e) { res(null); }
-});
-const mem = new Map();
-function tx(mode, fn) { return DB.then((db) => { if (!db) return fn(null); return new Promise((ok, no) => { const t = db.transaction('takes', mode); const r = fn(t.objectStore('takes')); t.oncomplete = () => ok(r && r.result); t.onerror = () => no(t.error); t.onabort = () => no(t.error || new Error('storage full')); }); }); }
-function peaks(L, R, cols = 160) {
-  const out = new Float32Array(cols * 2), step = L.length / cols;
-  for (let c = 0; c < cols; c++) { let lo = 0, hi = 0; for (let i = Math.floor(c * step), e = Math.min(L.length, Math.floor((c + 1) * step)); i < e; i++) { const v = (L[i] + R[i]) / 2; if (v < lo) lo = v; if (v > hi) hi = v; } out[c * 2] = lo; out[c * 2 + 1] = hi; }
-  return out;
-}
-async function save(t) {
-  const src = t.src || st.src || (sc.transport && sc.transport.source()) || {};
-  const list = await listMeta(); const base = safe(t.name || opts.name); let name = base, i = 2; const names = new Set(list.map((m) => m.name));
-  while (names.has(name)) name = base + '-' + i++;
-  let pk = 0; for (let k = 0; k < t.L.length; k++) { const a = Math.abs(t.L[k]); if (a > pk) pk = a; }
-  const meta = { id: 'tk' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind: 'take', name, created: new Date().toISOString(),
-    sr: t.sr, frames: t.L.length, seconds: t.L.length / t.sr, cycles: t.cycles, cps: +(+t.cps).toFixed(6), mode: t.mode, exact: !!t.exact, loop: !!t.loop, how: t.how,
-    type: 'audio', from: t.from || null, preRoll: t.preRoll || 0, fold: !!t.fold, haps: t.haps, fails: t.fails || 0, retries: t.retries || 0, startCycle: t.startCycle, peak: pk, peaks: Array.from(peaks(t.L, t.R)),
-    source: { kind: src.kind || null, title: src.title || null, code: src.code || '' }, bytes: t.L.length * 8 };
-  const rec = { meta, audio: { L: t.L, R: t.R } };
-  if (await DB) await tx('readwrite', (s) => s.put(rec)); else mem.set(meta.id, rec);
-  quota(); return rec;
-}
-async function listMeta() { const db = await DB; const all = db ? await tx('readonly', (s) => s.getAll()) : [...mem.values()]; return (all || []).map((r) => r.meta).sort((a, b) => (a.created < b.created ? 1 : -1)); }
-async function getTake(id) { const db = await DB; return db ? tx('readonly', (s) => s.get(id)) : mem.get(id); }
-async function remove(id) { if (await DB) await tx('readwrite', (s) => s.delete(id)); else mem.delete(id); quota(); }
-async function rename(id, name) { const r = await getTake(id); if (!r) return; r.meta.name = safe(name); if (await DB) await tx('readwrite', (s) => s.put(r)); else mem.set(id, r); return r.meta.name; }
-let quotaMsg = '';
-async function quota() {
+/* Render exact N cycles of the current program as a recipe (code-state + render output) */
+async function renderExact(n = opts.n) {
+  if (st.rendering || st.phase !== 'idle') return null;
+  const T = sc.transport;
   try {
-    if (!navigator.storage || !navigator.storage.estimate) return;
-    const { usage = 0, quota: q = 0 } = await navigator.storage.estimate(); const free = q - usage;
-    quotaMsg = q && (usage / q > 0.8 || free < 64e6) ? `Storage nearly full: ${(free / 1e6).toFixed(0)} MB left of ${(q / 1e6).toFixed(0)} MB. Download and delete old takes.` : '';
-    const el = $('#capQuota'); if (el) { el.textContent = quotaMsg || (q ? `${(usage / 1e6).toFixed(1)} MB used, ${(free / 1e6).toFixed(0)} MB free` : ''); el.classList.toggle('warn', !!quotaMsg); }
-    if (quotaMsg && !quota.warned) { quota.warned = true; toast(quotaMsg, { kind: 'error' }); }
-    if (navigator.storage.persist && !quota.asked) { quota.asked = true; navigator.storage.persist().catch(() => {}); }
-  } catch (e) { /* estimate unsupported */ }
+    const info = await T.compile(); n = Math.max(1, n | 0);
+    const state = await codeState({ kind: info.kind, title: info.title, code: info.code });
+    const includes = { audio: true, events: false, code: true };
+    const recipe = await buildRecipe({ name: opts.name, includes, state, timing: { cps: +(+info.cps).toFixed(6), start: 0, stop: n, cycles: n, loop: true, mode: 'cycles', exact: true, fold: !!opts.fold, preRoll: 0 } });
+    if (T.playing) { T.stop(); await new Promise((r) => setTimeout(r, 150)); }
+    const out = await renderRecipe(recipe);
+    const rec = { id: recipe.id, recipe, audio: { render: { L: out.L, R: out.R, sr: out.sr } } };
+    recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails };
+    await store.put(rec); renderTakes();
+    toast(`Rendered ${recipe.name}: ${n} cycles, ${out.L.length} frames${out.fails ? `, ${out.fails} events failed offline` : ''}`, { kind: out.fails ? 'info' : 'ok' });
+    return rec;
+  } catch (e) { toast('Render: ' + (e.message || e), { kind: 'error' }); return null; }
 }
 
-/* ---------- motion takes: Perform lane (control automation) and pad takes, kept in the same list (no audio) ---------- */
-const fr = (x) => { if (typeof x === 'number') return x; const m = /^(-?\d+)(?:\/(\d+))?$/.exec(String(x)); return m ? +m[1] / +(m[2] || 1) : +x; };
-const MOTION = 'strudel-craft/motion@1';
-function motionPreview(type, model, len) {
-  const out = new Array(160).fill(0);
-  if (type === 'lane') { const lib = sc.controls && sc.controls.lib; const pts = model.lane.points; if (!pts.length) return out;
-    const vs = pts.map((p) => p[1]); const lo = Math.min(...vs), hi = Math.max(...vs);
-    for (let i = 0; i < 160; i++) { const v = lib ? lib.sampleLane(model.lane, i / 160 * len) : vs[0]; out[i] = hi > lo ? (v - lo) / (hi - lo) : 0.5; } }
-  else for (const l of model.performance.layers) for (const e of l.events) { const i = Math.min(159, Math.floor(fr(e.t) / len * 160)); out[i] = Math.max(out[i], e.type === 'on' ? (e.velocity != null ? e.velocity : 1) : 0.35); }
-  return out;
+/* ---------- Remake: approve deps, trust unknown sources, verify pins, render, compare hashes ---------- */
+const ask = (o) => sc.ui.askYesNo(o);
+async function remake(id, { silent = false } = {}) {
+  const rec = await store.get(id); if (!rec) return null; const r = rec.recipe;
+  try { validate(r); } catch (e) { await ask({ title: 'Recipe refused', message: e.message, okText: 'OK' }); return { refused: e.message }; }
+  if (!r.includes.code || !r.state) { await ask({ title: 'Cannot remake', message: `"${r.name}" has no code-state, so nothing can regenerate it. Record with Code-state ticked.`, okText: 'OK' }); return { refused: 'no code-state' }; }
+  const refs = refsOf(r); const lines = r.state.source.code.split('\n').length;
+  const list = refs.map((x) => `${x.kind} ${x.id}: ${x.ref} (${short(x.sha)})${x.known ? '' : ' [unknown source]'}${x.code && x.code.length ? ` [code ingredients not run: ${x.code.join(', ')}]` : ''}`).join('\n');
+  if (!silent && !(await ask({ title: 'Remake: approve dependencies', message: `Runs the recipe's program (${lines} line${lines > 1 ? 's' : ''}, "${r.state.source.title || r.name}") with:\n${list}\nSite build ${r.deps.site.build}. Code ingredients from packs never run (sandbox, #71).`, okText: 'Approve and remake' }))) return { cancelled: true };
+  for (const x of refs.filter((q) => !q.known && !trusted(q.id, q.sha))) {
+    if (!(await ask({ title: `Trust ${x.id}?`, message: `${x.kind} ${x.id} comes from an unknown source:\n${x.ref}\npinned at ${x.sha}. Trust this exact version? (remembered for this id and hash)`, okText: 'Trust' }))) return { cancelled: true, untrusted: x.id };
+    grant(x.id, x.sha);
+  }
+  const v = await verify(r); const bad = v.refs.find((q) => !q.ok);
+  if (bad) {
+    const msg = `${bad.kind} ${bad.id} (${bad.ref}): ${bad.error ? bad.error : `expected ${bad.sha}, got ${bad.have}`}. Nothing was loaded or run.`;
+    await ask({ title: 'Load refused: hash mismatch', message: msg, okText: 'OK' }); toast('Remake refused: ' + bad.id, { kind: 'error' }); return { refused: bad.id, ref: bad.ref };
+  }
+  for (const s of r.deps.samples) { const q = v.refs.find((x) => x.kind === 'samples' && x.id === s.bank); const map = JSON.parse(new TextDecoder().decode(q.bytes)); const sha = /@([0-9a-f]{40})\//.exec(s.source)[1]; if (typeof map._base === 'string') map._base = map._base.replace(/\/(main|master)\//, `/${sha}/`); await sc.transport.loadSampleMap(map); }
+  for (const b of r.deps.vox) if (window.voxBank) await window.voxBank(b.url);
+  const notes = [...v.notes]; if (r.deps.site.build !== (await siteBuild())) notes.push(`Made with site build ${r.deps.site.build}, this is ${await siteBuild()}.`);
+  let out; try { out = await renderRecipe(r); } catch (e) { toast('Remake: ' + e.message, { kind: 'error' }); return { error: e.message }; }
+  const got = await audioHash(out.L, out.R); const want = r.outputs.render ? r.outputs.render.sha256 : null;
+  rec.audio.remake = { L: out.L, R: out.R, sr: out.sr }; rec.remake = { at: new Date().toISOString(), sha256: got, match: want ? got === want : null, notes }; await store.put(rec); renderTakes();
+  if (want && got === want) toast(`Remake matches the stored audio (sha256 ${short(got)})`, { kind: 'ok' });
+  else if (!silent) await ask({ title: want ? 'Remake differs' : 'Remake done (no exact render stored)', message: want ? `Stored ${want}\nRemade ${got}\n${notes.join('\n') || 'All pinned dependencies verified; the difference comes from randomness or state outside the recipe (see docs/CAPTURE.md).'}` : `Remade ${got}. This take kept only a realtime capture, which cannot be compared bit for bit; the remake is stored as its exact render.`, okText: 'OK' });
+  return { match: want ? got === want : null, sha256: got, expected: want, notes, haps: out.haps, fails: out.fails };
 }
-function motionEvents(type, model, cps) {
-  if (type === 'lane') return model.lane.points.map(([t, v, sh]) => ({ cycle: fr(t), time: +(fr(t) / cps).toFixed(6), control: model.control, value: v, shape: sh || 'lin' }));
-  const o = fr(model.performance.origin || 0), tg = model.pads || {};
-  return model.performance.layers.flatMap((l, li) => l.events.map((e) => ({ cycle: o + fr(e.t), t: fr(e.t), time: +(fr(e.t) / cps).toFixed(6), layer: li, pad: e.pad, type: e.type, ...(e.velocity != null ? { velocity: e.velocity } : {}), ...(tg[e.pad] ? { target: tg[e.pad] } : {}) })))
-    .sort((a, b) => a.cycle - b.cycle);
-}
-function motionCode(rec) {
-  const m = rec.model, n = (rec.meta.name || 'take').replace(/[^\w]/g, '_').replace(/^(\d)/, '_$1');
-  if (rec.meta.type === 'lane') return sc.controls && sc.controls.lib ? sc.controls.lib.laneCode(m.lane, n) : '';
-  return sc.pads && sc.pads.lib ? sc.pads.lib.bounceCode(m.performance, { pads: m.pads || {}, name: rec.meta.name }) : '';
-}
-/* save a motion take: {type: 'lane', control, lane} or {type: 'pads', performance, bank, pads}; returns the record */
-async function saveMotion(d, { silent = false } = {}) {
-  const type = d.type === 'pads' ? 'pads' : 'lane';
-  const model = type === 'lane' ? { control: d.control, lane: JSON.parse(JSON.stringify(d.lane)) } : { performance: JSON.parse(JSON.stringify(d.performance)), bank: d.bank || null, pads: JSON.parse(JSON.stringify(d.pads || {})) };
-  const len = type === 'lane' ? fr(model.lane.period || model.lane.length || 1) : fr(model.performance.length || 1);
-  const sch = sc.transport && sc.transport.scheduler; const cps = d.cps || (sch && sch.cps) || 0.5;
-  const src = d.source || (sc.transport && sc.transport.source()) || {};
-  const list = await listMeta(); const base = safe(d.name || (type === 'lane' ? 'lane-' + d.control : 'pads-' + (d.bank || 'take'))); let name = base, i = 2; const names = new Set(list.map((x) => x.name)); while (names.has(name)) name = base + '-' + i++;
-  const events = motionEvents(type, model, cps);
-  const meta = { id: 'mt' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind: 'motion', type, name, created: new Date().toISOString(), cycles: len, cps: +(+cps).toFixed(6), seconds: len / cps,
-    events: events.length, control: model.control || null, bank: model.bank || null, peaks: motionPreview(type, model, len), source: { kind: src.kind || null, title: src.title || null, code: src.code || '' } };
-  const rec = { meta, model };
-  if (await DB) await tx('readwrite', (s) => s.put(rec)); else mem.set(meta.id, rec);
-  if (!silent) toast(`Take saved: ${name}. Download`, { kind: 'ok', ms: 6000, onClick: () => download(meta.id, 'json') });
-  renderTakes(); return rec;
-}
-function motionJson(rec) {
-  const m = rec.meta; let code = ''; try { code = motionCode(rec); } catch (e) { code = ''; }
-  return { format: MOTION, type: m.type, name: m.name, created: m.created, cps: m.cps, length: m.cycles, seconds: m.seconds,
-    origin: m.type === 'pads' ? fr(rec.model.performance.origin || 0) : 0, refs: m.type === 'lane' ? { control: m.control } : { bank: m.bank, pads: rec.model.pads || {} },
-    events: motionEvents(m.type, rec.model, m.cps), model: rec.model, code, source: m.source };
-}
-function parseMotion(text) {
-  const j = typeof text === 'string' ? JSON.parse(text) : text;
-  if (!j || j.format !== MOTION || !j.model || !/^(lane|pads)$/.test(j.type)) throw new Error('Not a Strudel Craft motion take (format ' + MOTION + ')');
-  if (j.type === 'lane' && !(j.model.control && j.model.lane && Array.isArray(j.model.lane.points))) throw new Error('Lane take needs model.control and model.lane.points');
-  if (j.type === 'pads' && !(j.model.performance && Array.isArray(j.model.performance.layers))) throw new Error('Pad take needs model.performance.layers');
-  return j;
-}
-/* load a motion take back into Perform: a lane goes onto its control, a pad take into the looper (optionally replaying) */
-async function applyMotion(rec, { play = false } = {}) {
-  const P = sc.perform; if (!P || !P.applyLane) throw new Error('Perform tools load on the first Play: press Play once');
-  if (rec.meta.type === 'lane') { P.applyLane(rec.model.control, rec.model.lane); return null; }
-  return P.applyTake(rec.model.performance, rec.model.bank, { play });
-}
-async function importMotion(file) {
-  const text = await file.text(); const j = parseMotion(text);
-  const rec = await saveMotion({ ...(j.type === 'lane' ? { control: j.model.control, lane: j.model.lane } : j.model), type: j.type, name: j.name, cps: j.cps, source: j.source }, { silent: true });
-  try { await applyMotion(rec); toast(`Imported ${rec.meta.name} and loaded it into Perform`, { kind: 'ok' }); } catch (e) { toast(`Imported ${rec.meta.name}. ${e.message}`, { kind: 'info' }); }
-  return rec;
-}
-/* audio of a motion take: load it, play the program, record the take's length on its loop boundary through the capture path, save + download WAV */
-async function exportMotionAudio(id, { download: dl = true } = {}) {
-  const rec = await getTake(id); if (!rec) return null; const T = sc.transport;
-  if (st.phase !== 'idle' || st.rendering) { toast('Capture is busy', { kind: 'info' }); return null; }
-  if (!T.playing) { await T.play(); if (!T.playing || !(await waitTicking())) { toast('Press Play first', { kind: 'error' }); return null; } }
-  const len = rec.meta.cycles; let at;
-  if (rec.meta.type === 'lane') { await applyMotion(rec); at = 0; } /* lanes are periodic from cycle 0: record() steps to the next loop start */
-  else at = await applyMotion(rec, { play: true });
-  const take = await record({}, { mode: 'cycles', n: Math.max(1, Math.ceil(len - 1e-9)), countIn: 0, at, step: len, name: rec.meta.name + '-audio', from: id });
-  if (take && dl) saveBlob(encodeWav(take, opts.bits), fileName(take, 'wav'));
-  return take;
-}
-async function copyCode(id) {
-  const rec = await getTake(id); const code = motionCode(rec); if (!code) { toast('No code for this take', { kind: 'error' }); return; }
-  try { await navigator.clipboard.writeText(code); toast('Strudel code copied', { kind: 'ok' }); }
-  catch (e) { await sc.ui.ask({ title: 'Strudel code', label: 'Copy this code', value: code.replace(/\n/g, ' '), okText: 'Done' }); }
+let buildP = null; const siteBuild = () => (buildP = buildP || fetch('build.json', { cache: 'no-store' }).then((x) => x.json()).then((b) => b.sha).catch(() => 'dev'));
+
+/* ---------- import / export ---------- */
+function exportRecipe(rec) { return JSON.parse(JSON.stringify(rec.recipe)); }
+async function importRecipe(fileOrText) {
+  const text = typeof fileOrText === 'string' ? fileOrText : await fileOrText.text();
+  let r; try { r = JSON.parse(text); } catch (e) { throw new Error('Not JSON'); }
+  validate(r);
+  if (await store.get(r.id)) r = { ...r, id: newId(), name: await uniqueName(r.name) };
+  await store.put({ id: r.id, recipe: r, audio: {}, imported: new Date().toISOString() }); renderTakes();
+  toast(`Imported ${r.name}: inert until you press Remake and approve its dependencies`, { kind: 'ok' }); return r.id;
 }
 
-/* ---------- encode ---------- */
+/* ---------- Perform lane / pad takes land in the same timeline as event recipes ---------- */
+addEventListener('perform:take', async (e) => {
+  const d = e.detail || {}; const fr = (x) => { const m = /^(-?\d+)(?:\/(\d+))?$/.exec(String(x)); return m ? +m[1] / +(m[2] || 1) : +x; };
+  try {
+    const sch = sc.transport && sc.transport.scheduler; const cps = (sch && sch.cps) || 0.5;
+    const len = d.type === 'pads' ? fr(d.performance.length) : fr(d.lane.period || d.lane.length || 1), start = d.type === 'pads' ? fr(d.performance.origin || 0) : 0;
+    const events = d.type === 'pads' ? { pads: [], controls: [], lanes: {}, performance: d.performance, bank: d.bank, targets: d.pads || {} } : { pads: [], controls: [], lanes: { ['lane:' + d.control]: d.lane } };
+    const recipe = await buildRecipe({ name: d.type === 'pads' ? 'pads-' + (d.bank || 'take') : 'lane-' + d.control, includes: { audio: false, events: true, code: true }, state: await codeState(), events,
+      timing: { cps: +(+cps).toFixed(6), start, stop: start + len, cycles: len, loop: true, mode: 'cycles', exact: true, fold: !!opts.fold, preRoll: 0 } });
+    await store.put({ id: recipe.id, recipe, audio: {} }); renderTakes();
+    toast(`Take saved: ${recipe.name}. Download`, { kind: 'ok', ms: 6000, onClick: () => download(recipe.id, 'recipe') });
+  } catch (err) { toast('Could not keep the take: ' + err.message, { kind: 'error' }); }
+});
+function eventCode(r) {
+  const ev = r.events; if (!ev) return '';
+  const lanes = Object.entries(ev.lanes || {}); const name = (s) => String(s).replace(/[^\w]/g, '_').replace(/^(\d)/, '_$1');
+  let code = lanes.map(([id, l]) => (sc.controls && sc.controls.lib ? sc.controls.lib.laneCode(l, name(id.replace(/^lane:/, 'lane_'))) : '')).join('');
+  if (ev.performance && sc.pads && sc.pads.lib) code += sc.pads.lib.bounceCode(ev.performance, { pads: ev.targets || {}, name: r.name });
+  return code;
+}
+
+/* ---------- encode + download ---------- */
 function infoChunk(fields) {
   const enc = new TextEncoder(); const parts = Object.entries(fields).map(([id, v]) => { const b = enc.encode(String(v) + '\0'); return { id, b, pad: b.length & 1 }; });
   const size = 4 + parts.reduce((a, p) => a + 8 + p.b.length + p.pad, 0); const out = new Uint8Array(8 + size); const dv = new DataView(out.buffer);
@@ -355,15 +397,16 @@ function infoChunk(fields) {
   for (const p of parts) { w4(o, p.id); dv.setUint32(o + 4, p.b.length, true); out.set(p.b, o + 8); o += 8 + p.b.length + p.pad; }
   return out;
 }
-function encodeWav(take, bits = 16) {
-  const { L, R } = take.audio, m = take.meta, n = L.length, bps = bits === 24 ? 3 : 2, data = n * 2 * bps;
-  const info = infoChunk({ INAM: m.name, ISFT: 'Strudel Craft capture', ICRD: m.created.slice(0, 10), ICMT: JSON.stringify({ cycles: m.cycles, cps: m.cps, exact: m.exact, loop: m.loop, how: m.how, source: m.source }) });
-  const buf = new ArrayBuffer(44 + info.length + data), dv = new DataView(buf), u8 = new Uint8Array(buf);
+/* PCM WAV, 16 or 24 bit stereo; LIST/INFO carries the name, recipe id and the output's sha256 */
+function encodeWav(a, bits = 16, info = {}) {
+  const { L, R, sr: rate } = a, n = L.length, bps = bits === 24 ? 3 : 2, data = n * 2 * bps;
+  const ic = infoChunk({ INAM: info.name || 'take', ISFT: 'Strudel Craft recorder', ICRD: (info.created || new Date().toISOString()).slice(0, 10), ICMT: JSON.stringify(info.comment || {}) });
+  const buf = new ArrayBuffer(44 + ic.length + data), dv = new DataView(buf), u8 = new Uint8Array(buf);
   const w4 = (o, s) => { for (let i = 0; i < 4; i++) u8[o + i] = s.charCodeAt(i); };
-  w4(0, 'RIFF'); dv.setUint32(4, 36 + info.length + data, true); w4(8, 'WAVE');
-  w4(12, 'fmt '); dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 2, true); dv.setUint32(24, m.sr, true);
-  dv.setUint32(28, m.sr * 2 * bps, true); dv.setUint16(32, 2 * bps, true); dv.setUint16(34, bits === 24 ? 24 : 16, true);
-  u8.set(info, 36); let o = 36 + info.length; w4(o, 'data'); dv.setUint32(o + 4, data, true); o += 8;
+  w4(0, 'RIFF'); dv.setUint32(4, 36 + ic.length + data, true); w4(8, 'WAVE');
+  w4(12, 'fmt '); dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 2, true); dv.setUint32(24, rate, true);
+  dv.setUint32(28, rate * 2 * bps, true); dv.setUint16(32, 2 * bps, true); dv.setUint16(34, bits === 24 ? 24 : 16, true);
+  u8.set(ic, 36); let o = 36 + ic.length; w4(o, 'data'); dv.setUint32(o + 4, data, true); o += 8;
   const max = bits === 24 ? 8388607 : 32767;
   for (let i = 0; i < n; i++) for (const ch of [L, R]) {
     let v = Math.round(Math.max(-1, Math.min(1, ch[i])) * max);
@@ -371,60 +414,51 @@ function encodeWav(take, bits = 16) {
   }
   return new Blob([buf], { type: 'audio/wav' });
 }
-function sidecar(take) { const m = { ...take.meta }; delete m.peaks; return new Blob([JSON.stringify({ format: 'strudel-craft/capture@1', file: fileName(take, 'wav'), ...m }, null, 2)], { type: 'application/json' }); }
-function fileName(take, ext) { const m = take.meta; return `${safe(m.name)}_${numStr(m.cycles)}c_${numStr(m.cps)}cps.${ext}`; }
-function compressedType() {
-  if (typeof MediaRecorder === 'undefined') return null;
-  for (const [t, ext] of [['audio/webm;codecs=opus', 'webm'], ['audio/ogg;codecs=opus', 'ogg'], ['audio/mp4', 'm4a']]) if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) return { type: t, ext };
-  return null;
-}
-/* compressed: play the take once through a silent private AudioContext into MediaRecorder (real time, never audible) */
-async function encodeCompressed(take, onProgress) {
-  const ct = compressedType(); if (!ct) throw new Error('No compressed encoder in this browser: use WAV');
-  const m = take.meta, ctx = new AudioContext({ sampleRate: m.sr }); if (ctx.state !== 'running') await ctx.resume();
-  const ab = ctx.createBuffer(2, m.frames, m.sr); ab.copyToChannel(take.audio.L, 0); ab.copyToChannel(take.audio.R, 1);
-  const dst = ctx.createMediaStreamDestination(); const s = ctx.createBufferSource(); s.buffer = ab; s.connect(dst);
-  const rec = new MediaRecorder(dst.stream, { mimeType: ct.type, audioBitsPerSecond: 160000 }); const parts = [];
-  rec.ondataavailable = (e) => e.data.size && parts.push(e.data);
-  const done = new Promise((ok) => { rec.onstop = ok; });
-  rec.start(250); s.start(); const t0 = ctx.currentTime;
-  const iv = setInterval(() => onProgress && onProgress(Math.min(1, (ctx.currentTime - t0) / m.seconds)), 200);
-  await new Promise((ok) => { s.onended = ok; }); await new Promise((r) => setTimeout(r, 150)); rec.stop(); await done; clearInterval(iv); ctx.close();
-  return { blob: new Blob(parts, { type: ct.type.split(';')[0] }), ext: ct.ext };
-}
 function saveBlob(blob, name) {
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.rel = 'noopener'; a.style.display = 'none';
   document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
 }
-async function download(id, fmt = 'wav16') {
-  const t = await getTake(id); if (!t) return;
-  if (t.meta.kind === 'motion') { if (fmt === 'audio') return exportMotionAudio(id); return saveBlob(new Blob([JSON.stringify(motionJson(t), null, 2)], { type: 'application/json' }), `${safe(t.meta.name)}_${t.meta.type}_${numStr(t.meta.cycles)}c_${numStr(t.meta.cps)}cps.json`); }
-  if (fmt === 'json') return saveBlob(sidecar(t), fileName(t, 'json'));
-  if (fmt === 'wav16' || fmt === 'wav24') return saveBlob(encodeWav(t, fmt === 'wav24' ? 24 : 16), fileName(t, 'wav'));
-  const note = $(`#capTakes [data-id="${id}"] .cap-tk-sub`); const was = note && note.textContent;
-  try { const { blob, ext } = await encodeCompressed(t, (p) => { if (note) note.textContent = `Encoding ${Math.round(p * 100)}%`; }); saveBlob(blob, fileName(t, ext)); }
-  catch (e) { toast(e.message, { kind: 'error' }); } finally { if (note) note.textContent = was; }
+const baseName = (r) => `${safe(r.name)}_${numStr(r.timing.cycles)}c_${numStr(r.timing.cps)}cps`;
+const bestAudio = (rec) => rec.audio.render ? ['render', rec.audio.render] : rec.audio.capture ? ['capture', rec.audio.capture] : rec.audio.remake ? ['remake', rec.audio.remake] : [null, null];
+async function download(id, fmt = 'recipe') {
+  const rec = await store.get(id); if (!rec) return; const r = rec.recipe;
+  if (fmt === 'recipe') return saveBlob(new Blob([JSON.stringify(exportRecipe(rec), null, 2)], { type: 'application/json' }), baseName(r) + '.recipe.json');
+  const [k, a] = fmt === 'wav16' || fmt === 'wav24' ? bestAudio(rec) : [fmt, rec.audio[fmt]];
+  if (!a) { toast('This take has no audio yet: Remake it first', { kind: 'info' }); return; }
+  return saveBlob(encodeWav(a, fmt === 'wav24' || opts.bits === 24 && fmt !== 'wav16' ? 24 : 16, { name: r.name, created: r.created, comment: { recipe: r.id, output: k, sha256: (r.outputs[k] || rec.remake || {}).sha256, cps: r.timing.cps, cycles: r.timing.cycles } }), baseName(r) + (k === 'capture' ? '' : '_' + k) + '.wav');
 }
 
 /* ---------- UI ---------- */
 const ICON_REC = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.5" class="cap-dot"/><circle cx="12" cy="12" r="10" class="cap-ring"/></svg>';
+const ICON = {
+  play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" class="fill"/></svg>',
+  remake: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3M18 3v4h-4M6 21v-4h4"/></svg>',
+  dl: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>',
+  ren: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>',
+  del: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg>',
+};
 let el = {};
 function seg(name, label, items, val) {
   return `<fieldset class="cap-seg" data-k="${name}"><legend>${label}</legend>${items.map(([v, t]) => `<label><input type="radio" name="cap-${name}" value="${v}"${String(v) === String(val) ? ' checked' : ''}><span>${t}</span></label>`).join('')}</fieldset>`;
 }
 function build() {
   if ($('#capSheet')) return;
-  const tb = document.createElement('button'); tb.type = 'button'; tb.id = 'capBtn'; tb.className = 'tp-btn cap-btn'; tb.setAttribute('aria-label', 'Capture audio'); tb.setAttribute('aria-expanded', 'false'); tb.setAttribute('aria-controls', 'capSheet'); tb.title = 'Capture (record takes)';
+  const tb = document.createElement('button'); tb.type = 'button'; tb.id = 'capBtn'; tb.className = 'tp-btn cap-btn'; tb.setAttribute('aria-label', 'Record panel'); tb.setAttribute('aria-expanded', 'false'); tb.setAttribute('aria-controls', 'capSheet'); tb.title = 'Record (audio, events, code-state)';
   tb.innerHTML = ICON_REC; tb.addEventListener('click', () => toggleSheet());
   const host = $('.tp-main'); if (host) host.append(tb);
-  const w = document.createElement('section'); w.id = 'capSheet'; w.className = 'cap'; w.hidden = true; w.setAttribute('aria-label', 'Audio capture');
+  const w = document.createElement('section'); w.id = 'capSheet'; w.className = 'cap'; w.hidden = true; w.setAttribute('aria-label', 'Record');
   w.innerHTML = `
   <div class="cap-head">
     <button type="button" class="cap-rec" id="capRec" aria-pressed="false">${ICON_REC}<span id="capRecLabel">Record</span></button>
     <div class="cap-read"><output id="capTime" class="cap-time">0:00.0</output><span id="capState" class="cap-state" role="status" aria-live="polite">Ready</span></div>
-    <canvas id="capMeter" class="cap-meter" role="img" aria-label="Capture input level"></canvas>
-    <button type="button" class="icon ghost" id="capClose" aria-label="Close capture">&times;</button>
+    <canvas id="capMeter" class="cap-meter" role="img" aria-label="Record input level"></canvas>
+    <button type="button" class="icon ghost" id="capClose" aria-label="Close record panel">&times;</button>
   </div>
+  <fieldset class="cap-inc"><legend>Include</legend>
+    <label class="switch"><input id="capInc_audio" type="checkbox"${opts.audio ? ' checked' : ''}><span>Audio</span></label>
+    <label class="switch"><input id="capInc_events" type="checkbox"${opts.events ? ' checked' : ''}><span>Events (lanes, pads, controls)</span></label>
+    <label class="switch"><input id="capInc_code" type="checkbox"${opts.code ? ' checked' : ''}><span>Code-state</span></label>
+  </fieldset>
   <div class="cap-opts">
     ${seg('mode', 'Arm', [['free', 'Free'], ['cycles', 'Cycles'], ['until', 'Until stop']], opts.mode)}
     <div class="cap-num"><span class="cap-lab" id="capNLab">Cycles</span><div class="cap-step"><button type="button" class="ghost" data-step="-1" aria-label="Fewer cycles">-</button><output id="capN" aria-labelledby="capNLab">${opts.n}</output><button type="button" class="ghost" data-step="1" aria-label="More cycles">+</button></div></div>
@@ -435,7 +469,7 @@ function build() {
   </div>
   <div class="cap-exact"><button type="button" id="capExact" class="ghost">Render exact <b id="capExactN">${opts.n}</b> cycles</button><label class="switch"><input id="capFold" type="checkbox"${opts.fold ? ' checked' : ''}><span>Fold tail (seamless)</span></label></div>
   <p class="cap-hint" id="capHint"></p>
-  <div class="cap-imp"><button type="button" id="capImport" class="ghost">Import JSON</button><input type="file" id="capFile" accept="application/json,.json" hidden></div>
+  <div class="cap-imp"><button type="button" id="capImport" class="ghost">Import recipe</button><input type="file" id="capFile" accept="application/json,.json" hidden></div>
   <ol class="cap-takes" id="capTakes" aria-label="Takes"></ol>
   <p class="cap-quota" id="capQuota"></p>`;
   document.body.append(w);
@@ -444,22 +478,19 @@ function build() {
   el.rec.addEventListener('click', () => toggleRec());
   el.exact.addEventListener('click', () => renderExact());
   $('#capImport').addEventListener('click', () => $('#capFile').click());
-  $('#capFile').addEventListener('change', async (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return; try { await importMotion(f); } catch (err) { toast('Import: ' + err.message, { kind: 'error' }); } });
+  $('#capFile').addEventListener('change', async (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return; try { await importRecipe(f); } catch (err) { await sc.ui.askYesNo({ title: 'Import refused', message: err.message, okText: 'OK' }); } });
   w.addEventListener('change', (e) => {
     const t = e.target;
-    if (t.name === 'cap-mode') { opts.mode = t.value; set('mode', opts.mode); }
-    else if (t.name === 'cap-bits') { opts.bits = +t.value; set('bits', opts.bits); }
-    else if (t.id === 'capCount') { opts.countIn = +t.value; set('countIn', opts.countIn); }
-    else if (t.id === 'capPre') { opts.preRoll = +t.value; set('preRoll', opts.preRoll); }
-    else if (t.id === 'capFold') { opts.fold = t.checked; set('fold', opts.fold); }
-    else if (t.id === 'capName') { opts.name = safe(t.value); t.value = opts.name; set('name', opts.name); }
-    sync();
+    if (t.name === 'cap-mode') configure({ mode: t.value }); else if (t.name === 'cap-bits') configure({ bits: +t.value });
+    else if (t.id === 'capCount') configure({ countIn: +t.value }); else if (t.id === 'capPre') configure({ preRoll: +t.value });
+    else if (t.id === 'capFold') configure({ fold: t.checked }); else if (t.id === 'capName') configure({ name: t.value });
+    else if (t.id && t.id.startsWith('capInc_')) configure({ [t.id.slice(7)]: t.checked });
   });
   w.addEventListener('click', (e) => {
-    const s = e.target.closest('[data-step]'); if (s) { opts.n = Math.max(1, Math.min(64, opts.n + +s.dataset.step)); set('n', opts.n); sync(); return; }
-    const b = e.target.closest('[data-act]'); if (!b) return; const id = b.closest('[data-id]').dataset.id; takeAct(b.dataset.act, id, b);
+    const s = e.target.closest('[data-step]'); if (s) { configure({ n: opts.n + +s.dataset.step }); return; }
+    const b = e.target.closest('[data-act]'); if (!b) return; const li = b.closest('[data-id]'); if (li) takeAct(b.dataset.act, li.dataset.id, b);
   });
-  w.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.stopPropagation(); close(); } });
+  w.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !w.closest('.ws-body')) { e.stopPropagation(); close(); } });
   sync();
 }
 function sync() {
@@ -467,12 +498,13 @@ function sync() {
   const busy = st.phase !== 'idle';
   el.rec.setAttribute('aria-pressed', String(busy)); el.lab.textContent = st.phase === 'waiting' ? 'Cancel' : busy ? 'Stop' : 'Record';
   el.w.dataset.phase = st.phase; el.tb.dataset.phase = st.phase; document.body.classList.toggle('capturing', busy);
-  el.tb.setAttribute('aria-label', busy ? 'Capture: recording, open controls' : 'Capture audio');
+  el.tb.setAttribute('aria-label', busy ? 'Record panel: recording' : 'Record panel');
   el.n.textContent = opts.n; $('#capExactN').textContent = opts.n; $('#capNLab').closest('.cap-num').classList.toggle('off', opts.mode !== 'cycles');
   el.exact.disabled = st.rendering || busy; el.exact.firstChild.textContent = st.rendering ? 'Rendering ' : 'Render exact ';
-  for (const i of el.w.querySelectorAll('.cap-opts input, .cap-opts select, .cap-opts button')) i.disabled = busy;
-  el.hint.textContent = opts.mode === 'cycles' ? `Starts and stops on cycle boundaries: ${opts.n} cycle${opts.n > 1 ? 's' : ''}, loops cleanly. Pre-roll is ignored.`
-    : opts.mode === 'until' ? 'Records until you stop or the play-time limit is reached.' : 'Records from now until you stop.';
+  el.rec.disabled = st.rendering;
+  for (const i of el.w.querySelectorAll('.cap-opts input, .cap-opts select, .cap-opts button, .cap-inc input')) i.disabled = busy;
+  const inc = ['audio', 'events', 'code'].filter((k) => opts[k]).map((k) => (k === 'code' ? 'code-state' : k)).join(' + ') || 'nothing';
+  el.hint.textContent = (opts.mode === 'cycles' ? `Cycles: starts and stops on cycle boundaries (${opts.n}), loops cleanly; with audio + code-state the transport stops at the end for an exact reference render.` : opts.mode === 'until' ? 'Until stop: records until you stop or the play-time limit.' : 'Free: records from now until you stop.') + ` Records ${inc}.`;
   if (!busy) { el.state.textContent = st.rendering ? 'Rendering offline' : 'Ready'; el.time.textContent = '0:00.0'; }
 }
 function draw() {
@@ -488,24 +520,35 @@ function draw() {
   const g = c.getContext('2d'); g.clearRect(0, 0, W, H);
   const cs = getComputedStyle(el.w); const db = st.peak > 0 ? 20 * Math.log10(st.peak) : -90; const x = Math.max(0, Math.min(1, (db + 60) / 60)) * W;
   g.fillStyle = cs.getPropertyValue('--line').trim() || '#262d36'; g.fillRect(0, 0, W, H);
-  g.fillStyle = db > -1 ? (cs.getPropertyValue('--bad').trim() || '#f66') : st.phase === 'recording' ? (cs.getPropertyValue('--bad').trim() || '#f66') : (cs.getPropertyValue('--sig-2').trim() || '#2fd6c3'); g.fillRect(0, 0, x, H);
+  g.fillStyle = db > -1 || st.phase === 'recording' ? (cs.getPropertyValue('--bad').trim() || '#f66') : (cs.getPropertyValue('--sig-2').trim() || '#2fd6c3'); g.fillRect(0, 0, x, H);
   st.peak *= 0.92;
+}
+function peaksOf(a, cols = 160) {
+  const out = new Float32Array(cols * 2); if (!a) return out; const { L, R } = a, step = L.length / cols;
+  for (let c = 0; c < cols; c++) { let lo = 0, hi = 0; for (let i = Math.floor(c * step), e = Math.min(L.length, Math.floor((c + 1) * step)); i < e; i++) { const v = (L[i] + R[i]) / 2; if (v < lo) lo = v; if (v > hi) hi = v; } out[c * 2] = lo; out[c * 2 + 1] = hi; }
+  return out;
 }
 async function renderTakes() {
   if (!el.takes) return;
-  const list = await listMeta();
-  el.takes.innerHTML = list.length ? list.map((m) => m.kind === 'motion' ? motionRow(m) : `<li data-id="${m.id}" class="cap-tk" data-type="audio">
+  const list = await store.list();
+  el.takes.innerHTML = list.length ? list.map(({ recipe: r, audio, remake: rm, imported }) => {
+    const hasAudio = !!(audio.render || audio.capture || audio.remake);
+    const chips = ['audio', 'events', 'code'].filter((k) => r.includes[k]).map((k) => `<i class="cap-badge" data-type="${k}">${k === 'code' ? 'code' : k}</i>`).join('');
+    const ver = rm ? (rm.match === true ? '<i class="cap-badge" data-type="ok">remake ok</i>' : rm.match === false ? '<i class="cap-badge" data-type="bad">differs</i>' : '') : imported ? '<i class="cap-badge" data-type="inert">inert</i>' : '';
+    const deps = r.deps.packs.length + r.deps.samples.length + r.deps.vox.length + 1;
+    return `<li data-id="${r.id}" class="cap-tk">
     <canvas class="cap-wave" aria-hidden="true"></canvas>
-    <div class="cap-tk-info"><b class="cap-tk-name"><i class="cap-badge" data-type="audio">audio</i>${esc(m.name)}</b><span class="cap-tk-sub">${numStr(m.cycles)}c · ${numStr(m.cps)} cps · ${fmtT(m.seconds)}${m.exact ? ' · loop' : ''}${m.how === 'offline' ? ' · exact' : ''}</span></div>
+    <div class="cap-tk-info"><b class="cap-tk-name">${chips}${ver}<span class="cap-tk-label">${esc(r.name)}</span></b><span class="cap-tk-sub">${numStr(r.timing.cycles)}c · ${numStr(r.timing.cps)} cps · c${numStr(r.timing.start)}-${numStr(r.timing.stop)} · ${deps} dep${deps > 1 ? 's' : ''}${r.outputs.render ? ' · ' + short(r.outputs.render.sha256) : ''}</span></div>
     <div class="cap-tk-acts">
-      <button type="button" class="ghost icon" data-act="play" aria-label="Play ${esc(m.name)}" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" class="fill"/></svg></button>
-      <button type="button" class="ghost icon" data-act="rename" aria-label="Rename ${esc(m.name)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg></button>
-      <button type="button" class="ghost icon" data-act="dl" aria-label="Download ${esc(m.name)}" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></button>
-      <button type="button" class="ghost icon" data-act="del" aria-label="Delete ${esc(m.name)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg></button>
+      <button type="button" class="ghost icon" data-act="play" aria-label="Play ${esc(r.name)}" aria-pressed="false"${hasAudio ? '' : ' disabled'}>${ICON.play}</button>
+      <button type="button" class="ghost icon" data-act="remake" aria-label="Remake ${esc(r.name)}"${r.includes.code ? '' : ' disabled'}>${ICON.remake}</button>
+      <button type="button" class="ghost icon" data-act="rename" aria-label="Rename ${esc(r.name)}">${ICON.ren}</button>
+      <button type="button" class="ghost icon" data-act="del" aria-label="Delete ${esc(r.name)}">${ICON.del}</button>
     </div>
-    <div class="cap-dl" hidden><button type="button" data-act="wav16">WAV 16</button><button type="button" data-act="wav24">WAV 24</button>${compressedType() ? `<button type="button" data-act="comp">${compressedType().ext.toUpperCase()}</button>` : ''}<button type="button" data-act="json">JSON</button></div>
-  </li>`).join('') : '<li class="cap-empty">No takes yet. Record or render one; takes stay on this device.</li>';
-  for (const li of el.takes.querySelectorAll('li[data-id]')) { const m = list.find((x) => x.id === li.dataset.id); if (m.kind === 'motion') motionWave(li.querySelector('canvas'), m.peaks, m.type); else wave(li.querySelector('canvas'), m.peaks); }
+    <div class="cap-dl"><button type="button" data-act="recipe">Recipe</button>${hasAudio ? '<button type="button" data-act="wav">WAV</button>' : ''}${r.events && (Object.keys(r.events.lanes || {}).length || r.events.performance) ? '<button type="button" data-act="code">Copy code</button>' : ''}</div>
+  </li>`;
+  }).join('') : '<li class="cap-empty">No takes yet. Record or render one; takes stay on this device as recipes.</li>';
+  for (const li of el.takes.querySelectorAll('li[data-id]')) { const rec = list.find((x) => x.id === li.dataset.id); const [, a] = bestAudio(rec); if (a) wave(li.querySelector('canvas'), peaksOf(a)); else eventWave(li.querySelector('canvas'), rec.recipe); }
   quota();
 }
 function wave(c, pk) {
@@ -515,30 +558,14 @@ function wave(c, pk) {
   g.fillStyle = cs.getPropertyValue('--sig-2').trim() || '#2fd6c3';
   for (let i = 0; i < cols; i++) { const x = Math.floor(i * W / cols), w = Math.max(1, Math.floor(W / cols) - (W / cols > 2 ? 1 : 0)); const y0 = H / 2 - pk[i * 2 + 1] * k, y1 = H / 2 - pk[i * 2] * k; g.fillRect(x, y0, w, Math.max(dpr, y1 - y0)); }
 }
-const ICON = {
-  dl: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>',
-  ren: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>',
-  del: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg>',
-};
-function motionRow(m) {
-  const what = m.type === 'lane' ? `lane · ${esc(m.control || '')}` : `pads · ${esc(m.bank || '')}`;
-  return `<li data-id="${m.id}" class="cap-tk" data-type="${m.type}">
-    <canvas class="cap-wave" aria-hidden="true"></canvas>
-    <div class="cap-tk-info"><b class="cap-tk-name"><i class="cap-badge" data-type="lane">${m.type === 'lane' ? 'lane' : 'pads'}</i>${esc(m.name)}</b><span class="cap-tk-sub">${what} · ${m.events} ev · ${numStr(m.cycles)}c · ${numStr(m.cps)} cps</span></div>
-    <div class="cap-tk-acts">
-      <button type="button" class="ghost" data-act="load" aria-label="Load ${esc(m.name)} into Perform">Load</button>
-      <button type="button" class="ghost icon" data-act="rename" aria-label="Rename ${esc(m.name)}">${ICON.ren}</button>
-      <button type="button" class="ghost icon" data-act="mjson" aria-label="Download ${esc(m.name)} as JSON">${ICON.dl}</button>
-      <button type="button" class="ghost icon" data-act="del" aria-label="Delete ${esc(m.name)}">${ICON.del}</button>
-    </div>
-    <div class="cap-dl"><button type="button" data-act="mjson">JSON</button><button type="button" data-act="maudio">Export audio</button><button type="button" data-act="mcode">Copy code</button></div>
-  </li>`;
-}
-function motionWave(c, pk, type) {
+function eventWave(c, r) {
   const dpr = Math.min(2, window.devicePixelRatio || 1), W = Math.round((c.clientWidth || 96) * dpr), H = Math.round((c.clientHeight || 40) * dpr); c.width = W; c.height = H;
-  const g = c.getContext('2d'), cs = getComputedStyle(c), n = pk.length; g.strokeStyle = g.fillStyle = cs.getPropertyValue('--sig').trim() || '#ff6a1a'; g.lineWidth = 1.5 * dpr;
-  if (type === 'lane') { g.beginPath(); for (let i = 0; i < n; i++) { const x = i / (n - 1) * W, y = H - dpr * 3 - pk[i] * (H - dpr * 6); i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); }
-  else for (let i = 0; i < n; i++) if (pk[i] > 0) { const h = Math.max(3 * dpr, pk[i] * (H - 4 * dpr)); g.fillRect(Math.floor(i / n * W), H - 2 * dpr - h, Math.max(dpr * 1.5, W / n), h); }
+  const g = c.getContext('2d'), cs = getComputedStyle(c); g.fillStyle = cs.getPropertyValue('--sig').trim() || '#ff6a1a';
+  const ev = r.events || {}, t0 = r.timing.start, len = r.timing.cycles || 1; const xs = [...(ev.pads || []).map((e) => e.cycle - t0), ...(ev.controls || []).map((e) => e.cycle - t0)];
+  if (ev.performance) for (const l of ev.performance.layers) for (const e of l.events) { const m = /^(-?\d+)(?:\/(\d+))?$/.exec(String(e.t)); xs.push(m ? +m[1] / +(m[2] || 1) : +e.t); }
+  for (const l of Object.values(ev.lanes || {})) for (const p of l.points || []) { const m = /^(-?\d+)(?:\/(\d+))?$/.exec(String(p[0])); xs.push(m ? +m[1] / +(m[2] || 1) : +p[0]); }
+  for (const x of xs) g.fillRect(Math.floor(Math.max(0, Math.min(1, x / len)) * (W - 2 * dpr)), H * 0.2, 1.5 * dpr, H * 0.6);
+  if (!xs.length) { g.fillStyle = cs.getPropertyValue('--line').trim() || '#262d36'; g.fillRect(0, H / 2, W, dpr); }
 }
 let player = null, playerId = null;
 async function takeAct(act, id, btn) {
@@ -546,42 +573,53 @@ async function takeAct(act, id, btn) {
   if (act === 'play') {
     if (player && playerId === id) { player.pause(); return; }
     if (player) player.pause();
-    const t = await getTake(id); if (!t) return;
-    const a = new Audio(); a.src = URL.createObjectURL(encodeWav(t, 16)); a.loop = true; player = a; playerId = id; /* HTMLAudio, not the WebAudio bus: previews are never recorded */
-    const pb = btn; pb.setAttribute('aria-pressed', 'true');
-    a.onpause = () => { pb.setAttribute('aria-pressed', 'false'); URL.revokeObjectURL(a.src); if (player === a) { player = null; playerId = null; } };
-    a.play().catch((e) => toast('Preview: ' + e.message, { kind: 'error' }));
-  } else if (act === 'rename') {
-    const cur = li.querySelector('.cap-tk-name').lastChild.textContent;
+    const rec = await store.get(id); const [, a] = bestAudio(rec); if (!a) return;
+    const au = new Audio(); au.src = URL.createObjectURL(encodeWav(a, 16, { name: rec.recipe.name })); au.loop = true; player = au; playerId = id; /* HTMLAudio, not the WebAudio bus: previews are never recorded */
+    btn.setAttribute('aria-pressed', 'true');
+    au.onpause = () => { btn.setAttribute('aria-pressed', 'false'); URL.revokeObjectURL(au.src); if (player === au) { player = null; playerId = null; } };
+    au.play().catch((e) => toast('Preview: ' + e.message, { kind: 'error' }));
+  } else if (act === 'remake') { btn.disabled = true; try { await remake(id); } finally { btn.disabled = false; } }
+  else if (act === 'rename') {
+    const cur = li.querySelector('.cap-tk-label').textContent;
     const v = await sc.ui.ask({ title: 'Rename take', label: 'Name (letters, digits, - _ .)', value: cur, okText: 'Rename' });
     if (v && v.trim()) { const n = await rename(id, v); toast('Renamed to ' + n, { kind: 'ok' }); renderTakes(); }
   } else if (act === 'del') {
-    const cur = li.querySelector('.cap-tk-name').lastChild.textContent;
-    if (await sc.ui.askYesNo({ title: 'Delete take', message: `Delete "${cur}" from this device? Download it first to keep it.`, okText: 'Delete', danger: true })) { if (playerId === id && player) player.pause(); await remove(id); toast('Deleted ' + cur, { kind: 'info' }); renderTakes(); }
-  } else if (act === 'dl') {
-    const d = li.querySelector('.cap-dl'); d.hidden = !d.hidden; btn.setAttribute('aria-expanded', String(!d.hidden));
-  } else if (act === 'load') { const r = await getTake(id); try { await applyMotion(r); toast(`Loaded ${r.meta.name} into Perform`, { kind: 'ok' }); } catch (e) { toast(e.message, { kind: 'error' }); }
-  } else if (act === 'mjson') download(id, 'json');
-  else if (act === 'maudio') { btn.disabled = true; try { await exportMotionAudio(id); } finally { btn.disabled = false; } }
-  else if (act === 'mcode') copyCode(id);
-  else if (act === 'wav16' || act === 'wav24' || act === 'json' || act === 'comp') download(id, act === 'comp' ? 'comp' : act);
+    const cur = li.querySelector('.cap-tk-label').textContent;
+    if (await sc.ui.askYesNo({ title: 'Delete take', message: `Delete "${cur}" (recipe and audio) from this device? Download the recipe first to keep it.`, okText: 'Delete', danger: true })) { if (playerId === id && player) player.pause(); await store.remove(id); toast('Deleted ' + cur, { kind: 'info' }); renderTakes(); }
+  } else if (act === 'recipe') download(id, 'recipe');
+  else if (act === 'wav') download(id, opts.bits === 24 ? 'wav24' : 'wav16');
+  else if (act === 'code') { const rec = await store.get(id); const code = eventCode(rec.recipe); if (!code) { toast('No events to bounce', { kind: 'info' }); return; }
+    try { await navigator.clipboard.writeText(code); toast('Strudel code copied', { kind: 'ok' }); } catch (e) { await sc.ui.ask({ title: 'Strudel code', label: 'Copy this code', value: code.replace(/\n/g, ' '), okText: 'Done' }); } }
+}
+async function rename(id, name) { const rec = await store.get(id); if (!rec) return; rec.recipe.name = await uniqueName(name); await store.put(rec); return rec.recipe.name; }
+let quotaMsg = '';
+async function quota() {
+  try {
+    if (!navigator.storage || !navigator.storage.estimate) return;
+    const { usage = 0, quota: q = 0 } = await navigator.storage.estimate(); const free = q - usage;
+    quotaMsg = q && (usage / q > 0.8 || free < 64e6) ? `Storage nearly full: ${(free / 1e6).toFixed(0)} MB left of ${(q / 1e6).toFixed(0)} MB. Download and delete old takes.` : '';
+    const e = $('#capQuota'); if (e) { e.textContent = quotaMsg || (q ? `${(usage / 1e6).toFixed(1)} MB used, ${(free / 1e6).toFixed(0)} MB free` : ''); e.classList.toggle('warn', !!quotaMsg); }
+    if (quotaMsg && !quota.warned) { quota.warned = true; toast(quotaMsg, { kind: 'error' }); }
+    if (navigator.storage.persist && !quota.asked) { quota.asked = true; navigator.storage.persist().catch(() => {}); }
+  } catch (e) { /* estimate unsupported */ }
 }
 function dock() { const tp = $('.transport'); if (tp && el.w) el.w.style.setProperty('--cap-bottom', Math.round(tp.getBoundingClientRect().height) + 'px'); }
 addEventListener('resize', () => st.open && dock());
-function open() { build(); dock(); el.w.hidden = false; st.open = true; el.tb.setAttribute('aria-expanded', 'true'); document.body.classList.add('cap-open'); renderTakes(); loop(); el.rec.focus({ preventScroll: true }); }
-function close() { if (!el.w) return; el.w.hidden = true; st.open = false; el.tb.setAttribute('aria-expanded', 'false'); document.body.classList.remove('cap-open'); el.tb.focus({ preventScroll: true }); }
-function toggleSheet() { el.w && !el.w.hidden ? close() : open(); }
+function open() { build(); dock(); el.w.hidden = false; st.open = true; el.tb.setAttribute('aria-expanded', 'true'); document.body.classList.add('cap-open'); renderTakes(); loop(); if (!el.w.closest('.ws-body')) el.rec.focus({ preventScroll: true }); }
+function close() { if (!el.w) return; if (el.w.closest('.ws-body')) return; el.w.hidden = true; st.open = false; el.tb.setAttribute('aria-expanded', 'false'); document.body.classList.remove('cap-open'); el.tb.focus({ preventScroll: true }); }
+function toggleSheet() { el.w && !el.w.hidden && !el.w.closest('.ws-body') ? close() : open(); }
 
 function init() {
   build();
+  pruneLegacy((m) => toast(m, { kind: 'info', ms: 8000 })).catch(() => {});
   const P = sc.palette; if (P) {
-    P.register({ id: 'capture.open', group: 'Capture', title: 'Open capture', run: () => open() });
-    P.register({ id: 'capture.record', group: 'Capture', title: 'Record / stop take', run: () => { open(); toggleRec(); } });
-    P.register({ id: 'capture.cycles', group: 'Capture', title: 'Record N cycles (loop)', run: () => { open(); if (st.phase === 'idle') { configure({ mode: 'cycles' }); record(); } } });
-    P.register({ id: 'capture.exact', group: 'Capture', title: 'Render exact N cycles (offline)', run: () => { open(); renderExact(); } });
+    P.register({ id: 'record.open', group: 'Record', title: 'Open record panel', run: () => open() });
+    P.register({ id: 'record.toggle', group: 'Record', title: 'Record / stop take', run: () => { open(); toggleRec(); } });
+    P.register({ id: 'record.cycles', group: 'Record', title: 'Record N cycles (loop)', run: () => { open(); if (st.phase === 'idle') { configure({ mode: 'cycles' }); record(); } } });
+    P.register({ id: 'record.exact', group: 'Record', title: 'Render exact N cycles (offline)', run: () => { open(); renderExact(); } });
+    P.register({ id: 'record.import', group: 'Record', title: 'Import recipe', run: () => { open(); $('#capFile').click(); } });
   }
 }
-/* Perform recorders announce finished takes (perform.js dispatches perform:take) */
-addEventListener('perform:take', (e) => { const d = e.detail || {}; saveMotion(d).catch((err) => toast('Could not keep the take: ' + err.message, { kind: 'error' })); });
-sc.capture = { saveMotion, motionJson, parseMotion, importMotion, applyMotion, exportMotionAudio, motionCode, open, close, toggle: toggleSheet, record, stop, toggleRec, configure, renderExact, list: listMeta, get: getTake, remove, rename, encodeWav, sidecar, fileName, download, opts, state: st };
+sc.capture = { open, close, toggle: toggleSheet, configure, record, stop, toggleRec, renderExact, remake, importRecipe, exportRecipe: async (id) => exportRecipe(await store.get(id)), renderRecipe,
+  download, list: () => store.list().then((l) => l.map((x) => ({ ...x.recipe, remake: x.remake || null, imported: x.imported || null, audio: Object.keys(x.audio) }))), get: (id) => store.get(id), remove: (id) => store.remove(id).then(renderTakes), rename, encodeWav, opts, state: st };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

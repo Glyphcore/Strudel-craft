@@ -41,8 +41,7 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
     node tests/site/word_intellisense.mjs  # word() completions from data/intellisense/words.json (#44)
     node tests/site/vox.mjs            # vocal banks and voxBank()
     STRUDEL_MODULES=... node tests/vocals/formant_helper.mjs  # word().formant(true) on a synthetic bank (#57)
-    node tests/site/motion.mjs         # Perform lane / pad takes: JSON download, export audio, copy code, import (#72)
-    node tests/site/capture.mjs        # audio capture at 360px: 2-cycle take, waveform, WAV header/length, exact render (#72)
+    node tests/site/record.mjs         # Record panel + recipes at 360px: record, download, clean-profile Remake hash match, tamper refused (#72)
 
 Outputs go to `docs/screens/` (`metrics.json`, `lighthouse-mobile.json`, PNG screenshots at 390px and 1440px).
 
@@ -452,12 +451,9 @@ Suggestions (ghost text, popup, cycling) are inert until accepted and dismiss th
 modal switch, Esc or 5 s idle (CONTROL_BINDING section 11). Literal menus open from the tap itself, even with the editor focused; a tap
 on another literal switches, the same literal toggles (section 7).
 
-## Audio capture (`capture.js` + `capture.css`, #72; detail docs/CAPTURE.md)
-- **Record button** in the transport (after Next) opens the capture sheet; it pulses red while a take runs. Palette: Capture > Open capture, Record / stop take, Record N cycles (loop), Render exact N cycles.
-- **Tap**: an AudioWorklet (ScriptProcessor fallback) on the master bus (`strudelCraft.transport.bus`, post master level); its output is silent, so capture never changes what is heard. Record starts the transport if stopped.
-- **Arm**: Free, Cycles (start and end on cycle boundaries, length `round(N / cps * sr)` frames, loops cleanly) or Until stop (play-time limit is the cap); count-in (cycles) and pre-roll (seconds, Free / Until stop). Takes keep running across Rack/Stack tab switches and a hidden browser tab.
-- **Render exact N cycles**: offline through an OfflineAudioContext (superdough swapped in and restored), sample-exact and faster than real time; Fold tail adds the release back onto the start. Hooks, pads and live seek are not in offline renders (limits in docs/CAPTURE.md).
-- **Takes**: IndexedDB `sc-capture` (`{meta, audio}`), settings `sc.capture.*`; each take has a waveform, play (looping preview, never recorded), rename and delete (site modals), download: WAV 16 / 24 bit, the browser's compressed format (WEBM/Opus on Chrome), JSON sidecar with source and cps. File names `<name>_<cycles>c_<cps>cps.wav`. Storage usage line turns into a warning near the quota.
-- **Perform motion takes**: a finished Rec lane (control automation) or looper pad take lands in the same take list with a `lane` / `pads` badge and a "Take saved, Download" toast. Per take: Download JSON (`strudel-craft/motion@1`: events with cycle and time, control / pad ids, values, cps, refs, model, code, source), Export audio (re-record pass through capture, saved and downloaded as WAV), Copy code (`laneCode` / `bounceCode`), Load; Import JSON loads a take back. Test `node tests/site/motion.mjs`.
-- API `strudelCraft.capture = { open, configure, record, stop, renderExact, list, get, remove, rename, download, encodeWav, sidecar, fileName }`.
+## Record panel and recipes (`capture.js`, `recipe.js`, `capture.css`, #72; detail docs/CAPTURE.md)
+- **One Record panel**: transport record button, palette group Record, or the workspace pane `record`. Include boxes Audio / Events (lanes, pads, controls) / Code-state; one Record captures all ticked parts; arm Free / Cycles (cycle-boundary cut, exact loop length) / Until stop, count-in, pre-roll, Render exact N cycles.
+- **Takes are recipes** (`schemas/recipe.v1.json`, forward only, version 1): source + resolved atoms, controls model with AST ids and aliases, Perform model, mod ranges, settings, cps, start/stop cycle, seed, event stream, and pinned deps (Strudel bundle sha256, site build, pack lock entries with ingredient hashes, sample maps at a commit + hash, vox banks + hash). Audio blobs are outputs with sha256.
+- **Remake** re-renders offline from the recipe (after a dependency approval modal, trust prompts for unknown sources and hash verification; a mismatch refuses the load naming the ref) and checks the audio hash. Imports are inert until Remake. The old take store is pruned once with a notice.
+- Storage IndexedDB `sc-recipes`, settings `sc.record.*`, trust grants `sc.trust`. Test `node tests/site/record.mjs`.
 Caret placement works in every state: highlight and widget decorations never dispatch while a pointer is down in an editor and only when they change (CONTROL_BINDING section 5).

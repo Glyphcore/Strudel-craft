@@ -1,101 +1,98 @@
-# Audio capture and download (`site/capture.js`, `site/capture.css`, #72)
+# Record panel and recipes (`site/capture.js`, `site/recipe.js`, `schemas/recipe.v1.json`, #72)
 
-Record whatever the transport plays (Rack or Stack) as takes that loop, keep them on the device and download them, phone first.
+One Record panel with one arm, one transport and one timeline of takes. A take is a **recipe**: versioned JSON that regenerates the result from scratch. Audio blobs are optional outputs of the recipe. Pins follow [PACK_SPEC](PACK_SPEC.md) sections 8 (hashes) and 9 (sources, lockfile).
 
-## Where
-- Transport: the record button after Next opens the capture sheet. It pulses red while a take runs, so you can see that it is recording with the sheet closed.
-- Command palette (`Ctrl+K`, or the floating button on phones), group Capture: Open capture, Record / stop take, Record N cycles (loop), Render exact N cycles (offline).
-- The sheet does not block the page: the Rack and Stack stay playable and editable while it records.
+## Panel
+- **Opening it**:
+  - the record button in the transport (after Next);
+  - the palette (`Ctrl+K`), group Record: Open record panel, Record / stop take, Record N cycles (loop), Render exact N cycles (offline), Import recipe;
+  - the workspace pane **Record** (`strudelCraft.workspace.on([[{ id: 'record', w: 1 }]])`). Docked, the panel is in flow and always shown.
+- **Include** boxes: **Audio** (master tap), **Events** (lanes, pads, control moves), **Code-state**. A single Record captures every ticked part.
+- **Arm**:
+  - Free;
+  - Cycles: starts and stops on cycle boundaries. Length is `round(N / cps * sr)` frames, so the take loops;
+  - Until stop: capped by the play-time limit.
 
-## Tap
-`app.js` routes every Strudel connection to the destination into one master `GainNode` (the bus). It exposes that bus as `strudelCraft.transport.bus = {ctx, node, own}`.
-`capture.js` connects `bus.node` to an `AudioWorkletNode` loaded from a Blob module. If AudioWorklet is missing it falls back to a `ScriptProcessorNode`.
-The worklet writes silent output. That output goes to the destination only so the node gets pulled. The node is in `bus.own`, so app.js's redirect skips it. What you hear does not change. The tap sits after the master level, so a take sounds like what is heard.
-Each block carries its `currentFrame`, so every sample has an absolute frame index on the AudioContext clock. Takes use the live context's sample rate (44.1 or 48 kHz, whichever the device uses). The tap attaches on the first Record. Autoplay rules apply, so Record starts the transport from the tap when needed.
+  Plus count-in (cycles), pre-roll (seconds, Free / Until stop), name, WAV 16/24 and Render exact N cycles with Fold tail.
+- **Timeline**: one row per recipe with:
+  - chips: `audio` / `events` / `code`, `remake ok` / `differs`, `inert` for imports;
+  - a waveform, or event ticks for event-only takes;
+  - cycles, cps, start-stop cycles, the dependency count and the render hash;
+  - actions: Play (HTMLAudio, never recorded), Remake, Rename, Delete, Recipe (JSON download), WAV, and Copy code for lane / pad takes (`laneCode` / `bounceCode`).
+- Perform's own Rec lane and looper takes still record in Perform. They land in the same timeline as event recipes, with a "Take saved, Download" toast.
+- 44px targets and a 360px layout. A storage line turns into a warning near the quota.
 
-## Arm modes
-- **Cycles**: the start is the next cycle boundary, plus the count-in. The end is `start + round(N / cps * sampleRate)` frames, so the length is exact and the take loops. Strudel's Cyclist plays a hap at cycle `c` at `lastTick + (c - lastBegin) / cps + latency` (AudioContext time). `capture.js` uses the same formula to turn the boundary into a frame. Test: the realtime cut lines up with the offline render at a 0 ms onset lag.
-- **Free**: from now (or from the boundary after the count-in) until you press Stop. Pre-roll prepends up to the chosen seconds from a ring buffer, which fills while the transport plays and the sheet is open.
-- **Until stop**: like Free, capped by what is left of the play-time limit (`strudelCraft.range`).
-- If the transport stops, the take ends and is saved. A Cycles take cut short is saved as not exact.
-- Tab switches: Follow tab hot-swaps the program on the bus, so a take runs on across Rack/Stack switches. On a hidden browser tab the worklet keeps sending blocks and the take still ends on its frame. Only the UI redraw is throttled.
-- A tempo change during a Cycles take is not followed: the length is fixed when the take starts.
+## Tap and timing
+- An AudioWorklet (ScriptProcessor fallback) sits on the master bus GainNode, post master level. Its output is silent and only pulled, so the mix is unchanged.
+- Cycles cuts are computed from the Cyclist clock: a hap at cycle `c` sounds at `lastTick + (c - lastBegin) / cps + latency`.
+- A take continues across Rack/Stack tab switches and in a hidden browser tab.
+- Events: control values are sampled about 10 times per second and stored as changes `{cycle, control, value}`. Pad journal entries in `[start, stop)` are stored as `{cycle, pad, op, args}`, and the active lanes are stored too.
 
-## Render exact N cycles (offline)
-`strudelCraft.transport.compile()` evaluates the current source without starting it, or takes the playing pattern. `capture.js` then stops the transport and does the following:
-1. Suspends the live context. superdough's `onended` cleanups build nodes on the *current* context, so no live source may end while the offline context is current.
-2. Swaps superdough to an `OfflineAudioContext` (`setAudioContext`, `setSuperdoughAudioController(null)`, `loadWorklets()`).
-3. Calls `superdough()` for every onset hap in `[0, N)` in onset order. This is what Strudel's own `renderPatternAudio` does, but without closing the live context or auto-downloading.
-4. Renders, waits 300 ms so the offline `onended` cleanups run while the offline context is still current, then restores and resumes the live context and controller.
+## Recipe (version 1, forward only)
+`schemas/recipe.v1.json` (`format: "strudel-craft/recipe"`, `version: 1`). Fields:
 
-Length: `round(N / cps * sampleRate)` frames, faster than real time. Fold tail (on by default) renders up to 4 s more and adds it back onto the start, which gives the steady-state loop. The master level is applied so that exact and realtime takes match.
+| field | contents |
+|---|---|
+| `includes` | `{audio, events, code}` |
+| `timing` | `cps`, `start`, `stop`, `cycles`, `loop`, `mode`, `exact`, `fold`, `preRoll` |
+| `random.seed` | 32-bit seed: `Math.random` is seeded with it during offline renders only, restored in `finally` (Strudel's `rand` is cycle-deterministic already) |
+| `state` | `source` `{kind, title, code (as played), resolved (atoms inlined), atoms}`, `controls` (controls engine model: values, ranges, maps, lanes), `aliases` (label -> AST control id), `sites` (AST control ids with path, value, range), `perform` (pads = hook bindings, boards, maps), `modRanges` (path + sha256), `settings` (tempo, masterDb, follow, transport range) |
+| `events` | `pads`, `controls`, `lanes` (+ `performance`, `bank`, `targets` for looper takes) |
+| `deps` | `strudel` (`@strudel/web@1.3.0` URL + sha256 of the bundle bytes), `superdough` (1.3.0, bundled), `site` (build id), `packs` (lock entries: id, version, source, manifest hash, tier, every ingredient id + hash), `samples` (bank id, `github:owner/repo@<40-hex>/path`, pinned URL, sha256 of the map), `vox` (bank id, URL, sha256) |
+| `outputs` | `capture` (realtime) and/or `render` (offline): `{sha256, sr, frames, how, encoding: "f32le-interleaved"}`. The audio hash is sha256 of interleaved little-endian float32 frames |
 
-Limits:
-- Live transport effects are not in the offline render: hooks, pads, perform mappings and the transport loop/seek.
-- superdough keeps filter, compressor and supersaw nodes in module-wide WeakRef pools (nodePools.mjs) that ignore the context. The render handles this within its own scope and patches nothing page-wide that outlasts it:
-  - Offline to live: while the render's `superdough()` calls run, a `connect()` wrapper collects the offline context's nodes. The wrapper is installed only for the render and restored in `finally`. Before `startRendering`, the nodes' own Symbol keys (superdough's pool key) are deleted. On release they are torn down instead of pooled, so live playback never receives an offline node.
-  - Live to offline: a hap that pulls a pooled live node throws `InvalidAccessError`. The failed call has already removed that stale node from the pool, so the hap is retried, up to 64 times, until it gets a fresh offline node. Retries are counted in `meta.retries`. Haps that still fail are counted in `meta.fails` and reported in the toast.
-  - Check: `tests/site/capture.mjs` plays a supersaw + lpf/hpf pattern, renders it offline, then plays it live again. Over 10 runs: `fails` 0, 1 retry, 0 console errors.
-- Worklet effects need `loadWorklets()` on the offline context. If that fails, those effects are silent.
-- Samples must be loadable. The sample maps load before the render.
-- Takes are always stereo at the live sample rate.
+- Only version 1 exists. Older and unknown versions are rejected ("Recipe version N is not supported"). There are no legacy readers and no migration shims.
+- The pre-recipe take store (IndexedDB `sc-capture`, `sc.capture.*` settings) is deleted once, with a notice. Storage is now IndexedDB `sc-recipes` (`{id, recipe, audio: {capture?, render?, remake?}}`) plus settings in `sc.record.*`.
+- Sample maps the site loads by branch are pinned at record time to the commit the branch resolves to (GitHub API). The map's `_base` is rewritten to that commit on Remake, so every sample file is fixed by the commit.
 
-## Takes and storage
-- IndexedDB `sc-capture`, object store `takes`. Records are `{meta, audio: {L, R}}` (Float32). `meta` = `{id, kind: 'take', name, created, sr, frames, seconds, cycles, cps, mode, exact, loop, how: 'realtime'|'offline', preRoll, fold, startCycle, haps, fails, retries, peak, peaks[320], source: {kind, title, code}, bytes}`.
-- Settings are in `localStorage` `sc.capture.{mode,n,countIn,preRoll,name,bits,fold}`, so the history store versions them. Audio never goes into history.
-- `navigator.storage.estimate()` drives the usage line. Past 80% or under 64 MB free, it turns into a warning and a toast. On the first save, `navigator.storage.persist()` is requested.
-- Preview plays through an `HTMLAudioElement` on a looping WAV, not through the WebAudio bus, so a preview is never recorded.
+## Reference render and Remake
+- An exact Cycles take with audio and code-state gets an offline **reference render** when it ends. The transport stops for it. Its hash is `outputs.render.sha256`. Render exact N cycles writes a recipe with the same output.
+- Remake runs these steps in order:
+  1. Validate the recipe.
+  2. Ask for approval in a modal that lists the program and every dependency (kind, id, pinned ref, short hash). Pack code ingredients are listed as not run (sandbox, #71).
+  3. Ask for trust for each ref from an unknown source. The answer is remembered per id + hash in `sc.trust`.
+  4. Fetch every pinned ref and compare its sha256. A mismatch refuses the load: a modal names the ref with the expected and actual hash, and nothing is loaded or run.
+  5. Load the pinned sample maps from the verified bytes, and the vox banks.
+  6. Render offline from the recipe alone:
+     - compile the program;
+     - apply the label -> id aliases and the controls model;
+     - set each control's history to its start value plus the recorded cycle-stamped events;
+     - seed `Math.random`;
+     - render `[start, stop)` at the recorded sample rate, with fold tail and master level.
 
-## Downloads
-- A Blob plus an `<a download>` anchor, which works on the live site and on phones. Name: `<name>_<cycles>c_<cps>cps.<ext>`, e.g. `loop_2c_0.5cps.wav`.
-- WAV: 16 or 24 bit PCM stereo, encoded in the browser. A `LIST/INFO` chunk holds INAM (name), ISFT, ICRD and ICMT (JSON with cycles, cps, exact, loop, how and the pattern source).
-- Compressed: the first format `MediaRecorder` supports out of `audio/webm;codecs=opus`, `audio/ogg;codecs=opus`, `audio/mp4`. The take plays once in real time through a private, silent AudioContext into MediaRecorder at 160 kb/s. No MP3 library is bundled.
-- JSON sidecar `strudel-craft/capture@1`: every meta field except the peaks, plus the WAV file name.
+     The previous controls state is restored afterwards.
+  7. Compare the result with `outputs.render.sha256`: a toast when it matches; a modal "Remake differs" with both hashes and the notes (other build, pack not loaded, ...) when it does not.
+- A take that kept only a realtime capture cannot be compared bit for bit. Its remake becomes its exact render.
 
-## Perform motion takes (lane and pad takes)
-- When a Perform lane recording (Rec lane: control automation) or a looper pad take stops, `perform.js` dispatches `perform:take`. `capture.js` saves it into the same IndexedDB list as a motion record `{meta: {kind: 'motion', type: 'lane'|'pads', ...}, model}`, which holds no audio. A toast "Take saved: <name>. Download" downloads the JSON.
-- Each row has a type badge (`audio`, `lane`, `pads`), a curve or tick preview, and these buttons: Load (back into Perform), Rename, Download, Delete, then JSON, Export audio and Copy code.
-- Download JSON, format `strudel-craft/motion@1`, contains:
-  - `type`, `name`, `cps`, `length` (cycles), `seconds`, `origin`;
-  - `events`: lane points as `{cycle, time, control, value, shape}`, pad events as `{cycle, t, time, layer, pad, type, velocity, target}`;
-  - `refs`: the control id, or the bank and the pad targets;
-  - `model`: the stored lane, or `{performance, bank, pads}`;
-  - `code`: the `laneCode()` / `bounceCode()` output;
-  - `source`: kind, title, and the program code.
+## Trust and poisoning
+- External refs are always a commit sha plus a content hash. Floating refs (branch, tag) fail validation.
+- Known sources are same-origin, `unpkg.com/@strudel/web@1.3.0`, and the pinned GitHub repos of the site's sample maps and this repo. Core and curated packs from the shipped lock are known too. Anything else needs the trust modal.
+- Imported recipes are inert data: nothing is fetched beyond the file or evaluated until Remake is pressed and approved. A recipe never runs third-party pack code.
+- **Coming**: snapshot mirror. A copy of every pinned dependency kept beside the recipe, so a Remake still works when an upstream host disappears. For now the external hosts (unpkg, GitHub raw, pack repos) are assumed reachable.
 
-  File name: `<name>_<type>_<cycles>c_<cps>cps.json`.
-- Copy code writes the same `laneCode` / `bounceCode` text to the clipboard. Without clipboard access it opens a site modal that holds the text.
-- Import JSON (button above the takes) stores the file as a take and loads it into Perform. A lane goes onto its control (one undo step). A pad take goes into the looper.
-- Export audio is a real-time re-record pass through the capture path:
-  1. It loads the take and starts the transport if needed.
-  2. For a pad take, it starts the looper replay. Lanes are periodic from cycle 0.
-  3. It records `ceil(length)` cycles from the take's next loop start: `record({}, {mode: 'cycles', at, step: length})`.
-  4. It saves the result as an audio take, `<name>-audio` with `meta.from` = the motion take id, and downloads it as a WAV.
-- API: `strudelCraft.perform.applyLane(name, lane)`, `strudelCraft.perform.applyTake(performance, bank, {play})` returns the replay base cycle. `strudelCraft.capture.{saveMotion, motionJson, parseMotion, importMotion, applyMotion, exportMotionAudio, motionCode}`.
-- Test: `node tests/site/motion.mjs` runs at 360px:
-  - record a lane: the take and the toast appear;
-  - row buttons are 44px;
-  - the Download blob parses with the lane events;
-  - Copy code produces `signal(`;
-  - Export audio gives a non-silent WAV of the lane length;
-  - Import JSON loads the lane back;
-  - a looper take lands as `pads`;
-  - no console errors.
+## Limits
+- Hooks runtime state outside the controls model and the pad journal (for example a live pad replay) is not replayed by an offline render. Pad events are stored and shown, and lanes and control moves are replayed.
+- The noise buffers superdough caches per session are created by the first noise sound. A render seeds `Math.random`, but a buffer that already exists from live play is reused, so noise-based patterns may differ on Remake. Remake then reports "differs".
+- Superdough pools nodes without regard to context. A collector installed for the render only strips the pool key from offline nodes. Haps that receive a stale live node are retried.
 
 ## API
-`strudelCraft.capture = { saveMotion, motionJson, importMotion, exportMotionAudio, open, close, toggle, configure(opts), record(opts), stop, toggleRec, renderExact(n), list, get(id), remove(id), rename(id, name), download(id, 'wav16'|'wav24'|'comp'|'json'), encodeWav(take, bits), sidecar(take), fileName(take, ext), opts, state }`.
+`strudelCraft.capture = { open, close, toggle, configure({mode, n, countIn, preRoll, name, bits, fold, audio, events, code}), record(opts, run), stop, toggleRec, renderExact(n), remake(id), importRecipe(fileOrText), exportRecipe(id), renderRecipe(recipe), download(id, 'recipe'|'wav16'|'wav24'|'capture'|'render'|'remake'), list, get, remove, rename, encodeWav, opts, state }`
+
+`strudelCraft.recipe = { FORMAT, VERSION, sha256, audioHash, collectDeps, validate, refsOf, verify, trusted, grant, store }`. The controls engine gains `history(name)` / `setHistory(name, entries)` for exact, restorable value histories.
 
 ## Test
-`node tests/site/capture.mjs` runs at 360x740:
-- the transport and sheet: 44px targets, no overflow, knob readouts whole;
-- palette actions;
-- Record 2 cycles: the take is listed, has the exact frame count and a non-silent waveform;
-- WAV 16 and 24 headers and lengths;
-- the file name and the download anchor;
-- recording across Rack -> Stack -> Rack;
-- exact render length and level;
-- realtime/offline onset alignment;
-- playback after a render;
-- no console errors.
-
-It writes `docs/screens/phone-360-capture.png`.
+`node tests/site/record.mjs` runs at 360x740 in two browser profiles:
+- **A**:
+  - panel targets and palette;
+  - one Record with audio + events + code-state: realtime capture plus reference render;
+  - chips;
+  - recipe download, with v1 and pinned deps;
+  - workspace pane.
+- **B** (clean):
+  - legacy prune notice;
+  - import is inert;
+  - Remake approval, then the audio hash matches A's render;
+  - the controls engine is intact afterwards;
+  - a tampered pack manifest hash is refused with the ref named;
+  - version 0 is rejected;
+  - no console errors.

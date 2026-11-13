@@ -6,7 +6,7 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
 ## What is on screen
 - **Transport** (always visible, bottom; thumb zone on phones): prev / Play-Stop / next, Tempo knob (BPM), Master knob (dB), L/R peak meter.
 - **Stage**: scope + log-frequency spectrum (Hz / dB axes) of the master output, and pattern lanes for the current cycle with a moving playhead.
-- **Views** (`1`-`4`): Rack (browser, code editor, inspector), Stack (layer recipes into one `$:` program with per-layer mute and `postgain` level), Ref (plugin/function reference), Practice (best practices).
+- **Views** (`1`-`7`): Rack (browser, code editor, inspector), Stack (layer recipes into one `$:` program with per-layer mute and `postgain` level), Ref (plugin/function reference), Practice (best practices), Perform (pad banks and control boards), Syntax (runnable examples of the new paradigms), Graph (blueprint node editor over the shared model; loaded on first open).
 - Old URLs `compose.html`, `plugins.html`, `practices.html` redirect to `#stack`, `#ref`, `#practice`. A recipe deep link is `index.html#r/<recipe-id>`.
 - Shortcuts: press `?` in the app for the cheat sheet (Space, arrows / J K, Enter, `[` `]`, `-` `=`, A, `/`, Esc, Ctrl/Cmd+Enter, Ctrl/Cmd+Z, C, O, T).
 
@@ -26,6 +26,13 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
     node tests/site/smoke.mjs --quick  # first 4 recipes only
     node tests/site/lighthouse.mjs     # needs `npm i -g lighthouse@12`; mobile perf / a11y scores
     node tests/atoms/a1.mjs            # atoms core (#61); STRUDEL_MODULES=<dir with @strudel/> for the rendered checks
+    node tests/hooks/p3.mjs            # model round trip (#49); the `strudel` CLI checks print SKIP without it
+    node tests/hooks/p4.mjs            # component library, instances, lib: fragments (#50)
+    node tests/hooks/p5.mjs            # hooks + model intellisense providers (#51)
+    node tests/site/graph.mjs          # Graph view (#52); tests/site/graph_zoom.mjs, graph_scroll.mjs for the gestures
+    node tests/site/perform.mjs        # Perform view, learn/map, lanes, looper (#55)
+    node tests/site/word_intellisense.mjs  # word() completions from data/intellisense/words.json (#44)
+    node tests/site/vox.mjs            # vocal banks and voxBank()
 
 Outputs go to `docs/screens/` (`metrics.json`, `lighthouse-mobile.json`, PNG screenshots at 390px and 1440px).
 
@@ -43,6 +50,9 @@ Completions come from a runtime registry. Built-in providers:
 - `catalog`: recipe presets from `data/catalog.json` (inserts the recipe `expr`).
 - `runtime`: after Strudel loads (`strudel:ready` event): `Pattern.prototype` methods, new global functions, loaded sound names (`soundMap`).
 - `user`: names (`const x`) and quoted values the user types, persisted in `localStorage['sc.intellisense.user']`.
+- `words` (`word-intellisense.js`, #44): word names inside quotes, from `data/intellisense/words.json` (item shape of `engine/vocals/complete.py`: `{name, kind, detail, n}`; names and counts only, no audio).
+- `hooks` and `model` (`hooks-intellisense.js`, #51): see below.
+- `syntax` (`syntax.js`): every runnable Syntax-view example as a snippet.
 
 API:
     const off = window.strudelCraft.intellisense.register({
@@ -103,8 +113,25 @@ states), `closers` (open brackets/quotes). Register more:
     strudelCraft.intellisense.registerInline({ id, priority, suggest: async ({ before, after, line, doc, pos }) => ['...'] })
 `strudelCraft.intellisense.remoteInlineStub` shows the shape for a future remote/LLM provider; none is wired.
 
-## Preludes
-`app.js` loads `prelude/word.js` (#43) into the Strudel eval context right after `initStrudel`, so `word()`, `syl()` and `vowel()` work in both editors; they are intellisense items (category `vocals`). Add more preludes to `PRELUDES` in `app.js`.
+## Preludes and vocal banks (`prelude/word.js`, `data/vox/`, #43-#46)
+`app.js` loads `prelude/word.js` (#43) into the Strudel eval context right after `initStrudel`, so `word()`, `syl()`, `vowel()` and
+`voxBank()` work in both editors; they are intellisense items (category `vocals`). Add more preludes to `PRELUDES` in `app.js`.
+- `word("<call me baby>")` -> `s("vox_call vox_me vox_baby")` (mini-notation kept, `"baby:2"` = third take through `n`);
+  `syl("0 1 2")` plays syllables in lyric order; `vowel()` is Strudel's fixed formant filter, not a formant shifter.
+- Banks live in `data/vox/<bank>/` (`ogg/`, `pitched/strudel.json` with the sung base note, `words.json`): `demo` (espeak-ng speech,
+  auto-loaded on the first `word()`) and `call-me-baby` (the owner's vocal bank). `voxBank('call-me-baby')` switches bank (keys it
+  lacks fall back to demo), `voxBank(url)` loads a `strudel.json` (or a folder URL ending in `/`), `voxBank()` opens a folder picker
+  (files stay in the browser), `voxBank.list()` -> `[{name, url, words, active}]`. Failures toast, they do not throw.
+- `.note()` on a pitched map retunes by speed, so formants move with the pitch. Formant-preserving takes are pre-rendered by the
+  build-time CLI (`engine/vocals/wordbank.sh ... --formant-steps -5,7 [--formant-backend pyworld|rubberband]`, #45 - keys
+  `vox_<word>_f<semi>`, gate them with `python3 engine/vocals/formant.py --selftest --backend all`): pyworld (in-process WORLD
+  vocoder) passes that selftest, the external `rubberband --formant` binary is approximate and fails 3 of its 4 vowels, which the
+  tool reports rather than hides. Lyric words missing from the stem can be filled with opt-in TTS clips (`--tts-fallback`, Shabda speech,
+  network, per-clip `source`/`licence` in `words.json`, #46). Neither is baked into the two site banks yet, and `word(...).formant(true)`
+  is not built (#57) - the Syntax view marks it "coming".
+- Completions for word names come from `data/intellisense/words.json`; regenerate it with
+  `python3 engine/vocals/complete.py "" --samples-dir site/data/vox/call-me-baby --samples-dir site/data/vox/demo --kind word`
+  (merge duplicate names, keep the highest take count).
 
 ## Visual feedback (`visuals.js`)
 As on strudel.cc/learn/visual-feedback, using Strudel's own draw code in `@strudel/web` 1.3.0 (unmodified):
@@ -152,6 +179,10 @@ Alt+arrows reorder) of pad banks and control boards; "Tabs ⋯" adds, renames, d
   destination; its sheet maps, unlearns, records/clears/saves a lane and sends it to another board.
 - Learn: Learn, pick a destination, move a control: one `maps` entry plus one `hooks.map('ctl', 'dest')` line at the top of the playing
   editor; Unlearn removes both. `hooks.map` is glue on the runtime (idempotent; only lines still in an editor count).
+  A map reaches params the code never mentions: `controls.applyMaps` rewrites the mapped key on the events as the outermost
+  `queryArc` returns them (value resolved at each event's start cycle, lanes included), so one knob can move several layers.
+  `hooks.map(control, dest, opts?, gate?)` from code does the same, but the control must already exist (declare it with `ctl()`
+  first), and an unknown control is reported as `E_CONTROL_UNKNOWN` and ignored.
 - Automation: "Rec lane" (or a cell's sheet) records the next moved number control for 1/2/4 bars into a lane (`recordLane`, period =
   length, overdub keeps points outside the touched span); "↶ Lane" undoes; lanes persist in the model (`automation`) and `ctl()`
   reads them at each event's time.
@@ -191,6 +222,46 @@ same file on the site and in the CLI; it imports acorn from `vendor/` and never 
   intellisense and hooks consumers (#63), `extract` / `inline` (#62), graph cards (#64) and the `strudel atoms` CLI subcommands
   (`list | show | refs | compile | check`, CLI in another repo) — those print SKIP / are marked "coming" in the Syntax view.
 
+## Component library (`library.js`, `library-store.js`, #50)
+Versioned components over the shared model; storage goes through `library-store.js` (`strudelCraft.history` when a host provides it,
+else an in-memory + `localStorage` `sc.library` fallback with the same five calls).
+- A record is a model plus `meta` (name, kind `song|track|set|fragment|bank|performance|board|automation`, rev, content hash, parent, tags) and `exports`
+  (`taps`, `slots`, `hooks`, `params` with `target` paths, `requires`). `save` hashes the content: saving identical content returns the
+  existing rev, anything else is a new rev, so `"pad@3"` is pinned content; `verify` refuses a record whose hash does not match
+  (`E_COMPONENT_HASH`, other errors `E_COMPONENT_REQUIRES`, `_MISSING`, `_CYCLE`, `_ARG`, `E_BAD_REF`).
+- `extract(model, selection)` lifts a selection into a component, `replaceWithInstance` puts the instance back, `embed` inlines a
+  component's record, `expand(model, { lookup })` flattens instances and `lib:` hook-refs into a plain model (namespaced `as/...`).
+- Runtime (`installInstances`, installed on the hooks runtime by `hooks-intellisense.js` on the first refresh):
+  `hooks.inst("pad@3", { as: "pad2", args, gate, remap })` returns the instance's tracks as one pattern (its params follow
+  `hooks.set("pad2.cutoff", v)`), and `hooks.bind(slot, "lib:warmth@1(0.4)")` binds a saved fragment's hook (its defs are registered
+  under a slugged name). Text-only (`src`) tracks, inline `$code` args and gated instance-param sets raise `E_UNSUPPORTED`.
+- Components are created from the UI: Graph (select nodes -> "Save to library" / "Collapse to subgraph") and Perform
+  ("Save to library" for a bank, board, take or lane). Test: `node tests/hooks/p4.mjs`.
+
+## Hooks and model intellisense (`hooks-intellisense.js`, #51)
+Two providers through the public registry (`intellisense.js` is unchanged), re-registered (the registry's cache-bust) on every code,
+runtime or library change (400 ms debounce, `input` capture plus the `strudel:hooks-changed` event):
+- `hooks`: the fixed vocabulary - methods `.use .wrap .tap .wire .ns` (`method: true`), functions `tap`, `hooks.def/undef/bind/replace/load/inst`,
+  and gate templates `@17b`, `<17b`, `9b..17b` (category `gates`).
+- `model`: names from the program, merged from `hooks.manifest()` when the runtime is up and `model.parse()` of both editors otherwise -
+  categories `slots` (with their bindings and windows), `hook names` (plain and with default args, `info` = params with min/max/default/unit),
+  `decorators`, `markers`, `variables`, `taps` (each `name` plus `name:facet`; facets are `onset/gate/env` plus the controls actually seen
+  on the tapped events, collected into `model.tapControls` from the live taps) and `components` (`name@rev` from the library, with their exports);
+  an instance contributes `as/slot` and `as/tap` names.
+Test: `node tests/hooks/p5.mjs`.
+
+## Graph (`graph.js` + `graph.css`, view 7, #52)
+Blueprint node editor over `model.js` and `library.js`, lazy-loaded on first open (not in the shell). It never writes code or model
+fields directly: every edit is one `model.js` op (or the library's `extract` / `replaceWithInstance`), so code, graph and model stay the
+same document and undo is the shared history stack.
+- Nodes come from `graph(model)`: tracks (source + chain), defs, slots with their bindings and gates, taps and wires, variables,
+  markers and component instances (a missing component shows `E_COMPONENT_MISSING` on the node). Placement from `layout(model)`,
+  persisted as the `// @model-layout {...}` comment.
+- Canvas: pan and pinch zoom with a content-derived minimum zoom (zoom out always keeps every node visible), glyph level of detail,
+  1:1 reset and Fit; on phones one finger scrolls the page (`touch-action: pan-y`), two fingers pan and zoom, and "Interact" locks
+  one-finger panning. Selection -> "Save to library" or "Collapse to subgraph" (new component plus `hooks.inst(...)` in the code).
+- Tests: `node tests/site/graph.mjs`, `graph_zoom.mjs`, `graph_scroll.mjs`; screenshots and metrics under `graph` in `docs/screens/`.
+
 ## Hooks wiring
 `app.js` runs every program through `strudelCraft.hooksLib.protect(code)` before `evaluate` (play and live swap), so gate strings such
 as `"@2b"` stay plain strings. Before the first evaluate it installs the hooks runtime and gives it the mod RANGE table
@@ -200,8 +271,11 @@ param ranges (e.g. `lpf` -> `cutoff` 20..20000).
 ## Syntax (`syntax.js`, view 6)
 Teaches the new paradigms from `data/syntax.json` (sourced from docs/HOOKS_SYNTAX.md and docs/BLUEPRINT.md): slots/.use()/gates,
 taps/wire/variables/decorators, inline controls and mapping, pads and the board, library components, word() vocals, ghost text.
-Each example has "Load and play" (loads into Rack and plays, or hot-swaps if already playing). A paradigm whose engine is not
-present is marked "coming" (detected at runtime). Examples are intellisense snippets (provider `syntax`).
+Each example has "Load and play" (loads into Rack and plays, or hot-swaps if already playing); `"noplay": true` makes it "Load"
+only (for examples that need state first, such as a component saved in your library) and `"action": "perform"` opens Perform instead.
+A paradigm whose engine is not present is marked "coming" (detected at runtime), and a single example can carry `"coming": true` when
+the syntax around it is built but that call is not (`word(...).formant(true)`, #57). Every other example is expected to evaluate on the
+site as built: check with `node tests/site/smoke.mjs` plus a load of each example into Rack. Examples are intellisense snippets (provider `syntax`).
 
 ## Typed params, AST-bound controls, inert validation
 Design: `docs/CONTROL_BINDING.md`. `data/intellisense/strudel.json` `params` gives each function's args a shape (number with

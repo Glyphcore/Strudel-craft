@@ -143,7 +143,7 @@ const eqSpec = (a, b) => canonical(a) === canonical(b);
 
 // atoms: { checkDest(dest), target(ref) } for atom-param map destinations and `$atom` board / map targets (docs/ATOMS.md section 10);
 // normally site/engine/atoms-consumers.js (checkMapDest / target). Without it an `atom:` destination is refused.
-export function createControls({ registry = createRegistry(), model = {}, time = {}, strict = false, markers = {}, atoms = null } = {}) {
+export function createControls({ registry = createRegistry(), model = {}, time = {}, strict = false, markers = {}, atoms = null, onChange = null } = {}) {
   const specs = new Map(), hist = new Map(), maps = [], lanes = new Map(), dests = new Map(), picked = new Map(), boards = [];
   let anon = 0; const aliases = new Map(); /* display label -> site id (CONTROL_BINDING section 2); ids stay the identity */
   const R = (n) => { if (typeof n !== 'string') return n; const [b, ax] = n.split(':'); const id = aliases.has(b) ? aliases.get(b) : b; return ax ? id + ':' + ax : id; };
@@ -207,7 +207,7 @@ export function createControls({ registry = createRegistry(), model = {}, time =
     name = R(name);
     const s = declare(name); const k = kindOf(s); if (k === 'bool') value = value ? 1 : 0;
     if (k === 'vec2' && typeof value === 'object') { for (const a of ['x', 'y']) { const ax = s.axes?.[a]; if (ax?.min != null && (value[a] < ax.min || value[a] > ax.max)) throw err('E_BAD_ARG', `${name}:${a}`); } }
-    checkVal(name, s, value); const h = hist.get(name); h.push({ cycle, value }); h.sort((a, b) => a.cycle - b.cycle); return value;
+    checkVal(name, s, value); const h = hist.get(name); h.push({ cycle, value }); h.sort((a, b) => a.cycle - b.cycle); if (onChange) onChange(name); return value;
   }
   const travelOf = (name, v) => { name = R(name); if (v === undefined) v = manual(name); const s = specs.get(name), [lo, hi] = range(s); return Math.min(1, Math.max(0, curveIn(s.curve, v, lo, hi))); };
   const fromTravel = (name, t) => { name = R(name); const s = specs.get(name), [lo, hi] = range(s); let v = curveOut(s.curve, t, lo, hi); if (s.step) v = Math.round(v / s.step) * s.step; return Math.min(hi, Math.max(lo, v)); };
@@ -274,11 +274,11 @@ export function createControls({ registry = createRegistry(), model = {}, time =
   }
 
   // ---------- lanes / model io ----------
-  const addLane = (id, lane) => { lanes.set(id, lane); return lane; };
+  const addLane = (id, lane) => { lanes.set(id, lane); if (onChange) onChange(id); return lane; };
   function load(m) {
     for (const [n, s] of Object.entries(m.controls || {})) { const { value, ...rest } = s; declare(n, rest); if (value !== undefined) hist.get(n)[0].value = value; }
     maps.length = 0; (m.maps || []).forEach(x => { checkAtomDest(x.dest); maps.push({ ...x }); }); boards.length = 0; (m.boards || []).forEach(b => boards.push(b));
-    lanes.clear(); for (const [id, l] of Object.entries(m.automation || {})) lanes.set(id, l); return api;
+    lanes.clear(); for (const [id, l] of Object.entries(m.automation || {})) lanes.set(id, l); if (onChange) onChange(null); return api;
   }
   function toModel() {
     const out = {}; const named = [...specs].filter(([n, s]) => !s.anonymous);

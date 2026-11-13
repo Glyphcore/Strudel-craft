@@ -51,6 +51,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/site/atoms.mjs          # Playwright: atom completion, signature help, "use atoms.name", scrub on a reference arg (#63)
     node tests/atoms/a4_lazy.mjs       # atoms lazy declaration pass: lazy == eager, 5000 declared parse budget (#64)
     node tests/site/atoms_ui.mjs       # Playwright: atom cards, derived cards, browser, popover, keyboard path, 5000-atom paint (#64; also in smoke)
+    STRUDEL_MODULES=... node tests/lanes/l1.mjs  # lanes L1: tap cache, lane scope, tags, selections, checks (#74); CLI box prints SKIP without the `strudel` CLI
     node tests/hooks/p3.mjs            # model round trip (#49); the `strudel` CLI checks print SKIP without it
     node tests/hooks/p4.mjs            # component library, instances, lib: fragments (#50)
     node tests/hooks/p5.mjs            # hooks + model intellisense providers (#51)
@@ -247,6 +248,19 @@ literal into mini-notation, so write gate and hook strings with single quotes or
 does; `hooks.bind("fx", "x", "@3b")` is rewritten to single quotes). Design: `docs/HOOKS_SYNTAX.md`; tests: `node tests/hooks/p1.mjs`,
 `p2.mjs`. The CLI (`engine/strudel-cli` in suno-track-lab) imports this file from `$STRUDEL_CRAFT/site/engine/hooks.js`.
 
+## Lanes: event layer (`engine/lanes.js`, #74; design docs/LANES.md)
+Standalone ES module, no DOM, shared with the CLI. `install(S, hooks, { outer })` (called by `engine/index.js` after the hooks runtime; headless hosts call it with
+the Strudel `Pattern` and the hooks object) adds `Pattern.prototype.tags` and the globals `tagged` and `lanes`, refusing over an existing name (`E_NAME_COLLISION`).
+- Taps (in `hooks.js`): every tap has a 32-span query cache keyed by span and controls signature; cleared on registry change, a republished tap and `hooks.invalidate()`
+  (the controls engine calls it from `set`, lane and `load` through its `onChange`). In a labelled lane `.tap("x")` is `lane/x`; `.tap("x", { export: true })` lets other lanes read it;
+  an unexported cross-lane read is `W_LANE_IMPLICIT_EXPORT` (open mode) or `E_LANE_PRIVATE` after `lanes.closed()`.
+- `.tags("a", "b")` = `.tag("a").tag("b")`. `tagged("drums & !wet")` selects haps by tag, `#lane`, `& | ! ( ) *`; ops `.fx(f) .gain(g) .orbit(n) .mute(gate) .solo(gate)`, applied in the
+  outermost query wrapper before the control maps; selections serialise in `hooks.toJSON()` (`selections[]`) and live toggles (`lanes.set(id, op, on, at)`) journal as `sel` entries.
+- Text side: `scan(src)`, `compile(src)` -> `{ code, map, graph }` and `check(src, { strict })` (`E_LANE_DUP`, `W_LANE_ORBIT_FX`, `W_LANE_IMPLICIT_EXPORT`, `E_LANE_PRIVATE`); the
+  lane graph is what `strudel lanes IN` will print (that command and `check --strict` wiring live in the CLI repo and are not done yet).
+- Not built yet (shown as "coming" in the Syntax view): `.split .merge .send ret`, `capture recall .from`, model / graph / UI for lanes.
+Test: `STRUDEL_MODULES=<dir with @strudel/ core mini transpiler> node tests/lanes/l1.mjs`.
+
 ## Perform (`perform.js` + `perform.css`, view 5, #55)
 Loaded on first open of Perform or on first Play (not part of the shell; `Engine.play` awaits it so `ctl()`/`hooks.map()` exist before the first evaluate). One tab strip (`role=tablist`, arrows, Home/End,
 Alt+arrows reorder) of pad banks and control boards; "Tabs ⋯" adds, renames, duplicates, moves and deletes (site modal).
@@ -402,7 +416,7 @@ else an in-memory + `localStorage` `sc.library` fallback with the same five call
 ## Hooks and model intellisense (`hooks-intellisense.js`, #51)
 Two providers through the public registry (`intellisense.js` is unchanged), re-registered (the registry's cache-bust) on every code,
 runtime or library change (400 ms debounce, `input` capture plus the `strudel:hooks-changed` event):
-- `hooks`: the fixed vocabulary - methods `.use .wrap .tap .wire .ns` (`method: true`), functions `tap`, `hooks.def/undef/bind/replace/load/inst`,
+- `hooks`: the fixed vocabulary - methods `.use .wrap .tap .wire .ns` plus the lanes ones `.tags .fx .mute .solo` (`method: true`), functions `tap`, `tagged`, `lanes.closed/open`, `hooks.def/undef/bind/replace/load/inst`,
   and gate templates `@17b`, `<17b`, `9b..17b` (category `gates`).
 - `model`: names from the program, merged from `hooks.manifest()` when the runtime is up and `model.parse()` of both editors otherwise -
   categories `slots` (with their bindings and windows), `hook names` (plain and with default args, `info` = params with min/max/default/unit),

@@ -1,6 +1,6 @@
 # Lanes: splits, scoped taps, tags and capture without re-synthesis
 
-Status: **issued** (design note only, nothing built; phases and issues in section 11). Builds on `docs/HOOKS_SYNTAX.md` (taps, gates, scopes), `docs/BLUEPRINT.md`
+Status: **L1 built** (#74: memoised taps, lane-scoped taps, tags, selections, lane graph and checks; see "Built in L1" below; the CLI command `strudel lanes` is pending in the other repo). L2 to L5 are issued only (section 11). Builds on `docs/HOOKS_SYNTAX.md` (taps, gates, scopes), `docs/BLUEPRINT.md`
 (model, graph), `docs/ATOMS.md` (typed names), `docs/CONTROL_BINDING.md` (AST ids, param shapes), `docs/CAPTURE.md` (takes, offline
 render, recipes and Remake). Owner: `daw-sme`. UI parts are direction for `ui-designer`.
 
@@ -454,6 +454,26 @@ Counts are per cycle; `V` = source voices, `B` = branches, `S` = sends, `R` = re
 | L3 | #76 | capture and recall: events, audio, level; causal and ahead-of-time; CLI passes; Remake | L1, L2 | daw-implementer |
 | L4 | #77 | model, graph data, typed param shapes, intellisense, atom types, AST ids | L1 (grows with L2, L3) | daw-implementer |
 | L5 | #78 | lane cards, split fan, bus and capture nodes, tag chips | L4 (L2, L3 for live behaviour) | ui-designer |
+
+## 11a. Built in L1 (#74)
+Files: `site/engine/hooks.js` (tap cache, lane scope, `hooks.invalidate / laneMode / gateAt / record / ext`), `site/engine/lanes.js` (scan,
+compile, check, runtime), `site/engine/controls.js` (`onChange`), `site/engine/index.js` (wiring), test `tests/lanes/l1.mjs`.
+Where the build differs from, or fixes, the text above:
+- Lane id on a hap: haps do not carry the label, so `lanes.js` wraps `Pattern.prototype.withState` (the call the repl uses to set `state.controls.id`) and stamps
+  `context.lane` on the returned haps, only while at least one `tagged()` selection exists (a program without selections yields the same haps as before).
+- The cache lives in the object `.tap()` returns and publishes (one per tap), so a reader in another lane shares the entry: the memo queries upstream with the
+  publisher's own lane id. `hooks.invalidate()` is the control-change path; republishing a tap name drops all caches.
+- `tagged(sel)` returns a selection (`fx gain orbit mute solo`, chainable); selections are applied to the haps of the outermost query (`site/engine/index.js` runs them before
+  the control maps; headless hosts get their own wrapper). `fx(f)` runs `f` on a pattern of the matched haps over the queried span, so value effects (`hpf`, `gain`, `room`)
+  are exact and time-moving functions only see haps of the same query. Identical statements collapse, so re-evaluation is idempotent; `protect()` (run before every
+  evaluation) resets the registry so deleted statements disappear.
+- `mute` / `solo` take a gate or a boolean (`mute(false)` starts off). Live toggles go through `lanes.set(selectionId, op, on, at)`, journalled as `{ op: "sel" }` entries
+  that `toJSON` and `load` carry; selections serialise as `selections[]` (an `fx` function is `{ opaque, src }` and needs `load(json, { allowCode: true })`).
+- `lanes.js` `compile(src)` is a read-only skeleton in L1: `code` is the input and `map` the identity; `graph` has `lanes` (id, label, line, tags, taps with export flag, reads, orbit),
+  `tags`, `selections` (selector and op text), `mode` and `diagnostics`. `check(src, { strict })` reports `E_LANE_DUP`, `W_LANE_ORBIT_FX`, `W_LANE_IMPLICIT_EXPORT`,
+  `E_LANE_PRIVATE` (statically; the runtime raises the last two when it sees the read) and `E_BAD_SELECTOR`. L2 adds the rewrites.
+- Anonymous lanes are `$0`, `$1`, ... in source order, as Strudel numbers them; `tap("$0/x")` is a valid ref.
+- Not built (marked coming in `site/data/syntax.json`): `.split`, `.merge`, `.send`, `ret`, `capture`, `recall`, `.from`, the `strudel lanes` command, model and graph fields (L4), UI (L5).
 
 ## 12. Open questions
 

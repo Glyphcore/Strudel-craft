@@ -6,6 +6,7 @@ import * as inputMod from './input.js';
 import * as timeMod from './time.js';
 import { validate } from './validate.js';
 import * as hooksMod from './hooks.js';
+import * as lanesMod from './lanes.js';
 
 const sc = (globalThis.strudelCraft = globalThis.strudelCraft || {});
 const registry = createRegistry();
@@ -19,18 +20,20 @@ sc.engine = { time: timeMod, validate };
 
 // Hooks runtime (#47/#48): installed on the page's Strudel globals once they exist (strudel:ready). The site runs live: queries never throw.
 // Program text should go through strudelCraft.hooksLib.protect(code) before evaluation (double-quoted strings in hooks calls would become mini-notation).
-sc.hooksLib = hooksMod;
+sc.outer = sc.outer || []; // functions (haps, [begin, end, controls]) -> haps run by the outermost-query wrapper below, before the control maps (lanes selections)
+sc.hooksLib = { ...hooksMod, protect: (src) => { try { sc.lanes?.reset?.(); } catch (e) { /* selections stay */ } return hooksMod.protect(src); } }; // protect() runs before every evaluation: selections of the previous program are dropped, the new program re-registers its own
+sc.lanesLib = lanesMod;
 sc.installHooks = (S = globalThis, o = {}) => {
   if (!S.Pattern || !S.signal || !S.Fraction) throw new Error('installHooks: Strudel globals (Pattern, signal, Fraction, ...) not ready');
   const r = hooksMod.install({ Pattern: S.Pattern, stack: S.stack, silence: S.silence, reify: S.reify, signal: S.signal, Fraction: S.Fraction, mini: S.mini }, o);
-  r.hooks.live = true; sc.hooks = r.hooks; sc.tap = r.tap; return r;
+  r.hooks.live = true; sc.hooks = r.hooks; sc.tap = r.tap; sc.lanes = lanesMod.install({ Pattern: S.Pattern }, r.hooks, { outer: sc.outer, global: o.global }); return r;
 };
 const tryHooks = () => { if (!sc.hooks && globalThis.Pattern && globalThis.signal) { try { sc.installHooks(); } catch (e) { console.warn('[hooks]', e.message); } } };
 tryHooks(); globalThis.addEventListener?.('strudel:ready', tryHooks);
 
 // Intellisense: control names and type ids from every controls engine created through strudelCraft.controls.create (the Perform view makes one).
 const instances = new Set(); const baseCreate = sc.controls.create;
-sc.controls.create = (o) => { const c = baseCreate(o); for (const k of ['declare', 'ctl', 'load']) { const f = c[k]; c[k] = (...a) => { const r = f(...a); sc.intellisense?.invalidate?.(); return r; }; } instances.add(c); return c; };
+sc.controls.create = (o) => { const c = baseCreate({ onChange: () => sc.hooks?.invalidate?.(), ...o }); for (const k of ['declare', 'ctl', 'load']) { const f = c[k]; c[k] = (...a) => { const r = f(...a); sc.intellisense?.invalidate?.(); return r; }; } instances.add(c); return c; };
 sc.controls.completions = () => [...instances].flatMap((c) => c.completions());
 const regControls = () => sc.intellisense?.register({ id: 'controls', items: () => sc.controls.completions() });
 if (!regControls()) { const later = () => regControls(); if (typeof document !== 'undefined' && document.readyState === 'loading') document.addEventListener('DOMContentLoaded', later); else setTimeout(later, 0); }
@@ -40,7 +43,7 @@ const mapKey = (d) => { try { const h = globalThis.reify({})[d](1).queryArc(0, 0
 const rangeOfDest = (d) => { const H = sc.hooks, r = H?.ranges?.[mapKey(d)] || H?.ranges?.[d] || H?.ranges?.[H?.canon ? H.canon(d) : d]; return r ? [r.min, r.max] : null; };
 let qDepth = 0;
 const wrapQuery = () => { const P = globalThis.Pattern?.prototype; if (!P || P.__scMaps || typeof P.queryArc !== 'function') return; P.__scMaps = true; const orig = P.queryArc;
-  P.queryArc = function (...a) { qDepth++; try { const haps = orig.apply(this, a); if (qDepth > 1) return haps; let out = haps; for (const c of instances) if (c.maps().length) out = c.applyMaps(out, { key: mapKey, rangeOf: rangeOfDest }); return out; } finally { qDepth--; } }; };
+  P.queryArc = function (...a) { qDepth++; try { const haps = orig.apply(this, a); if (qDepth > 1) return haps; let out = haps; for (const f of sc.outer) out = f(out, a); for (const c of instances) if (c.maps().length) out = c.applyMaps(out, { key: mapKey, rangeOf: rangeOfDest }); return out; } finally { qDepth--; } }; };
 wrapQuery(); globalThis.addEventListener?.('strudel:ready', wrapQuery);
 export default sc;
 

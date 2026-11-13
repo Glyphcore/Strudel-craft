@@ -3,8 +3,10 @@
    taps, vars, instances) and the component library. Re-registering the same id is the registry's cache-bust; done on every code/library change.
    Manifest source: window.strudelCraft.hooks.manifest() when the hooks runtime provides it, else model.parse() of the editor text. */
 const METHODS = [['use', '.use(slot)', 'Run the hook bound to a slot (bypass while unbound or closed).'], ['wrap', '.wrap(slot)', 'Wrap the pattern in the hook bound to a slot.'],
-  ['tap', '.tap(name)', 'Publish this pattern as a named tap.'], ['wire', '.wire(tap, control)', 'Drive a control from a tap.'], ['ns', '.ns(name)', 'Namespace this track\'s slots and taps.']];
-const FUNCS = [['tap', 'tap(name)'], ['hooks.def', 'hooks.def(name, manifest)'], ['hooks.undef', 'hooks.undef(name)'], ['hooks.bind', 'hooks.bind(slot, hook, gate?)'],
+  ['tap', '.tap(name, { export })', 'Publish this pattern as a named tap (memoised: readers share one computation). Inside a lane it is lane/name; { export: true } lets other lanes read it.'], ['wire', '.wire(tap, control)', 'Drive a control from a tap.'], ['ns', '.ns(name)', 'Namespace this track\'s slots and taps.'],
+  ['tags', '.tags(tag, ...)', 'Tag every event of this lane (same as chained .tag(t)); select them with tagged().'], ['fx', '.fx(fn)', 'On a tagged() selection: apply fn to the matching events of every lane.'],
+  ['mute', '.mute(gate?)', 'On a tagged() selection: drop the matching events (inside the gate, e.g. "3b..5b").'], ['solo', '.solo(gate?)', 'On a tagged() selection: keep only matching events; several solo() selections add up.']];
+const FUNCS = [['tap', 'tap(name)'], ['tagged', 'tagged(selector)'], ['lanes.closed', 'lanes.closed()'], ['lanes.open', 'lanes.open()'], ['hooks.def', 'hooks.def(name, manifest)'], ['hooks.undef', 'hooks.undef(name)'], ['hooks.bind', 'hooks.bind(slot, hook, gate?)'],
   ['hooks.replace', 'hooks.replace(slot, hook, when?)'], ['hooks.load', 'hooks.load(json)'], ['hooks.inst', 'hooks.inst(component, { as, args?, gate? })']];
 const GATES = [['"@17b"', 'at bar 17'], ['"<17b"', 'until bar 17'], ['"9b..17b"', 'bars 9 to 17']];
 const FACETS = ['onset', 'gate', 'env'];

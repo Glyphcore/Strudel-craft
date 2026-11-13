@@ -9,6 +9,7 @@ const P = () => window.Pattern && window.Pattern.prototype;
 const HAS = {
   hooks: () => !!(sc.hooks && sc.hooks.bind && P() && P().use) || (!!sc.hooksLib && !window.Pattern),
   taps: () => !!(sc.hooks && sc.hooks.let && P() && P().tap && P().wire) || (!!sc.hooksLib && !window.Pattern),
+  lanes: () => !!(sc.lanes && sc.lanes.closed && P() && P().tags) || (!!sc.lanesLib && !window.Pattern),
   controls: () => !!(sc.controls && sc.controls.create),
   perform: () => !!(sc.controls && sc.pads),
   library: () => !!(sc.hooks && sc.hooks.inst),

@@ -10,14 +10,14 @@ const isObj = (x) => x !== null && typeof x === 'object' && (Object.getPrototype
 const sortKeys = (x) => (Array.isArray(x) ? x.map(sortKeys) : isObj(x) ? Object.fromEntries(Object.keys(x).sort().filter((k) => x[k] !== undefined).map((k) => [k, sortKeys(x[k])])) : x);
 const GATEKEYS = ['from', 'until', 'windows', 'period', 'when', 'latch', 'quant', 'unreached', 'scanLimit'];
 const NUMRE = '\\d+(?:\\.\\d+)?(?:/\\d+)?';
-const TAPREF = /^(?:((?:[\w-]+:)?[\w*-]+)\/)?([A-Za-z][\w-]*)(?::([A-Za-z]\w*))?$/;
+const TAPREF = /^(?:((?:[\w-]+:)?[\w$*-]+)\/)?([A-Za-z][\w-]*)(?::([A-Za-z]\w*))?$/;
 const METHODS = ['use', 'wrap', 'ns', 'tap', 'wire'];
 
 // Rewrite double-quoted string literals that sit directly in the argument list of hooks.*(...), .use/.wrap/.ns/.tap/.wire(...) and
 // tap(...) into single-quoted ones, so Strudel's transpiler does not turn gates ("@3b"), hook expressions ("a | b") or slot names
 // into mini-notation. Strings inside nested calls (s("bd*4") inside a wrap callback) are left alone.
 export function protect(src) {
-  const re = /(?:\bhooks\s*\.\s*[A-Za-z]+|\.\s*(?:use|wrap|ns|tap|wire)|\btap|\bctl)\s*\(/g; const edits = new Map(); let m;
+  const re = /(?:\bhooks\s*\.\s*[A-Za-z]+|\.\s*(?:use|wrap|ns|tap|wire|tags|mute|solo)|\btap|\bctl|\btagged)\s*\(/g; const edits = new Map(); let m;
   while ((m = re.exec(src))) {
     let i = m.index + m[0].length; let depth = 1;
     while (i < src.length && depth > 0) {
@@ -62,10 +62,10 @@ export function install(S, opts = {}) {
   const R = {};
   const diag = []; const seen = new Set();
   const memo = new Map(); const built = new WeakMap(); const astCache = new Map();
-  let frozen = false; let version = 0; let effCache = null; let bid = 0; let seq = 0; let sid = 0; const active = new Set();
-  function clear() { R.markers = new Map(); R.scopes = new Map(); R.slots = new Map(); R.declared = new Set(); R.defs = new Map(); R.bindings = []; R.vars = new Map(); R.sets = []; R.wires = []; R.taps = new Map(); R.reads = new Set(); }
+  let frozen = false; let version = 0; let tapGen = 0; let effCache = null; let bid = 0; let seq = 0; let sid = 0; const active = new Set();
+  function clear() { R.markers = new Map(); R.scopes = new Map(); R.slots = new Map(); R.declared = new Set(); R.defs = new Map(); R.bindings = []; R.vars = new Map(); R.sets = []; R.wires = []; R.taps = new Map(); R.reads = new Set(); R.laneMode = 'open'; }
   clear();
-  const touch = () => { version++; memo.clear(); effCache = null; };
+  const touch = () => { version++; tapGen++; memo.clear(); effCache = null; };
   const note = (level, c, msg) => { const k = c + '|' + msg; if (seen.has(k)) return; seen.add(k); diag.push({ level, code: c, msg }); if (hooks.live) console.warn(`[hooks] ${c} ${msg}`); };
   const fail = (c, msg) => { note('error', c, msg); if (!hooks.live) throw code(c, msg); return null; };
 
@@ -510,15 +510,54 @@ export function install(S, opts = {}) {
     active.add(key); try { return run(); } finally { active.delete(key); }
   };
   const tapKey = (sel, name) => (sel ? `${normSlot(sel)}/${name}` : name);
+  // Tap query cache (docs/LANES.md 4.1). Key: (span, controls signature) per tap, 32 spans, least recently used out; the whole cache is
+  // dropped when tapGen moves (registry change via touch(), evaluation reset, a republished tap, hooks.invalidate() for control changes).
+  const TAP_SPANS = 32; const memos = new WeakMap();
+  const ctlSig = (c) => { let sg = ''; if (c) for (const k of Object.keys(c).sort()) { const v = c[k]; if (v === null || (typeof v !== 'object' && typeof v !== 'function')) sg += `${k}=${v};`; } return sg; };
+  function memoTap(src) {
+    const cache = new Map(); let gen = tapGen;
+    const m = new Pattern((state) => {
+      if (gen !== tapGen) { cache.clear(); gen = tapGen; }
+      let st = state; const c = st.controls;
+      if (m._lane != null && c?.id !== m._lane) st = st.setControls({ ...c, id: m._lane }); // upstream always sees its own lane, so readers in other lanes share one entry
+      const sp = st.span; const key = `${frStr(sp.begin)}|${frStr(sp.end)}|${ctlSig(st.controls)}`;
+      const hit = cache.get(key);
+      if (hit) { cache.delete(key); cache.set(key, hit); return hit.slice(); }
+      const haps = src.query(st);
+      if (Array.isArray(haps)) { cache.set(key, Object.freeze(haps.slice())); if (cache.size > TAP_SPANS) cache.delete(cache.keys().next().value); }
+      return haps;
+    });
+    m.__tapMemo = true; m._lane = null; return m;
+  }
+  const memoOf = (pat) => { if (pat.__tapMemo) return pat; let m = memos.get(pat); if (!m) { m = memoTap(pat); memos.set(pat, m); } return m; };
+  function setTap(key, entry) { const cur = R.taps.get(key); if (cur && cur.pat === entry.pat) { Object.assign(cur, entry); return cur; } if (cur) tapGen++; R.taps.set(key, entry); return entry; }
   function publish(ref, pat, opts) {
     const p = TAPREF.exec(ref); if (!p || p[3]) throw code('E_BAD_ARG', `bad tap name "${ref}"`);
-    R.taps.set(tapKey(p[1], p[2]), { pat, opts }); return pat;
+    const m = memoOf(pat); setTap(tapKey(p[1], p[2]), { pat: m, opts }); return pat;
   }
-  function lookupTap(P, scopeId) {
-    const sc = scopeDesc(scopeId); const keys = [];
+  // a tap published inside a labelled pattern (state.controls.id = the label) is also registered as `lane/name` once that pattern is queried
+  function laneTap(lane, name, m, o) {
+    lane = String(lane); m._lane = lane; const exp = !!(o && o.export);
+    setTap(`${lane}/${name}`, { pat: m, opts: o, lane, export: exp, alias: true });
+    const g = R.taps.get(name); if (g && g.pat === m) { g.lane = lane; g.export = exp; }
+  }
+  function useTap(k, e, lane) {
+    if (lane && e.lane && e.lane !== lane && !e.export) {
+      if (R.laneMode === 'closed') { fail('E_LANE_PRIVATE', `tap "${k}" belongs to lane "${e.lane}" and is not exported (read from lane "${lane}"); use { export: true }`); return silence; }
+      note('warn', 'W_LANE_IMPLICIT_EXPORT', `lane "${lane}" reads tap "${k}" of lane "${e.lane}", which is not exported (open mode); use { export: true }`);
+    }
+    R.reads.add(k); return e.pat;
+  }
+  function lookupTap(P, scopeId, laneId) {
+    const sc = scopeDesc(scopeId); const keys = []; const lane = laneId != null ? String(laneId) : null;
     if (P.sel) keys.push(tapKey(P.sel, P.name));
-    else { if (sc?.name) keys.push(`${sc.name}/${P.name}`); if (sc?.stem) keys.push(`stem:${sc.stem}/${P.name}`); if (sc?.bus) keys.push(`bus:${sc.bus}/${P.name}`); keys.push(`*/${P.name}`, P.name); }
-    for (const k of keys) if (R.taps.has(k)) { R.reads.add(k); return R.taps.get(k).pat; }
+    else {
+      if (lane) keys.push(`${lane}/${P.name}`);
+      if (sc?.name) keys.push(`${sc.name}/${P.name}`); if (sc?.stem) keys.push(`stem:${sc.stem}/${P.name}`); if (sc?.bus) keys.push(`bus:${sc.bus}/${P.name}`); keys.push(`*/${P.name}`);
+      const ex = [...R.taps].filter(([k, e]) => e.alias && e.export && e.lane !== lane && k === `${e.lane}/${P.name}`).map(([k]) => k).sort(); keys.push(...ex.slice(0, 1)); keys.push(P.name);
+    }
+    for (const k of keys) { const e = R.taps.get(k); if (e) return useTap(k, e, lane); }
+    if (P.sel && !P.sel.includes(':') && lane !== null) { const g = R.taps.get(P.name); if (g && !g.lane) return useTap(P.name, g, lane); } // publisher of "lane/name" not queried yet
     return null;
   }
   function parseRef(ref) {
@@ -527,9 +566,13 @@ export function install(S, opts = {}) {
     return { sel: m[1], name: m[2], facet: m[3] };
   }
   const first = (haps) => haps.find((h) => h.value !== undefined);
-  function latestOnset(T, t, lb, ctrl) {
-    const tf = +t; const haps = [...T.queryArc(tf - lb, tf, ctrl), ...T.queryArc(t, t, ctrl)]; let best = null;
-    for (const h of haps) { if (!h.hasOnset() || !h.whole) continue; const b = +h.whole.begin; if (b <= tf + 1e-12 && (!best || b > best.begin)) best = { begin: b, hap: h }; }
+  function latestOnset(T, t, lb, ctrl) { // look-back in whole-cycle chunks so the tap cache keys repeat across ticks
+    const tf = +t; const lo = Math.floor(tf - lb - 1e-12); const hi = Math.floor(tf + 1e-12); let best = null;
+    for (let c = lo; c <= hi; c++) for (const h of T.queryArc(c, c + 1, ctrl)) {
+      if (!h.hasOnset() || !h.whole) continue; const b = +h.whole.begin;
+      if (b < tf - lb - 1e-12 || b > tf + 1e-12) continue;
+      if (!best || b > best.begin) best = { begin: b, hap: h };
+    }
     return best;
   }
   const lenOf = (v, d, ctrl) => lenCycles(v ?? d, hooks.cps ?? ctrl?._cps);
@@ -544,7 +587,7 @@ export function install(S, opts = {}) {
       const def = !P.sel && R.defs.get(P.name);
       if (def?.params && facet in def.params) { const v = paramTimeline(P.name, facet, t, cx); return isPatternValue(v) ? first(valuePattern(v).queryArc(t, t, ctrl))?.value : v; }
       if (def?.taps && facet in def.taps) return first(makeTap(def.taps[facet], o).queryArc(t, t, ctrl))?.value ?? o.default;
-      const T = lookupTap(P, ctrl?._hookNs);
+      const T = lookupTap(P, ctrl?._hookNs, ctrl?.id);
       if (!T) { note('error', 'E_UNKNOWN_TAP', `no tap "${P.name}" for read "${key}"`); return o.default; }
       if (facet === 'gate') return T.queryArc(t, t, ctrl).length ? 1 : 0;
       const on = latestOnset(T, t, o.lookback ?? 4, ctrl);
@@ -568,7 +611,7 @@ export function install(S, opts = {}) {
       const run = (sp) => guard(key, () => {
         const st = state.setSpan(sp);
         if (!P.sel && facet === 'ev' && (eff().vars.has(P.name))) return assignPattern(eff().vars.get(P.name), 'var:' + P.name).query(st);
-        const T = lookupTap(P, ctrl?._hookNs);
+        const T = lookupTap(P, ctrl?._hookNs, ctrl?.id);
         if (!T) { note('error', 'E_UNKNOWN_TAP', `no tap "${P.name}" for read "${key}"`); return []; }
         const haps = T.query(st); return facet === 'onset' ? haps.map((h) => h.withValue(() => 1)) : haps;
       }, () => []);
@@ -614,7 +657,7 @@ export function install(S, opts = {}) {
   proto.wrap = mark(function wrap(slotRef, inner, o) { if (typeof inner !== 'function') throw code('E_BAD_ARG', 'wrap needs an inner function'); return useOrWrap(this, slotRef, inner, o); });
   proto.ns = mark(function ns(id) {
     const src = this; const sc = normSlot(id);
-    for (const t of src._hookTaps || []) R.taps.set(`${sc}/${t.name}`, { pat: t.src, opts: t.opts });
+    for (const t of src._hookTaps || []) setTap(`${sc}/${t.name}`, { pat: t.src, opts: t.opts });
     return new Pattern((state) => {
       const ws = R.wires.filter((w) => w.dest.slice(0, w.dest.lastIndexOf('.')) === sc);
       let p = src; for (const w of ws) { const { dest, tap: tr, ...wo } = w; p = wireFn(p, dest.slice(dest.lastIndexOf('.') + 1), tr, wo); }
@@ -622,14 +665,20 @@ export function install(S, opts = {}) {
     });
   });
   proto.tap = mark(function tap(name, o) {
-    const src = this; publish(name, src, o); const P = TAPREF.exec(name);
-    const p = new Pattern((state) => { const sc = state.controls?._hookNs; if (sc && !P[1]) R.taps.set(`${normSlot(sc)}/${P[2]}`, { pat: src, opts: o }); return src.query(state); });
-    p._hookTaps = [{ name: P[2], src, opts: o }]; return p;
+    const src = this; const m = memoOf(src); publish(name, m, o); const P = TAPREF.exec(name);
+    const p = new Pattern((state) => {
+      const c = state.controls; const sc = c?._hookNs; const lane = c?.id;
+      if (!P[1]) { if (sc) setTap(`${normSlot(sc)}/${P[2]}`, { pat: m, opts: o }); if (lane != null) laneTap(lane, P[2], m, o); }
+      return m.query(state);
+    });
+    p._hookTaps = [{ name: P[2], src: m, opts: o }]; return p;
   });
   proto.wire = mark(function wire(param, ref, o) { return wireFn(this, param, ref, o); });
   const tap = mark((ref, o) => makeTap(ref, o));
 
   // ---------------- lifecycle ----------------
+  // Extension points for sibling engine modules (site/engine/lanes.js): they add to toJSON, read from load, and clear on reset.
+  const EXT = { toJSON: [], load: [], reset: [] }; hooks.ext = EXT;
   const livePoint = (at, quant = 1) => { // "next" | "nextN" | "now" -> Fraction cycle, or null when `at` is a normal point
     if (typeof at !== 'string' || !/^(now|next\d*)$/.test(at)) return null;
     if (!hooks.live) throw code('E_LIVE_ONLY', `"${at}" needs a live host (headless renders replay a journal)`);
@@ -691,7 +740,7 @@ export function install(S, opts = {}) {
     },
     fn(name) { return (pat) => new Pattern((st) => guarded(() => compileSpec(name, { slot: null, p0: st.span.begin, cx: cxOf(st.controls), named: {} }), String(name))(pat).query(st)); },
     pipe(...names) { return hooks.fn(names.join(' | ')); },
-    reset(o = {}) { frozen = false; clear(); bid = 0; seq = 0; sid = 0; active.clear(); if (!o.keepJournal) hooks.journal.length = 0; diag.length = 0; seen.clear(); touch(); return hooks; },
+    reset(o = {}) { frozen = false; clear(); bid = 0; seq = 0; sid = 0; active.clear(); if (!o.keepJournal) hooks.journal.length = 0; diag.length = 0; seen.clear(); for (const f of EXT.reset) f(o); touch(); return hooks; },
     diag: () => diag.map((d) => ({ ...d })),
     clearDiag() { diag.length = 0; seen.clear(); },
   });
@@ -717,7 +766,7 @@ export function install(S, opts = {}) {
     }
     const used = new Set(); for (const b of E.bindings) { hookNamesOf(b).forEach((n) => used.add(n)); }
     for (const [n, d] of R.defs) { if (d.taps) Object.values(d.taps).forEach(() => {}); if (!used.has(n) && !d.decorator) note('warn', 'W_UNUSED_HOOK', `hook "${n}" is defined but never bound`); }
-    for (const k of R.taps.keys()) if (!R.reads.has(k)) note('warn', 'W_UNUSED_TAP', `tap "${k}" is published but never read`);
+    const readPats = new Set([...R.reads].map((k) => R.taps.get(k)?.pat)); for (const [k, e] of R.taps) if (!R.reads.has(k) && !readPats.has(e.pat)) note('warn', 'W_UNUSED_TAP', `tap "${k}" is published but never read`);
     return { errors: diag.filter((d) => d.level === 'error'), warnings: diag.filter((d) => d.level === 'warn') };
   };
   hooks.plan = (o = {}) => {
@@ -740,7 +789,7 @@ export function install(S, opts = {}) {
         }
       }
       const atoms = atomIds();
-      return sortKeys({ horizon: T ? frStr(T) : null, cps: cps ?? null, slots, taps: [...R.taps.keys()].sort(), vars: [...E.vars.keys()].sort(), markers: Object.fromEntries(R.markers),
+      return sortKeys({ horizon: T ? frStr(T) : null, cps: cps ?? null, slots, taps: [...R.taps].filter(([, e]) => !e.alias).map(([k]) => k).sort(), vars: [...E.vars.keys()].sort(), markers: Object.fromEntries(R.markers),
         ...(atoms ? { atoms } : {}), diagnostics: diag.map((d) => ({ ...d })) });
     } finally { hooks.horizon = prev; }
   };
@@ -763,6 +812,8 @@ export function install(S, opts = {}) {
     if (R.sets.length) o.sets = R.sets.map((s) => ({ key: s.key, value: valJSON(s.value), ...(Object.keys(s.gate).length ? { gate: gateJSON(s.gate) } : {}) }));
     if (R.wires.length) o.wires = R.wires.map((w) => ({ ...w }));
     if (hooks.journal.length) o.journal = hooks.journal.map((e) => ({ cycle: String(e.cycle), op: e.op, args: e.args.map((x) => (typeof x === 'function' ? { opaque: true, src: x.toString() } : x)), ...(e.atoms ? { atoms: e.atoms } : {}) }));
+    if (R.laneMode === 'closed') o.lanes = 'closed';
+    for (const f of EXT.toJSON) f(o);
     return JSON.stringify(sortKeys(o), null, 1);
   };
   hooks.load = (json, lo = {}) => {
@@ -784,6 +835,8 @@ export function install(S, opts = {}) {
     for (const s of j.sets || []) hooks.set(s.key, un(s.value, `set ${s.key}`), s.gate);
     for (const w of j.wires || []) { const { dest, tap: tr, ...wo } = w; hooks.wire(dest, tr, wo); }
     for (const e of j.journal || []) hooks.journal.push({ cycle: String(e.cycle), op: e.op, args: (e.args || []).map((x, i) => un(x, `journal ${e.op}`)), ...(e.atoms ? { atoms: e.atoms } : {}) });
+    for (const f of EXT.load) f(j, lo);
+    if (j.lanes === 'closed' || j.lanes === 'open') R.laneMode = j.lanes;
     touch(); return hooks;
   };
 
@@ -811,6 +864,14 @@ export function install(S, opts = {}) {
     const f = hooks[k]; hooks[k] = (...a) => (frozen ? (k === 'bind' || k === 'set' ? undefined : hooks) : f(...a));
   }
   hooks.freeze = () => { frozen = true; return hooks; }; hooks.thaw = () => { frozen = false; return hooks; }; Object.defineProperty(hooks, 'frozen', { get: () => frozen });
+  // Lanes support (docs/LANES.md): cache invalidation for control changes, the lane mode, gate evaluation and journal records for ext modules.
+  hooks.invalidate = () => { tapGen++; return hooks; };
+  hooks.laneMode = (m) => { if (m !== undefined) { if (m !== 'open' && m !== 'closed') throw code('E_BAD_ARG', `lane mode "${m}"`); R.laneMode = m; tapGen++; } return R.laneMode; };
+  hooks.gateAt = (g, id = 'gate') => { const gate = normGate(g); const key = `${id}|${JSON.stringify(gate)}`; return (t, ctrl) => compileGate({ id: key, gate, label: id, quant: 1 }, cxOf(ctrl)).open(F(t)); };
+  hooks.record = (op, args, at) => {
+    const lp = livePoint(at, 1) ?? (at == null ? null : parsePoint(at, pctx())); if (!lp) throw code('E_BAD_ARG', `record "${op}" needs a point`);
+    hooks.journal.push({ cycle: frStr(lp), op, args }); touch(); return hooks;
+  };
   // Pure grammar checks for atoms (site/engine/atoms.js validators): the runtime's own parsers, exposed read-only, no second copies.
   hooks.parsers = Object.freeze({ gate: normGate, point: (s) => { try { return parsePoint(s, pctx()); } catch (e) { if (e.code === 'E_NO_CPS') return null; throw e; } }, ref: parseRef, expr: parseExpr });
   if (useGlobal) { globalThis.hooks = hooks; globalThis.tap = tapP; }

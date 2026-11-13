@@ -217,6 +217,15 @@ rendered audio (`out`) are reserved and raise `E_TAP_AUDIO`; use mixdown `follow
 
 Tap cycles (`a` reads `b` reads `a`) are caught by a re-entrancy guard in the query path: `E_TAP_CYCLE`, the inner read yields its default.
 
+**Query cache and lane scope (built, docs/LANES.md 4.1, 4.2; #74).** Every tap keeps a cache of its last 32 queried spans (key: span, controls
+signature `_cps`/`id`/scope; value: the haps), so readers of one tap in one tick share one computation of everything upstream. The cache is
+dropped on any registry change (`hooks.bind` and friends, `hooks.reset`), when a tap of that name is republished (a code edit), and on
+`hooks.invalidate()` (the controls engine calls it on every control `set`, automation-lane change and load). Look-back facets (`env`, held
+params) query whole cycles so their keys repeat. Inside a labelled pattern (`state.controls.id`) `.tap("x")` is also published as `lane/x`; a
+read finds its own lane first, then exported taps (`.tap("x", { export: true })`), then the global name. An unexported cross-lane read works and
+reports `W_LANE_IMPLICIT_EXPORT` (open mode, default) or raises `E_LANE_PRIVATE` after `lanes.closed()`. A qualified read `tap("drums/x")` made
+before the lane `drums` was first queried falls back to the global name once.
+
 Modules: `hooks.def("pump", { params: { depth: { min: 0, max: 1, default: 0.7, unit: "" } }, taps: { env: "kick:env" }, chain | apply })`.
 Module params are readable as taps (`tap("pump:depth")`) and settable (`hooks.set("pump.depth", ...)`); module taps are re-exports
 or derived patterns under the module's name (`tap("pump:env")`).

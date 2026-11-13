@@ -71,7 +71,7 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | pack-signatures (registry-side signing of manifests) | pack-spec | unexplored | - |
 | pack-external-assets (hash-pinned remote sample files in sound maps) | pack-spec | unexplored | - |
 | pack-kind-atoms (`atoms@1` ingredient kind and schema, docs/PACK_SPEC.md 5.1) | pack-spec, atoms-core | built | #63 |
-| lanes-events (memoised taps, lane-scoped taps, tags and selections; docs/LANES.md) | taps-vars-decorators, controls-engine | issued | #74 |
+| lanes-events (memoised taps, lane-scoped taps, tags and selections; docs/LANES.md) | taps-vars-decorators, controls-engine | built (engine, tests; CLI `strudel lanes` pending, critic pending) | #74 |
 | lanes-audio (`.split` / `.merge` / `.send` / `ret` on superdough buses, no re-synthesis) | lanes-events | issued | #75 |
 | lanes-capture (`capture` / `recall` / `.from`: events, audio, level; deterministic passes) | lanes-events, lanes-audio | issued | #76 |
 | lanes-consumers (model, graph data, param shapes, intellisense, atom types, AST ids) | lanes-events, model-schema-roundtrip, atoms-core | issued | #77 |

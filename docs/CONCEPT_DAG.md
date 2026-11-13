@@ -22,11 +22,13 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | spectral-resonator | spectral-freeze-paulstretch | accepted | #16 |
 | resynthesis (Harmor-like additive) | spectral-freeze-paulstretch, spectral-resonator | scouted | - |
 | sidechain-multiband-dynamics | envelope-follower-ducking | accepted | #15 |
-| bug: multiband release accuracy | sidechain-multiband-dynamics | issued | #17 |
-| loudness-metering-lufs | local-samples-ir-bounce | issued | #18 |
-| midi-clip-import-export | issues-protocol | issued | #19 |
-| master-bus-chain-presets | loudness-metering-lufs, sidechain-multiband-dynamics | unexplored | - |
-| arrangement-scene-timeline | follow-actions-clip-launching | unexplored | - |
+| bug: multiband release accuracy | sidechain-multiband-dynamics | accepted | #17 |
+| loudness-metering-lufs | local-samples-ir-bounce | accepted | #18 |
+| midi-clip-import-export | issues-protocol | accepted | #19 |
+| master-bus-chain-presets | loudness-metering-lufs, sidechain-multiband-dynamics | issued | #24 |
+| arrangement-scene-timeline | follow-actions-clip-launching | issued | #25 |
+| bug: midi import tempo map + track names | midi-clip-import-export | issued | #22 |
+| bug: true-peak above 16 kHz | loudness-metering-lufs | issued | #23 |
 
 ## Waiting nodes
 - live-mic-input: Strudel has no live input; needs browser/Node audio capture and an AGPL licence-decision issue before touching Strudel code (do not copy PR #1414). Size L. Waits for #14 and that decision.

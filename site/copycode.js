@@ -50,19 +50,63 @@ async function writeLater(promise) {
 const b64u = (bytes) => { let s = ''; for (let i = 0; i < bytes.length; i += 8192) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192)); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
 const unb64u = (s) => { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; const b = atob(s); const u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; };
 const pipe = async (bytes, Stream, fmt) => new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new Stream(fmt))).arrayBuffer());
-async function link(code) {
-  const raw = new TextEncoder().encode(code); let tag = 'p', body = raw;
-  if (window.CompressionStream) try { body = await pipe(raw, CompressionStream, 'deflate-raw'); tag = 'z'; } catch (e) { body = raw; tag = 'p'; }
-  return location.origin + location.pathname + '#code/' + tag + b64u(body);
+/* A shared link is untrusted input. Limits: decoded code at most MAX_CODE bytes of UTF-8 (256 KiB); the encoded payload after
+   "#code/z|p" at most MAX_HASH base64url chars (enough for MAX_CODE stored plain, plus slack), checked before any decoding.
+   Inflation is streamed in small input slices with backpressure and aborted the moment the running output passes MAX_CODE,
+   so a deflate bomb never materialises. Every failure throws a LinkError whose message is the toast text. */
+const MAX_CODE = 256 * 1024, MAX_HASH = Math.ceil((MAX_CODE + 2048) / 3) * 4, SLICE = 256;
+const kb = (n) => Math.ceil(n / 1024) + ' kB';
+class LinkError extends Error {}
+const bad = (why) => { throw new LinkError(why); };
+async function inflateCapped(bytes, max) {
+  const ds = new DecompressionStream('deflate-raw'), w = ds.writable.getWriter(), r = ds.readable.getReader();
+  let stop = false;
+  /* writer: one small slice at a time (deflate's worst ratio is ~1:1032, so a slice yields at most ~264 kB), waiting on backpressure */
+  const feed = (async () => { try { for (let i = 0; i < bytes.length && !stop; i += SLICE) { await w.ready; if (stop) break; await w.write(bytes.subarray(i, i + SLICE)); } if (!stop) await w.close(); } catch (e) { /* aborted or bad data: the reader reports it */ } })();
+  const out = []; let n = 0;
+  try {
+    for (;;) {
+      let step; try { step = await r.read(); } catch (e) { bad('That code link is damaged (the compressed data is not valid) and was not loaded'); }
+      if (step.done) break; n += step.value.length;
+      if (n > max) bad(`That code link holds more than ${kb(max)} of code and was not loaded`);
+      out.push(step.value);
+    }
+  } catch (e) { stop = true; r.cancel().catch(() => {}); w.abort().catch(() => {}); throw e; } finally { await feed; }
+  const all = new Uint8Array(n); let o = 0; for (const c of out) { all.set(c, o); o += c.length; } return all;
 }
+async function link(code) {
+  const raw = new TextEncoder().encode(code);
+  if (raw.length > MAX_CODE) bad(`This code is ${kb(raw.length)}; shareable links hold up to ${kb(MAX_CODE)}. Use Copy code or Copy with controls and state instead`);
+  let tag = 'p', body = raw;
+  if (window.CompressionStream) try { const z = await pipe(raw, CompressionStream, 'deflate-raw'); if (z.length < raw.length) { body = z; tag = 'z'; } } catch (e) { body = raw; tag = 'p'; }
+  const enc = b64u(body); if (enc.length > MAX_HASH) bad(`This code is too large for a shareable link (limit ${kb(MAX_CODE)})`);
+  return location.origin + location.pathname + '#code/' + tag + enc;
+}
+/* null: not a code link at all. Otherwise the decoded code, or a LinkError naming why it was refused. */
 async function decode(hash) {
-  const m = /^#?code\/([zp])([\w-]*)$/.exec(hash || ''); if (!m) return null;
-  const bytes = unb64u(m[2]); return new TextDecoder().decode(m[1] === 'z' ? await pipe(bytes, DecompressionStream, 'deflate-raw') : bytes);
+  hash = String(hash || ''); const h = hash.replace(/^#/, '');
+  if (!h.startsWith('code/')) return null;
+  const tag = h.charAt(5), body = h.slice(6);
+  if (body.length > MAX_HASH) bad(`That code link is too large (over ${kb(MAX_CODE)} of code) and was not loaded`);
+  if (tag !== 'z' && tag !== 'p') bad('That code link has an unknown format and was not loaded');
+  if (!body) bad('That code link is empty; nothing was loaded');
+  if (!/^[A-Za-z0-9_-]+$/.test(body) || body.length % 4 === 1) bad('That code link is damaged (not valid base64url) and was not loaded');
+  let bytes; try { bytes = unb64u(body); } catch (e) { bad('That code link is damaged (not valid base64url) and was not loaded'); }
+  if (tag === 'z') { if (!window.DecompressionStream) bad('This browser cannot open compressed code links'); bytes = await inflateCapped(bytes, MAX_CODE); }
+  else if (bytes.length > MAX_CODE) bad(`That code link holds more than ${kb(MAX_CODE)} of code and was not loaded`);
+  let code; try { code = new TextDecoder('utf-8', { fatal: true }).decode(bytes); } catch (e) { bad('That code link is damaged (not UTF-8 text) and was not loaded'); }
+  if (!code.trim()) bad('That code link is empty; nothing was loaded');
+  return code;
 }
 async function loadHash(hash = location.hash) {
-  let code; try { code = await decode(hash); } catch (e) { toast('That code link is damaged and could not be read', { kind: 'error' }); return false; }
+  /* never evaluates or plays: it only replaces the Rack document; on any refusal the editor is left untouched */
+  let code; try { code = await decode(hash); } catch (e) {
+    toast(e instanceof LinkError ? e.message : 'That code link is damaged and could not be read', { kind: 'error' });
+    if (/^#?code\//.test(location.hash)) history.replaceState(null, '', '#rack');
+    return false;
+  }
   if (code == null) return false;
-  if (window.__sc) window.__sc.setView('rack', { push: false });
+  if (window.__sc) { window.__sc.setView('rack', { push: false }); if (window.__sc.holdLink) window.__sc.holdLink(); }
   const ta = document.getElementById('code'); ta.value = code; ta.dispatchEvent(new Event('input'));
   history.replaceState(null, '', '#rack');
   toast('Loaded shared code into Rack. Press Play to hear it; Revert restores the recipe.', { kind: 'ok' });
@@ -94,7 +138,14 @@ const LABEL = { code: 'Copied', selection: 'Copied selection', link: 'Copied sha
 async function copy(t = visible(), mode = 'code', btn) {
   let ok;
   if (mode === 'recipe') ok = await writeLater(recipe(t));
-  else if (mode === 'link') ok = await writeLater(link(text(t)));
+  else if (mode === 'link') {
+    /* refuse before touching the clipboard: a link over the limit would be refused on open anyway */
+    const code = text(t), n = new TextEncoder().encode(code).length;
+    if (n > MAX_CODE) { toast(`This code is ${kb(n)}; shareable links hold up to ${kb(MAX_CODE)}. Use Copy code or Copy with controls and state instead`, { kind: 'error' }); return false; }
+    const p = link(code); let why = null; p.catch((e) => { why = e; });
+    ok = await writeLater(p).catch(() => false);
+    if (why) { toast(why instanceof LinkError ? why.message : 'Could not make a shareable link', { kind: 'error' }); return false; }
+  }
   else { const s = mode === 'selection' ? selection(t) : text(t); if (mode === 'selection' && !s) { toast('Nothing selected', { kind: 'info', ms: 1500 }); return false; } ok = await write(s); }
   if (ok) { toast(LABEL[mode], { kind: 'ok', ms: 1600 }); if (btn) { btn.dataset.done = '1'; clearTimeout(btn.__t); btn.__t = setTimeout(() => delete btn.dataset.done, 1400); } }
   else toast('The browser blocked the clipboard. Tap to try again', { kind: 'error', sticky: true, onClick: () => copy(t, mode, btn) });
@@ -104,12 +155,15 @@ async function copy(t = visible(), mode = 'code', btn) {
 /* ---------- menu ---------- */
 let menu = null, menuFor = null;
 function closeMenu(focus = true) { if (!menu || menu.hidden) return; menu.hidden = true; const b = menuFor && menuFor.btn; if (b) b.setAttribute('aria-expanded', 'false'); if (focus && b) b.focus({ preventScroll: true }); menuFor = null; }
-function openMenu(btn, t) {
+function openMenu(btn, t, last = false) {
   if (!menu) {
     menu = document.createElement('div'); menu.className = 'cc-menu'; menu.id = 'ccMenu'; menu.setAttribute('role', 'menu'); menu.hidden = true; document.body.append(menu);
     menu.addEventListener('click', (e) => { const it = e.target.closest('[data-mode]'); if (!it || it.disabled) return; const f = menuFor; closeMenu(); copy(f.t, it.dataset.mode, f.btn); });
     menu.addEventListener('keydown', (e) => { const its = [...menu.querySelectorAll('button:not([disabled])')]; const i = its.indexOf(document.activeElement);
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); its[(i + (e.key === 'ArrowDown' ? 1 : its.length - 1)) % its.length].focus(); } else if (e.key === 'Escape' || e.key === 'Tab') { e.preventDefault(); closeMenu(); } });
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); its[(i + (e.key === 'ArrowDown' ? 1 : its.length - 1)) % its.length].focus(); }
+      else if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); its[e.key === 'Home' ? 0 : its.length - 1].focus(); }
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.preventDefault();
+      else if (e.key === 'Escape' || e.key === 'Tab') { e.preventDefault(); closeMenu(); } });
     document.addEventListener('pointerdown', (e) => { if (menu && !menu.hidden && !menu.contains(e.target) && !(menuFor && menuFor.btn.contains(e.target))) closeMenu(false); }, true);
     window.addEventListener('resize', () => closeMenu(false));
   }
@@ -119,7 +173,7 @@ function openMenu(btn, t) {
   const r = btn.getBoundingClientRect(), w = menu.offsetWidth, h = menu.offsetHeight;
   const top = r.bottom + 4 + h > innerHeight - 8 ? Math.max(8, r.top - 4 - h) : r.bottom + 4;
   menu.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + 'px'; menu.style.top = top + 'px';
-  (menu.querySelector('[data-mode="code"]')).focus({ preventScroll: true });
+  const its = menu.querySelectorAll('button:not([disabled])'); (last ? its[its.length - 1] : its[0]).focus({ preventScroll: true });
 }
 
 /* ---------- button ---------- */
@@ -136,14 +190,21 @@ function button(target) {
   ['pointercancel', 'pointerleave'].forEach((ev) => b.addEventListener(ev, () => { clearTimeout(timer); t0 = -1; }));
   b.addEventListener('contextmenu', (e) => { e.preventDefault(); clearTimeout(timer); if (!(menu && !menu.hidden && menuFor && menuFor.btn === b)) openMenu(b, t()); held = true; });
   b.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); if (held) { held = false; return; } copy(t(), 'code', b); });
-  b.addEventListener('keydown', (e) => { if (e.key === 'ArrowDown' || (e.key === 'F10' && e.shiftKey)) { e.preventDefault(); openMenu(b, t()); } });
+  /* menu-button pattern: Enter/Space activate (native click = copy), Down/Up open the menu on the first/last item, Esc closes.
+     data-keys="own" tells the global shortcut handler (app.js onKey) to leave these keys to the widget. */
+  b.dataset.keys = 'own';
+  b.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || (e.key === 'F10' && e.shiftKey)) { e.preventDefault(); openMenu(b, t(), e.key === 'ArrowUp'); }
+    else if (e.key === 'Escape') { if (menu && !menu.hidden) { e.preventDefault(); closeMenu(); } }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Home' || e.key === 'End') e.preventDefault();
+  });
   b.addEventListener('mousedown', (e) => e.preventDefault()); /* keep the editor selection and focus */
   return b;
 }
 function attachEditor(view) {
   const ta = document.getElementById(TA[view]); const v = ta && ta.cmView; const host = v ? v.dom : null;
   if (!host || host.querySelector(':scope > .cc-btn')) return !!host;
-  host.classList.add('cc-host'); host.append(button(view)); return true;
+  host.classList.add('cc-host'); host.prepend(button(view)); return true; /* first in tab order: reached before the editor, which keeps Tab for indent */
 }
 function attachSyntax(root = document.getElementById('syntax')) {
   if (!root) return; root.querySelectorAll('.sx-ex').forEach((f) => { if (!f.querySelector('pre') || f.querySelector(':scope > .cc-btn')) return; f.classList.add('cc-host'); f.append(button(f)); });
@@ -164,5 +225,5 @@ function registerPalette() {
   return true;
 }
 if (!registerPalette()) { const iv = setInterval(() => { if (registerPalette()) clearInterval(iv); }, 300); setTimeout(() => clearInterval(iv), 15000); }
-sc.copycode = { copy, text, selection, link, decode, loadHash, recipe, attach };
+sc.copycode = { copy, text, selection, link, decode, loadHash, recipe, attach, limits: { code: MAX_CODE, hash: MAX_HASH } };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch); else watch();

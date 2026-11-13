@@ -647,14 +647,14 @@
    "label": "strudelCraft.copycode.link",
    "method": false,
    "detail": "link(code) -> Promise<url>",
-   "info": "A shareable URL with the code in its #code/ hash (deflate-raw + base64url, 'z' prefix; plain 'p' where CompressionStream is missing). Opening it loads the code into Rack.",
+   "info": "A shareable URL with the code in its #code/ hash (deflate-raw + base64url, 'z' prefix; plain 'p' where CompressionStream is missing or does not help). Opening it loads the code into Rack. Rejects (LinkError, with a toast from copy()) code over limits.code = 256 KiB of UTF-8.",
    "category": "site api"
   },
   {
    "label": "strudelCraft.copycode.loadHash",
    "method": false,
    "detail": "loadHash(hash?) -> Promise<boolean>",
-   "info": "Decode a #code/ link hash and load the code into the Rack editor (runs on page load and hash change).",
+   "info": "Decode a #code/ link hash and load the code into the Rack editor (runs on page load and hash change). Never evaluates or plays it. Oversized (over 256 KiB decoded, payload length checked first, inflation capped while streaming), malformed, wrong-prefix, non-UTF-8 or empty payloads load nothing, leave the editor untouched and toast the reason; resolves false.",
    "category": "site api"
   },
   {

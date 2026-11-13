@@ -406,6 +406,7 @@ function currentSource(view = playView()) {
 Engine.evalCount = 0;
 async function play(src = currentSource()) {
   if (!src) return;
+  S.linkHold = false; /* an explicit Play / Run is the user's consent to evaluate shared-link code */
   if (src.empty) { say('Stack is empty. Add layers with + or A, or type a program.', true); return; }
   const btn = $('#playBtn'); btn.classList.add('busy'); S.busy = true;
   const pv = playView(); const prep = bindPrep(src.kind === 'stack' ? 'stack' : pv, src.code);
@@ -503,6 +504,7 @@ async function settleRun(views, ctx) {
     const live = S.playing && view === playView();
     try {
       if (S.playing) { if (live && S.live && !S.busy) { ctx.stats.compiles++; await Engine.swap(prep.code, ctx.alive); Engine.evalCount++; S.playingId = src.id; } }
+      else if (S.linkHold && view === 'rack') { /* code from a shared #code/ link: never evaluated until the user presses Play / Run */ }
       else if (!S.busy && window.strudelCraft.idleCompile !== false && navigator.onLine && Engine.loadable !== false) { ctx.stats.compiles++; await Engine.idle(prep.code, ctx.alive, view); } /* offline: controls still render from the AST */
     } catch (e) {
       if (e && e.stale) { ctx.cancelled(); return; }
@@ -562,6 +564,7 @@ function renderList(keepId) {
 }
 function select(i, { scroll = true, audition = true } = {}) {
   if (!S.filtered.length) return;
+  S.linkHold = false;
   S.sel = (i + S.filtered.length) % S.filtered.length;
   $$('#list li').forEach((li, j) => li.setAttribute('aria-current', j === S.sel ? 'true' : 'false'));
   if (scroll) { const li = $$('#list li')[S.sel]; if (li) li.scrollIntoView({ block: 'nearest', behavior: reducedMotion.matches ? 'auto' : 'smooth' }); }
@@ -700,6 +703,9 @@ const KEYS = [
   ['Ctrl/⌘ + Enter', 'Run the code in the editor'], ['Ctrl/⌘ + Z', 'Undo knob or stack change (Shift: redo)'],
   ['C', 'Copy code'], ['O', 'Open in strudel.cc'], ['T', 'Toggle theme'], ['H', 'Version history (undo, timeline, diff, search)'], ['?', 'This cheat sheet'],
 ];
+const KEY_WIDGET = '[data-keys="own"], [role="menu"], [role="menuitem"], [aria-haspopup="menu"], [aria-haspopup="true"]';
+const WIDGET_KEYS = new Set(['Enter', ' ', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Escape']);
+const ACTIVATES = 'button:not(.row), a[href], summary, [role="button"], .chip, .add, .tp-btn, .play';
 function isField(t) { return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable); }
 function onKey(e) {
   if (window.strudelCraft.perform && window.strudelCraft.perform.capturing(e)) return;
@@ -711,12 +717,21 @@ function onKey(e) {
     return;
   }
   if ($('#help').open) return;
+  /* key scoping: a focused widget that handles its own keys (menu buttons, menus, [data-keys="own"]) owns the navigation and
+     activation keys; any focused native control (button, link, summary) owns Enter (and Space, except links) for its own
+     activation. None of those reach the global shortcuts, so a key never both activates a control and plays / reloads code.
+     Library rows are the exception: Enter / Space on a row are the play shortcuts. */
+  if (!mod && !e.altKey && t && t.closest) {
+    if (WIDGET_KEYS.has(e.key) && t.closest(KEY_WIDGET)) return;
+    const nat = (e.key === 'Enter' || e.key === ' ') && t.closest(ACTIVATES);
+    if (nat && !(e.key === ' ' && nat.matches('a'))) return;
+  }
   if (mod && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); e.shiftKey ? History.redo() : History.undo(); return; }
   if (mod && e.key === 'y') { e.preventDefault(); History.redo(); return; }
   if (mod || e.altKey) return;
   const k = e.key;
   const act = {
-    ' ': toggle, Enter: () => { if (t && t.closest && t.closest('.add, .inspector button, .layer button, a, .tools button, .tp-btn, .play, summary, .chip, #clear, #evalBtn, #revertBtn, #stackClear, #stackCopy')) return 'native'; play(); },
+    ' ': toggle, Enter: () => play(),
     ArrowDown: () => moveSel(1), ArrowUp: () => moveSel(-1), j: () => moveSel(1), k: () => moveSel(-1),
     '[': () => tempoK.nudge(e.shiftKey ? -10 : -1), ']': () => tempoK.nudge(e.shiftKey ? 10 : 1), '{': () => tempoK.nudge(-10), '}': () => tempoK.nudge(10),
     '-': () => masterK.nudge(-1), '=': () => masterK.nudge(1), '+': () => masterK.nudge(1), _: () => masterK.nudge(-1),
@@ -782,7 +797,8 @@ async function boot() {
   $('#stackClear').addEventListener('click', () => setStack([], 'clear stack'));
   $$('.views a').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); setView(a.dataset.view); }));
   document.addEventListener('keydown', onKey);
-  document.addEventListener('keyup', (e) => { if (e.key === ' ' && !isField(e.target) && !$('#help').open) e.preventDefault(); });
+  /* Space activates a focused button on keyup: only swallow it where Space is the global play shortcut (not on controls, see onKey) */
+  document.addEventListener('keyup', (e) => { const t = e.target; if (e.key !== ' ' || isField(t) || $('#help').open) return; const c = t && t.closest && (t.closest(KEY_WIDGET) || t.closest(ACTIVATES)); if (c && !c.matches('a')) return; e.preventDefault(); });
   window.addEventListener('hashchange', route);
   const onScheme = () => { Viz.readColors(); Viz.drawAll(performance.now()); }; reducedMotion.addEventListener('change', onScheme);
   /* back from the background (phones suspend audio): resume the context; if the browser refuses without a gesture, offer the Enable audio button */
@@ -836,5 +852,5 @@ window.strudelCraft.transport = { play: () => play(), stop: () => stop(), toggle
   },
   async loadSampleMap(map) { await Engine.load(); await window.samples(map); } };
 window.strudelCraft.engineState = () => ({ ...Engine.state, scheduler: Engine.scheduler, playing: S.playing, srcView: S.srcView || 'rack' });
-window.__sc = { S, Engine, Bus, play, stop, select, setView, History, toggleStack, audio: { resume: resumeAudio, get state() { const c = audioCtx(); return c ? c.state : 'none'; }, get peak() { return AudioSt.lastPeak; }, needsSamplesFor } };
+window.__sc = { S, Engine, Bus, play, stop, select, setView, History, toggleStack, holdLink: () => { S.linkHold = true; }, audio: { resume: resumeAudio, get state() { const c = audioCtx(); return c ? c.state : 'none'; }, get peak() { return AudioSt.lastPeak; }, needsSamplesFor } };
 document.addEventListener('DOMContentLoaded', boot);

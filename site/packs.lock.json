@@ -7,7 +7,7 @@
       "id": "glyphcore/shim",
       "version": "1.0.0",
       "source": "file:.",
-      "manifest": "sha256:1a282245d9dafa5ccbe1f207c41b8f69b478a366b89c59fddf0d8a370bbd7541",
+      "manifest": "sha256:0b40db620ebea521e466f7a1b4f4e80f1b93cc929742d9b93687f19a8f7ca430",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}

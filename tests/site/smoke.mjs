@@ -188,6 +188,7 @@ metrics.chromium = browser.version();
   await ctx.close();
 }
 
+{ const { graphSection } = await import('./graph.mjs'); await graphSection({ browser, BASE, OUT, check, watch, metrics }); } /* Graph view, #52 */
 await browser.close(); server.close();
 check('zero console errors / page errors', errors.length === 0, errors.slice(0, 5).join(' | '));
 metrics.console_errors = errors; metrics.checks = checks;

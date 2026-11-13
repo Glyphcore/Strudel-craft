@@ -148,3 +148,11 @@ Alt+arrows reorder) of pad banks and control boards; "Tabs ⋯" adds, renames, d
   continuous `signal`; controls found in the playing program appear in a strip under that editor in source order, same components.
 - Model persisted in `localStorage` `sc.perform` (so it is in history). Not yet built: learn mode, send to pad/board, automation
   record/overdub, looper strip, scenes UI, library save, the smoke-test additions and Lighthouse/metrics acceptance items.
+## Shared model (`model.js`, `data/schema/model.v1.json`)
+Standalone ES module: `parse(text)`, `generate(model)`, `applyOp(model, op)`, `graph(model)`, `layout(model)`, `canonical`, `hash`, `serialize`, `load`, `fromConfig`.
+- Parser: acorn 8.19.0 (MIT, (c) Marijn Haverbeke and others), loaded unmodified as its own file `vendor/acorn-8.19.0.mjs` (licence: `vendor/acorn-LICENSE.txt`), only when `model.js` is imported. No Strudel transpiler code is copied.
+- Version key is `model` (`"model": 1`), as in HOOKS_SYNTAX section 5 and the schema; there is no `hooks` key. The section 5 config keeps `cps/cpb/bpb` at top level, the schema holds them in `settings`; `load()` / `fromConfig()` move them.
+- Lossless: each layer keeps its verbatim `src` (with leading comments) and is re-emitted unchanged while its structure matches; edit ops splice that text, so only the touched statement changes. Statements outside the subset (loops, helpers, IIFEs) are `code` nodes (`src` only); `tap/.tap/.use/.wrap` literals in them become ports. `hooks.*` lines are re-emitted canonically, one per line, before the layers; anonymous `$:` layers are named `$1`, `$2`.
+- Code carries `header, markers, scopes, slots, defs, vars, bindings, instances, tracks` and `layout` (as a final `// @model-layout {...}` comment). `meta`, `settings`, `wires`, `journal`, pads, controls, components live only in the JSON model file.
+- Quotes: double-quoted args of ordinary methods are mini-notation (`{"$mini"}`); reference methods (`tap use wrap ns wire`) and object/array members are plain strings. The generator never changes the quote of text it keeps; new text uses double quotes for mini and references, single quotes for other plain strings.
+- Test: `node tests/hooks/p3.mjs`. The `strudel model`, `--model` CLI commands and the "Same sound" `strudel events` check need the `strudel` CLI (other repo) and print SKIP.

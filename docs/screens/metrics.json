@@ -889,6 +889,7 @@
   }
  },
  "perform": {
+  "date": "2026-11-13T18:46:09.386Z",
   "take": {
    "events": 4,
    "record": {
@@ -898,23 +899,23 @@
    }
   },
   "lane": {
-   "points": 12,
+   "points": 16,
    "events_next_cycle": [
     [
-     960,
-     960
+     3620,
+     3620
     ],
     [
-     3145,
-     3145
+     3134,
+     3134
     ],
     [
-     2830,
-     2830
+     2955,
+     2955
     ],
     [
-     3335,
-     3335
+     1150,
+     1150
     ]
    ]
   },
@@ -962,54 +963,116 @@
   "latency_phone": {
    "work": {
     "n": 40,
-    "mean_ms": 0.387,
-    "p95_ms": 0.7,
-    "max_ms": 0.7
+    "mean_ms": 0.315,
+    "p95_ms": 0.5,
+    "max_ms": 0.6
    },
    "from_event": {
     "n": 40,
-    "mean_ms": 12.047,
-    "p95_ms": 16.6,
-    "max_ms": 23.6
+    "mean_ms": 12.95,
+    "p95_ms": 20.3,
+    "max_ms": 25.7
    }
   },
   "latency_phone_cpu4x": {
    "work": {
     "n": 20,
-    "mean_ms": 3.335,
-    "p95_ms": 8.6,
-    "max_ms": 8.6
+    "mean_ms": 2.295,
+    "p95_ms": 3.6,
+    "max_ms": 3.6
    },
    "from_event": {
     "n": 20,
-    "mean_ms": 47.605,
-    "p95_ms": 69.7,
-    "max_ms": 69.7
+    "mean_ms": 43.41,
+    "p95_ms": 62.1,
+    "max_ms": 62.1
    }
   },
   "shell_growth": {
-   "gzip_bytes": 3456,
-   "commits": [
-    "5174f96",
-    "6ef850d",
-    "9ef74c3",
-    "8a428c1",
-    "7e8ece3",
-    "eafa160",
-    "9800995"
-   ],
-   "per": [
-    "9ef74c3 site/engine/controls.js +436",
-    "9ef74c3 site/engine/index.js +466",
-    "7e8ece3 site/style.css -996",
-    "eafa160 site/app.js +49",
-    "9800995 site/app.js +120",
-    "9800995 site/engine/hooks.js +1500",
-    "9800995 site/engine/index.js +771",
-    "9800995 site/index.html +69",
-    "9800995 site/style.css +1041"
-   ]
-  }
+   "error": "Unexpected token '/', ...\"-pop.js\", /* lazy vi\"... is not valid JSON"
+  },
+  "checks": [
+   {
+    "name": "perform: tab strip is role=tablist with bank and board tabs",
+    "ok": true,
+    "detail": ""
+   },
+   {
+    "name": "perform: tabs add (bank + board), rename, reorder; arrow keys move between tabs",
+    "ok": true,
+    "detail": "{\"names2\":[\"▦Bank A (pad bank)\",\"◎Board (control board)\",\"◎Board 2 (control board)\",\"◎Knobs (control board)\",\"▦Bank B1 (pad bank)\"],\"sel\":[\"pft1\",\"true\"]}"
+   },
+   {
+    "name": "perform: KeyQ fires pad 1,0 in perform mode; with it off 1-4 and Space keep working; typing in the editor fires no pad",
+    "ok": true,
+    "detail": "{\"kq\":1,\"v2\":\"stack\",\"stopped\":true,\"typedFired\":0}"
+   },
+   {
+    "name": "perform: bar-quantised pad shows the queued mark until its boundary, then on; reduced motion: no animation, beats as text",
+    "ok": true,
+    "detail": "{\"qd\":{\"state\":\"queued\",\"mark\":\"◔\",\"beats\":\"3 beats\",\"anim\":\"ppQ\"},\"qr\":{\"state\":\"queued\",\"beats\":\"3 beats\",\"anim\":\"none\",\"label\":\"Pad 0,0 lead, queued, 3 beats\"},\"qon\":\"on\"}"
+   },
+   {
+    "name": "perform: looper records a 1-bar take, Save stores a performance record, the loaded take replays",
+    "ok": true,
+    "detail": "{\"events\":4,\"kind\":\"performance\",\"want\":[6.104166666666667,6.229166666666667],\"replayed\":[6.104166666666667,6.229166666666667]}"
+   },
+   {
+    "name": "perform: declared-only type (encoder) renders its fallback with the \"basic view\" note",
+    "ok": true,
+    "detail": "basic view (encoder shown as knob)"
+   },
+   {
+    "name": "perform: board knob changes the event value of its param on the next cycle; the inline control shows the same value",
+    "ok": true,
+    "detail": "{\"v0\":200,\"v1\":580,\"evc\":[580,580],\"inl\":[\"580 Hz\",\"580 Hz\"]}"
+   },
+   {
+    "name": "perform: knob arrow keys step, typed value accepted, aria-valuetext has value and unit; XY moves by arrow keys",
+    "ok": true,
+    "detail": "{\"step\":38,\"typedV\":1234,\"vt\":\"1234 Hz\",\"x0\":\"x 0.00, y 0.00\",\"x1\":\"x 0.02, y 0.02\"}"
+   },
+   {
+    "name": "perform: a Learn/hooks.map mapping (no ctl() for it) changes the mapped param's event value on the next cycle",
+    "ok": true,
+    "detail": "{\"m0\":{\"x\":0,\"lo\":20,\"hi\":20000,\"cut\":1234,\"ev\":[20,20]},\"m1\":{\"x\":0.06,\"lo\":20,\"hi\":20000,\"cut\":1234,\"ev\":[1218.8,1218.8]}}"
+   },
+   {
+    "name": "perform: Learn + destination + move creates one maps entry and one hooks.map line; Unlearn removes both",
+    "ok": true,
+    "detail": "{\"lm\":[{\"control\":\"pos\",\"dest\":\"lpf\"}],\"ll\":[\"hooks.map('pos', 'lpf')\"],\"lm2\":[],\"ll2\":[]}"
+   },
+   {
+    "name": "perform: a 1-bar control move records a lane into the model and the control follows it on replay",
+    "ok": true,
+    "detail": "{\"points\":16,\"follow\":[[3620,3620],[3134,3134],[2955,2955],[1150,1150]]}"
+   },
+   {
+    "name": "perform: board edit mode resizes and moves a cell to another board; board saved to the library",
+    "ok": true,
+    "detail": "{\"sz\":\"2x1\",\"moved\":[false,true],\"kinds\":[\"performance\",\"board\"]}"
+   },
+   {
+    "name": "perform: perform-mode tap journals one on (hooks.journal); two touches fire two pads; edit-mode tap opens the pad sheet and journals nothing",
+    "ok": true,
+    "detail": "{\"one\":1,\"two\":[1,1],\"sheet\":1,\"j0\":5,\"j1\":5}"
+   },
+   {
+    "name": "perform: pads and controls >= 44x44 at 390, text contrast >= 7:1, every pad state has its own mark + text",
+    "ok": true,
+    "detail": "{\"tp\":[],\"tb\":[],\"cp\":7.95,\"cpw\":\"span.pp-mark \\\"●\\\" rgb(230, 233, 238) on rgb(30,75,76)\",\"cb\":10.25,\"cbw\":\"button. \\\"↶ Lane\\\" rgb(195, 202, 211) on rgb(24,29,36)\",\"marks\":{\"loaded\":{\"mark\":\"○\",\"label\":true},\"on\":{\"mark\":\"●\",\"label\":true},\"empty\":{\"mark\":\"·\",\"label\":true}},\"cols\":4}"
+   },
+   {
+    "name": "perform: pointerdown handler -> journal entry, main-thread work p95 <= 10 ms (phone profile); #55 adds <= 5 kB (gzip) to the shell",
+    "ok": false,
+    "detail": "{\"phone\":{\"work\":{\"n\":40,\"mean_ms\":0.315,\"p95_ms\":0.5,\"max_ms\":0.6},\"from_event\":{\"n\":40,\"mean_ms\":12.95,\"p95_ms\":20.3,\"max_ms\":25.7}},\"cpu4x\":{\"work\":{\"n\":20,\"mean_ms\":2.295,\"p95_ms\":3.6,\"max_ms\":3.6},\"from_event\":{\"n\":20,\"mean_ms\":43.41,\"p95_ms\":62.1,\"max_ms\":62.1}}}"
+   },
+   {
+    "name": "perform: zero console errors / page errors",
+    "ok": true,
+    "detail": ""
+   }
+  ]
  },
  "console_errors": [],
  "checks": [

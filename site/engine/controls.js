@@ -141,6 +141,12 @@ export function createControls({ registry = createRegistry(), model = {}, time =
     if (s.min != null && s.max != null && s.min > s.max) throw err('E_BAD_ARG', 'min > max');
     specs.set(name, s); hist.set(name, [{ cycle: -Infinity, value: v }]); return s;
   }
+  // spec change from code (range edit): replace the spec, keep the value clamped into the new range
+  function redeclare(name, spec) {
+    if (!specs.has(name)) return declare(name, spec); const s = baseSpec(spec); const h = hist.get(name);
+    specs.set(name, s); if (kindOf(s) === 'number') { const [lo, hi] = range(s); for (const e of h) if (typeof e.value === 'number') e.value = Math.min(hi, Math.max(lo, e.value)); }
+    return s;
+  }
   const manual = (name, cycle = Infinity) => { const h = hist.get(name); let v = h[0].value; for (const e of h) if (e.cycle <= cycle) v = e.value; return v; };
   // value of a control at a cycle: open lane (highest priority), else manual value. opts.quant: gate semantics (state as of last boundary)
   function valueAt(name, cycle = 0, { quant } = {}) {
@@ -249,7 +255,7 @@ export function createControls({ registry = createRegistry(), model = {}, time =
     return [...names.map(([n, s]) => ({ label: n, category: 'control', detail: `${s.type} control`, info: JSON.stringify(range(s)), inside: ['tap("', 'hooks.map("'] })),
       ...registry.types().map(t => ({ label: t.id, category: 'control-type', detail: `control type (${t.value})`, inside: ['type: "'] }))];
   }
-  const api = { registry, declare, ctl, sliderWithID, set, get: (n, c) => valueAt(n, c), valueAt, input, nudge, travelOf, map, maps: () => maps, registerDest, resolveDest, applyMaps, addLane, lanes: () => lanes,
+  const api = { registry, declare, redeclare, has: (n) => specs.has(n), ctl, sliderWithID, set, get: (n, c) => valueAt(n, c), valueAt, input, nudge, travelOf, map, maps: () => maps, registerDest, resolveDest, applyMaps, addLane, lanes: () => lanes,
     load, toModel, list, applySet, completions, boards: () => boards, gateOpen: (g, c) => gateOpen(g, c, ctx),
     // gate helper: a toggle control as a bind `when`
     when: (name, quant = 1) => ({ control: name, quant }) };

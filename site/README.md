@@ -180,3 +180,13 @@ Teaches the new paradigms from `data/syntax.json` (sourced from docs/HOOKS_SYNTA
 taps/wire/variables/decorators, inline controls and mapping, pads and the board, library components, word() vocals, ghost text.
 Each example has "Load and play" (loads into Rack and plays, or hot-swaps if already playing). A paradigm whose engine is not
 present is marked "coming" (detected at runtime). Examples are intellisense snippets (provider `syntax`).
+
+## Typed params, AST-bound controls, inert validation
+Design: `docs/CONTROL_BINDING.md`. `data/intellisense/strudel.json` `params` gives each function's args a shape (number with
+range/unit/curve/control, note, mini, sound, enum, bool, pattern, control), merged with `data/mod_ranges.json` and
+`data/controls/types.json`; inside `fn(` only that shape's suggestions show, with signature help. `engine/bind.js` finds
+`slider()`/`ctl()` sites with acorn, ids `k` + 6 base-36 chars of FNV-1a(structural path), reconciled by path, then structure, then
+position, and rewritten to `sliderWithID('id', ...)`/`ctlAt('id', ...)`. `engine/settle.js` is the one scheduler (350 ms quiet,
+1.5 s max wait, stale runs cancelled): validate -> derive -> compile (live swap, or idle `repl.evaluate(code, false)` when stopped,
+so controls and inline visuals show without Play) -> apply -> history. Invalid code changes nothing but a gutter marker, underline
+and the chip dot. Test: `node tests/site/binding.mjs`.

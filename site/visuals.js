@@ -67,39 +67,50 @@ function frame() {
 }
 const painted = new Set();
 
+/* evaluated text has AST-bound ids injected (engine/bind.js): map its offsets back to the editor text */
+function unbind(raw) { const b = sc.binder; if (!b || !b.original) return { code: raw, back: (p) => p }; return { code: b.original(raw), back: (p) => b.toOriginal(raw, p) }; }
 /* mini-notation highlighting */
 let lastKey = '';
 function clearHighlight() { if (!cmApi || !lastKey) return; lastKey = ''; cmApi.setHighlights('code', []); cmApi.setHighlights('stackCode', []); }
 function highlight(st, t, haps) {
   if (!cmApi) return;
-  const id = st.srcView === 'stack' ? 'stackCode' : 'code'; const doc = cmApi.doc(id); const code = st.activeCode || st.code || '';
+  const id = st.srcView === 'stack' ? 'stackCode' : 'code'; const doc = cmApi.doc(id); const raw = st.activeCode || st.code || ''; const { code, back } = unbind(raw);
   const off = code.endsWith(doc) ? code.length - doc.length : code.indexOf(doc) >= 0 ? code.indexOf(doc) : -1;
   if (off < 0) { cmApi.setHighlights(id, []); return; }
   const out = []; const seen = new Set();
   for (const h of haps) {
     if (!h.whole || !(h.whole.begin <= t && t < h.whole.end)) continue;
     const locs = (h.context && h.context.locations) || []; const color = h.value && typeof h.value === 'object' ? h.value.color : null;
-    for (const l of locs) { const from = l.start - off, to = l.end - off; if (from < 0 || to > doc.length || from >= to) continue; const k = from + ':' + to; if (seen.has(k)) continue; seen.add(k); out.push({ from, to, color }); }
+    for (const l of locs) { const from = back(l.start) - off, to = back(l.end) - off; if (from < 0 || to > doc.length || from >= to) continue; const k = from + ':' + to; if (seen.has(k)) continue; seen.add(k); out.push({ from, to, color }); }
   }
   const key = id + JSON.stringify(out); if (key === lastKey) return; lastKey = key;
   cmApi.setHighlights(id, out); cmApi.setHighlights(id === 'code' ? 'stackCode' : 'code', []);
 }
 
+/* idle (no Play): place the canvases and paint once from the queried events, static (CONTROL_BINDING section 6) */
+window.addEventListener('strudel:idle', (e) => {
+  const st = e.detail; if (!st || !st.pattern) return; install(); placeWidgets(st);
+  requestAnimationFrame(() => { try {
+    const haps = st.pattern.queryArc(0, 4); const painters = st.pattern.getPainters ? st.pattern.getPainters() : [];
+    for (const id of painted) { const c = widgetCanvases.get(id); if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height); }
+    painters.forEach((p) => { try { p(globalCtx(), 2, haps, [-2, 2]); } catch (err) { /* bad painter */ } });
+  } catch (err) { /* query failed: canvas stays blank */ } });
+});
 /* inline widgets: place each _visual canvas under its code line */
 function placeWidgets(st) {
-  if (!cmApi) return; const id = st.srcView === 'stack' ? 'stackCode' : 'code'; const doc = cmApi.doc(id); const code = st.activeCode || '';
+  if (!cmApi) return; const id = st.srcView === 'stack' ? 'stackCode' : 'code'; const doc = cmApi.doc(id); const { code, back } = unbind(st.activeCode || '');
   const off = code.endsWith(doc) ? code.length - doc.length : -1; const ws = [];
   painted.clear();
   for (const w of st.widgets || []) {
     if (!w || !/^_/.test(w.type || '')) continue; const wid = `${w.id || ''}_widget_${w.type}_${w.index}`; painted.add(wid);
-    const pos = (w.to != null ? w.to : w.from) - (off < 0 ? 0 : off); if (off < 0 || pos < 0 || pos > doc.length) continue;
+    const pos = back(w.to != null ? w.to : w.from) - (off < 0 ? 0 : off); if (off < 0 || pos < 0 || pos > doc.length) continue;
     widgetCanvas(wid); ws.push({ pos, el: widgetCanvases.get(wid) });
   }
   cmApi.setWidgets(id, ws); cmApi.setWidgets(id === 'code' ? 'stackCode' : 'code', []);
 }
 
 window.addEventListener('strudel:ready', () => { install(); if (!raf) raf = requestAnimationFrame(frame); });
-window.addEventListener('strudel:state', (e) => { const st = e.detail; if (st && st.widgets && st.activeCode && !st.pending) placeWidgets({ ...st, srcView: (sc.engineState && sc.engineState().srcView) || 'rack' }); });
+window.addEventListener('strudel:state', (e) => { const st = e.detail; const es = sc.engineState && sc.engineState(); if (!es || !es.playing) return; if (st && st.widgets && st.activeCode && !st.pending) placeWidgets({ ...st, srcView: (sc.engineState && sc.engineState().srcView) || 'rack' }); });
 
 /* registries: control types + intellisense */
 function registerTypes() {

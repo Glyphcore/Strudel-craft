@@ -101,12 +101,25 @@ const Engine = {
     const ctx = window.getAudioContext && window.getAudioContext();
     if (ctx && ctx.state !== 'running') throw new Error('Audio is blocked by the browser. Tap Play again to allow sound.');
   },
-  async swap(code) {
+  /* idle compile (CONTROL_BINDING section 6): evaluate without autostart, so controls and visuals exist before Play; never starts audio */
+  async idle(code, alive = () => true, view = 'rack') {
+    await this.load();
+    try { if (!window.strudelCraft.hooks && window.strudelCraft.installHooks) window.strudelCraft.installHooks(); await applyRanges(); } catch (e) { /* hooks optional */ }
+    await loadPerform();
+    if (!alive()) throw Object.assign(new Error('stale'), { stale: true });
+    if (S.playing || this.started) return;
+    this.state.evalError = undefined;
+    await this.repl.evaluate(protectCode(code), false);
+    if (this.state.evalError) throw this.state.evalError;
+    window.dispatchEvent(new CustomEvent('strudel:idle', { detail: { ...this.state, srcView: view } }));
+  },
+  async swap(code, alive = () => true) {
     /* hot-swap on the next cycle boundary; on failure the previous pattern keeps playing */
     const sch = this.scheduler; let wait = 0;
     try { const now = sch.now(); const cps = sch.cps || 0.5; wait = Math.max(0, (Math.ceil(now) - now) / cps * 1000 - 30); } catch (e) { wait = 0; }
     if (wait > 4000) wait = 0;
     await new Promise((r) => setTimeout(r, wait));
+    if (!alive()) throw Object.assign(new Error('stale'), { stale: true });
     this.state.evalError = undefined;
     await window.evaluate(protectCode(code));
     if (this.state.evalError) throw this.state.evalError;
@@ -316,9 +329,10 @@ async function play(src = currentSource()) {
   if (!src) return;
   if (src.empty) { say('Stack is empty. Add layers with + or A.', true); return; }
   const btn = $('#playBtn'); btn.classList.add('busy'); S.busy = true;
-  const pv = playView();
+  const pv = playView(); const prep = bindPrep(src.kind === 'stack' ? 'stack' : pv, src.code);
   try {
-    await Engine.play(src.code, src.samples, (m) => say(m + '…'));
+    await Engine.play(prep.ok ? prep.code : src.code, src.samples, (m) => say(m + '…'));
+    if (prep.ok) bindApply(src.kind === 'stack' ? 'stack' : pv, prep);
     Engine.evalCount++;
     S.playing = true; S.playingId = src.id; S.playingSource = src.kind; S.srcView = src.kind === 'stack' ? 'stack' : pv;
     say('Playing ' + src.title); Viz.start(); setLiveChip(S.live ? 'live' : 'off'); window.dispatchEvent(new CustomEvent('live:ok', { detail: { view: S.view } }));
@@ -360,7 +374,7 @@ S.follow = store.get('follow', true);
 S.live = (() => { try { return store.get('live', 'on') !== 'off'; } catch (e) { return true; } })();
 function setLiveChip(state, msg) {
   const c = $('#liveChip'); if (!c) return; c.dataset.state = state; $('#liveState').textContent = state; c.title = msg || (state === 'live' ? 'Edits apply on the next cycle' : state === 'off' ? 'Live updates off: tap to turn on' : state === 'error' ? 'Last good pattern still playing' : 'Press Play to go live');
-  for (const [id, v] of [['#liveMsg', 'rack'], ['#liveMsgStack', 'stack']]) { const m = $(id); if (m) { const on = state === 'error' && S.view === v; m.hidden = !on; m.textContent = on ? msg : ''; } }
+  for (const [id, v] of [['#liveMsg', 'rack'], ['#liveMsgStack', 'stack']]) { const m = $(id); if (m) { const on = state === 'error' && S.view === v; m.textContent = on ? msg : ''; } }
 }
 function syncLiveChip() { if (!S.live) setLiveChip('off'); else if (!S.playing) setLiveChip('paused'); else if ($('#liveChip').dataset.state !== 'error') setLiveChip('live'); }
 function errLine(e) { const m = /\((\d+):(\d+)\)/.exec(String(e && e.message)); if (e && e.loc && e.loc.line) return e.loc.line; return m ? +m[1] : null; }
@@ -371,13 +385,14 @@ function syntaxCheck(view) {
     window.dispatchEvent(new CustomEvent('live:error', { detail: { view, line: m ? +m[1] - 2 : null, message: msg } }));
   }
 }
-function setMsg(view, msg) { const m = $(view === 'stack' ? '#liveMsgStack' : '#liveMsg'); if (m) { m.hidden = !msg; m.textContent = msg; } }
+function setMsg(view, msg) { const m = $(view === 'stack' ? '#liveMsgStack' : '#liveMsg'); if (m) m.textContent = msg; }
 let swapping = Promise.resolve();
 function swapTo(src, why) {
   return (swapping = swapping.then(async () => {
     if (!S.playing || !src || src.empty) return false;
     try {
-      await Engine.swap(src.code); Engine.evalCount++;
+      const prep = bindPrep(src.kind === 'stack' ? 'stack' : 'rack', src.code);
+      await Engine.swap(prep.ok ? prep.code : src.code); Engine.evalCount++; if (prep.ok) bindApply(src.kind === 'stack' ? 'stack' : 'rack', prep);
       S.playingId = src.id; S.playingSource = src.kind; S.srcView = src.kind === 'stack' ? 'stack' : 'rack';
       setLiveChip(S.live ? 'live' : 'off'); window.dispatchEvent(new CustomEvent('live:ok', { detail: { view: S.srcView } }));
       window.dispatchEvent(new CustomEvent('live:swap', { detail: { id: src.id, kind: src.kind, code: src.code, why } }));
@@ -386,24 +401,50 @@ function swapTo(src, why) {
   }));
 }
 function onViewChanged() { if (S.playing && S.follow && EDIT_VIEWS.includes(S.view) && S.view !== S.srcView) swapTo(currentSource(), 'tab ' + S.view); }
-function liveCode(view = S.view) {
-  clearTimeout(codeT);
-  codeT = setTimeout(async () => {
-    if (S.playing && EDIT_VIEWS.includes(view) && view !== playView()) { syntaxCheck(view); return; }
-    if (!S.live || !S.playing || S.busy) return; const src = currentSource(); if (!src || src.empty) return;
-    try {
-      await Engine.swap(src.code); Engine.evalCount++; S.playingId = src.id;
-      setLiveChip('live'); window.dispatchEvent(new CustomEvent('live:ok', { detail: { view: S.view } }));
-      window.dispatchEvent(new CustomEvent('live:swap', { detail: { id: src.id, kind: src.kind, code: src.code } }));
-    } catch (e) {
-      const msg = (e && e.message ? e.message : String(e)).split('\n')[0].slice(0, 140);
-      const off = src.kind === 'solo' && src.code !== recipeCode(cur()) ? (src.code.split('\n').length - recipeCode(cur()).split('\n').length) : 0;
-      const ln = errLine(e); setLiveChip('error', msg);
-      window.dispatchEvent(new CustomEvent('live:error', { detail: { view: S.view, line: ln ? ln - off : null, message: msg } }));
-    }
-  }, 300);
+/* one settle scheduler (CONTROL_BINDING section 4): validate -> derive -> compile (live swap or idle) -> apply -> history */
+function settle() {
+  const sc = window.strudelCraft; if (sc.settle) return sc.settle; if (!sc.createSettle) return null;
+  sc.settle = sc.createSettle({ quiet: 350, maxWait: 1500, run: settleRun });
+  sc.settle.on((e) => setDot(e.state)); return sc.settle;
 }
-function liveUpdate() { clearTimeout(liveT); liveT = setTimeout(() => { if (!S.playing) return; const src = currentSource(); if (src && (src.id === S.playingId || src.kind === 'stack')) swapTo(src, 'update'); }, 160); }
+function setDot(state) { const c = $('#liveChip'); if (c) c.dataset.v = state; }
+function codeOffset(view, src) { return src.kind === 'solo' && cur() && src.code !== recipeCode(cur()) ? (src.code.split('\n').length - recipeCode(cur()).split('\n').length) : 0; }
+function reportError(view, src, line, raw) {
+  const msg = String(raw || 'error').split('\n')[0].slice(0, 140); const off = codeOffset(view, src);
+  const c = $('#liveChip'); if (c) c.title = msg + ' (last good pattern still playing)'; /* dot only: chip text and width never change (no layout shift) */
+  for (const id of ['#liveMsg', '#liveMsgStack']) { const m = $(id); if (m) m.textContent = id === (view === 'stack' ? '#liveMsgStack' : '#liveMsg') ? msg : ''; }
+  window.dispatchEvent(new CustomEvent('live:error', { detail: { view, line: line ? line - off : null, message: msg } }));
+}
+async function settleRun(views, ctx) {
+  for (const view of views) {
+    if (!ctx.alive()) { ctx.cancelled(); return; }
+    const src = currentSource(view); if (!src || src.empty) { ctx.emit('ok', view); continue; }
+    const prep = bindPrep(view, src.code); /* validate + derive (not committed) */
+    if (!prep.ok) { reportError(view, src, prep.error && prep.error.line, 'Not playing yet: ' + (prep.error && prep.error.message)); ctx.emit('invalid', view); continue; }
+    const live = S.playing && view === playView();
+    try {
+      if (S.playing) { if (live && S.live && !S.busy) { ctx.stats.compiles++; await Engine.swap(prep.code, ctx.alive); Engine.evalCount++; S.playingId = src.id; } }
+      else if (!S.busy && window.strudelCraft.idleCompile !== false) { ctx.stats.compiles++; await Engine.idle(prep.code, ctx.alive, view); }
+    } catch (e) {
+      if (e && e.stale) { ctx.cancelled(); return; }
+      reportError(view, src, errLine(e), e && e.message ? e.message : e); ctx.emit('invalid', view); continue;
+    }
+    bindApply(view, prep);
+    if (live) { setLiveChip(S.live ? 'live' : 'off'); window.dispatchEvent(new CustomEvent('live:swap', { detail: { id: src.id, kind: src.kind, code: src.code } })); }
+    window.dispatchEvent(new CustomEvent('live:ok', { detail: { view } })); ctx.emit('ok', view);
+    if (!live) try { const h = window.strudelCraft.history; if (h) h.commit('editor change', { auto: true }); } catch (e) { /* ignore */ }
+  }
+}
+function liveCode(view = S.view) {
+  if (!EDIT_VIEWS.includes(view)) return; const s = settle();
+  if (s) s.poke(view); else { clearTimeout(codeT); codeT = setTimeout(() => liveCode(view), 200); }
+}
+function bindPrep(view, code) { const b = window.strudelCraft.binder; if (!b) return { ok: true, code, sites: null }; const r = b.prepare(view, code); return r.ok ? r : { ...r, code }; }
+function bindApply(view, prep) {
+  const b = window.strudelCraft.binder; if (!b || !prep.sites) return; b.commit(view, prep.sites);
+  window.dispatchEvent(new CustomEvent('controls:sites', { detail: { view, sites: prep.sites } }));
+}
+function liveUpdate() { liveCode(playView()); }
 
 /* ---------- browser ---------- */
 const norm = (s) => s.toLowerCase();
@@ -444,6 +485,7 @@ function renderSelection(updateHash) {
   const r = cur(); const code = $('#code'); const ins = $('#inspector');
   if (!r) { code.value = ''; ins.replaceChildren(el('p', {}, 'Nothing selected.')); syncTransport(); return; }
   if (document.activeElement !== code) code.value = recipeCode(r);
+  liveCode('rack');
   $('#dirty').hidden = S.edits[r.id] == null; $('#revertBtn').disabled = S.edits[r.id] == null;
   if (r.bpm_hint && r.bpm_hint !== S.tempo) { tempoK.set(r.bpm_hint, false); S.tempo = r.bpm_hint; updateStackCode(); }
   const labs = r.labels.map((l) => el('span', { class: 'tag' }, S.labelsById[l] ? S.labelsById[l].title : l));
@@ -500,7 +542,7 @@ function renderStack() {
   updateStackCode();
 }
 function stackText() { return S.stackEdit != null ? S.stackEdit : stackProgram(); }
-function updateStackCode() { const ta = $('#stackCode'); if (document.activeElement !== ta) S.stackEdit = null; const code = stackText(); if (document.activeElement !== ta) ta.value = code; $('#stackOpen').href = strudelUrl(code); syncTransport(); }
+function updateStackCode() { const ta = $('#stackCode'); if (document.activeElement !== ta) S.stackEdit = null; const code = stackText(); if (document.activeElement !== ta) ta.value = code; $('#stackOpen').href = strudelUrl(code); syncTransport(); liveCode('stack'); }
 
 /* ---------- docs views ---------- */
 async function loadDoc(name, root, toc, q) {
@@ -547,7 +589,7 @@ function setView(v, { push = true } = {}) {
   if (v === 'syntax') loadSyntax();
   if (v === 'graph') loadGraph();
   if (push) history.replaceState(null, '', v === 'rack' && cur() ? '#r/' + cur().id : '#' + v);
-  syncTransport(); Viz.drawAll(performance.now()); onViewChanged();
+  syncTransport(); Viz.drawAll(performance.now()); onViewChanged(); if (EDIT_VIEWS.includes(v)) liveCode(v);
 }
 function route() {
   const h = decodeURIComponent(location.hash.slice(1));

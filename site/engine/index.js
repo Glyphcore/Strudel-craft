@@ -43,3 +43,9 @@ const wrapQuery = () => { const P = globalThis.Pattern?.prototype; if (!P || P._
   P.queryArc = function (...a) { qDepth++; try { const haps = orig.apply(this, a); if (qDepth > 1) return haps; let out = haps; for (const c of instances) if (c.maps().length) out = c.applyMaps(out, { key: mapKey, rangeOf: rangeOfDest }); return out; } finally { qDepth--; } }; };
 wrapQuery(); globalThis.addEventListener?.('strudel:ready', wrapQuery);
 export default sc;
+
+// AST-bound control sites + the one settle scheduler (docs/CONTROL_BINDING.md); app.js wires the run phases.
+import * as bindMod from './bind.js';
+import { createSettle } from './settle.js';
+sc.bindLib = bindMod; sc.binder = sc.binder || bindMod.createBinder(); sc.createSettle = createSettle;
+globalThis.dispatchEvent?.(new CustomEvent('sc:engine'));

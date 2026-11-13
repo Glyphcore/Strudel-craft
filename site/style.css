@@ -301,7 +301,12 @@ dialog::backdrop{background:rgba(5,6,8,.7)}
 .live-chip[data-state=live] i{background:var(--sig-2);box-shadow:0 0 8px var(--sig-2)}
 .live-chip[data-state=error] i{background:#ff5a4f;box-shadow:0 0 8px #ff5a4f}
 .live-chip[data-state=error]{color:#ff8a80}
-.live-msg{margin:0;padding:6px 14px;font-family:var(--mono);font-size:.78rem;color:#ff8a80;background:var(--panel-2);border-left:3px solid #ff5a4f}
+.live-msg{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
+/* validation dot (CONTROL_BINDING 5): always reserved, colour only, no layout shift */
+.live-chip::after{content:'';width:6px;height:6px;border-radius:50%;margin-left:2px;background:transparent;transition:background .12s}
+.live-chip[data-v=dirty]::after{background:var(--warn)}
+.live-chip[data-v=invalid]::after{background:#ff5a4f;box-shadow:0 0 6px #ff5a4f}
+.live-chip[data-v=ok]::after{background:transparent}
 /* history dialog */
 dialog.hist{width:min(640px,calc(100vw - 16px))}
 .hist-body{padding:0 16px 16px;display:grid;gap:10px;overflow:auto;max-height:calc(100vh - 140px)}

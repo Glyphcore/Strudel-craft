@@ -22,6 +22,56 @@ window.strudelCraft = window.strudelCraft || {}; window.strudelCraft.intellisens
 const staticData = fetch('data/intellisense/strudel.json').then((r) => r.json()).then((d) => d.items || []).catch(() => []);
 api.register({ id: 'strudel-docs', items: () => staticData });
 
+/* 1b. typed params (docs/CONTROL_BINDING.md section 1): params[fn][i] = { name, shape, ... } merged with mod_ranges + control types */
+const shapes = Promise.all([fetch('data/intellisense/strudel.json').then((r) => r.json()).catch(() => ({})), fetch('data/mod_ranges.json').then((r) => r.json()).catch(() => ({ ranges: {} })), fetch('data/controls/types.json').then((r) => r.json()).catch(() => ({ types: [] }))])
+  .then(([d, mr, ty]) => {
+    const types = new Map((ty.types || []).map((t) => [t.id, t])); const drawnType = (id) => { let t = types.get(id); const seen = new Set(); while (t && !t.drawn && t.render && t.render.fallback && !seen.has(t.id)) { seen.add(t.id); t = types.get(t.render.fallback); } return t ? t.id : 'knob'; };
+    const P = {};
+    for (const [fn, ps] of Object.entries(d.params || {})) P[fn] = ps.map((q) => { const r = q.range && mr.ranges ? mr.ranges[q.range] : null; const o = { ...(r ? { min: r.min, max: r.max } : {}), ...q }; if (o.shape === 'number') o.control = drawnType(o.control || 'knob'); return o; });
+    return P;
+  });
+api.params = () => shapes;
+/* argument context: innermost open call at pos, its arg index and whether the cursor is inside a string */
+function argContext(text, pos) {
+  const st = []; let q = null; const from = Math.max(0, pos - 4000);
+  for (let i = from; i < pos; i++) {
+    const c = text[i];
+    if (q) { if (c === '\\') i++; else if (c === q) { q = null; } continue; }
+    if (c === '"' || c === "'" || c === '`') { q = c; if (st.length) st[st.length - 1].qs = i; continue; }
+    if (c === '(' || c === '[' || c === '{') st.push({ c, i, commas: 0 }); else if (c === ')' || c === ']' || c === '}') st.pop(); else if (c === ',' && st.length) st[st.length - 1].commas++;
+  }
+  const top = st[st.length - 1]; if (!top || top.c !== '(') return null;
+  const m = /([A-Za-z_$][\w$]*)\s*$/.exec(text.slice(Math.max(0, top.i - 60), top.i)); if (!m) return null;
+  const pre = text.slice(0, top.i - m[1].length).trimEnd();
+  return { fn: m[1], method: pre.endsWith('.'), arg: top.commas, quote: q, open: top.i };
+}
+api.argContext = argContext;
+const NOTES = ['c3', 'e3', 'g3', 'a2', 'c2', 'g1', 'c3 e3 g3', '<c2 g1>', 'c3 eb3 g3 bb3', '[c3,e3,g3]'];
+const fmtN = (v) => (typeof v === 'number' ? String(+v.toFixed(4)) : String(v));
+function shapeOptions(p, ctx, items) {
+  const inQ = !!ctx.quote; const Q = (x) => (inQ ? x : '"' + x + '"'); const out = [];
+  const add = (label, detail, type = 'constant', apply) => out.push({ label, detail, type, apply });
+  if (p.shape === 'number') {
+    const lo = p.min ?? 0, hi = p.max ?? 1, def = p.default ?? lo; const u = p.unit ? ' ' + p.unit : '';
+    const vals = [...new Set([def, ...(p.presets || [])])].filter((v) => typeof v !== 'number' || (v >= lo && v <= hi));
+    vals.forEach((v) => add(fmtN(v), (p.unit || p.name) + (typeof v === 'number' ? ` (${lo} to ${hi})` : ''), 'constant'));
+    if (!inQ) {
+      add(`slider(${fmtN(def)}, ${fmtN(lo)}, ${fmtN(hi)})`, `${p.control} control, ${lo} to ${hi}${u}`, 'function');
+      const spec = [`type: '${p.control}'`, `min: ${fmtN(lo)}`, `max: ${fmtN(hi)}`, p.curve && p.curve !== 'lin' ? `curve: '${p.curve}'` : null, p.unit ? `unit: '${p.unit}'` : null].filter(Boolean).join(', ');
+      add(`ctl('${ctx.fn}', { ${spec} })`, `named ${p.control} control`, 'function');
+      add(`sine.range(${fmtN(lo)}, ${fmtN(hi)})`, 'modulate across the range', 'function');
+    }
+  } else if (p.shape === 'sound') {
+    const seen = new Set(); for (const it of items) if (it.string && (it.category === 'sounds' || it.category === 'loaded sounds') && !seen.has(it.label)) { seen.add(it.label); add(Q(it.label), 'sound', 'text'); }
+  } else if (p.shape === 'enum') (p.options || []).forEach((o) => add(Q(o), p.name, 'enum'));
+  else if (p.shape === 'note') NOTES.forEach((n) => add(Q(n), 'notes', 'text'));
+  else if (p.shape === 'mini') (p.examples || []).forEach((n) => add(Q(n), 'mini-notation', 'text'));
+  else if (p.shape === 'bool') { if (!inQ) ['true', 'false'].forEach((b) => add(b, 'bool', 'keyword')); }
+  else if (p.shape === 'pattern') (p.examples || []).forEach((n) => add(n, 'pattern', 'function'));
+  else if (p.shape === 'control') { const c = window.strudelCraft.perform; const names = c ? c.controls.list().map((x) => x.name) : []; names.forEach((n) => add(Q(n), 'control', 'variable')); if (!names.length) add(Q(ctx.fn === 'ctl' ? 'cutoff' : 'ctl'), 'new control label', 'variable'); }
+  return out;
+}
+
 /* 2. catalog presets */
 const catalog = fetch('data/catalog.json').then((r) => r.json()).catch(() => ({ recipes: [] }));
 api.register({ id: 'catalog', items: async () => (await catalog).recipes.filter((r) => r.expr).map((r) => ({ label: r.id, category: 'presets', detail: r.title, info: r.intent + '\n' + r.expr, apply: r.expr })) });
@@ -57,6 +107,18 @@ async function mount() {
     import(`https://esm.sh/codemirror@${V.cm}${DEPS}`), import(`https://esm.sh/@codemirror/autocomplete@${V.ac}${DEPS}`),
     import(`https://esm.sh/@codemirror/lang-javascript@${V.js}${DEPS}`), import(`https://esm.sh/@codemirror/view@${V.view}`)]);
   async function source(context) {
+    { /* typed argument position: shape-driven suggestions only */
+      const text = context.state.doc.sliceString(Math.max(0, context.pos - 4000), context.pos); const base = Math.max(0, context.pos - 4000);
+      const ctx = argContext(text, text.length); const P = await shapes; const p = ctx && P[ctx.fn] && P[ctx.fn][ctx.arg];
+      if (p) {
+        const wre = ctx.quote ? /[^\s"'`]*$/ : /[\w$.]*$/; const w = wre.exec(text)[0]; let from = context.pos - w.length;
+        if (!ctx.quote && !w && !context.explicit && !/[(,]\s*$/.test(text)) return null;
+        const opts = shapeOptions(p, ctx, await api.all());
+        if (ctx.quote && opts.length) { /* inside quotes: replace the word, drop our quotes */ opts.forEach((o) => { o.label = o.label.replace(/^"|"$/g, ''); }); }
+        if (opts.length) return { from, options: opts.map((o, i) => ({ ...o, section: { name: `${ctx.fn} · ${p.name}${p.unit ? ' (' + p.unit + ')' : ''}`, rank: -1 }, boost: 50 - i })), validFor: ctx.quote ? /^[^\s"'`]*$/ : /^[\w$.]*$/, filter: !!w };
+        void base;
+      }
+    }
     const line = context.state.doc.lineAt(context.pos); const before = line.text.slice(0, context.pos - line.from);
     const w = /[\w$]*$/.exec(before); const word = w[0]; const from = context.pos - word.length;
     const quotes = (before.match(/"/g) || []).length % 2 === 1; const method = !quotes && before.slice(0, before.length - word.length).endsWith('.');
@@ -94,7 +156,26 @@ async function mount() {
     const d = docs.get(text.slice(s - from, e - from)); if (!d) return null;
     return { pos: s, end: e, above: true, create() { const dom = document.createElement('div'); dom.className = 'cm-sig'; dom.textContent = d.detail + ' - ' + d.info; return { dom }; } };
   });
-  const theme = EditorView.theme({ '.cm-cursor, .cm-dropCursor': { borderLeftColor: 'var(--sig-2)' }, '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': { background: 'var(--sig-2-soft) !important' }, '.cm-matchingBracket': { background: 'var(--panel-3)', outline: '1px solid var(--line-2)' }, '.cm-lintRange-error': { backgroundImage: 'none', borderBottom: '2px wavy var(--bad)' }, '.cm-diagnostic-error': { borderLeftColor: 'var(--bad)' }, '.cm-tooltip-autocomplete ul li': { padding: '6px 8px', minHeight: '32px' }, '&': { background: 'var(--panel-2)', color: 'var(--text)', fontSize: '.86rem', borderRadius: '0 0 var(--r2) var(--r2)' }, '.cm-content': { fontFamily: 'var(--mono)', padding: '10px 0', caretColor: 'var(--sig-2)' }, '.cm-gutters': { background: 'transparent', border: '0', color: 'var(--dim)' }, '&.cm-focused': { outline: '2px solid var(--sig-2)', outlineOffset: '-2px' }, '.cm-scroller': { minHeight: '150px', lineHeight: '1.6' }, '.cm-tooltip': { background: 'var(--panel)', border: '1px solid var(--line, #333)', color: 'var(--text)' }, '.cm-tooltip-autocomplete ul li[aria-selected]': { background: 'var(--sig-2)', color: '#000' }, '.cm-completionSection': { color: 'var(--dim)', fontSize: '.72rem', textTransform: 'uppercase', padding: '4px 8px' }, '.cm-sig': { padding: '4px 8px', fontFamily: 'var(--mono)', fontSize: '.78rem', maxWidth: '320px' }, '.cm-activeLine, .cm-activeLineGutter': { background: 'transparent' } });
+  /* signature help: the active param of the innermost call is bold (CONTROL_BINDING section 1) */
+  const P0 = await shapes;
+  const sigField = smod.StateField.define({
+    create: () => null,
+    update(v, tr) {
+      if (!tr.docChanged && !tr.selection) return v; const st = tr.state; const pos = st.selection.main.head;
+      const text = st.doc.sliceString(Math.max(0, pos - 4000), pos); const ctx = argContext(text, text.length);
+      const ps = ctx && P0[ctx.fn]; if (!ps) return null;
+      return { pos: pos - text.length + ctx.open, fn: ctx.fn, arg: Math.min(ctx.arg, ps.length - 1), ps, over: ctx.arg >= ps.length };
+    },
+    provide: (f) => vmod.showTooltip.from(f, (v) => v && { pos: v.pos, above: true, strictSide: false, arrow: false, create() {
+      const dom = document.createElement('div'); dom.className = 'cm-sig cm-sighelp'; dom.setAttribute('role', 'tooltip');
+      dom.append(v.fn + '(');
+      v.ps.forEach((p, i) => { if (i) dom.append(', '); const b = document.createElement(i === v.arg && !v.over ? 'b' : 'span'); b.textContent = p.name; if (i === v.arg && !v.over) b.className = 'cm-sig-active'; dom.append(b); });
+      dom.append(')'); const p = v.ps[v.arg]; const d = document.createElement('small');
+      d.textContent = ' ' + p.shape + (p.shape === 'number' ? ` ${p.min ?? ''}..${p.max ?? ''}${p.unit ? ' ' + p.unit : ''}` : p.options ? ': ' + p.options.slice(0, 4).join(' ') : '');
+      dom.append(d); return { dom };
+    } }),
+  });
+  const theme = EditorView.theme({ '.cm-sig-active': { color: 'var(--sig-2)', fontWeight: '700' }, '.cm-sighelp small': { color: 'var(--dim)' }, '.cm-cursor, .cm-dropCursor': { borderLeftColor: 'var(--sig-2)' }, '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': { background: 'var(--sig-2-soft) !important' }, '.cm-matchingBracket': { background: 'var(--panel-3)', outline: '1px solid var(--line-2)' }, '.cm-lintRange-error': { backgroundImage: 'none', borderBottom: '2px wavy var(--bad)' }, '.cm-diagnostic-error': { borderLeftColor: 'var(--bad)' }, '.cm-tooltip-autocomplete ul li': { padding: '6px 8px', minHeight: '32px' }, '&': { background: 'var(--panel-2)', color: 'var(--text)', fontSize: '.86rem', borderRadius: '0 0 var(--r2) var(--r2)' }, '.cm-content': { fontFamily: 'var(--mono)', padding: '10px 0', caretColor: 'var(--sig-2)' }, '.cm-gutters': { background: 'transparent', border: '0', color: 'var(--dim)' }, '&.cm-focused': { outline: '2px solid var(--sig-2)', outlineOffset: '-2px' }, '.cm-scroller': { minHeight: '150px', lineHeight: '1.6' }, '.cm-tooltip': { background: 'var(--panel)', border: '1px solid var(--line, #333)', color: 'var(--text)' }, '.cm-tooltip-autocomplete ul li[aria-selected]': { background: 'var(--sig-2)', color: '#000' }, '.cm-completionSection': { color: 'var(--dim)', fontSize: '.72rem', textTransform: 'uppercase', padding: '4px 8px' }, '.cm-sig': { padding: '4px 8px', fontFamily: 'var(--mono)', fontSize: '.78rem', maxWidth: '320px' }, '.cm-activeLine, .cm-activeLineGutter': { background: 'transparent' } });
   /* visual feedback hooks: active-event highlights and inline widget canvases (visuals.js) */
   const setHl = smod.StateEffect.define(), setW = smod.StateEffect.define();
   class CanvasW extends vmod.WidgetType { constructor(el) { super(); this.el = el; } eq(o) { return o.el === this.el; } toDOM() { const d = document.createElement('div'); d.className = 'cm-sc-widget'; d.append(this.el); return d; } ignoreEvent() { return true; } }
@@ -110,7 +191,7 @@ async function mount() {
     const desc = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value'); let view; let syncing = false; let learnT = 0;
     view = new EditorView({
       doc: desc.get.call(ta), parent: ta.parentNode,
-      extensions: [ghost.extension, hlField, wField, basicSetup, lint.lintGutter(), javascript(), theme, hl, hover, EditorView.lineWrapping, ac.autocompletion({ override: [source], activateOnTyping: true, icons: false }),
+      extensions: [ghost.extension, hlField, wField, sigField, basicSetup, lint.lintGutter(), javascript(), theme, hl, hover, EditorView.lineWrapping, ac.autocompletion({ override: [source], activateOnTyping: true, icons: false }),
         EditorView.contentAttributes.of({ 'aria-label': ta.getAttribute('aria-label') || (id === 'code' ? 'Recipe code' : 'Stack program'), autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false' }),
         EditorView.updateListener.of((u) => { if (!u.docChanged || syncing) return; const v = u.state.doc.toString(); desc.set.call(ta, v); ta.dispatchEvent(new Event('input', { bubbles: true })); clearTimeout(learnT); learnT = setTimeout(() => learn(v), 1200); })],
     });

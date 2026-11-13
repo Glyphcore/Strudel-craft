@@ -109,11 +109,13 @@ function subscribe(fn) { subs.add(fn); return () => subs.delete(fn); }
 let suppress = false, autoT = 0, pending = null;
 function schedule(label) { pending = label; clearTimeout(autoT); autoT = setTimeout(() => { const l = pending; pending = null; commit(l, { auto: true }); }, 1200); }
 async function flush() { if (pending) { clearTimeout(autoT); const l = pending; pending = null; await commit(l, { auto: true }); } return busy; }
-Storage.prototype.setItem = function (k, v) { nativeSet.call(this, k, v); if (this === localStorage && !suppress && OWN(String(k))) schedule(({ edits: 'code edit', stack: 'stack change', stackEdit: 'stack code edit', tempo: 'tempo', master: 'master level', live: 'live toggle', theme: 'theme', 'intellisense.user': 'learned names' })[String(k).slice(3)] || 'edit ' + String(k).slice(3)); };
+/* editor keys commit from the shared settle scheduler (app.js settleRun, CONTROL_BINDING section 4) once it exists */
+const SETTLED = new Set(['sc.edits', 'sc.stackEdit']); const viaSettle = (k) => SETTLED.has(String(k)) && !!(window.strudelCraft && window.strudelCraft.settle);
+Storage.prototype.setItem = function (k, v) { nativeSet.call(this, k, v); if (this === localStorage && !suppress && OWN(String(k)) && !viaSettle(k)) schedule(({ edits: 'code edit', stack: 'stack change', stackEdit: 'stack code edit', tempo: 'tempo', master: 'master level', live: 'live toggle', theme: 'theme', 'intellisense.user': 'learned names' })[String(k).slice(3)] || 'edit ' + String(k).slice(3)); };
 Storage.prototype.removeItem = function (k) { nativeRemove.call(this, k); if (this === localStorage && !suppress && OWN(String(k))) schedule('remove ' + String(k).slice(3)); };
 /* any editor content change, whatever the source (typing, preset load, paste, tab switch, swap, restore) */
 let lastUi = '';
-setInterval(() => { if (suppress) return; const u = uiText(); const key = u['ui:rack-editor'] + '\u0000' + u['ui:stack-editor']; if (key !== lastUi) { const first = !lastUi; lastUi = key; if (!first) schedule('editor change'); } }, 700);
+setInterval(() => { if (suppress) return; const u = uiText(); const key = u['ui:rack-editor'] + '\u0000' + u['ui:stack-editor']; if (key !== lastUi) { const first = !lastUi; lastUi = key; if (!first && !(window.strudelCraft && window.strudelCraft.settle)) schedule('editor change'); } }, 700);
 window.addEventListener('live:swap', (e) => { clearTimeout(autoT); pending = null; commit('live swap: ' + e.detail.id + (e.detail.why ? ' (' + e.detail.why + ')' : ''), { auto: true, force: true }); });
 
 const api = { commit: (label, o) => commit(label, { ...(o || {}), named: !!label && !(o && o.auto) }), log, diff, checkout, search, subscribe, undo, redo, get, snapshot, flush, head: () => head };

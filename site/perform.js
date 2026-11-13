@@ -48,7 +48,11 @@ function bindStrudel() {
     if (!controls.list().some((c) => c.name === name)) { try { controls.declare(name, { type: 'knob', min: 0, max: 1, ...spec }); } catch (e) { /* conflict: keep the first */ } persistControls(); }
     declOrder(name); queueInline(); return sig(name);
   };
-  window.sliderWithID = (id, value, min = 0, max = 1) => { id = String(un(id)); value = +un(value); min = +un(min); max = +un(max); const f = controls.sliderWithID(id, value, min, max); declOrder(f.controlName); queueInline(); return sig(f.controlName); };
+  window.sliderWithID = (id, value, min = 0, max = 1) => { id = String(un(id)); value = +un(value); min = +un(min); max = +un(max);
+    if (/^k[0-9a-z]{6}/.test(id)) { ensureSite({ id, kind: 'slider', value, min, max }); return sig(id); }
+    const f = controls.sliderWithID(id, value, min, max); declOrder(f.controlName); queueInline(); return sig(f.controlName); };
+  /* ctl('label', spec) rewritten by engine/bind.js to ctlAt('<site id>', 'label', spec): the id is the identity, the label a display alias */
+  window.ctlAt = (id, label, spec = {}) => { ensureSite({ id: String(un(id)), kind: 'ctl', label: label == null ? null : String(un(label)), spec: unSpec(spec) }); return sig(String(un(id))); };
 }
 /* hooks runtime glue (engine/hooks.js is not modified): hooks.map(control, dest, opts?, gate?) -> controls.map (idempotent, the line
    re-runs on every evaluate); pad journal entries are written into hooks.journal in the runtime's journal format. */
@@ -161,12 +165,13 @@ const R = {
 };
 for (const [id, fn] of Object.entries(R)) sc.controls.registerRenderer(id, fn);
 const laneOf = (name) => controls.lanes().get('lane:' + name);
-function renderControl(host, name, { board } = {}) {
+function renderControl(host, name, { board, site } = {}) {
   const s = controls.declare(name); const chain = sc.controls.registry.fallbackChain(s.type); const drawn = chain[chain.length - 1];
   const size = board ? board.size[name] || '1x1' : '1x1';
   const cell = h('div', { class: 'pc-cell', 'data-name': name, 'data-size': size, 'data-learn': M.learn ? 'armed' : null, 'data-rec': A.run && A.run.name === name ? 'on' : A.armed && isNum(name) ? 'armed' : null });
   const maps = controls.maps().filter((m) => m.control.split(':')[0] === name).map((m) => m.dest);
-  cell.append(h('div', { class: 'pc-head' }, h('b', {}, name), laneOf(name) ? h('span', { class: 'pc-lane', title: 'Automation lane' }, '◆ lane') : null, h('span', { class: 'pc-type' }, s.type)));
+  const label = site ? (site.label || labels.get(name) || `${site.param || 'ctl'}·${site.arg < 0 ? 0 : site.arg}`) : (labels.get(name) || name);
+  cell.append(h('div', { class: 'pc-head', title: site ? `${name} · ${site.path}` : name }, h('b', {}, label), site && site.slot ? h('span', { class: 'pc-type' }, 'slot ' + site.slot) : null, laneOf(name) ? h('span', { class: 'pc-lane', title: 'Automation lane' }, '◆ lane') : null, h('span', { class: 'pc-type' }, s.type)));
   const body = h('div', { class: 'pc-body' }); (R[drawn] || R.number)(body, name, s); cell.append(body);
   if (drawn !== s.type) cell.append(h('p', { class: 'pc-note' }, `basic view (${s.type} shown as ${drawn})`));
   if (board && M.boardEdit) cell.append(h('button', { type: 'button', class: 'pc-map pc-edit', onclick: () => cellEdit(board, name) }, '✥ Edit cell'));
@@ -425,18 +430,47 @@ async function cellEdit(board, name) {
   save(); render();
 }
 
+/* ---------------- AST-bound sites (docs/CONTROL_BINDING.md) ---------------- */
+const SITES = { rack: [], stack: [] }; const lits = new Map(); const labels = new Map();
+function specOf(site) { return site.kind === 'slider' ? { type: 'slider', min: site.min ?? 0, max: site.max ?? 1, default: site.value ?? site.min ?? 0 } : { type: 'knob', min: 0, max: 1, ...(site.spec || {}) }; }
+function ensureSite(site) {
+  const sp = specOf(site); if (site.label) labels.set(site.id, site.label);
+  try {
+    if (!controls.has(site.id)) controls.declare(site.id, sp);
+    else { const c = controls.declare(site.id); if (c.type !== sp.type || c.min !== sp.min || c.max !== sp.max || c.curve !== sp.curve || c.unit !== sp.unit) controls.redeclare(site.id, sp); }
+    const lit = sp.default; const prev = lits.get(site.id); /* literal edit in code = intent: value follows it */
+    if (prev !== undefined && lit !== undefined && prev !== lit && typeof lit === 'number') controls.set(site.id, Math.min(sp.max, Math.max(sp.min, lit)));
+    if (lit !== undefined) lits.set(site.id, lit);
+  } catch (e) { /* bad spec: keep the last good one */ }
+}
+window.addEventListener('controls:sites', (e) => { const { view, sites } = e.detail; SITES[view] = sites; sites.forEach(ensureSite); persistControls(); renderInline(); });
+
 /* ---------------- inline controls under the editors ---------------- */
+/* strip = sites of that view's last good compile (AST-derived), keyed by site id and diffed in place; ctl()/slider() calls outside
+   the binder (legacy order list) still show when that view is playing */
 function renderInline() {
   for (const [id, view] of [['code', 'rack'], ['stackCode', 'stack']]) {
     const ta = document.getElementById(id); if (!ta) continue; const panel = ta.closest('.editor'); let strip = panel.querySelector('.pc-inline');
-    const st = sc.engineState && sc.engineState(); const mine = st && (st.srcView || 'rack') === view;
-    const names = mine ? order.filter((n) => { try { controls.declare(n); return true; } catch (e) { return false; } }) : [];
-    if (!names.length) { if (strip) strip.remove(); continue; }
+    let list = (SITES[view] || []).filter((x) => controls.has(x.id));
+    if (!list.length) { const st = sc.engineState && sc.engineState(); const mine = st && st.playing && (st.srcView || 'rack') === view;
+      list = mine ? order.filter((n) => { try { controls.declare(n); return true; } catch (e) { return false; } }).map((n) => ({ id: n, legacy: true })) : []; }
+    if (!list.length) { if (strip) strip.hidden = true; continue; }
     if (!strip) { strip = h('div', { class: 'pc-inline', role: 'group', 'aria-label': 'Controls in this program' }); panel.append(strip); }
-    strip.replaceChildren(); if (M.learn) strip.append(h('p', { class: 'pf-banner', role: 'status' }, `Learn: move a control to map it to ${M.learn}.`)); names.forEach((n) => renderControl(strip, n));
+    strip.hidden = false;
+    let banner = strip.querySelector('.pf-banner'); if (M.learn && !banner) { banner = h('p', { class: 'pf-banner', role: 'status' }); strip.prepend(banner); } if (banner) { if (M.learn) banner.textContent = `Learn: move a control to map it to ${M.learn}.`; else { banner.remove(); banner = null; } }
+    const have = new Map([...strip.querySelectorAll(':scope > .pc-cell')].map((c) => [c.dataset.site, c])); const keep = new Set(); let prev = banner;
+    for (const st of list) {
+      const sig = JSON.stringify([controls.declare(st.id), st.label, st.param, st.arg, st.slot, M.learn, A.armed, A.run && A.run.name, !!laneOf(st.id), controls.maps().filter((m) => m.control.split(':')[0] === st.id).map((m) => m.dest)]);
+      let cell = have.get(st.id);
+      const make = () => { const c = renderControl(h('div'), st.id, { site: st.legacy ? null : st }); c.dataset.site = st.id; c.dataset.sig = sig; return c; };
+      if (cell && cell.dataset.sig !== sig) { const nc = make(); cell.replaceWith(nc); cell = nc; }
+      else if (!cell) cell = make();
+      else cell.querySelectorAll('[data-ctl]').forEach((el) => el.__sync && el.__sync());
+      keep.add(st.id); const want = prev ? prev.nextSibling : strip.firstChild; if (want !== cell) strip.insertBefore(cell, want); prev = cell;
+    }
+    for (const [k, c] of have) if (!keep.has(k)) c.remove();
   }
 }
-
 /* ---------------- tabs + view ---------------- */
 function render() {
   const root = $('#perform'); if (!root) return; const t = curTab();
@@ -498,7 +532,8 @@ setInterval(() => {
 
 /* ---------------- boot ---------------- */
 rebuildPads();
-sc.perform = { model: () => M, render, renderInline, controls, pads: () => pads, journal: [], latency: lat, work, glue: bindStrudel, looper: () => Tk.looper, take: Tk, lanes: A,
+sc.perform = { model: () => M, render, renderInline, controls, sites: (v) => SITES[v] || [], pads: () => pads, journal: [], latency: lat, work, glue: bindStrudel, looper: () => Tk.looper, take: Tk, lanes: A,
   capturing: (e) => isPerformView() && !e.ctrlKey && !e.metaKey && !e.altKey && /^(Digit[1-4]|Key[QWERASDFZXCV]|Bracket(Left|Right))$/.test(e.code) && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) && !e.target.isContentEditable };
 bindStrudel(); window.addEventListener('strudel:ready', bindStrudel); wireInput();
-render();
+if (sc.binder) { for (const v of ['rack', 'stack']) { SITES[v] = sc.binder.sites(v); SITES[v].forEach(ensureSite); } }
+render(); renderInline();

@@ -594,5 +594,728 @@
    "info": "Formant filter as a pattern function (works with word()).",
    "category": "vocals"
   }
+ ],
+ "params": {
+  "s": [
+   {
+    "name": "sound",
+    "shape": "sound"
+   }
+  ],
+  "sound": [
+   {
+    "name": "sound",
+    "shape": "sound"
+   }
+  ],
+  "note": [
+   {
+    "name": "notes",
+    "shape": "note"
+   }
+  ],
+  "n": [
+   {
+    "name": "steps",
+    "shape": "mini",
+    "examples": [
+     "0 2 4 7",
+     "<0 3> [2 4]",
+     "0 .. 7"
+    ]
+   }
+  ],
+  "freq": [
+   {
+    "name": "hz",
+    "shape": "number",
+    "min": 20,
+    "max": 20000,
+    "unit": "Hz",
+    "curve": "exp",
+    "default": 440,
+    "control": "knob"
+   }
+  ],
+  "bank": [
+   {
+    "name": "bank",
+    "shape": "enum",
+    "options": [
+     "RolandTR909",
+     "RolandTR808",
+     "RolandTR707",
+     "LinnDrum",
+     "AkaiLinn"
+    ]
+   }
+  ],
+  "gain": [
+   {
+    "name": "gain",
+    "shape": "number",
+    "range": "gain",
+    "default": 0.8,
+    "control": "fader",
+    "presets": [
+     0.3,
+     0.5,
+     0.8,
+     1
+    ]
+   }
+  ],
+  "postgain": [
+   {
+    "name": "gain",
+    "shape": "number",
+    "range": "postgain",
+    "default": 1,
+    "control": "fader"
+   }
+  ],
+  "velocity": [
+   {
+    "name": "velocity",
+    "shape": "number",
+    "range": "velocity",
+    "default": 0.8,
+    "control": "knob"
+   }
+  ],
+  "lpf": [
+   {
+    "name": "frequency",
+    "shape": "number",
+    "range": "cutoff",
+    "unit": "Hz",
+    "curve": "exp",
+    "default": 800,
+    "control": "knob",
+    "presets": [
+     200,
+     400,
+     800,
+     2000,
+     5000
+    ]
+   },
+   {
+    "name": "q",
+    "shape": "number",
+    "min": 0,
+    "max": 50,
+    "default": 1,
+    "control": "knob"
+   }
+  ],
+  "cutoff": [
+   {
+    "name": "frequency",
+    "shape": "number",
+    "range": "cutoff",
+    "unit": "Hz",
+    "curve": "exp",
+    "default": 800,
+    "control": "knob",
+    "presets": [
+     200,
+     400,
+     800,
+     2000,
+     5000
+    ]
+   }
+  ],
+  "hpf": [
+   {
+    "name": "frequency",
+    "shape": "number",
+    "range": "hcutoff",
+    "unit": "Hz",
+    "curve": "exp",
+    "default": 200,
+    "control": "knob",
+    "presets": [
+     200,
+     400,
+     800,
+     2000,
+     5000
+    ]
+   }
+  ],
+  "bpf": [
+   {
+    "name": "frequency",
+    "shape": "number",
+    "range": "bandf",
+    "unit": "Hz",
+    "curve": "exp",
+    "default": 1000,
+    "control": "knob",
+    "presets": [
+     200,
+     400,
+     800,
+     2000,
+     5000
+    ]
+   }
+  ],
+  "lpq": [
+   {
+    "name": "resonance",
+    "shape": "number",
+    "range": "resonance",
+    "default": 4,
+    "control": "knob",
+    "presets": [
+     1,
+     4,
+     8,
+     16
+    ]
+   }
+  ],
+  "vowel": [
+   {
+    "name": "vowel",
+    "shape": "enum",
+    "options": [
+     "a",
+     "e",
+     "i",
+     "o",
+     "u",
+     "ae",
+     "aa",
+     "oe",
+     "ue",
+     "y",
+     "uh",
+     "un",
+     "en",
+     "an",
+     "on"
+    ]
+   }
+  ],
+  "room": [
+   {
+    "name": "wet",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0.4,
+    "control": "knob"
+   }
+  ],
+  "size": [
+   {
+    "name": "size",
+    "shape": "number",
+    "range": "roomsize",
+    "default": 4,
+    "control": "knob"
+   }
+  ],
+  "delay": [
+   {
+    "name": "wet",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0.3,
+    "control": "knob"
+   }
+  ],
+  "delaytime": [
+   {
+    "name": "time",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "unit": "cycles",
+    "default": 0.25,
+    "control": "knob",
+    "presets": [
+     0.125,
+     0.25,
+     0.375,
+     0.5
+    ]
+   }
+  ],
+  "delayfeedback": [
+   {
+    "name": "feedback",
+    "shape": "number",
+    "min": 0,
+    "max": 0.95,
+    "default": 0.4,
+    "control": "knob"
+   }
+  ],
+  "distort": [
+   {
+    "name": "amount",
+    "shape": "number",
+    "min": 0,
+    "max": 10,
+    "default": 0.5,
+    "control": "knob"
+   }
+  ],
+  "crush": [
+   {
+    "name": "bits",
+    "shape": "number",
+    "min": 1,
+    "max": 16,
+    "default": 8,
+    "step": 1,
+    "control": "knob",
+    "presets": [
+     4,
+     6,
+     8,
+     12
+    ]
+   }
+  ],
+  "shape": [
+   {
+    "name": "amount",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0.4,
+    "control": "knob"
+   }
+  ],
+  "pan": [
+   {
+    "name": "position",
+    "shape": "number",
+    "range": "pan",
+    "default": 0.5,
+    "curve": "bipolar",
+    "control": "knob"
+   }
+  ],
+  "attack": [
+   {
+    "name": "time",
+    "shape": "number",
+    "min": 0,
+    "max": 2,
+    "unit": "s",
+    "curve": "exp",
+    "default": 0.01,
+    "control": "knob",
+    "presets": [
+     0.005,
+     0.01,
+     0.1,
+     0.5
+    ]
+   }
+  ],
+  "decay": [
+   {
+    "name": "time",
+    "shape": "number",
+    "min": 0,
+    "max": 2,
+    "unit": "s",
+    "curve": "exp",
+    "default": 0.2,
+    "control": "knob"
+   }
+  ],
+  "sustain": [
+   {
+    "name": "level",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0.5,
+    "control": "knob"
+   }
+  ],
+  "release": [
+   {
+    "name": "time",
+    "shape": "number",
+    "min": 0,
+    "max": 4,
+    "unit": "s",
+    "curve": "exp",
+    "default": 0.3,
+    "control": "knob"
+   }
+  ],
+  "fast": [
+   {
+    "name": "factor",
+    "shape": "number",
+    "min": 0.25,
+    "max": 8,
+    "default": 2,
+    "control": "knob",
+    "presets": [
+     0.5,
+     2,
+     3,
+     4
+    ]
+   }
+  ],
+  "slow": [
+   {
+    "name": "factor",
+    "shape": "number",
+    "min": 0.25,
+    "max": 8,
+    "default": 2,
+    "control": "knob",
+    "presets": [
+     2,
+     4,
+     8
+    ]
+   }
+  ],
+  "early": [
+   {
+    "name": "cycles",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0.25,
+    "control": "knob"
+   }
+  ],
+  "late": [
+   {
+    "name": "cycles",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0.25,
+    "control": "knob"
+   }
+  ],
+  "every": [
+   {
+    "name": "n",
+    "shape": "number",
+    "min": 1,
+    "max": 16,
+    "step": 1,
+    "default": 4,
+    "control": "knob",
+    "presets": [
+     2,
+     4,
+     8
+    ]
+   },
+   {
+    "name": "pattern",
+    "shape": "pattern",
+    "examples": [
+     "fast(2)",
+     "rev",
+     "x => x.add(12)"
+    ]
+   }
+  ],
+  "sometimes": [
+   {
+    "name": "pattern",
+    "shape": "pattern",
+    "examples": [
+     "fast(2)",
+     "rev",
+     "x => x.add(12)"
+    ]
+   }
+  ],
+  "jux": [
+   {
+    "name": "pattern",
+    "shape": "pattern",
+    "examples": [
+     "fast(2)",
+     "rev",
+     "x => x.add(12)"
+    ]
+   }
+  ],
+  "off": [
+   {
+    "name": "cycles",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0.125,
+    "control": "knob",
+    "presets": [
+     0.125,
+     0.25
+    ]
+   },
+   {
+    "name": "pattern",
+    "shape": "pattern",
+    "examples": [
+     "fast(2)",
+     "rev",
+     "x => x.add(12)"
+    ]
+   }
+  ],
+  "degradeBy": [
+   {
+    "name": "amount",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0.3,
+    "control": "knob"
+   }
+  ],
+  "struct": [
+   {
+    "name": "rhythm",
+    "shape": "mini",
+    "examples": [
+     "x ~ x ~",
+     "x*4",
+     "x(3,8)",
+     "[x ~]*2"
+    ]
+   }
+  ],
+  "euclid": [
+   {
+    "name": "pulses",
+    "shape": "number",
+    "min": 1,
+    "max": 16,
+    "step": 1,
+    "default": 3,
+    "control": "knob"
+   },
+   {
+    "name": "steps",
+    "shape": "number",
+    "min": 1,
+    "max": 16,
+    "step": 1,
+    "default": 8,
+    "control": "knob"
+   }
+  ],
+  "scale": [
+   {
+    "name": "scale",
+    "shape": "enum",
+    "options": [
+     "C:minor",
+     "C:major",
+     "A:minor",
+     "D:dorian",
+     "E:phrygian",
+     "F:lydian",
+     "G:mixolydian",
+     "C:minor:pentatonic",
+     "C:major:pentatonic"
+    ]
+   }
+  ],
+  "transpose": [
+   {
+    "name": "semitones",
+    "shape": "number",
+    "min": -24,
+    "max": 24,
+    "step": 1,
+    "unit": "st",
+    "default": 12,
+    "control": "knob"
+   }
+  ],
+  "add": [
+   {
+    "name": "amount",
+    "shape": "pattern",
+    "examples": [
+     "12",
+     "\"<0 3 5>\""
+    ]
+   }
+  ],
+  "chop": [
+   {
+    "name": "parts",
+    "shape": "number",
+    "min": 1,
+    "max": 64,
+    "step": 1,
+    "default": 8,
+    "control": "knob"
+   }
+  ],
+  "speed": [
+   {
+    "name": "rate",
+    "shape": "number",
+    "min": -2,
+    "max": 4,
+    "default": 1,
+    "control": "knob",
+    "presets": [
+     0.5,
+     1,
+     2,
+     -1
+    ]
+   }
+  ],
+  "clip": [
+   {
+    "name": "length",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0.5,
+    "control": "knob"
+   }
+  ],
+  "orbit": [
+   {
+    "name": "bus",
+    "shape": "number",
+    "min": 0,
+    "max": 11,
+    "step": 1,
+    "default": 1,
+    "control": "number"
+   }
+  ],
+  "range": [
+   {
+    "name": "min",
+    "shape": "number",
+    "default": 0,
+    "control": "number"
+   },
+   {
+    "name": "max",
+    "shape": "number",
+    "default": 1,
+    "control": "number"
+   }
+  ],
+  "segment": [
+   {
+    "name": "steps",
+    "shape": "number",
+    "min": 1,
+    "max": 64,
+    "step": 1,
+    "default": 16,
+    "control": "knob"
+   }
+  ],
+  "setcpm": [
+   {
+    "name": "cpm",
+    "shape": "number",
+    "min": 10,
+    "max": 240,
+    "default": 30,
+    "control": "knob",
+    "presets": [
+     "120/4",
+     "90/4",
+     "140/4"
+    ]
+   }
+  ],
+  "setcps": [
+   {
+    "name": "cps",
+    "shape": "number",
+    "min": 0.1,
+    "max": 2,
+    "default": 0.5,
+    "control": "knob"
+   }
+  ],
+  "slider": [
+   {
+    "name": "value",
+    "shape": "number",
+    "default": 0.5,
+    "control": "slider"
+   },
+   {
+    "name": "min",
+    "shape": "number",
+    "default": 0,
+    "control": "number"
+   },
+   {
+    "name": "max",
+    "shape": "number",
+    "default": 1,
+    "control": "number"
+   }
+  ],
+  "ctl": [
+   {
+    "name": "label",
+    "shape": "control"
+   },
+   {
+    "name": "spec",
+    "shape": "pattern",
+    "examples": [
+     "{ type: 'knob', min: 0, max: 1 }",
+     "{ type: 'fader', min: 0, max: 2 }",
+     "{ type: 'toggle' }"
+    ]
+   }
+  ],
+  "mask": [
+   {
+    "name": "mask",
+    "shape": "mini",
+    "examples": [
+     "1 0 1 1",
+     "<1 [1 0]>"
+    ]
+   }
+  ],
+  "loop": [
+   {
+    "name": "on",
+    "shape": "bool"
+   }
+  ]
+ },
+ "shapes": [
+  "number",
+  "note",
+  "mini",
+  "sound",
+  "enum",
+  "bool",
+  "pattern",
+  "control"
  ]
 }

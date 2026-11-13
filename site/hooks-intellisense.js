@@ -30,10 +30,11 @@ export function modelItems(model, library) {
     for (const x of (t.src || '').matchAll(/\.(?:use|wrap)\(\s*"([^"]+)"/g)) slots.add(x[1]);
     for (const x of (t.src || '').matchAll(/\btap\(\s*"([^"]+)"/g)) tap(x[1]);
   }
+  for (const [n, cs] of Object.entries(m.tapControls || {})) tap(n, cs);
   for (const [name, d] of Object.entries(m.defs || {})) for (const [tn, spec] of Object.entries(d.taps || {})) tap(tn, isObj(spec) ? Object.keys(spec.facets || {}) : []);
   for (const s of [...slots].sort()) {
     const bs = (m.bindings || []).filter((b) => b.slot === s);
-    add({ label: s, category: 'slots', detail: 'slot', info: bs.length ? bs.map((b) => `${b.hook}${b.gate ? ' ' + JSON.stringify(b.gate) : ''}`).join('\n') : 'unbound' });
+    add({ label: s, category: 'slots', detail: 'slot', info: bs.length ? bs.map((b) => `${typeof b.hook === 'string' ? b.hook : '(inline hook)'}${b.gate ? ' ' + JSON.stringify(b.gate) : ''}`).join('\n') : 'unbound' });
   }
   for (const [name, d] of Object.entries(m.defs || {})) {
     const ps = d.params || {}, keys = Object.keys(ps);
@@ -58,6 +59,18 @@ export function modelItems(model, library) {
   return out;
 }
 
+/* Controls present on the events a tap publishes (e.g. kick -> ['s','gain']): sampled from the real tap over one cycle. tapFn(name) -> Pattern. */
+export function tapControls(tapFn, names, span = [0, 1]) {
+  const out = {};
+  for (const n of names) try {
+    const keys = new Set(); for (const h of tapFn(n).queryArc(span[0], span[1], { _cps: 1 })) if (isObj(h.value)) Object.keys(h.value).forEach((k) => keys.add(k));
+    if (keys.size) out[n] = [...keys].sort();
+  } catch (e) { /* tap not publishable yet */ }
+  return out;
+}
+const mergeModels = (a, b) => ({ ...a, ...b, defs: { ...a.defs, ...b.defs }, slots: { ...a.slots, ...b.slots }, markers: { ...a.markers, ...b.markers }, vars: { ...a.vars, ...b.vars },
+  bindings: [...(a.bindings || []), ...(b.bindings || [])], instances: [...(a.instances || []), ...(b.instances || [])], tracks: [...(a.tracks || []), ...(b.tracks || [])] });
+
 /* hooks.completions(ctx): every item, or narrowed when ctx.before (text before the cursor) shows a bind/inst argument position. */
 export function completions(ctx, model, library) {
   const all = [...staticItems(), ...modelItems(model, library)], b = (ctx && ctx.before) || '';
@@ -76,8 +89,14 @@ export function install(win = window, opts = {}) {
     api.register({ id: 'model', items: () => modelItems(model, library) });
   };
   const refresh = async () => {
-    const rt = win.strudelCraft.hooks;
-    try { model = rt && typeof rt.manifest === 'function' ? await rt.manifest() : (await import('./model.js')).parse(text()); } catch (e) { /* keep previous model */ }
+    const rt = win.strudelCraft.hooks; let parsed = {}, live = null;
+    try { parsed = (await import('./model.js')).parse(text()); } catch (e) { parsed = model || {}; }
+    try {
+      if (rt && rt.__hooks && !rt.inst && library) (await import('./library.js')).installInstances(rt, { lib: library }); // hooks.inst on the runtime
+      if (rt && typeof rt.manifest === 'function') live = await rt.manifest();
+    } catch (e) { /* runtime not ready */ }
+    model = live ? mergeModels(parsed, live) : parsed;
+    if (live && typeof win.tap === 'function') { const names = new Set(); (model.tracks || []).forEach((t) => { (t.chain || []).forEach((s) => s[0] === 'tap' && names.add(s[1])); for (const x of (t.src || '').matchAll(/\.tap\(\s*"([^"]+)"/g)) names.add(x[1]); }); model.tapControls = tapControls(win.tap, names); }
     register();
   };
   const sched = () => { clearTimeout(timer); timer = setTimeout(refresh, 400); };

@@ -71,6 +71,11 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | pack-signatures (registry-side signing of manifests) | pack-spec | unexplored | - |
 | pack-external-assets (hash-pinned remote sample files in sound maps) | pack-spec | unexplored | - |
 | pack-kind-atoms (`atoms@1` ingredient kind and schema, docs/PACK_SPEC.md 5.1) | pack-spec, atoms-core | built | #63 |
+| lanes-events (memoised taps, lane-scoped taps, tags and selections; docs/LANES.md) | taps-vars-decorators, controls-engine | issued | #74 |
+| lanes-audio (`.split` / `.merge` / `.send` / `ret` on superdough buses, no re-synthesis) | lanes-events | issued | #75 |
+| lanes-capture (`capture` / `recall` / `.from`: events, audio, level; deterministic passes) | lanes-events, lanes-audio | issued | #76 |
+| lanes-consumers (model, graph data, param shapes, intellisense, atom types, AST ids) | lanes-events, model-schema-roundtrip, atoms-core | issued | #77 |
+| lanes-ui (lane cards, split fan, bus and capture nodes, tag chips; ui-designer) | lanes-consumers, graph-editor-ui | issued | #78 |
 
 ## Waiting nodes
 - live-mic-input: Strudel has no live input; needs browser/Node audio capture and an AGPL licence-decision issue before touching Strudel code (do not copy PR #1414). Size L. Waits for #14 and that decision.
@@ -81,3 +86,4 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 - hooks toolkit (#47-#55): build order #47 -> #48 -> #49, then #50 / #51 / #53 on disjoint files, then #54, then UI #52 and #55 via ui-designer. Design: docs/HOOKS_SYNTAX.md, docs/BLUEPRINT.md. The CLI parts live in the engine/strudel-cli that tests/smoke.sh calls, outside this repo.
 - atoms (#61-#64): build order #61, then #62 and #63 on disjoint files, then UI #64 via ui-designer. The pack-ingredient box of #63 follows docs/PACK_SPEC.md 5.1 (kind `atoms`). Design: docs/ATOMS.md.
 - content packs (#65-#71): build order #65, then #67 and #68 in parallel (site files vs CLI repo, disjoint), then #69 (needs #66 and, for vox, owner approval), #70 after #65 with examples from #69, #71 after #67. Design: docs/PACK_SPEC.md.
+- lanes (#74-#78): build order #74, then #75, then #76; #77 alongside from #74 on; UI #78 via ui-designer last. First box of #75 to settle: the bus reader seam (docs/LANES.md open question 1). Design: docs/LANES.md.

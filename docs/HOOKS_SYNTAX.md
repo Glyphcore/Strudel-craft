@@ -3,6 +3,7 @@
 Status: **built on main** for the site and the CLI runtime (`site/engine/hooks.js`, #47/#48; model, library and intellisense on top of it in #49-#51). This file stays the design note and the reference for the syntax; what the site actually loads is summarised in `site/README.md`. DAG nodes `hooks-core` (#47) and `taps-vars-decorators` (#48). Owner: `daw-sme`.
 Extended by `docs/BLUEPRINT.md` (variables, decorators, node graph, component library, shared JSON model, phases).
 Gate strings, tap refs, slot and hook names can be declared once as typed atoms and referenced: `docs/ATOMS.md`.
+Audio-level splits, lane-scoped taps, tags and capture: `docs/LANES.md`.
 Target runtime: unmodified Strudel (`@strudel/web` 1.3.0 on the site, `@strudel/core` 1.2.6 in the headless CLI). Everything here is an
 add-on that calls Strudel's public Pattern API. No Strudel source is copied, patched or vendored.
 

@@ -124,7 +124,7 @@ function unmuteBus() {
    atoms.prepare returns the code unchanged when the program has no atoms ; an atom compile error (E_ATOM_*) makes the eval throw that coded error, which the error box and toast report. */
 function protectCode(code) {
   try { const a = window.strudelCraft.atoms; if (a && a.prepare) code = a.prepare(code); } catch (e) { /* atoms stay as written */ }
-  try { const p = window.strudelCraft.hooksLib && window.strudelCraft.hooksLib.protect; return p ? p(code) : code; } catch (e) { return code; }
+  try { const p = window.strudelCraft.hooksLib && window.strudelCraft.hooksLib.protect; return p ? p(code) : code; } catch (e) { if (e && /^E_(LANE|BUS)_/.test(e.code || '')) throw e; return code; } // lanes audio errors (E_LANE_*, E_BUS_RANGE) stop the evaluation with their code
 }
 /* user-space preludes (plain JS, Strudel unmodified) loaded into the eval context once Strudel's globals exist */
 const PRELUDES = ['prelude/word.js'];

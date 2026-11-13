@@ -21,7 +21,7 @@ sc.engine = { time: timeMod, validate };
 // Hooks runtime (#47/#48): installed on the page's Strudel globals once they exist (strudel:ready). The site runs live: queries never throw.
 // Program text should go through strudelCraft.hooksLib.protect(code) before evaluation (double-quoted strings in hooks calls would become mini-notation).
 sc.outer = sc.outer || []; // functions (haps, [begin, end, controls]) -> haps run by the outermost-query wrapper below, before the control maps (lanes selections)
-sc.hooksLib = { ...hooksMod, protect: (src) => { try { sc.lanes?.reset?.(); } catch (e) { /* selections stay */ } return hooksMod.protect(src); } }; // protect() runs before every evaluation: selections of the previous program are dropped, the new program re-registers its own
+sc.hooksLib = { ...hooksMod, protect: (src) => { try { sc.lanes?.reset?.(); } catch (e) { /* selections stay */ } if (sc.lanes?.prepare) src = sc.lanes.prepare(src).code; return hooksMod.protect(src); } }; // lanes.prepare: .split/.merge/.send/ret compile to plain Strudel on superdough buses (docs/LANES.md 5); a coded E_LANE_* / E_BUS_RANGE error propagates to the evaluation // protect() runs before every evaluation: selections of the previous program are dropped, the new program re-registers its own
 sc.lanesLib = lanesMod;
 sc.installHooks = (S = globalThis, o = {}) => {
   if (!S.Pattern || !S.signal || !S.Fraction) throw new Error('installHooks: Strudel globals (Pattern, signal, Fraction, ...) not ready');

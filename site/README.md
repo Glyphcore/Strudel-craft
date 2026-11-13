@@ -281,7 +281,7 @@ the Strudel `Pattern` and the hooks object) adds `Pattern.prototype.tags` and th
   outermost query wrapper before the control maps; selections serialise in `hooks.toJSON()` (`selections[]`) and live toggles (`lanes.set(id, op, on, at)`) journal as `sel` entries.
 - Text side: `scan(src)`, `compile(src)` -> `{ code, map, graph }` and `check(src, { strict })` (`E_LANE_DUP`, `W_LANE_ORBIT_FX`, `W_LANE_IMPLICIT_EXPORT`, `E_LANE_PRIVATE`); the
   lane graph is what `strudel lanes IN` will print (that command and `check --strict` wiring live in the CLI repo and are not done yet).
-- Not built yet (shown as "coming" in the Syntax view): the runtime of `.split .merge .send ret` (#75) and `capture recall .from` (#76), the UI (#78).
+- Not built yet (shown as "coming" in the Syntax view): `capture recall .from` (#76), the UI (#78); the CLI side of the audio layer (`strudel lanes`, `render`, `events`, `stems`).
 - **Consumers (L4, #77)** - data and engine only, no visible UI. Entry points for the lane UI (#78):
   - `model.js` `parse` / `generate` / `applyOp` / `graph` / `checkWire`. Model additions (all derived from the code, so a no-edit round trip is byte-identical and models without lanes are unchanged):
     `tracks[].tags`, `tracks[].split` (`{ site, at, branches: [{ id, param, chain | null, src }], merge, mix, pre }`), `tracks[].sends` (`[{ bus, amount }]`), `tracks[].ret`, `buses` (`{ name: { returns } }`, names only, never bus numbers),
@@ -297,6 +297,19 @@ the Strudel `Pattern` and the hooks object) adds `Pattern.prototype.tags` and th
   - Atom types `tag selector busname capture` (single-quoted, `data/atoms/types.json`, accepted positions in `positions.json`); a `selector` atom is validated with the lanes selector grammar.
 Tests: `node tests/site/lanes_data.mjs`, `STRUDEL_MODULES=... node tests/lanes/l4.mjs`.
 Test: `STRUDEL_MODULES=<dir with @strudel/ core mini transpiler> node tests/lanes/l1.mjs`.
+
+## Lanes: audio layer (`engine/lanes.js`, #75; design docs/LANES.md 5, "Built in L2")
+Same module. `compile(src, { host })` is a text-to-text pass (before atoms-free protect() and Strudel's transpiler); `prepare(src, { host })` is what the site runs before every evaluation
+(`engine/index.js` hooks it into `hooksLib.protect`; `lanes.prepare` on the installed instance also remembers the bus allocation and resets the runtime diagnostics) and throws a coded error for
+`E_LANE_HOST`, `E_LANE_SOURCE`, `E_LANE_CROSS`, `E_LANE_CYCLE`, `E_BUS_RANGE`, `E_LANE_OPTS` (app.js lets those codes through to the eval error box). A program with none of the features is returned byte for byte (all 46 catalog recipes checked).
+- `.split(f, g, ..., { mix: [..], pre })`: source rendered once with `.dry(0).bus(k)`, one `s("bus").n(k).attack(0.01).release(0.01).gain(1)` reader per branch (10 ms: superdough floors a bus release at 10 ms; measured seamless).
+  A branch is `x => x.effect(...)` (the parameter starts the body and is used once); it may add effects, gain, pan, orbit and structure, not `s n note freq bus dry`. `.merge(m => ...)` sums the branches on a second bus; splits nest.
+- `.send("name", amount)` forwards the lane's last bus to a named bus (reader `.dry(0).bus(N).busgain(amount)`); `ret("name")` is the reader of that bus and starts a lane; `.wire("lpf", "bus:name", { depth })` is `bmod`;
+  `tagged(sel).send("name", amount)` adds the send to every lane whose literal `.tags(...)` or `#id` match. Bus numbers: split and lane buses from 64 in source order, named buses from 512 in name order.
+- Checks: `E_LANE_SOURCE E_LANE_CROSS E_LANE_CYCLE E_BUS_RANGE E_LANE_HOST E_LANE_OPTS`, `W_LANE_POST_SPLIT W_BUS_NO_RETURN W_LANE_SELECT_EMPTY` (text, in `compile().graph.diagnostics`, with `line`), and on the queried haps `E_LANE_SOURCE`, `W_LANE_REFRAIN` (`lanes.diagnostics()`).
+  `compile().graph.audio` holds the buses, splits, sends, returns and wires (what `strudel lanes` will print; the CLI commands and `stems` per lane group are in the CLI repo, not done yet).
+- Site fix found by the end-to-end run: the page has an element `id="lanes"`, which made the `lanes` global look taken; a DOM element is now shadowed, not a collision.
+Tests: `STRUDEL_MODULES=... node tests/lanes/l2.mjs` (events, checks, compile) and `node tests/site/lanes.mjs` (Playwright: seam, parallel FX, merge, allocation hash, cost, the page plays the program).
 
 ## Perform (`perform.js` + `perform.css`, view 5, #55)
 Loaded on first open of Perform or on first Play (not part of the shell; `Engine.play` awaits it so `ctl()`/`hooks.map()` exist before the first evaluate). One tab strip (`role=tablist`, arrows, Home/End,

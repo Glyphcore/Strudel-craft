@@ -3,7 +3,8 @@
 //   - pure text: scan(src), compile(src) -> { code, map, graph }, check(src, { strict }), parseSelector(str). Lane graph + diagnostics.
 //   - runtime: install(S, hooks, { outer }) adds Pattern.prototype.tags, the globals tagged() and lanes, and applies selections to the
 //     haps of the outermost query. Strudel is never modified: public API only, `.tag` is called, not replaced.
-// Audio routing (split, send, ret) and capture are later phases; nothing here touches superdough.
+// L2 (#75): the audio layer is a text-to-text compile pass (audioPass, prepare): .split / .merge / .send / ret / .wire("p", "bus:name") and group
+// tagged().send become plain Strudel on superdough's own buses (bus, busgain, dry, s("bus"), bmod). Nothing here touches superdough; capture is a later phase.
 
 const code = (c, m) => Object.assign(new Error(`${c}: ${m}`), { code: c });
 const isObj = (x) => x !== null && typeof x === 'object' && (Object.getPrototypeOf(x) === Object.prototype || Object.getPrototypeOf(x) === null);
@@ -92,6 +93,181 @@ export function calls(text) {
   });
   return out.sort((a, b) => a.at - b.at);
 }
+// ---------------- audio layer (L2, docs/LANES.md sections 5.1 to 5.4) ----------------
+// text helpers: index of the ")" matching the "(" at `open` (strings and comments skipped), depth-0 method calls of an expression, branch arrows.
+function matchParen(t, open) { let close = -1; walk(t.slice(open), (p, c, d) => { if (c === ')' && d === 0) { close = open + p; return false; } }); return close; }
+function chain(t) {
+  const out = []; const re = /\.\s*([A-Za-z_$][\w$]*)\s*\(/y;
+  walk(t, (i, ch, d) => { if (ch !== '.' || d !== 0) return; re.lastIndex = i; const m = re.exec(t); if (!m) return; const open = i + m[0].length - 1; const close = matchParen(t, open); if (close < 0) return; out.push({ name: m[1], dot: i, open, close, end: close + 1, args: splitArgs(t.slice(open + 1, close)) }); });
+  return out;
+}
+const mask = (t) => { // same length, strings and comments blanked (newlines kept)
+  const o = t.split(''); let i = 0; const blank = (a, b) => { for (let k = a; k < b; k++) if (o[k] !== '\n') o[k] = ' '; };
+  while (i < t.length) {
+    const ch = t[i];
+    if (ch === '/' && t[i + 1] === '/') { const e = t.indexOf('\n', i); const z = e < 0 ? t.length : e; blank(i, z); i = z; continue; }
+    if (ch === '/' && t[i + 1] === '*') { const e = t.indexOf('*/', i + 2); const z = e < 0 ? t.length : e + 2; blank(i, z); i = z; continue; }
+    if (ch === '"' || ch === "'" || ch === '`') { const st = i; i++; while (i < t.length && t[i] !== ch) { if (t[i] === '\\') i++; i++; } i++; blank(st + 1, Math.min(i - 1, t.length)); continue; }
+    i++;
+  }
+  return o.join('');
+};
+const hasArrow = (a) => /=>/.test(mask(a));
+function arrow(a) { // `x => x.fx()`: the parameter starts the body and appears nowhere else -> { param, rest }; null otherwise
+  const m = /^\(?\s*([A-Za-z_$][\w$]*)\s*\)?\s*=>\s*([\s\S]+)$/.exec(a.trim()); if (!m) return null;
+  const p = m[1]; const b = m[2].trim(); if (b[0] === '{' || !b.startsWith(p) || /[\w$]/.test(b[p.length] || ' ')) return null;
+  const rest = b.slice(p.length); if (new RegExp('(^|[^\\w$.])' + p.replace(/\$/g, '\\$') + '(?![\\w$])').test(mask(rest))) return null; return { param: p, rest };
+}
+// Bus numbers (section 5.3): split and lane buses from 64 in source order, named buses from 512 in name order. The reader has a 10 ms attack and release and
+// gain(1) (docs/LANES.md 12.1: superdough floors a bus sound's release at 10 ms, so 5 ms sums to 1.5x at each seam; measured unity at 10 ms, tests/site/lanes.mjs).
+export const BUS = { lane0: 64, named0: 512, fade: 0.01 };
+const reader = (k) => `s("bus").n(${k}).attack(${BUS.fade}).release(${BUS.fade}).gain(1)`;
+const SOURCE_CTL = new Set(['s', 'sound', 'n', 'note', 'freq', 'midinote', 'bus', 'dry']);
+const NONLINEAR = new Set(['shape', 'distort', 'distortion', 'crush', 'coarse', 'compressor', 'squiz', 'waveloss', 'triode', 'krush', 'fold', 'clip']);
+export const HARD = ['E_LANE_HOST', 'E_LANE_SOURCE', 'E_LANE_CROSS', 'E_LANE_CYCLE', 'E_BUS_RANGE', 'E_LANE_OPTS']; // errors prepare() throws
+const QUICK = /\bsplit\s*\(|\bmerge\s*\(|\bsend\s*\(|\bret\s*\(|bus:|\.\s*bus\s*\(/;
+const BODY = /^(?:(?:\$|[A-Za-z_]\w*)\s*:(?!:)|(?:const|let|var)\s+[\w$]+\s*=(?!=))\s*/;
+
+// -> { code, map, diag, audio }. Statements that use none of the audio features are copied byte for byte.
+function audioPass(text, g, o = {}) {
+  const diag = []; const sts = statements(text); const laneAt = new Map(g.lanes.map((l) => [l.line, l]));
+  const add = (level, c, msg, line, extra = {}) => diag.push({ level, code: c, msg, ...(line ? { line } : {}), ...extra });
+  const info = sts.map((st) => { const m = BODY.exec(st.text); const off = m ? m[0].length : 0; let body = st.text.slice(off); let semi = ''; if (body.endsWith(';')) { body = body.slice(0, -1); semi = ';'; } return { st, off, body, semi, tagged: /^tagged\s*\(/.test(st.text), lane: laneAt.get(st.line) }; });
+  for (const x of info) for (const c of calls(x.st.text)) if (!c.bare && c.name === 'bus') { const v = num(c.args[0] || ''); if (v != null && v >= BUS.lane0) add('error', 'E_BUS_RANGE', `.bus(${v}) is in the range the compiler allocates (>= ${BUS.lane0}); user buses are 0..${BUS.lane0 - 1}`, x.st.line); }
+  // group sends: tagged(sel)....send(name, amount) is resolved against the static lane tags and handled like a .send on each matching lane
+  const extra = new Map(); const names = new Set();
+  for (const x of info) {
+    if (!x.tagged) continue; const cs = chain(x.st.text).filter((c) => c.name === 'send'); if (!cs.length) continue;
+    const head = calls(x.st.text).find((c) => c.bare && c.name === 'tagged'); let match = null; try { match = matcher(parseSelector(strLit(head?.args[0] || '') ?? '')); } catch (e) { continue; }
+    for (const s of cs) {
+      const name = strLit(s.args[0] || ''); if (name == null) { add('error', 'E_LANE_OPTS', 'tagged(...).send needs a literal bus name', x.st.line); continue; }
+      names.add(name); const hit = g.lanes.filter((l) => match({ context: { tags: l.tags, lane: l.id } }));
+      if (!hit.length) add('warn', 'W_LANE_SELECT_EMPTY', `tagged(${head.args[0]}).send("${name}") matches no lane (only literal .tags(...) on a lane's chain and #lane ids are matched at compile time)`, x.st.line);
+      for (const l of hit) { if (!extra.has(l.line)) extra.set(l.line, []); extra.get(l.line).push(`.send(${JSON.stringify(name)}, ${s.args[1] || '1'})`); }
+    }
+  }
+  for (const x of info) { if (x.tagged) continue; for (const c of calls(x.body)) { const a0 = strLit(c.args[0] || ''); if (!c.bare && c.name === 'send' && a0 != null) names.add(a0); if (c.bare && c.name === 'ret' && a0 != null) names.add(a0); if (!c.bare && c.name === 'wire' && /^bus:/.test(strLit(c.args[1] || '') || '')) names.add(strLit(c.args[1]).slice(4)); } }
+  const NAMED = Object.fromEntries([...names].sort().map((n, i) => [n, BUS.named0 + i])); let next = BUS.lane0; const allocated = [];
+  const audio = { buses: { named: NAMED, lane: allocated }, splits: [], sends: [], returns: [], wires: [] }; const lanesOf = [];
+  const out = []; const map = []; let pos = 0; let outLen = 0; let changed = false;
+  const put = (from, to, t) => { const keep = text.slice(pos, from); map.push({ from: pos, to: outLen, length: keep.length }); out.push(keep, t); outLen += keep.length + t.length; pos = to; changed = true; };
+  for (const x of info) {
+    const { st } = x; const line = st.line; const lane = x.lane; const stEnd = st.start + st.text.length;
+    if (x.tagged) { // the send ops are compiled away; the other ops stay
+      const cs = chain(st.text).filter((c) => c.name === 'send');
+      if (cs.length) { let t = st.text; for (const c of cs.slice().reverse()) t = t.slice(0, c.dot) + t.slice(c.end); put(st.start, stEnd, chain(t).length ? t : ''); }
+      continue;
+    }
+    let body = x.body; if (extra.has(line)) body += extra.get(line).join('');
+    if (!QUICK.test(body)) continue;
+    const lid = lane ? lane.id : `L${line}`; const ctx = { line, lid, sends: [], rets: [], err: (c, m) => add('error', c, m, line, { lane: lid }), next: () => { allocated.push(next); return next++; }, splits: [], wireNames: [] };
+    let nb = body;
+    try {
+      nb = rewrite(body, ctx, NAMED, add);
+      for (const c of calls(body)) if (c.bare && c.name === 'ret' && strLit(c.args[0] || '') == null) ctx.err('E_LANE_OPTS', 'ret needs a literal bus name');
+      nb = nb.replace(/\bret\s*\(\s*(["'])([\w-]+)\1\s*\)/g, (m, q, n) => { ctx.rets.push(n); return reader(NAMED[n]); });
+    } catch (e) { if (e.code) { add('error', e.code, e.message.replace(/^E_\w+: /, ''), line, { lane: lid }); nb = body; } else throw e; }
+    if (nb === body) continue;
+    for (const s of ctx.sends) audio.sends.push({ lane: lid, bus: s.name, amount: s.amount, line });
+    for (const r of ctx.rets) audio.returns.push({ lane: lid, bus: r, line });
+    for (const s of ctx.splits) audio.splits.push({ lane: lid, line, ...s });
+    for (const w of ctx.wireNames) audio.wires.push({ lane: lid, bus: w, line });
+    lanesOf.push({ lid, line, rets: ctx.rets, sends: ctx.sends.map((s) => s.name) });
+    put(st.start, stEnd, st.text.slice(0, x.off) + nb + x.semi);
+  }
+  map.push({ from: pos, to: outLen, length: text.length - pos }); out.push(text.slice(pos));
+  const featured = audio.splits.length + audio.sends.length + audio.returns.length + audio.wires.length > 0;
+  if (featured && o.host && (o.host.busSound === false || o.host.busControl === false)) add('error', 'E_LANE_HOST', `this host's superdough has no ${o.host.busSound === false ? '"bus" sound' : '`bus` control'} (older than 1.3.0); the audio split is refused and is never replaced by .layer`, (audio.splits[0] || audio.sends[0] || audio.returns[0] || audio.wires[0]).line);
+  const retNames = new Set([...audio.returns.map((r) => r.bus), ...audio.wires.map((w) => w.bus)]);
+  for (const n of [...new Set(audio.sends.map((s) => s.bus))].sort()) if (!retNames.has(n)) add('warn', 'W_BUS_NO_RETURN', `bus "${n}" is sent to but has no ret("${n}") or wire`, audio.sends.find((s) => s.bus === n).line, { bus: n });
+  // cycle: a lane that returns bus A and sends to bus B is an edge A -> B
+  const edges = new Map(); for (const l of lanesOf) for (const r of l.rets) for (const s of l.sends) { if (!edges.has(r)) edges.set(r, []); edges.get(r).push({ to: s, lane: l }); }
+  const state = new Map(); const reported = new Set();
+  const dfs = (n, path) => {
+    state.set(n, 1);
+    for (const e of edges.get(n) || []) {
+      if (state.get(e.to) === 1) { if (!reported.has(e.lane.lid)) { reported.add(e.lane.lid); const cyc = [...path.slice(Math.max(0, path.indexOf(e.to))), n, e.to]; add('error', 'E_LANE_CYCLE', `cycle in the send graph: ${cyc.join(' -> ')} (lane "${e.lane.lid}" returns "${n}" and sends to "${e.to}"); Web Audio would mute the loop silently`, e.lane.line, { lane: e.lane.lid }); } }
+      else if (!state.has(e.to)) dfs(e.to, [...path, n]);
+    }
+    state.set(n, 2);
+  };
+  for (const n of [...edges.keys()].sort()) if (!state.has(n)) dfs(n, []);
+  // names published inside a split branch are private to that branch
+  const pub = new Set(g.lanes.flatMap((l) => l.taps.map((t) => t.name)));
+  for (const l of g.lanes) for (const r of l.reads) {
+    const m = TAPRE.exec(r); if (!m || pub.has(m[2])) continue; const owner = g.lanes.find((x) => (x.branchTaps || []).includes(m[2]) && (!m[1] || x.id === m[1]));
+    if (!owner || (owner.id === l.id && l.readsIn?.[r])) continue;
+    add('error', 'E_LANE_CROSS', `lane "${l.id}" reads "${r}", a tap published inside a split branch of lane "${owner.id}"; branch names are private to their branch (publish it from the lane chain with { export: true } or add a send)`, l.readLine?.[r] || l.line, { lanes: [l.id, owner.id] });
+  }
+  return { code: changed ? out.join('') : text, map: changed ? map : [{ from: 0, to: 0, length: text.length }], diag, audio: featured ? audio : null };
+}
+
+// Rewrites one expression (a lane body). Order: arguments of ordinary calls first (so stack(a.split(f), b) works), .wire to a bus, .send collected, then the first
+// .split (with an adjacent .merge) becomes stack(source -> bus, one reader per branch [, merge reader]); branches are rewritten again (nesting).
+function rewrite(expr, ctx, NAMED, add) {
+  expr = mapArgs(expr, ctx, NAMED, add);
+  let cs = chain(expr);
+  for (const c of cs.slice().reverse()) if (c.name === 'wire' && /^bus:[\w-]+$/.test(strLit(c.args[1] || '') || '')) { // .wire("lpf", "bus:lfo", { depth: 800 }) -> .bmod({ bus: 512, control: 'lpf', depth: 800 })
+    const name = strLit(c.args[1]).slice(4); const p = strLit(c.args[0] || ''); const op = (c.args[2] || '').trim(); const inner = op[0] === '{' ? op.slice(1, op.lastIndexOf('}')).trim() : '';
+    ctx.wireNames.push(name);
+    expr = expr.slice(0, c.dot) + `.bmod({ bus: ${NAMED[name]}, control: ${p != null ? `'${p}'` : c.args[0]}${inner ? ', ' + inner : ''} })` + expr.slice(c.end);
+  }
+  cs = chain(expr);
+  const sends = cs.filter((c) => c.name === 'send'); const mine = [];
+  for (const c of sends.slice().reverse()) { const n = strLit(c.args[0] || ''); if (n == null) ctx.err('E_LANE_OPTS', '.send needs a literal bus name'); else mine.unshift({ name: n, amount: c.args[1] || '1' }); expr = expr.slice(0, c.dot) + expr.slice(c.end); }
+  ctx.sends.push(...mine); if (sends.length) cs = chain(expr);
+  const si = cs.findIndex((c) => c.name === 'split' && c.args.length && hasArrow(c.args[0]));
+  let parts = []; let last = null;
+  if (si < 0) { if (cs.some((c) => c.name === 'merge' && (!c.args.length || hasArrow(c.args[0])))) ctx.err('E_LANE_SOURCE', '.merge needs a .split before it'); }
+  else {
+    const sp = cs[si]; const head = expr.slice(0, sp.dot); const nx = cs[si + 1]; const hasMerge = !!nx && nx.name === 'merge' && expr.slice(sp.end, nx.dot).trim() === '';
+    const tail = expr.slice(hasMerge ? nx.end : sp.end); const args = sp.args.slice(); let mix = null; let pre = false;
+    if (args.length && /^\{/.test(args[args.length - 1].trim())) {
+      const op = args.pop(); const mm = /\bmix\s*:\s*\[([^\]]*)\]/.exec(op); if (mm) mix = splitArgs(mm[1]); const pm = /\bpre\s*:\s*(true|false)/.exec(op); pre = !!pm && pm[1] === 'true';
+      if (/[A-Za-z]/.test(op.replace(/\bmix\b|\bpre\b|\btrue\b|\bfalse\b/g, '').replace(/\[[^\]]*\]/g, ''))) ctx.err('E_LANE_OPTS', `split options are { mix: [numbers], pre: boolean }, got ${op.trim()}`);
+    }
+    if (mix && mix.length !== args.length) ctx.err('E_LANE_OPTS', `mix has ${mix.length} entries for ${args.length} branches`);
+    if (!hasMerge && chain(tail).some((c) => c.name === 'split' || c.name === 'merge')) ctx.err('E_LANE_SOURCE', 'a second .split after a split needs a .merge in between, or nest it inside a branch');
+    if (!hasMerge) for (const c of chain(tail)) if (NONLINEAR.has(c.name)) add('warn', 'W_LANE_POST_SPLIT', `.${c.name}(...) after .split(...) without .merge is applied to each branch separately, not to the sum; use .merge(m => m.${c.name}(...))`, ctx.line, { lane: ctx.lid });
+    const k = ctx.next(); const k2 = hasMerge ? ctx.next() : null; last = hasMerge ? k2 : k;
+    parts.push(head.trimEnd() + (pre ? '' : '.dry(0)') + `.bus(${k})`);
+    args.forEach((a, i) => {
+      const ar = arrow(a); if (!ar) { ctx.err('E_LANE_SOURCE', `branch ${i + 1} must be written x => x.effect(...): an arrow whose body starts with its own parameter and uses it once (got ${a.trim().slice(0, 40)})`); return; }
+      branchCheck(ar.rest, i + 1, ctx);
+      const post = mix ? `.postgain(${mix[i] ?? 1})` : '';
+      parts.push(rewrite(reader(k) + ar.rest + post + (hasMerge ? `.dry(0).bus(${k2})` : tail), ctx, NAMED, add));
+    });
+    ctx.splits.push({ bus: k, ...(hasMerge ? { merge: k2 } : {}), branches: args.length, ...(mix ? { mix: mix.map((m) => +m) } : {}), ...(pre ? { pre: true } : {}) });
+    if (hasMerge) {
+      const m0 = nx.args[0]; let rest = '';
+      if (m0) { const ar = arrow(m0); if (!ar) ctx.err('E_LANE_SOURCE', `.merge needs x => x.effect(...) (got ${m0.trim().slice(0, 40)})`); else { branchCheck(ar.rest, 'merge', ctx); rest = ar.rest; } }
+      parts.push(rewrite(reader(k2) + rest + tail, ctx, NAMED, add));
+    }
+  }
+  if (mine.length) { // sends read the lane's last bus: the split bus, the merge bus, or a lane bus of their own when there is no split
+    if (last == null) { last = ctx.next(); parts = [expr + `.bus(${last})`]; }
+    for (const s of mine) parts.push(reader(last) + `.dry(0).bus(${NAMED[s.name]}).busgain(${s.amount})`);
+  }
+  return parts.length ? `stack(\n  ${parts.join(',\n  ')})` : expr;
+}
+// ordinary calls: rewrite their (non-function) arguments, so audio features inside stack(...), .add(...) etc. are found
+function mapArgs(expr, ctx, NAMED, add) {
+  if (!QUICK.test(expr)) return expr;
+  const me = mask(expr); const depthAt = []; let d0 = 0; for (let i = 0; i < me.length; i++) { depthAt[i] = d0; if ('([{'.includes(me[i])) d0++; else if (')]}'.includes(me[i])) d0--; }
+  const skip = new Set(['split', 'merge', 'send', 'wire', 'ret', 'tap', 'tagged', 'tags', 'tag']); const re = /([A-Za-z_$][\w$]*)\s*\(/g; let out = ''; let pos = 0; let m;
+  while ((m = re.exec(me))) {
+    const open = m.index + m[0].length - 1; if (depthAt[open] !== 0 || m.index < pos || skip.has(m[1])) continue; const close = matchParen(expr, open); if (close < 0) continue;
+    const inner = expr.slice(open + 1, close); if (!QUICK.test(inner)) continue;
+    const parts = splitArgs(inner); const re2 = parts.map((p) => (hasArrow(p) ? p : rewrite(p, ctx, NAMED, add))); if (re2.every((p, i) => p === parts[i])) continue;
+    out += expr.slice(pos, open + 1) + re2.join(', '); pos = close;
+  }
+  return out + expr.slice(pos);
+}
+function branchCheck(rest, label, ctx) {
+  for (const c of chain(rest)) if (SOURCE_CTL.has(c.name)) ctx.err('E_LANE_SOURCE', `branch ${label} sets .${c.name}(...): a branch receives a bus reader and may only add effects and gating, not change what it is`);
+  if (/\bret\s*\(/.test(mask(rest))) ctx.err('E_LANE_CROSS', `ret(...) inside branch ${label}: a return starts a lane and cannot sit inside a split`);
+}
+
 const LANE = /^(\$|[A-Za-z_][\w]*)\s*:(?!:)/;
 const TAPRE = /^(?:([\w:*-]+)\/)?([A-Za-z][\w-]*)(?::([A-Za-z]\w*))?$/;
 const ORBIT_PARAMS = { roomsize: 'roomsize', rsize: 'roomsize', size: 'roomsize', sz: 'roomsize', roomfade: 'roomfade', rfade: 'roomfade', roomlp: 'roomlp', rlp: 'roomlp', roomdim: 'roomdim', rdim: 'roomdim',
@@ -107,10 +283,12 @@ export function scan(src) {
       const label = m[1]; if (label[0] === '_' || label.endsWith('_')) continue; // muted by Strudel
       const body = st.text.slice(m[0].length); const id = label === '$' ? `$${anon++}` : label;
       const cs = calls(body); const lane = { id, label, line: st.line, tags: [], taps: [], reads: [], orbit: 1, fx: {}, _t: body.replace(/\s+/g, '') };
+      const brs = []; for (const c of cs) if (!c.bare && (c.name === 'split' || c.name === 'merge') && c.args.some((a) => /=>/.test(a))) { const o = body.indexOf('(', c.at); const e = matchParen(body, o); if (e > o) brs.push([o, e]); }
+      const inBranch = (at) => brs.some(([a, b]) => at > a && at < b); const lineOf = (at) => st.line + (body.slice(0, at).match(/\n/g) || []).length;
       for (const c of cs) {
         if (!c.bare && (c.name === 'tags' || c.name === 'tag') && c.depth === 0) for (const a of c.args) { const t = strLit(a); if (t != null && t && !lane.tags.includes(t)) lane.tags.push(t); }
-        if (!c.bare && c.name === 'tap') { const n = strLit(c.args[0] || ''); if (n != null) lane.taps.push({ name: n, export: /\bexport\s*:\s*true\b/.test(c.args[1] || '') }); }
-        if (c.bare && c.name === 'tap') { const r = strLit(c.args[0] || ''); if (r != null) lane.reads.push(r); }
+        if (!c.bare && c.name === 'tap') { const n = strLit(c.args[0] || ''); if (n != null) { if (inBranch(c.at)) (lane.branchTaps = lane.branchTaps || []).push(n); else lane.taps.push({ name: n, export: /\bexport\s*:\s*true\b/.test(c.args[1] || '') }); } }
+        if (c.bare && c.name === 'tap') { const r = strLit(c.args[0] || ''); if (r != null) { lane.reads.push(r); (lane.readLine = lane.readLine || {})[r] = lineOf(c.at); lane.readsIn = lane.readsIn || {}; if (inBranch(c.at)) lane.readsIn[r] = true; } }
         if (!c.bare && c.name === 'wire') { const r = strLit(c.args[1] || ''); if (r != null) lane.reads.push(r); }
         if (!c.bare && c.depth === 0 && c.name === 'orbit') { const v = num(c.args[0] || ''); if (v != null) lane.orbit = v; }
         if (!c.bare && c.depth === 0) {
@@ -150,17 +328,28 @@ export function check(src, o = {}) {
     else add('warn', 'W_LANE_IMPLICIT_EXPORT', `lane "${l.id}" reads tap "${r}" of lane "${ow}", which is not exported (open mode)`, { lanes: [l.id, ow] });
   }
   for (const s of g.selections) { try { parseSelector(s.selector ?? ''); } catch (e) { add('error', 'E_BAD_SELECTOR', e.message.replace(/^E_\w+: /, ''), {}); } }
+  for (const d of o.audio || (typeof src === 'string' ? audioPass(src, g, o).diag : [])) diag.push(d);
   const errors = diag.filter((d) => d.level === 'error'); const warnings = diag.filter((d) => d.level === 'warn');
   return { errors, warnings, ok: !errors.length, fail: errors.length > 0 || (!!o.strict && warnings.length > 0) };
 }
 
-// compile pass skeleton: finds lanes, taps, tags and selections and returns the program unchanged (identity map). Later phases rewrite
-// .split/.send/ret here (L2); L1 only reads. graph is plain data, deterministic for one input.
-export function compile(src) {
+// compile pass: finds lanes, taps, tags and selections (L1) and rewrites .split / .merge / .send / ret / .wire("p", "bus:n") / tagged().send to plain Strudel on
+// superdough buses (L2). A program that uses none of these comes back byte for byte (identity map). graph is plain data, deterministic for one input;
+// graph.audio (splits, sends, returns, wires, named bus numbers) exists only when the program uses an audio feature. o.host = { busSound, busControl } (booleans).
+export function compile(src, o = {}) {
   const text = String(src); const g = scan(text); const lanesOnly = g.lanes.map(({ _t, ...l }) => l);
-  const graph = sortKeys({ version: 1, mode: g.mode, lanes: lanesOnly, tags: g.tags, selections: g.selections, diagnostics: [] });
-  const d = check(g); graph.diagnostics = d.errors.concat(d.warnings).map((x) => sortKeys(x));
-  return { code: text, map: [{ from: 0, to: 0, length: text.length }], graph };
+  const au = audioPass(text, g, o);
+  const graph = sortKeys({ version: 1, mode: g.mode, lanes: lanesOnly, tags: g.tags, selections: g.selections, diagnostics: [], ...(au.audio ? { audio: au.audio } : {}) });
+  const d = check(g, { ...o, audio: au.diag }); graph.diagnostics = d.errors.concat(d.warnings).map((x) => sortKeys(x));
+  return { code: au.code, map: au.map, graph };
+}
+// what the site runs before every evaluation: the compiled code, or a coded throw for the audio errors (HARD). Programs with no audio feature are returned untouched
+// without parsing. The other diagnostics stay in graph.diagnostics (and `lanes.diagnostics()` once installed).
+export function prepare(src, o = {}) {
+  const text = String(src); if (!QUICK.test(text)) return { code: text, graph: null };
+  const r = compile(text, o); const bad = r.graph.diagnostics.find((d) => d.level === 'error' && HARD.includes(d.code));
+  if (bad) throw Object.assign(code(bad.code, bad.msg + (bad.line ? ` (line ${bad.line})` : '')), { line: bad.line, diagnostics: r.graph.diagnostics });
+  return r;
 }
 export const graphJSON = (src) => JSON.stringify(compile(src).graph, null, 1);
 
@@ -194,6 +383,7 @@ export function install(S, hooks, opts = {}) {
     gain(v) { this.ops.push({ op: 'gain', value: plain(v) }); return this; }
     orbit(v) { this.ops.push({ op: 'orbit', value: plain(v) }); return this; }
     mute(g) { const x = gateOf(g); this.ops.push({ op: 'mute', ...(x.gate != null ? { gate: x.gate } : {}), ...(x.on ? {} : { on: false }) }); return this; }
+    send() { throw code('E_LANE_COMPILE', 'tagged(...).send(name, amount) is resolved by the compile pass (lanes.prepare); evaluate the program through it'); }
     solo(g) { const x = gateOf(g); this.ops.push({ op: 'solo', ...(x.gate != null ? { gate: x.gate } : {}), ...(x.on ? {} : { on: false }) }); return this; }
   }
   const fnSrc = (f) => f.toString();
@@ -211,7 +401,23 @@ export function install(S, hooks, opts = {}) {
     return o.gate == null ? true : hooks.gateAt(o.gate, `${sel.id}.${o.op}`)(t, ctrl);
   };
   const stampLane = (haps, id) => haps.map((h) => (h.context?.lane === id ? h : h.setContext({ ...h.context, lane: id })));
+  // ---- audio layer at runtime: the host check, bus allocation of the last compile, and checks on the queried haps (E_LANE_SOURCE, W_LANE_REFRAIN) ----
+  let alloc = null; let cdiag = []; const rdiag = []; const rseen = new Set();
+  const rnote = (level, c, msg) => { const k = c + '|' + msg; if (rseen.has(k)) return; rseen.add(k); rdiag.push({ level, code: c, msg }); if (hooks.live) console.warn(`[lanes] ${c} ${msg}`); };
+  const hostOf = () => { const sm = opts.soundMap || globalThis.soundMap; const P = S.Pattern; return { busSound: sm && typeof sm.get === 'function' && Object.keys(sm.get() || {}).length ? !!sm.get().bus : undefined, busControl: P ? typeof P.prototype.bus === 'function' && typeof P.prototype.busgain === 'function' : undefined }; };
+  const cover = (iv, b, e) => { let t = 0; let cur = b; for (const [x, y] of iv.map(([x, y]) => [Math.max(x, b), Math.min(y, e)]).filter(([x, y]) => y > x).sort((p, q) => p[0] - q[0])) { if (y > cur) { t += y - Math.max(x, cur); cur = y; } } return t; };
+  function checkAudio(haps, args) {
+    const [b, e] = [+args[0], +args[1]]; const feed = new Map(); const rd = new Map(); const iv = (h) => { const w = h.whole || h.part; return [+w.begin, +w.end]; };
+    for (const h of haps) {
+      const v = h.value; if (!v || typeof v !== 'object') continue; const n = +v.n;
+      if (alloc.has(n) && typeof v.s === 'string' && v.s !== 'bus' && (v.bus == null || alloc.has(+v.bus))) rnote('error', 'E_LANE_SOURCE', `a hap reads allocated bus ${n} but its sound is "${v.s}": a branch must not change .s of its reader`);
+      if (v.s === 'bus' && alloc.has(n)) { if (v.note !== undefined || v.freq !== undefined) rnote('error', 'E_LANE_SOURCE', `a reader of bus ${n} sets note or freq: a branch must not change what its reader is`); const key = n + '|' + JSON.stringify(v) + '|' + (iv(h)[1] - iv(h)[0]).toFixed(6); if (!rd.has(key)) rd.set(key, { n, iv: [] }); rd.get(key).iv.push(iv(h)); }
+      if (v.bus != null && alloc.has(+v.bus)) { const k = +v.bus; if (!feed.has(k)) feed.set(k, []); feed.get(k).push(iv(h)); }
+    }
+    for (const { n, iv: ivs } of rd.values()) { const f = feed.get(n); if (!f) continue; const total = cover(f, b, e); if (total <= 1e-9) continue; const gap = (total - Math.min(total, cover(ivs, b, e))) / total; if (gap > 1e-6) rnote('warn', 'W_LANE_REFRAIN', `a reader of bus ${n} leaves ${(gap * 100).toFixed(0)}% of the playing source silent in cycles ${b}..${e} (fine for a gate, a surprise otherwise)`); }
+  }
   function apply(haps, args) {
+    if (alloc && alloc.size) { try { checkAudio(haps, args); } catch (err) { /* checks never break playback */ } }
     const list = live(); if (!list.length) return haps;
     const [b, e, ctrl] = args; let out = haps; const jr = journal(); const solos = [];
     for (const sel of list) {
@@ -259,12 +465,18 @@ export function install(S, hooks, opts = {}) {
     closed() { hooks.laneMode('closed'); return L; }, open() { hooks.laneMode('open'); return L; }, mode: () => hooks.laneMode(),
     reset() { sels.length = 0; n = 0; return L; }, selections: () => live().map((s) => ({ id: s.id, selector: selectorString(s.ast), ops: s.ops.map((o) => o.op) })),
     stamping: () => live().length > 0,
+    // the compile pass the site runs before every evaluation (docs/LANES.md 8): compiled code, or a coded throw for the audio errors; remembers the bus allocation
+    prepare(src, o = {}) {
+      alloc = null; cdiag = []; rdiag.length = 0; rseen.clear();
+      const r = prepare(src, { host: hostOf(), ...o }); if (r.graph) { cdiag = r.graph.diagnostics; const a = r.graph.audio; if (a) alloc = new Set([...(a.buses.lane || []), ...Object.values(a.buses.named)]); for (const d of cdiag) if (d.level === 'warn' && hooks.live) console.warn(`[lanes] ${d.code} ${d.msg}`); } return r;
+    },
+    diagnostics: () => cdiag.concat(rdiag).map((d) => ({ ...d })), host: hostOf,
     // live toggle of one op of one selection; journalled so a headless render replays it (docs/LANES.md 4.3)
     set(id, op, on, at) {
       const s = sels.find((x) => x.id === id); if (!s) throw code('E_BAD_ARG', `no selection "${id}"`); if (!s.ops.some((o) => o.op === op)) throw code('E_BAD_ARG', `selection ${id} has no ${op}`);
       hooks.record('sel', [id, op, !!on], at ?? 'next'); return L;
     },
-    apply, compile, check, scan, parseSelector, selectorString,
+    apply, compile, check, scan, parseSelector, selectorString, BUS,
   });
   if (opts.outer) opts.outer.push(apply);
   else if (!proto.queryArc.__lanesSel) {

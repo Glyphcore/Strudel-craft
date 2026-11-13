@@ -1,6 +1,6 @@
 # Lanes: splits, scoped taps, tags and capture without re-synthesis
 
-Status: **L1 built** (#74: memoised taps, lane-scoped taps, tags, selections, lane graph and checks; see "Built in L1" below; the CLI command `strudel lanes` is pending in the other repo). L2 to L5 are issued only (section 11). Builds on `docs/HOOKS_SYNTAX.md` (taps, gates, scopes), `docs/BLUEPRINT.md`
+Status: **L1 built** (#74: memoised taps, lane-scoped taps, tags, selections, lane graph and checks; see "Built in L1" below) and **L2 built** (#75: `.split`, `.merge`, `.send`, `ret`, `.wire` to a bus, group `tagged().send`, as a compile pass on superdough buses; see "Built in L2" below). The CLI commands (`strudel lanes`, `render`, `events`, `stems` for lane programs) are pending in the other repo. L3 to L5 are issued only (section 11). Builds on `docs/HOOKS_SYNTAX.md` (taps, gates, scopes), `docs/BLUEPRINT.md`
 (model, graph), `docs/ATOMS.md` (typed names), `docs/CONTROL_BINDING.md` (AST ids, param shapes), `docs/CAPTURE.md` (takes, offline
 render, recipes and Remake). Owner: `daw-sme`. UI parts are direction for `ui-designer`.
 
@@ -168,9 +168,9 @@ compiles (before Strudel's transpiler; bus 64 allocated to this split site) to t
 ```js
 drums: stack(
   s("bd*4, hh*8").lpf(4000).dry(0).bus(64),
-  s("bus").n(64).attack(0.01).release(0.01),
-  s("bus").n(64).attack(0.01).release(0.01).room(0.9).rsize(6).lpf(900),
-  s("bus").n(64).attack(0.01).release(0.01).crush(5).hpf(2000).gain(0.4))
+  s("bus").n(64).attack(0.01).release(0.01).gain(1),
+  s("bus").n(64).attack(0.01).release(0.01).gain(1).room(0.9).rsize(6).lpf(900),
+  s("bus").n(64).attack(0.01).release(0.01).gain(1).crush(5).hpf(2000).gain(0.4))
 ```
 - **Source**: everything before `.split` is rendered once, per voice, with its per-voice effects (`lpf(4000)` here is one filter
   per note). `dry(0)` removes its direct path; its `post` signal goes only to the bus.
@@ -180,6 +180,7 @@ drums: stack(
 - A branch may change the reader's *structure*: `gate => gate.struct("x*8").decay(0.05)` is a rhythmic gate on the lane audio.
   A branch may not change what the reader is: setting `s`, `n`, `note`, `bus` or `dry` in a branch is `E_LANE_SOURCE` (checked on the
   queried haps of each branch).
+- **Playback start**: the first reader of a run fades in over 10 ms (nothing precedes it to cross-fade with), so a note that starts exactly at the first cycle boundary loses its first 10 ms of attack, once. Seams between consecutive cycles are unity (measured). A branch that gates (`struct`) fades each gate hap the same way.
 - **Join**: without `.merge`, the branches sum at the lane's orbit. Effects written after `.split(...)` are added to each
   branch reader separately (same result for linear effects, not for compression or distortion): `W_LANE_POST_SPLIT` when a
   non-linear control follows a split without a merge.
@@ -204,6 +205,7 @@ drums: s("bd*4").send("verb", 0.3)
 keys:  note("c e g").s("piano").send("verb", 0.6)
 verb:  ret("verb").room(1).rsize(8).lpf(3000)
 ```
+- (Built form in L2: the `.send` calls of a chain are removed and read the lane's *last* bus: the split bus, the merge bus when there is a merge, or a lane bus of their own when the lane has no split. The source keeps its direct path in the no-split case; each send is one extra reader voice. A group send `tagged(sel).send(name, amount)` is resolved by the compile pass against the lanes whose literal `.tags(...)` or `#id` match and becomes a `.send` on each of them; tags set deeper (inside `.when`) are not matched and `W_LANE_SELECT_EMPTY` reports a selector that matches no lane.)
 - A voice has one `bus` value, so every lane that sends or splits gets a **lane bus**: source voices -> lane bus (`dry(0)`);
   readers of the lane bus: the main output, each split branch, and one reader per send that forwards to the named bus with
   `dry(0).bus(named).busgain(amount)`. `pre`-style direct output is kept when the lane has only sends and no split (the source keeps
@@ -214,7 +216,7 @@ verb:  ret("verb").room(1).rsize(8).lpf(3000)
 - Errors: a send to a name with no `ret`: `W_BUS_NO_RETURN` (silent, not fatal). A cycle in the send graph (a return that sends,
   directly or through others, to its own bus): `E_LANE_CYCLE`; Web Audio would mute such a loop silently. A `ret` inside a split
   branch or a branch reader used outside its split: `E_LANE_CROSS`.
-- Audio-rate modulation from a bus (`bmod`) is exposed as `.wire(param, "bus:name", opts)`; it carries the raw signal, not an
+- Audio-rate modulation from a bus (`bmod`) is exposed as `.wire(param, "bus:name", opts)` (compiled to `.bmod({ bus: N, control: 'param', ...opts })`, opts `depth`, `depthabs`, `dc`, `subControl`); it carries the raw signal, not an
   envelope. Event-driven ducking stays `duckorbit` or the event-level `tap("k:env")`.
 
 ### 5.4 Errors and warnings
@@ -232,6 +234,9 @@ verb:  ret("verb").room(1).rsize(8).lpf(3000)
 | `W_LANE_ORBIT_FX` | conflicting orbit delay / reverb settings on one orbit |
 | `W_BUS_NO_RETURN` | send with no return |
 | `W_LANE_REFRAIN` | a reader's structure leaves gaps while the source plays (reported with the silent fraction; intended for gates) |
+| `E_LANE_OPTS` | (L2) malformed split options (`mix` length, unknown key) or a non-literal bus name |
+| `E_LANE_COMPILE` | (L2) `tagged(...).send` evaluated without the compile pass |
+| `W_LANE_SELECT_EMPTY` | (L2) `tagged(sel).send(...)` whose selector matches no lane at compile time |
 
 ## 6. Capture and recall
 
@@ -406,8 +411,18 @@ Counts are per cycle; `V` = source voices, `B` = branches, `S` = sends, `R` = re
 | lane with sends | `V + 1 + S` (or `V + S` with no split) | readers forwarding to named buses |
 | event tap, k readers | hap work once per tick instead of k times; 0 voices | memory: up to 32 cached spans per tap |
 
-- Example (estimate, to be measured in the build issue): a four-note `supersaw` chord (superdough builds several detuned
-  oscillators per voice) through three parallel effect branches is 12 voices with `.layer` and 4 voices + 3 readers with `.split`.
+- **Measured (#75, `tests/site/lanes.mjs`, Chromium headless in the CI sandbox, @strudel/web 1.3.0 offline render, 4 cycles, median of 3):** a four-note `supersaw` chord
+  (`note("[c3,e3,g3,b3]").s("supersaw").release(0.3)`) through three branches (`a => a`, `b => b.room(0.9)`, `c => c.crush(5)`):
+
+  | per cycle | `.layer` | `.split` | split / layer |
+  |---|---|---|---|
+  | superdough voices (haps played) | 12 | 7 (4 source + 3 readers) | 0.58 |
+  | supersaw oscillator sources (AudioWorkletNode) | 12 | 4 | 0.33 |
+  | audio nodes constructed (gain, filter, worklet, convolver, ...) | 105.5 | 64.8 | 0.61 |
+  | offline render time for 4 cycles | 1991 ms | 886 ms | 0.44 |
+
+  The estimate above (12 voices vs 4 + 3) held; the saving that matters is the oscillator sources (the heavy part of a supersaw voice) and the render time. Node counts are
+  counted by wrapping the node constructors in the test page only (a measurement instrument, not part of the site). Times are from a loaded shared sandbox: use the ratio, not the milliseconds.
 - Cost that grows: one bus node per split or named bus (a stereo gain, kept for the session); reverb per orbit is the heavy
   node, so branches that each want their own reverb settings need their own orbit (one convolver each), exactly as in Strudel today.
 - Latency added: none (same audio graph, same render quantum).
@@ -485,6 +500,28 @@ Where the build differs from, or settles, the text above:
 - Crossing: a read of a branch-local tap from another lane is not drawn (`graph().refused[]`, `checkWire`). The offered fixes are applyOp operations: "Export tap" puts `.tap(name, { export: true })` on the lane just before its `.split` (events before a split are the same as inside a branch, section 5.2), "Add send" appends `.send(<lane>)`. Names published inside a branch stay branch-local at runtime (section 4.2).
 - Pad target kind `selection` (`{ ref: <site id>, op: "mute" | "solo" }`) journals as op `sel`; `padSelection(code, target)` maps the site id to the runtime selection id for `lanes.set`.
 - Waiting on other issues: the runtime of `.split .merge .send ret` (#75) and of `capture recall .from` (#76). Their data side (model, graph, intellisense, atoms, ids, applyOp) is built and checked from the documented syntax; the `busname` atom events check in `.send(atoms.verb)` and the CLI `strudel atoms list --tag` are open.
+
+## 11b. Built in L2 (#75)
+Files: `site/engine/lanes.js` (`compile`, `prepare`, `check`, runtime), `site/engine/index.js` (`hooksLib.protect` runs `lanes.prepare`), `site/app.js` (the E_LANE_* / E_BUS_RANGE codes reach the eval error box),
+`site/hooks-intellisense.js`, tests `tests/lanes/l2.mjs` (Node) and `tests/site/lanes.mjs` (Playwright, real superdough offline). Where the build differs from, or fixes, the text above:
+- **Plain text out**: the compiled program is ordinary Strudel text (section 5.1 shows it exactly); there is no `__reader` marker and no runtime wrapper around branches. The checks therefore run on the text
+  (`E_LANE_SOURCE`, `E_LANE_CROSS`, `E_LANE_CYCLE`, `E_BUS_RANGE`, `E_LANE_HOST`, `W_LANE_POST_SPLIT`, `W_BUS_NO_RETURN`; each with the `line` of the lane statement) and, for what text cannot see, on the queried haps
+  (`lanes.diagnostics()`): a reader that sets `note` or `freq`, or whose sound is not `bus`, is `E_LANE_SOURCE`; `W_LANE_REFRAIN` compares, per bus, each group of readers with the same settings and hap length against
+  the haps feeding the bus (a gate such as `struct("x ~")` leaves 50% silent; two different gates with identical settings and length are measured together).
+- **Branch form**: a branch must be `x => x.effect(...)`: an arrow with an expression body that starts with its own parameter and uses it once. Anything else (a named function, a block body, `x => x.add(x)`) is
+  `E_LANE_SOURCE` with the reason; it is never run as an opaque function and a split is never turned into `layer`.
+- **Allocation**: lane buses (split, merge, send-only lanes) count up from 64 in source order as the compiler meets them, outer split first, then its merge bus, then nested splits in branch order; named buses are 512 + the
+  index of the name in sorted order, across the whole program (sends, `ret`, group sends and `.wire` all name buses). `graph.audio.buses` lists them.
+- **Order of rewriting inside a lane**: arguments of ordinary calls first (so `stack(a.split(f), b)` works), then `.wire(p, "bus:n")` -> `.bmod`, then `.send` calls are removed and collected, then the first `.split`
+  (an adjacent `.merge` belongs to it). Effects written after `.split(...)` go to each branch reader (to the merge reader when there is a merge); `mix` is a `.postgain(m)` on each branch; `pre: true` leaves out `.dry(0)` on the source.
+- **Host check** (`E_LANE_HOST`): `lanes.prepare` asks the page: the `bus` sound in `soundMap` (when `soundMap` is empty the host is "unknown" and not refused: the sound registers during `initStrudel`) and the `bus`,
+  `busgain` controls on `Pattern.prototype`. `compile(src, { host: { busSound, busControl } })` takes the answer as data, which is how a stub host is tested. Programs with no audio feature never ask.
+- **Fixed on the way**: on the site `window.lanes` is the `#lanes` canvas (named element access), which made L1's collision check refuse the whole lanes install on the page; a DOM element is now shadowed instead.
+- **Reproducibility of renders (measured)**: with one reader per bus the site's exact offline render is bit-identical run to run, and moving or inserting lanes (new bus numbers) leaves the SHA-256 unchanged
+  (`tests/site/lanes.mjs`, "Deterministic allocation"). A bus with two or more readers summed at the orbit is reproducible only to about 1 ULP in headless Chromium (the same program rendered twice differs by
+  -166 dB, max sample difference 3e-8): compare such renders with a tolerance, as Remake's level fingerprint does, not by hash.
+- **Not built** (marked coming where they appear in the Syntax view): the CLI side (`strudel lanes`, `render`, `events`, `stems` per lane group; these live in `engine/strudel-cli`, another repo), capture and recall (L3),
+  model fields, graph nodes and typed param shapes (L4), lane cards and the split fan (L5).
 
 ## 12. Open questions
 

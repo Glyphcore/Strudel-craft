@@ -26,7 +26,7 @@ const throwsCode = (f, c) => { try { f(); } catch (e) { assert.equal(e.code, c, 
 // the real repl, headless: transpiler, labels ($:), `.p()` ids (state.controls.id) exactly as the site evaluates them
 let R = null;
 if (transpilerMod) { await core.evalScope(core, RT.mini); R = core.repl({ defaultOutput: () => {}, getTime: () => 0, transpiler: transpilerMod.transpiler }); }
-const evalProgram = async (src) => { fresh(); await R.evaluate(protect(src), false); return R.scheduler.pattern; };
+const evalProgram = async (src) => { fresh(); await R.evaluate(protect(lanes.prepare(src).code), false); return R.scheduler.pattern; };
 const perCycle = (haps, n, pick = () => true) => Array.from({ length: n }, (_, c) => haps.filter((h) => pick(h) && +h.whole.begin >= c && +h.whole.begin < c + 1).length);
 const needRepl = (box) => { if (R) return false; skip(box, '@strudel/transpiler not installed in STRUDEL_MODULES (needed for the repl and labels)'); return true; };
 
@@ -182,10 +182,10 @@ keys: note("c e").s("piano").tags("keys")
 // 14. syntax.json
 if (!needRepl('syntax.json examples')) {
   const sx = JSON.parse(fs.readFileSync(new URL('../../site/data/syntax.json', import.meta.url), 'utf8')); const sec = sx.sections.find((x) => x.id === 'lanes'); assert.ok(sec && sec.needs === 'lanes');
-  const built = sec.examples.filter((e) => !e.coming); const coming = sec.examples.filter((e) => e.coming); assert.ok(built.length >= 5 && coming.length >= 3);
+  const built = sec.examples.filter((e) => !e.coming); const coming = sec.examples.filter((e) => e.coming); assert.ok(built.length >= 5 && coming.length >= 1);
   assert.ok(built.some((e) => /\.tags\(/.test(e.code)) && built.some((e) => /tagged\(/.test(e.code)) && built.some((e) => /export: true/.test(e.code)));
   let total = 0; for (const e of built) { const p = await evalProgram(e.code); const h = q(p, 0, 4); assert.ok(h.length > 0, e.title); total += h.length; assert.deepEqual(hooks.diag().filter((d) => d.level === 'error'), [], e.title); }
-  assert.ok(coming.every((e) => /split|send|capture/.test(e.code)));
-  pass(`syntax.json: section "lanes" has ${built.length} runnable examples (.tags, tagged, exported taps, closed mode: ${total} haps over 4 cycles, no diag errors) and ${coming.length} marked coming (split, send/ret, capture/recall)`);
+  assert.ok(coming.every((e) => /capture/.test(e.code)));
+  pass(`syntax.json: section "lanes" has ${built.length} runnable examples (.tags, tagged, exported taps, closed mode: ${total} haps over 4 cycles, no diag errors) and ${coming.length} marked coming (capture/recall; the audio layer is built in L2)`);
 }
 console.log('lanes L1 done');

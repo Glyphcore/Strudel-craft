@@ -72,7 +72,7 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | pack-external-assets (hash-pinned remote sample files in sound maps) | pack-spec | unexplored | - |
 | pack-kind-atoms (`atoms@1` ingredient kind and schema, docs/PACK_SPEC.md 5.1) | pack-spec, atoms-core | built | #63 |
 | lanes-events (memoised taps, lane-scoped taps, tags and selections; docs/LANES.md) | taps-vars-decorators, controls-engine | built (engine, tests; CLI `strudel lanes` pending, critic pending) | #74 |
-| lanes-audio (`.split` / `.merge` / `.send` / `ret` on superdough buses, no re-synthesis) | lanes-events | issued | #75 |
+| lanes-audio (`.split` / `.merge` / `.send` / `ret` on superdough buses, no re-synthesis) | lanes-events | built (compile pass, checks, wire, group send, measured seam and cost; CLI `render` / `events` / `stems` / `lanes` pending, critic pending) | #75 |
 | lanes-capture (`capture` / `recall` / `.from`: events, audio, level; deterministic passes) | lanes-events, lanes-audio | issued | #76 |
 | lanes-consumers (model, graph data, param shapes, intellisense, atom types, AST ids) | lanes-events, model-schema-roundtrip, atoms-core | built (data side; runtime halves wait on #75 / #76; critic pending) | #77 |
 | lanes-ui (lane cards, split fan, bus and capture nodes, tag chips; ui-designer) | lanes-consumers, graph-editor-ui | issued | #78 |

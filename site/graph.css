@@ -197,7 +197,9 @@
 
 /* scroll-trap fix: pinned view HUD, interact lock, collapse, touch hint */
 .gx[data-lock="on"] .gx-vp,.gx[data-lock="on"] .gn-head,.gx[data-lock="on"] .gp{touch-action:none}
-.gx:not([data-lock="on"]) .gx-vp *{touch-action:pan-y} /* one finger scrolls the page; tap-to-arm still wires ports */
+.gx:not([data-lock="on"]) .gx-world{touch-action:pan-y} /* empty canvas: one finger scrolls the page */
+.gn,.gp{touch-action:none} /* nodes and ports always take one-finger drags */
+.gb{touch-action:pan-y}
 .gx-hud{position:absolute;right:8px;top:8px;z-index:3;display:flex;flex-direction:column;gap:4px;padding:4px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r2);box-shadow:0 6px 18px rgba(0,0,0,.3)}
 .gx-hud .gx-tool{min-width:44px;min-height:44px;flex:0 0 auto;padding:0 4px;font-size:.62rem;letter-spacing:.02em}
 .gx-touchhint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);margin:0;pointer-events:none;font:700 .7rem var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--text);background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r1);padding:4px 8px;white-space:nowrap;opacity:0;transition:opacity .2s}

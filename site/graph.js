@@ -258,7 +258,7 @@ function mount(host) {
     planEl = h('div', { class: 'gx-plan', id: 'gxPlan', hidden: true, role: 'img', 'aria-label': 'Plan: open windows per slot and variable against bars' }),
     h('div', { class: 'gx-body' },
       h('div', { class: 'gx-canvas', id: 'gxPane-graph', role: 'tabpanel', 'aria-labelledby': 'gxTab-graph' },
-        vp = h('div', { class: 'gx-vp', 'aria-label': 'Graph canvas: drag to pan, pinch or Ctrl+wheel to zoom, + and - keys zoom', role: 'group' },
+        vp = h('div', { class: 'gx-vp', 'aria-label': 'Graph canvas: drag nodes and ports; on touch one finger on empty canvas scrolls the page, two fingers pan and pinch; mouse drag pans, Ctrl+wheel zooms, + and - keys zoom', role: 'group' },
           world = h('div', { class: 'gx-world' },
             svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
             badgesEl = h('div', { class: 'gx-badges' }), nodesEl = h('div', { class: 'gx-nodes' }))), // nodes over badges: a node is never covered by a wire label
@@ -269,7 +269,7 @@ function mount(host) {
           tool('gxHudReset', 'Reset zoom to 100%', '1:1', { 'data-hud': 'reset' }),
           tool('gxLock', 'Interact: one-finger drag pans the graph instead of scrolling the page', 'Interact', { 'aria-pressed': 'false', 'data-hud': 'lock' }),
           tool('gxCollapse', 'Collapse graph canvas', '\u2303', { 'aria-pressed': 'false', 'aria-expanded': 'true', 'data-hud': 'collapse' })),
-        h('p', { class: 'gx-touchhint', 'aria-hidden': 'true' }, '2 fingers to move graph'),
+        h('p', { class: 'gx-touchhint', 'aria-hidden': 'true' }, 'drag nodes; two fingers to move the view'),
         selbar = h('div', { class: 'gx-selbar', hidden: true, role: 'toolbar', 'aria-label': 'Selection actions' }),
         sheetEl = h('div', { class: 'gx-sheet', hidden: true, role: 'region', 'aria-label': 'Inspector', tabindex: '-1' })),
       h('div', { class: 'gx-side' },
@@ -549,6 +549,8 @@ function fit() {
   V.s = s; V.x = (r.width - (b.x1 - b.x0) * s) / 2 - b.x0 * s; V.y = (r.height - (b.y1 - b.y0) * s) / 2 - b.y0 * s; applyView();
 }
 function resetView() { const r = vp.getBoundingClientRect(), b = bounds(); V.s = 1; V.x = 24 - (b ? b.x0 : 0); V.y = 24 - (b ? b.y0 : 0); if (!r.width) return; applyView(); }
+const SNAP = 12; // world px, half the 24 px dot grid
+function snapC(v) { return Math.max(0, Math.round(v / SNAP) * SNAP); } // snap to the grid, clamp to the content origin (no negative world space)
 function moveNode(id, x, y) {
   const n = G.view.nmap.get(id); n.x = x; n.y = y;
   if (!G.fixture) { const k = scopeKey(); (G.pos[k] ||= {})[id] = { x: Math.round(x), y: Math.round(y) }; store.set(POSKEY, G.pos); }
@@ -748,12 +750,19 @@ function pointer() {
   vp.addEventListener('pointermove', (e) => {
     if (!pts.has(e.pointerId) || !g) return; pts.set(e.pointerId, local(e));
     if (g.kind === 'pinch') { if (pts.size < 2) return; const [a, b] = [...pts.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y); const s = Math.min(ZMAX, Math.max(zmin(), g.s0 * d / g.d0)); const m = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; const k = s / g.s0; V.s = s; V.x = m.x - (g.m.x - g.x0) * k; V.y = m.y - (g.m.y - g.y0) * k; applyView(); return; }
-    if (e.pointerType === 'touch' && !locked()) return; // one finger belongs to the page
+    if (e.pointerType === 'touch' && !locked() && (g.kind === 'pan' || g.kind === 'badge')) return; // one finger on empty canvas belongs to the page; nodes and ports still drag
     const p = local(e), dx = p.x - g.p0.x, dy = p.y - g.p0.y;
     if (!g.moved && Math.hypot(dx, dy) < 8) return;
     if (!g.moved) { g.moved = true; clearTimeout(g.lp); }
     if (g.kind === 'pan' || g.kind === 'badge') { const t = performance.now(); if (g.lt) { const k = Math.max(1, t - g.lt); g.vx = 0.7 * (g.vx || 0) + 0.3 * (g.x0 + dx - V.x) / k; g.vy = 0.7 * (g.vy || 0) + 0.3 * (g.y0 + dy - V.y) / k; } g.lt = t; V.x = g.x0 + dx; V.y = g.y0 + dy; applyView(); }
-    else if (g.kind === 'node') moveNode(g.id, g.n0.x + dx / V.s, g.n0.y + dy / V.s);
+    else if (g.kind === 'node') {
+      // edge auto-pan: dragging near the viewport edge scrolls the view, so the canvas extends with the node
+      const r = vp.getBoundingClientRect(), E = 36, sp = 10; let ex = 0, ey = 0;
+      if (p.x < E) ex = sp; else if (p.x > r.width - E) ex = -sp; if (p.y < E) ey = sp; else if (p.y > r.height - E) ey = -sp;
+      if (ex || ey) { V.x += ex; V.y += ey; g.x0 += ex; g.y0 += ey; g.pan = { x: (g.pan ? g.pan.x : 0) + ex, y: (g.pan ? g.pan.y : 0) + ey }; applyView(); }
+      const ox = g.pan ? g.pan.x : 0, oy = g.pan ? g.pan.y : 0;
+      moveNode(g.id, snapC(g.n0.x + (dx - ox) / V.s), snapC(g.n0.y + (dy - oy) / V.s));
+    }
     else if (g.kind === 'port') {
       if (!g.from) { g.from = portOf(g.el); G.armed = g.from; renderArmed(); }
       const end = { x: p.x, y: p.y - (g.touch ? 48 : 0) }; // the wire end sits above the finger so the target stays visible

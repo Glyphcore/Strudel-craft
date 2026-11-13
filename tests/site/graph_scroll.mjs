@@ -1,4 +1,4 @@
-// Graph scroll-trap check: `node tests/site/graph_scroll.mjs` - at 360x780 (touch), zoom in fully, one-finger swipes scroll the page past the graph, Fit stays on screen while the canvas shows, canvas <= 70dvh.
+// Graph scroll-trap + drag check: `node tests/site/graph_scroll.mjs` - at 360x780 (touch): one-finger node drag moves the node (snapped, clamped), one-finger port drag draws a wire, zoomed fully in an empty-canvas swipe scrolls the page past the graph, Fit stays on screen, canvas <= 70dvh; desktop mouse and pen drag nodes and mouse pans.
 import http from 'node:http'; import fs from 'node:fs'; import path from 'node:path';
 import { createRequire } from 'node:module'; import { fileURLToPath } from 'node:url';
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'site');
@@ -14,7 +14,7 @@ const ctx = await b.newContext({ viewport: { width: 360, height: 780 }, hasTouch
 const p = await ctx.newPage(); p.on('pageerror', (e) => errs.push(String(e))); p.on('console', (m) => m.type() === 'error' && !/Failed to load resource/.test(m.text()) && errs.push(m.text()));
 await p.goto(URL_); await p.waitForTimeout(2500); await p.evaluate(() => { const a = document.querySelector('a[data-view="graph"]'); a ? a.click() : location.hash = 'graph'; });
 await p.waitForFunction(() => window.__graph && __graph.view, null, { timeout: 30000 });
-await p.evaluate(() => { const t = [...document.querySelectorAll('.gx-tab')].find((x) => x.dataset.pane === 'graph'); t && t.click(); __graph.zoomTo(2, -200, -200); const sp = document.createElement('div'); sp.id = 'spacer'; sp.style.height = '1200px'; document.querySelector('.gx').after(sp); });
+await p.evaluate(() => { const t = [...document.querySelectorAll('.gx-tab')].find((x) => x.dataset.pane === 'graph'); t && t.click(); __graph.zoomTo(2, 3000, 3000); const sp = document.createElement('div'); sp.id = 'spacer'; sp.style.height = '1200px'; document.querySelector('.gx').after(sp); });
 await p.waitForTimeout(300);
 const geo = () => p.evaluate(() => { const v = document.querySelector('.gx-vp').getBoundingClientRect(), f = document.getElementById('gxHudFit').getBoundingClientRect(); return { vpTop: v.top, vpBot: v.bottom, vpH: v.height, fTop: f.top, fBot: f.bottom, sy: scrollY, max: document.documentElement.scrollHeight - innerHeight, s: __graph.V.s, ih: innerHeight }; });
 let g = await geo(); ok(g.vpH <= 0.7 * g.ih + 1, `canvas height ${g.vpH.toFixed(0)} <= 70% of ${g.ih}`); ok(g.s >= 2, `zoomed fully in (s=${g.s})`);
@@ -41,5 +41,34 @@ await p.tap('#gxHudFit'); await p.waitForTimeout(300); ok((await geo()).s < 2, '
 await p.tap('#gxCollapse'); await p.waitForTimeout(200); ok(await p.evaluate(() => getComputedStyle(document.querySelector('.gx-vp')).display === 'none' && !!document.getElementById('gxCollapse').offsetParent), 'collapse hides canvas, keeps toggle');
 await p.tap('#gxCollapse');
 await p.screenshot({ path: `${process.env.SHOT_DIR || '/tmp'}/graph_scroll_360.png` });
+// one-finger node drag (touch, Interact off)
+await p.evaluate(() => { document.querySelector('.gx').dataset.lock = 'off'; document.getElementById('gxLock').setAttribute('aria-pressed', 'false'); __graph.center('track:bass', 1); document.querySelector('.gx-vp').scrollIntoView({ block: 'center' }); }); await p.waitForTimeout(300);
+const nodeBox = async (id) => { const e = p.locator(`.gn[data-id="${id}"] .gn-head`); return e.boundingBox(); };
+const pos = (id) => p.evaluate((id) => { const n = __graph.view.nmap.get(id); return { x: n.x, y: n.y }; }, id);
+let hb = await nodeBox('track:bass'); const n0 = await pos('track:bass'); const sy3 = (await geo()).sy;
+await (async () => { const t = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts }); const x = hb.x + 60, y = hb.y + 20; await t('touchStart', [{ x, y }]); for (let i = 1; i <= 20; i++) { await t('touchMove', [{ x: x + i * 2, y: y + i * 4 }]); await p.waitForTimeout(16); } await t('touchEnd', []); await p.waitForTimeout(300); })();
+const n1 = await pos('track:bass');
+ok(n1.x !== n0.x || n1.y !== n0.y, `touch: one-finger node drag moves the node (${n0.x},${n0.y} -> ${n1.x},${n1.y})`);
+ok(n1.x % 12 === 0 && n1.y % 12 === 0 && n1.x >= 0 && n1.y >= 0, 'dragged node snaps to the 12 px grid and stays in content space');
+ok((await geo()).sy === sy3, 'node drag does not scroll the page');
+// one-finger wire drag from a port (no Interact): the drag path appears mid-gesture
+const port = await p.evaluate(() => { const e = document.querySelector('.gn[data-id="track:bass"] .gp-out'); const r = e.getBoundingClientRect(); return { x: r.left + r.width - 12, y: r.top + r.height / 2 }; });
+let sawWire = false; await (async () => { const t = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts }); await t('touchStart', [{ x: port.x, y: port.y }]); for (let i = 1; i <= 12; i++) { await t('touchMove', [{ x: port.x - i * 6, y: port.y + i * 6 }]); await p.waitForTimeout(16); } sawWire = await p.evaluate(() => !!document.querySelector('.gw-drag')); await t('touchEnd', []); await p.waitForTimeout(200); })();
+ok(sawWire, 'touch: one-finger drag from a port draws a wire without Interact');
+await ctx.close();
+// desktop: mouse and pen drag nodes, mouse drag on empty canvas pans
+const dctx = await b.newContext({ viewport: { width: 1440, height: 900 } }); const d = await dctx.newPage(); d.on('pageerror', (e) => errs.push(String(e)));
+await d.goto(URL_); await d.waitForTimeout(2000); await d.evaluate(() => { location.hash = 'graph'; }); await d.waitForFunction(() => window.__graph && __graph.view, null, { timeout: 30000 });
+await d.evaluate(() => __graph.center('track:bass', 1)); await d.waitForTimeout(300);
+const dpos = (id) => d.evaluate((id) => { const n = __graph.view.nmap.get(id); return [n.x, n.y]; }, id);
+let db = await d.locator('.gn[data-id="track:bass"] .gn-head').boundingBox(); const m0 = await dpos('track:bass');
+await d.mouse.move(db.x + 60, db.y + 20); await d.mouse.down(); for (let i = 1; i <= 10; i++) await d.mouse.move(db.x + 60 + i * 8, db.y + 20 + i * 5); await d.mouse.up(); await d.waitForTimeout(200);
+const m1 = await dpos('track:bass'); ok(m1[0] !== m0[0] || m1[1] !== m0[1], `mouse: node drag moves (${m0} -> ${m1})`);
+db = await d.locator('.gn[data-id="track:bass"] .gn-head').boundingBox();
+await d.evaluate(({ x, y }) => { const el = document.elementFromPoint(x, y); const ev = (type, dx, dy) => el.dispatchEvent(new PointerEvent(type, { pointerId: 7, pointerType: 'pen', isPrimary: true, clientX: x + dx, clientY: y + dy, bubbles: true, buttons: type === 'pointerup' ? 0 : 1 })); ev('pointerdown', 0, 0); for (let i = 1; i <= 10; i++) ev('pointermove', i * 6, i * 6); ev('pointerup', 60, 60); }, { x: db.x + 60, y: db.y + 20 });
+const m2 = await dpos('track:bass'); ok(m2[0] !== m1[0] || m2[1] !== m1[1], `pen: node drag moves (${m1} -> ${m2})`);
+const v0 = await d.evaluate(() => [__graph.V.x, __graph.V.y]); const vr = await d.locator('.gx-vp').boundingBox();
+await d.mouse.move(vr.x + vr.width - 140, vr.y + vr.height - 30); await d.mouse.down(); for (let i = 1; i <= 10; i++) await d.mouse.move(vr.x + vr.width - 140 - i * 6, vr.y + vr.height - 30 - i * 3); await d.mouse.up(); await d.waitForTimeout(400);
+const v1 = await d.evaluate(() => [__graph.V.x, __graph.V.y]); ok(v1[0] !== v0[0] || v1[1] !== v0[1], 'mouse: empty-canvas drag pans the view');
 if (errs.length) { fail++; console.log('errors', errs); }
 await b.close(); server.close(); process.exit(fail ? 1 : 0);

@@ -154,6 +154,13 @@ Every edit is one registry operation, the same ones the code calls, so the graph
 - Layout: named nodes keep `x, y, collapsed` in `model.layout`. No layout stored: deterministic layered layout, left to right by
   dependency rank, tracks top to bottom in program order.
 
+### 4.4b Canvas gestures (phone and desktop)
+- Nodes and cards (`touch-action: none`, pointer capture): a one-finger, mouse or pen drag that starts on a node always moves it; an 8 px movement threshold tells a tap (select, double-tap zoom) from a drag; a 500 ms hold starts multi-select. Dragged nodes snap to a 12 px grid (half the dot grid), are clamped to non-negative world space, and auto-pan the view near the canvas edge, so the content bounds (and Fit) extend with the node.
+- Ports: a one-finger drag from a port draws a wire (no Interact needed); a tap arms the port for tap-to-connect.
+- Empty canvas: on touch, one finger scrolls the page (`touch-action: pan-y`); two fingers pan and pinch zoom. The **Interact** toggle makes one finger pan the empty canvas too. Mouse drag pans; the wheel pans until the content edge, then scrolls the page; Ctrl+wheel zooms.
+- Canvas height is capped (about 66-70 dvh) with a page gutter; Fit, zoom out, 1:1, Interact and Collapse stay pinned on the canvas. On-canvas hint: "drag nodes; two fingers to move the view".
+- Test: `node tests/site/graph_scroll.mjs` (360x780 touch, plus desktop mouse and pen).
+
 ### 4.5 Read-only derived views
 - **Plan strip**: `hooks.plan()` drawn as bars: per slot and per variable, which binding is open when. This replaces the timeline;
   it is edited by changing gates, not by dragging clips (dragging a window edge in the strip is an edit of that gate's `from`/`until`).

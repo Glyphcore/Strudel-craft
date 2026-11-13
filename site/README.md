@@ -286,7 +286,9 @@ same file on the site and in the CLI; it imports acorn from `vendor/` and never 
 - UI (A4, #64; `atoms-ui.js` + `atoms-ui.css` load with the Graph view, `atoms-pop.js` on the first tap on a reference; none of them
   with the shell):
   - Graph atom cards: one card per referenced atom at the visible level (from `graph(model)`; never from `model.atoms`, so 5000
-    declared atoms with 3 referenced draw 3 cards), shared by all its references: name, text type badge (`MINI`, `GATE`, ...), the
+    declared atoms with 3 referenced draw 3 cards; the cards read only the referenced ids and their composition closure from the lazy
+    `model.atoms`, and the Graph parses only the code after the model's verbatim declaration header, so first paint does not resolve
+    the other declarations), shared by all its references: name, text type badge (`MINI`, `GATE`, ...), the
     reference count (`×2`), the compiled preview, and editors for the body and param defaults. A derived reference
     (`atoms.kick4({ n: 8 })`) gets its own dashed card keyed by `{ atom, args, ops }`, wired from the parent card's `out` to its
     `from` port; its argument editors rewrite only that argument (`literal` op). One `param` wire per reference into the step port
@@ -299,7 +301,9 @@ same file on the site and in the CLI; it imports acorn from `vendor/` and never 
   - Atom browser (Graph toolbar "Atoms", or "Atom for <port>…" in Outline > Connect to…): opens for the armed port, filters by the
     types that port accepts (`positions.json`: `gain` -> `MINI`; a binding gate -> `GATE / POINT`), text filter, namespaces Document,
     `atoms.snd`, `atoms.bank`, `atoms.scale`, `atoms.chord` (catalogs by prefix, from `atoms.configure({ catalog })`, else the
-    site's sound / bank / scale names), 50 rows per page with More and scroll-to-load. Choosing a row makes the reference
+    site's sound / bank / scale names), 50 rows per page with More and scroll-to-load. Document rows on a lazy document walk the
+    declaration index (`indexDecls`) and resolve a record only for the rows up to the current page, so opening it with 5000 atoms
+    resolves 50; off-screen rows skip layout (`content-visibility`). Choosing a row makes the reference
     (`literal` or `setGate` op) and the card appears by the rule. Keyboard: Tab / Enter to "Atom for…", type, ArrowDown, Enter.
     `strudelCraft.atomsUI = { browse(port), query({ ns, text, types, page }), goto(atomId), accepts(port), cards(), refLabel(ref) }`.
   - Reference popover (code editor): a tap on an `atoms.*` reference, or Enter with the caret inside it, opens a fixed popover (no

@@ -150,6 +150,9 @@ JSON, `hash()`, export, the atom browser listing) resolves all, in declaration o
 content, records of self-contained declarations by declaration text. Any other layout (declarations elsewhere, multi-line, duplicates,
 errors) takes the eager path unchanged. `generate(parse(code)) === code` and ids / revs / hashes are identical on both paths
 (`tests/atoms/a4_lazy.mjs`). Callers that enumerate `model.atoms` just to look up a few ids give the laziness back; index by id instead.
+The Graph view (#64) follows this: atom cards read `model.atoms[id]` for the referenced ids and walk their `from` / `$atom` closure by id;
+selection-sync spans skip the model's verbatim declaration header; the atom browser lists Document atoms from `indexDecls` and resolves
+only the rows up to the page it shows (enumerating `model.atoms` only when the document is not lazy or a subgraph level is shown).
 
 ## 5. Declaring and referencing (code)
 

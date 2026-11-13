@@ -30,14 +30,21 @@ export function loadCss() {
 
 /* ---------------------------------------------------------------- projection */
 // the referenced atoms plus everything they need (from chains, atom-valued param defaults, $atom nodes in bodies)
+// Reads one id at a time and never enumerates `atoms` (model.atoms is lazy: an enumeration resolves every declaration, ATOMS laziness).
 function closure(atoms, ids) {
   const out = {}, todo = [...ids];
   while (todo.length) {
     const id = todo.pop(); if (out[id] || !atoms[id]) continue; const rec = atoms[id]; out[id] = rec;
     const s = JSON.stringify(rec); for (const m of s.matchAll(/"\$atom":"([^"]+)"/g)) todo.push(m[1].replace(/@\d+$/, ''));
-    if (rec.from && rec.from.atom) { const f = rec.from.atom; todo.push(f, ...Object.keys(atoms).filter((k) => atoms[k].name === f)); }
+    if (rec.from && rec.from.atom) { const f = rec.from.atom; todo.push(f); if (!atoms[f]) { const k = idByName(atoms, f); if (k) todo.push(k); } }
   }
   return out;
+}
+// a `from` written as a name (model-sourced records): the id rule (idFor) per type, read directly; catalog names (snd.bd) are not declarations
+function idByName(atoms, name) {
+  if (/[.:]/.test(name)) return null;
+  for (const t of A.types().map((x) => x.id)) { const id = A.idFor(t, name); if (atoms[id] && atoms[id].name === name) return id; }
+  return null;
 }
 const nameOf = (id) => P.names[id] || id;
 function preview(ref) { try { const v = A.resolve(P.env, { ...ref, $atom: nameOf(ref.$atom) }); return v.text ?? JSON.stringify(v.obj); } catch (e) { return null; } }
@@ -61,8 +68,8 @@ export function decorate(view, model) {
   // slot gate ports for every binding, so a gate atom can be wired from the port itself
   for (const w of view.wires) if (w.binding) { const s = view.nmap.get(w.to.node); if (s && !s.ins.some((p) => p.name === `gate:${w.binding}`)) s.ins.push({ name: `gate:${w.binding}`, type: 'gate', label: `gate ${w.binding}`, dir: 'in' }); }
   if (!atomNodes.length) { P.prev = new Set(); P.gone = prevIds ? [...prevIds] : []; return view; }
-  const atoms = model.atoms || {};
-  for (const [id, a] of Object.entries(atoms)) if (atomNodes.some((n) => n.raw.atom === id)) P.names[id] = a.name;
+  const atoms = model.atoms || {}; // lazy stand-in: read referenced ids only, never enumerate on the paint path
+  for (const n of atomNodes) { const a = atoms[n.raw.atom]; if (a) P.names[n.raw.atom] = a.name; }
   const need = closure(atoms, atomNodes.map((n) => n.raw.atom));
   for (const [id, a] of Object.entries(need)) P.names[id] = a.name;
   try { P.env = A.buildEnv('', { atoms: need }); } catch (e) { P.env = null; }
@@ -234,12 +241,34 @@ async function loadFallback() { // the site's own sound / bank / scale names (in
   try { const P2 = sc.intellisense && sc.intellisense.params ? await sc.intellisense.params() : {}; const sc0 = (P2.scale || P2['.scale'] || [])[0]; if (sc0 && sc0.options) B.fallback.scale = [...new Set(sc0.options.map((o) => String(o).split(':').slice(1).join(':')).filter(Boolean))]; } catch (e) { /* none */ }
   B.fallback.chord = B.fallback.chord || ['M', 'm', '7', 'm7', 'M7', 'dim', 'aug', 'sus2', 'sus4', 'm9', '9', '6', 'm6', 'add9'];
 }
+// Document atoms in declaration order without resolving them: engine/atoms.js indexDecls over the top-level text (the same strict
+// prefix and id rule model.parse uses for its lazy model.atoms). Null when the document is not lazy or a subgraph level is shown;
+// the browser then enumerates model.atoms, which is already resolved there. Memoised per text.
+const DI = { text: null, list: null };
+function docIndex() {
+  const g = sc.graph; if (!g || X.model() !== g.model) return null;
+  const text = X.text(); if (DI.text === text) return DI.list;
+  const ix = text.charCodeAt(0) === 97 ? A.indexDecls(text) : null, taken = new Set();
+  DI.text = text; DI.list = ix ? ix.list.map((e) => { const id = A.idFor(e.type, e.name, taken); taken.add(id); return { id, name: e.name, type: e.type, line: e.line }; }) : null;
+  return DI.list;
+}
 // one page of rows: [{ key, name, type, ref, pv }], plus whether more exist. Document atoms are scanned lazily; catalogs by prefix.
 export function query({ ns = 'doc', text = '', types = null, page = 0 } = {}) {
   const want = types && types.length ? types : null, q = text.trim().toLowerCase(), lo = page * PAGE, hi = lo + PAGE; const rows = []; let seen = 0, more = false;
   if (ns === 'doc') {
-    const atoms = X.model().atoms || {};
-    for (const [id, a] of Object.entries(atoms)) {
+    const atoms = X.model().atoms || {}, ix = docIndex();
+    if (ix) { // lazy document: walk the declaration index; a record is resolved only for rows up to this page (and doc-text candidates)
+      for (const e of ix) {
+        if (want && !want.includes(e.type) && e.type !== 'text') continue;
+        const byName = !q || e.name.toLowerCase().includes(q);
+        if (!byName && !e.line.includes('\\') && !e.line.toLowerCase().includes(q)) continue; // the doc string is in the line verbatim
+        const a = atoms[e.id]; if (!a) continue; // a declaration that does not evaluate is not listed (as enumeration would)
+        if (want && !want.includes(a.type) && a.type !== 'text') continue;
+        if (!byName && !a.name.toLowerCase().includes(q) && !(a.doc || '').toLowerCase().includes(q)) continue;
+        if (seen >= hi) { more = true; break; }
+        if (seen++ >= lo) rows.push({ key: e.id, name: a.name, type: a.type, ref: { $atom: e.id }, doc: a.doc || '' });
+      }
+    } else for (const [id, a] of Object.entries(atoms)) {
       if (want && !want.includes(a.type) && a.type !== 'text') continue;
       if (q && !a.name.toLowerCase().includes(q) && !(a.doc || '').toLowerCase().includes(q)) continue;
       if (seen >= hi) { more = true; break; }

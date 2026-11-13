@@ -68,7 +68,12 @@ const V = { x: 24, y: 24, s: 1 };
 /* ---------------------------------------------------------------- code -> model -> view */
 function scanSpans(text, model) {
   // top-level statement ranges -> graph node ids, for code <-> graph selection sync (statement order mirrors model.parse)
-  let ast; try { ast = acorn.parse(text, { ecmaVersion: 'latest', sourceType: 'module', allowReturnOutsideFunction: true, allowAwaitOutsideFunction: true }); } catch (e) { return { spans: [], err: e }; }
+  // the model's verbatim header (e.g. a 5000-line atom-declaration prefix) holds no structural statement: parse only what follows it,
+  // offsets shifted back, so the cost follows the program and not the declarations (#64); any doubt -> the whole text, as before
+  const hd = model.atoms && typeof model.header === 'string' ? model.header : ''; // model.atoms is set only after a clean parse
+  let off = hd && text.startsWith(hd) && (text.length === hd.length || text[hd.length] === '\n') ? hd.length : 0;
+  const opts = { ecmaVersion: 'latest', sourceType: 'module', allowReturnOutsideFunction: true, allowAwaitOutsideFunction: true };
+  let ast; try { ast = acorn.parse(off ? text.slice(off) : text, opts); } catch (e) { if (!off) return { spans: [], err: e }; off = 0; try { ast = acorn.parse(text, opts); } catch (e2) { return { spans: [], err: e2 }; } }
   const out = []; let structural = false, ti = 0, bi = 0;
   const tracks = model.tracks || [];
   const str = (n) => (n && n.type === 'Literal' && typeof n.value === 'string' ? n.value : null);
@@ -82,7 +87,7 @@ function scanSpans(text, model) {
       else if (hk === 'bind') { bi++; const o = e.arguments.find((x) => x.type === 'ObjectExpression'); const p = o && o.properties.find((q) => q.key && (q.key.name === 'id' || q.key.value === 'id')); id = `bind:${(p && str(p.value)) || 'b' + bi}`; }
     } else if (hk === 'inst') { structural = true; const o = e.arguments[1]; const p = o && o.properties && o.properties.find((q) => q.key && q.key.name === 'as'); id = `inst:${p && str(p.value)}`; }
     else if (st.type === 'LabeledStatement' || structural) { structural = true; const t = tracks[ti++]; if (t) id = (t.chain == null && t.source == null ? 'code:' : 'track:') + t.name; }
-    if (id) out.push({ id, start: st.start, end: st.end });
+    if (id) out.push({ id, start: st.start + off, end: st.end + off });
   }
   return { spans: out, err: null };
 }
@@ -519,6 +524,8 @@ function syncMirror(scroll = true) {
   if (!mirror) return; const t = codeTa.value;
   const ids = G.wire && G.wire.startsWith('bind:') ? ['bind:' + G.wire.split(':')[1]] : [...G.sel];
   const sp = G.spans.filter((s) => ids.includes(s.id)).sort((a, b) => a.start - b.start);
+  // the mirror's text is transparent and only positions the marks: with nothing selected it stays empty (no copy of a large document)
+  if (!sp.length) { if (mirror.firstChild) mirror.replaceChildren(); return; }
   let out = '', at = 0;
   for (const s of sp) { if (s.start < at || s.end > t.length) continue; out += esc(t.slice(at, s.start)) + '<mark>' + esc(t.slice(s.start, s.end)) + '</mark>'; at = s.end; }
   mirror.innerHTML = out + esc(t.slice(at)) + '\n';

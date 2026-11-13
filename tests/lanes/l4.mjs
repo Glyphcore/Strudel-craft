@@ -202,4 +202,42 @@ const NM = process.env.STRUDEL_MODULES;
   assert.throws(() => LD.filterByTags(items, 'drum &'), /E_BAD_SELECTOR/);
   skip('CLI: `strudel atoms list --tag "<selector>"`', 'the strudel CLI lives in another repo (engine/strudel-cli) and is not in this checkout; the shared grammar function lanes-data.js filterByTags(items, selector) is verified here (drum & !wet, #pad | wet, bad selector -> E_BAD_SELECTOR)');
 }
+
+// ---- 10. Export tap: model verdict, checkWire, engine check and runtime agree (#82)
+{
+  const rdSrc = 'b: s("hh*8").gain(tap("inner:env"))\n';
+  const cases = [
+    ['no export', 'a: s("bd*4").split(x => x.tap("inner").lpf(500))\n' + rdSrc, true],
+    ['exported before the split', 'a: s("bd*4").tap("inner", { export: true }).split(x => x.tap("inner").lpf(500))\n' + rdSrc, false],
+    ['tap only inside a branch', 'a: s("bd*4").split(x => x.tap("inner").lpf(500), x => x.hpf(300))\n' + rdSrc, true],
+    ['nested split', 'a: s("bd*4").split(x => x.split(y => y.tap("inner").lpf(500)))\n' + rdSrc, true],
+    ['nested split, exported', 'a: s("bd*4").tap("inner", { export: true }).split(x => x.split(y => y.tap("inner").lpf(500)))\n' + rdSrc, false],
+    ['two lanes export the same name', 'a: s("bd*4").tap("inner", { export: true }).split(x => x.tap("inner").lpf(500))\nc: s("sd*2").tap("inner", { export: true })\n' + rdSrc, false],
+  ];
+  let rt = null;
+  const RT = await bootRuntime();
+  if (RT && NM) {
+    const pkg = (n) => { try { return JSON.parse(fs.readFileSync(path.join(NM, n, 'package.json'), 'utf8')); } catch { return null; } };
+    const j = pkg('@strudel/transpiler');
+    if (j) {
+      const ex = typeof j.exports === 'object' && j.exports['.'] ? (j.exports['.'].import || j.exports['.'].default || j.exports['.']) : j.module || j.main;
+      const tm = await import(pathToFileURL(path.join(NM, '@strudel/transpiler', ex)).href); await RT.core.evalScope(RT.core, RT.mini);
+      const lanes = installLanes(RT.S, RT.hooks); const R = RT.core.repl({ defaultOutput: () => {}, getTime: () => 0, transpiler: tm.transpiler });
+      rt = async (src) => { RT.hooks.reset(); RT.hooks.live = false; lanes.reset(); try { await R.evaluate(protect(lanes.prepare(src).code), false); } catch (e) { return /E_LANE_CROSS/.test(String(e.message || e)) ? 'refused' : 'error ' + e.message; } return R.scheduler.pattern.queryArc(0, 2, { _cps: 1 }).filter((h) => h.value.s === 'hh').length; };
+    }
+  }
+  for (const [name, src, refused] of cases) {
+    const g = M.graph(M.parse(src)), cw = M.checkWire(M.parse(src), 'tap:inner', 'track:b#0'), en = compileLanes(src).graph.diagnostics.filter((d) => d.code === 'E_LANE_CROSS');
+    assert.equal((g.refused || []).length > 0, refused, name + ': model');
+    assert.equal(cw.ok, !refused, name + ': checkWire');
+    assert.equal(en.length > 0, refused, name + ': engine check');
+    if (!refused) assert.ok(g.wires.some((w) => w.from.node === 'tap:inner' && w.to.node.startsWith('track:b')), name + ': wire drawn');
+    if (rt) { const r = await rt(src); if (refused) assert.equal(r, 'refused', name + ': runtime refuses'); else assert.ok(typeof r === 'number' && r > 0, name + ': runtime read resolves with events, got ' + r); }
+  }
+  // the fix op itself: only the one statement changes, and the refusal is gone afterwards
+  const m6 = M.parse(cases[0][1]), fixed = M.generate(M.applyOp(m6, M.graph(m6).refused[0].fixes[0].op));
+  assert.equal(fixed, cases[1][1]); assert.equal(M.graph(M.parse(fixed)).refused, undefined); assert.equal(M.generate(M.parse(fixed)), fixed);
+  const tn = M.graph(M.parse(fixed)).nodes.find((n) => n.id === 'tap:inner'); assert.ok(tn.export && !tn.local, 'exported lane-level tap is not local');
+  pass(`Export tap (#82): ${cases.length} cases agree between graph().refused, checkWire, the engine check${rt ? ' and the runtime (read resolves with events / is refused)' : ' (runtime skipped: STRUDEL_MODULES)'}; after the fix the refusal is gone and the tap node is exported, not local`);
+}
 console.log('lanes L4 done');

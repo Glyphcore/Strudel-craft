@@ -646,8 +646,8 @@ export function graph(model) {
   // atom cards exist only while something references them (ATOMS 9): built from the reference list, never from model.atoms
   for (const c of AT.atomCards(model)) add({ ...c });
   const addSlot = (scope, name) => add({ id: `slot:${scope}/${name}`, kind: 'slot', scope, name });
-  const publish = (name, from, port, track, opts) => { const tn = add({ id: `tap:${name}`, kind: 'tap', name, facets: [] }); wire('pattern', from, port, tn.id, 'in'); if (track.ns) tn.ns = track.ns; if (opts && opts.export === true) tn.export = true; return tn; };
-  const lanesOn = hasLanes(model), branchTaps = new Map(); // tap name -> { lane, branch }: names published inside a split branch are local to it
+  const publish = (name, from, port, track, opts) => { const tn = add({ id: `tap:${name}`, kind: 'tap', name, facets: [] }); wire('pattern', from, port, tn.id, 'in'); if (track.ns) tn.ns = track.ns; if (opts && opts.export === true) { tn.export = true; exported.add(name); } return tn; };
+  const exported = new Set(), lanesOn = hasLanes(model), branchTaps = new Map(); // tap name -> { lane, branch }: names published inside a split branch are local to it
   (model.tracks || []).forEach((t) => {
     if (t.chain == null && t.source == null) {
       const id = `code:${t.name}`, sc = scanText(t.src || '');
@@ -681,6 +681,7 @@ export function graph(model) {
     add({ id: `inst:${i.as}`, kind: 'component', component: i.component, args: i.args || {} });
     for (const mk of gateMarkers(i.gate, markers)) wire('gate', `marker:${mk}`, 'point', `inst:${i.as}`, 'gate');
   }
+  for (const nm of exported) if (branchTaps.has(nm)) { branchTaps.delete(nm); const tn = byId.get(`tap:${nm}`); delete tn.local; delete tn.lane; delete tn.branch; } // a lane-level exported tap wins over a branch-local one of the same name (LANES 4.2; the engine check treats any lane-level publish the same way)
   const trackNode = (name) => byId.has(`track:${name}`) ? `track:${name}` : `code:${name}`;
   const resolve = (ref, to, tp) => {
     const r = parseRef(ref), inst = (model.instances || []).find(i => i.as === r.scope);
@@ -733,7 +734,8 @@ export function graph(model) {
         const id = `${bid}.${k}`;
         add({ id, kind: 'step', method: step[0], parent: tid, lane: t.name, branch: j });
         wire('audio', last, 'out', id, 'in'); last = id;
-        if (step[0] === 'tap' && typeof step[1] === 'string') { const nm = parseRef(step[1]).name, tn = publish(nm, id, 'out', t); tn.local = true; tn.lane = t.name; tn.branch = j; branchTaps.set(nm, { lane: t.name, branch: j, node: id }); }
+        const names = step[0] === 'tap' && typeof step[1] === 'string' ? [step[1]] : step.slice(1).flatMap(a => isObj(a) && a.$code !== undefined ? scanText(a.$code).publishes : []); // taps inside a nested split's code are branch-local too
+        for (const ref of names) { const nm = parseRef(ref).name, tn = publish(nm, id, 'out', t); tn.local = true; tn.lane = t.name; tn.branch = j; branchTaps.set(nm, { lane: t.name, branch: j, node: id }); }
       });
       wire('audio', last, 'out', join, `in${j}`);
     });

@@ -44,6 +44,7 @@ const audioWires = (g) => g.wires.filter((w) => w.type === 'audio');
   outs.forEach((o) => assert.equal(changed(src6, o), 1, 'one statement changes'));
   // the same check for a wire the UI proposes
   const c = checkWire(m6, 'tap:inner', 'track:b#0'); assert.equal(c.ok, false); assert.equal(c.code, 'E_LANE_CROSS'); assert.deepEqual(c.fixes.map((f) => f.label), ['Export tap', 'Add send']);
+  const gf = graph(parse(outs[0])); assert.equal(gf.refused, undefined, 'after Export tap no refusal remains (#82)'); assert.ok(gf.wires.some((w) => w.from.node === 'tap:inner' && w.to.node.startsWith('track:b')), 'the wire tap:inner -> b is drawn after Export tap'); assert.equal(checkWire(parse(outs[0]), 'tap:inner', 'track:b#0').ok, true);
   assert.equal(checkWire(m6, 'tap:inner', 'track:a#0').ok, true, 'inside its own lane the wire is fine');
   pass(`Split fan (data side; runtime waits on #75): example 1 = 1 lane card, ${branches.length} branch sub-chains (${branches.map((b) => b.steps).join('/')} steps), 1 audio wire into the fan; example 6 refused ${r.code} with fixes ${r.fixes.map((f) => f.label).join(' / ')}, each a one-statement applyOp change`);
 }

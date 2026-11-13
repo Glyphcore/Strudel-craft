@@ -126,11 +126,12 @@ export async function lanesUiSection({ browser, BASE, OUT, check, watch, metrics
       await page.waitForSelector('.gx-sheet .gl-crossmsg');
       const sheet = await page.evaluate(() => ({ msg: document.querySelector('.gl-crossmsg').textContent, fixes: [...document.querySelectorAll('.gx-sheet .gl-fix')].map((b) => b.textContent) }));
       const before = await text(page); await page.click(`.gx-sheet .gl-fix[data-i="${i}"]`); await settle(page);
-      const d = diff(before, await text(page)); fixes[label] = { sheet, added: d.added, removed: d.removed };
+      const d = diff(before, await text(page)); const after = await page.evaluate(() => ({ refusedRow: !!document.querySelector('.gn[data-id="track:b"] .gl-ref'), refused: document.querySelectorAll('.gl-ref').length })); fixes[label] = { sheet, added: d.added, removed: d.removed, after };
     }
     const ex = fixes['Export tap'], as = fixes['Add send'];
     M.taps = { edge, wired, fixes };
     check('lanes ui: an exported tap shows on the card edge and wires to another lane (.wire in code)', edge.exported && edge.edge && wired, JSON.stringify({ edge, wired }));
+    check('lanes ui: after the Export tap fix the refusal row is gone (#82)', edge.refusedRow && ex.after.refusedRow === false && ex.after.refused === 0, JSON.stringify({ before: edge.refusedRow, ex: ex.after }));
     check('lanes ui: a local tap is refused with the E_LANE_CROSS text and working Export tap / Add send buttons',
       edge.local && edge.localInside && !edge.localOnEdge && ex.sheet.msg.startsWith('E_LANE_CROSS: tap "inner" of lane "a"') && JSON.stringify(ex.sheet.fixes) === '["Export tap","Add send"]'
       && ex.added.length === 1 && ex.added[0].includes('a: s("hh*8").tap("inner", { export: true }).split(') && as.added.length === 1 && /^a: .*\.send\("a"\)$/.test(as.added[0]), JSON.stringify(fixes));

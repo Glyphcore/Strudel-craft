@@ -26,6 +26,15 @@ for (const [name, src] of [['mix', MIX], ['big40', BIG(40)]]) {
 }
 pass('lazy parse equals eager parse (atoms, order, tracks, generate round trip)');
 
+// the index is memoised by prefix text: an edit outside the prefix reuses it, an edit inside re-indexes; results always equal eager
+{ const base = BIG(60), more = base + 'd: s(atoms.p3)\n', ins = base.replace('bd*1"', 'bd*9"'), add = base.replace('a: s(', 'atom("zz", { type: "mini", body: "hh" })\na: s(');
+  for (const [n, t] of [['outside', more], ['inside', ins], ['append decl', add], ['again', base]]) {
+    const a = M.parse(t), b = M.parse(EAGER(t));
+    assert.deepEqual(JSON.parse(JSON.stringify(a.atoms)), JSON.parse(JSON.stringify(b.atoms)), n + ': atoms');
+    assert.equal(M.generate(a), t, n + ': round trip');
+  } }
+pass('prefix memo: edits outside / inside / appended declaration stay equal to eager');
+
 const med = (f) => { const v = []; for (let i = 0; i < 7; i++) { const t = performance.now(); f(i); v.push(performance.now() - t); } return v.sort((x, y) => x - y)[3]; };
 const big = BIG(5000), small = BIG(3);
 const tBig = med((i) => M.parse(big + ' '.repeat(i))), tSmall = med((i) => M.parse(small + ' '.repeat(i)));

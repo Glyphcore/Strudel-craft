@@ -76,7 +76,7 @@ function atomsFromCode(text) {
   if (!atomsIn(text)) return null;
   try {
     const lz = AT.lazyAtoms(text); // strict declaration prefix: indexed, evaluated only when read (docs/ATOMS.md, laziness)
-    if (lz) return { env: lz.env, ids: lz.ids, names: lz.names, atoms: null, lazy: lz, prefixEnd: AT.indexDecls(text).end };
+    if (lz) return { env: lz.env, ids: lz.ids, names: lz.names, atoms: null, lazy: lz, prefixEnd: lz.end };
     const env = AT.buildEnv(text, {}, { diag: [] }), r = AT.reconcile({}, env);
     if (!Object.keys(r.atoms).length) return null;
     return { env, ids: r.ids, names: Object.fromEntries(Object.entries(r.atoms).map(([id, a]) => [id, a.name])), atoms: r.atoms };
@@ -287,7 +287,7 @@ export function parse(text) {
   let ast;
   const prevAtoms = ATOMS; ATOMS = atomsFromCode(body); // `atom(...)` declarations -> model.atoms; references resolve to ids below
   const lazyEnd = ATOMS && ATOMS.lazy ? ATOMS.prefixEnd : 0; // lazy declaration prefix: kept verbatim in the header, never handed to the JS parser
-  try { ast = parseJs(lazyEnd ? ' '.repeat(lazyEnd) + body.slice(lazyEnd) : body); } catch { ATOMS = prevAtoms; if (body) m.header = body; return m; }
+  try { ast = lazyEnd ? new acorn.Parser({ ecmaVersion: 'latest', sourceType: 'module', allowAwaitOutsideFunction: true, allowReturnOutsideFunction: true }, body, lazyEnd).parse() : parseJs(body); } catch { ATOMS = prevAtoms; if (body) m.header = body; return m; }
   if (ATOMS) m.atoms = ATOMS.lazy ? ATOMS.lazy.makeAtoms() : clone(ATOMS.atoms);
   let header = lazyEnd ? body.slice(0, lazyEnd) : '', structural = false, pos = lazyEnd, codeN = 0;
   const n = ast.body.length;

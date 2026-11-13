@@ -555,10 +555,10 @@
  },
  "recipes_audible": 46,
  "graph": {
-  "date": "2026-11-13T15:11:56.471Z",
+  "date": "2026-11-13T15:30:22.453Z",
   "shell": {
    "graph_files_requested_with_shell": 0,
-   "shell_same_origin_bytes": 1136947
+   "shell_same_origin_bytes": 1139750
   },
   "two_views": {
    "added": [
@@ -675,45 +675,45 @@
     "max_ms": 16.8
    },
    "pan": {
-    "n": 240,
-    "mean_ms": 16.67,
-    "p95_ms": 16.8,
+    "n": 239,
+    "mean_ms": 16.74,
+    "p95_ms": 16.7,
     "p95_vsync_ms": 16.67,
-    "dropped_pct": 0,
-    "max_ms": 16.8
+    "dropped_pct": 0.4,
+    "max_ms": 33.3
    },
    "zoom": {
-    "n": 231,
-    "mean_ms": 17.32,
+    "n": 226,
+    "mean_ms": 17.7,
     "p95_ms": 16.8,
     "p95_vsync_ms": 16.67,
-    "dropped_pct": 2.6,
-    "max_ms": 66.8
+    "dropped_pct": 4,
+    "max_ms": 66.7
    },
    "all": {
-    "n": 471,
-    "mean_ms": 16.98,
+    "n": 465,
+    "mean_ms": 17.2,
     "p95_ms": 16.8,
     "p95_vsync_ms": 16.67,
-    "dropped_pct": 1.3,
-    "max_ms": 66.8
+    "dropped_pct": 2.2,
+    "max_ms": 66.7
    },
    "cpu4x": {
     "pan": {
-     "n": 240,
-     "mean_ms": 16.67,
+     "n": 237,
+     "mean_ms": 16.88,
      "p95_ms": 16.8,
      "p95_vsync_ms": 16.67,
-     "dropped_pct": 0,
-     "max_ms": 16.8
+     "dropped_pct": 1.3,
+     "max_ms": 33.4
     },
     "zoom": {
-     "n": 79,
-     "mean_ms": 50.84,
-     "p95_ms": 83.3,
-     "p95_vsync_ms": 83.33,
-     "dropped_pct": 83.5,
-     "max_ms": 566.6
+     "n": 84,
+     "mean_ms": 47.62,
+     "p95_ms": 66.7,
+     "p95_vsync_ms": 66.67,
+     "dropped_pct": 79.8,
+     "max_ms": 466.7
     }
    }
   },
@@ -1260,7 +1260,7 @@
   }
  ],
  "atoms_ui": {
-  "date": "2026-11-13T15:10:31.706Z",
+  "date": "2026-11-13T15:29:37.158Z",
   "derived_edit": {
    "added": [
     "k2: s(atoms.kick4({ n: 6 })).gain(0.5)"
@@ -1363,48 +1363,48 @@
   },
   "lazy": {
    "declared_5000": {
-    "first_paint_ms": 120.4,
+    "first_paint_ms": 100.8,
     "dom_cards": 3,
     "scene_cards": 3
    },
    "declared_3": {
-    "first_paint_ms": 83.8,
+    "first_paint_ms": 119.5,
     "dom_cards": 3
    },
-   "delta_pct": 43.7,
+   "delta_pct": -15.6,
    "rounds": [
     {
      "small": {
-      "ms": 83.8,
+      "ms": 122.5,
       "dom_cards": 3,
       "scene_cards": 3
      },
      "big": {
-      "ms": 104.5,
+      "ms": 131,
       "dom_cards": 3,
       "scene_cards": 3
      }
     },
     {
      "small": {
-      "ms": 90.1,
+      "ms": 119.5,
       "dom_cards": 3,
       "scene_cards": 3
      },
      "big": {
-      "ms": 122,
+      "ms": 100.8,
       "dom_cards": 3,
       "scene_cards": 3
      }
     },
     {
      "small": {
-      "ms": 61.4,
+      "ms": 54.5,
       "dom_cards": 3,
       "scene_cards": 3
      },
      "big": {
-      "ms": 120.4,
+      "ms": 80,
       "dom_cards": 3,
       "scene_cards": 3
      }

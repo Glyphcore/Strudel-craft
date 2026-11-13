@@ -559,26 +559,54 @@ export function reconcile(prev = {}, env, { keep = new Set() } = {}) {
 // hashed only when something reads it (a reference, model.atoms[id]); anything that enumerates resolves the lot, in declaration order.
 const DECL_LINE = /(?:[ \t]*\n)*atom\((["'])([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\1, \{ type: (["'])([A-Za-z0-9_.-]+)\3[^\n\r]*?\}\);?(?=\n|$)/y;
 const LAZY_MEMO = new Map(); // declaration line -> { rec, d } for declarations that reference no other atom (so the record depends on the line alone)
-export function indexDecls(code) {
-  if (code.length < 2 || code.charCodeAt(0) !== 97 /* a */ || code.includes('`') || code.includes('/*')) return null;
+const IX_CACHE = []; // small LRU of indexed prefixes: { prefix, end, list, byName, ids, names, order } (an index depends on the prefix text alone)
+function scanDecls(code) {
   const list = [], byName = new Map(); let pos = 0, ln = 1, ls = -1;
   for (;;) {
     DECL_LINE.lastIndex = pos; const m = DECL_LINE.exec(code); if (!m) break;
     const from = m.index + m[0].indexOf('atom('), to = m.index + m[0].length, line = code.slice(from, to);
     if (line.indexOf('atom(', 5) >= 0 || byName.has(m[2])) return null;
     for (let i = code.indexOf('\n', pos); i >= 0 && i < from; i = code.indexOf('\n', i + 1)) { ln++; ls = i; }
-    const e = { name: m[2], type: m[4], from, to, line, at: { from, to, line: ln, col: from - ls } }; list.push(e); byName.set(e.name, e); pos = to;
+    const e = { i: list.length, name: m[2], type: m[4], from, to, line, at: { from, to, line: ln, col: from - ls } }; list.push(e); byName.set(e.name, e); pos = to;
     if (code[pos] === '\n') { if (pos + 1 >= code.length) { pos++; break; } } else break;
   }
   if (!list.length) return null;
-  const rest = code.slice(pos);
+  const end = list[list.length - 1].to;
+  return { prefix: code.slice(0, end), end, list, byName, ids: null, names: null, order: null, pos };
+}
+export function indexDecls(code) {
+  if (code.length < 2 || code.charCodeAt(0) !== 97 /* a */ || code.includes('`') || code.includes('/*')) return null;
+  let ix = null;
+  for (let i = 0; i < IX_CACHE.length; i++) { // hit: the text starts with a cached prefix and no further declaration line follows it
+    const c = IX_CACHE[i]; if (!code.startsWith(c.prefix)) continue;
+    if (code[c.end] === '\n' && c.end + 1 < code.length) { DECL_LINE.lastIndex = c.end; if (DECL_LINE.exec(code)) continue; }
+    ix = c; if (i) { IX_CACHE.splice(i, 1); IX_CACHE.unshift(c); } break;
+  }
+  if (!ix) { ix = scanDecls(code); if (!ix) return null; IX_CACHE.unshift(ix); if (IX_CACHE.length > 4) IX_CACHE.pop(); }
+  const rest = code.slice(ix.end);
   if (/\batom\s*\(/.test(rest) || /^\s*(?:[^A-Za-z_$\s]|in\b|instanceof\b)/.test(rest)) return null;
-  return { list, byName, end: list[list.length - 1].to };
+  return ix;
 }
 export function lazyAtoms(code) { // -> { env, ids, names, makeAtoms() } | null
   const ix = indexDecls(code); if (!ix) return null;
-  const ids = {}, names = {}, taken = new Set();
-  for (const e of ix.list) { const id = idFor(e.type, e.name, taken); taken.add(id); ids[e.name] = id; names[id] = e.name; }
+  if (!ix.ids) { // ids from the index alone, once per distinct prefix. Without a base-id collision (the usual case) they are read lazily:
+    // idFor is `a` + b36(FNV(type/name)), so only the numeric hashes are computed up front and an id string exists once something reads it.
+    const n = ix.list.length, base = new Array(n), byBase = new Map();
+    for (let i = 0; i < n; i++) { const e = ix.list[i], h = FNV(e.type + '/' + e.name) % 36 ** 6; base[i] = h; byBase.set(h, i); }
+    if (byBase.size === n) {
+      const idAt = (i) => 'a' + b36(base[i]);
+      const view = (read, keys) => { let all = null; const mat = () => (all ||= Object.fromEntries(keys())); return new Proxy({}, { get: (_, k) => (all ? all[k] : read(k)), has: (_, k) => (all ? k in all : read(k) !== undefined), ownKeys: () => Reflect.ownKeys(mat()), getOwnPropertyDescriptor: (_, k) => { if (all) return Reflect.getOwnPropertyDescriptor(all, k); const v = read(k); return v === undefined ? undefined : { value: v, writable: true, enumerable: true, configurable: true }; }, set() { throw new TypeError('atom id index is read-only'); } }); };
+      ix.ids = view((k) => (typeof k === 'string' && ix.byName.has(k) ? idAt(ix.byName.get(k).i) : undefined), () => ix.list.map((e, i) => [e.name, idAt(i)]));
+      ix.names = view((k) => (typeof k === 'string' && k.length === 7 && k.charCodeAt(0) === 97 && byBase.has(parseInt(k.slice(1), 36)) && idAt(byBase.get(parseInt(k.slice(1), 36))) === k ? ix.list[byBase.get(parseInt(k.slice(1), 36))].name : undefined), () => ix.list.map((e, i) => [idAt(i), e.name]));
+      ix.orderAt = idAt;
+    } else {
+      const ids = {}, names = {}, taken = new Set();
+      for (const e of ix.list) { const id = idFor(e.type, e.name, taken); taken.add(id); ids[e.name] = id; names[id] = e.name; }
+      ix.ids = ids; ix.names = names; const o = ix.list.map((e) => ids[e.name]); ix.orderAt = (i) => o[i];
+    }
+    ix.order = null;
+  }
+  const { ids, names } = ix;
   let full = null; const whole = () => (full ||= buildEnv(code, {}, { diag: [] }));
   const decls = new Map();
   const decl = (name) => {
@@ -610,11 +638,11 @@ export function lazyAtoms(code) { // -> { env, ids, names, makeAtoms() } | null
     if (key) { if (LAZY_MEMO.size > 20000) LAZY_MEMO.clear(); LAZY_MEMO.set(key, { id, rec: deepFreeze(JSON.parse(JSON.stringify(rec))), d }); }
     return rec;
   };
-  const order = ix.list.map((e) => ids[e.name]);
+  const orderOf = () => (ix.order ||= ix.list.map((e, i) => ix.orderAt(i)));
   const makeAtoms = () => { // a model.atoms stand-in: reads of one id resolve that one; any enumeration / write resolves all, in declaration order
     const store = {}; let all = false;
     const clone1 = (r) => JSON.parse(JSON.stringify(r));
-    const materialise = () => { if (all) return; const next = {}; for (const id of order) { const r = Object.prototype.hasOwnProperty.call(store, id) ? store[id] : record(id); if (r) next[id] = r === store[id] ? r : clone1(r); } for (const k of Object.keys(store)) delete store[k]; Object.assign(store, next); all = true; };
+    const materialise = () => { if (all) return; const next = {}; for (const id of orderOf()) { const r = Object.prototype.hasOwnProperty.call(store, id) ? store[id] : record(id); if (r) next[id] = r === store[id] ? r : clone1(r); } for (const k of Object.keys(store)) delete store[k]; Object.assign(store, next); all = true; };
     return new Proxy(store, {
       get(t, k, r) { if (!all && typeof k === 'string' && !Object.prototype.hasOwnProperty.call(t, k) && Object.prototype.hasOwnProperty.call(names, k)) { const rec = record(k); if (rec) t[k] = clone1(rec); } return Reflect.get(t, k, r); },
       has(t, k) { if (all || typeof k !== 'string') return Reflect.has(t, k); return Reflect.has(t, k) || (Object.prototype.hasOwnProperty.call(names, k) && !!record(k)); },
@@ -625,7 +653,7 @@ export function lazyAtoms(code) { // -> { env, ids, names, makeAtoms() } | null
       defineProperty(t, k, d) { materialise(); return Reflect.defineProperty(t, k, d); },
     });
   };
-  return { env, ids, names, makeAtoms, order, record };
+  return { env, ids, names, makeAtoms, get order() { return orderOf(); }, record, end: ix.end };
 }
 
 // ---------------------------------------------------------------- model references and graph cards (sections 4, 9)

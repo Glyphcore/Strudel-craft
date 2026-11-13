@@ -150,6 +150,12 @@ JSON, `hash()`, export, the atom browser listing) resolves all, in declaration o
 content, records of self-contained declarations by declaration text. Any other layout (declarations elsewhere, multi-line, duplicates,
 errors) takes the eager path unchanged. `generate(parse(code)) === code` and ids / revs / hashes are identical on both paths
 (`tests/atoms/a4_lazy.mjs`). Callers that enumerate `model.atoms` just to look up a few ids give the laziness back; index by id instead.
+The declaration index is memoised by the prefix text itself (a 4-entry LRU in `engine/atoms.js`): a later parse whose text starts with a
+cached prefix, with no further declaration line right after it, costs a `startsWith`, so edits after the prefix reuse it and an edit inside
+re-indexes only that prefix. Ids are computed once per prefix and read lazily (only the numeric FNV hashes up front; an id string exists
+when read; a base-id collision falls back to eager `idFor` objects). `parse()` hands acorn the text after the prefix with a start offset,
+not a padded copy. What remains at 5000 declarations is the size of a 5000-line document, not atom work: a 3-declared document padded with
+5000 comment lines paints the Graph as slowly as the 5000-declared one.
 The Graph view (#64) follows this: atom cards read `model.atoms[id]` for the referenced ids and walk their `from` / `$atom` closure by id;
 selection-sync spans skip the model's verbatim declaration header; the atom browser lists Document atoms from `indexDecls` and resolves
 only the rows up to the page it shows (enumerating `model.atoms` only when the document is not lazy or a subgraph level is shown).

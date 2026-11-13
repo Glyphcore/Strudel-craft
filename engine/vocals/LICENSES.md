@@ -12,3 +12,5 @@
 | Rejected: torchaudio MMS_FA (model CC-BY-NC), Gentle, MFA (MIT, alt backend, external) | | |
 
 No model weights or third-party code are vendored in this repo.
+
+| Shabda speech (shabda.ndre.gr; speech via Google TTS) | no per-clip licence published | optional `--tts-fallback` (opt-in, network): clips recorded in words.json as `source:tts` with URL and licence note; verify provider terms before redistributing |

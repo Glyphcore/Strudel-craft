@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Word-keyed vocal sample bank from forced alignment. Glyphcore/Strudel-craft#42 (word-vocals P1)
 
-  engine/vocals/wordbank.sh STEM.wav LYRICS.txt OUT_DIR [--bank vox] [--timings T.json] [--syll rule|pyphen] [--aligner whisperx|mfa] [--per-section] [--no-norm] [--own-file]
+  engine/vocals/wordbank.sh STEM.wav LYRICS.txt OUT_DIR [--bank vox] [--timings T.json] [--syll rule|pyphen] [--aligner whisperx|mfa] [--per-section] [--no-norm] [--own-file] [--tts-fallback]
   engine/vocals/wordbank.sh --selftest
 
 Writes OUT_DIR/{strudel.json, words.json, wav/*.wav, WORDBANK.md} and OUT_DIR/pitched/{strudel.json, wav/} (note()-retunable map: --samples-dir OUT_DIR/pitched).
@@ -174,7 +174,7 @@ def syl_bounds(seg, n):
     return [0] + [int(np.searchsorted(c, k / n)) for k in range(1, n)] + [len(seg)]
 
 
-def build(stem, lyrics_txt, out, bank, timings, syll, norm, aligner, own, per_section=False, formant_steps=None, formant_backend='pyworld'):
+def build(stem, lyrics_txt, out, bank, timings, syll, norm, aligner, own, per_section=False, formant_steps=None, formant_backend='pyworld', tts=False, tts_fetch=None):
     stem, out = Path(stem), Path(out)
     if not own and not owner_ok(stem):
         print(f'owner guard: {stem} has no owner provenance (tracks/<slug>/source/*.json handle in data/suno/owners.json); use --own-file only for audio you recorded', file=sys.stderr); return 4
@@ -218,6 +218,11 @@ def build(stem, lyrics_txt, out, bank, timings, syll, norm, aligner, own, per_se
             for pk_ in (f'{bank}_{s}_s{j}', f'{bank}_syl'): pit.setdefault(pk_, []).append((sm_, sf0, ss, sp.name))
             rec['syllables'].append({'text': part, 'k': j, 'syl_n': len(smap[f'{bank}_syl']) - 1, 't_start': round(ta + sb[j] / sr, 4), 't_end': round(ta + sb[j + 1] / sr, 4), 'dur': round(len(ss) / sr, 4)})
         meta.append(rec)
+    if tts:  # P5 (#46): opt-in only; words absent from the stem get a Shabda speech clip under the same key (flagged source:tts in words.json)
+        import tts_fallback
+        miss = list(dict.fromkeys(w for w, *_ in words if f'{bank}_{slug(w)}' not in smap))
+        add, tm = tts_fallback.fill(miss, out, bank, SR, slug, **({'fetch': tts_fetch} if tts_fetch else {}))
+        smap.update(add); meta.extend(tm)
     (out / 'strudel.json').write_text(json.dumps(smap, indent=1) + '\n')
     # pitched map (word-vocals P2, #43): {key: {basenote: [urls]}} in OUT_DIR/pitched/. Each key's slices are speed-shifted so their sung f0 sits exactly on
     # the key's base note (median MIDI, rounded), so note("c4") retunes exactly relative to base. The flat strudel.json keeps natural intonation untouched.
@@ -238,9 +243,9 @@ def build(stem, lyrics_txt, out, bank, timings, syll, norm, aligner, own, per_se
         fs = {k_: [(nm_, sg_) for _, _, sg_, nm_ in lst] for k_, lst in pit.items() if not re.search(r'_s\d+$', k_) and not k_.endswith('_syl')}
         formant.render_variants(fs, out, bank, formant_steps, formant_backend)
     (out / 'words.json').write_text(json.dumps({'bank': bank, 'source': str(stem), 'sr': SR, 'words': meta}, indent=1) + '\n')
-    good = [m for m in meta if not m.get('skipped')]; hi = [m for m in good if m['confidence'] > 0.5]
+    good = [m for m in meta if not m.get('skipped') and not m.get('source')]; hi = [m for m in good if m['confidence'] > 0.5]
     pct = 100 * len(hi) / len(words)
-    noad = [m for m in meta if not m.get('adlib')]; noad_hi = [m for m in noad if not m.get('skipped') and m['confidence'] > 0.5]
+    noad = [m for m in meta if not m.get('adlib') and not m.get('source')]; noad_hi = [m for m in noad if not m.get('skipped') and m['confidence'] > 0.5]
     pct_noad = 100 * len(noad_hi) / max(1, len(noad)); lowc = len(good) - len(hi)
     voiced = sum(1 for m in good if m['f0_hz'])
     (out / 'WORDBANK.md').write_text(
@@ -281,11 +286,11 @@ def main():
     ap.add_argument('--bank', default='vox'); ap.add_argument('--timings'); ap.add_argument('--syll', choices=['rule', 'pyphen'], default='rule')
     ap.add_argument('--aligner', choices=['whisperx', 'mfa'], default='whisperx'); ap.add_argument('--no-norm', action='store_true')
     ap.add_argument('--own-file', action='store_true'); ap.add_argument('--per-section', action='store_true'); ap.add_argument('--selftest', action='store_true')
-    ap.add_argument('--formant-steps', help='e.g. -12..12 or -5,7: pre-render formant-preserving pitch variants (default off)'); ap.add_argument('--formant-backend', choices=['pyworld', 'rubberband'], default='pyworld')
+    ap.add_argument('--formant-steps', help='e.g. -12..12 or -5,7: pre-render formant-preserving pitch variants (default off)'); ap.add_argument('--tts-fallback', action='store_true', help='opt-in: fetch Shabda speech clips (network) for lyric words missing from the stem'); ap.add_argument('--formant-backend', choices=['pyworld', 'rubberband'], default='pyworld')
     a = ap.parse_args()
     if a.selftest: return selftest()
     if not (a.stem and a.lyrics and a.out): ap.print_usage(sys.stderr); return 2
-    return build(a.stem, a.lyrics, a.out, a.bank, a.timings, a.syll, not a.no_norm, a.aligner, a.own_file, a.per_section, __import__('formant').parse_steps(a.formant_steps) if a.formant_steps else None, a.formant_backend)
+    return build(a.stem, a.lyrics, a.out, a.bank, a.timings, a.syll, not a.no_norm, a.aligner, a.own_file, a.per_section, __import__('formant').parse_steps(a.formant_steps) if a.formant_steps else None, a.formant_backend, a.tts_fallback)
 
 
 if __name__ == '__main__':

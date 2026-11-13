@@ -139,6 +139,18 @@ Model key `atoms` (added to `strudelcraft.model/1`), keyed by id:
   step args, `bindings[].slot / hook / gate / else`, `wires[].tap`, `markers`, `vars`, `maps[].dest`, pad `target.ref`, `scopes`.
 - A model with `$atom` refs and no matching `atoms` entry (and no import providing it) fails validation: `E_ATOM_UNKNOWN`.
 
+### Laziness of the atom pass (#64)
+
+`parse()` does not evaluate every declaration. When a document's declarations are a strict prefix of single-line
+`atom("name", { type: "t", ... })` statements (nothing else declares atoms; no template literals or block comments), they are indexed in one
+linear scan (name, type, source span; no JS parser, no evaluation). Ids come from the index alone (same `idFor` rule and order as
+`reconcile`). A declaration is evaluated, typed and hashed only when something reads it: a reference in the code, `model.atoms[id]`, a
+composition dependency. `model.atoms` is a stand-in object: reading one id resolves that one; enumerating it (`Object.keys` / `entries`,
+JSON, `hash()`, export, the atom browser listing) resolves all, in declaration order, with exactly the eager result. Hashes are memoised by
+content, records of self-contained declarations by declaration text. Any other layout (declarations elsewhere, multi-line, duplicates,
+errors) takes the eager path unchanged. `generate(parse(code)) === code` and ids / revs / hashes are identical on both paths
+(`tests/atoms/a4_lazy.mjs`). Callers that enumerate `model.atoms` just to look up a few ids give the laziness back; index by id instead.
+
 ## 5. Declaring and referencing (code)
 
 ```ebnf

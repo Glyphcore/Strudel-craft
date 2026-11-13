@@ -249,7 +249,7 @@ export async function atomsUiSection({ browser, BASE, OUT, check, watch, metrics
     const sm = med('small'), bg = med('big'), delta = +(((bg - sm) / sm) * 100).toFixed(1);
     M.lazy = { declared_5000: { first_paint_ms: bg, dom_cards: rounds[0].big.dom_cards, scene_cards: rounds[0].big.scene_cards }, declared_3: { first_paint_ms: sm, dom_cards: rounds[0].small.dom_cards }, delta_pct: delta, rounds };
     check('atoms ui: 5000 declared atoms and 3 referenced render exactly 3 atom cards', rounds.every((r) => r.big.dom_cards === 3 && r.big.scene_cards === 3 && r.small.dom_cards === 3), JSON.stringify(rounds.map((r) => [r.big.dom_cards, r.small.dom_cards])));
-    // reported, not gated here: the gap is model.js parse() (buildEnv + reconcile of every declaration), outside the view
+    // reported, not gated here: parse() is lazy (tests/atoms/a4_lazy.mjs); what remains is anything that enumerates model.atoms (docs/ATOMS.md, laziness)
     console.log(`INFO  atoms ui: Graph first paint 3 declared ${sm} ms, 5000 declared ${bg} ms (${delta}% ; gate 10%)`);
   }
 }

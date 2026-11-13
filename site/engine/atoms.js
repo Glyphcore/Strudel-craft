@@ -110,8 +110,8 @@ export function scan(code) {
 // ---------------------------------------------------------------- environment
 const deepFreeze = (o) => { if (o && typeof o === 'object' && !Object.isFrozen(o)) { Object.freeze(o); Object.values(o).forEach(deepFreeze); } return o; };
 const NAME_RE = /^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*$/;
-function declOf(code, d) {
-  const at = spanOf(code, d.stmt[0], d.stmt[1]); const a = d.node.arguments;
+function declOf(code, d, atOverride) {
+  const at = atOverride || spanOf(code, d.stmt[0], d.stmt[1]); const a = d.node.arguments;
   return withAt(at, () => {
     if (a.length !== 2 || a[1].type !== 'ObjectExpression') throw err('E_ATOM_ARG', 'atom(name, { type, params?, body | from, doc? }) expected');
     let name, spec; try { name = sv(a[0]); spec = sv(a[1]); } catch (e) { if (e instanceof NotStatic) throw err('E_ATOM_ARG', 'atom declarations must be static (literals only)'); throw e; }
@@ -505,22 +505,33 @@ export const buildAndCompile = (code, extra, opts) => { const env = buildEnv(cod
 // structural site id (control binding: `r` + 6 base-36 chars of FNV-1a(path)); same rule for code reference sites and model ref paths
 export const siteId = (path) => 'r' + b36(FNV(path));
 export const idFor = (type, name, taken = new Set()) => { let id = 'a' + b36(FNV(`${type}/${name}`)), n = 2; const base = id; while (taken.has(id)) id = base + (n++).toString(36); return id; };
-const hashOf = (rec) => 'sha256:' + modelHash({ type: rec.type, params: rec.params ?? null, ...(rec.from ? { from: rec.from } : { body: rec.body }) });
+const HASHES = new Map(); // content -> hash (a declaration's hash depends on its content alone)
+const hashOf = (rec) => {
+  const c = { type: rec.type, params: rec.params ?? null, ...(rec.from ? { from: rec.from } : { body: rec.body }) }, k = JSON.stringify(c);
+  let h = HASHES.get(k); if (h === undefined) { if (HASHES.size > 20000) HASHES.clear(); HASHES.set(k, h = 'sha256:' + modelHash(c)); }
+  return h;
+};
 export const atomHash = hashOf;
-// declared (env.decls) vs previous model atoms (id -> record) -> { atoms: id -> record, ids: name -> id, renamed: [{ from, to, id }], notInCode: [id] }
-export function reconcile(prev = {}, env, { keep = new Set() } = {}) {
-  const decls = env.decls, ids = {}, taken = new Set(Object.keys(prev)), matchedPrev = new Set();
-  const byNameType = new Map(Object.entries(prev).map(([id, a]) => [`${a.type}/${a.name}`, id]));
-  for (const d of decls) { const id = byNameType.get(`${d.type}/${d.name}`); if (id) { ids[d.name] = id; matchedPrev.add(id); } }
+// the id-normalised content of a declaration (names -> ids so renames of a dependency do not change the hash of its users)
+function contentOf(env, ids, d) {
   const nameOf = (x) => (typeof x === 'string' ? x : x.$atom);
-  const norm = (x) => { // names -> ids so renames of a dependency do not change the hash of its users
+  const norm = (x) => {
     if (Array.isArray(x)) return x.map(norm);
     if (!isObj(x)) return x;
     if (x.$segs) { const r = toRef(env, x); return { $atom: ids[r.$atom] || r.$atom, args: norm(r.args), ...(r.ops.length && { ops: norm(r.ops) }) }; }
     if (typeof x.$atom === 'string') return { ...Object.fromEntries(Object.entries(x).map(([k, v]) => [k, norm(v)])), $atom: ids[nameOf(x)] || x.$atom };
     return Object.fromEntries(Object.entries(x).map(([k, v]) => [k, norm(v)]));
   };
-  const content = (d) => ({ type: d.type, ...(d.params && { params: norm(d.params) }), ...(d.from !== undefined ? { from: (() => { const r = toRef(env, d.from.atom !== undefined ? { $atom: d.from.atom, args: d.from.args, ops: d.from.ops } : d.from); return { atom: ids[r.$atom] || r.$atom, ...(Object.keys(r.args).length && { args: norm(r.args) }), ...(r.ops.length && { ops: norm(r.ops) }) }; })() } : { body: norm(d.body) }) });
+  return { type: d.type, ...(d.params && { params: norm(d.params) }), ...(d.from !== undefined ? { from: (() => { const r = toRef(env, d.from.atom !== undefined ? { $atom: d.from.atom, args: d.from.args, ops: d.from.ops } : d.from); return { atom: ids[r.$atom] || r.$atom, ...(Object.keys(r.args).length && { args: norm(r.args) }), ...(r.ops.length && { ops: norm(r.ops) }) }; })() } : { body: norm(d.body) }) };
+}
+// a fresh (no previous model) reconciled record of one declaration
+const freshRec = (env, ids, d) => { const c = contentOf(env, ids, d); return { name: d.name, ...c, ...(d.doc && { doc: d.doc }), ...(d.tags && { tags: d.tags }), ...(d.quote && { quote: d.quote }), hash: hashOf(c), rev: 1 }; };
+// declared (env.decls) vs previous model atoms (id -> record) -> { atoms: id -> record, ids: name -> id, renamed: [{ from, to, id }], notInCode: [id] }
+export function reconcile(prev = {}, env, { keep = new Set() } = {}) {
+  const decls = env.decls, ids = {}, taken = new Set(Object.keys(prev)), matchedPrev = new Set();
+  const byNameType = new Map(Object.entries(prev).map(([id, a]) => [`${a.type}/${a.name}`, id]));
+  for (const d of decls) { const id = byNameType.get(`${d.type}/${d.name}`); if (id) { ids[d.name] = id; matchedPrev.add(id); } }
+  const content = (d) => contentOf(env, ids, d);
   const fresh = decls.filter((d) => !ids[d.name]);
   for (const d of fresh) { const id = idFor(d.type, d.name, taken); taken.add(id); ids[d.name] = id; }
   const renamed = [];
@@ -539,6 +550,82 @@ export function reconcile(prev = {}, env, { keep = new Set() } = {}) {
   const notInCode = [];
   for (const [id, a] of Object.entries(prev)) if (!atoms[id] && keep.has(id)) { atoms[id] = a; notInCode.push(id); }
   return { atoms, ids, renamed, notInCode };
+}
+
+// ---------------------------------------------------------------- lazy atom pass (docs/ATOMS.md section 4, "laziness")
+// A document whose atom declarations are a strict single-line prefix (`atom("name", { type: "t", ... })`, one per line, nothing else
+// declaring atoms, no template literals / block comments) is indexed in one linear scan: name -> source span + type. Ids come from
+// the index alone (idFor over the declaration order, exactly as reconcile with no previous model); a declaration is evaluated and
+// hashed only when something reads it (a reference, model.atoms[id]); anything that enumerates resolves the lot, in declaration order.
+const DECL_LINE = /(?:[ \t]*\n)*atom\((["'])([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\1, \{ type: (["'])([A-Za-z0-9_.-]+)\3[^\n\r]*?\}\);?(?=\n|$)/y;
+const LAZY_MEMO = new Map(); // declaration line -> { rec, d } for declarations that reference no other atom (so the record depends on the line alone)
+export function indexDecls(code) {
+  if (code.length < 2 || code.charCodeAt(0) !== 97 /* a */ || code.includes('`') || code.includes('/*')) return null;
+  const list = [], byName = new Map(); let pos = 0, ln = 1, ls = -1;
+  for (;;) {
+    DECL_LINE.lastIndex = pos; const m = DECL_LINE.exec(code); if (!m) break;
+    const from = m.index + m[0].indexOf('atom('), to = m.index + m[0].length, line = code.slice(from, to);
+    if (line.indexOf('atom(', 5) >= 0 || byName.has(m[2])) return null;
+    for (let i = code.indexOf('\n', pos); i >= 0 && i < from; i = code.indexOf('\n', i + 1)) { ln++; ls = i; }
+    const e = { name: m[2], type: m[4], from, to, line, at: { from, to, line: ln, col: from - ls } }; list.push(e); byName.set(e.name, e); pos = to;
+    if (code[pos] === '\n') { if (pos + 1 >= code.length) { pos++; break; } } else break;
+  }
+  if (!list.length) return null;
+  const rest = code.slice(pos);
+  if (/\batom\s*\(/.test(rest) || /^\s*(?:[^A-Za-z_$\s]|in\b|instanceof\b)/.test(rest)) return null;
+  return { list, byName, end: list[list.length - 1].to };
+}
+export function lazyAtoms(code) { // -> { env, ids, names, makeAtoms() } | null
+  const ix = indexDecls(code); if (!ix) return null;
+  const ids = {}, names = {}, taken = new Set();
+  for (const e of ix.list) { const id = idFor(e.type, e.name, taken); taken.add(id); ids[e.name] = id; names[id] = e.name; }
+  let full = null; const whole = () => (full ||= buildEnv(code, {}, { diag: [] }));
+  const decls = new Map();
+  const decl = (name) => {
+    if (decls.has(name)) return decls.get(name);
+    const e = ix.byName.get(name); let d;
+    try {
+      const memo = LAZY_MEMO.get(e.line);
+      if (memo) d = { ...memo.d, at: e.at };
+      else {
+        const st = acorn.parse(e.line, { ecmaVersion: 'latest', sourceType: 'module' }).body;
+        if (st.length !== 1 || st[0].type !== 'ExpressionStatement' || st[0].expression.type !== 'CallExpression') throw err('E_ATOM_ARG', 'bad declaration');
+        d = deepFreeze(declOf(e.line, { node: st[0].expression, stmt: [st[0].start, st[0].end] }, e.at));
+      }
+    } catch (x) { if (!(x instanceof AtomError)) throw x; d = undefined; }
+    decls.set(name, d); return d;
+  };
+  const cat = new Map();
+  // Map-like: get / has resolve one declaration; every enumerating member answers from the whole environment
+  const byNameView = new Proxy({}, { get: (_, k) => (k === 'get' ? (n) => (ix.byName.has(n) ? decl(n) : undefined) : k === 'has' ? (n) => ix.byName.has(n) && !!decl(n) : (() => { const w = whole().byName, v = w[k]; return typeof v === 'function' ? v.bind(w) : v; })()) });
+  const env = Object.freeze({
+    get byName() { return byNameView; }, get byId() { return whole().byId; }, get decls() { return whole().decls; }, synth: (k) => catalogAtom(k),
+    get: (k) => (ix.byName.has(k) ? decl(k) : typeof k === 'string' ? (cat.has(k) ? cat : cat.set(k, catalogAtom(k))).get(k) : undefined),
+  });
+  const record = (id) => {
+    const name = names[id], d = decl(name); if (!d) return undefined;
+    const e = ix.byName.get(name), plain = !/\batoms\b|\bfrom\b/.test(e.line);
+    const key = plain && e.line; if (key && LAZY_MEMO.has(key) && LAZY_MEMO.get(key).id === id) return LAZY_MEMO.get(key).rec;
+    const rec = freshRec(env, ids, d);
+    if (key) { if (LAZY_MEMO.size > 20000) LAZY_MEMO.clear(); LAZY_MEMO.set(key, { id, rec: deepFreeze(JSON.parse(JSON.stringify(rec))), d }); }
+    return rec;
+  };
+  const order = ix.list.map((e) => ids[e.name]);
+  const makeAtoms = () => { // a model.atoms stand-in: reads of one id resolve that one; any enumeration / write resolves all, in declaration order
+    const store = {}; let all = false;
+    const clone1 = (r) => JSON.parse(JSON.stringify(r));
+    const materialise = () => { if (all) return; const next = {}; for (const id of order) { const r = Object.prototype.hasOwnProperty.call(store, id) ? store[id] : record(id); if (r) next[id] = r === store[id] ? r : clone1(r); } for (const k of Object.keys(store)) delete store[k]; Object.assign(store, next); all = true; };
+    return new Proxy(store, {
+      get(t, k, r) { if (!all && typeof k === 'string' && !Object.prototype.hasOwnProperty.call(t, k) && Object.prototype.hasOwnProperty.call(names, k)) { const rec = record(k); if (rec) t[k] = clone1(rec); } return Reflect.get(t, k, r); },
+      has(t, k) { if (all || typeof k !== 'string') return Reflect.has(t, k); return Reflect.has(t, k) || (Object.prototype.hasOwnProperty.call(names, k) && !!record(k)); },
+      ownKeys(t) { materialise(); return Reflect.ownKeys(t); },
+      getOwnPropertyDescriptor(t, k) { materialise(); return Reflect.getOwnPropertyDescriptor(t, k); },
+      set(t, k, v, r) { materialise(); return Reflect.set(t, k, v, r); },
+      deleteProperty(t, k) { materialise(); return Reflect.deleteProperty(t, k); },
+      defineProperty(t, k, d) { materialise(); return Reflect.defineProperty(t, k, d); },
+    });
+  };
+  return { env, ids, names, makeAtoms, order, record };
 }
 
 // ---------------------------------------------------------------- model references and graph cards (sections 4, 9)

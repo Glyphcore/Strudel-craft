@@ -75,6 +75,8 @@ const atomsIn = (text) => /\batom\s*\(|\batoms\s*\./.test(text);
 function atomsFromCode(text) {
   if (!atomsIn(text)) return null;
   try {
+    const lz = AT.lazyAtoms(text); // strict declaration prefix: indexed, evaluated only when read (docs/ATOMS.md, laziness)
+    if (lz) return { env: lz.env, ids: lz.ids, names: lz.names, atoms: null, lazy: lz, prefixEnd: AT.indexDecls(text).end };
     const env = AT.buildEnv(text, {}, { diag: [] }), r = AT.reconcile({}, env);
     if (!Object.keys(r.atoms).length) return null;
     return { env, ids: r.ids, names: Object.fromEntries(Object.entries(r.atoms).map(([id, a]) => [id, a.name])), atoms: r.atoms };
@@ -283,10 +285,11 @@ export function parse(text) {
     try { m.layout = JSON.parse(lm[1]); body = text.slice(0, lm.index); } catch { /* keep as code */ }
   }
   let ast;
-  try { ast = parseJs(body); } catch { if (body) m.header = body; return m; }
-  ATOMS = atomsFromCode(body); // `atom(...)` declarations -> model.atoms; references resolve to ids below
-  if (ATOMS) m.atoms = clone(ATOMS.atoms);
-  let header = '', structural = false, pos = 0, codeN = 0;
+  const prevAtoms = ATOMS; ATOMS = atomsFromCode(body); // `atom(...)` declarations -> model.atoms; references resolve to ids below
+  const lazyEnd = ATOMS && ATOMS.lazy ? ATOMS.prefixEnd : 0; // lazy declaration prefix: kept verbatim in the header, never handed to the JS parser
+  try { ast = parseJs(lazyEnd ? ' '.repeat(lazyEnd) + body.slice(lazyEnd) : body); } catch { ATOMS = prevAtoms; if (body) m.header = body; return m; }
+  if (ATOMS) m.atoms = ATOMS.lazy ? ATOMS.lazy.makeAtoms() : clone(ATOMS.atoms);
+  let header = lazyEnd ? body.slice(0, lazyEnd) : '', structural = false, pos = lazyEnd, codeN = 0;
   const n = ast.body.length;
   ast.body.forEach((st, i) => {
     const last = i === n - 1;

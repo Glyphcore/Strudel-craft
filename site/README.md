@@ -29,6 +29,7 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
     node tests/atoms/a2.mjs            # atoms migration: extract / parse / inline / catalog (#62)
     node tests/atoms/a3.mjs            # atoms consumers: intellisense data, hooks / model / pads / maps $atom, packs (#63)
     node tests/site/atoms.mjs          # Playwright: atom completion, signature help, "use atoms.name", scrub on a reference arg (#63)
+    node tests/atoms/a4_lazy.mjs       # atoms lazy declaration pass: lazy == eager, 5000 declared parse budget (#64)
     node tests/site/atoms_ui.mjs       # Playwright: atom cards, derived cards, browser, popover, keyboard path, 5000-atom paint (#64; also in smoke)
     node tests/hooks/p3.mjs            # model round trip (#49); the `strudel` CLI checks print SKIP without it
     node tests/hooks/p4.mjs            # component library, instances, lib: fragments (#50)

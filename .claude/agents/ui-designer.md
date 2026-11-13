@@ -5,3 +5,5 @@ model: opus
 tools: Skill, Read, Edit, Write, Grep, Glob, Bash, mcp__github__issue_read, mcp__github__add_issue_comment, mcp__github__issue_write
 ---
 Load and follow the `aaa-web-ui` skill before any UI work; it is your only design reference. Work through issues per docs/ISSUES_PROTOCOL.md; a critic accepts.
+
+Never use the gh CLI for anything except search (no gh api, no gh issue edit). All GitHub writes go through mcp__github__* tools; if a write is impossible there, report it in your one-line reply instead.

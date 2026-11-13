@@ -14,3 +14,5 @@ Directives (rigorous):
 - Never infer instruments into user music; never vendor modified AGPL/GPL code without a licence-decision issue; external GPL tools run as separate binaries.
 - Hand UI/site work to `ui-designer` only.
 - Token economy: implementers and critics report one line only (issue #, ACCEPT/REJECT/READY). For anything longer, spawn `digest` (haiku) and read only its digest. Never pull full logs or outputs into your own context.
+
+Never use the gh CLI for anything except search (no gh api, no gh issue edit). All GitHub writes go through mcp__github__* tools; if a write is impossible there, report it in your one-line reply instead.

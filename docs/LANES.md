@@ -1,6 +1,6 @@
 # Lanes: splits, scoped taps, tags and capture without re-synthesis
 
-Status: **L1 built** (#74: memoised taps, lane-scoped taps, tags, selections, lane graph and checks; see "Built in L1" below) and **L2 built** (#75: `.split`, `.merge`, `.send`, `ret`, `.wire` to a bus, group `tagged().send`, as a compile pass on superdough buses; see "Built in L2" below). The CLI commands (`strudel lanes`, `render`, `events`, `stems` for lane programs) are pending in the other repo. L3 to L5 are issued only (section 11). Builds on `docs/HOOKS_SYNTAX.md` (taps, gates, scopes), `docs/BLUEPRINT.md`
+Status: **L1 built** (#74: memoised taps, lane-scoped taps, tags, selections, lane graph and checks; see "Built in L1" below) and **L2 built** (#75: `.split`, `.merge`, `.send`, `ret`, `.wire` to a bus, group `tagged().send`, as a compile pass on superdough buses; see "Built in L2", section 11c). The CLI commands (`strudel lanes`, `render`, `events`, `stems` for lane programs) are pending in the other repo. L3 to L5 are issued only (section 11). Builds on `docs/HOOKS_SYNTAX.md` (taps, gates, scopes), `docs/BLUEPRINT.md`
 (model, graph), `docs/ATOMS.md` (typed names), `docs/CONTROL_BINDING.md` (AST ids, param shapes), `docs/CAPTURE.md` (takes, offline
 render, recipes and Remake). Owner: `daw-sme`. UI parts are direction for `ui-designer`.
 
@@ -488,7 +488,7 @@ Where the build differs from, or fixes, the text above:
   `tags`, `selections` (selector and op text), `mode` and `diagnostics`. `check(src, { strict })` reports `E_LANE_DUP`, `W_LANE_ORBIT_FX`, `W_LANE_IMPLICIT_EXPORT`,
   `E_LANE_PRIVATE` (statically; the runtime raises the last two when it sees the read) and `E_BAD_SELECTOR`. L2 adds the rewrites.
 - Anonymous lanes are `$0`, `$1`, ... in source order, as Strudel numbers them; `tap("$0/x")` is a valid ref.
-- Not built (marked coming in `site/data/syntax.json`): `.split`, `.merge`, `.send`, `ret`, `capture`, `recall`, `.from` at runtime, the `strudel lanes` command, UI (L5). Model, graph data, param shapes, intellisense, atom types and ids: section 11b.
+- Not built in L1 (marked coming in `site/data/syntax.json` where still true): `capture`, `recall`, `.from` at runtime, the `strudel lanes` command, UI (L5); `.split`, `.merge`, `.send`, `ret` are built in L2 (section 11c). Model, graph data, param shapes, intellisense, atom types and ids: section 11b.
 
 ## 11b. Built in L4 (#77)
 Files: `site/model.js` (records, `graph`, `checkWire`, ops `addBranch exportTap addSend`), `site/engine/lanes-data.js` (site ids, selector matching, capture facets, pad selection target), `site/lanes-intellisense.js`,
@@ -501,7 +501,7 @@ Where the build differs from, or settles, the text above:
 - Pad target kind `selection` (`{ ref: <site id>, op: "mute" | "solo" }`) journals as op `sel`; `padSelection(code, target)` maps the site id to the runtime selection id for `lanes.set`.
 - Waiting on other issues: the runtime of `.split .merge .send ret` (#75) and of `capture recall .from` (#76). Their data side (model, graph, intellisense, atoms, ids, applyOp) is built and checked from the documented syntax; the `busname` atom events check in `.send(atoms.verb)` and the CLI `strudel atoms list --tag` are open.
 
-## 11b. Built in L2 (#75)
+## 11c. Built in L2 (#75)
 Files: `site/engine/lanes.js` (`compile`, `prepare`, `check`, runtime), `site/engine/index.js` (`hooksLib.protect` runs `lanes.prepare`), `site/app.js` (the E_LANE_* / E_BUS_RANGE codes reach the eval error box),
 `site/hooks-intellisense.js`, tests `tests/lanes/l2.mjs` (Node) and `tests/site/lanes.mjs` (Playwright, real superdough offline). Where the build differs from, or fixes, the text above:
 - **Plain text out**: the compiled program is ordinary Strudel text (section 5.1 shows it exactly); there is no `__reader` marker and no runtime wrapper around branches. The checks therefore run on the text
@@ -516,7 +516,7 @@ Files: `site/engine/lanes.js` (`compile`, `prepare`, `check`, runtime), `site/en
   (an adjacent `.merge` belongs to it). Effects written after `.split(...)` go to each branch reader (to the merge reader when there is a merge); `mix` is a `.postgain(m)` on each branch; `pre: true` leaves out `.dry(0)` on the source.
 - **Host check** (`E_LANE_HOST`): `lanes.prepare` asks the page: the `bus` sound in `soundMap` (when `soundMap` is empty the host is "unknown" and not refused: the sound registers during `initStrudel`) and the `bus`,
   `busgain` controls on `Pattern.prototype`. `compile(src, { host: { busSound, busControl } })` takes the answer as data, which is how a stub host is tested. Programs with no audio feature never ask.
-- **Fixed on the way**: on the site `window.lanes` is the `#lanes` canvas (named element access), which made L1's collision check refuse the whole lanes install on the page; a DOM element is now shadowed instead.
+- **Site install**: on the page `window.lanes` is the `#lanes` canvas (named element access), which made L1's collision check refuse the whole lanes install; an earlier commit on main (4eeeca8) fixed it the same way (a DOM element is shadowed, not a collision), and the end-to-end run in `tests/site/lanes.mjs` now covers it.
 - **Reproducibility of renders (measured)**: with one reader per bus the site's exact offline render is bit-identical run to run, and moving or inserting lanes (new bus numbers) leaves the SHA-256 unchanged
   (`tests/site/lanes.mjs`, "Deterministic allocation"). A bus with two or more readers summed at the orbit is reproducible only to about 1 ULP in headless Chromium (the same program rendered twice differs by
   -166 dB, max sample difference 3e-8): compare such renders with a tolerance, as Remake's level fingerprint does, not by hash.

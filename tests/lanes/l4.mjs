@@ -15,7 +15,7 @@ import * as LD from '../../site/engine/lanes-data.js';
 import * as LI from '../../site/lanes-intellisense.js';
 import { createPads } from '../../site/engine/pads.js';
 import { validate } from '../../site/engine/validate.js';
-import { install as installLanes } from '../../site/engine/lanes.js';
+import { install as installLanes, compile as compileLanes } from '../../site/engine/lanes.js';
 import { protect } from '../../site/engine/hooks.js';
 
 const pass = (m) => console.log('PASS ' + m);
@@ -110,7 +110,7 @@ const NM = process.env.STRUDEL_MODULES;
       ran = `selector atom runs: ${a.length} events, identical to the string form (${none.length} without the selection)`;
     }
   }
-  skip('Atoms: busname in .send(atoms.verb), events half', '.send is the audio layer (#75, site/engine/lanes.js in progress); compile equality is checked above (.send(\'verb\', 0.5) single-quoted) and runs once #75 lands');
+  { const c = compileLanes("d: s('bd').send('verb', 0.5)\nv: ret('verb')"); assert.deepEqual(c.graph.audio.buses.named, { verb: 512 }); assert.deepEqual(c.graph.diagnostics, []); } // the single-quoted busname atom form runs through the audio compile pass (#75)
   pass(`Atoms: types tag, selector, busname, capture compile single-quoted (tagged('drums & wet'), ret('verb'), .send('verb', 0.5), .tags('wet'), recall('groove')), an invalid selector atom is refused, the model keeps $atom refs and round-trips; ${ran}`);
 }
 
@@ -186,10 +186,10 @@ const NM = process.env.STRUDEL_MODULES;
   const sx = JSON.parse(rd('../../site/data/syntax.json')); const sec = sx.sections.find((x) => x.id === 'lanes');
   for (const w of ['model', 'graph', 'bus', 'selection', 'completion', 'selector', 'busname']) assert.ok(sec.explain.toLowerCase().includes(w), 'syntax.json lanes explain mentions ' + w);
   const st = strudelJson.lanes.status; for (const [k, v] of Object.entries(st)) assert.ok(['built', 'coming'].includes(v), k);
-  assert.equal(st.tags, 'built'); assert.equal(st.split, 'coming'); for (const k of ['split', 'send', 'ret', 'capture', 'recall']) assert.ok(sec.examples.some((e) => e.coming && e.code.includes(k)), k + ' example is marked coming');
+  assert.equal(st.tags, 'built'); for (const k of ['split', 'merge', 'send', 'ret']) assert.equal(st[k], 'built', k + ' is built (#75)'); for (const k of ['capture', 'recall']) { assert.equal(st[k], 'coming'); assert.ok(sec.examples.some((e) => e.coming && e.code.includes(k)), k + ' example is marked coming'); } assert.ok(sec.examples.some((e) => !e.coming && e.code.includes('.split(')), 'the split example is built');
   const ro = rd('../../site/README.md'); for (const w of ['lanes-data.js', 'lanes-intellisense.js', 'checkWire']) assert.ok(ro.includes(w), 'README mentions ' + w);
   const dc = rd('../../docs/LANES.md'); assert.ok(/## 11b\. Built in L4/.test(dc));
-  pass(`Docs: syntax.json lanes section describes model / graph / selectors / bus names and keeps .split, .send, ret, capture, recall marked coming; strudel.json lanes.status marks ${Object.entries(st).filter(([, v]) => v === 'built').map(([k]) => k).join(', ')} built and ${Object.entries(st).filter(([, v]) => v === 'coming').map(([k]) => k).join(', ')} coming; site/README.md and docs/LANES.md 11b describe the entry points`);
+  pass(`Docs: syntax.json lanes section describes model / graph / selectors / bus names and marks capture and recall coming (.split, .merge, .send, ret are built in #75); strudel.json lanes.status marks ${Object.entries(st).filter(([, v]) => v === 'built').map(([k]) => k).join(', ')} built and ${Object.entries(st).filter(([, v]) => v === 'coming').map(([k]) => k).join(', ')} coming; site/README.md and docs/LANES.md 11b describe the entry points`);
 }
 
 // ---- 9. CLI half of the selector grammar

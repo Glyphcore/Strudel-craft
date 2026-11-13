@@ -298,7 +298,7 @@ the Strudel `Pattern` and the hooks object) adds `Pattern.prototype.tags` and th
 Tests: `node tests/site/lanes_data.mjs`, `STRUDEL_MODULES=... node tests/lanes/l4.mjs`.
 Test: `STRUDEL_MODULES=<dir with @strudel/ core mini transpiler> node tests/lanes/l1.mjs`.
 
-## Lanes: audio layer (`engine/lanes.js`, #75; design docs/LANES.md 5, "Built in L2")
+## Lanes: audio layer (`engine/lanes.js`, #75; design docs/LANES.md 5, "Built in L2", section 11c)
 Same module. `compile(src, { host })` is a text-to-text pass (before atoms-free protect() and Strudel's transpiler); `prepare(src, { host })` is what the site runs before every evaluation
 (`engine/index.js` hooks it into `hooksLib.protect`; `lanes.prepare` on the installed instance also remembers the bus allocation and resets the runtime diagnostics) and throws a coded error for
 `E_LANE_HOST`, `E_LANE_SOURCE`, `E_LANE_CROSS`, `E_LANE_CYCLE`, `E_BUS_RANGE`, `E_LANE_OPTS` (app.js lets those codes through to the eval error box). A program with none of the features is returned byte for byte (all 46 catalog recipes checked).
@@ -308,7 +308,6 @@ Same module. `compile(src, { host })` is a text-to-text pass (before atoms-free 
   `tagged(sel).send("name", amount)` adds the send to every lane whose literal `.tags(...)` or `#id` match. Bus numbers: split and lane buses from 64 in source order, named buses from 512 in name order.
 - Checks: `E_LANE_SOURCE E_LANE_CROSS E_LANE_CYCLE E_BUS_RANGE E_LANE_HOST E_LANE_OPTS`, `W_LANE_POST_SPLIT W_BUS_NO_RETURN W_LANE_SELECT_EMPTY` (text, in `compile().graph.diagnostics`, with `line`), and on the queried haps `E_LANE_SOURCE`, `W_LANE_REFRAIN` (`lanes.diagnostics()`).
   `compile().graph.audio` holds the buses, splits, sends, returns and wires (what `strudel lanes` will print; the CLI commands and `stems` per lane group are in the CLI repo, not done yet).
-- Site fix found by the end-to-end run: the page has an element `id="lanes"`, which made the `lanes` global look taken; a DOM element is now shadowed, not a collision.
 Tests: `STRUDEL_MODULES=... node tests/lanes/l2.mjs` (events, checks, compile) and `node tests/site/lanes.mjs` (Playwright: seam, parallel FX, merge, allocation hash, cost, the page plays the program).
 
 ## Perform (`perform.js` + `perform.css`, view 5, #55)

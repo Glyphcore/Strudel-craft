@@ -23,3 +23,6 @@ The implementer ticks boxes only with evidence linked in a comment (commit SHA, 
 - Cross-cutting concerns (rules, licences, CI, site deploy, data formats) go in issues labelled `type:workflow`; they block feature issues that depend on them (`Blocked by #N` in body).
 - Discovered problems outside scope: open a new issue (`type:bug` or `type:workflow`), link it, do not widen the current one.
 - Commits reference the issue (`Refs #N`), never `Closes #N` (closing is the critic's job).
+
+## Test budget
+Test budget: verify each acceptance box once with a minimal behavioral check; no exhaustive per-detail suites and no repeated regression re-runs unless an issue asks for one. Specs and implementations are zero-shot stitched.

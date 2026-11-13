@@ -4,9 +4,11 @@
 // while its structure still matches that text; edit ops splice the text, so only the touched statement changes.
 import * as acorn from './vendor/acorn-8.19.0.mjs';
 import * as AT from './engine/atoms.js';
+import * as LD from './engine/lanes-data.js';
 
 const LAYOUT_RE = /\/\/ @model-layout (\{[^\n]*\})\n?$/;
-const REF_METHODS = new Set(['tap', 'use', 'wrap', 'ns', 'wire']); // string args are references, not mini-notation: plain strings
+// string args are references, not mini-notation: plain strings (lanes: tags, bus names, capture names)
+const REF_METHODS = new Set(['tap', 'use', 'wrap', 'ns', 'wire', 'tags', 'tag', 'send', 'ret', 'from', 'recall', 'capture', 'tagged']);
 const ANON = /^\$\d*$/;
 const IDENT = /^[A-Za-z_$][\w$]*$/;
 const GATE_KEYS = new Set(['from', 'until', 'windows', 'period', 'when', 'latch', 'quant', 'unreached']);
@@ -203,6 +205,116 @@ function scanText(text) {
   return p;
 }
 
+// ---------------------------------------------------------------- lanes (docs/LANES.md section 10, issue #77)
+// Derived from the chain, so a no-edit round trip never depends on them: tracks[].tags / split / sends / ret, buses, selections[], captures,
+// settings.lanes. Header statements (`tagged(...)...`, `capture(...)`, `lanes.closed()`) are absorbed like the hooks registry (kept verbatim in hookSrc).
+const strOf = (v) => (typeof v === 'string' ? v : isAtomRef(v) ? atomStr(v) : null);
+const isFnCode = (v) => isObj(v) && typeof v.$code === 'string' && /^\s*(?:async\s+)?(?:\([^)]*\)|[\w$]+)\s*=>|^\s*function\b/.test(v.$code);
+// `w => w.room(0.8).lpf(900)` -> { param, chain } (chain null when the body is not a plain method chain on the parameter); src is kept verbatim
+function fnChain(code) {
+  const out = { src: code, param: null, chain: null };
+  let ast; try { ast = parseJs('(' + code + ')'); } catch { return out; }
+  const f = ast.body[0] && ast.body[0].expression;
+  if (!f || f.type !== 'ArrowFunctionExpression' || f.params.length !== 1 || f.params[0].type !== 'Identifier') return out;
+  out.param = f.params[0].name;
+  const text = '(' + code + ')'; const calls = []; let cur = f.body;
+  while (cur.type === 'CallExpression' && cur.callee.type === 'MemberExpression' && !cur.callee.computed && cur.callee.property.type === 'Identifier') { calls.push(cur); cur = cur.callee.object; }
+  if (cur.type !== 'Identifier' || cur.name !== out.param || calls.some(c => c.arguments.some(a => a.type === 'SpreadElement'))) return out;
+  out.chain = calls.reverse().map(c => [c.callee.property.name, ...c.arguments.map(a => parseArg(a, text, REF_METHODS.has(c.callee.property.name) ? 'plain' : 'mini'))]);
+  return out;
+}
+const fnvId = LD.fnvId;
+// the lane record of one track (tags, split with branch sub-chains, sends, ret); layer = statement index (ids are first-sight path hashes)
+function laneOf(t, layer, prev) {
+  const out = {}, steps = t.chain || [], tags = [], sends = [];
+  steps.forEach((s) => {
+    if (s[0] === 'tags' || s[0] === 'tag') for (const a of s.slice(1)) { const v = strOf(a); if (v && !tags.includes(v)) tags.push(v); }
+    else if (s[0] === 'send') { const bus = strOf(s[1]); if (bus) sends.push({ bus, amount: typeof s[2] === 'number' ? s[2] : 1 }); }
+  });
+  if (tags.length) out.tags = tags;
+  if (sends.length) out.sends = sends;
+  if (t.source && t.source[0] === 'ret' && strOf(t.source[1])) out.ret = strOf(t.source[1]);
+  const si = steps.findIndex((s) => s[0] === 'split');
+  if (si >= 0) {
+    const args = steps[si].slice(1), root = t.source ? t.source[0] : '';
+    const site = (prev && prev.site) || fnvId('split', `L${layer ?? 0}/${[root, ...steps.slice(0, si + 1).map((s) => s[0])].join('.')}`);
+    const branches = []; let opts = null;
+    args.forEach((a, j) => { if (isFnCode(a)) branches.push({ id: fnvId('branch', `${site}#${j}`), ...fnChain(a.$code) }); else if (isObj(a) && !hasCode(a)) opts = a; });
+    const sp = { site, at: si, branches };
+    const mg = steps[si + 1] && steps[si + 1][0] === 'merge' ? steps[si + 1] : null;
+    if (mg) sp.merge = mg[1] && isFnCode(mg[1]) ? { id: fnvId('branch', `${site}#m`), ...fnChain(mg[1].$code) } : true;
+    if (opts && Array.isArray(opts.mix)) sp.mix = opts.mix;
+    if (opts && typeof opts.pre === 'boolean') sp.pre = opts.pre;
+    out.split = sp;
+  }
+  return out;
+}
+const LANE_KEYS = ['tags', 'split', 'sends', 'ret'];
+function setLane(t, layer) {
+  const prev = t.split; for (const k of LANE_KEYS) delete t[k];
+  if (t.chain == null && t.source == null) return;
+  Object.assign(t, laneOf(t, layer, prev));
+}
+const hasLaneSteps = (t) => LANE_KEYS.some((k) => t[k] !== undefined) || (t.chain || []).some((s) => ['tags', 'tag', 'send', 'split'].includes(s[0])) || (t.source && t.source[0] === 'ret');
+// buses (name -> { returns: [track] }) are recomputed from the tracks and selections, never stored by hand
+function syncBuses(m) {
+  const buses = {};
+  for (const t of m.tracks || []) {
+    for (const s of t.sends || []) (buses[s.bus] ||= { returns: [] });
+    if (t.ret) (buses[t.ret] ||= { returns: [] }).returns.push(t.name);
+  }
+  for (const sel of m.selections || []) for (const o of sel.ops || []) { const b = o.op === 'send' ? strOf(o.bus) : null; if (b) buses[b] ||= { returns: [] }; }
+  if (Object.keys(buses).length) m.buses = buses; else delete m.buses;
+}
+function syncLanes(m) {
+  (m.tracks || []).forEach((t, i) => { if (hasLaneSteps(t)) setLane(t, i + (m.hookSrc || []).filter(h => h.at <= i).length); });
+  syncBuses(m);
+}
+const SEL_OP_SET = new Set(LD.SEL_OPS);
+// `tagged("sel").op(args)...` -> { id, selector, ops: [{ op, ... }] } in the shape the hooks runtime serialises (lanes.js toJSON), or null
+function selectionOf(e, text, layer) {
+  const calls = []; let cur = e;
+  while (cur.type === 'CallExpression' && cur.callee.type === 'MemberExpression' && !cur.callee.computed && cur.callee.property.type === 'Identifier') { calls.push(cur); cur = cur.callee.object; }
+  if (cur.type !== 'CallExpression' || cur.callee.type !== 'Identifier' || cur.callee.name !== 'tagged' || cur.arguments.length !== 1 || !calls.length) return null;
+  if (calls.some(c => c.arguments.some(a => a.type === 'SpreadElement') || !SEL_OP_SET.has(c.callee.property.name))) return null;
+  const selector = parseArg(cur.arguments[0], text, 'plain'); if (strOf(selector) === null) return null;
+  const ops = [];
+  for (const c of calls.reverse()) {
+    const op = c.callee.property.name, a = c.arguments.map(x => parseArg(x, text, 'plain'));
+    if (op === 'fx') { if (a.length !== 1 || !isObj(a[0]) || !a[0].$code) return null; ops.push({ op, opaque: true, src: a[0].$code }); }
+    else if (op === 'gain' || op === 'orbit') { if (a.length !== 1) return null; ops.push({ op, value: a[0] }); }
+    else if (op === 'mute' || op === 'solo') { if (a.length > 1 || hasCode(a)) return null; ops.push(a[0] === undefined || a[0] === true ? { op } : a[0] === false ? { op, on: false } : { op, gate: a[0] }); }
+    else if (op === 'send') { if (a.length < 1 || a.length > 2 || strOf(a[0]) === null || hasCode(a)) return null; ops.push({ op, bus: a[0], ...(a[1] !== undefined ? { amount: a[1] } : {}) }); }
+    else { if (a.length < 1 || a.length > 2 || strOf(a[0]) === null || hasCode(a) || (a[1] !== undefined && !isObj(a[1]))) return null; ops.push({ op, name: a[0], ...(a[1] ? { opts: a[1] } : {}) }); }
+  }
+  const g = ops.find(o => (o.op === 'mute' || o.op === 'solo') && o.gate !== undefined);
+  return { id: fnvId('selection', `L${layer}/tagged`), selector, ops, ...(g ? { gate: g.gate } : {}) };
+}
+// returns true when the statement was absorbed into settings.lanes / selections / captures of `m`
+function analyseLanes(st, text, m, layer) {
+  if (st.type !== 'ExpressionStatement' || st.expression.type !== 'CallExpression') return false;
+  const e = st.expression, c = e.callee;
+  if (c.type === 'MemberExpression' && !c.computed && c.object.type === 'Identifier' && c.object.name === 'lanes' && (c.property.name === 'closed' || c.property.name === 'open') && !e.arguments.length) {
+    (m.settings ||= {}).lanes = c.property.name; return true;
+  }
+  if (c.type === 'Identifier' && c.name === 'capture' && e.arguments.length >= 2 && e.arguments.length <= 3 && isStr(e.arguments[0])) {
+    const a = e.arguments.map(x => parseArg(x, text, 'plain')), name = a[0];
+    if (strOf(a[1]) === null || (a[2] !== undefined && (!isObj(a[2]) || hasCode(a[2]) || Object.keys(a[2]).some(k => !['window', 'last', 'what', 'live', 'max'].includes(k))))) return false;
+    if ((m.captures || {})[name]) return false;
+    (m.captures ||= {})[name] = { picker: a[1], ...(a[2] || {}) }; return true;
+  }
+  const sel = selectionOf(e, text, layer); if (!sel) return false;
+  (m.selections ||= []).push(sel); return true;
+}
+const emitSelection = (sel) => `tagged(${emitArg(sel.selector)})` + (sel.ops || []).map((o) => {
+  if (o.op === 'fx') return `.fx(${o.src})`;
+  if (o.op === 'gain' || o.op === 'orbit') return `.${o.op}(${emitArg(o.value)})`;
+  if (o.op === 'mute' || o.op === 'solo') return `.${o.op}(${o.on === false ? 'false' : o.gate !== undefined ? emitArg(o.gate) : ''})`;
+  if (o.op === 'send') return `.send(${emitArg(o.bus)}${o.amount !== undefined ? ', ' + emitArg(o.amount) : ''})`;
+  return `.${o.op}(${emitArg(o.name)}${o.opts ? ', ' + emitArg(o.opts) : ''})`;
+}).join('');
+const emitCapture = (name, c) => { const { picker, ...opts } = c; return `capture(${JSON.stringify(name)}, ${emitArg(picker)}${Object.keys(opts).length ? ', ' + emitArg(opts) : ''})`; };
+
 // ---------------------------------------------------------------- statement analysis
 function analyseLayer(st, text) {
   if (st.type !== 'LabeledStatement' || st.body.type !== 'ExpressionStatement') return null;
@@ -294,7 +406,7 @@ export function parse(text) {
   ast.body.forEach((st, i) => {
     const last = i === n - 1;
     const stmtEnd = st.end + (body[st.end] === '\r' && body[st.end + 1] === '\n' ? 2 : body[st.end] === '\n' ? 1 : 0);
-    if (analyseRegistry(st, body, m) || (() => { const inst = analyseInst(st, body); if (inst) (m.instances ||= []).push(inst); return !!inst; })()) {
+    if (analyseRegistry(st, body, m) || (() => { const inst = analyseInst(st, body); if (inst) (m.instances ||= []).push(inst); return !!inst; })() || analyseLanes(st, body, m, i)) {
       // keep the statement's verbatim text and its position among the layers, so a no-edit generate() moves nothing
       const end = last ? body.length : stmtEnd;
       (m.hookSrc ||= []).push({ at: (m.tracks || []).length, src: body.slice(pos, end) });
@@ -309,6 +421,7 @@ export function parse(text) {
       if (layer.ns) t.ns = layer.ns;
       if (layer.muted) t.muted = true;
       t.src = src;
+      setLane(t, i);
       (m.tracks ||= []).push(t);
     } else if (!structural && st.type !== 'LabeledStatement') header += src;
     else {
@@ -322,6 +435,7 @@ export function parse(text) {
   if (!n) header = body;
   else if (pos < body.length && !structural) header += body.slice(pos);
   if (header) m.header = header;
+  if (m.tracks || m.selections) syncBuses(m);
   return m;
 }
 
@@ -353,7 +467,9 @@ function hookRegistry(list, text) {
     let ast; try { ast = parseJs(h.src); } catch { return null; }
     for (const st of ast.body) {
       if (analyseRegistry(st, h.src, m)) continue;
-      const inst = analyseInst(st, h.src); if (!inst) return null; (m.instances ||= []).push(inst);
+      const inst = analyseInst(st, h.src);
+      if (!inst) { if (analyseLanes(st, h.src, m, 0)) continue; return null; }
+      (m.instances ||= []).push(inst);
     }
   }
   return m;
@@ -362,7 +478,8 @@ function hookRegistry(list, text) {
 function hooksVerbatim(model) {
   const list = model.hookSrc; if (!Array.isArray(list) || !list.length) return false;
   const m = hookRegistry(list); if (!m) return false;
-  const pick = (x) => JSON.stringify(sortKeys(REG_KEYS.map(k => x[k] && Object.keys(x[k]).length !== 0 ? x[k] : undefined)));
+  const pick = (x) => JSON.stringify(sortKeys([...REG_KEYS.map(k => x[k] && Object.keys(x[k]).length !== 0 ? x[k] : undefined),
+    x.selections && x.selections.length ? x.selections.map(({ id, ...s }) => s) : undefined, x.captures && Object.keys(x.captures).length ? x.captures : undefined, x.settings && x.settings.lanes]));
   return pick(m) === pick(model);
 }
 export function generate(model) {
@@ -402,6 +519,9 @@ export function generate(model) {
   for (const i of model.instances || []) {
     const { component, ...rest } = i; line('$: ' + call('inst', component, { as: rest.as, ...rest }));
   }
+  if (model.settings && model.settings.lanes) line(`lanes.${model.settings.lanes}()`);
+  for (const [k, c] of Object.entries(model.captures || {})) line(emitCapture(k, c));
+  for (const sel of model.selections || []) line(emitSelection(sel));
   }
   const kept = (i) => { if (keep) for (const h of model.hookSrc) if (h.at === i) out += h.src; };
   (model.tracks || []).forEach((t, i) => {
@@ -467,8 +587,32 @@ export function applyOp(model, op) {
       })) step[op.arg + 1] = op.value;
       break;
     }
+    // lanes (docs/LANES.md section 10): each touches one statement only
+    case 'addBranch': { // { track, fn: 'g => g.crush(5)', index? }: a new branch callback in the lane's .split(...) argument list
+      const t = findTrack(m, op.track), si = (t.chain || []).findIndex((s) => s[0] === 'split'); if (si < 0) throw new Error('E_NO_SPLIT ' + op.track);
+      if (typeof op.fn !== 'string' || !isFnCode({ $code: op.fn })) throw new Error('E_BAD_ARG branch needs a function text such as "g => g.room(0.5)"');
+      const fnIdx = t.chain[si].map((a, j) => (j > 0 && isFnCode(a) ? j - 1 : -1)).filter((j) => j >= 0), at = op.index === undefined ? fnIdx.length : op.index;
+      if (at < 0 || at > fnIdx.length) throw new Error('E_RANGE');
+      if (!layerEdit(t, (a, src) => {
+        const sp = a.spans.calls[si], args = sp.args, before = at < fnIdx.length ? args[fnIdx[at]] : null;
+        if (before) return splice(src, before.start, before.start, op.fn + ', ');
+        if (!args.length) return splice(src, sp.end - 1, sp.end - 1, op.fn);
+        const last = fnIdx.length ? args[fnIdx[fnIdx.length - 1]] : null;
+        return last ? splice(src, last.end, last.end, ', ' + op.fn) : splice(src, args[0].start, args[0].start, op.fn + ', ');
+      })) { const tail = t.chain[si].slice(1); const k = at < fnIdx.length ? fnIdx[at] : (fnIdx.length ? fnIdx[fnIdx.length - 1] + 1 : 0); tail.splice(k, 0, { $code: op.fn }); t.chain[si] = [t.chain[si][0], ...tail]; }
+      break;
+    }
+    case 'exportTap': { // { track, tap }: publish `tap` as an exported lane-level tap just before the split (or at the end of the chain)
+      const t = findTrack(m, op.track), si = (t.chain || []).findIndex((s) => s[0] === 'split'), at = si < 0 ? (t.chain || []).length : si;
+      if ((t.chain || []).some((s) => s[0] === 'tap' && s[1] === op.tap)) throw new Error('E_TAP_EXISTS ' + op.tap);
+      insertStep(t, at, ['tap', op.tap, { export: true }]); break;
+    }
+    case 'addSend': { // { track, bus, amount? }: one `.send(bus, amount)` at the end of the lane's chain
+      const t = findTrack(m, op.track); insertStep(t, (t.chain || []).length, ['send', op.bus, ...(op.amount !== undefined ? [op.amount] : [])]); break;
+    }
     default: throw new Error('E_UNKNOWN_OP ' + op.op);
   }
+  if ((m.tracks || []).some(hasLaneSteps) || m.selections) syncLanes(m);
   return m;
 }
 
@@ -502,7 +646,8 @@ export function graph(model) {
   // atom cards exist only while something references them (ATOMS 9): built from the reference list, never from model.atoms
   for (const c of AT.atomCards(model)) add({ ...c });
   const addSlot = (scope, name) => add({ id: `slot:${scope}/${name}`, kind: 'slot', scope, name });
-  const publish = (name, from, port, track) => { const tn = add({ id: `tap:${name}`, kind: 'tap', name, facets: [] }); wire('pattern', from, port, tn.id, 'in'); if (track.ns) tn.ns = track.ns; };
+  const publish = (name, from, port, track, opts) => { const tn = add({ id: `tap:${name}`, kind: 'tap', name, facets: [] }); wire('pattern', from, port, tn.id, 'in'); if (track.ns) tn.ns = track.ns; if (opts && opts.export === true) tn.export = true; return tn; };
+  const lanesOn = hasLanes(model), branchTaps = new Map(); // tap name -> { lane, branch }: names published inside a split branch are local to it
   (model.tracks || []).forEach((t) => {
     if (t.chain == null && t.source == null) {
       const id = `code:${t.name}`, sc = scanText(t.src || '');
@@ -513,13 +658,14 @@ export function graph(model) {
       return node;
     }
     const tid = `track:${t.name}`;
-    add({ id: tid, kind: 'track', name: t.name, ns: t.ns, muted: !!t.muted, collapsed: true, steps: 1 + (t.chain || []).length });
+    const tnode = add({ id: tid, kind: 'track', name: t.name, ns: t.ns, muted: !!t.muted, collapsed: true, steps: 1 + (t.chain || []).length });
+    if (lanesOn) { tnode.tags = t.tags ? [...t.tags] : []; tnode.ports = { out: [{ name: 'audio', type: 'audio' }] }; if (t.ret) tnode.ret = t.ret; } // lane card: tag row + audio output port
     [t.source, ...(t.chain || [])].forEach((s, i) => {
       if (!s) return;
       const id = `${tid}#${i}`, method = s[0], isSlot = i > 0 && (method === 'use' || method === 'wrap');
       add({ id, kind: i === 0 ? 'pattern' : isSlot ? 'slot' : 'step', method, parent: tid });
       if (i > 0) wire('pattern', `${tid}#${i - 1}`, 'out', id, 'in');
-      if (method === 'tap' && typeof s[1] === 'string') publish(parseRef(s[1]).name, id, 'out', t);
+      if (method === 'tap' && typeof s[1] === 'string') publish(parseRef(s[1]).name, id, 'out', t, isObj(s[2]) ? s[2] : null);
       if (isSlot && typeof s[1] === 'string') { const r = parseRef(s[1]); addSlot(r.scope || t.name, r.name); }
       if (method === 'wire' && typeof s[2] === 'string') reads.push({ ref: s[2], node: id, port: String(s[1]) });
       s.slice(1).forEach((a, j) => {
@@ -529,6 +675,7 @@ export function graph(model) {
         else if (isObj(a) && a.$code !== undefined) scanText(a.$code).reads.forEach(r => reads.push({ ref: r, node: id, port }));
       });
     });
+    if (lanesOn && t.split) laneSplit(t, tid);
   });
   for (const i of model.instances || []) {
     add({ id: `inst:${i.as}`, kind: 'component', component: i.component, args: i.args || {} });
@@ -544,7 +691,12 @@ export function graph(model) {
     if (!tn.facets.includes(facet)) tn.facets.push(facet);
     wire(['ev', 'onset'].includes(facet) ? 'pattern' : 'signal', tn.id, facet, to, tp);
   };
-  reads.forEach(r => resolve(r.ref, r.node, r.port));
+  const refused = [];
+  reads.forEach(r => {
+    const rp = parseRef(r.ref), bt = branchTaps.get(rp.name), lane = r.node.replace(/^(track|code):/, '').split('#')[0];
+    if (bt && bt.lane !== lane && (!rp.scope || rp.scope === bt.lane)) { refused.push(crossing(`tap "${rp.name}"`, bt, lane, r)); return; } // E_LANE_CROSS: never a wire
+    resolve(r.ref, r.node, r.port);
+  });
   (model.wires || []).forEach(w => { const d = w.dest.split('.'); if (byId.has(trackNode(d[0]))) resolve(w.tap, trackNode(d[0]), d[1] || ''); });
   (model.maps || []).forEach(mp => { const d = mp.dest.split('.'); if (byId.has(`control:${mp.control}`) && byId.has(trackNode(d[0]))) wire('param', `control:${mp.control}`, 'out', trackNode(d[0]), d[1] || ''); });
   (model.bindings || []).forEach((b, i) => {
@@ -562,7 +714,84 @@ export function graph(model) {
     const t = (model.tracks || [])[+mt[1]]; if (!t) continue;
     const id = trackNode(t.name); if (byId.has(id)) wire('param', c.id, 'out', id, 'atom');
   }
-  return { nodes, wires };
+  if (lanesOn) laneNodes();
+  return refused.length ? { nodes, wires, refused } : { nodes, wires };
+
+  // ---- lanes (docs/LANES.md section 10): split fan, buses, selection chips, capture nodes. Function declarations: hoisted; all gated by lanesOn.
+  function laneSplit(t, tid) {
+    const sp = t.split, from = `${tid}#${sp.at}`, sid = `split:${t.name}`;
+    add({ id: sid, kind: 'split', parent: tid, lane: t.name, site: sp.site, branches: sp.branches.length, merge: !!sp.merge, ...(sp.mix ? { mix: sp.mix } : {}), ...(sp.pre !== undefined ? { pre: sp.pre } : {}) });
+    wire('audio', from, 'out', sid, 'in'); // ONE audio wire feeds the fan
+    const join = `join:${t.name}`;
+    add({ id: join, kind: 'join', parent: tid, lane: t.name, sum: !(sp.merge && sp.merge !== true), ...(sp.merge && sp.merge !== true ? { steps: (sp.merge.chain || []).length } : {}) });
+    sp.branches.forEach((b, j) => {
+      const bid = `branch:${t.name}#${j}`;
+      add({ id: bid, kind: 'branch', parent: tid, lane: t.name, index: j, branch: j, branchId: b.id, param: b.param, steps: b.chain ? b.chain.length : null, opaque: b.chain === null, src: b.src });
+      wire('audio', sid, `out${j}`, bid, 'in');
+      let last = bid;
+      (b.chain || []).forEach((step, k) => {
+        const id = `${bid}.${k}`;
+        add({ id, kind: 'step', method: step[0], parent: tid, lane: t.name, branch: j });
+        wire('audio', last, 'out', id, 'in'); last = id;
+        if (step[0] === 'tap' && typeof step[1] === 'string') { const nm = parseRef(step[1]).name, tn = publish(nm, id, 'out', t); tn.local = true; tn.lane = t.name; tn.branch = j; branchTaps.set(nm, { lane: t.name, branch: j, node: id }); }
+      });
+      wire('audio', last, 'out', join, `in${j}`);
+    });
+  }
+  function crossing(what, bt, to, read) {
+    return { code: 'E_LANE_CROSS', message: LD.E_LANE_CROSS(what, bt.lane, to), from: { node: bt.node, lane: bt.lane, branch: bt.branch }, to: { node: read.node, port: read.port, lane: to },
+      fixes: [{ label: 'Export tap', op: { op: 'exportTap', track: bt.lane, tap: parseRef(read.ref).name } }, { label: 'Add send', op: { op: 'addSend', track: bt.lane, bus: bt.lane } }] };
+  }
+  function laneNodes() {
+    const lanes = [], anon = { n: 0 };
+    for (const t of model.tracks || []) if (!(t.chain == null && t.source == null)) lanes.push({ id: ANON.test(t.name) ? `$${anon.n++}` : t.name, name: t.name, tags: t.tags || [] });
+    const nodeOf = (laneId) => `track:${lanes.find(l => l.id === laneId).name}`;
+    const buses = new Map(), bus = (name) => { if (!buses.has(name)) buses.set(name, add({ id: `bus:${name}`, kind: 'bus', name, sends: [], returns: [] })); return buses.get(name); };
+    const send = (laneId, name, amount, via) => {
+      const b = bus(name), e = b.sends.find(x => x.lane === laneId);
+      if (e) { if (via && !(e.via || []).includes(via)) (e.via ||= []).push(via); return; }
+      b.sends.push({ lane: laneId, amount, ...(via ? { via: [via] } : {}) });
+      wire('audio', nodeOf(laneId), 'audio', b.id, 'in');
+    };
+    for (const l of lanes) { const t = (model.tracks || []).find(x => x.name === l.name); for (const sd of t.sends || []) send(l.id, sd.bus, sd.amount); if (t.ret) { const b = bus(t.ret); b.returns.push(l.id); wire('audio', b.id, 'out', nodeOf(l.id), 'in'); } }
+    const chipOf = (kind, id, picker, extra) => { const sel = strOf(picker), m = sel === null ? { ok: false, matches: [], error: 'selector is not a string' } : LD.matchLanes(sel, lanes); return { id, kind, selector: sel, matches: m.matches, ...(m.ok ? {} : { error: m.error }), ...extra }; };
+    const captureNode = (name, c) => {
+      const picker = strOf(c.picker), what = Array.isArray(c.what) ? c.what : LD.defaultWhat(picker);
+      const chip = chipOf('capture', `capture:${name}`, c.picker, { name, site: LD.captureId(name), what, ...['window', 'last', 'live', 'max'].filter(k => c[k] !== undefined).reduce((o, k) => ({ ...o, [k]: c[k] }), {}) });
+      chip.ports = { out: [...(what.includes('events') ? [{ name: 'ev', type: 'pattern' }] : []), ...(what.includes('audio') ? [{ name: 'audio', type: 'audio' }] : []), ...(what.includes('level') ? [{ name: 'level', type: 'signal' }] : [])] };
+      if (chip.error && /^[\w-]+\/[\w-]+$/.test(picker || '')) { delete chip.error; chip.tap = picker; } // an event tap ref (lane/tap) is a picker, not a selector
+      return add(chip);
+    };
+    (model.selections || []).forEach((sel, i) => {
+      const id = sel.id || `s${i + 1}`, chip = add(chipOf('selection', `selection:${id}`, sel.selector, { ops: (sel.ops || []).map(o => o.op), ...(sel.gate !== undefined ? { gate: sel.gate } : {}) })); // one chip per statement; no per-match wires
+      for (const o of sel.ops || []) {
+        if (o.op === 'send') for (const m of chip.matches) send(m, strOf(o.bus), typeof o.amount === 'number' ? o.amount : 1, id);
+        if (o.op === 'capture') { const nm = strOf(o.name); if (nm && !(model.captures || {})[nm]) captureNode(nm, { picker: sel.selector, ...(o.opts || {}) }); }
+      }
+    });
+    for (const [name, c] of Object.entries(model.captures || {})) captureNode(name, c);
+    for (const t of model.tracks || []) { // capture readers: recall("name:facet") and .from("name") anywhere in the lane
+      if (t.chain == null && t.source == null) continue;
+      const text = t.src !== undefined ? t.src : emitTrack(t), tn = `track:${t.name}`;
+      for (const m of text.matchAll(/\brecall\(\s*["']([\w-]+)(?::([\w-]+))?/g)) { const cn = byId.get(`capture:${m[1]}`); if (cn) { const w = LD.facetWire(m[2] || 'ev'); wire(w.type, cn.id, w.port, tn, 'recall'); } }
+      for (const m of text.matchAll(/\.from\(\s*["']([\w-]+)["']/g)) { const cn = byId.get(`capture:${m[1]}`); if (cn) wire('audio', cn.id, 'audio', tn, 'from'); }
+    }
+  }
+}
+
+const hasLanes = (m) => (m.tracks || []).some(t => LANE_KEYS.some(k => t[k] !== undefined)) || !!(m.selections && m.selections.length) || !!(m.captures && Object.keys(m.captures).length);
+// every wire proposed by the UI goes through this: a source inside a split branch cannot feed another lane (E_LANE_CROSS); the fixes are applyOp operations
+export function checkWire(model, fromNode, toNode) {
+  const g = graph(model), byId = new Map(g.nodes.map(n => [n.id, n])), a = byId.get(fromNode), b = byId.get(toNode);
+  if (!a || !b) return { ok: false, code: 'E_NO_NODE', message: 'E_NO_NODE: unknown node' };
+  const laneName = (n) => (n.kind === 'track' ? n.name : n.lane || (n.parent ? String(n.parent).replace(/^track:/, '') : null));
+  const la = laneName(a), lb = laneName(b);
+  if (a.branch !== undefined && la && lb && la !== lb) {
+    const tap = a.kind === 'tap' ? a.name : (g.nodes.find(n => n.kind === 'tap' && n.branch === a.branch && n.lane === la) || {}).name;
+    return { ok: false, code: 'E_LANE_CROSS', message: LD.E_LANE_CROSS(tap ? `tap "${tap}"` : 'a branch step', la, lb), from: { node: fromNode, lane: la, branch: a.branch }, to: { node: toNode, lane: lb },
+      fixes: [...(tap ? [{ label: 'Export tap', op: { op: 'exportTap', track: la, tap } }] : []), { label: 'Add send', op: { op: 'addSend', track: la, bus: la } }] };
+  }
+  return { ok: true };
 }
 
 // ---------------------------------------------------------------- layout (deterministic layered, left to right)

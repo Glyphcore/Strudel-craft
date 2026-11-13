@@ -1572,6 +1572,115 @@
      "call-me-baby"
     ]
    }
+  ],
+  "tags": [
+   {
+    "name": "tag",
+    "shape": "tag"
+   }
+  ],
+  "tag": [
+   {
+    "name": "tag",
+    "shape": "tag"
+   }
+  ],
+  "tagged": [
+   {
+    "name": "selector",
+    "shape": "selector"
+   }
+  ],
+  "send": [
+   {
+    "name": "bus",
+    "shape": "busname"
+   },
+   {
+    "name": "amount",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 1,
+    "control": "knob",
+    "clamp": "hard"
+   }
+  ],
+  "ret": [
+   {
+    "name": "bus",
+    "shape": "busname"
+   }
+  ],
+  "split": [
+   {
+    "name": "branch",
+    "shape": "branch"
+   },
+   {
+    "name": "branch",
+    "shape": "branch"
+   },
+   {
+    "name": "branch",
+    "shape": "branch"
+   }
+  ],
+  "merge": [
+   {
+    "name": "branch",
+    "shape": "branch"
+   }
+  ],
+  "capture": [
+   {
+    "name": "name",
+    "shape": "name"
+   },
+   {
+    "name": "picker",
+    "shape": "selector"
+   },
+   {
+    "name": "options",
+    "shape": "pattern",
+    "examples": [
+     "{ window: \"1b..3b\" }",
+     "{ last: \"2b\" }",
+     "{ window: \"1b..3b\", what: [\"events\", \"audio\", \"level\"] }"
+    ]
+   }
+  ],
+  "recall": [
+   {
+    "name": "capture",
+    "shape": "capture"
+   },
+   {
+    "name": "options",
+    "shape": "pattern",
+    "examples": [
+     "{ at: 0 }"
+    ]
+   }
+  ],
+  "from": [
+   {
+    "name": "capture",
+    "shape": "capture"
+   }
+  ],
+  "mute": [
+   {
+    "name": "gate",
+    "shape": "gate"
+   }
+  ],
+  "solo": [
+   {
+    "name": "gate",
+    "shape": "gate"
+   }
   ]
  },
  "shapes": [
@@ -1594,6 +1703,12 @@
   "voicing",
   "progression",
   "bank",
+  "lane",
+  "busname",
+  "tag",
+  "selector",
+  "capture",
+  "branch",
   "atom:<type>"
  ],
  "editors": {
@@ -1659,5 +1774,215 @@
    "soft": "slider travel stays in range, typed values may go beyond",
    "none": "no bounds"
   }
+ },
+ "lanes": {
+  "_doc": "docs/LANES.md section 10. Read by site/lanes-intellisense.js. branchControls: the only methods offered inside a split/merge branch callback (bus-safe: effects, filters, envelope, gain, pan, orbit, structure); never s, n, note, bus or dry (E_LANE_SOURCE). facets: recall facet -> the capture layer that must be recorded. status: built = parses and models today, coming = needs the audio layer (#75) or capture (#76) at runtime.",
+  "status": {
+   "tags": "built",
+   "tagged": "built",
+   "split": "coming",
+   "merge": "coming",
+   "send": "coming",
+   "ret": "coming",
+   "capture": "coming",
+   "recall": "coming",
+   "from": "coming"
+  },
+  "branchControls": [
+   {
+    "label": "room",
+    "detail": "room(amount)",
+    "info": "Reverb send 0..1 (sends from the bus reader inside a branch)"
+   },
+   {
+    "label": "rsize",
+    "detail": "rsize(seconds)",
+    "info": "Reverb size"
+   },
+   {
+    "label": "size",
+    "detail": "size(seconds)",
+    "info": "Reverb size (alias)"
+   },
+   {
+    "label": "delay",
+    "detail": "delay(amount)",
+    "info": "Delay send 0..1"
+   },
+   {
+    "label": "delaytime",
+    "detail": "delaytime(seconds)",
+    "info": "Delay time"
+   },
+   {
+    "label": "delayfeedback",
+    "detail": "delayfeedback(amount)",
+    "info": "Delay feedback"
+   },
+   {
+    "label": "distort",
+    "detail": "distort(amount)",
+    "info": "Distortion on the lane sum"
+   },
+   {
+    "label": "crush",
+    "detail": "crush(bits)",
+    "info": "Bit crusher"
+   },
+   {
+    "label": "coarse",
+    "detail": "coarse(n)",
+    "info": "Sample-rate reduction"
+   },
+   {
+    "label": "shape",
+    "detail": "shape(amount)",
+    "info": "Waveshaper"
+   },
+   {
+    "label": "lpf",
+    "detail": "lpf(hz)",
+    "info": "Low-pass filter cutoff (Hz): one filter for the whole lane"
+   },
+   {
+    "label": "hpf",
+    "detail": "hpf(hz)",
+    "info": "High-pass filter cutoff (Hz)"
+   },
+   {
+    "label": "bpf",
+    "detail": "bpf(hz)",
+    "info": "Band-pass filter centre (Hz)"
+   },
+   {
+    "label": "lpq",
+    "detail": "lpq(q)",
+    "info": "Low-pass resonance"
+   },
+   {
+    "label": "hpq",
+    "detail": "hpq(q)",
+    "info": "High-pass resonance"
+   },
+   {
+    "label": "bpq",
+    "detail": "bpq(q)",
+    "info": "Band-pass resonance"
+   },
+   {
+    "label": "vowel",
+    "detail": "vowel(\"a e i o u\")",
+    "info": "Formant filter"
+   },
+   {
+    "label": "djf",
+    "detail": "djf(amount)",
+    "info": "DJ filter sweep"
+   },
+   {
+    "label": "phaser",
+    "detail": "phaser(speed)",
+    "info": "Phaser"
+   },
+   {
+    "label": "tremolo",
+    "detail": "tremolo(rate)",
+    "info": "Tremolo"
+   },
+   {
+    "label": "compressor",
+    "detail": "compressor(\"threshold:ratio:knee:attack:release\")",
+    "info": "Compressor on the lane sum"
+   },
+   {
+    "label": "attack",
+    "detail": "attack(seconds)",
+    "info": "Envelope attack of the reader"
+   },
+   {
+    "label": "decay",
+    "detail": "decay(seconds)",
+    "info": "Envelope decay of the reader"
+   },
+   {
+    "label": "sustain",
+    "detail": "sustain(level)",
+    "info": "Envelope sustain of the reader"
+   },
+   {
+    "label": "release",
+    "detail": "release(seconds)",
+    "info": "Envelope release of the reader"
+   },
+   {
+    "label": "gain",
+    "detail": "gain(amount)",
+    "info": "Volume of this branch"
+   },
+   {
+    "label": "postgain",
+    "detail": "postgain(amount)",
+    "info": "Gain after the effects"
+   },
+   {
+    "label": "pan",
+    "detail": "pan(position)",
+    "info": "Stereo position 0..1"
+   },
+   {
+    "label": "orbit",
+    "detail": "orbit(n)",
+    "info": "Effect bus of this reader"
+   },
+   {
+    "label": "struct",
+    "detail": "struct(\"x*8\")",
+    "info": "Rhythmic gate on the lane audio"
+   },
+   {
+    "label": "mask",
+    "detail": "mask(\"1 0 1 1\")",
+    "info": "Keep or drop segments of the lane audio"
+   }
+  ],
+  "branchExcluded": [
+   "s",
+   "sound",
+   "n",
+   "note",
+   "freq",
+   "bank",
+   "bus",
+   "dry"
+  ],
+  "facets": {
+   "ev": "events",
+   "onset": "events",
+   "gate": "events",
+   "audio": "audio",
+   "level": "level"
+  },
+  "selectorOperators": [
+   {
+    "label": "&",
+    "info": "and"
+   },
+   {
+    "label": "|",
+    "info": "or"
+   },
+   {
+    "label": "!",
+    "info": "not"
+   },
+   {
+    "label": "*",
+    "info": "every lane"
+   },
+   {
+    "label": "#",
+    "info": "#lane-id: one lane by its label"
+   }
+  ]
  }
 }

@@ -145,5 +145,67 @@
   "0": [
    "mini"
   ]
+ },
+ ".tags": {
+  "0": [
+   "tag",
+   "name"
+  ]
+ },
+ ".tag": {
+  "0": [
+   "tag",
+   "name"
+  ]
+ },
+ "tagged": {
+  "0": [
+   "selector",
+   "tag"
+  ]
+ },
+ ".send": {
+  "0": [
+   "busname",
+   "name"
+  ]
+ },
+ "ret": {
+  "0": [
+   "busname",
+   "name"
+  ]
+ },
+ "recall": {
+  "0": [
+   "capture",
+   "name"
+  ]
+ },
+ ".from": {
+  "0": [
+   "capture",
+   "name"
+  ]
+ },
+ "capture": {
+  "0": [
+   "capture",
+   "name"
+  ],
+  "1": [
+   "selector",
+   "tag"
+  ]
+ },
+ ".mute": {
+  "0": [
+   "gate"
+  ]
+ },
+ ".solo": {
+  "0": [
+   "gate"
+  ]
  }
 }

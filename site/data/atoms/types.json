@@ -207,5 +207,49 @@
   "validator": "none",
   "editor": "text",
   "ops": []
+ },
+ {
+  "id": "tag",
+  "compiles": "string",
+  "quote": "'",
+  "shape": [
+   "tag"
+  ],
+  "validator": "tag",
+  "editor": "text",
+  "ops": []
+ },
+ {
+  "id": "selector",
+  "compiles": "string",
+  "quote": "'",
+  "shape": [
+   "selector"
+  ],
+  "validator": "selector",
+  "editor": "text",
+  "ops": []
+ },
+ {
+  "id": "busname",
+  "compiles": "string",
+  "quote": "'",
+  "shape": [
+   "busname"
+  ],
+  "validator": "busname",
+  "editor": "text",
+  "ops": []
+ },
+ {
+  "id": "capture",
+  "compiles": "string",
+  "quote": "'",
+  "shape": [
+   "capture"
+  ],
+  "validator": "capture",
+  "editor": "text",
+  "ops": []
  }
 ]

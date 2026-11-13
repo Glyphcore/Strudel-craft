@@ -1,0 +1,6 @@
+drums: s("bd*4, hh*8").tags("drums")
+snare: s("~ sd").tags("drums", "wet")
+keys:  note("c e g").s("piano").tags("harm", "wet")
+verb:  ret("verb").room(1).rsize(8)
+tagged("wet").send("verb", 0.5)
+tagged("drums").fx(x => x.hpf(40)).mute("33b..37b")

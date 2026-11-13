@@ -49,6 +49,7 @@
   "settings": {
    "type": "object",
    "properties": {
+    "lanes": { "enum": ["open", "closed"], "default": "open" },
     "cps": {
      "type": "number",
      "exclusiveMinimum": 0
@@ -280,7 +281,10 @@
    "additionalProperties": {
     "$ref": "#/$defs/atom"
    }
-  }
+  },
+  "buses": { "type": "object", "description": "named buses used by sends and returns (docs/LANES.md section 10); never bus numbers, those are allocated per compile and not data", "additionalProperties": { "type": "object", "properties": { "returns": { "type": "array", "items": { "type": "string" } } } } },
+  "selections": { "type": "array", "items": { "$ref": "#/$defs/selection" } },
+  "captures": { "type": "object", "additionalProperties": { "$ref": "#/$defs/capture" } }
  },
  "$defs": {
   "point": {
@@ -557,8 +561,34 @@
     "src": {
      "type": "string",
      "description": "verbatim text; authoritative when chain is absent (opaque code node)"
-    }
+    },
+    "tags": { "type": "array", "items": { "type": "string" }, "description": "static tags of the lane (`.tags(...)` with literal arguments on its chain); derived from the chain" },
+    "split": { "$ref": "#/$defs/laneSplit" },
+    "sends": { "type": "array", "items": { "$ref": "#/$defs/laneSend" } },
+    "ret": { "type": "string", "description": "bus name this lane returns (`ret(name)` as its source)" }
    }
+  },
+  "laneBranch": {
+   "type": "object", "required": ["id", "src"], "description": "one split branch callback: verbatim src and, when its body is a plain method chain on the parameter, the parsed chain (chain null otherwise)",
+   "properties": { "id": { "type": "string" }, "src": { "type": "string" }, "param": { "type": ["string", "null"] }, "chain": { "type": ["array", "null"], "items": { "$ref": "#/$defs/step" } } }
+  },
+  "laneSplit": {
+   "type": "object", "required": ["site", "at", "branches"], "description": "docs/LANES.md section 10: `.split(...)` of a lane; at = chain index of the split step; ids are first-sight path hashes (reconciled ids: engine/lanes-data.js laneSites)",
+   "properties": { "site": { "type": "string" }, "at": { "type": "integer", "minimum": 0 }, "branches": { "type": "array", "items": { "$ref": "#/$defs/laneBranch" } },
+     "merge": { "oneOf": [{ "const": true }, { "$ref": "#/$defs/laneBranch" }] }, "mix": { "type": "array", "items": { "type": "number" } }, "pre": { "type": "boolean" } }
+  },
+  "laneSend": {
+   "type": "object", "required": ["bus"], "properties": { "bus": { "type": "string" }, "amount": { "type": "number", "minimum": 0, "maximum": 1 } }
+  },
+  "selection": {
+   "type": "object", "required": ["selector", "ops"], "description": "a `tagged(selector).op()...` statement; ops use the shape the hooks runtime serialises (engine/lanes.js toJSON)",
+   "properties": { "id": { "type": "string" }, "selector": { "type": ["string", "object"] }, "gate": {},
+     "ops": { "type": "array", "items": { "type": "object", "required": ["op"], "properties": { "op": { "enum": ["fx", "send", "mute", "solo", "gain", "orbit", "capture"] } } } } }
+  },
+  "capture": {
+   "type": "object", "required": ["picker"], "description": "capture(name, picker, opts): the name is the key; picker is a selector string, a tap ref, bus:<name> or master",
+   "properties": { "picker": { "type": ["string", "object"] }, "window": { "type": ["string", "object"] }, "last": { "type": ["string", "number"] },
+     "what": { "type": "array", "items": { "enum": ["events", "audio", "level"] } }, "live": { "type": ["boolean", "string"] }, "max": { "type": ["string", "number"] } }
   },
   "instance": {
    "type": "object",
@@ -656,8 +686,16 @@
         "var",
         "tap",
         "scene",
-        "action"
+        "action",
+        "selection"
        ]
+      },
+      "op": {
+       "enum": [
+        "mute",
+        "solo"
+       ],
+       "description": "kind selection: which toggle of the tagged(...) statement the pad drives; ref is its AST site id"
       },
       "ref": {
        "oneOf": [

@@ -1,0 +1,369 @@
+{
+ "recipe:four-on-the-floor": {
+  "graph": "94387456453b0ca1",
+  "model": "4071895898895778",
+  "hash": "4071895898895778fc4bc6af842eea3c237f2d525b817072f3744088096c7e64",
+  "gen": true
+ },
+ "recipe:offbeat-hat": {
+  "graph": "be75b454f92b3115",
+  "model": "7b1ca705c58735e9",
+  "hash": "7b1ca705c58735e9cff47340077e256d5de37d49a871aa4ec0c4748570250d56",
+  "gen": true
+ },
+ "recipe:euclid-groove": {
+  "graph": "94387456453b0ca1",
+  "model": "ffd100d02ca4c976",
+  "hash": "ffd100d02ca4c976d8881da9a5f258f4fe34fa55b628620641ce84130242c6b6",
+  "gen": true
+ },
+ "recipe:reese-style-detuned-bass": {
+  "graph": "41d7c64c7ebb11fb",
+  "model": "c3d89118eea4f310",
+  "hash": "c3d89118eea4f310ec627936ef1b4d925074daad45c3a069831fb7c116bd8815",
+  "gen": true
+ },
+ "recipe:sub-bass": {
+  "graph": "87338e06d853f870",
+  "model": "d0c71fd9ec4b0123",
+  "hash": "d0c71fd9ec4b01230cb8eff6701c64b18ba5859c558b3529e1725f3cde32f929",
+  "gen": true
+ },
+ "recipe:pad-swell": {
+  "graph": "bf57c67601f934f6",
+  "model": "18e22a4686d2ac25",
+  "hash": "18e22a4686d2ac25518091a2ad9b34ed40b5bf87588d0d5b1bfda3564286c50d",
+  "gen": true
+ },
+ "recipe:filter-sweep-build": {
+  "graph": "bc5472321750c343",
+  "model": "707309aa305c04cf",
+  "hash": "707309aa305c04cfa9452633a72a8fc683ca04c65878f71aa16fc2a40aadc6a7",
+  "gen": true
+ },
+ "recipe:riser": {
+  "graph": "ccec50dc79b5fe10",
+  "model": "e437c9ff7e823626",
+  "hash": "e437c9ff7e8236263fb98337786332bd448a53cd9efb88d0457d07228b7d94bd",
+  "gen": true
+ },
+ "recipe:breakdown-drop-arrangement-over-bars": {
+  "graph": "a810796f3e87ab18",
+  "model": "69e87905433c2a0b",
+  "hash": "69e87905433c2a0b68fc3cb77e6015bf207ffa47d5ffbb3cbc174cccfd49701d",
+  "gen": true
+ },
+ "recipe:half-time": {
+  "graph": "94387456453b0ca1",
+  "model": "56054c6394d2c251",
+  "hash": "56054c6394d2c251df8fb979522d1a0c5bc88fa82ee879a7f988c99a411ae8a6",
+  "gen": true
+ },
+ "recipe:call-and-response": {
+  "graph": "568742ab9dd5e83b",
+  "model": "1f451bc75d68bbc3",
+  "hash": "1f451bc75d68bbc378ee12f0e568d685ef51c77d551020677d5011e06a943acb",
+  "gen": true
+ },
+ "recipe:minor-motif": {
+  "graph": "2d8c965182202bb5",
+  "model": "a249b711eadc6fbd",
+  "hash": "a249b711eadc6fbd37fed1ea2423d5bfb6a59cd6e806a39c4a06912921e76195",
+  "gen": true
+ },
+ "recipe:chord-stabs": {
+  "graph": "b59d4193c419d31f",
+  "model": "b44ab5d4038085d0",
+  "hash": "b44ab5d4038085d0d250cfc73848055a28aa967fdcd35df085b9387a0359f8c1",
+  "gen": true
+ },
+ "recipe:sidechain-pump": {
+  "graph": "edc8a16969bac118",
+  "model": "37b052f203918675",
+  "hash": "37b052f203918675e788adaa6b04410fe15f3c6c41484b4ab3a715b86f6df1a4",
+  "gen": true
+ },
+ "recipe:fade-out": {
+  "graph": "4115ba5b223ace8e",
+  "model": "f2876317af8bc321",
+  "hash": "f2876317af8bc3215e4386f2f298e5f9c9008059057754ee0354dc4e72b513f9",
+  "gen": true
+ },
+ "recipe:synth-kick": {
+  "graph": "415484cac6585315",
+  "model": "0d5988cbe6270435",
+  "hash": "0d5988cbe627043538b434240f3ae2ae05c73126fd547266b488bd02fd4c5e1d",
+  "gen": true
+ },
+ "recipe:synth-hat-offbeat": {
+  "graph": "ac79c21045ece19a",
+  "model": "326c535f918ff916",
+  "hash": "326c535f918ff916b1ac8f8e30a69d80688b16ed065d1609fcfa518fc705ee07",
+  "gen": true
+ },
+ "recipe:synth-backbeat": {
+  "graph": "f76f2a848b57838a",
+  "model": "d5adf49b2dc8277e",
+  "hash": "d5adf49b2dc8277ee4b0113de06b929de4775f20e18e12f72dd0a5052d1fd6bf",
+  "gen": true
+ },
+ "recipe:synth-euclid": {
+  "graph": "415484cac6585315",
+  "model": "35a2c912ee9979ff",
+  "hash": "35a2c912ee9979ffc05b82cf1b08f4a2867f973dcabf5959e9dd5a59dbecfe7c",
+  "gen": true
+ },
+ "recipe:syncopated-bass": {
+  "graph": "d0642ed67dd91efa",
+  "model": "5bd79a511719cc57",
+  "hash": "5bd79a511719cc57eb8502da85742238805f47516e46c6992789aa0903e57aa6",
+  "gen": true
+ },
+ "recipe:supersaw-pad": {
+  "graph": "ef6738d09e68e94f",
+  "model": "134a4df3e85fedab",
+  "hash": "134a4df3e85fedab5f4001af012efc8ff4adc5b3f6e06e3b6da7e958aea73f36",
+  "gen": true
+ },
+ "recipe:pluck": {
+  "graph": "ae82d276434002d4",
+  "model": "c678d68d4a6f023e",
+  "hash": "c678d68d4a6f023e14c4974565cf74417841034d4b36954f2cc30dfdc8b3d957",
+  "gen": true
+ },
+ "recipe:minor-arp": {
+  "graph": "f321f46d00a806ea",
+  "model": "74b6c937c27a2901",
+  "hash": "74b6c937c27a2901807d2824ea7a20abf7115138a0121da002df1e0098010e34",
+  "gen": true
+ },
+ "recipe:chord-progression": {
+  "graph": "3fe88871273d868b",
+  "model": "4c71cc5c836062ef",
+  "hash": "4c71cc5c836062ef97eed9794a6a7edce83e761f4700f9a65026f1749989e64a",
+  "gen": true
+ },
+ "recipe:root-bass": {
+  "graph": "87338e06d853f870",
+  "model": "9a00d22a028153c5",
+  "hash": "9a00d22a028153c56b7bac55bb936f8019582915dacddb8e1aef0bb8f7cc08bf",
+  "gen": true
+ },
+ "recipe:delay-echo": {
+  "graph": "210d7b2a7d7da6b8",
+  "model": "1910240642e38c47",
+  "hash": "1910240642e38c47f2ea74f1fdbeb0bfad40b084277d08b6643a6d3551a7b6a1",
+  "gen": true
+ },
+ "recipe:stereo-jux": {
+  "graph": "fd98f2d67df24f78",
+  "model": "d388d792b4c4b543",
+  "hash": "d388d792b4c4b543c9d9bc2b5bb46b3e3d2817067a3870bbd4a2bdd4fc4fc63c",
+  "gen": true
+ },
+ "recipe:big-reverb": {
+  "graph": "b3d81fb06ee4d099",
+  "model": "643fce2d4840c448",
+  "hash": "643fce2d4840c448738b18241168efd8af7e3b77a9da5aba95d5a61a988ff1b0",
+  "gen": true
+ },
+ "recipe:dry-tight": {
+  "graph": "673c4a5b4418c85e",
+  "model": "8ddf383d455c2454",
+  "hash": "8ddf383d455c24540b3b2b939f46296f3a921180b2e7171191a847010b453dfa",
+  "gen": true
+ },
+ "recipe:phaser-sweep": {
+  "graph": "46f7c81d3870da91",
+  "model": "50816ceb97c9c47d",
+  "hash": "50816ceb97c9c47d08ab7e742a5498e404d316714d4940e48aafcd149f4cf330",
+  "gen": true
+ },
+ "recipe:tremolo-pad": {
+  "graph": "677c65210960b2c5",
+  "model": "7886a0f5c05ce623",
+  "hash": "7886a0f5c05ce6239ab8dc097b6d91cbaa028e98d8c9f8a1af123460161a5eb2",
+  "gen": true
+ },
+ "recipe:vowel-voice": {
+  "graph": "68e6bc64e8ca840d",
+  "model": "06696dbc3bf57b13",
+  "hash": "06696dbc3bf57b13ccc1e8688fca63028b38986b181ae9c24956827a291c214e",
+  "gen": true
+ },
+ "recipe:fm-bell": {
+  "graph": "284febc029a59f6c",
+  "model": "0dc857d71c00615c",
+  "hash": "0dc857d71c00615cc3b9fd28a8e0240aaadc7eee429cff6e54d386e8d869ecea",
+  "gen": true
+ },
+ "recipe:lofi-crunch": {
+  "graph": "6087fd920f9192a4",
+  "model": "cf9ccd1d3e8769f8",
+  "hash": "cf9ccd1d3e8769f8705c527617eaaf60c2c167e70433e2fc530c5a223f5864c7",
+  "gen": true
+ },
+ "recipe:perlin-drift": {
+  "graph": "4919eb53d859b418",
+  "model": "c8ffb0e8b304058a",
+  "hash": "c8ffb0e8b304058a1c9de71c1864a25bbd5c78fc1da30cf08b837af823d22a9a",
+  "gen": true
+ },
+ "recipe:crescendo": {
+  "graph": "87338e06d853f870",
+  "model": "1ea9fd0d72452b1a",
+  "hash": "1ea9fd0d72452b1a310b62e7d061067e3371caf41517c739898c520c37a36585",
+  "gen": true
+ },
+ "recipe:accents": {
+  "graph": "7d56e52173c3a5dd",
+  "model": "91b5a9ffcf98835e",
+  "hash": "91b5a9ffcf98835e1ebde344d94a7352514f50efbd609b638203c65065b3e9d5",
+  "gen": true
+ },
+ "recipe:sidechain-synth": {
+  "graph": "db9244d12dbafe3e",
+  "model": "3a997fc340efc879",
+  "hash": "3a997fc340efc879d753e845a0ea2988fecad9963992311e8c54971191138a9f",
+  "gen": true
+ },
+ "recipe:build-drop": {
+  "graph": "a810796f3e87ab18",
+  "model": "95ae9f411cccd2e3",
+  "hash": "95ae9f411cccd2e3abd2844ec5a7943049abb745be0ea9c336938dea80f05c07",
+  "gen": true
+ },
+ "recipe:layers-in": {
+  "graph": "58d8cecebf50dda6",
+  "model": "78e12eb727128e77",
+  "hash": "78e12eb727128e773fa923e26bd58b91164d81014d84c8fa535d5d7070b0c3d5",
+  "gen": true
+ },
+ "recipe:filter-open-intro": {
+  "graph": "4919eb53d859b418",
+  "model": "d67ff613e2d26c9d",
+  "hash": "d67ff613e2d26c9dfc34699dda3a7d6b676d68001a5a8e8b7f11dfb009a11130",
+  "gen": true
+ },
+ "recipe:random-thin": {
+  "graph": "ac79c21045ece19a",
+  "model": "2f7406a00475257c",
+  "hash": "2f7406a00475257c40509c4af396e0e49e1956e136e8b2ad224400d1388dce58",
+  "gen": true
+ },
+ "recipe:polymeter": {
+  "graph": "4115ba5b223ace8e",
+  "model": "165b0e50759bbb23",
+  "hash": "165b0e50759bbb23f8b9cadfbfbcbaabd1b91458f218bd214012a4dead7a5d5f",
+  "gen": true
+ },
+ "recipe:dark-drone": {
+  "graph": "4919eb53d859b418",
+  "model": "f46c3365c2cfd24b",
+  "hash": "f46c3365c2cfd24be0a86cb7fea4ed2ad029afd6d608a056f1b98cfe7ced9811",
+  "gen": true
+ },
+ "recipe:sparse-line": {
+  "graph": "0bbf45211e2fb512",
+  "model": "b965dbec3f0c5815",
+  "hash": "b965dbec3f0c5815c67b34db74c3737a54ce608c4628d15676b3ad306eccfa22",
+  "gen": true
+ },
+ "recipe:tense-riser": {
+  "graph": "51d44f48214323c6",
+  "model": "ef8249d2d3cca206",
+  "hash": "ef8249d2d3cca20694f9c9b77a832ef89e26ba9eedb4c0fd959e94ab3fd942b5",
+  "gen": true
+ },
+ "fx:tests/hooks/fixtures/ctl_prog.strudel.js": {
+  "graph": "4f5bb0f275343bb7",
+  "model": "f9eb232a1b339b6c",
+  "hash": "f9eb232a1b339b6cb36f2e82e95e5d19d324a41c29b54f974f04660daccb53e0",
+  "gen": true
+ },
+ "fx:tests/hooks/fixtures/perf_reader.strudel.js": {
+  "graph": "ae9a6bf80301aa80",
+  "model": "d2719222cea4bfd4",
+  "hash": "d2719222cea4bfd493b3a0cbc76083d117f2bf2bdf69932f300a609bd9f687ed",
+  "gen": true
+ },
+ "fx:tests/hooks/fixtures/perf_render.strudel.js": {
+  "graph": "43315abd36d388b8",
+  "model": "9bafc6b2652ce3da",
+  "hash": "9bafc6b2652ce3da0383be2d466f9d0c2d3189095c32b4227762c3e89442f3c1",
+  "gen": true
+ },
+ "fx:tests/hooks/fixtures/plan_prog.strudel.js": {
+  "graph": "6262d25da29c9ff4",
+  "model": "fa3166f21f52a620",
+  "hash": "fa3166f21f52a620838ef6fa492c560716985028b90766fbb0fb90300a2d7c0e",
+  "gen": true
+ },
+ "fx:tests/hooks/fixtures/render_prog.strudel.js": {
+  "graph": "735cf9167abaca8a",
+  "model": "bdb439be47c7338f",
+  "hash": "bdb439be47c7338f90ce12d123a54a5c3360f8308ab6b21ff02b5c8355d736d1",
+  "gen": true
+ },
+ "fx:tests/hooks/fixtures/slider_prog.strudel.js": {
+  "graph": "4f5bb0f275343bb7",
+  "model": "2a40c6af5d50290b",
+  "hash": "2a40c6af5d50290bf0ce4256fc3240dd4bbe5d587f6380ea0c413e35ea6fd73c",
+  "gen": true
+ },
+ "fx:tests/hooks/fixtures/two_layers.strudel.js": {
+  "graph": "888ddad4ac2bd523",
+  "model": "6ce9f9bf32da0cc2",
+  "hash": "6ce9f9bf32da0cc2077739f44e1d03abdecb6a79b90d8f38d687a2c9473608e0",
+  "gen": true
+ },
+ "fx:tests/hooks/fixtures/unknown_hook.strudel.js": {
+  "graph": "779b92836f25c216",
+  "model": "53e22f6aa348f9ac",
+  "hash": "53e22f6aa348f9ac6af1c7776330a363a1131f9fa47c90cdc31a6a4d770140f3",
+  "gen": true
+ },
+ "fx:tests/hooks/fixtures/xlayer.strudel.js": {
+  "graph": "e2d9792839d95daf",
+  "model": "74dbcde35a55d211",
+  "hash": "74dbcde35a55d2116b44a12a2534a604da39da5473d877cddd2dd1f1c50177eb",
+  "gen": true
+ },
+ "fx:tests/lanes/fixtures/dup.strudel.js": {
+  "graph": "6afdc8bc80770809",
+  "model": "ea85395691dc6c6b",
+  "hash": "ea85395691dc6c6b1ca6bd05987bf7eb1d6d29928810bd373d595f6609ba2a93",
+  "gen": true
+ },
+ "fx:tests/atoms/fixtures/bad_type.strudel.js": {
+  "graph": "ce9adc583d73a13f",
+  "model": "4ca283564421aa56",
+  "hash": "4ca283564421aa5671a9bdf02fb8caec0a9b730b3d7f4d7b09d699b6da98cb79",
+  "gen": true
+ },
+ "fx:tests/atoms/fixtures/badlit.strudel.js": {
+  "graph": "fd49d95ff631f8dd",
+  "model": "2f6b249722d444fc",
+  "hash": "2f6b249722d444fcf4db53461bb15625ac72acef4a9f62497309da5d62e1441a",
+  "gen": true
+ },
+ "fx:tests/atoms/fixtures/ex1.strudel.js": {
+  "graph": "ERR b.hook.replace is not a function",
+  "model": "1010593665402348",
+  "hash": "1010593665402348b62793de47e42215a9985ef21763ed1509ef1e4025cf4d8e",
+  "gen": true
+ },
+ "fx:tests/atoms/fixtures/prog.strudel.js": {
+  "graph": "19f3b1458ff62440",
+  "model": "e471eb2dae36d40d",
+  "hash": "e471eb2dae36d40d7b325c7402a26999f7869cb127177fed501fc3db3376ecf3",
+  "gen": true
+ },
+ "fx:tests/atoms/fixtures/prog_plain.strudel.js": {
+  "graph": "f1b723f685eaefbc",
+  "model": "7cd1d9bf43657c4f",
+  "hash": "7cd1d9bf43657c4f9296416e4ac1fa7802b6ce7ffa0a8b3ae44d59356e8fde27",
+  "gen": true
+ },
+ "_doc": "graph / canonical-model / hash digests of every non-lane document (46 recipes, hooks fixtures, dup lane fixture) computed with site/model.js of origin/main at 3c77681, before #77; tests/lanes/l4.mjs checks the current build against them"
+}

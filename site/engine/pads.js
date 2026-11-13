@@ -2,7 +2,7 @@
 import { quantise, parseLength, toFrac, fromFrac } from './time.js';
 
 const EPS = 1e-9;
-const OPS = { component: ['open', 'close'], hook: ['bind', 'unbind'], var: ['let', 'unlet'], tap: ['tap', 'tap-end'], action: ['action', null], scene: ['scene', null] };
+const OPS = { component: ['open', 'close'], hook: ['bind', 'unbind'], var: ['let', 'unlet'], tap: ['tap', 'tap-end'], selection: ['sel', 'unsel'], action: ['action', null], scene: ['scene', null] };
 
 export function padDefaults(pad) {
   const kind = pad.target.kind;
@@ -73,6 +73,7 @@ export function createPads({ banks = [], settings = {}, model = {}, atoms = null
       if (kind === 'hook') Object.assign(args, { slot: pad.target.slot, hook: ref });
       if (kind === 'var') Object.assign(args, { name: ref, ...(on ? { value: pad.target.value } : {}) });
       if (kind === 'component') args.instance = ref;
+      if (kind === 'selection') { args.selection = ref; args.op = pad.target.op || 'mute'; } // lanes (LANES 4.3): ref = the selection's AST site id (lanes-data.js padSelection resolves it to the runtime id)
       if (kind === 'tap') { args.name = ref; if (on) args.velocity = extra.velocity; }
       out.push({ cycle: toFrac(cycle), op: OPS[kind][on ? 0 : 1], pad: addr, target: { kind, ref, ...(pad.target.slot ? { slot: pad.target.slot } : {}) }, args, ...(extra.rebase ? { rebase: true } : {}), ...(extra.choke ? { choke: true } : {}) });
     };

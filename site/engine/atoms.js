@@ -4,6 +4,7 @@
 // Pipeline order on the site and in the CLI: atoms.compile -> control-site rewrite -> Strudel transpiler.
 import * as acorn from '../vendor/acorn-8.19.0.mjs';
 import { hash as modelHash } from '../model.js';
+import { parseSelector } from './lanes.js'; // the lanes selector grammar validates `selector` atoms (docs/LANES.md section 3)
 
 // ---------------------------------------------------------------- errors, positions
 export class AtomError extends Error {
@@ -368,6 +369,7 @@ const VALID = {
   chord: CHORD, scale: rx(/^[A-Ga-g][#b]*-?\d*(:[A-Za-z0-9 ]+)+$/, 'scale (root:mode)'),
   progression: (s) => { if (CFG.mini) CFG.mini(s); for (const tok of s.split(/[\s\[\]<>,|]+/).filter(Boolean)) { const c = tok.replace(/[*\/!@?:(].*$/, ''); if (c && c !== '~' && c !== '-') CHORD(c); } },
   gate: (s) => CFG.parsers?.gate(s), point: (s) => CFG.parsers?.point(s),
+  tag: rx(/^[A-Za-z_][\w-]*$/, 'tag'), busname: rx(/^[A-Za-z_][\w-]*$/, 'bus name'), capture: rx(/^[A-Za-z_][\w-]*$/, 'capture name'), selector: (s) => { parseSelector(s); },
   tapref: (s) => CFG.parsers?.ref(s),
   slot: (s) => { const r = CFG.parsers?.ref(s); if (r && r.facet) throw new Error(`a slot has no facet: "${s}"`); },
   'hook-expr': (s) => CFG.parsers?.expr(s),

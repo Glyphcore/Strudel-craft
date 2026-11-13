@@ -1,0 +1,5 @@
+lanes.closed()
+drums: s("bd*4, ~ sd ~ sd, hh*8").tags("drums")
+capture("groove", "drums", { window: "1b..3b", what: ["events", "audio", "level"] })
+chop:  n("0 3 2 1 4 7 6 5").from("groove").slice(8).gain(0.8).mask("<0 0 1 1>")
+bass:  note("c2*8").s("sawtooth").gain(recall("groove:level").range(1, 0.3))

@@ -104,3 +104,12 @@ states), `closers` (open brackets/quotes). Register more:
 
 ## Preludes
 `app.js` loads `prelude/word.js` (#43) into the Strudel eval context right after `initStrudel`, so `word()`, `syl()` and `vowel()` work in both editors; they are intellisense items (category `vocals`). Add more preludes to `PRELUDES` in `app.js`.
+
+## Visual feedback (`visuals.js`)
+As on strudel.cc/learn/visual-feedback, using Strudel's own draw code in `@strudel/web` 1.3.0 (unmodified):
+- active events in the mini-notation are outlined in the editor while playing (tinted by `.color()`);
+- global `.pianoroll() .punchcard() .spiral() .scope() .tscope() .fscope() .wordfall() .pitchwheel()` draw on a full-page
+  `#test-canvas` layer (no pointer events); onPaint painters are driven by our frame loop;
+- inline `_pianoroll` ... `_pitchwheel` render in a canvas under their code line (widget types registered with the transpiler).
+Each visual is a control type `visual.<name>` / `visual._<name>` in `strudelCraft.controls` and an intellisense item (`visuals`).
+`engine/index.js` (controls, pads, input) is now loaded by `index.html`.

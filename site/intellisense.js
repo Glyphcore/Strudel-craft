@@ -95,12 +95,22 @@ async function mount() {
     return { pos: s, end: e, above: true, create() { const dom = document.createElement('div'); dom.className = 'cm-sig'; dom.textContent = d.detail + ' - ' + d.info; return { dom }; } };
   });
   const theme = EditorView.theme({ '.cm-cursor, .cm-dropCursor': { borderLeftColor: 'var(--sig-2)' }, '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': { background: 'var(--sig-2-soft) !important' }, '.cm-matchingBracket': { background: 'var(--panel-3)', outline: '1px solid var(--line-2)' }, '.cm-lintRange-error': { backgroundImage: 'none', borderBottom: '2px wavy var(--bad)' }, '.cm-diagnostic-error': { borderLeftColor: 'var(--bad)' }, '.cm-tooltip-autocomplete ul li': { padding: '6px 8px', minHeight: '32px' }, '&': { background: 'var(--panel-2)', color: 'var(--text)', fontSize: '.86rem', borderRadius: '0 0 var(--r2) var(--r2)' }, '.cm-content': { fontFamily: 'var(--mono)', padding: '10px 0', caretColor: 'var(--sig-2)' }, '.cm-gutters': { background: 'transparent', border: '0', color: 'var(--dim)' }, '&.cm-focused': { outline: '2px solid var(--sig-2)', outlineOffset: '-2px' }, '.cm-scroller': { minHeight: '150px', lineHeight: '1.6' }, '.cm-tooltip': { background: 'var(--panel)', border: '1px solid var(--line, #333)', color: 'var(--text)' }, '.cm-tooltip-autocomplete ul li[aria-selected]': { background: 'var(--sig-2)', color: '#000' }, '.cm-completionSection': { color: 'var(--dim)', fontSize: '.72rem', textTransform: 'uppercase', padding: '4px 8px' }, '.cm-sig': { padding: '4px 8px', fontFamily: 'var(--mono)', fontSize: '.78rem', maxWidth: '320px' }, '.cm-activeLine, .cm-activeLineGutter': { background: 'transparent' } });
+  /* visual feedback hooks: active-event highlights and inline widget canvases (visuals.js) */
+  const setHl = smod.StateEffect.define(), setW = smod.StateEffect.define();
+  class CanvasW extends vmod.WidgetType { constructor(el) { super(); this.el = el; } eq(o) { return o.el === this.el; } toDOM() { const d = document.createElement('div'); d.className = 'cm-sc-widget'; d.append(this.el); return d; } ignoreEvent() { return true; } }
+  const hlField = smod.StateField.define({ create: () => vmod.Decoration.none, update(v, tr) { v = v.map(tr.changes); for (const e of tr.effects) if (e.is(setHl)) v = vmod.Decoration.set(e.value.map((h) => vmod.Decoration.mark({ class: 'cm-sc-active', attributes: h.color ? { style: `outline-color:${h.color};background:color-mix(in srgb, ${h.color} 25%, transparent)` } : {} }).range(h.from, h.to)), true); return v; }, provide: (f) => EditorView.decorations.from(f) });
+  const wField = smod.StateField.define({ create: () => vmod.Decoration.none, update(v, tr) { v = v.map(tr.changes); for (const e of tr.effects) if (e.is(setW)) v = vmod.Decoration.set(e.value.map((w) => vmod.Decoration.widget({ widget: new CanvasW(w.el), block: true, side: 1 }).range(w.pos)), true); return v; }, provide: (f) => EditorView.decorations.from(f) });
+  const vizApi = {
+    doc: (id) => { const t = document.getElementById(id); return t && t.cmView ? t.cmView.state.doc.toString() : ''; },
+    setHighlights: (id, hs) => { const t = document.getElementById(id); const v = t && t.cmView; if (!v) return; const n = v.state.doc.length; v.dispatch({ effects: setHl.of(hs.filter((h) => h.to <= n)) }); },
+    setWidgets: (id, ws) => { const t = document.getElementById(id); const v = t && t.cmView; if (!v) return; const n = v.state.doc.length; const lineEnd = (p) => v.state.doc.lineAt(Math.min(p, n)).to; v.dispatch({ effects: setW.of(ws.filter((w) => w.pos <= n).map((w) => ({ ...w, pos: lineEnd(w.pos) })).sort((a, b) => a.pos - b.pos)) }); },
+  };
   for (const id of ['code', 'stackCode']) {
     const ta = document.getElementById(id); if (!ta) continue;
     const desc = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value'); let view; let syncing = false; let learnT = 0;
     view = new EditorView({
       doc: desc.get.call(ta), parent: ta.parentNode,
-      extensions: [ghost.extension, basicSetup, lint.lintGutter(), javascript(), theme, hl, hover, EditorView.lineWrapping, ac.autocompletion({ override: [source], activateOnTyping: true, icons: false }),
+      extensions: [ghost.extension, hlField, wField, basicSetup, lint.lintGutter(), javascript(), theme, hl, hover, EditorView.lineWrapping, ac.autocompletion({ override: [source], activateOnTyping: true, icons: false }),
         EditorView.contentAttributes.of({ 'aria-label': ta.getAttribute('aria-label') || (id === 'code' ? 'Recipe code' : 'Stack program'), autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false' }),
         EditorView.updateListener.of((u) => { if (!u.docChanged || syncing) return; const v = u.state.doc.toString(); desc.set.call(ta, v); ta.dispatchEvent(new Event('input', { bubbles: true })); clearTimeout(learnT); learnT = setTimeout(() => learn(v), 1200); })],
     });
@@ -115,6 +125,7 @@ async function mount() {
     view.dispatch(lint.setDiagnostics(view.state, [{ from: ln.from, to: ln.to, severity: 'error', message: e.detail.message }]));
   });
   window.addEventListener('live:ok', (e) => { const view = viewFor(e.detail.view); if (view) view.dispatch(lint.setDiagnostics(view.state, [])); });
+  if (window.strudelCraft.visuals) window.strudelCraft.visuals.attach(vizApi); else window.addEventListener('load', () => window.strudelCraft.visuals && window.strudelCraft.visuals.attach(vizApi));
   document.documentElement.dataset.editor = 'cm6';
 }
 mount().catch((e) => { console.warn('Intellisense editor unavailable, plain textarea kept:', e.message); window.strudelCraft.ui && window.strudelCraft.ui.toast('Code helper offline: plain editor in use', { kind: 'info' }); });

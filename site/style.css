@@ -303,3 +303,6 @@ dialog.scm{width:min(420px,calc(100vw - 24px))}
 .src-badge[data-locked=true]{color:var(--warn);outline:1px solid var(--warn)}
 .toast-act{flex:1;text-align:left;min-height:44px;border:0;background:transparent;color:var(--sig-2);font-weight:600}
 .build{font-family:var(--mono);font-size:.62rem;color:var(--faint);white-space:nowrap}
+.cm-sc-active{outline:1.5px solid var(--sig-2);outline-offset:0;border-radius:2px;background:var(--sig-2-soft)}
+.cm-sc-widget{padding:4px 0}
+.sc-widget{display:block;max-width:100%;border-radius:var(--r1);background:var(--panel-3)}

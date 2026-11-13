@@ -78,7 +78,7 @@ const Engine = {
     if (!this.ready) this.ready = new Promise((res, rej) => {
       const s = document.createElement('script'); s.src = STRUDEL_WEB; s.crossOrigin = 'anonymous';
       s.onload = () => {
-        try { window.initStrudel({ onUpdateState: (st) => { this.state = st; } }).then((r) => { this.repl = r; loadPreludes().then(() => res(r), () => res(r)); try { window.dispatchEvent(new CustomEvent('strudel:ready')); } catch (e2) { /* ignore */ } }, rej); } catch (e) { rej(e); }
+        try { window.initStrudel({ onUpdateState: (st) => { this.state = st; try { window.dispatchEvent(new CustomEvent('strudel:state', { detail: st })); } catch (e) { /* ignore */ } } }).then((r) => { this.repl = r; loadPreludes().then(() => res(r), () => res(r)); try { window.dispatchEvent(new CustomEvent('strudel:ready')); } catch (e2) { /* ignore */ } }, rej); } catch (e) { rej(e); }
       };
       s.onerror = () => { this.ready = null; rej(new Error('Could not load the Strudel engine from unpkg (offline?)')); };
       document.head.append(s);
@@ -656,5 +656,6 @@ async function boot() {
     'requestIdleCallback' in window ? requestIdleCallback(reg, { timeout: 4000 }) : setTimeout(reg, 2000);
   }
 }
+window.strudelCraft.engineState = () => ({ ...Engine.state, scheduler: Engine.scheduler, playing: S.playing, srcView: S.srcView || 'rack' });
 window.__sc = { S, Engine, Bus, play, stop, select, setView, History, toggleStack };
 document.addEventListener('DOMContentLoaded', boot);

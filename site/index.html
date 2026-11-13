@@ -1,22 +1,139 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Strudel Craft - Catalog</title>
-<meta name="description" content="Recipes for sounds, harmony, rhythm and feel in Strudel, filterable by concept.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Strudel Craft</title>
+<meta name="description" content="A playable instrument of Strudel recipes: browse sounds by what they do, audition them live with scope, spectrum and pattern lanes, stack them into one program.">
+<meta name="theme-color" content="#0b0d10">
+<link rel="preload" href="fonts/ChakraPetch-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="data/catalog.json" as="fetch" crossorigin>
 <link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b0d10'/%3E%3Cpath d='M4 16h5l3-9 4 18 4-14 3 5h5' fill='none' stroke='%23ff6a1a' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>try{var t=localStorage.getItem('sc.theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <script src="app.js" defer></script>
 </head>
-<body data-page="catalog">
-<main class="wrap">
-<h2>Recipe catalog</h2>
-<p class="lead">Find a sound by what it does or how it feels, then play it, copy it or open it in strudel.cc. Recipes marked "rendered ok" were rendered headless and were not silent.</p>
-<input id="q" type="search" placeholder="Search: dark, pad, echo, build..." aria-label="Search recipes">
-<div id="filters"></div>
-<div class="row"><label><input id="vonly" type="checkbox"> Verified only</label><button id="clear" type="button">Clear filters</button></div>
-<p id="count" class="meta" role="status"></p>
-<div id="list"></div>
+<body>
+<a class="skip" href="#main">Skip to instrument</a>
+<header class="top">
+  <div class="brand">
+    <svg class="glyph" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16h6l3-9 4 18 4-14 3 5h6"/></svg>
+    <span class="name">Strudel<b>Craft</b></span>
+  </div>
+  <nav class="views" aria-label="Views">
+    <a href="#rack" data-view="rack"><kbd>1</kbd>Rack</a>
+    <a href="#stack" data-view="stack"><kbd>2</kbd>Stack<span class="count" id="stackCount"></span></a>
+    <a href="#ref" data-view="ref"><kbd>3</kbd>Ref</a>
+    <a href="#practice" data-view="practice"><kbd>4</kbd>Practice</a>
+  </nav>
+  <div class="tools">
+    <button type="button" class="icon" id="helpBtn" aria-label="Keyboard shortcuts" aria-haspopup="dialog" title="Shortcuts (?)">?</button>
+    <button type="button" class="icon" id="themeBtn" aria-label="Toggle light or dark theme" title="Theme (T)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" class="fill"/></svg></button>
+  </div>
+</header>
+
+<main id="main" class="deck" data-view="rack">
+  <aside class="browser" aria-label="Recipe browser">
+    <div class="search">
+      <label class="sr" for="q">Search recipes</label>
+      <input id="q" type="search" placeholder="Search: dark, pad, echo, build" autocomplete="off" spellcheck="false">
+      <kbd class="hint" aria-hidden="true">/</kbd>
+    </div>
+    <details class="filters" id="filtersBox">
+      <summary><span>Filters</span><span id="filterCount" class="pill"></span></summary>
+      <div id="filters"></div>
+      <div class="filter-foot">
+        <label class="switch"><input id="vonly" type="checkbox"><span>Rendered OK only</span></label>
+        <button type="button" id="clear" class="ghost">Clear</button>
+      </div>
+    </details>
+    <p id="count" class="count-line" role="status" aria-live="polite"></p>
+    <ol id="list" class="list" aria-label="Recipes"></ol>
+  </aside>
+
+  <section class="center" aria-label="Stage">
+    <div class="stage panel">
+      <div class="stage-head">
+        <div class="now"><span class="label" id="srcLabel">Solo</span><h1 id="nowTitle">Loading recipes</h1></div>
+        <div class="readouts" aria-hidden="true"><span><i>Cycle</i><b id="cycleOut">0.00</b></span><span><i>CPS</i><b id="cpsOut">-</b></span></div>
+      </div>
+      <canvas id="viz" class="viz" aria-label="Scope and spectrum of the master output" role="img"></canvas>
+      <canvas id="lanes" class="lanes" aria-label="Pattern lanes for the current cycle with playhead" role="img"></canvas>
+    </div>
+
+    <div class="view view-rack" data-for="rack">
+      <div class="editor panel">
+        <div class="panel-head"><h2>Code</h2><span class="dirty" id="dirty" hidden>edited</span>
+          <div class="acts"><button type="button" id="evalBtn" class="ghost" title="Evaluate (Ctrl+Enter)">Run <kbd>Ctrl+Enter</kbd></button><button type="button" id="revertBtn" class="ghost" disabled>Revert</button></div></div>
+        <label class="sr" for="code">Recipe code</label>
+        <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" rows="6"></textarea>
+      </div>
+    </div>
+
+    <div class="view view-stack" data-for="stack">
+      <div class="editor panel">
+        <div class="panel-head"><h2>Stack program</h2><div class="acts"><button type="button" id="stackCopy" class="ghost">Copy</button><a id="stackOpen" class="btn ghost" target="_blank" rel="noopener" href="https://strudel.cc/">strudel.cc</a></div></div>
+        <label class="sr" for="stackCode">Generated stack program</label>
+        <textarea id="stackCode" spellcheck="false" readonly rows="8"></textarea>
+      </div>
+    </div>
+
+    <div class="view view-doc" data-for="ref">
+      <div class="doc panel">
+        <div class="panel-head"><h2>Plugin and function reference</h2></div>
+        <label class="sr" for="refQ">Filter reference</label>
+        <input id="refQ" type="search" placeholder="Filter: lpf, delay, envelope" autocomplete="off">
+        <div id="refDoc" class="docbody">Loading reference</div>
+      </div>
+    </div>
+    <div class="view view-doc" data-for="practice">
+      <div class="doc panel">
+        <div class="panel-head"><h2>Best practices</h2></div>
+        <label class="sr" for="pracQ">Filter practices</label>
+        <input id="pracQ" type="search" placeholder="Filter: mini-notation, gain" autocomplete="off">
+        <div id="pracDoc" class="docbody">Loading practices</div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="side" aria-label="Details">
+    <div class="view view-rack" data-for="rack">
+      <div class="inspector panel" id="inspector"></div>
+    </div>
+    <div class="view view-stack" data-for="stack">
+      <div class="panel layers">
+        <div class="panel-head"><h2>Layers</h2><button type="button" id="stackClear" class="ghost">Clear</button></div>
+        <ol id="layers" class="layer-list" aria-label="Stack layers"></ol>
+        <p class="hintline">Add layers with <b>+</b> in the browser or <kbd>A</kbd>. Level is <code>postgain</code>; mute writes <code>_$:</code>.</p>
+      </div>
+    </div>
+    <div class="view view-doc" data-for="ref"><nav class="panel toc" aria-label="Reference sections" id="refToc"></nav></div>
+    <div class="view view-doc" data-for="practice"><nav class="panel toc" aria-label="Practice sections" id="pracToc"></nav></div>
+  </aside>
 </main>
+
+<footer class="transport" aria-label="Transport">
+  <div class="tp-main">
+    <button type="button" class="tp-btn" id="prevBtn" aria-label="Previous recipe" title="Previous (Up)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14M19 5 9 12l10 7z"/></svg></button>
+    <button type="button" class="play" id="playBtn" aria-pressed="false" title="Play / stop (Space)"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-play" d="M7 4.5v15l13-7.5z"/><path class="i-stop" d="M6 6h12v12H6z"/></svg><span id="playLabel">Play</span></button>
+    <button type="button" class="tp-btn" id="nextBtn" aria-label="Next recipe" title="Next (Down)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 5v14M5 5l10 7-10 7z"/></svg></button>
+  </div>
+  <div class="tp-knobs">
+    <div id="tempoKnob"></div>
+    <div id="masterKnob"></div>
+  </div>
+  <div class="tp-meter">
+    <canvas id="meter" class="meter" role="img" aria-label="Master peak level meter, left and right"></canvas>
+    <output id="peakOut" class="peak" aria-hidden="true">-inf dB</output>
+  </div>
+  <p id="status" class="status" role="status" aria-live="polite">Ready. Press Play or Space.</p>
+</footer>
+
+<dialog id="help" aria-labelledby="helpTitle">
+  <div class="help-head"><h2 id="helpTitle">Shortcuts</h2><button type="button" class="icon" id="helpClose" aria-label="Close shortcuts">&times;</button></div>
+  <dl class="keys" id="keys"></dl>
+  <p class="hintline">Knobs: drag up/down (Shift = fine), wheel, arrow keys when focused, double-click to reset.</p>
+</dialog>
+<noscript><p class="noscript">Strudel Craft is an instrument and needs JavaScript. Recipes are in <a href="data/catalog.json">data/catalog.json</a>.</p></noscript>
 </body>
 </html>

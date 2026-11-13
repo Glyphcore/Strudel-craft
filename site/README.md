@@ -72,6 +72,8 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/atoms/a4_lazy.mjs       # atoms lazy declaration pass: lazy == eager, 5000 declared parse budget (#64)
     node tests/site/atoms_ui.mjs       # Playwright: atom cards, derived cards, browser, popover, keyboard path, 5000-atom paint (#64; also in smoke)
     STRUDEL_MODULES=... node tests/lanes/l1.mjs  # lanes L1: tap cache, lane scope, tags, selections, checks (#74); CLI box prints SKIP without the `strudel` CLI
+    STRUDEL_MODULES=... node tests/lanes/l4.mjs  # lanes L4: model schema, round trip, completion, atom types, ids, bus numbers, invariants (#77); needs core, mini, transpiler
+    node tests/site/lanes_data.mjs     # lanes L4: graph() data (lane cards, buses, selection chips, split fan, capture node, E_LANE_CROSS fixes), no runtime needed
     node tests/hooks/p3.mjs            # model round trip (#49); the `strudel` CLI checks print SKIP without it
     node tests/hooks/p4.mjs            # component library, instances, lib: fragments (#50)
     node tests/hooks/p5.mjs            # hooks + model intellisense providers (#51)
@@ -279,7 +281,21 @@ the Strudel `Pattern` and the hooks object) adds `Pattern.prototype.tags` and th
   outermost query wrapper before the control maps; selections serialise in `hooks.toJSON()` (`selections[]`) and live toggles (`lanes.set(id, op, on, at)`) journal as `sel` entries.
 - Text side: `scan(src)`, `compile(src)` -> `{ code, map, graph }` and `check(src, { strict })` (`E_LANE_DUP`, `W_LANE_ORBIT_FX`, `W_LANE_IMPLICIT_EXPORT`, `E_LANE_PRIVATE`); the
   lane graph is what `strudel lanes IN` will print (that command and `check --strict` wiring live in the CLI repo and are not done yet).
-- Not built yet (shown as "coming" in the Syntax view): `.split .merge .send ret`, `capture recall .from`, model / graph / UI for lanes.
+- Not built yet (shown as "coming" in the Syntax view): the runtime of `.split .merge .send ret` (#75) and `capture recall .from` (#76), the UI (#78).
+- **Consumers (L4, #77)** - data and engine only, no visible UI. Entry points for the lane UI (#78):
+  - `model.js` `parse` / `generate` / `applyOp` / `graph` / `checkWire`. Model additions (all derived from the code, so a no-edit round trip is byte-identical and models without lanes are unchanged):
+    `tracks[].tags`, `tracks[].split` (`{ site, at, branches: [{ id, param, chain | null, src }], merge, mix, pre }`), `tracks[].sends` (`[{ bus, amount }]`), `tracks[].ret`, `buses` (`{ name: { returns } }`, names only, never bus numbers),
+    `selections[]` (`{ id, selector, ops, gate? }`, the shape `hooks.toJSON()` uses), `captures` (`{ name: { picker, window | last, what, live, max } }`), `settings.lanes` (`open` | `closed`). Header statements `tagged(...)...`, `capture(...)`, `lanes.closed()` are kept verbatim like the hooks registry.
+  - `graph(model)` for a document with lanes: track nodes gain `tags` and `ports.out = [{ name: "audio", type: "audio" }]`; `split:<lane>` (fed by ONE `audio` wire), `branch:<lane>#i` and `branch:<lane>#i.k` sub-chain steps, `join:<lane>`;
+    `bus:<name>` (`sends`, `returns`, `audio` wires in and out); `selection:<id>` chips (`selector`, `ops`, `matches` - never one wire per match); `capture:<name>` nodes (`ports.out` = `ev` / `audio` / `level` as recorded, wires to the lanes that `recall(...)` or `.from(...)` them);
+    tap nodes carry `export` / `local` + `lane` + `branch`. A read of a branch-local tap from another lane is not drawn: `graph().refused[]` holds `{ code: "E_LANE_CROSS", message, from, to, fixes: [{ label: "Export tap" | "Add send", op }] }`; `checkWire(model, fromNode, toNode)` answers the same for a wire the UI proposes.
+  - `applyOp` additions: `addBranch { track, fn, index? }` (splices one argument into `.split(...)`), `exportTap { track, tap }` (an exported `.tap(name, { export: true })` just before `.split`), `addSend { track, bus, amount? }` (`.send(bus)` at the end of the chain); each changes one statement.
+  - `engine/lanes-data.js`: `laneSites(code, prev)` (stable site ids: `p...` split / branch / send, `g...` selection, `q...` capture = name-keyed, reconciled with the control-binding rules), `selectionRuntimeId`, `padSelection(code, target, prev)` (pad kind `selection`, `{ ref: <site id>, op: "mute" | "solo" }`, resolved to the runtime id for `lanes.set`),
+    `matchLanes(selector, lanes)`, `filterByTags(items, selector)` (the selector grammar shared with `strudel atoms list --tag` and the atom browser filter), `facetsOf(what)`, `defaultWhat(picker)`. Model split/selection ids are first-sight path hashes; `laneSites` is the reconciled authority for bindings and pads.
+  - `lanes-intellisense.js`: `complete(ctx, data, model)`, `enumFor`, `textModel(doc)`; `install()` registers one completion source `lanes` and a literal-editor shape provider. Inside a `.split(` / `.merge(` branch callback after `w.` only the bus-safe controls of `data/intellisense/strudel.json` `lanes.branchControls` are offered (never `s n note bus dry`);
+    `tagged("` and `capture(name, "` offer tags, `#lane` ids and operators; `.send("` and `ret("` offer bus names; `recall("` capture names, `recall("name:` only the facets that capture records; `.from("` captures with audio. Typed shapes `lane busname tag selector capture branch` are in the `params` / `shapes` tables.
+  - Atom types `tag selector busname capture` (single-quoted, `data/atoms/types.json`, accepted positions in `positions.json`); a `selector` atom is validated with the lanes selector grammar.
+Tests: `node tests/site/lanes_data.mjs`, `STRUDEL_MODULES=... node tests/lanes/l4.mjs`.
 Test: `STRUDEL_MODULES=<dir with @strudel/ core mini transpiler> node tests/lanes/l1.mjs`.
 
 ## Perform (`perform.js` + `perform.css`, view 5, #55)
@@ -339,8 +355,8 @@ same file on the site and in the CLI; it imports acorn from `vendor/` and never 
   (partial application -> derived atom), `derive`, `runtimeAtoms` (frozen fallback for dynamic `atoms[x]`, which warns
   `W_ATOM_DYNAMIC`), `reconcile` (ids `a` + 6 base-36 FNV-1a chars, kept across renames; `rev` / `parent` by content hash),
   `atomHash`, `checkModel`, `locate` / `errorSpan` (an error inside a compiled literal maps back to the reference span).
-- 15 types in `data/atoms/types.json` (mini, sound, bank, note, chord, scale, voicing, progression, gate, point, tapref, slot, hook,
-  name, text) with `compiles / quote / shape / validator / editor / ops`; `data/atoms/positions.json` says which type fits which
+- 19 types in `data/atoms/types.json` (mini, sound, bank, note, chord, scale, voicing, progression, gate, point, tapref, slot, hook,
+  name, tag, selector, busname, capture, text) with `compiles / quote / shape / validator / editor / ops`; `data/atoms/positions.json` says which type fits which
   argument position (`s(` takes `sound | mini`, `hooks.bind` takes `slot, hook, gate`, ...) -> `E_ATOM_TYPE`.
 - Schema: `atoms` map plus `$defs.atom / atomParam / atomRef` in `data/schema/model.v1.json`; `{ "$atom": id }` is accepted in step
   args, `bindings` slot/hook/gate/else, `wires[].tap`, `markers`, `maps[].dest` and pad `target.ref`.

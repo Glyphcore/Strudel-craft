@@ -82,6 +82,10 @@ Data, like control types: `site/data/atoms/types.json`, loaded into `strudelCraf
 | `slot` | `[scope/]name` | `'` | `slot` | ref grammar | `bass/fx` |
 | `hook` | hook expression (BLUEPRINT 3) | `'` | `hook` | hook-expr grammar | `every(${n})[murk]` |
 | `name` | a bare name: tap name, var, scope, control label, pad address | `'` | `name` | name grammar | `kick` |
+| `tag` | a lane tag (docs/LANES.md) | `'` | `tag` | name grammar | `wet` |
+| `selector` | a lanes selector: tags, `#lane`, `& \| ! ( ) *` | `'` | `selector` | selector grammar (lanes.js `parseSelector`) | `drums & !wet` |
+| `busname` | a named send / return bus | `'` | `busname` | name grammar | `verb` |
+| `capture` | a capture name | `'` | `capture` | name grammar | `groove` |
 | `text` | any other string (escape hatch) | as declared | - | none | |
 
 Type record: `{ id, compiles: "string" | "pattern" | "object", quote, shape, validator, editor, ops: [...] }`. `shape` is the param-shape

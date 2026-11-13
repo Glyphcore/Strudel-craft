@@ -74,7 +74,7 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | lanes-events (memoised taps, lane-scoped taps, tags and selections; docs/LANES.md) | taps-vars-decorators, controls-engine | built (engine, tests; CLI `strudel lanes` pending, critic pending) | #74 |
 | lanes-audio (`.split` / `.merge` / `.send` / `ret` on superdough buses, no re-synthesis) | lanes-events | issued | #75 |
 | lanes-capture (`capture` / `recall` / `.from`: events, audio, level; deterministic passes) | lanes-events, lanes-audio | issued | #76 |
-| lanes-consumers (model, graph data, param shapes, intellisense, atom types, AST ids) | lanes-events, model-schema-roundtrip, atoms-core | issued | #77 |
+| lanes-consumers (model, graph data, param shapes, intellisense, atom types, AST ids) | lanes-events, model-schema-roundtrip, atoms-core | built (data side; runtime halves wait on #75 / #76; critic pending) | #77 |
 | lanes-ui (lane cards, split fan, bus and capture nodes, tag chips; ui-designer) | lanes-consumers, graph-editor-ui | issued | #78 |
 
 ## Waiting nodes

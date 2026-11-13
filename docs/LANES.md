@@ -473,7 +473,18 @@ Where the build differs from, or fixes, the text above:
   `tags`, `selections` (selector and op text), `mode` and `diagnostics`. `check(src, { strict })` reports `E_LANE_DUP`, `W_LANE_ORBIT_FX`, `W_LANE_IMPLICIT_EXPORT`,
   `E_LANE_PRIVATE` (statically; the runtime raises the last two when it sees the read) and `E_BAD_SELECTOR`. L2 adds the rewrites.
 - Anonymous lanes are `$0`, `$1`, ... in source order, as Strudel numbers them; `tap("$0/x")` is a valid ref.
-- Not built (marked coming in `site/data/syntax.json`): `.split`, `.merge`, `.send`, `ret`, `capture`, `recall`, `.from`, the `strudel lanes` command, model and graph fields (L4), UI (L5).
+- Not built (marked coming in `site/data/syntax.json`): `.split`, `.merge`, `.send`, `ret`, `capture`, `recall`, `.from` at runtime, the `strudel lanes` command, UI (L5). Model, graph data, param shapes, intellisense, atom types and ids: section 11b.
+
+## 11b. Built in L4 (#77)
+Files: `site/model.js` (records, `graph`, `checkWire`, ops `addBranch exportTap addSend`), `site/engine/lanes-data.js` (site ids, selector matching, capture facets, pad selection target), `site/lanes-intellisense.js`,
+`site/data/schema/model.v1.json`, `site/data/intellisense/strudel.json` (`params`, `shapes`, `lanes`), `site/data/atoms/types.json` + `positions.json`, `site/engine/pads.js` (target kind `selection`); tests `tests/lanes/l4.mjs`, `tests/site/lanes_data.mjs`. Data entry points for the UI (#78) are listed in site/README.md.
+Where the build differs from, or settles, the text above:
+- Everything in the model is derived from the code (`tags`, `split`, `sends`, `ret`, `buses`) or kept verbatim (header statements `tagged`, `capture`, `lanes.closed()` in `hookSrc`), so `generate(parse(code))` stays byte-identical and a document without lanes has the same model, hash and `graph()` as before.
+- `selections[]` use the shape of the hooks runtime JSON (`{ op: "mute", gate }`, `{ op: "fx", opaque, src }`, ...), so a config and a program describe selections the same way. A branch records its verbatim `src` and, when the body is a plain method chain on the parameter, the parsed `chain` (else `chain: null`).
+- Model ids (`split.site`, `branch.id`, selection `id`) are first-sight path hashes. The reconciled ids (path, structure, position; the control-binding rules) come from `laneSites(code, prev)`; bindings and pads use those. Captures are name-keyed, a rename is a new id. Bus numbers are not data: nothing in the model, the graph or the ids contains one.
+- Crossing: a read of a branch-local tap from another lane is not drawn (`graph().refused[]`, `checkWire`). The offered fixes are applyOp operations: "Export tap" puts `.tap(name, { export: true })` on the lane just before its `.split` (events before a split are the same as inside a branch, section 5.2), "Add send" appends `.send(<lane>)`. Names published inside a branch stay branch-local at runtime (section 4.2).
+- Pad target kind `selection` (`{ ref: <site id>, op: "mute" | "solo" }`) journals as op `sel`; `padSelection(code, target)` maps the site id to the runtime selection id for `lanes.set`.
+- Waiting on other issues: the runtime of `.split .merge .send ret` (#75) and of `capture recall .from` (#76). Their data side (model, graph, intellisense, atoms, ids, applyOp) is built and checked from the documented syntax; the `busname` atom events check in `.send(atoms.verb)` and the CLI `strudel atoms list --tag` are open.
 
 ## 12. Open questions
 

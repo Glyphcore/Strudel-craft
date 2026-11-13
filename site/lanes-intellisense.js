@@ -8,6 +8,7 @@
        - recall(" : capture names; recall("name: : only the facets that capture records; .from(" : captures that record audio
      enumFor(method, argIndex, model) -> string[]  options for a literal editor (combobox) on those arguments */
 import { facetsOf, defaultWhat, FACETS } from './engine/lanes-data.js';
+import { scan } from './engine/lanes.js';
 
 const IDENT = /[\w$]/;
 // scan the text before the caret: the stack of open brackets, with `.split(` / `.merge(` openings and arrow functions that start inside them
@@ -89,10 +90,21 @@ export function enumFor(method, argIndex, model) {
   return null;
 }
 
+// the model of a document that does not parse yet (an unclosed string or bracket while typing): lanes, tags, sends, returns and captures read from the text
+export function textModel(doc) {
+  const g = scan(doc), anon = g.lanes.filter((l) => l.label === '$');
+  const tracks = g.lanes.map((l) => ({ name: l.label === '$' ? '$' + (anon.indexOf(l) + 1) : l.label, tags: l.tags, source: ['s'], chain: [] }));
+  const buses = {}; for (const x of doc.matchAll(/\b(?:\.send|ret)\(\s*["']([\w-]+)["']/g)) buses[x[1]] = { returns: [] };
+  const captures = {};
+  for (const x of doc.matchAll(/\bcapture\(\s*["']([\w-]+)["']\s*,\s*["']([^"']*)["']\s*(?:,\s*\{([^}\n]*)\})?/g)) {
+    const w = /what\s*:\s*\[([^\]]*)\]/.exec(x[3] || ''); captures[x[1]] = { picker: x[2], ...(w ? { what: [...w[1].matchAll(/["'](\w+)["']/g)].map((y) => y[1]) } : {}) };
+  }
+  return { tracks, buses, captures };
+}
 export function install(win = window) {
   const sc = win.strudelCraft; if (!sc || !sc.intellisense || !sc.intellisense.registerSource) return null;
   let data = null, cache = { text: null, model: null }; const load = fetch('data/intellisense/strudel.json').then((r) => r.json()).then((d) => { data = d; }).catch(() => { data = {}; });
-  const modelOf = async (doc) => { if (cache.text === doc) return cache.model; const { parse } = await import('./model.js'); let m = {}; try { m = parse(doc); } catch (e) { m = {}; } cache = { text: doc, model: m }; return m; };
+  const modelOf = async (doc) => { if (cache.text === doc) return cache.model; const { parse } = await import('./model.js'); let m = {}; try { m = parse(doc); } catch (e) { m = {}; } if (!m.tracks && !m.captures && !m.selections) m = textModel(doc); cache = { text: doc, model: m }; return m; };
   sc.intellisense.registerSource({ id: 'lanes', async complete(ctx) { await load; const r = complete(ctx, data, await modelOf(ctx.doc || ctx.text)); return r && r.options.length ? r : null; } });
   const lit = sc.literals;
   if (lit && lit.registerEditor) lit.registerEditor({ id: 'lanes', shape(l) {

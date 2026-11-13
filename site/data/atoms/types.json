@@ -200,15 +200,6 @@
   ]
  },
  {
-  "id": "text",
-  "compiles": "string",
-  "quote": "as declared",
-  "shape": [],
-  "validator": "none",
-  "editor": "text",
-  "ops": []
- },
- {
   "id": "tag",
   "compiles": "string",
   "quote": "'",
@@ -249,6 +240,15 @@
    "capture"
   ],
   "validator": "capture",
+  "editor": "text",
+  "ops": []
+ },
+ {
+  "id": "text",
+  "compiles": "string",
+  "quote": "as declared",
+  "shape": [],
+  "validator": "none",
   "editor": "text",
   "ops": []
  }

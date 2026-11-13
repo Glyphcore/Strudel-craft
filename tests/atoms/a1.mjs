@@ -30,9 +30,9 @@ const NO_CLI = '`strudel` CLI not available in this checkout (engine/strudel-cli
 const comp = (code, extra) => { const env = A.buildEnv(code, extra); return A.compile(code, env, { extra }); };
 let boxes = 0; const box = (m) => { boxes++; pass(m); };
 
-// 1 Type registry (supporting: the 15 types of ATOMS section 3 load from data)
-assert.equal(A.types().length, 15);
-assert.deepEqual(A.types().map((t) => t.id), ['mini', 'sound', 'bank', 'note', 'chord', 'scale', 'voicing', 'progression', 'gate', 'point', 'tapref', 'slot', 'hook', 'name', 'text']);
+// 1 Type registry (supporting: the 19 types of ATOMS section 3 and LANES section 10 load from data)
+assert.equal(A.types().length, 19);
+assert.deepEqual(A.types().map((t) => t.id), ['mini', 'sound', 'bank', 'note', 'chord', 'scale', 'voicing', 'progression', 'gate', 'point', 'tapref', 'slot', 'hook', 'name', 'tag', 'selector', 'busname', 'capture', 'text']);
 
 // Box: no-op on existing code
 {

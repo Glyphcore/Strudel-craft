@@ -28,7 +28,9 @@ const escapeHtml = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt
 const mdInline = (s) => escapeHtml(s || '').replace(/`([^`]+)`/g, '<code>$1</code>');
 
 /* strudel.cc stores the program in the URL hash: encodeURIComponent(base64(UTF-8 bytes)). */
-function strudelUrl(code) { const b = new TextEncoder().encode(code); let s = ''; for (let i = 0; i < b.length; i += 8192) s += String.fromCharCode.apply(null, b.subarray(i, i + 8192)); return 'https://strudel.cc/#' + encodeURIComponent(btoa(s)); }
+/* `atoms` exists only inside this toolkit (docs/ATOMS.md section 11): strudel.cc and Copy get the inlined, plain Strudel program. */
+function plain(code) { try { return window.strudelCraft?.atoms?.inline(code) ?? code; } catch (e) { return code; } }
+function strudelUrl(code) { code = plain(code); const b = new TextEncoder().encode(code); let s = ''; for (let i = 0; i < b.length; i += 8192) s += String.fromCharCode.apply(null, b.subarray(i, i + 8192)); return 'https://strudel.cc/#' + encodeURIComponent(btoa(s)); }
 
 /* ---------- audio tap ----------
    Strudel connects its output to AudioContext.destination. We wrap AudioNode.prototype.connect so that
@@ -501,7 +503,7 @@ function renderSelection(updateHash) {
     r.notes ? el('p', { html: mdInline(r.notes) }) : null,
     r.needs_samples ? el('p', {}, 'Loads drum-machine sample banks on first play (network).') : null,
     el('div', { class: 'acts' },
-      el('button', { type: 'button', class: 'ghost', onclick: (e) => copyText(recipeCode(r), e.currentTarget) }, 'Copy ', el('kbd', {}, 'C')),
+      el('button', { type: 'button', class: 'ghost', onclick: (e) => copyText(plain(recipeCode(r)), e.currentTarget) }, 'Copy ', el('kbd', {}, 'C')),
       el('a', { class: 'btn ghost', href: strudelUrl(recipeCode(r)), target: '_blank', rel: 'noopener' }, 'strudel.cc ', el('kbd', {}, 'O')),
       r.expr ? el('button', { type: 'button', class: 'ghost', onclick: () => toggleStack(r.id) }, inStack ? 'Unstack' : 'Stack', ' ', el('kbd', {}, 'A')) : null),
     el('p', { class: 'src' }, 'Source: ', el('a', { href: r.source, rel: 'noopener', target: '_blank' }, r.source.replace(/^https?:\/\//, '')))].filter(Boolean));
@@ -632,7 +634,7 @@ function onKey(e) {
     1: () => setView('rack'), 2: () => setView('stack'), 3: () => setView('ref'), 4: () => setView('practice'), 5: () => setView('perform'), 6: () => setView('syntax'), 7: () => setView('graph'),
     '/': () => { const q = $('#q'); if (S.view === 'ref') $('#refQ').focus(); else if (S.view === 'practice') $('#pracQ').focus(); else { q.focus(); q.select(); } },
     Escape: () => { if (S.q || S.chips.size || S.vonly) clearFilters(); },
-    c: () => { const s = currentSource(); if (s) copyText(S.view === 'stack' ? stackText() : recipeCode(cur())); },
+    c: () => { const s = currentSource(); if (s) copyText(plain(S.view === 'stack' ? stackText() : recipeCode(cur()))); },
     o: () => { const code = S.view === 'stack' ? stackText() : cur() && recipeCode(cur()); if (code) window.open(strudelUrl(code), '_blank', 'noopener'); },
     t: toggleTheme, '?': openHelp,
   }[k];
@@ -686,7 +688,7 @@ async function boot() {
   const sc = $('#stackCode'); sc.addEventListener('input', () => { S.stackEdit = sc.value === stackProgram() ? null : sc.value; store.set('stackEdit', S.stackEdit); $('#stackOpen').href = strudelUrl(stackText()); liveCode('stack'); });
   $('#evalBtn').addEventListener('click', runEditor);
   $('#revertBtn').addEventListener('click', () => { const r = cur(); if (!r) return; delete S.edits[r.id]; store.set('edits', S.edits); code.value = r.code; renderSelection(false); liveUpdate(); });
-  $('#stackCopy').addEventListener('click', (e) => copyText(stackText(), e.currentTarget));
+  $('#stackCopy').addEventListener('click', (e) => copyText(plain(stackText()), e.currentTarget));
   $('#stackClear').addEventListener('click', () => setStack([], 'clear stack'));
   $$('.views a').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); setView(a.dataset.view); }));
   document.addEventListener('keydown', onKey);

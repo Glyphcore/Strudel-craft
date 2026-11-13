@@ -26,6 +26,7 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
     node tests/site/smoke.mjs --quick  # first 4 recipes only
     node tests/site/lighthouse.mjs     # needs `npm i -g lighthouse@12`; mobile perf / a11y scores
     node tests/atoms/a1.mjs            # atoms core (#61); STRUDEL_MODULES=<dir with @strudel/> for the rendered checks
+    node tests/atoms/a2.mjs            # atoms migration: extract / parse / inline / catalog (#62)
     node tests/hooks/p3.mjs            # model round trip (#49); the `strudel` CLI checks print SKIP without it
     node tests/hooks/p4.mjs            # component library, instances, lib: fragments (#50)
     node tests/hooks/p5.mjs            # hooks + model intellisense providers (#51)
@@ -221,9 +222,23 @@ same file on the site and in the CLI; it imports acorn from `vendor/` and never 
   argument position (`s(` takes `sound | mini`, `hooks.bind` takes `slot, hook, gate`, ...) -> `E_ATOM_TYPE`.
 - Schema: `atoms` map plus `$defs.atom / atomParam / atomRef` in `data/schema/model.v1.json`; `{ "$atom": id }` is accepted in step
   args, `bindings` slot/hook/gate/else, `wires[].tap`, `markers`, `maps[].dest` and pad `target.ref`.
-- Test: `node tests/atoms/a1.mjs` (rendered checks need `STRUDEL_MODULES=<dir with @strudel/>`). Not built yet: the editor,
-  intellisense and hooks consumers (#63), `extract` / `inline` (#62), graph cards (#64) and the `strudel atoms` CLI subcommands
-  (`list | show | refs | compile | check`, CLI in another repo) — those print SKIP / are marked "coming" in the Syntax view.
+- Migration (A2, #62; `engine/atoms-migrate.js`): `extract(code, { minUses, params, catalog, text, names, events }) -> { code, atoms, report }`
+  types literals from `positions.json` (typed positions only; untyped strings stay unless `text`), groups by `(type, text)`, declares atoms
+  used `>= minUses` times (default 2; `gate / tapref / slot / point` always), names them deterministically (`kickEnv`, `from17b`, `bdSd8`,
+  clash -> numeric suffix), reuses existing atoms through `parse(type, string, env) -> { atom, args } | null`, and unifies literals that
+  differ in one numeric token only with `params` (the report lists those candidates either way). Self-check before returning: the
+  inlined result must equal the original program (normalised AST, plus `opts.events(code)` when the host supplies an event renderer),
+  else the original code comes back with `report.reason`; a string typed both as a pattern and as a plain string is left alone and listed
+  in `report.refused`. It never adds a sound, chord, note or instrument. `inline(code)` = compile with formatting kept; the site's
+  "Open in strudel.cc", Copy and Stack copy use it (`atoms-site.js` exposes `strudelCraft.atoms`). `list(code)` shows declared plus referenced atoms.
+- Catalog atoms (no declaration, synthesised on reference, never enumerated): `atoms.snd.bd` (`.n(3)` -> `bd:3`), `atoms.bank.RolandTR909`,
+  `atoms.scale.minor({ root: "C" })`, `atoms.chord.m7({ root: "D" })`; names that are not identifiers use `atoms.snd["808bd"]`. The host
+  passes the catalogs with `configure({ catalog: { snd, bank, scale, chord } })`; an unknown sound or bank warns `W_ATOM_UNKNOWN_SOUND`.
+  `extract` turns catalog names into references only with `catalog: true`.
+- Tests: `node tests/atoms/a1.mjs`, `node tests/atoms/a2.mjs` (need `STRUDEL_MODULES=<dir with @strudel/>`), `node tests/site/atoms_inline.mjs`
+  (Playwright: the strudel.cc link of an atoms program decodes to plain Strudel that evaluates). Not built yet: the editor, intellisense and
+  hooks consumers (#63), graph cards (#64) and the `strudel atoms` CLI subcommands (`list | show | refs | compile | extract | check`, CLI
+  in another repo) — those print SKIP / are marked "coming" in the Syntax view.
 
 ## Component library (`library.js`, `library-store.js`, #50)
 Versioned components over the shared model; storage goes through `library-store.js` (`strudelCraft.history` when a host provides it,

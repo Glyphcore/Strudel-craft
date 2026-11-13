@@ -1,7 +1,7 @@
 # Atoms: typed, parameterised definitions in place of magic strings
 
-Status: **A1 built** (core: `site/engine/atoms.js`, `site/data/atoms/types.json`, the `atoms` schema, `tests/atoms/a1.mjs`; #61).
-A2-A4 and the `strudel atoms` CLI subcommands of section 12 are still design only; phases and issues in section 14. Extends `docs/HOOKS_SYNTAX.md`, `docs/BLUEPRINT.md` and the AST-bound control
+Status: **A1 built** (core: `site/engine/atoms.js`, `site/data/atoms/types.json`, the `atoms` schema, `tests/atoms/a1.mjs`; #61) and **A2 built** (`site/engine/atoms-migrate.js`: `extract`, `parse`, `inline`; catalog atoms `atoms.snd|bank|scale|chord`; strudel.cc / Copy inline; `tests/atoms/a2.mjs`; #62).
+A3-A4 and the `strudel atoms` CLI subcommands of section 12 (CLI in another repo) are still design only; phases and issues in section 14. Extends `docs/HOOKS_SYNTAX.md`, `docs/BLUEPRINT.md` and the AST-bound control
 work (control binding: structural ids, literal sites, typed param shapes). Owner: `daw-sme`. UI parts are direction for `ui-designer`.
 
 ## 1. The problem and the idea
@@ -295,6 +295,12 @@ specified separately; this is the contract atoms need from it.
 6. Rewrite: declarations go in one block at the top of the header; uses become references. Guarantee, checked by the tool itself
    before writing: `compile(extract(code).code).code` evaluates to the same events as `code` over 8 cycles.
 
+A2 as built: `@P` / `<P` gates become `atoms.p.after()` / `.before()` only when point `P` appears in two forms (else a `from17b` gate atom);
+`name` atoms are declared when a `tapref` facet derives from them (`from: atoms.kick.facet("env")`); a string typed both as a pattern
+(double-quoted) and as a plain string is left alone and listed in `report.refused`; names come from the text or, for points, from a
+`hooks.marker(name, point)` in the program, or from `opts.names["type:text"]`. The self-check compares the normalised AST of the inlined
+result with the original (and event lists when the host passes `opts.events`).
+
 Also: `parse(type, string, env) -> { atom, args } | null` (find the atom and args whose output equals a string; used by the editor
 suggestion and by `extract` on later runs so new strings join existing atoms), and `inline(code)` = `compile` with formatting kept,
 used by "Open in strudel.cc" and "Copy", because `atoms` does not exist outside this toolkit.
@@ -364,7 +370,7 @@ $: chord(atoms.turn).voicing()
 | phase | issue | deliverable | depends on | owner |
 |---|---|---|---|---|
 | A1 | #61 | atoms core **built** (type registry, schema, `compile` with source map, runtime fallback, params / partial application / composition, ids, hashes); the `strudel atoms` CLI subcommands are **coming** (the CLI lives in another repo) | model schema (#49), control-binding parser | daw-implementer |
-| A2 | #62 | migration: `extract`, `parse`, `inline`, catalog atoms, strudel.cc export inlines | A1 | daw-implementer |
+| A2 | #62 | migration **built** in the toolkit: `extract`, `parse`, `inline`, catalog atoms, strudel.cc export inlines (the `strudel atoms extract` CLI is **coming**) | A1 | daw-implementer |
 | A3 | #63 | consumers: intellisense provider, atom args in literal editors, `$atom` in hooks / model / pads / maps, pack ingredient record | A1 (pack record waits for the pack spec) | daw-implementer |
 | A4 | #64 | UI: lazy reference-counted atom cards in the graph, atom browser / palette, reference popover | A1, A3 | ui-designer |
 

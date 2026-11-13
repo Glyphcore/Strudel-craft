@@ -16,14 +16,17 @@ const withAt = (at, fn) => { try { return fn(); } catch (e) { if (e instanceof A
 
 // ---------------------------------------------------------------- type registry, configuration
 const TYPES = new Map();
-let CFG = { mini: null, parsers: null, positions: {} };
+let CFG = { mini: null, parsers: null, positions: {}, catalog: null };
 export function registerType(t) {
   if (!t || typeof t.id !== 'string') throw err('E_ATOM_TYPE_ID', 'type needs an id');
   TYPES.set(t.id, Object.freeze({ compiles: 'string', quote: "'", shape: [], validator: 'none', editor: 'text', ops: [], ...t })); return TYPES.get(t.id);
 }
 export const types = () => [...TYPES.values()];
+export const config = () => CFG;
+export const typeOf_ = (id) => typeOf(id);
 export const loadTypes = (list) => { for (const t of typeof list === 'string' ? JSON.parse(list) : list) registerType(t); return types(); };
 // mini: Strudel's mini() (public API). parsers: hooks.parsers (gate, point, ref, expr). positions: data/atoms/positions.json.
+// catalog: { snd, bank, scale, chord } each an array | Set | (key) => bool, used only to check catalog atoms (never enumerated into the environment).
 export const configure = (o = {}) => { CFG = { ...CFG, ...o }; return CFG; };
 const typeOf = (id, strict) => { const t = TYPES.get(id); if (t) return t; if (strict) throw err('E_ATOM_TYPE_ID', `unknown atom type "${id}"`); return TYPES.get('text') || { id: 'text', compiles: 'string', quote: "'", ops: [], validator: 'none' }; };
 
@@ -137,9 +140,24 @@ export function buildEnv(code, extra = {}, opts = {}) {
     seen.add(r.name); const prev = byName.get(r.name); if (prev?.id && prev.origin === 'model') r.id = prev.id;
     put(r); decls.push(r);
   }
-  const env = { byName, byId, decls, get: (k) => byName.get(k) || byId.get(k) };
+  const cache = new Map(); // catalog atoms synthesised on reference (ATOMS section 2, decision 7); not part of byName, never enumerated
+  const synth = (k) => { if (typeof k !== 'string') return undefined; if (!cache.has(k)) cache.set(k, catalogAtom(k)); return cache.get(k); };
+  const env = { byName, byId, decls, synth, get: (k) => byName.get(k) || byId.get(k) || synth(k) };
   for (const r of byName.values()) deepFreeze(r);
   return Object.freeze(env);
+}
+
+// catalog atoms: `snd.bd` / `snd:bd` (sound), `bank.RolandTR909`, `scale.minor` (param root), `chord.m7` (param root)
+function catalogAtom(k) {
+  const m = /^(snd|bank|scale|chord)\.([^.]+)$/.exec(k) || /^(snd|bank|scale|chord):(.+)$/.exec(k); if (!m) return undefined;
+  const [, cat, key] = m, name = `${cat}.${key}`, root = (d) => ({ root: { shape: 'note', default: d } });
+  const r = cat === 'snd' ? { type: 'sound', body: key } : cat === 'bank' ? { type: 'bank', body: key }
+    : cat === 'scale' ? { type: 'scale', params: root('c'), body: `\${root}:${key}` } : { type: 'chord', params: root('C'), body: `\${root}${key}` };
+  return deepFreeze({ name, ...r, origin: 'catalog', cat, key });
+}
+export function inCatalog(cat, key) { // true / false, or null when that catalog is not configured
+  const c = CFG.catalog?.[cat]; if (!c) return null;
+  return typeof c === 'function' ? !!c(key) : c instanceof Set ? c.has(key) : Array.isArray(c) ? c.includes(key) : key in c;
 }
 
 // ---------------------------------------------------------------- references, params, rendering
@@ -151,7 +169,7 @@ export function toRef(env, v) { // { $segs } (code) | { $atom } (model) | name s
   const segs = v?.$segs; if (!segs) throw err('E_ATOM_TYPE', 'not an atom reference');
   const props = []; for (const s of segs) { if (s.prop === undefined) break; props.push(s.prop); }
   let k = props.length, rec = null;
-  for (; k > 0; k--) { rec = env.byName.get(props.slice(0, k).join('.')); if (rec) break; }
+  for (; k > 0; k--) { rec = env.byName.get(props.slice(0, k).join('.')) || env.synth(props.slice(0, k).join('.')); if (rec) break; }
   if (!rec) throw err('E_ATOM_UNKNOWN', `unknown atom "atoms.${props.join('.')}"`);
   let j = k, args = {};
   if (segs[k]?.call) { args = segs[k].call[0] || {}; if (!isObj(args) || segs[k].call.length > 1) throw err('E_ATOM_ARG', `atoms.${rec.name}(...) takes one { name: value } object`); j = k + 1; }
@@ -341,7 +359,7 @@ const CHORD = rx(/^[A-G][#b]*[^\s\[\]<>*\/!@?,|~]*$/, 'chord symbol');
 const VALID = {
   mini: (s) => { if (CFG.mini) CFG.mini(s); },
   sound: rx(SHAPE_RE.sound, 'sound name'), bank: rx(/^[\w-]+$/, 'bank name'), note: rx(SHAPE_RE.note, 'note'), name: rx(SHAPE_RE.name, 'name'),
-  chord: CHORD, scale: rx(/^[A-Ga-g][#b]*-?\d*:[A-Za-z0-9 ]+$/, 'scale (root:mode)'),
+  chord: CHORD, scale: rx(/^[A-Ga-g][#b]*-?\d*(:[A-Za-z0-9 ]+)+$/, 'scale (root:mode)'),
   progression: (s) => { if (CFG.mini) CFG.mini(s); for (const tok of s.split(/[\s\[\]<>,|]+/).filter(Boolean)) { const c = tok.replace(/[*\/!@?:(].*$/, ''); if (c && c !== '~' && c !== '-') CHORD(c); } },
   gate: (s) => CFG.parsers?.gate(s), point: (s) => CFG.parsers?.point(s),
   tapref: (s) => CFG.parsers?.ref(s),
@@ -416,6 +434,10 @@ function analyze(code, env, diag, opts = {}) {
         return v;
       });
       const rec = lookup(env, s.ref.$atom); used.add(rec.name);
+      if (rec.origin === 'catalog' && inCatalog(rec.cat, rec.key) === false) {
+        if (rec.cat === 'snd' || rec.cat === 'bank') warn('W_ATOM_UNKNOWN_SOUND', `${rec.cat === 'snd' ? 'sound' : 'bank'} "${rec.key}" is not in the catalog (it may load later)`, at);
+        else throw err('E_ATOM_UNKNOWN', `${rec.cat} "${rec.key}" is not in the catalog`, at);
+      }
       edits.push({ from: s.from, to: s.to, text: literal(v, rec), atom: rec.name });
       refs.push({ id: s.id, atom: rec.name, ...(rec.id && { atomId: rec.id }), args: s.ref.args, ops: s.ref.ops, path: s.segs.filter((x) => x.prop !== undefined).map((x) => x.prop).join('.'), from: s.from, to: s.to, type: v.type });
     } catch (e) { fail(e); }

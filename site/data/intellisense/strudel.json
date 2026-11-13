@@ -641,7 +641,7 @@
    "label": "atoms",
    "method": false,
    "detail": "atoms.<name> / atoms.<name>({ param: value })",
-   "info": "Reference an atom anywhere its string would go. Pattern types compile to a double-quoted string, name types to a single-quoted one. Ops: .seq() .stack() .alt() .rep() .slow() .euclid() (mini), .union() .shift() (gate), .after() .before() .to() (point), .facet() .in() (tapref/name), .pipe() .wrap() (hook). Compile pass built (#61); editor and intellisense wiring coming (#63).",
+   "info": "Reference an atom anywhere its string would go. Pattern types compile to a double-quoted string, name types to a single-quoted one. Ops: .seq() .stack() .alt() .rep() .slow() .euclid() (mini), .union() .shift() (gate), .after() .before() .to() (point), .facet() .in() (tapref/name), .pipe() .wrap() (hook). Catalog namespaces need no declaration: atoms.snd.<sound>, atoms.bank.<bank>, atoms.scale.<mode>({ root }), atoms.chord.<quality>({ root }); an unknown sound warns W_ATOM_UNKNOWN_SOUND. Compile pass built (#61), extract / parse / inline built (#62); editor and intellisense wiring coming (#63).",
    "category": "atoms",
    "coming": true
   },

@@ -12,3 +12,10 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | granulator | local-samples-ir-bounce | accepted | #7 |
 | vocoder | issues-protocol | accepted | #8 |
 | external-renderers-sf2-ks | local-samples-ir-bounce | accepted | #9 |
+| mod-matrix (LFO/envelope -> any param, cross-layer) | issues-protocol | issued | #11 |
+| time-volume-gating (Gross Beat-style) | envelope-follower-ducking, slicer | issued | #12 |
+| follow-actions-clip-launching | issues-protocol | issued | #13 |
+| live-sampling-resampling | local-samples-ir-bounce | unexplored | - |
+| convolution-spectral-fx | local-samples-ir-bounce, spectral-freeze-paulstretch | unexplored | - |
+| resynthesis (Harmor-like additive) | spectral-freeze-paulstretch | unexplored | - |
+| sidechain-multiband-dynamics | envelope-follower-ducking | unexplored | - |

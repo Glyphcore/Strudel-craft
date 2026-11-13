@@ -12,8 +12,17 @@ const fmt = (s) => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) +
 const limit = () => st.maxMin * 60 + st.extra;
 const sch = () => { const s = sc.engineState && sc.engineState(); return s && s.scheduler; };
 const playing = () => !!(sc.transport && sc.transport.playing);
-const u = (c) => (st.unit === 'bar' ? c + 1 : c); // bars are 1-based (1 cycle = 1 bar of 4 beats here)
-const fromU = (v) => (st.unit === 'bar' ? v - 1 : v);
+/* cycles are canonical; time is derived from the live cps, so a tempo change re-converts every shown value */
+const cps = () => { const s = sch(); return (s && s.cps) || (sc.transport && sc.transport.cps) || 0.5; };
+const mmss = (sec) => { sec = Math.max(0, sec); const m = Math.floor(sec / 60), x = sec - m * 60; return m + ':' + (x < 9.95 ? '0' : '') + x.toFixed(sec < 600 ? 1 : 0).replace(/\.0$/, ''); };
+const u = (c) => (st.unit === 'bar' ? c + 1 : st.unit === 'time' ? mmss(c / cps()) : +c.toFixed(3)); // bars are 1-based (1 cycle = 1 bar of 4 beats here)
+/* accepts "1:30" (m:ss) or a number in the current unit (seconds when the unit is time) -> cycles, NaN if unreadable */
+export function parsePos(v, unit = st.unit, k = cps()) {
+  v = String(v).trim(); const m = /^(\d+):(\d+(?:\.\d+)?)$/.exec(v); if (m) return (+m[1] * 60 + +m[2]) * k;
+  const n = parseFloat(v.replace(/^c\s*/i, '')); if (!isFinite(n)) return NaN;
+  return unit === 'bar' ? n - 1 : unit === 'time' ? n * k : n;
+}
+const fromU = (v) => parsePos(v);
 let el = {};
 
 function build() {
@@ -22,10 +31,10 @@ function build() {
   w.innerHTML = `<label class="sr" for="trPos">Position</label>
     <input id="trPos" class="tr-pos" type="range" min="0" max="16" step="0.01" value="0" aria-valuetext="cycle 0">
     <div class="tr-row">
-      <output id="trOut" class="tr-out">0.00</output>
-      <button type="button" class="ghost tr-unit" id="trUnit" title="Count loop points in cycles or bars">cycle</button>
-      <label class="tr-num"><span>Start</span><input id="trStart" type="number" step="1" inputmode="decimal"></label>
-      <label class="tr-num"><span>End</span><input id="trEnd" type="number" step="1" inputmode="decimal"></label>
+      <button type="button" class="ghost tr-out" id="trOut" title="Go to a cycle or m:ss"><span id="trPosTxt">c 0 / 16 · 0:00 / 0:32</span></button>
+      <button type="button" class="ghost tr-unit" id="trUnit" title="Loop points in cycles, bars or m:ss">cycle</button>
+      <label class="tr-num"><span>Start</span><input id="trStart" type="text" inputmode="decimal" autocomplete="off" spellcheck="false"></label>
+      <label class="tr-num"><span>End</span><input id="trEnd" type="text" inputmode="decimal" autocomplete="off" spellcheck="false"></label>
       <button type="button" class="ghost tr-loop" id="trLoop" aria-pressed="false" title="Loop between start and end">Loop</button>
       <span class="tr-left" id="trLeft" title="Remaining play time before the clamp">20:00 left</span>
       <button type="button" class="ghost tr-more" id="trMore" hidden title="Extend the clamp by 5 minutes for this run">+5 min</button>
@@ -33,13 +42,15 @@ function build() {
     </div>`;
   host.append(w);
   el = { pos: $('#trPos'), out: $('#trOut'), unit: $('#trUnit'), start: $('#trStart'), end: $('#trEnd'), loop: $('#trLoop'), left: $('#trLeft'), more: $('#trMore') };
-  const sync = () => { el.unit.textContent = st.unit; el.start.value = u(st.start); el.end.value = u(st.end); el.loop.setAttribute('aria-pressed', String(st.loop)); el.pos.min = st.start; el.pos.max = Math.max(st.end, st.start + 1); };
+  const sync = () => { el.unit.textContent = st.unit === 'time' ? 'm:ss' : st.unit; el.start.value = u(st.start); el.end.value = u(st.end); el.loop.setAttribute('aria-pressed', String(st.loop)); el.pos.min = st.start; el.pos.max = Math.max(st.end, st.start + 1); };
   sync();
-  el.unit.onclick = () => { st.unit = st.unit === 'cycle' ? 'bar' : 'cycle'; set('range.unit', st.unit); sync(); };
-  const pts = () => { let a = fromU(+el.start.value || 0), b = fromU(+el.end.value || 0); a = Math.max(0, a); if (b <= a) b = a + 1; st.start = a; st.end = b; set('range.start', a); set('range.end', b); sync(); };
+  el.unit.onclick = () => { st.unit = { cycle: 'bar', bar: 'time', time: 'cycle' }[st.unit] || 'cycle'; set('range.unit', st.unit); sync(); };
+  const pts = () => { let a = fromU(el.start.value), b = fromU(el.end.value); if (!isFinite(a)) a = st.start; if (!isFinite(b)) b = st.end; a = Math.max(0, a); if (b <= a) b = a + 1; st.start = a; st.end = b; set('range.start', a); set('range.end', b); sync(); };
   el.start.onchange = pts; el.end.onchange = pts;
   el.loop.onclick = () => { st.loop = !st.loop; set('range.loop', st.loop); sync(); sc.ui && sc.ui.toast(st.loop ? `Looping ${st.unit} ${u(st.start)} to ${u(st.end)}` : 'Loop off'); };
   el.pos.addEventListener('input', () => seek(+el.pos.value));
+  el.out.onclick = async () => { if (!sc.ui) return; const v = await sc.ui.ask({ title: 'Go to', label: 'Cycle (e.g. 12) or time m:ss (e.g. 0:24)', value: '', okText: 'Go' }); if (v == null) return; const c = parsePos(v, /:/.test(v) ? 'time' : 'cycle'); if (!isFinite(c)) { sc.ui.toast('Enter a cycle or m:ss', { kind: 'error' }); return; } if (!seek(c)) sc.ui.toast('Press Play first, then seek'); };
+  el.sync = sync;
   el.more.onclick = () => extend(300);
   $('#trSet').onclick = settings;
   sc.palette && sc.palette.register({ id: 'range.loop', group: 'Transport', title: 'Toggle loop range', run: () => el.loop.click() });
@@ -95,8 +106,11 @@ function tick() {
   if (p && s) installLoop(s);
   if (c > +el.pos.max && !st.loop) el.pos.max = Math.ceil(c / 4) * 4;
   if (document.activeElement !== el.pos) el.pos.value = c;
-  el.pos.setAttribute('aria-valuetext', st.unit + ' ' + u(c).toFixed(1));
-  el.out.textContent = (st.unit === 'bar' ? 'bar ' + Math.floor(u(c)) : 'cyc ' + c.toFixed(2));
+  const k = cps(); if (k !== st.lastCps) { st.lastCps = k; if (document.activeElement !== el.start && document.activeElement !== el.end) el.sync(); }
+  /* end = loop End when looping, otherwise the clamp end projected from the current position */
+  const endC = st.loop ? st.end : c + Math.max(0, left) * k;
+  const txt = `c ${c.toFixed(1)} / ${+endC.toFixed(1)} · ${mmss(c / k)} / ${mmss(endC / k)}`;
+  if (txt !== st.lastTxt) { st.lastTxt = txt; $('#trPosTxt').textContent = txt; el.pos.setAttribute('aria-valuetext', `cycle ${c.toFixed(1)}, ${mmss(c / k)}`); }
   el.left.textContent = fmt(left) + ' left'; el.left.dataset.warn = String(p && left < 60);
   el.more.hidden = !(p && (left < 60 || st.fading));
 }
@@ -113,5 +127,5 @@ function installLoop(s) {
   } });
 }
 function setLimit(min) { st.maxMin = min; set('range.maxMin', min); }
-sc.range = { state: st, setLimit, extend, tick, seek };
+sc.range = { state: st, setLimit, extend, tick, seek, parsePos };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build); else build();

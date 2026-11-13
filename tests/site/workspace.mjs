@@ -41,6 +41,10 @@ for (const [tag,vp] of [['360',{width:360,height:780}],['1440',{width:1440,heigh
   ok(tag+' loop wrap count', cps===0.5 && back===3 && q2[wr[0]][0]===2 && wr.slice(1).every((w,k)=>Math.abs(w-(k?wr[k]:wr[0])-perPass)<=1), 'cps='+cps+' wraps='+back+' at '+JSON.stringify(wr.map(i=>[i,+q2[i][0].toFixed(3)])));
   ok(tag+' loop 2-3: queries stay in range and wrap', back>=1 && loopQ.every(x=>x[0]>=2-1e-6 && x[1]<3.03), 'wraps='+back+' max='+Math.max(...loopQ.map(x=>x[1])).toFixed(3));
   await pg.evaluate(()=>{strudelCraft.range.state.loop=false;}); await pg.click('#playBtn'); await pg.waitForTimeout(300);
+  // readout + cycle/time conversion
+  ok(tag+' readout format', /^c \d+\.\d \/ [\d.]+ · \d+:\d\d(\.\d)? \/ \d+:\d\d/.test(await pg.textContent('#trPosTxt')), await pg.textContent('#trPosTxt'));
+  ok(tag+' m:ss -> cycles via cps', await pg.evaluate(()=>{const P=strudelCraft.range.parsePos; return P('0:24','cycle',0.5)===12 && P('0:24','cycle',1)===24 && P('8','time',0.5)===4 && P('5','bar',0.5)===4 && P('3','cycle',0.5)===3;}));
+  for (const id of ['#trUnit','#trLoop','#trSet','#trOut','#trStart','#trEnd']) { const bb=await pg.locator(id).boundingBox(); ok(tag+' '+id+' >= 44px', bb && bb.height>=44 && bb.width>=44, bb&&(bb.width|0)+'x'+(bb.height|0)); }
   // clamp
   await pg.evaluate(()=>{strudelCraft.range.setLimit(0.05); strudelCraft.range.state.atLimit='fade';});
   await pg.click('#playBtn'); let pl=false; for(let i=0;i<40&&!pl;i++){await pg.waitForTimeout(250); pl=await pg.evaluate(()=>strudelCraft.transport.playing);} ok(tag+' playing', pl);

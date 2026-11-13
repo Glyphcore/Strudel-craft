@@ -59,6 +59,7 @@
       "examples": [
         { "title": "Try: type .lpf( then Tab", "code": "$: note(\"c2 eb2\").s(\"sawtooth\")", "noplay": true }
       ]
-    }
+    },
+    {"id": "workspace", "title": "Transport range, workspace and palette", "needs": "workspace", "explain": "The stage has a position slider: 'c 12.3 / 64 · 0:24 / 2:08' is current cycle / end cycle · elapsed / end time (end = loop End, or the play-time clamp). Start, End and Go-to take a cycle or m:ss; the unit button cycles cycle / bar / m:ss, converted with the live cps. Play time is clamped (20 min default, timer button) with a fade and a +5 min override. W toggles the workspace; Ctrl+K (or the floating button on phones) opens the command palette, which also loads layouts. Code can add palette actions and seek.", "examples": [{"title": "Add a palette action", "code": "strudelCraft.palette.register({ id: 'my.drop', group: 'Mine', title: 'Jump to the drop', run: () => strudelCraft.range.seek(16) })\n$: s(\"bd*4, hh*8\").bank(\"RolandTR909\")"}, {"title": "Loop cycles 4 to 8", "code": "Object.assign(strudelCraft.range.state, { start: 4, end: 8, loop: true })\n$: note(\"<c3 eb3 g3 bb3>*2\").s(\"sawtooth\").lpf(800)"}, {"title": "Load a layout", "code": "strudelCraft.workspace.load('Perform')\n$: s(\"bd ~ sd ~\")"}]}
   ]
 }

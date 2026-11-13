@@ -14,6 +14,7 @@ const HAS = {
   library: () => !!(sc.hooks && sc.hooks.inst),
   word: () => typeof window.word === 'function' || !window.Pattern,
   ghost: () => !!(sc.intellisense && sc.intellisense.registerInline),
+  workspace: () => !!(sc.palette && sc.workspace && sc.range),
 };
 const data = fetch('data/syntax.json').then((r) => r.json()).catch(() => ({ sections: [] }));
 

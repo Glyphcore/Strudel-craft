@@ -593,6 +593,41 @@
    "detail": "vowel(\"a e i o u\")",
    "info": "Formant filter as a pattern function (works with word()).",
    "category": "vocals"
+  },
+  {
+   "label": "strudelCraft.palette.register",
+   "method": false,
+   "detail": "register({id, title, group, keys, run})",
+   "info": "Add a command palette action (Ctrl+K). Returns an unregister function.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.range.seek",
+   "method": false,
+   "detail": "seek(cycle)",
+   "info": "Jump playback to a cycle (re-anchors the scheduler's time origin).",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.range.parsePos",
+   "method": false,
+   "detail": "parsePos(value, unit, cps)",
+   "info": "'0:24' or a number in cycle/bar/time units -> cycles.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.range.setLimit",
+   "method": false,
+   "detail": "setLimit(minutes)",
+   "info": "Play-time clamp in minutes (default 20).",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.workspace.load",
+   "method": false,
+   "detail": "load(name)",
+   "info": "Load a workspace layout: Code, Perform, Visual, Full studio or a saved one.",
+   "category": "site api"
   }
  ],
  "params": {

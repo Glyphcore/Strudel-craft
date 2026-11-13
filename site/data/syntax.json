@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sources": ["docs/HOOKS_SYNTAX.md", "docs/BLUEPRINT.md"],
+  "sources": ["docs/HOOKS_SYNTAX.md", "docs/BLUEPRINT.md", "docs/SAMPLES_AND_VOICES.md"],
   "sections": [
     {
       "id": "slots", "title": "Slots, .use() and gates", "needs": "hooks",
@@ -23,34 +23,36 @@
     },
     {
       "id": "controls", "title": "Inline controls and mapping", "needs": "controls",
-      "explain": "ctl(\"name\", {type, min, max}) declares a control and returns its value as a pattern. It shows up under the editor while playing and on the Perform board; slider(v, min, max) works too. hooks.map sends one control to several destinations.",
+      "explain": "ctl(\"name\", {type, min, max}) declares a control and returns its value as a pattern. It shows up under the editor while playing and on the Perform board; slider(v, min, max) works too. hooks.map('ctl', 'param', { range, curve, op, priority }) sends one control to params it never touches in the code: the map is applied to the events of that param as they are queried, so one knob can move several layers. The control has to exist when the map line runs (declare it with ctl() first, or map it in Perform with Learn), and the line only counts while it is still in an editor. Automation lanes recorded in Perform play back through the same values.",
       "examples": [
         { "title": "A cutoff knob", "code": "$: note(\"c2*8\").s(\"sawtooth\").lpf(ctl(\"cutoff\", { type: \"knob\", min: 200, max: 4000 }))" },
         { "title": "Strudel slider()", "code": "$: note(\"c3 e3 g3\").s(\"triangle\").gain(slider(0.6, 0, 1))" },
-        { "title": "Map a macro (coming)", "code": "hooks.map(\"macro1\", \"murk.hz\", { range: [200, 4000], curve: \"exp\" })", "coming": true }
+        { "title": "Map one knob onto another layer", "code": "$: note(\"c2*8\").s(\"sawtooth\").gain(ctl(\"macro\", { type: \"knob\", min: 0, max: 1, default: 0.6 }))\n$: s(\"hh*8\").room(0.1)\nhooks.map('macro', 'room', { range: [0, 0.8] })" }
       ]
     },
     {
       "id": "pads", "title": "Pads and the control board", "needs": "perform",
-      "explain": "Perform (key 5) holds pad banks and control boards as tabs. In Perform mode a pad press is quantised (bar by default) and journaled; Edit mode opens the pad sheet to set its target, mode, quantise and choke. Boards show every control with its mapping; tap Map... to remap.",
+      "explain": "Perform (key 5) holds pad banks and control boards as tabs. In Perform mode a pad press is quantised (bar by default) and journaled; Edit mode opens the pad sheet to set its target, mode, quantise and choke, and lays the board out (sizes, move, place, remove). Boards show every control with its mapping; tap Map... to remap, or Learn and move a control to write one hooks.map(...) line into the playing editor (Unlearn removes it). \"Rec lane\" records the next control you move for 1/2/4 bars as an automation lane; the looper strip records, overdubs and replays pad takes; \"Tabs ...\" adds, renames and reorders tabs and switches scenes (rows/columns); \"Save to library\" stores a bank, board, take or lane as a component.",
       "examples": [
         { "title": "Open Perform", "action": "perform" }
       ]
     },
     {
       "id": "library", "title": "Library components", "needs": "library",
-      "explain": "A component (fragment, track, set, song) is a saved model with exports. hooks.inst(\"pad@3\", { as: \"pad2\" }) drops a pinned revision into the program under its own namespace.",
+      "explain": "A component (fragment, track, set, song) is a saved model with exports, versioned by revision: every save is a new rev, so a reference like \"pad@1\" is pinned content. Components come from Graph (key 7: select nodes, Save to library / Collapse to subgraph) or from Perform (\"Save to library\" for a bank, board, take or lane); they live in this browser. hooks.inst(\"pad@1\", { as: \"pad2\", args: {...}, gate, remap }) drops one revision into the program under its own namespace, and hooks.bind(slot, 'lib:warmth@1(0.4)') binds a saved fragment's hook into a slot. The two examples below load into Rack without playing because they only run once their component is in your library (an unknown reference reports E_COMPONENT_MISSING).",
       "examples": [
-        { "title": "Instance a component (coming)", "code": "$: hooks.inst(\"pad@3\", { as: \"pad2\", args: { cutoff: 900 } })", "coming": true }
+        { "title": "Instance a saved component (needs pad@1 in this browser's library)", "code": "$: hooks.inst(\"pad@1\", { as: \"pad2\" })\n$: s(\"bd*4\")", "noplay": true },
+        { "title": "Bind a saved fragment into a slot (needs warmth@1)", "code": "hooks.bind('fx', 'lib:warmth@1(0.4)')\n$: note(\"c2 eb2 g2\").s(\"sawtooth\").use(\"fx\")", "noplay": true }
       ]
     },
     {
       "id": "word", "title": "word() vocals", "needs": "word",
-      "explain": "word(\"<call me baby>\") plays your vocal word bank (vox_<word> samples) with mini-notation; \"baby:2\" picks the third take. syl(\"0 1 2\") plays syllables in lyric order. vowel() is a formant filter. A demo bank (espeak-ng speech) loads on first use; voxBank('call-me-baby') switches to the owner's vocal bank, voxBank() picks a local folder, voxBank.list() shows banks.",
+      "explain": "word(\"<call me baby>\") plays your vocal word bank (vox_<word> samples) with mini-notation; \"baby:2\" picks the third take. syl(\"0 1 2\") plays syllables in lyric order. vowel() is a formant filter (it does not shift formants). A demo bank (espeak-ng speech) loads on first use; voxBank('call-me-baby') switches to the owner's vocal bank (keys it lacks fall back to demo), voxBank(url) loads a strudel.json, voxBank() picks a local folder, voxBank.list() shows banks. Word names complete inside the quotes from data/intellisense/words.json (both site banks). .note() on a bank retunes by speed, so formants move with the pitch; formant-preserving takes are pre-rendered at build time by the wordbank CLI (--formant-steps, pyworld) and missing lyric words can be filled by opt-in TTS (--tts-fallback); neither is in the site banks yet.",
       "examples": [
         { "title": "Words in a pattern", "code": "$: word(\"<call me baby>\").vowel(\"<a o>\")" },
         { "title": "Syllables", "code": "$: syl(\"0 1 2 3\")" },
-        { "title": "Call Me Baby bank, retuned", "code": "await voxBank('call-me-baby')\n$: word(\"<call me baby>\").note(\"<c3 e3 g3>\")" }
+        { "title": "Call Me Baby bank, retuned", "code": "await voxBank('call-me-baby')\n$: word(\"<call me baby>\").note(\"<c3 e3 g3>\")" },
+        { "title": "Formant-preserving retune (coming, #57)", "code": "$: word(\"<call me baby>\").note(\"<c3 e3 g3>\").formant(true)", "coming": true }
       ]
     },
     {
@@ -60,6 +62,15 @@
         { "title": "Try: type .lpf( then Tab", "code": "$: note(\"c2 eb2\").s(\"sawtooth\")", "noplay": true }
       ]
     },
-    {"id": "workspace", "title": "Transport range, workspace and palette", "needs": "workspace", "explain": "The stage has a position slider: 'c 12.3 / 64 · 0:24 / 2:08' is current cycle / end cycle · elapsed / end time (end = loop End, or the play-time clamp). Start, End and Go-to take a cycle or m:ss; the unit button cycles cycle / bar / m:ss, converted with the live cps. Play time is clamped (20 min default, timer button) with a fade and a +5 min override. W toggles the workspace; Ctrl+K (or the floating button on phones) opens the command palette, which also loads layouts. Code can add palette actions and seek.", "examples": [{"title": "Add a palette action", "code": "strudelCraft.palette.register({ id: 'my.drop', group: 'Mine', title: 'Jump to the drop', run: () => strudelCraft.range.seek(16) })\n$: s(\"bd*4, hh*8\").bank(\"RolandTR909\")"}, {"title": "Loop cycles 4 to 8", "code": "Object.assign(strudelCraft.range.state, { start: 4, end: 8, loop: true })\n$: note(\"<c3 eb3 g3 bb3>*2\").s(\"sawtooth\").lpf(800)"}, {"title": "Load a layout", "code": "strudelCraft.workspace.load('Perform')\n$: s(\"bd ~ sd ~\")"}]}
+    {"id": "workspace", "title": "Transport range, workspace and palette", "needs": "workspace", "explain": "The stage has a position slider: 'c 12.3 / 64 · 0:24 / 2:08' is current cycle / end cycle · elapsed / end time (end = loop End, or the play-time clamp). Start, End and Go-to take a cycle or m:ss; the unit button cycles cycle / bar / m:ss, converted with the live cps. Play time is clamped (20 min default, timer button) with a fade and a +5 min override. W toggles the workspace; Ctrl+K (or the floating button on phones) opens the command palette, which also loads layouts. Code can add palette actions and seek.", "examples": [{"title": "Add a palette action", "code": "strudelCraft.palette.register({ id: 'my.drop', group: 'Mine', title: 'Jump to the drop', run: () => strudelCraft.range.seek(16) })\n$: s(\"bd*4, hh*8\").bank(\"RolandTR909\")"}, {"title": "Loop cycles 4 to 8", "code": "Object.assign(strudelCraft.range.state, { start: 4, end: 8, loop: true })\n$: note(\"<c3 eb3 g3 bb3>*2\").s(\"sawtooth\").lpf(800)"}, {"title": "Load a layout", "code": "strudelCraft.workspace.load('Perform')\n$: s(\"bd ~ sd ~\")"}]},
+    {
+      "id": "atoms", "title": "Atoms: named, typed strings (coming)", "needs": "atoms",
+      "explain": "An atom gives a magic string one typed, parameterised definition: atom(\"kick4\", { type: \"mini\", params: { n: { shape: \"number\", min: 1, max: 16, default: 4 } }, body: \"bd*${n}\" }) and then atoms.kick4 or atoms.kick4({ n: 8 }) anywhere a string would go. References compile away before Strudel sees the program: pattern types (mini, sound, note, chord, scale) become double-quoted strings, name types (gate, point, tapref, slot, hook, name) single-quoted. Ops compose without hand-written brackets: .stack() .seq() .alt() .rep() .slow() .euclid() on patterns, .union() .shift() on gates, .after() .before() .to() on points, .facet() .in() on refs. The compile pass, types, schema and ids are built (site/engine/atoms.js, docs/ATOMS.md, #61); wiring into the editor, intellisense and the hooks runtime is coming (#62-#64), so these examples do not play yet.",
+      "examples": [
+        { "title": "Declare and reference (coming)", "code": "atom(\"kick4\", { type: \"mini\", params: { n: { shape: \"number\", min: 1, max: 16, step: 1, default: 4 } }, body: \"bd*${n}\" })\natom(\"kick\", { type: \"name\", body: \"kick\" })\n$: s(atoms.kick4).tap(atoms.kick)\n$: s(atoms.kick4({ n: 8 })).gain(0.6)", "coming": true },
+        { "title": "Compose instead of retyping (coming)", "code": "atom(\"kick4\", { type: \"mini\", body: \"bd*4\" })\natom(\"backbeat\", { type: \"mini\", body: \"~ sd ~ sd\" })\n$: s(atoms.kick4.stack(atoms.backbeat).slow(2))", "coming": true },
+        { "title": "One name for a gate and a tap ref (coming)", "code": "atom(\"drop\", { type: \"point\", body: \"17b\" })\natom(\"kickEnv\", { type: \"tapref\", body: \"kick:env\" })\nhooks.bind(\"fx\", \"murk\", atoms.drop.after())\n$: note(\"c2*8\").s(\"sawtooth\").wire(\"gain\", atoms.kickEnv, { range: [1, 0.3], op: \"mul\" })", "coming": true }
+      ]
+    }
   ]
 }

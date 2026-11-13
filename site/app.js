@@ -287,7 +287,7 @@ function stackProgram() {
   return `setcpm(${S.tempo}/4)\n\n` + ls.map((l) => `// ${l.r.title}${l.db ? ` (${l.db > 0 ? '+' : ''}${l.db} dB)` : ''}\n${l.on ? '' : '_'}$: ${l.r.expr.trim()}${l.db ? `\n  .postgain(${(+dbToGain(l.db).toFixed(3))})` : ''}`).join('\n\n') + '\n';
 }
 function currentSource() {
-  if (S.view === 'stack') { const ls = stackLayers(); return { kind: 'stack', id: 'stack', title: ls.length ? `Stack · ${ls.length} layer${ls.length > 1 ? 's' : ''}` : 'Stack (empty)', code: stackProgram(), samples: ls.some((l) => l.r.needs_samples), empty: !ls.length }; }
+  if (S.view === 'stack') { const ls = stackLayers(); return { kind: 'stack', id: 'stack', title: ls.length ? `Stack · ${ls.length} layer${ls.length > 1 ? 's' : ''}` : 'Stack (empty)', code: stackText(), samples: ls.some((l) => l.r.needs_samples), empty: !ls.length }; }
   const r = cur(); if (!r) return null;
   return { kind: 'solo', id: r.id, title: r.title, code: withTempo(recipeCode(r)), samples: r.needs_samples || /\.bank\(|\bs\("(?:bd|hh|sd|cp|oh)/.test(recipeCode(r)) };
 }
@@ -413,7 +413,8 @@ function renderStack() {
   }));
   updateStackCode();
 }
-function updateStackCode() { const code = stackProgram(); $('#stackCode').value = code; $('#stackOpen').href = strudelUrl(code); syncTransport(); }
+function stackText() { return S.stackEdit != null ? S.stackEdit : stackProgram(); }
+function updateStackCode() { const ta = $('#stackCode'); if (document.activeElement !== ta) S.stackEdit = null; const code = stackText(); if (document.activeElement !== ta) ta.value = code; $('#stackOpen').href = strudelUrl(code); syncTransport(); }
 
 /* ---------- docs views ---------- */
 async function loadDoc(name, root, toc, q) {
@@ -490,8 +491,8 @@ function onKey(e) {
     1: () => setView('rack'), 2: () => setView('stack'), 3: () => setView('ref'), 4: () => setView('practice'),
     '/': () => { const q = $('#q'); if (S.view === 'ref') $('#refQ').focus(); else if (S.view === 'practice') $('#pracQ').focus(); else { q.focus(); q.select(); } },
     Escape: () => { if (S.q || S.chips.size || S.vonly) clearFilters(); },
-    c: () => { const s = currentSource(); if (s) copyText(S.view === 'stack' ? stackProgram() : recipeCode(cur())); },
-    o: () => { const code = S.view === 'stack' ? stackProgram() : cur() && recipeCode(cur()); if (code) window.open(strudelUrl(code), '_blank', 'noopener'); },
+    c: () => { const s = currentSource(); if (s) copyText(S.view === 'stack' ? stackText() : recipeCode(cur())); },
+    o: () => { const code = S.view === 'stack' ? stackText() : cur() && recipeCode(cur()); if (code) window.open(strudelUrl(code), '_blank', 'noopener'); },
     t: toggleTheme, '?': openHelp,
   }[k];
   if (!act) return;
@@ -501,6 +502,7 @@ function onKey(e) {
 }
 function moveSel(d) { select(S.sel + d); const b = $$('#list .row')[S.sel]; if (b && document.activeElement && document.activeElement.classList.contains('row')) b.focus({ preventScroll: true }); }
 function runEditor() {
+  if (S.view === 'stack') { S.stackEdit = $('#stackCode').value; play(); return; }
   const ta = document.activeElement && document.activeElement.id === 'code' ? document.activeElement : $('#code');
   const r = cur(); if (!r) return; commitEdit(ta.value);
   if (S.view !== 'rack') setView('rack'); play();
@@ -537,9 +539,10 @@ async function boot() {
   $('#filters').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (!b) return; const id = b.dataset.label; const on = !S.chips.has(id); on ? S.chips.add(id) : S.chips.delete(id); b.setAttribute('aria-pressed', on); renderList(); });
   const code = $('#code');
   code.addEventListener('input', () => commitEdit(code.value));
+  const sc = $('#stackCode'); sc.addEventListener('input', () => { S.stackEdit = sc.value === stackProgram() ? null : sc.value; $('#stackOpen').href = strudelUrl(stackText()); });
   $('#evalBtn').addEventListener('click', runEditor);
   $('#revertBtn').addEventListener('click', () => { const r = cur(); if (!r) return; delete S.edits[r.id]; code.value = r.code; renderSelection(false); liveUpdate(); });
-  $('#stackCopy').addEventListener('click', (e) => copyText(stackProgram(), e.currentTarget));
+  $('#stackCopy').addEventListener('click', (e) => copyText(stackText(), e.currentTarget));
   $('#stackClear').addEventListener('click', () => setStack([], 'clear stack'));
   $$('.views a').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); setView(a.dataset.view); }));
   document.addEventListener('keydown', onKey);

@@ -156,3 +156,15 @@ Standalone ES module: `parse(text)`, `generate(model)`, `applyOp(model, op)`, `g
 - Code carries `header, markers, scopes, slots, defs, vars, bindings, instances, tracks` and `layout` (as a final `// @model-layout {...}` comment). `meta`, `settings`, `wires`, `journal`, pads, controls, components live only in the JSON model file.
 - Quotes: double-quoted args of ordinary methods are mini-notation (`{"$mini"}`); reference methods (`tap use wrap ns wire`) and object/array members are plain strings. The generator never changes the quote of text it keeps; new text uses double quotes for mini and references, single quotes for other plain strings.
 - Test: `node tests/hooks/p3.mjs`. The `strudel model`, `--model` CLI commands and the "Same sound" `strudel events` check need the `strudel` CLI (other repo) and print SKIP.
+
+## Hooks wiring
+`app.js` runs every program through `strudelCraft.hooksLib.protect(code)` before `evaluate` (play and live swap), so gate strings such
+as `"@2b"` stay plain strings. Before the first evaluate it installs the hooks runtime and gives it the mod RANGE table
+(`data/mod_ranges.json`, a mirror of the CLI's `engine/strudel-cli/lib/mod.mjs`: `ranges` + `canon`) so `wire()` scales into real
+param ranges (e.g. `lpf` -> `cutoff` 20..20000).
+
+## Syntax (`syntax.js`, view 6)
+Teaches the new paradigms from `data/syntax.json` (sourced from docs/HOOKS_SYNTAX.md and docs/BLUEPRINT.md): slots/.use()/gates,
+taps/wire/variables/decorators, inline controls and mapping, pads and the board, library components, word() vocals, ghost text.
+Each example has "Load and play" (loads into Rack and plays, or hot-swaps if already playing). A paradigm whose engine is not
+present is marked "coming" (detected at runtime). Examples are intellisense snippets (provider `syntax`).

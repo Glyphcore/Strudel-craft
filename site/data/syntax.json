@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "sources": ["docs/HOOKS_SYNTAX.md", "docs/BLUEPRINT.md"],
+  "sections": [
+    {
+      "id": "slots", "title": "Slots, .use() and gates", "needs": "hooks",
+      "explain": "A slot is a named hole in a chain: .use(\"fx\") marks it, hooks.bind fills it with a hook. A gate says when the binding is open: \"@17b\" from bar 17 on, \"<17b\" before bar 17, \"9b..17b\" bars 9 to 16. Outside its gate the slot bypasses. hooks.def names a reusable chain.",
+      "examples": [
+        { "title": "A slot and a hook", "code": "hooks.def(\"murk\", { chain: [[\"lpf\", 400], [\"room\", 0.4]] })\nhooks.bind(\"fx\", \"murk\")\n$: note(\"c2 eb2 g2 bb2\").s(\"sawtooth\").use(\"fx\")" },
+        { "title": "Drop-in at bar 3 (@3b)", "code": "hooks.bind(\"fx\", [[\"distort\", 2], [\"hpf\", 120]], \"@3b\")\n$: s(\"sawtooth\").note(\"c2*4\").use(\"fx\")" },
+        { "title": "Before bar 3 (<3b)", "code": "hooks.def(\"murk\", { chain: [[\"lpf\", 300]] })\nhooks.bind(\"fx\", \"murk\", \"<3b\")\n$: note(\"c3 e3 g3 b3\").s(\"triangle\").use(\"fx\")" },
+        { "title": "Range with fallback (2b..4b)", "code": "hooks.def(\"murk\", { chain: [[\"lpf\", 400]] })\nhooks.def(\"open\", { chain: [[\"lpf\", 4000]] })\nhooks.bind(\"fx\", \"open\", \"2b..4b\", { else: \"murk\" })\n$: note(\"c2 eb2 g2 bb2\").s(\"sawtooth\").use(\"fx\")" }
+      ]
+    },
+    {
+      "id": "taps", "title": ".tap(), .wire(), variables and decorators", "needs": "taps",
+      "explain": ".tap(\"name\") publishes a pattern so others can read it with tap(\"name\") or facets like tap(\"kick:env\"). .wire(param, tap, opts) drives a param from a tap. hooks.let defines a variable (gated assignments act like a key change). Decorators wrap hooks: every(4)[h], mix(0.3)[h], h | g.",
+      "examples": [
+        { "title": "Tap to param: ducking", "code": "$: s(\"sine\").note(\"c1*4\").decay(0.2).tap(\"kick\")\n$: note(\"c2*8\").s(\"sawtooth\").wire(\"gain\", \"kick:env\", { range: [1, 0.3], op: \"mul\", r: 0.25 })" },
+        { "title": "Variable with a key change", "code": "hooks.let(\"root\", 48)\nhooks.let(\"root\", 51, \"@3b\")\n$: note(tap(\"root\").add(\"0 3 7 10\")).s(\"sawtooth\")\n$: note(tap(\"root\").sub(12)).s(\"triangle\").struct(\"x*2\")" },
+        { "title": "Decorated binding", "code": "hooks.def(\"murk\", { chain: [[\"lpf\", 500]] })\nhooks.bind(\"fx\", \"every(2)[murk]\")\n$: note(\"c3 eb3 g3\").s(\"sawtooth\").use(\"fx\")" }
+      ]
+    },
+    {
+      "id": "controls", "title": "Inline controls and mapping", "needs": "controls",
+      "explain": "ctl(\"name\", {type, min, max}) declares a control and returns its value as a pattern. It shows up under the editor while playing and on the Perform board; slider(v, min, max) works too. hooks.map sends one control to several destinations.",
+      "examples": [
+        { "title": "A cutoff knob", "code": "$: note(\"c2*8\").s(\"sawtooth\").lpf(ctl(\"cutoff\", { type: \"knob\", min: 200, max: 4000 }))" },
+        { "title": "Strudel slider()", "code": "$: note(\"c3 e3 g3\").s(\"triangle\").gain(slider(0.6, 0, 1))" },
+        { "title": "Map a macro (coming)", "code": "hooks.map(\"macro1\", \"murk.hz\", { range: [200, 4000], curve: \"exp\" })", "coming": true }
+      ]
+    },
+    {
+      "id": "pads", "title": "Pads and the control board", "needs": "perform",
+      "explain": "Perform (key 5) holds pad banks and control boards as tabs. In Perform mode a pad press is quantised (bar by default) and journaled; Edit mode opens the pad sheet to set its target, mode, quantise and choke. Boards show every control with its mapping; tap Map... to remap.",
+      "examples": [
+        { "title": "Open Perform", "action": "perform" }
+      ]
+    },
+    {
+      "id": "library", "title": "Library components", "needs": "library",
+      "explain": "A component (fragment, track, set, song) is a saved model with exports. hooks.inst(\"pad@3\", { as: \"pad2\" }) drops a pinned revision into the program under its own namespace.",
+      "examples": [
+        { "title": "Instance a component (coming)", "code": "$: hooks.inst(\"pad@3\", { as: \"pad2\", args: { cutoff: 900 } })", "coming": true }
+      ]
+    },
+    {
+      "id": "word", "title": "word() vocals", "needs": "word",
+      "explain": "word(\"<call me baby>\") plays your vocal word bank (vox_<word> samples) with mini-notation; \"baby:2\" picks the third take. syl(\"0 1 2\") plays syllables in lyric order. vowel() is a formant filter. Needs a loaded vox bank.",
+      "examples": [
+        { "title": "Words in a pattern", "code": "$: word(\"<call me baby>\").vowel(\"<a o>\")" },
+        { "title": "Syllables", "code": "$: syl(\"0 1 2 3\")" }
+      ]
+    },
+    {
+      "id": "ghost", "title": "Ghost text and Tab", "needs": "ghost",
+      "explain": "Type in the editor: a dimmed continuation appears at the cursor. Tab (or the Tab chip on phones) accepts it, Esc dismisses it, Ctrl/Alt+] cycles alternatives. Tab also accepts the selected popup item, and indents when nothing is suggested.",
+      "examples": [
+        { "title": "Try: type .lpf( then Tab", "code": "$: note(\"c2 eb2\").s(\"sawtooth\")", "noplay": true }
+      ]
+    }
+  ]
+}

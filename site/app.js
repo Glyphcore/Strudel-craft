@@ -69,6 +69,8 @@ function unmuteBus() {
 }
 
 /* ---------- engine ---------- */
+/* hooks calls take plain strings: protect them from mini-notation before Strudel's transpiler sees them (engine/hooks.js) */
+function protectCode(code) { try { const p = window.strudelCraft.hooksLib && window.strudelCraft.hooksLib.protect; return p ? p(code) : code; } catch (e) { return code; } }
 /* user-space preludes (plain JS, Strudel unmodified) loaded into the eval context once Strudel's globals exist */
 const PRELUDES = ['prelude/word.js'];
 function loadPreludes() { return Promise.all(PRELUDES.map((src) => new Promise((ok) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => { console.warn('prelude failed: ' + src); ok(); }; document.head.append(s); }))); }
@@ -88,11 +90,12 @@ const Engine = {
   get scheduler() { return this.repl && this.repl.scheduler; },
   async play(code, needsSamples, say) {
     say('Loading engine'); await this.load();
+    try { if (!window.strudelCraft.hooks && window.strudelCraft.installHooks) window.strudelCraft.installHooks(); await applyRanges(); } catch (e) { /* hooks optional */ }
     if (needsSamples && !this.samplesLoaded) { say('Loading sample banks'); for (const m of SAMPLE_MAPS) await window.samples(m); this.samplesLoaded = true; }
     try { const c = window.getAudioContext && window.getAudioContext(); if (c && c.state !== 'running') await c.resume(); } catch (e) { /* resumed on gesture below */ }
     this.state.evalError = undefined;
     unmuteBus();
-    await window.evaluate(code);
+    await window.evaluate(protectCode(code));
     if (this.state.evalError) throw this.state.evalError;
     const ctx = window.getAudioContext && window.getAudioContext();
     if (ctx && ctx.state !== 'running') throw new Error('Audio is blocked by the browser. Tap Play again to allow sound.');
@@ -104,7 +107,7 @@ const Engine = {
     if (wait > 4000) wait = 0;
     await new Promise((r) => setTimeout(r, wait));
     this.state.evalError = undefined;
-    await window.evaluate(code);
+    await window.evaluate(protectCode(code));
     if (this.state.evalError) throw this.state.evalError;
   },
   stop() { muteBus(); try { if (this.repl) this.repl.stop(); else if (window.hush) window.hush(); } catch (e) { /* not started */ } },
@@ -525,15 +528,21 @@ function ensureDoc(view) {
 async function loadJSON(name) { const r = await fetch('data/' + name + '.json'); if (!r.ok) throw new Error(name + ': HTTP ' + r.status); return r.json(); }
 
 /* ---------- views + routing ---------- */
-const VIEWS = ['rack', 'stack', 'ref', 'practice', 'perform'];
+const VIEWS = ['rack', 'stack', 'ref', 'practice', 'perform', 'syntax'];
+let syntaxLoad = null; function loadSyntax() { if (!syntaxLoad) syntaxLoad = import('./syntax.js').catch((e) => { syntaxLoad = null; say('Syntax view failed to load: ' + e.message, true); }); return syntaxLoad; }
 let performLoad = null; function loadPerform() { if (!performLoad) performLoad = import('./perform.js').catch((e) => { performLoad = null; say('Perform tools failed to load: ' + e.message, true); }); return performLoad; }
 window.addEventListener('strudel:ready', () => loadPerform());
+/* mod RANGE table for wire()/taps (mirror of the CLI's lib/mod.mjs): ranges + canonical param names */
+const modRanges = fetch('data/mod_ranges.json').then((r) => r.json()).catch(() => null);
+function applyRanges() { const h = window.strudelCraft.hooks; if (!h) return false; return modRanges.then((m) => { if (m && !h.ranges) { h.ranges = m.ranges; h.canon = (p) => m.canon[p] || p; } return true; }); }
+window.addEventListener('strudel:ready', () => { if (!applyRanges()) setTimeout(applyRanges, 200); });
 function setView(v, { push = true } = {}) {
   if (!VIEWS.includes(v)) v = 'rack';
   S.view = v; $('#main').dataset.view = v;
   $$('.views a').forEach((a) => (a.dataset.view === v ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
   if (v === 'ref' || v === 'practice') ensureDoc(v);
   if (v === 'perform') loadPerform();
+  if (v === 'syntax') loadSyntax();
   if (push) history.replaceState(null, '', v === 'rack' && cur() ? '#r/' + cur().id : '#' + v);
   syncTransport(); Viz.drawAll(performance.now()); onViewChanged();
 }
@@ -549,7 +558,7 @@ function route() {
 const KEYS = [
   ['Space', 'Play / stop'], ['↑ ↓  or  K J', 'Previous / next recipe (auditions while playing)'], ['Enter', 'Play the selected recipe'],
   ['[  ]', 'Tempo −1 / +1 BPM (Shift: ±10)'], ['−  =', 'Master −1 / +1 dB'], ['A', 'Add / remove selected recipe in the stack'],
-  ['1 2 3 4 5', 'Rack / Stack / Ref / Practice / Perform'], ['/', 'Search recipes'], ['Esc', 'Clear search, close dialog, leave a field'],
+  ['1 - 6', 'Rack / Stack / Ref / Practice / Perform / Syntax'], ['/', 'Search recipes'], ['Esc', 'Clear search, close dialog, leave a field'],
   ['Ctrl/⌘ + Enter', 'Run the code in the editor'], ['Ctrl/⌘ + Z', 'Undo knob or stack change (Shift: redo)'],
   ['C', 'Copy code'], ['O', 'Open in strudel.cc'], ['T', 'Toggle theme'], ['H', 'Version history (undo, timeline, diff, search)'], ['?', 'This cheat sheet'],
 ];
@@ -574,7 +583,7 @@ function onKey(e) {
     '[': () => tempoK.nudge(e.shiftKey ? -10 : -1), ']': () => tempoK.nudge(e.shiftKey ? 10 : 1), '{': () => tempoK.nudge(-10), '}': () => tempoK.nudge(10),
     '-': () => masterK.nudge(-1), '=': () => masterK.nudge(1), '+': () => masterK.nudge(1), _: () => masterK.nudge(-1),
     a: () => cur() && toggleStack(cur().id), A: () => cur() && toggleStack(cur().id),
-    1: () => setView('rack'), 2: () => setView('stack'), 3: () => setView('ref'), 4: () => setView('practice'), 5: () => setView('perform'),
+    1: () => setView('rack'), 2: () => setView('stack'), 3: () => setView('ref'), 4: () => setView('practice'), 5: () => setView('perform'), 6: () => setView('syntax'),
     '/': () => { const q = $('#q'); if (S.view === 'ref') $('#refQ').focus(); else if (S.view === 'practice') $('#pracQ').focus(); else { q.focus(); q.select(); } },
     Escape: () => { if (S.q || S.chips.size || S.vonly) clearFilters(); },
     c: () => { const s = currentSource(); if (s) copyText(S.view === 'stack' ? stackText() : recipeCode(cur())); },

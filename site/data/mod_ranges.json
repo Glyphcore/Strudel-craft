@@ -1,0 +1,111 @@
+{
+ "source": "suno-track-lab engine/strudel-cli/lib/mod.mjs (mirror; keep in sync)",
+ "ranges": {
+  "cutoff": {
+   "min": 20,
+   "max": 20000,
+   "span": 19980,
+   "base": 20000
+  },
+  "hcutoff": {
+   "min": 20,
+   "max": 20000,
+   "span": 19980,
+   "base": 20
+  },
+  "bandf": {
+   "min": 20,
+   "max": 20000,
+   "span": 19980,
+   "base": 1000
+  },
+  "gain": {
+   "min": 0,
+   "max": 2,
+   "span": 1,
+   "base": 1
+  },
+  "pan": {
+   "min": 0,
+   "max": 1,
+   "span": 1,
+   "base": 0.5
+  },
+  "room": {
+   "min": 0,
+   "max": 1,
+   "span": 1,
+   "base": 0
+  },
+  "roomsize": {
+   "min": 0,
+   "max": 10,
+   "span": 10,
+   "base": 1
+  },
+  "delay": {
+   "min": 0,
+   "max": 1,
+   "span": 1,
+   "base": 0
+  },
+  "resonance": {
+   "min": 0,
+   "max": 50,
+   "span": 50,
+   "base": 1
+  },
+  "shape": {
+   "min": 0,
+   "max": 1,
+   "span": 1,
+   "base": 0
+  },
+  "velocity": {
+   "min": 0,
+   "max": 1,
+   "span": 1,
+   "base": 1
+  },
+  "attack": {
+   "min": 0,
+   "max": 10,
+   "span": 10,
+   "base": 0.001
+  },
+  "release": {
+   "min": 0,
+   "max": 10,
+   "span": 10,
+   "base": 0.01
+  },
+  "lpenv": {
+   "min": 0,
+   "max": 16,
+   "span": 16,
+   "base": 0
+  },
+  "detune": {
+   "min": 0,
+   "max": 12,
+   "span": 12,
+   "base": 0
+  },
+  "postgain": {
+   "min": 0,
+   "max": 2,
+   "span": 1,
+   "base": 1
+  }
+ },
+ "canon": {
+  "lpf": "cutoff",
+  "hpf": "hcutoff",
+  "bpf": "bandf",
+  "lpq": "resonance",
+  "size": "roomsize",
+  "sz": "roomsize",
+  "lp": "cutoff",
+  "hp": "hcutoff"
+ }
+}

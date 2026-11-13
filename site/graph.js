@@ -14,7 +14,7 @@ const KEY = 'sc.graph', POSKEY = 'sc.graph.pos';
 const COLW = 330, W = 220, HEAD = 52, ROW = 52, STEP = 30, GAP = 28, PILL = 52, CODEH = 64;
 const FAR = 0.85, NEAR = 1.5, GLYPH = 0.4, ZMIN = 0.25, ZMAX = 2; // ZMIN is a floor only for small graphs: zmin() always lets the whole graph fit
 const REG = new Set(['marker', 'hook', 'module', 'decorator', 'var', 'control']); // definitions sit in the first column
-const NONPARAM = new Set(['tap', 'use', 'wrap', 'wire', 'ns']);
+const NONPARAM = new Set(['tap', 'use', 'wrap', 'wire', 'ns', 'split', 'merge', 'tags', 'tag', 'send']); // lanes steps are edited on the lane card (lanes-ui.js), not as param ports
 const FACETS = ['onset', 'gate', 'env'];
 const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 const DEMO = `setcpm(30)
@@ -167,7 +167,8 @@ function buildView(model) {
     if (id.startsWith('bind:')) { const bid = id.split(':')[1]; const bi = (model.bindings || []).findIndex((bb, i) => (bb.id || `b${i + 1}`) === bid); x.binding = bid; x.b = (model.bindings || [])[bi]; x.window = gateBadge(x.b && x.b.gate); }
     wires.push(x);
   }
-  return AU ? AU.decorate({ nodes, wires, nmap }, model) : { nodes, wires, nmap }; // atom cards, derived cards, per-reference wires (atoms-ui.js, #64)
+  const v0 = AU ? AU.decorate({ nodes, wires, nmap }, model) : { nodes, wires, nmap }; // atom cards, derived cards, per-reference wires (atoms-ui.js, #64)
+  return LU ? LU.decorate(v0, model, g) : v0; // lane cards, split fans, bus / selection / capture nodes, tag chips (lanes-ui.js, #78)
 }
 function place(view, model) {
   // rank and order from model.layout(); pixel rows stack the real node heights per column (layout's 96 px rows assume pills)
@@ -197,6 +198,7 @@ function rule(a, b) {
   const out = a.dir === 'out' ? a : b, inn = a.dir === 'out' ? b : a;
   const on = G.view.nmap.get(out.node), tn = G.view.nmap.get(inn.node);
   if (!on || !tn) return { ok: false, reason: 'Unknown node.' };
+  if (LU) { const lr = LU.rule(out, inn, on, tn); if (lr) return lr; }
   if (tn.kind === 'code') return { ok: false, reason: 'Opaque code node: its inputs come from its text; edit the code instead.' };
   if (tn.kind === 'component') return { ok: false, reason: `Component ${tn.label}: args and gate are set on its hooks.inst line, not by wires.` };
   if (out.type === 'hook' || inn.type === 'hook') {
@@ -221,8 +223,9 @@ function rule(a, b) {
 }
 async function connect(a, b) {
   const r = rule(a, b);
-  if (!r.ok) { refuse(r.reason); return false; }
+  if (!r.ok) { if (r.crossing && LU) LU.crossSheet(r.crossing); else refuse(r.reason); return false; }
   if (G.fixture) { refuse('Fixture view is read-only.'); return false; }
+  if (r.lanes && LU) return LU.connect(r);
   const on = G.view.nmap.get(r.out.node), tn = G.view.nmap.get(r.inn.node);
   if (r.does === 'bind') return doOps([{ op: 'bind', slot: slotRef(tn), hook: on.label }], `Bound ${on.label} to ${slotRef(tn)}`);
   if (r.does === 'publish') { const t = G.model.tracks.find((x) => x.name === on.label); return doOps([{ op: 'insertStep', track: on.label, index: (t.chain || []).length, step: ['tap', tn.label] }], `${on.label} publishes tap ${tn.label}`); }
@@ -306,12 +309,12 @@ function render() {
     let body = '';
     if (n.steps) body = `<ol class="gn-steps" style="top:${HEAD + rows * ROW}px">${n.steps.map((s, i) => `<li data-step="${i}"><span class="gs-t">${i ? '.' : ''}${esc(stepText(s))}</span>${s.slice(1).map((a, j) => ((typeof a === 'number' || typeof a === 'string' || (isObj(a) && '$mini' in a)) && !NONPARAM.has(s[0]) ? `<input class="gs-in" data-step="${i}" data-arg="${j}" value="${esc(isObj(a) ? a.$mini : a)}" aria-label="${esc(`${n.label} ${s[0]} argument ${j + 1}`)}"${ro ? ' readonly' : ''}>` : '')).join('')}</li>`).join('')}</ol>`;
     if (n.kind === 'code') body = `<pre class="gn-src" style="top:${HEAD + rows * ROW}px">${esc(n.src.trim().split('\n').slice(0, 3).join('\n'))}</pre>`;
-    if (n.body) body = n.body(HEAD + rows * ROW);
+    if (n.body) body += n.body(HEAD + rows * ROW + (n.steps ? n.steps.length * STEP + 8 : 0)); // card bodies (atoms, lanes) sit below the step list
     html += `<div class="gn gk-${n.kind}${sel ? ' sel' : ''}${n.err ? ' err' : ''}" data-id="${esc(n.id)}" style="left:${n.x}px;top:${n.y}px;height:${n.h}px">`
       + `<button type="button" class="gn-head" data-node="${esc(n.id)}" aria-pressed="${sel}" aria-label="${esc(`${n.sub} ${n.label}${n.err ? ', error: ' + n.err : ''}`)}"><b>${esc(n.label)}</b><span class="gn-k">${esc(n.sub)}</span></button>`
       + (n.err ? `<p class="gn-err" title="${esc(n.err)}">${esc(n.err.split(':')[0])}</p>` : '') + ports('in') + ports('out') + body + '</div>';
   }
-  nodesEl.innerHTML = html; if (AU) AU.after(nodesEl);
+  nodesEl.innerHTML = html; if (AU) AU.after(nodesEl); if (LU) LU.after(nodesEl);
   if (G.wire && !G.view.wires.some((w) => w.id === G.wire)) { G.wire = null; closeSheet(); }
   for (const id of [...G.sel]) if (!G.view.nmap.has(id)) G.sel.delete(id);
   drawWires(); renderArmed(); renderCrumbs(); renderOutline(); renderSelbar(); renderPlan(); syncMirror(false);
@@ -325,18 +328,19 @@ function wirePath(w, k = 0) {
   const at = (P, A, B, Q) => u * u * u * P + 3 * u * u * t * A + 3 * u * t * t * B + t * t * t * Q;
   return { d: `M${p.x} ${p.y}C${c1.x} ${c1.y} ${c2.x} ${c2.y} ${q.x} ${q.y}`, mx: at(p.x, c1.x, c2.x, q.x), my: at(p.y, c1.y, c2.y, q.y) };
 }
-const BADGE = { pattern: 'PAT', signal: 'SIG ~', param: 'PRM', gate: 'GATE', hook: 'HOOK' };
+const BADGE = { pattern: 'PAT', signal: 'SIG ~', param: 'PRM', gate: 'GATE', hook: 'HOOK', audio: 'BUS' };
 function drawWires() {
   let paths = '', badges = ''; const seen = new Map();
   for (const w of G.view.wires) {
     const key = w.to.node + '\u0000' + w.to.port, k = seen.get(key) || 0; seen.set(key, k + 1);
     const { d, mx, my } = wirePath(w, k), s = G.wire === w.id ? ' sel' : '';
     if (w.type === 'hook') paths += `<path class="gw gw-hook${s}" d="${d}"/><path class="gw-hook-in" d="${d}"/>`;
+    else if (w.type === 'audio') paths += `<path class="gw gw-audio${s}" d="${d}"/><path class="gw-audio-in" d="${d}"/>`;
     else paths += `<path class="gw gw-${w.type}${s}" d="${d}"/>`;
     if (w.type === 'pattern') paths += `<path class="gw-pulse" d="${d}"/>`;
-    const extra = w.type === 'signal' ? ` ${w.from.port}` : w.window ? ` ${w.window}` : '';
+    const extra = w.type === 'signal' ? ` ${w.from.port}` : w.badge ? ` ${w.badge}` : w.window ? ` ${w.window}` : '';
     const bw = Math.max(52, Math.ceil((BADGE[w.type].length + extra.length) * 6.6 + 24)); // left/top, no per-badge transform: keeps pan/zoom off the layerizer
-    badges += `<button type="button" class="gb gb-${w.type}${s}" data-wire="${esc(w.id)}" style="left:${(mx - bw / 2).toFixed(1)}px;top:${(my - 26).toFixed(1)}px;width:${bw}px" aria-label="${esc(`${w.type} wire ${G.view.nmap.get(w.from.node).label} ${w.from.port} to ${G.view.nmap.get(w.to.node).label} ${w.to.port}${w.window ? ', window ' + w.window : ''}`)}"><span>${BADGE[w.type]}${esc(extra)}</span></button>`;
+    badges += `<button type="button" class="gb gb-${w.type}${s}" data-wire="${esc(w.id)}" style="left:${(mx - bw / 2).toFixed(1)}px;top:${(my - 26).toFixed(1)}px;width:${bw}px" aria-label="${esc(`${w.type} wire ${G.view.nmap.get(w.from.node).label} ${w.from.port} to ${G.view.nmap.get(w.to.node).label} ${w.to.port}${w.window ? ', window ' + w.window : ''}${w.badge ? ', ' + w.badge : ''}`)}"><span>${BADGE[w.type]}${esc(extra)}</span></button>`;
   }
   svg.innerHTML = paths; badgesEl.innerHTML = badges;
 }
@@ -384,7 +388,8 @@ function renderOutline() {
     h('h3', { class: 'gx-oh' }, `Wires (${v.wires.length})`),
     h('ul', { class: 'gx-ol', 'aria-label': 'Graph wires' }, ...v.wires.map((w) => h('li', {},
       h('button', { type: 'button', class: 'ghost gx-on', 'data-act': 'wire', 'data-wire': w.id, 'aria-pressed': String(G.wire === w.id) },
-        h('b', {}, `${v.nmap.get(w.from.node).label}.${w.from.port} → ${v.nmap.get(w.to.node).label}.${w.to.port}`), h('span', {}, ` ${w.type}${w.window ? ' · ' + w.window : ''}`))))));
+        h('b', {}, `${v.nmap.get(w.from.node).label}.${w.from.port} → ${v.nmap.get(w.to.node).label}.${w.to.port}`), h('span', {}, ` ${w.type}${w.window ? ' · ' + w.window : ''}${w.badge ? ' · ' + w.badge : ''}`))))),
+    ...(LU ? LU.outline() : []));
 }
 
 /* ---------------------------------------------------------------- sheet (inspector, questions, palette) */
@@ -434,6 +439,7 @@ function inspectNode(id) {
     kids.push(h('p', { class: 'gx-hint' }, bs.length ? 'Bindings: ' + bs.map((w) => `${G.view.nmap.get(w.from.node).label}${w.window ? ' ' + w.window : ''}`).join(', ') : 'Unbound: the slot passes its pattern through.'));
   }
   if (n.kind === 'atom' && AU) kids.push(...AU.inspect(n));
+  if (LU) kids.push(...LU.inspect(n));
   kids.push(h('div', { class: 'gx-acts' }, h('button', { type: 'button', class: 'ghost', 'data-act': 'connect', 'data-node': id, disabled: ro }, 'Connect to…'), h('button', { type: 'button', class: 'ghost', 'data-act': 'move', 'data-node': id }, 'Move to…')));
   openSheet(n.label, h('div', { class: 'gx-insp' }, ...kids), { label: 'Inspector: ' + n.label });
 }
@@ -466,7 +472,7 @@ function connectSheet(id) {
     for (const m of G.view.nodes) { if (m.id === id) continue; for (const q of [...m.ins, ...m.outs]) { const b = { node: m.id, port: q.name, dir: q.dir, type: q.type }; const r = rule(a, b); if (r.ok) opts.push({ a, b, text: `${p.label} → ${m.label} · ${q.label}`, does: r.does }); } }
   }
   const list = h('ul', { class: 'gx-choices', 'aria-label': `Compatible ports for ${n.label}` }, ...opts.map((o, i) => h('li', {}, h('button', { type: 'button', class: 'ghost', 'data-act': 'pick', 'data-i': String(i) }, h('b', {}, o.text), h('span', {}, ' ' + o.does)))));
-  const ax = AU && !readonly() ? AU.connectItems(n) : []; list.append(...ax);
+  const ax = [...(AU && !readonly() ? AU.connectItems(n) : []), ...(LU && !readonly() ? LU.connectItems(n) : [])]; list.append(...ax);
   openSheet(`Connect ${n.label} to…`, opts.length || ax.length ? list : h('p', { class: 'gx-hint' }, 'No compatible ports in this graph.'));
   sheetEl.__opts = opts; const first = sheetEl.querySelector('[data-act=pick]'); (first || sheetEl).focus();
 }
@@ -746,7 +752,7 @@ function pointer() {
   vp.addEventListener('touchstart', (e) => { if (e.touches.length > 1 || locked()) root.classList.add('gx-touched'); else { root.classList.add('gx-hinting'); clearTimeout(vp.ht); vp.ht = setTimeout(() => root.classList.remove('gx-hinting'), 1600); } }, { passive: true });
   vp.addEventListener('pointerdown', (e) => {
     cancelAnimationFrame(glide.raf);
-    if (e.target.closest('input, select, textarea')) return;
+    if (e.target.closest('input, select, textarea, .gl-b')) return; // lane card controls (lanes-ui.js) are plain buttons, not node drags
     pts.set(e.pointerId, local(e));
     if (pts.size === 2) { if (g) clearTimeout(g.lp); const [a, b] = [...pts.values()]; g = { kind: 'pinch', d0: Math.hypot(a.x - b.x, a.y - b.y) || 1, s0: V.s, m: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, x0: V.x, y0: V.y }; return; }
     const port = e.target.closest('.gp'), badge = e.target.closest('.gb'), node = e.target.closest('.gn');
@@ -843,10 +849,12 @@ function makeFixture(nn = 150, nw = 300) {
 /* ---------------------------------------------------------------- boot + test/automation surface */
 const host = document.getElementById('graph');
 // atom cards and the atom browser load with the Graph view (never with the shell); the graph works without them
-let AU = null;
+let AU = null, LU = null; // lane cards (lanes-ui.js, #78) load with the Graph view too; the graph works without them
 if (host) {
   const au = import('./atoms-ui.js').then(async (m) => { await m.loadCss(); return m; }).catch((e) => { console.warn('atom cards unavailable:', e.message); return null; });
-  await loadCss(); AU = await au; mount(host);
+  const lu = import('./lanes-ui.js').then(async (m) => { await m.loadCss(); return m; }).catch((e) => { console.warn('lane cards unavailable:', e.message); return null; });
+  await loadCss(); AU = await au; LU = await lu; mount(host);
+  if (LU) { LU.install({ h, root: () => root, text: () => G.text, model: () => (cur() ? cur().model : G.model), view: () => G.view, doOps, commit, refuse, say, openSheet, closeSheet, readonly, select: (id) => selectNode(id), rerender: () => render() }); render(); }
   if (AU) AU.install({ h, root: () => root, text: () => G.text, model: () => (cur() ? cur().model : G.model), view: () => G.view, doOps, commit, refuse, say, openSheet, closeSheet, readonly, armed: () => G.armed, disarm: () => { if (G.armed) { G.armed = null; renderArmed(); } },
     select: (id) => selectNode(id), center: (id) => api.center(id), focusPort: (p) => { const b = p && nodesEl.querySelector(`.gp[data-node="${CSS.escape(p.node)}"][data-port="${CSS.escape(p.port)}"]`); if (b) b.focus({ preventScroll: true }); return !!b; } });
 }

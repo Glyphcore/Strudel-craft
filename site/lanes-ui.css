@@ -1,0 +1,96 @@
+/* Lanes L5 (#78): lane cards, split fan, bus / selection / capture nodes and tag chips in the Graph view. Loaded with the Graph view
+   (lanes-ui.js), never with the shell. Language: audio is a "bus bar" - a thick bar with a ladder of slots (line style + the BUS badge,
+   never colour alone); a lane card has a heavy left rail (it is a channel strip); a bus is a square-cornered rail node; a capture is a
+   bracketed tape node whose state is a word (Empty / Recording / Frozen) and an icon, colour only reinforcing. Signal colour stays reserved
+   for selection, arming and live flow. Text uses --text / --dim only (>= 7:1 on the panels, both themes). Every control >= 44 x 44 CSS px. */
+
+/* ---- audio wire type: bar + ladder slots, BUS badge ---- */
+.gw-audio{stroke-width:8;stroke-linecap:butt}
+.gw-audio-in{fill:none;stroke:var(--panel);stroke-width:2;stroke-dasharray:2 6;pointer-events:none}
+.gb-audio span{border-width:3px;border-style:solid;border-radius:0;font-weight:800}
+.gt-audio .gp-dot{width:18px;height:10px;margin-top:-5px;border-radius:1px;background:var(--dim);border-width:2px}
+.gp-in.gt-audio .gp-dot{left:-10px}.gp-out.gt-audio .gp-dot{right:-10px}
+
+/* ---- lane card ---- */
+.gn.gl-lane{border-left:6px solid var(--line-2)}
+.gn.gl-lane .gn-head{border-top-left-radius:0}
+.gl-card{position:absolute;left:0;right:0;margin:0;padding:4px 8px 6px;border-top:1px solid var(--line);display:flex;flex-direction:column}
+.gl-b{min-height:44px;min-width:44px;padding:0 8px;text-transform:none;letter-spacing:.01em;font:600 .74rem var(--mono)}
+.gl-b i{font-style:normal;margin-right:4px}
+.gl-soon{display:inline-block;margin-left:4px;font:700 .58rem/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--text);border:1px dashed var(--text);border-radius:var(--r1);padding:2px 4px}
+.gl-why{color:var(--dim);font-size:.64rem;font-weight:400}
+
+/* tag chip: name + Mute + Solo, state in a word and a filled square as well as colour */
+.gl-tag{display:flex;align-items:center;gap:4px;height:52px;flex:none}
+.gl-tn{flex:1;min-width:0;font:700 .76rem var(--mono);color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gl-tg{flex:none;width:68px;padding:0 4px;justify-content:center}
+.gl-tg[aria-pressed=true]{border-color:var(--text);border-width:2px;background:var(--panel-3);box-shadow:inset 0 -3px 0 var(--sig-2)}
+
+/* split fan: one audio bar in, a bar per branch, a join bar out */
+.gl-fhead{display:flex;gap:6px;align-items:center;height:52px;flex:none}
+.gl-fold{flex:1;justify-content:flex-start}
+.gl-addb{flex:none}
+.gl-fan{position:relative;flex:none}
+.gl-fsvg{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+.gl-br{position:relative;margin:0;padding:0 0 0 22px;list-style:none;width:180px}
+.gl-br li{display:flex;align-items:flex-start}
+.gl-bb{width:158px;justify-content:flex-start;gap:6px;overflow:hidden;white-space:nowrap}
+.gl-bb b{flex:none}
+.gl-bb code{min-width:0;overflow:hidden;text-overflow:ellipsis;font:400 .68rem var(--mono);color:var(--text);background:none;padding:0}
+.gl-ltap.gp{position:relative;top:auto!important;right:auto;width:158px;height:44px;min-height:44px;border:1px dashed var(--line-2);border-radius:var(--r1);justify-content:space-between;padding:0 18px 0 10px}
+.gl-loc{font:700 .58rem var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--text);border:1px solid var(--text);border-radius:2px;padding:1px 3px}
+.gl-join{position:absolute;left:22px;right:0;margin:0;height:36px;line-height:36px;font:700 .7rem var(--mono);color:var(--text)}
+.gl-voices{margin:0;height:44px;display:flex;align-items:center;flex-wrap:wrap;gap:0 4px;font:500 .7rem var(--mono);color:var(--text);overflow:hidden;flex:none}
+.gl-voices .gl-why{flex-basis:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gl-ref{height:44px;margin-top:8px;justify-content:flex-start;gap:6px;border:1px solid var(--bad);border-left-width:4px;overflow:hidden;white-space:nowrap;flex:none}
+.gl-ref b{flex:none}
+
+/* ---- bus node: square rail ---- */
+.gk-bus{border-radius:0;border-width:3px;border-style:solid}
+.gk-bus .gn-head{border-radius:0;background:var(--panel-3)}
+.gl-send{display:grid;grid-template-columns:minmax(0,1fr) 84px;align-items:center;gap:6px;height:52px;margin:0}
+.gl-sl{display:flex;flex-direction:column;min-width:0;font:500 .74rem var(--mono);color:var(--text)}
+.gl-sl em{font-style:normal;font-size:.62rem;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gl-amt,.gl-wi{width:100%;min-width:0;height:44px;min-height:44px;padding:0 6px;font:500 .8rem var(--mono);color:var(--text);background:var(--bg);border:1px solid var(--line-2);border-radius:var(--r1)}
+.gl-amt:focus-visible,.gl-wi:focus-visible{outline:2px solid var(--sig-2);outline-offset:1px}
+.gl-ret,.gl-coming,.gl-ops,.gl-match,.gl-pick{margin:0;min-height:40px;display:flex;align-items:center;flex-wrap:wrap;gap:4px;font:500 .72rem var(--mono);color:var(--text)}
+.gl-ret i,.gl-match i{font-style:normal;color:var(--dim)}
+
+/* ---- selection chip node ---- */
+.gk-selection{border-radius:22px;border-style:solid}
+.gk-selection .gn-head{border-radius:22px 22px 0 0}
+.gl-ops code{background:none;padding:0;color:var(--text)}
+.gl-win{border:2px dashed var(--line-2);border-radius:var(--r1);padding:1px 4px}
+.gl-pad{width:100%;justify-content:center;flex:none}
+.gl-b:disabled{opacity:1;color:var(--text);border-style:dashed;cursor:not-allowed}
+
+/* ---- capture node: bracketed tape, state is a word ---- */
+.gk-capture{border-left:4px double var(--text);border-right:4px double var(--text)}
+.gl-chip{font:700 .72rem var(--mono);color:var(--text);border:1px solid var(--text);border-radius:12px;padding:3px 8px}
+.gl-wf{display:grid;grid-template-columns:42px 44px minmax(0,1fr) 44px;gap:4px;align-items:center;height:52px;flex:none}
+.gl-wl{font:600 .64rem var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--dim)}
+.gl-step{padding:0;justify-content:center;font-size:1rem}
+.gl-state{margin:0;height:44px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font:700 .76rem var(--mono);color:var(--text);overflow:hidden;flex:none}
+.gl-state .gl-why{flex-basis:100%;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gl-state i{width:12px;height:12px;border:2px solid var(--text);flex:none}
+.gl-state[data-state="empty"] i{border-style:dashed}
+.gl-state[data-state="recording"] i{border-radius:50%;background:var(--bad);border-color:var(--bad);animation:gl-rec 1s steps(2) infinite}
+.gl-state[data-state="frozen"] i{background:var(--text)}
+@keyframes gl-rec{50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.gl-state[data-state="recording"] i{animation:none}}
+.gl-cact{width:100%;margin-top:8px;justify-content:space-between;flex:none}
+
+/* ---- inspector / outline ---- */
+.gl-insp{display:flex;flex-direction:column;gap:4px}
+.gl-insp .gl-tg{width:auto;min-width:88px}
+.gl-bline{margin:4px 0;font:500 .78rem var(--mono);color:var(--text);overflow-wrap:anywhere}
+.gl-bline code{background:none;padding:0}
+.gl-filter{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+.gl-fchip[aria-pressed=true]{border-color:var(--sig-2);box-shadow:inset 0 -3px 0 var(--sig-2);color:var(--text)}
+.gl-otags,.gl-obus,.gl-ocap{display:flex;flex-direction:column;gap:2px;padding:4px 0;border-bottom:1px solid var(--line)}
+.gl-otags .gl-tg{width:auto;min-width:88px}
+.gl-osplit{display:flex;flex-direction:column;align-items:stretch!important}
+.gl-crossmsg{margin:8px 0;padding:8px 10px;font:600 .8rem/1.4 var(--mono);color:var(--text);border:1px solid var(--bad);border-left-width:4px;border-radius:var(--r1)}
+
+/* level of detail: bodies go with the steps at far / glyph zoom; the card keeps its head and ports */
+.gx[data-zoom="far"] .gl-card,.gx.gx-glyph .gl-card{display:none}

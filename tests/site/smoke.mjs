@@ -190,6 +190,7 @@ metrics.chromium = browser.version();
 
 { const { graphSection } = await import('./graph.mjs'); await graphSection({ browser, BASE, OUT, check, watch, metrics }); } /* Graph view, #52 */
 { const { atomsUiSection } = await import('./atoms_ui.mjs'); try { await atomsUiSection({ browser, BASE, OUT, check, watch, metrics }); } catch (e) { check('atoms ui section ran to the end', false, e.stack); } } /* Atoms A4 cards, browser, popover, #64 */
+{ const { lanesUiSection } = await import('./lanes_ui.mjs'); try { await lanesUiSection({ browser, BASE, OUT, check, watch, metrics }); } catch (e) { check('lanes ui section ran to the end', false, e.stack); } } /* Lanes L5 lane cards, split fan, bus / capture nodes, tag chips, #78 */
 { const { performSection } = await import('./perform.mjs'); try { await performSection({ browser, BASE, OUT, check, watch, metrics }); } catch (e) { check('perform section ran to the end', false, e.stack); } } /* Perform view, #55 */
 await browser.close(); server.close();
 check('zero console errors / page errors', errors.length === 0, errors.slice(0, 5).join(' | '));

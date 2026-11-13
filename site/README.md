@@ -92,3 +92,12 @@ of taking over; the page shows a sticky toast "New version, tap to reload" which
   `ui:panel` (visible title, inspector, status and error text). Any editor content change from any source (typing, preset load,
   paste, tab switch, swap, restore) is detected and committed; search scans these too and reports the field (e.g. `Rack editor:4`).
   `ui:*` keys are searchable/diffable but are not written back on checkout.
+
+## Ghost text and Tab (`inline.js`)
+Tab accepts the selected popup item; with no popup it accepts the dimmed ghost-text continuation at the cursor (also via the
+visible `Tab` chip, tap on phones); Esc dismisses; Ctrl/Alt+`]` / `[` cycle alternatives; with nothing suggested Tab indents.
+Inline providers (local, no network): `snippets` (default arguments and the chain that usually follows, e.g. `.lpf(` -> `800)`,
+`.decay(..)` -> `.sustain(0)`), `ngram` (trigram next-token model trained on catalog recipes and the user's history editor
+states), `closers` (open brackets/quotes). Register more:
+    strudelCraft.intellisense.registerInline({ id, priority, suggest: async ({ before, after, line, doc, pos }) => ['...'] })
+`strudelCraft.intellisense.remoteInlineStub` shows the shape for a future remote/LLM provider; none is wired.

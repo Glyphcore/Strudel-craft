@@ -130,7 +130,7 @@ const History = {
 
 /* ---------- status ---------- */
 let statusEl;
-function say(msg, err) { statusEl.textContent = msg; statusEl.classList.toggle('err', !!err); }
+function say(msg, err) { statusEl.textContent = msg; statusEl.classList.toggle('err', !!err); if (err && window.strudelCraft && window.strudelCraft.ui) window.strudelCraft.ui.toast(msg, { kind: 'error' }); }
 
 /* ---------- knob ---------- */
 function knob({ label, min, max, step, value, def, fmt, onChange, cls }) {

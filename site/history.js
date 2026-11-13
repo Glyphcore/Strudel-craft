@@ -62,7 +62,7 @@ async function checkout(id, opts = {}) {
     try {
       const cur = snapshot(); for (const k of Object.keys(cur)) if (!(k in s)) nativeRemove.call(localStorage, 'sc.' + k);
       for (const [k, v] of Object.entries(s)) if (v != null) nativeSet.call(localStorage, 'sc.' + k, v);
-      try { window.strudelCraft.app && window.strudelCraft.app.reload(); } catch (e) { console.warn('history: app reload failed', e); }
+      try { window.strudelCraft.app && window.strudelCraft.app.reload(); } catch (e) { console.warn('history: app reload failed', e); window.strudelCraft.ui && window.strudelCraft.ui.toast('History restore could not refresh the page state', { kind: 'error' }); }
     } finally { setTimeout(() => { suppress = false; }, 50); }
     if (!opts.fromUndo) redoStack = []; head = id; await saveMeta(); emit('checkout', { id }); return id;
   });
@@ -154,12 +154,12 @@ function ui() {
     <ol id="histHits" class="hist-hits"></ol>
   </div>`;
   document.body.append(d);
-  const say = (m) => { const l = document.getElementById('live') || document.querySelector('[role=status]'); if (l) l.textContent = m; };
+  const say = (m, kind) => window.strudelCraft.ui.toast(m, { kind: kind || 'ok' });
   btn.addEventListener('click', () => { if (!d.open) d.showModal(); flush().then(refresh); });
   $('#histClose').addEventListener('click', () => d.close());
-  $('#histUndo').addEventListener('click', async () => { const id = await undo(); say(id ? 'Undone' : 'Nothing to undo'); sel = head; refresh(); });
-  $('#histRedo').addEventListener('click', async () => { const id = await redo(); say(id ? 'Redone' : 'Nothing to redo'); sel = head; refresh(); });
-  $('#histSnap').addEventListener('click', async () => { const n = prompt('Snapshot name', 'snapshot ' + new Date().toLocaleTimeString()); if (n == null) return; await flush(); await commit(n, { named: true, force: true }); sel = head; refresh(); });
+  $('#histUndo').addEventListener('click', async () => { const id = await undo(); say(id ? 'Undone' : 'Nothing to undo', id ? 'ok' : 'info'); sel = head; refresh(); });
+  $('#histRedo').addEventListener('click', async () => { const id = await redo(); say(id ? 'Redone' : 'Nothing to redo', id ? 'ok' : 'info'); sel = head; refresh(); });
+  $('#histSnap').addEventListener('click', async () => { const n = await window.strudelCraft.ui.ask({ title: 'Name this snapshot', label: 'Snapshot name', value: 'snapshot ' + new Date().toLocaleTimeString(), okText: 'Save' }); if (n == null) return; await flush(); await commit(n, { named: true, force: true }); sel = head; refresh(); say('Snapshot saved: ' + n); });
   const scrub = (i) => { i = Math.max(0, Math.min(list.length - 1, i)); $('#histScrub').value = i; sel = list[i] && list[i].id; showSel(); };
   $('#histScrub').addEventListener('input', (e) => scrub(+e.target.value));
   $('#histPrev').addEventListener('click', () => scrub(+$('#histScrub').value - 1));

@@ -114,4 +114,4 @@ async function mount() {
   window.addEventListener('live:ok', (e) => { const view = viewFor(e.detail.view); if (view) view.dispatch(lint.setDiagnostics(view.state, [])); });
   document.documentElement.dataset.editor = 'cm6';
 }
-mount().catch((e) => { console.warn('Intellisense editor unavailable, plain textarea kept:', e.message); });
+mount().catch((e) => { console.warn('Intellisense editor unavailable, plain textarea kept:', e.message); window.strudelCraft.ui && window.strudelCraft.ui.toast('Code helper offline: plain editor in use', { kind: 'info' }); });

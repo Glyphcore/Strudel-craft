@@ -27,6 +27,12 @@ const BASE = `http://127.0.0.1:${server.address().port}/`;
 
 const errors = []; const checks = []; const metrics = { date: new Date().toISOString(), chromium: null, recipes: [], frame: {} };
 const check = (name, ok, detail = '') => { checks.push({ name, ok: !!ok, detail }); console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? '  -- ' + detail : ''}`); };
+{ /* user rule: no native alert/prompt/confirm anywhere in site/ */
+  const fsm = await import('node:fs'); const pm = await import('node:path'); const hits = [];
+  const walk = (dir) => { for (const f of fsm.readdirSync(dir, { withFileTypes: true })) { const fp = pm.join(dir, f.name); if (f.isDirectory()) { if (f.name !== 'data' && f.name !== 'fonts') walk(fp); } else if (/\.(m?js|html)$/.test(f.name)) fsm.readFileSync(fp, 'utf8').split('\n').forEach((l, i) => { if (/(^|[^\w.$])(alert|prompt|confirm)\s*\(|window\.(alert|prompt|confirm)\b/.test(l)) hits.push(pm.relative(dir, fp) + ':' + (i + 1)); }); } };
+  walk(new URL('../../site', import.meta.url).pathname);
+  check('no native alert/prompt/confirm in site/', hits.length === 0, hits.join(', '));
+}
 const watch = (page, tag) => {
   page.on('console', (m) => { if (m.type() === 'error') errors.push(`[${tag}] console.error: ${m.text()}`); });
   page.on('pageerror', (e) => errors.push(`[${tag}] pageerror: ${e.message}`));

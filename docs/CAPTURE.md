@@ -32,13 +32,16 @@ Length: `round(N / cps * sampleRate)` frames, faster than real time. Fold tail (
 
 Limits:
 - Live transport effects are not in the offline render: hooks, pads, perform mappings and the transport loop/seek.
-- superdough pools filter and compressor nodes in WeakRef pools that ignore the context. On the first render, `capture.js` makes `WeakRef.prototype.deref` return `undefined` for an AudioNode of any context other than superdough's current one. A pool then never hands a node across contexts, in either direction. Any events that still fail are counted (`meta.fails`) and reported in the toast.
+- superdough keeps filter, compressor and supersaw nodes in module-wide WeakRef pools (nodePools.mjs) that ignore the context. The render handles this within its own scope and patches nothing page-wide that outlasts it:
+  - Offline to live: while the render's `superdough()` calls run, a `connect()` wrapper collects the offline context's nodes. The wrapper is installed only for the render and restored in `finally`. Before `startRendering`, the nodes' own Symbol keys (superdough's pool key) are deleted. On release they are torn down instead of pooled, so live playback never receives an offline node.
+  - Live to offline: a hap that pulls a pooled live node throws `InvalidAccessError`. The failed call has already removed that stale node from the pool, so the hap is retried, up to 64 times, until it gets a fresh offline node. Retries are counted in `meta.retries`. Haps that still fail are counted in `meta.fails` and reported in the toast.
+  - Check: `tests/site/capture.mjs` plays a supersaw + lpf/hpf pattern, renders it offline, then plays it live again. Over 10 runs: `fails` 0, 1 retry, 0 console errors.
 - Worklet effects need `loadWorklets()` on the offline context. If that fails, those effects are silent.
 - Samples must be loadable. The sample maps load before the render.
 - Takes are always stereo at the live sample rate.
 
 ## Takes and storage
-- IndexedDB `sc-capture`, object store `takes`. Records are `{meta, audio: {L, R}}` (Float32). `meta` = `{id, kind: 'take', name, created, sr, frames, seconds, cycles, cps, mode, exact, loop, how: 'realtime'|'offline', preRoll, fold, startCycle, haps, fails, peak, peaks[320], source: {kind, title, code}, bytes}`.
+- IndexedDB `sc-capture`, object store `takes`. Records are `{meta, audio: {L, R}}` (Float32). `meta` = `{id, kind: 'take', name, created, sr, frames, seconds, cycles, cps, mode, exact, loop, how: 'realtime'|'offline', preRoll, fold, startCycle, haps, fails, retries, peak, peaks[320], source: {kind, title, code}, bytes}`.
 - Settings are in `localStorage` `sc.capture.{mode,n,countIn,preRoll,name,bits,fold}`, so the history store versions them. Audio never goes into history.
 - `navigator.storage.estimate()` drives the usage line. Past 80% or under 64 MB free, it turns into a warning and a toast. On the first save, `navigator.storage.persist()` is requested.
 - Preview plays through an `HTMLAudioElement` on a looping WAV, not through the WebAudio bus, so a preview is never recorded.

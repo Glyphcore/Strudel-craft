@@ -170,26 +170,30 @@ async function finish(why) {
 }
 
 /* ---------- exact offline render ---------- */
-/* superdough pools filter/compressor nodes in module-wide WeakRef pools that ignore the context. After an offline render the pools
-   hold offline nodes (and during it, live ones), and reusing one throws "different audio context". Installed on the first render:
-   a WeakRef to an AudioNode of a context other than superdough's current one derefs to undefined, so the pool skips it. */
-function guardPools() {
-  if (guardPools.on || typeof WeakRef === 'undefined') return; guardPools.on = true;
-  const deref = WeakRef.prototype.deref;
-  WeakRef.prototype.deref = function () { const v = deref.call(this); if (v instanceof AudioNode && typeof window.getAudioContext === 'function') { try { if (v.context !== window.getAudioContext()) return undefined; } catch (e) { /* keep */ } } return v; };
+/* superdough keeps filter / compressor / supersaw nodes in module-wide WeakRef pools that ignore the context (nodePools.mjs). Two scoped fixes,
+   nothing page-wide survives the render:
+   - offline -> live: while our superdough() calls run, a connect() wrapper (installed for the render only, restored in finally) collects the
+     offline context's nodes; before startRendering their own Symbol keys (superdough's POOL_KEY) are deleted, so on release they are torn
+     down instead of pooled and the live context never gets one back.
+   - live -> offline: a hap whose pooled node belongs to the live context throws InvalidAccessError; the failed call consumed (popped) that
+     stale node, so the hap is retried (up to 64 times) until the pool hands out a fresh offline node. */
+function collectNodes(ctx) {
+  const prev = AudioNode.prototype.connect, seen = new Set();
+  AudioNode.prototype.connect = function (dest, ...rest) { if (this.context === ctx) seen.add(this); if (dest instanceof AudioNode && dest.context === ctx) seen.add(dest); return prev.call(this, dest, ...rest); };
+  return { seen, restore() { if (AudioNode.prototype.connect !== prev) AudioNode.prototype.connect = prev; } };
 }
+function unpool(nodes) { let n = 0; for (const node of nodes) for (const sym of Object.getOwnPropertySymbols(node)) { try { delete node[sym]; n++; } catch (e) { /* frozen */ } } return n; }
 async function renderExact(n = opts.n) {
   const W = window; const T = sc.transport;
   if (st.rendering || st.phase !== 'idle') return;
   if (!W.OfflineAudioContext) { toast('This browser has no OfflineAudioContext: use Record (cycles)', { kind: 'error' }); return; }
   st.rendering = true; sync();
-  let live = null, ctl = null, swapped = false, wasRunning = false;
+  let live = null, ctl = null, swapped = false, wasRunning = false, col = null;
   try {
     const info = await T.compile();
     if (!info.pattern) throw new Error('No pattern compiled');
     for (const f of ['setAudioContext', 'getAudioContext', 'superdough', 'loadWorklets', 'getSuperdoughAudioController', 'setSuperdoughAudioController']) if (typeof W[f] !== 'function') throw new Error('Strudel offline API missing: ' + f);
     if (T.playing) { T.stop(); await new Promise((r) => setTimeout(r, 150)); } /* let in-flight live superdough() calls (async) finish on the live context */
-    guardPools();
     const cps = info.cps; n = Math.max(1, n | 0);
     live = W.getAudioContext(); ctl = W.getSuperdoughAudioController();
     /* freeze the live clock: superdough's onended cleanups create nodes on the current context, so no live source may end while the offline one is current */
@@ -199,10 +203,15 @@ async function renderExact(n = opts.n) {
     W.setAudioContext(off); W.setSuperdoughAudioController(null); swapped = true;
     try { await W.loadWorklets(); } catch (e) { /* worklet effects unavailable offline */ }
     const haps = info.pattern.queryArc(0, n, { _cps: cps }).filter((h) => h.hasOnset()).sort((a, b) => a.whole.begin.valueOf() - b.whole.begin.valueOf());
-    let fails = 0;
+    let fails = 0, retries = 0; col = collectNodes(off);
     for (const h of haps) {
-      try { h.ensureObjectValue && h.ensureObjectValue(); const t = h.whole.begin.valueOf() / cps; await W.superdough(h.value, t, h.duration / cps, cps, h.whole.begin.valueOf()); } catch (e) { fails++; }
+      h.ensureObjectValue && h.ensureObjectValue(); const t = h.whole.begin.valueOf() / cps;
+      for (let k = 0; ; k++) {
+        try { await W.superdough(h.value, t, h.duration / cps, cps, h.whole.begin.valueOf()); break; }
+        catch (e) { if (e && e.name === 'InvalidAccessError' && k < 64) { retries++; continue; } fails++; break; }
+      }
     }
+    col.restore(); unpool(col.seen);
     const buf = await off.startRendering();
     await new Promise((r) => setTimeout(r, 300)); /* let the offline onended cleanups run while the offline context is still current */
     W.setAudioContext(live); W.setSuperdoughAudioController(ctl); swapped = false;
@@ -210,10 +219,10 @@ async function renderExact(n = opts.n) {
     const g = T.masterDb <= -60 ? 0 : Math.pow(10, (T.masterDb || 0) / 20); /* master level, so exact and realtime takes match */
     if (tail) { const tl = buf.getChannelData(0), tr = buf.numberOfChannels > 1 ? buf.getChannelData(1) : tl; for (let i = 0; i < tail && i < frames; i++) { L[i] += tl[frames + i]; R[i] += tr[frames + i]; } }
     if (g !== 1) for (let i = 0; i < frames; i++) { L[i] *= g; R[i] *= g; }
-    const take = await save({ L, R, sr: rate, cycles: n, cps, mode: 'cycles', exact: true, loop: true, how: 'offline', fold: !!tail, src: { kind: info.kind, title: info.title, code: info.code }, haps: haps.length, fails });
+    const take = await save({ L, R, sr: rate, cycles: n, cps, mode: 'cycles', exact: true, loop: true, how: 'offline', fold: !!tail, src: { kind: info.kind, title: info.title, code: info.code }, haps: haps.length, fails, retries });
     toast(`Rendered ${take.meta.name}: ${n} cycles, ${frames} frames${fails ? `, ${fails} events failed offline` : ''}`, { kind: fails ? 'info' : 'ok' });
   } catch (e) { toast('Render: ' + (e.message || e), { kind: 'error' }); }
-  finally { if (swapped) { try { W.setAudioContext(live); W.setSuperdoughAudioController(ctl); } catch (e) { /* restore */ } } if (wasRunning && live) live.resume().catch(() => {}); st.rendering = false; sync(); renderTakes(); }
+  finally { if (col) col.restore(); if (swapped) { try { W.setAudioContext(live); W.setSuperdoughAudioController(ctl); } catch (e) { /* restore */ } } if (wasRunning && live) live.resume().catch(() => {}); st.rendering = false; sync(); renderTakes(); }
 }
 
 /* ---------- store (IndexedDB "sc-capture", object store "takes": {meta, audio}) ---------- */
@@ -234,7 +243,7 @@ async function save(t) {
   let pk = 0; for (let k = 0; k < t.L.length; k++) { const a = Math.abs(t.L[k]); if (a > pk) pk = a; }
   const meta = { id: 'tk' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind: 'take', name, created: new Date().toISOString(),
     sr: t.sr, frames: t.L.length, seconds: t.L.length / t.sr, cycles: t.cycles, cps: +(+t.cps).toFixed(6), mode: t.mode, exact: !!t.exact, loop: !!t.loop, how: t.how,
-    type: 'audio', from: t.from || null, preRoll: t.preRoll || 0, fold: !!t.fold, haps: t.haps, fails: t.fails || 0, startCycle: t.startCycle, peak: pk, peaks: Array.from(peaks(t.L, t.R)),
+    type: 'audio', from: t.from || null, preRoll: t.preRoll || 0, fold: !!t.fold, haps: t.haps, fails: t.fails || 0, retries: t.retries || 0, startCycle: t.startCycle, peak: pk, peaks: Array.from(peaks(t.L, t.R)),
     source: { kind: src.kind || null, title: src.title || null, code: src.code || '' }, bytes: t.L.length * 8 };
   const rec = { meta, audio: { L: t.L, R: t.R } };
   if (await DB) await tx('readwrite', (s) => s.put(rec)); else mem.set(meta.id, rec);

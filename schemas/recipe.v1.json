@@ -14,7 +14,7 @@
         "sha256": { "$ref": "#/$defs/hash", "description": "sha256 of the interleaved little-endian float32 L,R frames" },
         "sr": { "type": "integer", "minimum": 8000 }, "frames": { "type": "integer", "minimum": 1 },
         "how": { "enum": ["realtime", "offline"] }, "encoding": { "const": "f32le-interleaved" },
-        "haps": { "type": "integer" }, "fails": { "type": "integer" }
+        "haps": { "type": "integer" }, "fails": { "type": "integer" }, "envelope": { "type": "array", "items": { "type": "number" }, "description": "mono RMS per 10 ms block in dB (0.1 dB steps); noise-based takes are compared by it within 1.5 dB" }
       }
     }
   },
@@ -49,14 +49,14 @@
       ]
     },
     "events": {
-      "description": "Event stream; null when includes.events is false",
+      "description": "Event stream; null when neither events nor code-state is included (with code-state alone it still carries the hooks pad journal a render needs)",
       "oneOf": [
         { "type": "null" },
         { "type": "object", "required": ["pads", "controls", "lanes"],
           "properties": {
             "pads": { "type": "array", "items": { "type": "object", "required": ["cycle", "pad", "op"] } },
             "controls": { "type": "array", "items": { "type": "object", "required": ["cycle", "control", "value"] } },
-            "lanes": { "type": "object" }, "performance": { "type": "object" }, "bank": {}, "targets": { "type": "object" }
+            "lanes": { "type": "object" }, "hooks": { "type": "array", "description": "pad entries of the hooks journal up to stop (hooks runtime format); replayed by offline renders" }, "performance": { "type": "object" }, "bank": {}, "targets": { "type": "object" }
           } }
       ]
     },

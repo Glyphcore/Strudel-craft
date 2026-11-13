@@ -61,7 +61,8 @@ export async function collectDeps(code = '') {
     try { await sc.packs.ready; } catch (e) { /* report below */ }
     for (const p of sc.packs.list().filter((x) => x.state === 'ready')) {
       const e = { id: p.id, version: p.version, source: p.source, manifest: p.manifest, tier: p.tier, ingredients: [] };
-      try { const bytes = await fetchBytes(packManifestUrl(p.source)); const man = JSON.parse(new TextDecoder().decode(bytes)); e.ingredients = (man.ingredients || []).map((i) => ({ id: i.id, kind: i.kind, hash: i.hash || null, code: !!i.code })); } catch (err) { e.error = err.message; }
+      /* ingredient hashes come from the manifest the loader pinned: the bytes must hash to the lock's manifest hash before they are read */
+      try { const bytes = await fetchBytes(packManifestUrl(p.source)); if ((await sha256(bytes)) !== p.manifest) throw new Error('manifest bytes do not match the lock hash'); const man = JSON.parse(new TextDecoder().decode(bytes)); e.ingredients = (man.ingredients || []).map((i) => ({ id: i.id, kind: i.kind, hash: i.hash || null, code: !!i.code })); } catch (err) { e.error = err.message; }
       deps.packs.push(e);
     }
   }
@@ -110,10 +111,26 @@ export function refsOf(r) {
   for (const v of d.vox) out.push({ kind: 'vox', id: v.bank, ref: v.url, url: v.url, sha: v.sha256, known: known(v.url || '') });
   return out;
 }
+/* packs: one verification path, the pack loader's. A commit-pinned source goes through packs.verify(ref, hash) (same fetch, hash and
+   cache path as loading; nothing is loaded). A shipped same-origin source (file:) is not commit-pinned, so packs.verify refuses it by
+   design; it is checked against the loader's own state, whose manifest bytes were verified against the shipped lock on load. */
+async function verifyPack(p) {
+  const P = sc.packs; if (!P || !P.verify) return { ok: false, error: 'the pack loader is not available' };
+  try { await P.ready; } catch (e) { /* state below */ }
+  if (/^file:/.test(p.source)) {
+    const live = P.list().find((x) => x.id === p.id);
+    if (!live || live.state !== 'ready') return { ok: false, error: `pack ${p.id} is not loaded here` };
+    if (live.source !== p.source) return { ok: false, have: live.manifest, error: `pack ${p.id} is loaded from ${live.source}, the recipe pins ${p.source}` };
+    return { ok: live.manifest === p.manifest, have: live.manifest, via: 'loader (shipped lock)' };
+  }
+  const v = await P.verify(`${p.id}@${p.source}`, p.manifest);
+  return v.ok ? { ok: true, have: p.manifest, via: 'packs.verify' } : { ok: false, have: v.actual || null, error: `${v.code}: ${v.message}`, via: 'packs.verify' };
+}
 /* fetch each pinned ref and compare its content hash; returns {ok, refs:[{...ref, have, ok, error}], notes:[]} */
 export async function verify(r) {
   const res = []; const notes = [];
   for (const ref of refsOf(r)) {
+    if (ref.kind === 'pack') { res.push({ ...ref, ...(await verifyPack(r.deps.packs.find((p) => p.id === ref.id))) }); continue; }
     if (!ref.sha) { res.push({ ...ref, ok: false, error: 'no content hash recorded' }); continue; }
     if (!ref.url) { res.push({ ...ref, ok: false, error: 'unsupported or floating ref' }); continue; }
     try { const bytes = await fetchBytes(ref.url); const have = await sha256(bytes); res.push({ ...ref, have, ok: have === ref.sha, bytes: ref.kind === 'samples' || ref.kind === 'vox' ? bytes : undefined }); }

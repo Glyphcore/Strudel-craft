@@ -37,9 +37,9 @@ One Record panel with one arm, one transport and one timeline of takes. A take i
 | `timing` | `cps`, `start`, `stop`, `cycles`, `loop`, `mode`, `exact`, `fold`, `preRoll` |
 | `random.seed` | 32-bit seed: `Math.random` is seeded with it during offline renders only, restored in `finally` (Strudel's `rand` is cycle-deterministic already) |
 | `state` | `source` `{kind, title, code (as played), resolved (atoms inlined), atoms}`, `controls` (controls engine model: values, ranges, maps, lanes), `aliases` (label -> AST control id), `sites` (AST control ids with path, value, range), `perform` (pads = hook bindings, boards, maps), `modRanges` (path + sha256), `settings` (tempo, masterDb, follow, transport range) |
-| `events` | `pads`, `controls`, `lanes` (+ `performance`, `bank`, `targets` for looper takes) |
+| `events` | `pads` (Perform journal), `hooks` (the pad entries of the hooks journal up to `stop`, as the runtime reads them; replayed by renders), `controls`, `lanes` (+ `performance`, `bank`, `targets` for looper takes). Present whenever events or code-state is included |
 | `deps` | `strudel` (`@strudel/web@1.3.0` URL + sha256 of the bundle bytes), `superdough` (1.3.0, bundled), `site` (build id), `packs` (lock entries: id, version, source, manifest hash, tier, every ingredient id + hash), `samples` (bank id, `github:owner/repo@<40-hex>/path`, pinned URL, sha256 of the map), `vox` (bank id, URL, sha256) |
-| `outputs` | `capture` (realtime) and/or `render` (offline): `{sha256, sr, frames, how, encoding: "f32le-interleaved"}`. The audio hash is sha256 of interleaved little-endian float32 frames |
+| `outputs` | `capture` (realtime) and/or `render` (offline): `{sha256, sr, frames, how, encoding: "f32le-interleaved", envelope}`. `envelope` is a level fingerprint: mono RMS per 10 ms block in dB, in 0.1 dB steps. The audio hash is sha256 of interleaved little-endian float32 frames |
 
 - Only version 1 exists. Older and unknown versions are rejected ("Recipe version N is not supported"). There are no legacy readers and no migration shims.
 - The pre-recipe take store (IndexedDB `sc-capture`, `sc.capture.*` settings) is deleted once, with a notice. Storage is now IndexedDB `sc-recipes` (`{id, recipe, audio: {capture?, render?, remake?}}`) plus settings in `sc.record.*`.
@@ -51,17 +51,25 @@ One Record panel with one arm, one transport and one timeline of takes. A take i
   1. Validate the recipe.
   2. Ask for approval in a modal that lists the program and every dependency (kind, id, pinned ref, short hash). Pack code ingredients are listed as not run (sandbox, #71).
   3. Ask for trust for each ref from an unknown source. The answer is remembered per id + hash in `sc.trust`.
-  4. Fetch every pinned ref and compare its sha256. A mismatch refuses the load: a modal names the ref with the expected and actual hash, and nothing is loaded or run.
+  4. Verify every pinned ref. A mismatch refuses the load: a modal names the ref with the expected and actual hash, and nothing is loaded or run.
+     - Packs go through the pack loader only (one verification path). A commit-pinned source uses `packs.verify(ref, hash)` (e8d15fa), the same fetch, hash and cache path as loading. A shipped same-origin `file:` source is not commit-pinned, so `packs.verify` refuses it by design; it is checked against the loader's state instead, whose manifest bytes were verified against the shipped lock.
+     - Non-pack refs (the Strudel bundle, sample maps, vox banks) are fetched and hashed by recipe.js, because they are not packs.
   5. Load the pinned sample maps from the verified bytes, and the vox banks.
   6. Render offline from the recipe alone:
      - compile the program;
      - apply the label -> id aliases and the controls model;
      - set each control's history to its start value plus the recorded cycle-stamped events;
+     - replace the pad entries of the hooks journal with `events.hooks`, so pad bindings and variables replay;
      - seed `Math.random`;
+     - run a warm-up pass on a throwaway context, which drains stale live nodes from superdough's pools;
+     - run the real pass on a fresh context, passing a copy of each hap value per `superdough()` call (superdough writes into values);
      - render `[start, stop)` at the recorded sample rate, with fold tail and master level.
 
-     The previous controls state is restored afterwards.
-  7. Compare the result with `outputs.render.sha256`: a toast when it matches; a modal "Remake differs" with both hashes and the notes (other build, pack not loaded, ...) when it does not.
+     The previous controls state and hooks journal are restored afterwards.
+  7. Compare the result with `outputs.render.sha256`.
+     - Bit-exact: a toast, and the take shows `remake ok`.
+     - Otherwise, the level fingerprint within 1.5 dB on at least 98 % of the audible blocks: a toast "matches within tolerance" with a note, and the take shows `remake ~ok`. This covers noise (random per session) and very low filter cutoffs. Those render with tiny numeric differences between runs: in tests, `lpf(300)` gave three different hashes in three renders and `cutoff(1234)` gave identical ones, which points at denormal handling in the browser's offline audio thread.
+     - Otherwise: a modal "Remake differs" with both hashes and the notes (other build, pack not loaded, ...).
 - A take that kept only a realtime capture cannot be compared bit for bit. Its remake becomes its exact render.
 
 ## Trust and poisoning
@@ -71,8 +79,8 @@ One Record panel with one arm, one transport and one timeline of takes. A take i
 - **Coming**: snapshot mirror. A copy of every pinned dependency kept beside the recipe, so a Remake still works when an upstream host disappears. For now the external hosts (unpkg, GitHub raw, pack repos) are assumed reachable.
 
 ## Limits
-- Hooks runtime state outside the controls model and the pad journal (for example a live pad replay) is not replayed by an offline render. Pad events are stored and shown, and lanes and control moves are replayed.
-- The noise buffers superdough caches per session are created by the first noise sound. A render seeds `Math.random`, but a buffer that already exists from live play is reused, so noise-based patterns may differ on Remake. Remake then reports "differs".
+- Pad bindings and variables replay from `events.hooks`. Looper takes (`events.performance`) are not replayed by offline renders yet, and Remake says so in a note.
+- The noise buffers superdough caches per session are created by the first noise sound, and superdough's module state cannot be reached. A render seeds `Math.random`, but a buffer that already exists from live play is reused. Noise takes therefore compare by the level fingerprint, and the result says so.
 - Superdough pools nodes without regard to context. A collector installed for the render only strips the pool key from offline nodes. Haps that receive a stale live node are retried.
 
 ## API
@@ -82,7 +90,7 @@ One Record panel with one arm, one transport and one timeline of takes. A take i
 
 ## Test
 `node tests/site/record.mjs` runs at 360x740 in two browser profiles:
-- **A**:
+- **A** (with a pad and a noise take):
   - panel targets and palette;
   - one Record with audio + events + code-state: realtime capture plus reference render;
   - chips;
@@ -91,7 +99,9 @@ One Record panel with one arm, one transport and one timeline of takes. A take i
 - **B** (clean):
   - legacy prune notice;
   - import is inert;
-  - Remake approval, then the audio hash matches A's render;
+  - Remake approval, then the audio hash matches A's render bit for bit;
+  - a pad take replays its hooks pad journal: it matches, while the same render without the journal leaves the tolerance;
+  - a noise take compares by level fingerprint, with a note;
   - the controls engine is intact afterwards;
   - a tampered pack manifest hash is refused with the ref named;
   - version 0 is rejected;

@@ -132,6 +132,24 @@ function padEvents(c0, c1) {
   const fr = (x) => { const m = /^(-?\d+)(?:\/(\d+))?$/.exec(String(x)); return m ? +m[1] / +(m[2] || 1) : +x; };
   return ((sc.perform && sc.perform.journal) || []).map((e) => ({ cycle: fr(e.cycle), pad: e.pad, op: e.op, args: e.args || {} })).filter((e) => e.pad && e.cycle >= c0 - 1e-9 && e.cycle < c1 - 1e-9);
 }
+/* the pad entries of the hooks journal up to the take's end (bindings made before the start still hold), as the hooks runtime reads them */
+function hookPadEntries(c1) {
+  const H = sc.hooks; if (!H || !H.journal) return [];
+  const fr = (x) => { const m = /^(-?\d+)(?:\/(\d+))?$/.exec(String(x)); return m ? +m[1] / +(m[2] || 1) : +x; };
+  return JSON.parse(JSON.stringify(H.journal.filter((e) => e.pad && fr(e.cycle) < c1 - 1e-9)));
+}
+/* level fingerprint of an output: mono RMS per 10 ms block in dB (0.1 dB steps); Remake compares noise-based takes with it */
+function envelope(L, R, rate) {
+  const b = Math.max(1, Math.round(rate / 100)), n = Math.floor(L.length / b), out = new Array(n);
+  for (let k = 0; k < n; k++) { let e = 0; for (let i = k * b; i < (k + 1) * b; i++) { const v = (L[i] + R[i]) / 2; e += v * v; } out[k] = Math.round(10 * Math.log10(e / b + 1e-12) * 10) / 10; }
+  return out;
+}
+const usesNoise = (code) => /["'`\s,[<](white|pink|brown|crackle)\b|\bnoise\(/.test(code || '');
+function envelopeMatch(a, b, tolDb = 1.5) {
+  if (!a || !b || a.length !== b.length) return { ok: false, why: 'no comparable level fingerprint' };
+  let n = 0, bad = 0, max = 0; for (let i = 0; i < a.length; i++) { if (a[i] < -50 && b[i] < -50) continue; n++; const d = Math.abs(a[i] - b[i]); if (d > max) max = d; if (d > tolDb) bad++; }
+  return { ok: n > 0 && bad / n <= 0.02, blocks: n, over: bad, maxDb: +max.toFixed(2), tolDb };
+}
 const seed32 = () => crypto.getRandomValues(new Uint32Array(1))[0] | 0;
 function newId() { return 'rc' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 async function uniqueName(base) { const names = new Set((await store.list()).map((r) => r.recipe.name)); let n = safe(base), i = 2; const b = n; while (names.has(n)) n = b + '-' + i++; return n; }
@@ -139,7 +157,7 @@ async function buildRecipe({ name, includes, timing, state, events, outputs = {}
   const deps = await collectDeps(state ? state.source.code : '');
   return { format: FORMAT, version: VERSION, id: newId(), name: await uniqueName(name), created: new Date().toISOString(), includes, timing,
     random: { seed: seed32(), note: 'Math.random is seeded with this value during offline renders (noise, random phases); Strudel rand is cycle-deterministic' },
-    state: includes.code ? state : null, events: includes.events ? events : null, deps, outputs };
+    state: includes.code ? state : null, events: includes.events || includes.code ? events || null : null, deps, outputs };
 }
 
 /* ---------- record ---------- */
@@ -225,17 +243,18 @@ async function finish(why) {
     const audio = opts.audio ? slice(st.startFrame, end) : null;
     const includes = { audio: !!opts.audio, events: !!opts.events, code: !!opts.code };
     const C = sc.perform && sc.perform.controls;
-    const events = includes.events ? { pads: padEvents(c0, c1), controls: st.ev ? st.ev.controls : [], lanes: C ? (C.toModel().automation || {}) : {} } : null;
+    const events = includes.events || includes.code ? { pads: padEvents(c0, c1), hooks: hookPadEntries(c1), controls: st.ev ? st.ev.controls : [], lanes: C ? (C.toModel().automation || {}) : {} } : null;
     const timing = { cps: +(+st.cps).toFixed(6), start: +c0.toFixed(6), stop: +c1.toFixed(6), cycles: +(c1 - c0).toFixed(6), loop: exact, mode: ru.mode, exact, fold: !!opts.fold, preRoll: (st.recFrame - st.startFrame) / rate };
     const recipe = await buildRecipe({ name: ru.name, includes, timing, state: st.state, events });
     rec = { id: recipe.id, recipe, audio: {} };
-    if (audio) { rec.audio.capture = { L: audio.L, R: audio.R, sr: rate }; recipe.outputs.capture = { sha256: await audioHash(audio.L, audio.R), sr: rate, frames: audio.L.length, how: 'realtime', encoding: 'f32le-interleaved' }; }
+    if (audio) { rec.audio.capture = { L: audio.L, R: audio.R, sr: rate }; recipe.outputs.capture = { sha256: await audioHash(audio.L, audio.R), sr: rate, frames: audio.L.length, how: 'realtime', encoding: 'f32le-interleaved', envelope: envelope(audio.L, audio.R, rate) }; }
     await store.put(rec);
     /* reference render: an exact take with code-state gets an offline render whose hash Remake checks (stops the transport) */
     if (audio && includes.code && exact) {
       st.phase = 'idle'; sync();
+      if (sc.transport.playing) sc.transport.stop(); await new Promise((r) => setTimeout(r, 500)); /* let live voices end and in-flight superdough() calls settle before the offline swap */
       const out = await renderRecipe(recipe, { sr: rate });
-      if (out) { rec.audio.render = { L: out.L, R: out.R, sr: out.sr }; recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails }; await store.put(rec); }
+      if (out) { rec.audio.render = { L: out.L, R: out.R, sr: out.sr }; recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr) }; await store.put(rec); }
     }
     toast(`Take saved: ${recipe.name}. Download`, { kind: 'ok', ms: 6000, onClick: () => download(recipe.id, 'recipe') });
   } catch (e) { toast((e.message === 'Nothing captured' ? '' : 'Could not save take: ') + e.message, { kind: 'error' }); rec = null; }
@@ -251,7 +270,7 @@ async function renderRecipe(recipe, { sr: rateIn } = {}) {
   if (!W.OfflineAudioContext) throw new Error('This browser has no OfflineAudioContext');
   st.rendering = true; sync();
   const C = () => sc.perform && sc.perform.controls;
-  let live = null, ctl = null, swapped = false, wasRunning = false, col = null, prevCtl = null, rnd = null;
+  let live = null, ctl = null, swapped = false, wasRunning = false, col = null, prevCtl = null, rnd = null, prevJ = null;
   try {
     /* labels -> AST control ids (ctl("cut") reads the site id it was bound to when recorded); the aliases must exist before the program
        declares its controls, so the Perform tools are loaded first with an empty program */
@@ -268,6 +287,10 @@ async function renderRecipe(recipe, { sr: rateIn } = {}) {
         c.setHistory(n, [{ cycle: -Infinity, value: v0 }, ...evs.map((e) => ({ cycle: e.cycle, value: e.value }))]);
       }
     }
+    /* pad events: the hooks runtime reads pad bindings from its journal at query time, so the recorded pad entries replace the live
+       ones for the render (non-pad entries stay); the live journal comes back in finally */
+    const H = sc.hooks, padJ = recipe.events && recipe.events.hooks;
+    if (H && H.journal && padJ) { prevJ = H.journal.slice(); const keep = H.journal.filter((e) => !e.pad); H.journal.length = 0; H.journal.push(...keep, ...JSON.parse(JSON.stringify(padJ))); try { H.undef('__scPerformTouch'); } catch (e) { /* cache bust */ } }
     for (const f of ['setAudioContext', 'getAudioContext', 'superdough', 'loadWorklets', 'getSuperdoughAudioController', 'setSuperdoughAudioController']) if (typeof W[f] !== 'function') throw new Error('Strudel offline API missing: ' + f);
     const { cps, start, stop: end } = recipe.timing;
     live = W.getAudioContext(); ctl = W.getSuperdoughAudioController();
@@ -275,21 +298,29 @@ async function renderRecipe(recipe, { sr: rateIn } = {}) {
     wasRunning = live.state === 'running'; if (wasRunning) await live.suspend();
     const rate = rateIn || (recipe.outputs.render && recipe.outputs.render.sr) || (recipe.outputs.capture && recipe.outputs.capture.sr) || live.sampleRate;
     const frames = Math.round((end - start) / cps * rate), tail = recipe.timing.fold ? Math.round(Math.min(4, (end - start) / cps) * rate) : 0;
-    const off = new OfflineAudioContext(2, frames + tail, rate);
-    /* seeded Math.random for the render only (noise buffers, random phases); restored in finally */
-    rnd = Math.random; Math.random = mulberry(recipe.random.seed);
-    W.setAudioContext(off); W.setSuperdoughAudioController(null); swapped = true;
-    try { await W.loadWorklets(); } catch (e) { /* worklet effects unavailable offline */ }
     const haps = info.pattern.queryArc(start, end, { _cps: cps }).filter((h) => h.hasOnset()).sort((a, b) => a.whole.begin.valueOf() - b.whole.begin.valueOf());
-    let fails = 0, retries = 0; col = collectNodes(off);
-    for (const h of haps) {
-      h.ensureObjectValue && h.ensureObjectValue(); const t = (h.whole.begin.valueOf() - start) / cps;
-      for (let k = 0; ; k++) {
-        try { await W.superdough(h.value, t, h.duration / cps, cps, h.whole.begin.valueOf()); break; }
-        catch (e) { if (e && e.name === 'InvalidAccessError' && k < 64) { retries++; continue; } fails++; break; }
+    let fails = 0, retries = 0, warm = 0;
+    const pass = async (ctx, count) => {
+      W.setAudioContext(ctx); W.setSuperdoughAudioController(null); swapped = true;
+      try { await W.loadWorklets(); } catch (e) { /* worklet effects unavailable offline */ }
+      col = collectNodes(ctx); let f = 0, r = 0;
+      for (const h of haps) {
+        h.ensureObjectValue && h.ensureObjectValue(); const t = (h.whole.begin.valueOf() - start) / cps;
+        for (let k = 0; ; k++) {
+          try { await W.superdough({ ...h.value }, t, h.duration / cps, cps, h.whole.begin.valueOf()); break; } /* a copy per call: superdough may write into the value */
+          catch (e) { if (e && e.name === 'InvalidAccessError' && k < 64) { r++; continue; } f++; break; }
+        }
       }
-    }
-    col.restore(); unpool(col.seen);
+      col.restore(); unpool(col.seen); if (count) { fails = f; retries = r; } else warm = r;
+    };
+    /* warm-up pass on a throwaway context: a failed superdough() call can leave a partial voice behind, so stale live nodes are drained
+       from the pools here (never rendered) and the real pass only ever gets fresh nodes: renders are bit-identical across sessions */
+    rnd = Math.random; Math.random = mulberry(recipe.random.seed);
+    await pass(new OfflineAudioContext(2, 128, rate), false);
+    /* seeded Math.random for the real pass only (noise buffers, random phases); restored in finally */
+    Math.random = mulberry(recipe.random.seed);
+    const off = new OfflineAudioContext(2, frames + tail, rate);
+    await pass(off, true);
     const buf = await off.startRendering();
     await new Promise((r) => setTimeout(r, 300)); /* let the offline onended cleanups run while the offline context is still current */
     W.setAudioContext(live); W.setSuperdoughAudioController(ctl); swapped = false;
@@ -297,9 +328,10 @@ async function renderRecipe(recipe, { sr: rateIn } = {}) {
     if (tail) { const tl = buf.getChannelData(0), tr = buf.numberOfChannels > 1 ? buf.getChannelData(1) : tl; for (let i = 0; i < tail && i < frames; i++) { L[i] += tl[frames + i]; R[i] += tr[frames + i]; } }
     const db = S.settings && S.settings.masterDb != null ? S.settings.masterDb : (T.masterDb || 0); const g = db <= -60 ? 0 : Math.pow(10, db / 20); /* master level, so renders match realtime takes */
     if (g !== 1) for (let i = 0; i < frames; i++) { L[i] = Math.fround(L[i] * g); R[i] = Math.fround(R[i] * g); }
-    return { L, R, sr: rate, haps: haps.length, fails, retries };
+    return { L, R, sr: rate, haps: haps.length, fails, retries, warm };
   } finally {
     if (rnd) Math.random = rnd;
+    if (prevJ && sc.hooks) { sc.hooks.journal.length = 0; sc.hooks.journal.push(...prevJ); try { sc.hooks.undef('__scPerformTouch'); } catch (e) { /* cache bust */ } }
     if (col) col.restore();
     if (swapped) { try { W.setAudioContext(live); W.setSuperdoughAudioController(ctl); } catch (e) { /* restore */ } }
     if (prevCtl && C()) { try { const c = C(); c.load(prevCtl.model); if (c.setHistory) for (const [n, h] of Object.entries(prevCtl.hist)) if (h && h.length) c.setHistory(n, h); } catch (e) { /* keep */ } }
@@ -319,7 +351,7 @@ async function renderExact(n = opts.n) {
     if (T.playing) { T.stop(); await new Promise((r) => setTimeout(r, 150)); }
     const out = await renderRecipe(recipe);
     const rec = { id: recipe.id, recipe, audio: { render: { L: out.L, R: out.R, sr: out.sr } } };
-    recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails };
+    recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr) };
     await store.put(rec); renderTakes();
     toast(`Rendered ${recipe.name}: ${n} cycles, ${out.L.length} frames${out.fails ? `, ${out.fails} events failed offline` : ''}`, { kind: out.fails ? 'info' : 'ok' });
     return rec;
@@ -348,11 +380,19 @@ async function remake(id, { silent = false } = {}) {
   for (const b of r.deps.vox) if (window.voxBank) await window.voxBank(b.url);
   const notes = [...v.notes]; if (r.deps.site.build !== (await siteBuild())) notes.push(`Made with site build ${r.deps.site.build}, this is ${await siteBuild()}.`);
   let out; try { out = await renderRecipe(r); } catch (e) { toast('Remake: ' + e.message, { kind: 'error' }); return { error: e.message }; }
+  if (r.events && r.events.pads && r.events.pads.length && !r.events.hooks) notes.push('Pad events were recorded but this recipe has no hooks journal, so they are not replayed.');
+  if (r.events && r.events.performance) notes.push('Looper pad takes are not replayed in offline renders yet: the render plays the program without the looper.');
   const got = await audioHash(out.L, out.R); const want = r.outputs.render ? r.outputs.render.sha256 : null;
-  rec.audio.remake = { L: out.L, R: out.R, sr: out.sr }; rec.remake = { at: new Date().toISOString(), sha256: got, match: want ? got === want : null, notes }; await store.put(rec); renderTakes();
-  if (want && got === want) toast(`Remake matches the stored audio (sha256 ${short(got)})`, { kind: 'ok' });
+  let match = want ? got === want : null, tol = null;
+  /* bit-exact first; otherwise the level fingerprint within 1.5 dB. Noise is random per session, and very low filter cutoffs can render with
+     tiny numeric differences between runs (denormal handling in the browser's offline audio thread), so these compare by tolerance and say so */
+  if (want && !match && r.outputs.render.envelope) { tol = envelopeMatch(r.outputs.render.envelope, envelope(out.L, out.R, out.sr)); if (tol.ok) { match = 'tolerance';
+    notes.push(`${usesNoise(r.state.source.code) ? 'Noise is random per session' : 'The bit-exact hash differs (tiny numeric differences, e.g. very low filter cutoffs)'}, so this take is compared by its level fingerprint: ${tol.blocks} blocks of 10 ms, max ${tol.maxDb} dB apart (tolerance ${tol.tolDb} dB).`); } }
+  rec.audio.remake = { L: out.L, R: out.R, sr: out.sr }; rec.remake = { at: new Date().toISOString(), sha256: got, match, tolerance: tol, notes }; await store.put(rec); renderTakes();
+  if (match === true) toast(`Remake matches the stored audio (sha256 ${short(got)})${notes.length ? '. ' + notes.join(' ') : ''}`, { kind: 'ok', ms: notes.length ? 9000 : 4000 });
+  else if (match === 'tolerance') toast(`Remake matches within tolerance (level fingerprint, max ${tol.maxDb} dB apart); the bit-exact hash differs. ${notes.join(' ')}`, { kind: 'ok', ms: 9000 });
   else if (!silent) await ask({ title: want ? 'Remake differs' : 'Remake done (no exact render stored)', message: want ? `Stored ${want}\nRemade ${got}\n${notes.join('\n') || 'All pinned dependencies verified; the difference comes from randomness or state outside the recipe (see docs/CAPTURE.md).'}` : `Remade ${got}. This take kept only a realtime capture, which cannot be compared bit for bit; the remake is stored as its exact render.`, okText: 'OK' });
-  return { match: want ? got === want : null, sha256: got, expected: want, notes, haps: out.haps, fails: out.fails };
+  return { match, tolerance: tol, sha256: got, expected: want, notes, haps: out.haps, fails: out.fails };
 }
 let buildP = null; const siteBuild = () => (buildP = buildP || fetch('build.json', { cache: 'no-store' }).then((x) => x.json()).then((b) => b.sha).catch(() => 'dev'));
 
@@ -534,7 +574,7 @@ async function renderTakes() {
   el.takes.innerHTML = list.length ? list.map(({ recipe: r, audio, remake: rm, imported }) => {
     const hasAudio = !!(audio.render || audio.capture || audio.remake);
     const chips = ['audio', 'events', 'code'].filter((k) => r.includes[k]).map((k) => `<i class="cap-badge" data-type="${k}">${k === 'code' ? 'code' : k}</i>`).join('');
-    const ver = rm ? (rm.match === true ? '<i class="cap-badge" data-type="ok">remake ok</i>' : rm.match === false ? '<i class="cap-badge" data-type="bad">differs</i>' : '') : imported ? '<i class="cap-badge" data-type="inert">inert</i>' : '';
+    const ver = rm ? (rm.match === 'tolerance' ? '<i class="cap-badge" data-type="ok">remake ~ok</i>' : rm.match === true ? '<i class="cap-badge" data-type="ok">remake ok</i>' : rm.match === false ? '<i class="cap-badge" data-type="bad">differs</i>' : '') : imported ? '<i class="cap-badge" data-type="inert">inert</i>' : '';
     const deps = r.deps.packs.length + r.deps.samples.length + r.deps.vox.length + 1;
     return `<li data-id="${r.id}" class="cap-tk">
     <canvas class="cap-wave" aria-hidden="true"></canvas>

@@ -22,6 +22,10 @@ const server = http.createServer((q, s) => {
 }).listen(0);
 const BASE = `http://localhost:${server.address().port}/index.html`;
 let fail = 0; const ok = (name, pass, info = '') => { if (!pass) fail++; console.log(`${pass ? 'PASS' : 'FAIL'}  ${name}  ${info}`); };
+const PADCODE = 'hooks.def("murk", { chain: [["lpf", 300]] })\nnote("c3 e3 g3 b3").s("sawtooth").release(.2).use("fx")';
+const NOISECODE = 's("white*8").decay(.05).gain(.6)';
+const MODEL = { tabs: [{ kind: 'bank', id: 'A', name: 'Bank A' }], active: 0, perform: true,
+  banks: { A: { id: 'A', rows: 4, cols: 4, pads: [{ pos: '1,0', target: { kind: 'hook', ref: 'murk', slot: 'fx' }, quant: 'none', label: 'murk' }] } }, boards: {}, controls: {}, maps: [], automation: {} };
 const CODE = 'note("c3 e3 g3 b3").s("sawtooth").cutoff(ctl("cut", {type: "knob", min: 200, max: 4000, unit: "Hz"})).release(.2)';
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'rec-'));
 const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
@@ -39,6 +43,7 @@ const modalOk = async (page, re) => { await page.waitForSelector('dialog.scm[ope
 
 // ---------- profile A: record ----------
 const A = await profile(); let p = A.page;
+await p.evaluate((m) => localStorage.setItem('sc.perform', JSON.stringify(m)), MODEL); await p.reload(); await p.waitForSelector('#list li[data-id]');
 await p.click('#list li[data-id="minor-arp"] .row').catch(() => p.click('#list li[data-id] .row'));
 await p.evaluate((c) => { const ta = document.getElementById('code'); ta.value = c; ta.dispatchEvent(new Event('input', { bubbles: true })); document.activeElement.blur(); }, CODE);
 await p.evaluate(() => window.__sc.play());
@@ -72,6 +77,23 @@ const ws = await p.evaluate(() => { const s = document.getElementById('capSheet'
 ok('panel docks as a workspace pane at 360', ws.inPane && ws.visible && ws.right <= 360, JSON.stringify(ws));
 await p.evaluate(() => window.strudelCraft.workspace.off());
 
+/* extra takes in A: pad events (hooks journal replay) and a noise pattern (level-fingerprint tolerance) */
+const setCode = (c) => p.evaluate((c) => { window.__sc.setView('rack'); const ta = document.getElementById('code'); ta.value = c; ta.dispatchEvent(new Event('input', { bubbles: true })); document.activeElement.blur(); }, c);
+const takeOf = async (name) => { await until(p, async (n) => { const l = await window.strudelCraft.capture.list(); const t = l.find((x) => x.name === n); return !!(t && t.outputs.render && !window.strudelCraft.capture.state.rendering); }, name); return p.evaluate(async (n) => (await window.strudelCraft.capture.list()).find((x) => x.name === n), name); };
+await setCode(PADCODE); await p.evaluate(() => window.__sc.play()); await p.waitForTimeout(1500);
+await p.evaluate(() => window.__sc.setView('perform')); await p.waitForSelector('#perform .pp-pad[data-pos="1,0"]');
+await p.evaluate(() => { window.strudelCraft.capture.configure({ audio: true, events: true, code: true, mode: 'cycles', n: 2, name: 'pads' }); window.strudelCraft.capture.record(); });
+await p.waitForFunction(() => window.strudelCraft.capture.state.phase === 'recording', null, { timeout: 30000 }); await p.waitForTimeout(1200);
+await p.evaluate(() => document.activeElement && document.activeElement.blur()); await p.keyboard.press('KeyQ');
+const padTake = await takeOf('pads');
+ok('pad take: hooks pad journal recorded with the take', padTake.events.hooks.length >= 1 && padTake.events.hooks.some((e) => e.op === 'bind'), JSON.stringify(padTake.events.hooks.map((e) => [e.cycle, e.op, e.args])).slice(0, 160));
+const [dlp] = await Promise.all([p.waitForEvent('download'), p.evaluate((id) => window.strudelCraft.capture.download(id, 'recipe'), padTake.id)]); const fileP = path.join(TMP, 'pads.recipe.json'); await dlp.saveAs(fileP);
+await setCode(NOISECODE); await p.evaluate(() => window.__sc.play()); await p.waitForTimeout(1500);
+await p.evaluate(() => { window.strudelCraft.capture.configure({ name: 'noise' }); window.strudelCraft.capture.record(); });
+const noiseTake = await takeOf('noise');
+const [dln] = await Promise.all([p.waitForEvent('download'), p.evaluate((id) => window.strudelCraft.capture.download(id, 'recipe'), noiseTake.id)]); const fileN = path.join(TMP, 'noise.recipe.json'); await dln.saveAs(fileN);
+ok('noise take: render output carries a level fingerprint', Array.isArray(noiseTake.outputs.render.envelope) && noiseTake.outputs.render.envelope.length > 300, String(noiseTake.outputs.render.envelope && noiseTake.outputs.render.envelope.length));
+
 // ---------- profile B: clean import + Remake ----------
 const B = await profile(); p = B.page;
 await p.evaluate(() => { localStorage.setItem('sc.capture.mode', '"cycles"'); localStorage.removeItem('sc.record.schema'); });
@@ -89,7 +111,23 @@ await until(p, async () => { const l = await window.strudelCraft.capture.list();
 const rm = await p.evaluate(async () => (await window.strudelCraft.capture.list())[0]);
 const ctlOk = await p.evaluate(() => { try { const C = window.strudelCraft.perform.controls; return { ok: true, list: C.list().map((x) => [x.name, x.value]) }; } catch (e) { const C = window.strudelCraft.perform.controls; return { ok: false, err: e.message, stack: e.stack.split('\n').slice(0, 3).join(' | '), hc: C.history('cut'), hk: C.history('kkenzvc'), rc: C.resolve('cut'), rk: C.resolve('kkenzvc') }; } });
 ok('controls engine intact after Remake (state restored)', ctlOk.ok, JSON.stringify(ctlOk) + ' aliases ' + JSON.stringify(R.state.aliases));
-ok('clean profile Remake: approval modal lists deps, audio hash matches', /strudel/.test(approve) && /pack/.test(approve) && rm.remake.match === true && rm.remake.sha256 === R.outputs.render.sha256, JSON.stringify({ got: rm.remake.sha256.slice(0, 19), want: R.outputs.render.sha256.slice(0, 19), notes: rm.remake.notes }));
+ok('clean profile Remake: approval modal lists deps, audio hash matches', /strudel/.test(approve) && /pack/.test(approve) && rm.remake.match === true && rm.remake.sha256 === R.outputs.render.sha256, JSON.stringify({ got: rm.remake.sha256.slice(0, 19), want: R.outputs.render.sha256.slice(0, 19), notes: rm.remake.notes, al: R.state.aliases, c: R.state.controls, ev: R.events.controls, hk: R.events.hooks }));
+
+// pad events replayed by Remake (clean profile)
+const remakeFile = async (f, name) => { await p.setInputFiles('#capFile', f); await until(p, async (n) => (await window.strudelCraft.capture.list()).some((x) => x.name === n), name);
+  const id = await p.evaluate(async (n) => (await window.strudelCraft.capture.list()).find((x) => x.name === n).id, name);
+  await p.click(`#capTakes li[data-id="${id}"] [data-act="remake"]`); await modalOk(p, /approve/i);
+  await until(p, async (i) => !!(await window.strudelCraft.capture.list()).find((x) => x.id === i).remake, id, 120000);
+  const rmk = await p.evaluate(async (i) => (await window.strudelCraft.capture.list()).find((x) => x.id === i).remake, id);
+  if (await p.$('dialog.scm[open]')) await p.click('dialog.scm[open] .scm-ok'); return rmk; };
+const rp = await remakeFile(fileP, 'pads');
+const noPads = await p.evaluate(async () => { const t = (await window.strudelCraft.capture.list()).find((x) => x.name === 'pads'); const rec = await window.strudelCraft.capture.get(t.id); const r = JSON.parse(JSON.stringify(rec.recipe)); r.events.hooks = []; const o = await window.strudelCraft.capture.renderRecipe(r);
+  /* without the pad journal the level fingerprint must leave the tolerance: the bind (lpf 300) really is replayed */
+  const env = (L, R) => { const b = 441, n = Math.floor(L.length / b), out = []; for (let k = 0; k < n; k++) { let e = 0; for (let i = k * b; i < (k + 1) * b; i++) { const v = (L[i] + R[i]) / 2; e += v * v; } out.push(10 * Math.log10(e / b + 1e-12)); } return out; };
+  const a = env(o.L, o.R), w = rec.recipe.outputs.render.envelope; let far = 0; for (let i = 0; i < Math.min(a.length, w.length); i++) if (Math.abs(a[i] - w[i]) > 1.5 && (a[i] > -50 || w[i] > -50)) far++; return far; });
+ok('clean profile Remake replays pad events: matches (bit-exact or by level fingerprint, said in a note), and without the pad journal it does not', (rp.match === true || (rp.match === 'tolerance' && rp.notes.some((x) => /level fingerprint/.test(x)))) && noPads > 8 /* more than the 2 % of blocks the tolerance allows */, JSON.stringify({ match: rp.match, sha: rp.sha256.slice(0, 19), blocksApartWithoutPads: noPads, tol: rp.tolerance, want: padTake.outputs.render.sha256.slice(0, 19), hooks: padTake.events.hooks, start: padTake.timing.start }));
+const rn = await remakeFile(fileN, 'noise');
+ok('noise take: Remake compares by level fingerprint and says so', rn.match === true || (rn.match === 'tolerance' && rn.notes.some((x) => /compared by its level fingerprint/.test(x))), JSON.stringify({ match: rn.match, tol: rn.tolerance }));
 
 // tampered ref -> refused
 const T = JSON.parse(JSON.stringify(R)); T.id = 'tampered'; T.name = 'tampered'; const h = T.deps.packs[0].manifest; T.deps.packs[0].manifest = h.slice(0, -1) + (h.endsWith('0') ? '1' : '0');

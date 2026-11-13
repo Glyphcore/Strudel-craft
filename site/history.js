@@ -70,7 +70,7 @@ async function checkout(id, opts = {}) {
 async function undo() { await flush(); await load(); const c = head && commits.get(head); if (!c || !c.parent) return null; redoStack.push(head); await checkout(c.parent, { fromUndo: true }); return c.parent; }
 async function redo() { await load(); const id = redoStack.pop(); if (!id) return null; await checkout(id, { fromUndo: true }); return id; }
 
-function pretty(v) { if (v == null) return ''; try { const o = JSON.parse(v); if (typeof o === 'string') return o; return JSON.stringify(o, null, 2).replace(/\\n/g, '\n'); } catch (e) { return v; } }
+function pretty(v) { if (v == null) return ''; try { const o = JSON.parse(v); if (typeof o === 'string') return o; if (o && typeof o === 'object' && !Array.isArray(o) && Object.values(o).every((x) => typeof x === 'string')) return Object.entries(o).map(([k, x]) => `## ${k}\n${x}`).join('\n'); return JSON.stringify(o, null, 2); } catch (e) { return v; } }
 let jsdiff = null;
 async function diff(a, b) {
   await load(); if (!jsdiff) jsdiff = await import('https://esm.sh/diff@5.2.0');

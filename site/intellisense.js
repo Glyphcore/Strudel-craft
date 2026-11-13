@@ -71,6 +71,17 @@ async function mount() {
     }
     return { from, options: opts, validFor: /^[\w$]*$/ };
   }
+  const [{ HighlightStyle, syntaxHighlighting }, { tags: t }] = await Promise.all([import('https://esm.sh/@codemirror/language@6'), import('https://esm.sh/@lezer/highlight@1')]);
+  const hl = syntaxHighlighting(HighlightStyle.define([
+    { tag: [t.string, t.special(t.string)], color: 'var(--sig)' },
+    { tag: [t.number, t.bool, t.null], color: 'var(--warn)' },
+    { tag: [t.keyword, t.operatorKeyword, t.controlKeyword, t.definitionKeyword, t.labelName], color: 'var(--sig-2)' },
+    { tag: [t.function(t.variableName), t.function(t.propertyName), t.propertyName], color: 'var(--text)', fontWeight: '600' },
+    { tag: [t.variableName, t.definition(t.variableName)], color: 'var(--text)' },
+    { tag: [t.comment, t.lineComment, t.blockComment], color: 'var(--dim)', fontStyle: 'italic' },
+    { tag: [t.punctuation, t.bracket, t.operator, t.separator], color: 'var(--faint)' },
+    { tag: t.invalid, color: 'var(--bad)' },
+  ]));
   const lint = await import(`https://esm.sh/@codemirror/lint@6.8.5`);
   const docs = new Map(); (await staticData).forEach((d) => docs.set(d.label, d));
   const { hoverTooltip } = await import(`https://esm.sh/@codemirror/view@${V.view}`);
@@ -80,13 +91,13 @@ async function mount() {
     const d = docs.get(text.slice(s - from, e - from)); if (!d) return null;
     return { pos: s, end: e, above: true, create() { const dom = document.createElement('div'); dom.className = 'cm-sig'; dom.textContent = d.detail + ' - ' + d.info; return { dom }; } };
   });
-  const theme = EditorView.theme({ '&': { background: 'var(--panel-2)', color: 'var(--text)', fontSize: '.86rem', borderRadius: '0 0 var(--r2) var(--r2)' }, '.cm-content': { fontFamily: 'var(--mono)', padding: '10px 0', caretColor: 'var(--sig-2)' }, '.cm-gutters': { background: 'transparent', border: '0', color: 'var(--dim)' }, '&.cm-focused': { outline: '2px solid var(--sig-2)', outlineOffset: '-2px' }, '.cm-scroller': { minHeight: '150px', lineHeight: '1.6' }, '.cm-tooltip': { background: 'var(--panel)', border: '1px solid var(--line, #333)', color: 'var(--text)' }, '.cm-tooltip-autocomplete ul li[aria-selected]': { background: 'var(--sig-2)', color: '#000' }, '.cm-completionSection': { color: 'var(--dim)', fontSize: '.72rem', textTransform: 'uppercase', padding: '4px 8px' }, '.cm-sig': { padding: '4px 8px', fontFamily: 'var(--mono)', fontSize: '.78rem', maxWidth: '320px' }, '.cm-activeLine, .cm-activeLineGutter': { background: 'transparent' } });
+  const theme = EditorView.theme({ '.cm-cursor, .cm-dropCursor': { borderLeftColor: 'var(--sig-2)' }, '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': { background: 'var(--sig-2-soft) !important' }, '.cm-matchingBracket': { background: 'var(--panel-3)', outline: '1px solid var(--line-2)' }, '.cm-lintRange-error': { backgroundImage: 'none', borderBottom: '2px wavy var(--bad)' }, '.cm-diagnostic-error': { borderLeftColor: 'var(--bad)' }, '.cm-tooltip-autocomplete ul li': { padding: '6px 8px', minHeight: '32px' }, '&': { background: 'var(--panel-2)', color: 'var(--text)', fontSize: '.86rem', borderRadius: '0 0 var(--r2) var(--r2)' }, '.cm-content': { fontFamily: 'var(--mono)', padding: '10px 0', caretColor: 'var(--sig-2)' }, '.cm-gutters': { background: 'transparent', border: '0', color: 'var(--dim)' }, '&.cm-focused': { outline: '2px solid var(--sig-2)', outlineOffset: '-2px' }, '.cm-scroller': { minHeight: '150px', lineHeight: '1.6' }, '.cm-tooltip': { background: 'var(--panel)', border: '1px solid var(--line, #333)', color: 'var(--text)' }, '.cm-tooltip-autocomplete ul li[aria-selected]': { background: 'var(--sig-2)', color: '#000' }, '.cm-completionSection': { color: 'var(--dim)', fontSize: '.72rem', textTransform: 'uppercase', padding: '4px 8px' }, '.cm-sig': { padding: '4px 8px', fontFamily: 'var(--mono)', fontSize: '.78rem', maxWidth: '320px' }, '.cm-activeLine, .cm-activeLineGutter': { background: 'transparent' } });
   for (const id of ['code', 'stackCode']) {
     const ta = document.getElementById(id); if (!ta) continue;
     const desc = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value'); let view; let syncing = false; let learnT = 0;
     view = new EditorView({
       doc: desc.get.call(ta), parent: ta.parentNode,
-      extensions: [basicSetup, lint.lintGutter(), javascript(), theme, hover, EditorView.lineWrapping, ac.autocompletion({ override: [source], activateOnTyping: true, icons: false }),
+      extensions: [basicSetup, lint.lintGutter(), javascript(), theme, hl, hover, EditorView.lineWrapping, ac.autocompletion({ override: [source], activateOnTyping: true, icons: false }),
         EditorView.contentAttributes.of({ 'aria-label': ta.getAttribute('aria-label') || (id === 'code' ? 'Recipe code' : 'Stack program'), autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false' }),
         EditorView.updateListener.of((u) => { if (!u.docChanged || syncing) return; const v = u.state.doc.toString(); desc.set.call(ta, v); ta.dispatchEvent(new Event('input', { bubbles: true })); clearTimeout(learnT); learnT = setTimeout(() => learn(v), 1200); })],
     });

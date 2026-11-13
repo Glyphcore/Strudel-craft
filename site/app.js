@@ -346,7 +346,7 @@ let liveT = 0, codeT = 0;
 S.live = (() => { try { return store.get('live', 'on') !== 'off'; } catch (e) { return true; } })();
 function setLiveChip(state, msg) {
   const c = $('#liveChip'); if (!c) return; c.dataset.state = state; $('#liveState').textContent = state; c.title = msg || (state === 'live' ? 'Edits apply on the next cycle' : state === 'off' ? 'Live updates off: tap to turn on' : state === 'error' ? 'Last good pattern still playing' : 'Press Play to go live');
-  const m = $('#liveMsg'); if (m) { m.hidden = state !== 'error'; m.textContent = state === 'error' ? msg : ''; }
+  for (const [id, v] of [['#liveMsg', 'rack'], ['#liveMsgStack', 'stack']]) { const m = $(id); if (m) { const on = state === 'error' && S.view === v; m.hidden = !on; m.textContent = on ? msg : ''; } }
 }
 function syncLiveChip() { if (!S.live) setLiveChip('off'); else if (!S.playing) setLiveChip('paused'); else if ($('#liveChip').dataset.state !== 'error') setLiveChip('live'); }
 function errLine(e) { const m = /\((\d+):(\d+)\)/.exec(String(e && e.message)); if (e && e.loc && e.loc.line) return e.loc.line; return m ? +m[1] : null; }

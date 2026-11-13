@@ -7,7 +7,7 @@ Coverage: N = native, P = partial, X = none. Effort: S (<1 day), M (days), L (we
 | Feature | Strudel | Add how | Effort | Licence note |
 |---|---|---|---|---|
 | Simpler/Sampler (slice, classic, one-shot, ADSR, filter) | P: `begin/end/slice/speed`, env, filters | already close; add per-region sample map helper | S | none |
-| Warp modes (Beats, Tones, Complex, Re-Pitch) | P: only Re-Pitch (`loopAt`/`fit`) | PY/EXT: pre-warp samples with rubberband (time/pitch independent) into a sample map | M | rubberband GPL-2 as a tool call (not linked) |
+| Warp modes (Beats, Tones, Complex, Re-Pitch) | P: only Re-Pitch (`loopAt`/`fit`) | PY/EXT: pre-warp samples with rubberband (time/pitch independent) into a sample map | M | rubberband GPL-2 as a tool call (not linked); DONE: `engine/strudel-cli/warp.sh` (#3), licence note in engine/strudel-cli/LICENSES.md |
 | Granulator | P: `chop/striate/scrub` | W grain-cloud worklet (size, spray, pitch jitter, pan) or PY granular on stems | M | own code |
 | Vocoder | X | PY STFT vocoder (carrier stem x modulator stem) or W | M | own code |
 | Corpus (resonator bank from sample) | X | PY/W comb/modal bank tuned by analysis | M | own code |

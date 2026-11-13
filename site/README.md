@@ -101,3 +101,6 @@ Inline providers (local, no network): `snippets` (default arguments and the chai
 states), `closers` (open brackets/quotes). Register more:
     strudelCraft.intellisense.registerInline({ id, priority, suggest: async ({ before, after, line, doc, pos }) => ['...'] })
 `strudelCraft.intellisense.remoteInlineStub` shows the shape for a future remote/LLM provider; none is wired.
+
+## Preludes
+`app.js` loads `prelude/word.js` (#43) into the Strudel eval context right after `initStrudel`, so `word()`, `syl()` and `vowel()` work in both editors; they are intellisense items (category `vocals`). Add more preludes to `PRELUDES` in `app.js`.

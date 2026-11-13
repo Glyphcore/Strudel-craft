@@ -69,13 +69,16 @@ function unmuteBus() {
 }
 
 /* ---------- engine ---------- */
+/* user-space preludes (plain JS, Strudel unmodified) loaded into the eval context once Strudel's globals exist */
+const PRELUDES = ['prelude/word.js'];
+function loadPreludes() { return Promise.all(PRELUDES.map((src) => new Promise((ok) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => { console.warn('prelude failed: ' + src); ok(); }; document.head.append(s); }))); }
 const Engine = {
   ready: null, repl: null, samplesLoaded: false, state: {},
   load() {
     if (!this.ready) this.ready = new Promise((res, rej) => {
       const s = document.createElement('script'); s.src = STRUDEL_WEB; s.crossOrigin = 'anonymous';
       s.onload = () => {
-        try { window.initStrudel({ onUpdateState: (st) => { this.state = st; } }).then((r) => { this.repl = r; res(r); try { window.dispatchEvent(new CustomEvent('strudel:ready')); } catch (e2) { /* ignore */ } }, rej); } catch (e) { rej(e); }
+        try { window.initStrudel({ onUpdateState: (st) => { this.state = st; } }).then((r) => { this.repl = r; loadPreludes().then(() => res(r), () => res(r)); try { window.dispatchEvent(new CustomEvent('strudel:ready')); } catch (e2) { /* ignore */ } }, rej); } catch (e) { rej(e); }
       };
       s.onerror = () => { this.ready = null; rej(new Error('Could not load the Strudel engine from unpkg (offline?)')); };
       document.head.append(s);

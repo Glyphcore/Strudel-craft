@@ -67,7 +67,7 @@ async function mount() {
     for (const it of items) {
       if (!!it.string !== quotes) continue; if (!quotes && !!it.method !== method && !(it.category === 'presets' && !method)) continue;
       const k = it.label + '|' + it.category; if (seen.has(k)) continue; seen.add(k);
-      opts.push({ label: it.label, type: it.method ? 'method' : it.string ? 'text' : it.category === 'presets' ? 'variable' : 'function', detail: it.detail, info: it.info, section: it.category, apply: it.apply, boost: it.provider === 'strudel-docs' ? 2 : it.provider === 'user' ? 1 : 0 });
+      opts.push({ label: it.label, type: it.method ? 'method' : it.string ? 'text' : it.category === 'presets' ? 'variable' : 'function', detail: it.detail, info: it.info, section: { name: it.category, rank: it.provider === 'strudel-docs' ? 0 : it.provider === 'user' ? 1 : it.provider === 'catalog' ? 2 : 3 }, apply: it.apply, boost: it.provider === 'strudel-docs' ? 2 : it.provider === 'user' ? 1 : 0 });
     }
     return { from, options: opts, validFor: /^[\w$]*$/ };
   }

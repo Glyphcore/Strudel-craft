@@ -575,6 +575,24 @@
    "detail": "bank",
    "info": "Drum machine bank",
    "category": "banks"
+  },
+  {
+   "label": "word",
+   "detail": "word(\"<call me baby>\", bank='vox')",
+   "info": "Word vocals: mini-notation of words -> s('vox_<word>'); 'baby:2' picks the 3rd take (n). Prelude #43.",
+   "category": "vocals"
+  },
+  {
+   "label": "syl",
+   "detail": "syl(\"0 1 2\", bank='vox')",
+   "info": "Syllables in lyric order: s('vox_syl').n(...). Prelude #43.",
+   "category": "vocals"
+  },
+  {
+   "label": "vowel",
+   "detail": "vowel(\"a e i o u\")",
+   "info": "Formant filter as a pattern function (works with word()).",
+   "category": "vocals"
   }
  ]
 }

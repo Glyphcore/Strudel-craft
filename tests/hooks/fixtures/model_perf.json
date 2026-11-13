@@ -1,0 +1,9 @@
+{ "model": 1,
+  "pads": { "banks": [ { "id": "A", "rows": 4, "cols": 4, "pads": [
+    { "pos": "0,0", "target": { "kind": "tap", "ref": "pads/kick" }, "mode": "gate" },
+    { "pos": "0,1", "target": { "kind": "hook", "ref": "murk", "slot": "fx" }, "mode": "gate", "quant": "bar" } ] } ] },
+  "performances": { "take1": { "length": "2", "origin": "0", "layers": [ { "events": [
+    { "t": "0", "pad": "A/0,0", "type": "on", "velocity": 0.9 }, { "t": "1/4", "pad": "A/0,0", "type": "off" },
+    { "t": "1/2", "pad": "A/0,0", "type": "on", "velocity": 0.6 }, { "t": "3/4", "pad": "A/0,0", "type": "off" },
+    { "t": "5/4", "pad": "A/0,0", "type": "on", "velocity": 0.8 }, { "t": "3/2", "pad": "A/0,0", "type": "off" },
+    { "t": "1", "pad": "A/0,1", "type": "on" }, { "t": "2", "pad": "A/0,1", "type": "off" } ] } ] } } }

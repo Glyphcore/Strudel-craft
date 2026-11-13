@@ -1,0 +1,1 @@
+{ "model": 1, "defs": { "thin": { "chain": [["gain", 0.5]] } }, "bindings": [ { "id": "b1", "slot": "fx", "hook": "thin", "gate": { "from": "2b" } } ] }

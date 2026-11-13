@@ -1,0 +1,2 @@
+{ "model": 1, "controls": { "cutoff": { "type": "knob", "min": 200, "max": 8000, "default": 800 } },
+  "automation": { "l1": { "control": "cutoff", "length": "2", "period": "2", "mode": "curve", "points": [ ["0", 400, "lin"], ["1", 3000, "lin"], ["2", 600, "lin"] ] } } }

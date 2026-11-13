@@ -64,6 +64,13 @@ def align_whisperx(stem, words):
     except Exception as ex:
         print(f'whisperX not installed ({ex}); use --timings T.json or pip install whisperx', file=sys.stderr); sys.exit(3)
     dev = 'cuda' if torch.cuda.is_available() else 'cpu'
+    import whisperx.alignment as wa
+    try:
+        wa.nltk_load('tokenizers/punkt_tab/english.pickle')
+    except LookupError:  # punkt data absent (offline): sentence spans only group output, so use one span per segment
+        class _One:
+            def span_tokenize(self, t): return [(0, len(t))]
+        wa.nltk_load = lambda *_a, **_k: _One()
     audio = whisperx.load_audio(str(stem))
     model, meta = whisperx.load_align_model(language_code='en', device=dev)  # default en model = WAV2VEC2_ASR_BASE_960H
     seg = [{'text': ' '.join(w for w, _ in words), 'start': 0.0, 'end': len(audio) / 16000}]

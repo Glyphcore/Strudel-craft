@@ -1,3 +1,4 @@
+PASS  no native alert/prompt/confirm in site/
 PASS  catalog renders every recipe in the browser  -- 46/46
 PASS  key 2 -> stack view  -- stack
 PASS  key 3 -> ref view  -- ref
@@ -21,71 +22,145 @@ PASS  knob exposes role=slider with valuetext
 PASS  Space starts playback  -- Playing Reese-style detuned bass
 PASS  pattern lanes have haps to draw  -- 8 haps in cycle 0
 PASS  master meter shows signal  -- -17.7 dB
-PASS  frame time during playback measured (1440)  -- {"n":360,"mean_ms":16.67,"p95_ms":16.8,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":0.49,"p95_ms":0.7,"max_ms":2.7}}
+PASS  frame time during playback measured (1440)  -- {"n":360,"mean_ms":16.67,"p95_ms":16.7,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":0.82,"p95_ms":1.2,"max_ms":2.4}}
 PASS  Space stops playback
 PASS  A adds selected recipes to the stack
 PASS  stack view plays the stacked program  -- Playing Stack · 3 layers
 PASS  Ctrl+Z undoes stack add
-  ok  four-on-the-floor                        peak -13.2 dB  haps 16
-  ok  offbeat-hat                              peak -18.3 dB  haps 16
-  ok  euclid-groove                            peak -8.0 dB   haps 40
-  ok  reese-style-detuned-bass                 peak -12.2 dB  haps 32
-  ok  sub-bass                                 peak -20.4 dB  haps 16
-  ok  pad-swell                                peak -19.6 dB  haps 12
-  ok  filter-sweep-build                       peak -16.5 dB  haps 16
-  ok  riser                                    peak -29.4 dB  haps 4
-  ok  breakdown-drop-arrangement-over-bars     peak -4.1 dB   haps 48
-  ok  half-time                                peak -17.9 dB  haps 40
-  ok  call-and-response                        peak -18.3 dB  haps 16
-  ok  minor-motif                              peak -19.8 dB  haps 8
-  ok  chord-stabs                              peak -11.8 dB  haps 38
-  ok  sidechain-pump                           peak -11.7 dB  haps 24
-  ok  fade-out                                 peak -18.6 dB  haps 12
-  ok  synth-kick                               peak -21.5 dB  haps 16
-  ok  synth-hat-offbeat                        peak -27.3 dB  haps 16
-  ok  synth-backbeat                           peak -31.1 dB  haps 4
-  ok  synth-euclid                             peak -24.6 dB  haps 12
-  ok  syncopated-bass                          peak -23.3 dB  haps 20
-  ok  supersaw-pad                             peak -17.5 dB  haps 12
-  ok  pluck                                    peak -17.1 dB  haps 16
-  ok  minor-arp                                peak -22.0 dB  haps 48
-  ok  chord-progression                        peak -7.4 dB   haps 19
-  ok  root-bass                                peak -21.5 dB  haps 8
-  ok  delay-echo                               peak -28.5 dB  haps 8
-  ok  stereo-jux                               peak -20.9 dB  haps 32
-  ok  big-reverb                               peak -27.6 dB  haps 4
-  ok  dry-tight                                peak -22.6 dB  haps 16
-  ok  phaser-sweep                             peak -31.5 dB  haps 4
-  ok  tremolo-pad                              peak -23.7 dB  haps 12
-  ok  vowel-voice                              peak -30.2 dB  haps 16
-  ok  fm-bell                                  peak -17.0 dB  haps 16
-  ok  lofi-crunch                              peak -20.7 dB  haps 16
+  ok  four-on-the-floor                        peak -7.5 dB   haps 16
+  ok  offbeat-hat                              peak -20.4 dB  haps 16
+  ok  euclid-groove                            peak -9.1 dB   haps 40
+  ok  reese-style-detuned-bass                 peak -17.2 dB  haps 32
+  ok  sub-bass                                 peak -18.2 dB  haps 16
+  ok  pad-swell                                peak -18.1 dB  haps 12
+  ok  filter-sweep-build                       peak -16.8 dB  haps 16
+  ok  riser                                    peak -28.4 dB  haps 4
+  ok  breakdown-drop-arrangement-over-bars     peak -6.0 dB   haps 48
+  ok  half-time                                peak -13.6 dB  haps 40
+  ok  call-and-response                        peak -19.5 dB  haps 16
+  ok  minor-motif                              peak -22.6 dB  haps 8
+  ok  chord-stabs                              peak -21.5 dB  haps 38
+  ok  sidechain-pump                           peak -11.4 dB  haps 24
+  ok  fade-out                                 peak -23.0 dB  haps 12
+  ok  synth-kick                               peak -21.0 dB  haps 16
+  ok  synth-hat-offbeat                        peak -23.1 dB  haps 16
+  ok  synth-backbeat                           peak -46.3 dB  haps 4
+  ok  synth-euclid                             peak -28.3 dB  haps 12
+  ok  syncopated-bass                          peak -20.4 dB  haps 20
+  ok  supersaw-pad                             peak -17.9 dB  haps 12
+  ok  pluck                                    peak -19.6 dB  haps 16
+  ok  minor-arp                                peak -19.3 dB  haps 48
+  ok  chord-progression                        peak -10.4 dB  haps 19
+  ok  root-bass                                peak -17.6 dB  haps 8
+  ok  delay-echo                               peak -29.1 dB  haps 8
+  ok  stereo-jux                               peak -17.0 dB  haps 32
+  ok  big-reverb                               peak -23.4 dB  haps 4
+  ok  dry-tight                                peak -20.2 dB  haps 16
+  ok  phaser-sweep                             peak -32.0 dB  haps 4
+  ok  tremolo-pad                              peak -20.9 dB  haps 12
+  ok  vowel-voice                              peak -35.2 dB  haps 16
+  ok  fm-bell                                  peak -15.6 dB  haps 16
+  ok  lofi-crunch                              peak -20.6 dB  haps 16
   ok  perlin-drift                             peak -19.3 dB  haps 32
-  ok  crescendo                                peak -34.0 dB  haps 16
-  ok  accents                                  peak -26.1 dB  haps 32
-  ok  sidechain-synth                          peak -22.6 dB  haps 20
-  ok  build-drop                               peak -12.5 dB  haps 28
-  ok  layers-in                                peak -11.7 dB  haps 20
-  ok  filter-open-intro                        peak -22.9 dB  haps 16
-  ok  random-thin                              peak -31.7 dB  haps 35
-  ok  polymeter                                peak -21.5 dB  haps 32
-  ok  dark-drone                               peak -24.2 dB  haps 4
-  ok  sparse-line                              peak -27.4 dB  haps 8
+  ok  crescendo                                peak -27.7 dB  haps 16
+  ok  accents                                  peak -20.1 dB  haps 32
+  ok  sidechain-synth                          peak -19.2 dB  haps 20
+  ok  build-drop                               peak -22.4 dB  haps 30
+  ok  layers-in                                peak -41.0 dB  haps 17
+  ok  filter-open-intro                        peak -20.5 dB  haps 16
+  ok  random-thin                              peak -31.4 dB  haps 34
+  ok  polymeter                                peak -17.8 dB  haps 32
+  ok  dark-drone                               peak -24.3 dB  haps 4
+  ok  sparse-line                              peak -25.3 dB  haps 8
   ok  tense-riser                              peak -27.6 dB  haps 4
 PASS  every catalog recipe plays from the UI (46)
 PASS  no horizontal scroll at 390px  -- scrollWidth 390
 PASS  touch targets >= 44px (except filter chips)  -- 0 smaller
 PASS  tap Play works on phone
-PASS  frame time during playback measured (390, and 4x CPU throttle)  -- {"normal":{"n":360,"mean_ms":16.67,"p95_ms":16.7,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":0.49,"p95_ms":0.7,"max_ms":3.5}},"cpu4x":{"n":360,"mean_ms":16.67,"p95_ms":16.7,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":1.94,"p95_ms":3,"max_ms":6.4}}}
+PASS  frame time during playback measured (390, and 4x CPU throttle)  -- {"normal":{"n":360,"mean_ms":16.67,"p95_ms":16.8,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":0.82,"p95_ms":1.1,"max_ms":1.8}},"cpu4x":{"n":242,"mean_ms":24.79,"p95_ms":50,"max_ms":66.6,"viz_draw":{"n":243,"mean_ms":3.39,"p95_ms":5.5,"max_ms":14.7}}}
 PASS  reduced motion: transitions are 0s  -- 0s
 PASS  T toggles light theme
 PASS  reduced motion: visualiser throttled to <= 10 fps  -- {"n":30,"mean_ms":100,"p95_ms":100.1,"max_ms":100.1}
 PASS  works offline after first load (service worker)
-PASS  compose.html redirects into the app (stack)  -- http://127.0.0.1:45619/index.html#stack
-PASS  plugins.html redirects into the app (ref)  -- http://127.0.0.1:45619/index.html#ref
-PASS  practices.html redirects into the app (practice)  -- http://127.0.0.1:45619/index.html#practice
+PASS  compose.html redirects into the app (stack)  -- http://127.0.0.1:46147/index.html#stack
+PASS  plugins.html redirects into the app (ref)  -- http://127.0.0.1:46147/index.html#ref
+PASS  practices.html redirects into the app (practice)  -- http://127.0.0.1:46147/index.html#practice
 PASS  deep link #r/<id> selects that recipe
+PASS  graph: graph.js / graph.css are not loaded with the shell  -- 0 graph requests on first load; shell 1389737 B same-origin
+PASS  graph: view opens from the nav and loads graph.js on first open
+PASS  graph: no horizontal scroll at 390px  -- scrollWidth 390
+PASS  graph: tap port, tap compatible port creates the wire (touch, 390px)  -- armed def:murk; target "gp gp-in gt-hook lit"; 20 ports dimmed; wires bind:b1:slot:bass/fx
+PASS  graph: wiring hook -> slot adds exactly one hooks.bind line to the code  -- {"added":["hooks.bind(\"bass/fx\", \"murk\")"],"removed":[]}
+PASS  graph: incompatible target is refused with a visible reason  -- Refused: A hook output connects only to a slot’s hook input (that makes a hooks.bind binding).
+PASS  graph: deleting the hooks.bind line in code removes the wire  -- 0 hook wires left
+PASS  graph: tap -> param asks facet and range and writes a .wire(...) in code  -- {"asked":{"facets":["onset","gate","env"],"range":true},"added":["bass: note(\"c2 eb2\").s(\"sawtooth\").lpf(800).gain(0.7).use(\"fx\").wire(\"lpf\", \"kick:env\", { range: [200, 2000] })"]}
+PASS  graph: changing a binding window rewrites only that binding’s gate; badge shows the window  -- {"added":["hooks.bind(\"bass/fx\", \"murk\", \"9b..17b\")"],"removed":["hooks.bind(\"bass/fx\", \"murk\")"],"badge":"HOOK 9b..17b"}
+PASS  graph: ports and controls >= 44x44 CSS px at mid zoom (390px)  -- {"zoom_100":{"n":23,"ports":4,"min_w":46.3,"min_h":44,"port_min":[110,52],"small":[]},"zoom_85":{"n":23,"ports":4,"min_w":46.3,"min_h":44,"port_min":[93.5,44.2],"small":[]}}
+PASS  graph: long-press + tap multi-select, Collapse yields one component node with exported ports; entering shows the breadcrumb  -- {"multi":["track:hat"],"sel2":["track:hat","track:perc"],"comps":[{"id":"inst:drums","outs":["hat"],"sub":"component · drums@1"}],"crumbs":"Songdrums","inner":["track:hat","tap:hat","track:perc"]}
+PASS  graph: collapse keeps every track chain when the instance is expanded (model level)  -- {"same":true,"before":["kick","bass","hat","perc","code1"],"after":["kick","bass","code1","drums_hat","drums_perc"]}
+PASS  graph: opaque code node renders detected ports and is not editable beyond text  -- {"ins":["kick:env"],"outs":["out"],"editors":0,"text":true,"refusal":"Refused: Opaque code node: its inputs come from its text; edit the code instead."}
+PASS  graph: 150-node / 300-wire fixture pans and zooms with p95 frame time <= 16.7 ms (phone profile)  -- {"profile":"smoke phone profile: 390x844, dpr 2, touch","nodes":150,"wires":300,"empty_raf_loop":{"n":120,"mean_ms":16.67,"p95_ms":16.8,"p95_vsync_ms":16.67,"dropped_pct":0,"max_ms":16.8},"pan":{"n":240,"mean_ms":16.67,"p95_ms":16.8,"p95_vsync_ms":16.67,"dropped_pct":0,"max_ms":16.8},"zoom":{"n":222,"mean_ms":18.02,"p95_ms":16.8,"p95_vsync_ms":16.67,"dropped_pct":5,"max_ms":100},"all":{"n":462,"mean_ms":17.32,"p95_ms":16.8,"p95_vsync_ms":16.67,"dropped_pct":2.4,"max_ms":100},"cpu4x":{"pan":{"n":226,"mean_ms":17.7,"p95_ms":33.3,"p95_vsync_ms":33.33,"dropped_pct":6.2,"max_ms":33.4},"zoom":{"n":57,"mean_ms":70.17,"p95_ms":83.5,"p95_vsync_ms":83.33,"dropped_pct":100,"max_ms":416.7}}}
+PASS  graph: keyboard-only wire through the outline list (Connect to...)  -- {"found":true,"pointer":0,"added":["hooks.bind(\"bass/fx\", \"murk\")"]}
+PASS  graph: one undo stack covers a code edit and a graph edit  -- {"t2":"tap(\"kick:env\")) })()\n\n// note","u1":" p.gain(tap(\"kick:env\")) })()\n","u2eq":true}
+PASS  graph: desktop shows code and graph side by side with selection sync both ways  -- {"side":{"canvas":927.96875,"code":477.03125},"mark":"bass: note(\"c2 eb2\").s(\"sawtooth\").lpf(8","sel":["track:kick"]}
+PASS  graph: plan strip draws binding windows against bars  -- [["murk","0%","43.2432%"],["open","43.2432%","43.2432%"],["48","0%","100%"]]
+PASS  graph: text contrast >= 7:1 (dark 1440, dark 390, light 390)  -- [{"min":7.11,"n":76,"worst":"button.gx-tab \"Outline\" rgb(154, 163, 174) on rgb(18,22,27)"},{"min":7.11,"n":120,"worst":"button.gx-tab \"Code\" rgb(154, 163, 174) on rgb(18,22,27)"},{"min":7.34,"n":120,"worst":"button.gx-tab \"Code\" rgb(77, 84, 93) on rgb(251,250,247)"}]
+PASS  graph: reduced motion runs no wire animation; live state still shown  -- {"anims":0,"live":true,"pulse":"0.6","badge":"\" ▸\"","animations_without_reduce":2}
+PASS  atoms ui: atoms-ui.js / atoms-pop.js are not loaded with the shell
+PASS  atoms ui: atoms-ui.js loads with the Graph view
+PASS  atoms ui: cards only for referenced atoms (5 declared, kick4 + derived kick4({ n: 8 }) + hats)  -- hats x1, kick4 x1, kick4* x1; 3 in DOM
+PASS  atoms ui: derived atoms.kick4({ n: 8 }) has its own card linked to the kick4 card  -- ["atom:az1dsgr>atom:az1dsgr~{\"args\":{\"n\":8},\"ops\":[]}"]
+PASS  atoms ui: changing n on the derived card rewrites only that argument  -- {"added":["k2: s(atoms.kick4({ n: 6 })).gain(0.5)"],"removed":["k2: s(atoms.kick4({ n: 8 })).gain(0.5)"]}
+PASS  atoms ui: browser from a param port filters by the port (gain: MINI)  -- MINI
+PASS  atoms ui: a second port on the same atom raises the shown count to 2, no second card  -- after 1: 1; after 2: 2 shown "×2"
+PASS  atoms ui: removing both references removes the card; undo brings it back at the same position  -- gone 0; before 330px,248px; after undo 330px,248px
+PASS  atoms ui: editing the card body updates every referencing node preview after one commit  -- commits 1; s(atoms.kick4 "bd*4 [~ sd]").gain("0.8 0.6") | s(atoms.kick4(n: 6) "bd*6 [~ sd]").gain(0.5)
+PASS  atoms ui: the code shows one changed declaration line  -- {"added":["atom(\"kick4\", { type: \"mini\", params: { n: { shape: \"number\", min: 1, max: 16, step: 1, default: 4 } }, body: \"bd*${n} [~ sd]\", doc: \"four on the floor\" })"],"removed":["atom(\"kick4\", { type: \"mini\", params: { n: { shape: \"number\", min: 1, max: 16, step: 1, default: 4 } }, body: \"bd*${n}\", doc: \"four on the floor\" })"]}
+PASS  atoms ui: browser from a gate port lists only gate / point atoms  -- [["atDrop","GATE"],["onDrop","POINT"]]
+PASS  atoms ui: choosing a gate atom sets the binding gate
+PASS  atoms ui: catalog namespace shows 50 rows per page; More and scroll fetch the next page  -- 50 -> More 100 -> scroll 150
+PASS  atoms ui: card controls and browser rows at least 44 x 44 CSS px at 390  -- {"tCard":{"n":14,"min_w":110,"min_h":44,"small":[]},"tBrowser":{"n":12,"min_w":44,"min_h":44,"small":[]}}
+PASS  atoms ui: card and browser text contrast at least 7:1; type shown as a text badge  -- {"cCard":{"min":7.11,"n":36,"worst":"span.gp-t \"par\""},"cBrowser":{"min":7.11,"n":19,"worst":"p.gx-hint \"Choose an atom for kick.\""},"badges":["MINI","GATE","MINI","MINI"]}
+PASS  atoms ui: popover opens on tap and on Enter with the caret on a reference (Enter inserts nothing)  -- tap 1, enter 1; "MINIatoms.kick4×"bd*4"nEdit definitionDerive…DetachGo to card"
+PASS  atoms ui: Escape closes the popover; opening it shifts no code line  -- 63,10,264,110 63,120,264,22 63,142,264,44 63,186,264,22 0,0,0,0 | 63,10,264,110 63,120,264,22 63,142,264,44 63,186,264,22 0,0,0,0
+PASS  atoms ui: Detach replaces that one reference with its compiled string; the card count drops by 1  -- {"sites":2,"card":2} -> {"sites":1,"card":1}
+PASS  atoms ui: keyboard only (Tab, Enter, type, ArrowDown) creates an atom reference on a port  -- steps true,true,true,true; {"added":["hat: s(atoms.hats).gain(atoms.loud)"],"removed":["hat: s(atoms.hats).gain(0.5)"]}
+PASS  atoms ui: card appear / disappear animate, and not with reduced motion  -- {"full":{"appear":"ax-appear","ghosts":1,"ghostAnim":"ax-leave"},"reduce":{"appear":"none","ghosts":0,"ghostAnim":"none"}}
+PASS  atoms ui: 5000 declared atoms and 3 referenced render exactly 3 atom cards  -- [[3,3],[3,3],[3,3]]
+INFO  atoms ui: Graph first paint 3 declared 75.1 ms, 5000 declared 108.5 ms (44.5% ; gate 10%)
+PASS  lanes ui: lanes-ui.js / .css load with the Graph view, not with the shell  -- {"shellLoaded":false,"graphLoaded":true}
+PASS  lanes ui: LANES example 1 renders one lane card with three branch sub-chains (audio bars)  -- {"lanes":1,"branches":["drypass-through","wet.room.rsize.lpf","grit.crush.hpf.gain"],"bars":8}
+PASS  lanes ui: + Branch changes exactly the .split(...) call in the code  -- {"before":"split(dry => dry,\n         wet => wet.room(0.9).rsize(6).lpf(900),\n         grit => grit.crush(5).hpf(2000).gain(0.4))","after":"split(dry => dry,\n         wet => wet.room(0.9).rsize(6).lpf(900),\n         grit => grit.crush(5).hpf(2000).gain(0.4), crush => crush.crush(4))"}
+PASS  lanes ui: collapsing the fan keeps the card ports  -- {"ports":["in:lpf:param","out:out:pattern","out:audio:audio"],"rows":0,"expanded":"false"}
+PASS  lanes ui: an exported tap shows on the card edge and wires to another lane (.wire in code)  -- {"edge":{"exported":true,"edge":true,"local":true,"localInside":true,"localOnEdge":false,"refusedRow":true},"wired":true}
+PASS  lanes ui: a local tap is refused with the E_LANE_CROSS text and working Export tap / Add send buttons  -- {"Export tap":{"sheet":{"msg":"E_LANE_CROSS: tap \"inner\" of lane \"a\" is local to its split and cannot be used in lane \"bass\"; export a tap or use a named send","fixes":["Export tap","Add send"]},"added":["a: s(\"hh*8\").tap(\"inner\", { export: true }).split(x => x.tap(\"inner\").lpf(500), y => y.room(0.4))"],"removed":["a: s(\"hh*8\").split(x => x.tap(\"inner\").lpf(500), y => y.room(0.4))"]},"Add send":{"sheet":{"msg":"E_LANE_CROSS: tap \"inner\" of lane \"a\" is local to its split and cannot be used in lane \"bass\"; export a tap or use a named send","fixes":["Export tap","Add send"]},"added":["a: s(\"hh*8\").split(x => x.tap(\"inner\").lpf(500), y => y.room(0.4)).send(\"a\")"],"removed":["a: s(\"hh*8\").split(x => x.tap(\"inner\").lpf(500), y => y.room(0.4))"]}}
+PASS  lanes ui: LANES example 5 shows one verb bus with two sends and one return  -- {"nodes":1,"sends":["snarevia tagged(\"wet\")","keysvia tagged(\"wet\")"],"returns":"Returns verb"}
+PASS  lanes ui: changing a send amount rewrites only that .send(...) argument  -- {"dSel":{"added":["tagged(\"wet\").send(\"verb\", 0.3)"],"removed":["tagged(\"wet\").send(\"verb\", 0.5)"]},"dOwn":{"added":["pad: note(\"c4\").s(\"sawtooth\").send(\"verb\", 0.35)"],"removed":["pad: note(\"c4\").s(\"sawtooth\").send(\"verb\", 0.6)"]}}
+PASS  lanes ui: capture node shows ev / audio / level ports, the window in bars with steppers, its state in words, and coming actions  -- {"ports":["ev:pattern","audio:audio","level:signal"],"state":"empty","word":"Empty","from":"1b","until":"3b","coming":["Bounce to takes coming|true","Freeze coming|true","Use as sample coming|true"],"recallWire":true,"fromWire":true,"window_step":{"added":["capture(\"groove\", \"drums\", { window: \"1b..4b\", what: [\"events\", \"audio\", \"level\"] })"],"removed":["capture(\"groove\", \"drums\", { window: \"1b..3b\", what: [\"events\", \"audio\", \"level\"] })"]}}
+PASS  lanes ui: every lanes control >= 44 x 44 CSS px at 390 (canvas cards and outline)  -- {"canvas":{"n":29,"min_w":44,"min_h":44,"small":[]},"outline":{"n":26,"min_w":44,"min_h":44,"small":[]}}
+PASS  lanes ui: lanes text contrast >= 7:1 (canvas cards and outline)  -- {"canvas":{"min":7.11,"n":71,"worst":"span.gl-vres gl-why \"source + readers vs .lay\""},"outline":{"min":7.11,"n":75,"worst":"span. \"#drums\""}}
+PASS  lanes ui: no horizontal scroll at 390 with lanes in the graph  -- 390
+PASS  lanes ui: the split of LANES example 1 shows the engine counts 12 source + 3 readers (.layer: 36)  -- {"shown":"12 + 3 = 15 voices / cycle.layer: 36 (12 × 3)","recount":{"src":12,"rd":3,"bus_sounds":[64]}}
+PASS  lanes ui: tag chip Mute adds one tagged("drums").mute() and silences those lanes on the next cycle (queried events); again removes it  -- {"added":["tagged(\"drums\").mute()"],"events_before":["bd","bd","bd","bd","hh","hh","hh","hh","hh","hh","hh","hh","sd","triangle","triangle","triangle"],"events_muted":["triangle","triangle","triangle"],"events_after_unmute":["bd","bd","bd","bd","hh","hh","hh","hh","hh","hh","hh","hh","sd","triangle","triangle","triangle"],"chip":{"pressed":"true","text":"■Muted","icon":"■"},"solo":{"added":["tagged(\"harm\").solo()"],"events":["triangle","triangle","triangle"]}}
+PASS  lanes ui: tag chip Solo adds one tagged("harm").solo() and only those lanes sound  -- {"added":["tagged(\"harm\").solo()"],"events":["triangle","triangle","triangle"]}
+PASS  lanes ui: keyboard only (outline Connect to… -> bus) adds .send("verb", 0.3) to drums  -- {"tabs":[1,38,0],"keys":46,"added":["drums: s(\"bd*4\").tags(\"drums\").send(\"verb\", 0.3)"],"removed":["drums: s(\"bd*4\").tags(\"drums\")"]}
+PASS  lanes ui: reduced motion - recording state style has no animation, the state word stays (CSS only; capture runtime #76)  -- {"animation":"none","word":"Recording"}
+PASS  perform: tab strip is role=tablist with bank and board tabs
+PASS  perform: tabs add (bank + board), rename, reorder; arrow keys move between tabs  -- {"names2":["▦Bank A (pad bank)","◎Board (control board)","◎Board 2 (control board)","◎Knobs (control board)","▦Bank B1 (pad bank)"],"sel":["pft1","true"]}
+PASS  perform: KeyQ fires pad 1,0 in perform mode; with it off 1-4 and Space keep working; typing in the editor fires no pad  -- {"kq":1,"v2":"stack","stopped":true,"typedFired":0}
+PASS  perform: bar-quantised pad shows the queued mark until its boundary, then on; reduced motion: no animation, beats as text  -- {"qd":{"state":"queued","mark":"◔","beats":"3 beats","anim":"ppQ"},"qr":{"state":"queued","beats":"3 beats","anim":"none","label":"Pad 0,0 lead, queued, 3 beats"},"qon":"on"}
+PASS  perform: looper records a 1-bar take, Save stores a performance record, the loaded take replays  -- {"events":4,"kind":"performance","want":[6.104166666666667,6.25],"replayed":[6.104166666666667,6.25]}
+PASS  perform: declared-only type (encoder) renders its fallback with the "basic view" note  -- basic view (encoder shown as knob)
+PASS  perform: board knob changes the event value of its param on the next cycle; the inline control shows the same value  -- {"v0":200,"v1":580,"evc":[580,580],"inl":["580 Hz","580 Hz"]}
+PASS  perform: knob arrow keys step, typed value accepted, aria-valuetext has value and unit; XY moves by arrow keys  -- {"step":38,"typedV":1234,"vt":"1234 Hz","x0":"x 0.00, y 0.00","x1":"x 0.02, y 0.02"}
+PASS  perform: a Learn/hooks.map mapping (no ctl() for it) changes the mapped param's event value on the next cycle  -- {"m0":{"x":0,"lo":20,"hi":20000,"cut":1234,"ev":[20,20]},"m1":{"x":0.06,"lo":20,"hi":20000,"cut":1234,"ev":[1218.8,1218.8]}}
+PASS  perform: Learn + destination + move creates one maps entry and one hooks.map line; Unlearn removes both  -- {"lm":[{"control":"pos","dest":"lpf"}],"ll":["hooks.map('pos', 'lpf')"],"lm2":[],"ll2":[]}
+PASS  perform: a 1-bar control move records a lane into the model and the control follows it on replay  -- {"points":18,"follow":[[3240,3240],[2754,2754],[3240,3240],[1150,1150]]}
+PASS  perform: board edit mode resizes and moves a cell to another board; board saved to the library  -- {"sz":"2x1","moved":[false,true],"kinds":["performance","board"]}
+PASS  perform: perform-mode tap journals one on (hooks.journal); two touches fire two pads; edit-mode tap opens the pad sheet and journals nothing  -- {"one":1,"two":[1,1],"sheet":1,"j0":5,"j1":5}
+PASS  perform: pads and controls >= 44x44 at 390, text contrast >= 7:1, every pad state has its own mark + text  -- {"tp":[],"tb":[],"cp":7.95,"cpw":"span.pp-mark \"●\" rgb(230, 233, 238) on rgb(30,75,76)","cb":10.25,"cbw":"button. \"↶ Lane\" rgb(195, 202, 211) on rgb(24,29,36)","marks":{"loaded":{"mark":"○","label":true},"on":{"mark":"●","label":true},"empty":{"mark":"·","label":true}},"cols":4}
+PASS  perform: pointerdown handler -> journal entry, main-thread work p95 <= 10 ms (phone profile); #55 adds <= 5 kB (gzip) to the shell  -- {"phone":{"work":{"n":40,"mean_ms":0.398,"p95_ms":0.7,"max_ms":0.8},"from_event":{"n":40,"mean_ms":28.128,"p95_ms":37.8,"max_ms":38.4}},"cpu4x":{"work":{"n":20,"mean_ms":3.095,"p95_ms":7.8,"max_ms":7.8},"from_event":{"n":20,"mean_ms":48.565,"p95_ms":80.9,"max_ms":80.9}},"shell_gzip_bytes":3456}
 PASS  zero console errors / page errors
 
-42/42 checks passed; 0 console errors; frame {"desktop_1440":{"n":360,"mean_ms":16.67,"p95_ms":16.8,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":0.49,"p95_ms":0.7,"max_ms":2.7}},"phone_390":{"n":360,"mean_ms":16.67,"p95_ms":16.7,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":0.49,"p95_ms":0.7,"max_ms":3.5}},"phone_390_cpu4x":{"n":360,"mean_ms":16.67,"p95_ms":16.7,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":1.94,"p95_ms":3,"max_ms":6.4}},"reduced_motion_viz":{"n":30,"mean_ms":100,"p95_ms":100.1,"max_ms":100.1}}
-EXIT 0
+116/116 checks passed; 0 console errors; frame {"desktop_1440":{"n":360,"mean_ms":16.67,"p95_ms":16.7,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":0.82,"p95_ms":1.2,"max_ms":2.4}},"phone_390":{"n":360,"mean_ms":16.67,"p95_ms":16.8,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":0.82,"p95_ms":1.1,"max_ms":1.8}},"phone_390_cpu4x":{"n":242,"mean_ms":24.79,"p95_ms":50,"max_ms":66.6,"viz_draw":{"n":243,"mean_ms":3.39,"p95_ms":5.5,"max_ms":14.7}},"reduced_motion_viz":{"n":30,"mean_ms":100,"p95_ms":100.1,"max_ms":100.1}}
+exit 0

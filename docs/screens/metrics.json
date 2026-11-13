@@ -1,5 +1,5 @@
 {
- "date": "2026-11-13T18:36:19.032Z",
+ "date": "2026-11-13T19:44:47.181Z",
  "chromium": "153.0.8010.12",
  "recipes": [
   {
@@ -9,7 +9,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Four-on-the-floor",
-   "peak": "-7.1 dB",
+   "peak": "-7.5 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -20,7 +20,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Offbeat hat",
-   "peak": "-22.9 dB",
+   "peak": "-20.4 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -31,7 +31,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Euclid groove",
-   "peak": "-10.9 dB",
+   "peak": "-9.1 dB",
    "haps_next4cycles": 40,
    "ok": true
   },
@@ -42,7 +42,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Reese-style detuned bass",
-   "peak": "-15.9 dB",
+   "peak": "-17.2 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -53,7 +53,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Sub bass",
-   "peak": "-21.4 dB",
+   "peak": "-18.2 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -64,7 +64,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Pad swell",
-   "peak": "-17.4 dB",
+   "peak": "-18.1 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -75,7 +75,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Filter sweep build",
-   "peak": "-15.1 dB",
+   "peak": "-16.8 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -86,7 +86,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Riser",
-   "peak": "-29.7 dB",
+   "peak": "-28.4 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -97,7 +97,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Breakdown/drop arrangement over bars",
-   "peak": "-10.0 dB",
+   "peak": "-6.0 dB",
    "haps_next4cycles": 48,
    "ok": true
   },
@@ -108,7 +108,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Half-time",
-   "peak": "-12.8 dB",
+   "peak": "-13.6 dB",
    "haps_next4cycles": 40,
    "ok": true
   },
@@ -119,7 +119,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Call-and-response",
-   "peak": "-18.0 dB",
+   "peak": "-19.5 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -141,7 +141,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Chord stabs",
-   "peak": "-19.1 dB",
+   "peak": "-21.5 dB",
    "haps_next4cycles": 38,
    "ok": true
   },
@@ -152,7 +152,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Sidechain pump",
-   "peak": "-7.9 dB",
+   "peak": "-11.4 dB",
    "haps_next4cycles": 24,
    "ok": true
   },
@@ -163,7 +163,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Fade out",
-   "peak": "-21.9 dB",
+   "peak": "-23.0 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -174,7 +174,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Synth kick (no samples)",
-   "peak": "-24.0 dB",
+   "peak": "-21.0 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -185,7 +185,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Noise tick on the offbeats",
-   "peak": "-29.2 dB",
+   "peak": "-23.1 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -196,7 +196,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Noise backbeat",
-   "peak": "-40.8 dB",
+   "peak": "-46.3 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -207,7 +207,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Euclid low pulse",
-   "peak": "-24.5 dB",
+   "peak": "-28.3 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -218,7 +218,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Syncopated bass line",
-   "peak": "-20.2 dB",
+   "peak": "-20.4 dB",
    "haps_next4cycles": 20,
    "ok": true
   },
@@ -229,7 +229,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Wide detuned pad",
-   "peak": "-22.4 dB",
+   "peak": "-17.9 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -240,7 +240,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Short pluck line",
-   "peak": "-17.4 dB",
+   "peak": "-19.6 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -251,7 +251,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Minor arpeggio",
-   "peak": "-21.6 dB",
+   "peak": "-19.3 dB",
    "haps_next4cycles": 48,
    "ok": true
   },
@@ -262,7 +262,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Four-chord progression",
-   "peak": "-12.0 dB",
+   "peak": "-10.4 dB",
    "haps_next4cycles": 19,
    "ok": true
   },
@@ -273,7 +273,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Root-following bass",
-   "peak": "-22.7 dB",
+   "peak": "-17.6 dB",
    "haps_next4cycles": 8,
    "ok": true
   },
@@ -284,7 +284,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Echo tail",
-   "peak": "-25.1 dB",
+   "peak": "-29.1 dB",
    "haps_next4cycles": 8,
    "ok": true
   },
@@ -295,7 +295,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Reversed copy on the right",
-   "peak": "-19.7 dB",
+   "peak": "-17.0 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -306,7 +306,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Big reverb splash",
-   "peak": "-19.6 dB",
+   "peak": "-23.4 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -317,7 +317,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Dry and tight",
-   "peak": "-23.3 dB",
+   "peak": "-20.2 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -328,7 +328,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Phaser movement",
-   "peak": "-30.6 dB",
+   "peak": "-32.0 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -339,7 +339,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Tremolo shimmer",
-   "peak": "-21.0 dB",
+   "peak": "-20.9 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -350,7 +350,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Vowel formant colour",
-   "peak": "-31.7 dB",
+   "peak": "-35.2 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -361,7 +361,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing FM bell",
-   "peak": "-18.8 dB",
+   "peak": "-15.6 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -372,7 +372,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Lo-fi crunch",
-   "peak": "-24.0 dB",
+   "peak": "-20.6 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -383,7 +383,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Drifting filter",
-   "peak": "-19.2 dB",
+   "peak": "-19.3 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -394,7 +394,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Crescendo",
-   "peak": "-32.0 dB",
+   "peak": "-27.7 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -405,7 +405,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Accent pattern",
-   "peak": "-21.4 dB",
+   "peak": "-20.1 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -416,7 +416,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Sidechain pump (synth)",
-   "peak": "-21.7 dB",
+   "peak": "-19.2 dB",
    "haps_next4cycles": 20,
    "ok": true
   },
@@ -427,7 +427,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Build and drop sections",
-   "peak": "-18.7 dB",
+   "peak": "-22.4 dB",
    "haps_next4cycles": 30,
    "ok": true
   },
@@ -438,7 +438,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Layers entering one by one",
-   "peak": "-37.1 dB",
+   "peak": "-41.0 dB",
    "haps_next4cycles": 17,
    "ok": true
   },
@@ -449,7 +449,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Intro with an opening filter",
-   "peak": "-24.1 dB",
+   "peak": "-20.5 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -460,7 +460,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Random thinning",
-   "peak": "-29.4 dB",
+   "peak": "-31.4 dB",
    "haps_next4cycles": 34,
    "ok": true
   },
@@ -471,7 +471,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Polymeter",
-   "peak": "-23.4 dB",
+   "peak": "-17.8 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -482,7 +482,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Dark drone",
-   "peak": "-24.0 dB",
+   "peak": "-24.3 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -493,7 +493,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Sparse, spacious line",
-   "peak": "-23.0 dB",
+   "peak": "-25.3 dB",
    "haps_next4cycles": 8,
    "ok": true
   },
@@ -513,37 +513,37 @@
   "desktop_1440": {
    "n": 360,
    "mean_ms": 16.67,
+   "p95_ms": 16.7,
+   "max_ms": 16.8,
+   "viz_draw": {
+    "n": 361,
+    "mean_ms": 0.82,
+    "p95_ms": 1.2,
+    "max_ms": 2.4
+   }
+  },
+  "phone_390": {
+   "n": 360,
+   "mean_ms": 16.67,
    "p95_ms": 16.8,
    "max_ms": 16.8,
    "viz_draw": {
     "n": 361,
-    "mean_ms": 0.86,
+    "mean_ms": 0.82,
     "p95_ms": 1.1,
-    "max_ms": 2.8
-   }
-  },
-  "phone_390": {
-   "n": 358,
-   "mean_ms": 16.76,
-   "p95_ms": 16.7,
-   "max_ms": 50.1,
-   "viz_draw": {
-    "n": 359,
-    "mean_ms": 0.71,
-    "p95_ms": 1,
-    "max_ms": 2.2
+    "max_ms": 1.8
    }
   },
   "phone_390_cpu4x": {
-   "n": 287,
-   "mean_ms": 21.02,
-   "p95_ms": 33.4,
-   "max_ms": 50,
+   "n": 242,
+   "mean_ms": 24.79,
+   "p95_ms": 50,
+   "max_ms": 66.6,
    "viz_draw": {
-    "n": 288,
-    "mean_ms": 2.95,
-    "p95_ms": 4.8,
-    "max_ms": 5.8
+    "n": 243,
+    "mean_ms": 3.39,
+    "p95_ms": 5.5,
+    "max_ms": 14.7
    }
   },
   "reduced_motion_viz": {
@@ -557,7 +557,7 @@
  "graph": {
   "shell": {
    "graph_files_requested_with_shell": 0,
-   "shell_same_origin_bytes": 1206884
+   "shell_same_origin_bytes": 1389737
   },
   "two_views": {
    "added": [
@@ -668,7 +668,7 @@
    "empty_raf_loop": {
     "n": 120,
     "mean_ms": 16.67,
-    "p95_ms": 16.7,
+    "p95_ms": 16.8,
     "p95_vsync_ms": 16.67,
     "dropped_pct": 0,
     "max_ms": 16.8
@@ -676,43 +676,43 @@
    "pan": {
     "n": 240,
     "mean_ms": 16.67,
-    "p95_ms": 16.7,
+    "p95_ms": 16.8,
     "p95_vsync_ms": 16.67,
     "dropped_pct": 0,
     "max_ms": 16.8
    },
    "zoom": {
-    "n": 231,
+    "n": 222,
+    "mean_ms": 18.02,
+    "p95_ms": 16.8,
+    "p95_vsync_ms": 16.67,
+    "dropped_pct": 5,
+    "max_ms": 100
+   },
+   "all": {
+    "n": 462,
     "mean_ms": 17.32,
     "p95_ms": 16.8,
     "p95_vsync_ms": 16.67,
-    "dropped_pct": 2.2,
-    "max_ms": 66.7
-   },
-   "all": {
-    "n": 471,
-    "mean_ms": 16.98,
-    "p95_ms": 16.7,
-    "p95_vsync_ms": 16.67,
-    "dropped_pct": 1.1,
-    "max_ms": 66.7
+    "dropped_pct": 2.4,
+    "max_ms": 100
    },
    "cpu4x": {
     "pan": {
-     "n": 236,
-     "mean_ms": 16.95,
-     "p95_ms": 16.7,
-     "p95_vsync_ms": 16.67,
-     "dropped_pct": 1.7,
-     "max_ms": 33.3
+     "n": 226,
+     "mean_ms": 17.7,
+     "p95_ms": 33.3,
+     "p95_vsync_ms": 33.33,
+     "dropped_pct": 6.2,
+     "max_ms": 33.4
     },
     "zoom": {
-     "n": 104,
-     "mean_ms": 38.46,
-     "p95_ms": 50.1,
-     "p95_vsync_ms": 50,
-     "dropped_pct": 63.5,
-     "max_ms": 366.7
+     "n": 57,
+     "mean_ms": 70.17,
+     "p95_ms": 83.5,
+     "p95_vsync_ms": 83.33,
+     "dropped_pct": 100,
+     "max_ms": 416.7
     }
    }
   },
@@ -839,48 +839,48 @@
   },
   "lazy": {
    "declared_5000": {
-    "first_paint_ms": 101.4,
+    "first_paint_ms": 108.5,
     "dom_cards": 3,
     "scene_cards": 3
    },
    "declared_3": {
-    "first_paint_ms": 55.2,
+    "first_paint_ms": 75.1,
     "dom_cards": 3
    },
-   "delta_pct": 83.7,
+   "delta_pct": 44.5,
    "rounds": [
     {
      "small": {
-      "ms": 55.2,
+      "ms": 92.5,
       "dom_cards": 3,
       "scene_cards": 3
      },
      "big": {
-      "ms": 112.5,
+      "ms": 156.6,
       "dom_cards": 3,
       "scene_cards": 3
      }
     },
     {
      "small": {
-      "ms": 48.1,
+      "ms": 74.2,
       "dom_cards": 3,
       "scene_cards": 3
      },
      "big": {
-      "ms": 101.4,
+      "ms": 108.5,
       "dom_cards": 3,
       "scene_cards": 3
      }
     },
     {
      "small": {
-      "ms": 62.7,
+      "ms": 75.1,
       "dom_cards": 3,
       "scene_cards": 3
      },
      "big": {
-      "ms": 80.8,
+      "ms": 106.4,
       "dom_cards": 3,
       "scene_cards": 3
      }
@@ -888,8 +888,247 @@
    ]
   }
  },
+ "lanes_ui": {
+  "split": {
+   "fan": {
+    "lanes": 1,
+    "branches": [
+     "drypass-through",
+     "wet.room.rsize.lpf",
+     "grit.crush.hpf.gain"
+    ],
+    "bars": 8
+   },
+   "branches_after_add": 4,
+   "split_only": true,
+   "ports": [
+    "in:lpf:param",
+    "out:out:pattern",
+    "out:audio:audio"
+   ],
+   "folded": {
+    "ports": [
+     "in:lpf:param",
+     "out:out:pattern",
+     "out:audio:audio"
+    ],
+    "rows": 0,
+    "expanded": "false"
+   }
+  },
+  "taps": {
+   "edge": {
+    "exported": true,
+    "edge": true,
+    "local": true,
+    "localInside": true,
+    "localOnEdge": false,
+    "refusedRow": true
+   },
+   "wired": true,
+   "fixes": {
+    "Export tap": {
+     "sheet": {
+      "msg": "E_LANE_CROSS: tap \"inner\" of lane \"a\" is local to its split and cannot be used in lane \"bass\"; export a tap or use a named send",
+      "fixes": [
+       "Export tap",
+       "Add send"
+      ]
+     },
+     "added": [
+      "a: s(\"hh*8\").tap(\"inner\", { export: true }).split(x => x.tap(\"inner\").lpf(500), y => y.room(0.4))"
+     ],
+     "removed": [
+      "a: s(\"hh*8\").split(x => x.tap(\"inner\").lpf(500), y => y.room(0.4))"
+     ]
+    },
+    "Add send": {
+     "sheet": {
+      "msg": "E_LANE_CROSS: tap \"inner\" of lane \"a\" is local to its split and cannot be used in lane \"bass\"; export a tap or use a named send",
+      "fixes": [
+       "Export tap",
+       "Add send"
+      ]
+     },
+     "added": [
+      "a: s(\"hh*8\").split(x => x.tap(\"inner\").lpf(500), y => y.room(0.4)).send(\"a\")"
+     ],
+     "removed": [
+      "a: s(\"hh*8\").split(x => x.tap(\"inner\").lpf(500), y => y.room(0.4))"
+     ]
+    }
+   }
+  },
+  "bus": {
+   "bus": {
+    "nodes": 1,
+    "sends": [
+     "snarevia tagged(\"wet\")",
+     "keysvia tagged(\"wet\")"
+    ],
+    "returns": "Returns verb"
+   },
+   "selection_send": {
+    "added": [
+     "tagged(\"wet\").send(\"verb\", 0.3)"
+    ],
+    "removed": [
+     "tagged(\"wet\").send(\"verb\", 0.5)"
+    ]
+   },
+   "own_send": {
+    "added": [
+     "pad: note(\"c4\").s(\"sawtooth\").send(\"verb\", 0.35)"
+    ],
+    "removed": [
+     "pad: note(\"c4\").s(\"sawtooth\").send(\"verb\", 0.6)"
+    ]
+   }
+  },
+  "capture": {
+   "ports": [
+    "ev:pattern",
+    "audio:audio",
+    "level:signal"
+   ],
+   "state": "empty",
+   "word": "Empty",
+   "from": "1b",
+   "until": "3b",
+   "coming": [
+    "Bounce to takes coming|true",
+    "Freeze coming|true",
+    "Use as sample coming|true"
+   ],
+   "recallWire": true,
+   "fromWire": true,
+   "window_step": {
+    "added": [
+     "capture(\"groove\", \"drums\", { window: \"1b..4b\", what: [\"events\", \"audio\", \"level\"] })"
+    ],
+    "removed": [
+     "capture(\"groove\", \"drums\", { window: \"1b..3b\", what: [\"events\", \"audio\", \"level\"] })"
+    ]
+   }
+  },
+  "targets_390": {
+   "canvas": {
+    "n": 29,
+    "min_w": 44,
+    "min_h": 44,
+    "small": []
+   },
+   "outline": {
+    "n": 26,
+    "min_w": 44,
+    "min_h": 44,
+    "small": []
+   }
+  },
+  "contrast_390": {
+   "canvas": {
+    "min": 7.11,
+    "n": 71,
+    "worst": "span.gl-vres gl-why \"source + readers vs .lay\""
+   },
+   "outline": {
+    "min": 7.11,
+    "n": 75,
+    "worst": "span. \"#drums\""
+   }
+  },
+  "scroll_width_390": 390,
+  "voices": {
+   "shown": "12 + 3 = 15 voices / cycle.layer: 36 (12 × 3)",
+   "recount": {
+    "src": 12,
+    "rd": 3,
+    "bus_sounds": [
+     64
+    ]
+   }
+  },
+  "tags": {
+   "added": [
+    "tagged(\"drums\").mute()"
+   ],
+   "events_before": [
+    "bd",
+    "bd",
+    "bd",
+    "bd",
+    "hh",
+    "hh",
+    "hh",
+    "hh",
+    "hh",
+    "hh",
+    "hh",
+    "hh",
+    "sd",
+    "triangle",
+    "triangle",
+    "triangle"
+   ],
+   "events_muted": [
+    "triangle",
+    "triangle",
+    "triangle"
+   ],
+   "events_after_unmute": [
+    "bd",
+    "bd",
+    "bd",
+    "bd",
+    "hh",
+    "hh",
+    "hh",
+    "hh",
+    "hh",
+    "hh",
+    "hh",
+    "hh",
+    "sd",
+    "triangle",
+    "triangle",
+    "triangle"
+   ],
+   "chip": {
+    "pressed": "true",
+    "text": "■Muted",
+    "icon": "■"
+   },
+   "solo": {
+    "added": [
+     "tagged(\"harm\").solo()"
+    ],
+    "events": [
+     "triangle",
+     "triangle",
+     "triangle"
+    ]
+   }
+  },
+  "keyboard": {
+   "tabs": [
+    1,
+    38,
+    0
+   ],
+   "keys": 46,
+   "added": [
+    "drums: s(\"bd*4\").tags(\"drums\").send(\"verb\", 0.3)"
+   ],
+   "removed": [
+    "drums: s(\"bd*4\").tags(\"drums\")"
+   ]
+  },
+  "reduced_motion": {
+   "animation": "none",
+   "word": "Recording"
+  }
+ },
  "perform": {
-  "date": "2026-11-13T18:46:09.386Z",
   "take": {
    "events": 4,
    "record": {
@@ -899,19 +1138,19 @@
    }
   },
   "lane": {
-   "points": 16,
+   "points": 18,
    "events_next_cycle": [
     [
-     3620,
-     3620
+     3240,
+     3240
     ],
     [
-     3134,
-     3134
+     2754,
+     2754
     ],
     [
-     2955,
-     2955
+     3240,
+     3240
     ],
     [
      1150,
@@ -963,116 +1202,54 @@
   "latency_phone": {
    "work": {
     "n": 40,
-    "mean_ms": 0.315,
-    "p95_ms": 0.5,
-    "max_ms": 0.6
+    "mean_ms": 0.398,
+    "p95_ms": 0.7,
+    "max_ms": 0.8
    },
    "from_event": {
     "n": 40,
-    "mean_ms": 12.95,
-    "p95_ms": 20.3,
-    "max_ms": 25.7
+    "mean_ms": 28.128,
+    "p95_ms": 37.8,
+    "max_ms": 38.4
    }
   },
   "latency_phone_cpu4x": {
    "work": {
     "n": 20,
-    "mean_ms": 2.295,
-    "p95_ms": 3.6,
-    "max_ms": 3.6
+    "mean_ms": 3.095,
+    "p95_ms": 7.8,
+    "max_ms": 7.8
    },
    "from_event": {
     "n": 20,
-    "mean_ms": 43.41,
-    "p95_ms": 62.1,
-    "max_ms": 62.1
+    "mean_ms": 48.565,
+    "p95_ms": 80.9,
+    "max_ms": 80.9
    }
   },
   "shell_growth": {
-   "error": "Unexpected token '/', ...\"-pop.js\", /* lazy vi\"... is not valid JSON"
-  },
-  "checks": [
-   {
-    "name": "perform: tab strip is role=tablist with bank and board tabs",
-    "ok": true,
-    "detail": ""
-   },
-   {
-    "name": "perform: tabs add (bank + board), rename, reorder; arrow keys move between tabs",
-    "ok": true,
-    "detail": "{\"names2\":[\"▦Bank A (pad bank)\",\"◎Board (control board)\",\"◎Board 2 (control board)\",\"◎Knobs (control board)\",\"▦Bank B1 (pad bank)\"],\"sel\":[\"pft1\",\"true\"]}"
-   },
-   {
-    "name": "perform: KeyQ fires pad 1,0 in perform mode; with it off 1-4 and Space keep working; typing in the editor fires no pad",
-    "ok": true,
-    "detail": "{\"kq\":1,\"v2\":\"stack\",\"stopped\":true,\"typedFired\":0}"
-   },
-   {
-    "name": "perform: bar-quantised pad shows the queued mark until its boundary, then on; reduced motion: no animation, beats as text",
-    "ok": true,
-    "detail": "{\"qd\":{\"state\":\"queued\",\"mark\":\"◔\",\"beats\":\"3 beats\",\"anim\":\"ppQ\"},\"qr\":{\"state\":\"queued\",\"beats\":\"3 beats\",\"anim\":\"none\",\"label\":\"Pad 0,0 lead, queued, 3 beats\"},\"qon\":\"on\"}"
-   },
-   {
-    "name": "perform: looper records a 1-bar take, Save stores a performance record, the loaded take replays",
-    "ok": true,
-    "detail": "{\"events\":4,\"kind\":\"performance\",\"want\":[6.104166666666667,6.229166666666667],\"replayed\":[6.104166666666667,6.229166666666667]}"
-   },
-   {
-    "name": "perform: declared-only type (encoder) renders its fallback with the \"basic view\" note",
-    "ok": true,
-    "detail": "basic view (encoder shown as knob)"
-   },
-   {
-    "name": "perform: board knob changes the event value of its param on the next cycle; the inline control shows the same value",
-    "ok": true,
-    "detail": "{\"v0\":200,\"v1\":580,\"evc\":[580,580],\"inl\":[\"580 Hz\",\"580 Hz\"]}"
-   },
-   {
-    "name": "perform: knob arrow keys step, typed value accepted, aria-valuetext has value and unit; XY moves by arrow keys",
-    "ok": true,
-    "detail": "{\"step\":38,\"typedV\":1234,\"vt\":\"1234 Hz\",\"x0\":\"x 0.00, y 0.00\",\"x1\":\"x 0.02, y 0.02\"}"
-   },
-   {
-    "name": "perform: a Learn/hooks.map mapping (no ctl() for it) changes the mapped param's event value on the next cycle",
-    "ok": true,
-    "detail": "{\"m0\":{\"x\":0,\"lo\":20,\"hi\":20000,\"cut\":1234,\"ev\":[20,20]},\"m1\":{\"x\":0.06,\"lo\":20,\"hi\":20000,\"cut\":1234,\"ev\":[1218.8,1218.8]}}"
-   },
-   {
-    "name": "perform: Learn + destination + move creates one maps entry and one hooks.map line; Unlearn removes both",
-    "ok": true,
-    "detail": "{\"lm\":[{\"control\":\"pos\",\"dest\":\"lpf\"}],\"ll\":[\"hooks.map('pos', 'lpf')\"],\"lm2\":[],\"ll2\":[]}"
-   },
-   {
-    "name": "perform: a 1-bar control move records a lane into the model and the control follows it on replay",
-    "ok": true,
-    "detail": "{\"points\":16,\"follow\":[[3620,3620],[3134,3134],[2955,2955],[1150,1150]]}"
-   },
-   {
-    "name": "perform: board edit mode resizes and moves a cell to another board; board saved to the library",
-    "ok": true,
-    "detail": "{\"sz\":\"2x1\",\"moved\":[false,true],\"kinds\":[\"performance\",\"board\"]}"
-   },
-   {
-    "name": "perform: perform-mode tap journals one on (hooks.journal); two touches fire two pads; edit-mode tap opens the pad sheet and journals nothing",
-    "ok": true,
-    "detail": "{\"one\":1,\"two\":[1,1],\"sheet\":1,\"j0\":5,\"j1\":5}"
-   },
-   {
-    "name": "perform: pads and controls >= 44x44 at 390, text contrast >= 7:1, every pad state has its own mark + text",
-    "ok": true,
-    "detail": "{\"tp\":[],\"tb\":[],\"cp\":7.95,\"cpw\":\"span.pp-mark \\\"●\\\" rgb(230, 233, 238) on rgb(30,75,76)\",\"cb\":10.25,\"cbw\":\"button. \\\"↶ Lane\\\" rgb(195, 202, 211) on rgb(24,29,36)\",\"marks\":{\"loaded\":{\"mark\":\"○\",\"label\":true},\"on\":{\"mark\":\"●\",\"label\":true},\"empty\":{\"mark\":\"·\",\"label\":true}},\"cols\":4}"
-   },
-   {
-    "name": "perform: pointerdown handler -> journal entry, main-thread work p95 <= 10 ms (phone profile); #55 adds <= 5 kB (gzip) to the shell",
-    "ok": false,
-    "detail": "{\"phone\":{\"work\":{\"n\":40,\"mean_ms\":0.315,\"p95_ms\":0.5,\"max_ms\":0.6},\"from_event\":{\"n\":40,\"mean_ms\":12.95,\"p95_ms\":20.3,\"max_ms\":25.7}},\"cpu4x\":{\"work\":{\"n\":20,\"mean_ms\":2.295,\"p95_ms\":3.6,\"max_ms\":3.6},\"from_event\":{\"n\":20,\"mean_ms\":43.41,\"p95_ms\":62.1,\"max_ms\":62.1}}}"
-   },
-   {
-    "name": "perform: zero console errors / page errors",
-    "ok": true,
-    "detail": ""
-   }
-  ]
+   "gzip_bytes": 3456,
+   "commits": [
+    "5174f96",
+    "6ef850d",
+    "9ef74c3",
+    "8a428c1",
+    "7e8ece3",
+    "eafa160",
+    "9800995"
+   ],
+   "per": [
+    "9ef74c3 site/engine/controls.js +436",
+    "9ef74c3 site/engine/index.js +466",
+    "7e8ece3 site/style.css -996",
+    "eafa160 site/app.js +49",
+    "9800995 site/app.js +120",
+    "9800995 site/engine/hooks.js +1500",
+    "9800995 site/engine/index.js +771",
+    "9800995 site/index.html +69",
+    "9800995 site/style.css +1041"
+   ]
+  }
  },
  "console_errors": [],
  "checks": [
@@ -1194,12 +1371,12 @@
   {
    "name": "master meter shows signal",
    "ok": true,
-   "detail": "-18.0 dB"
+   "detail": "-17.7 dB"
   },
   {
    "name": "frame time during playback measured (1440)",
    "ok": true,
-   "detail": "{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.8,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":0.86,\"p95_ms\":1.1,\"max_ms\":2.8}}"
+   "detail": "{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.7,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":0.82,\"p95_ms\":1.2,\"max_ms\":2.4}}"
   },
   {
    "name": "Space stops playback",
@@ -1244,7 +1421,7 @@
   {
    "name": "frame time during playback measured (390, and 4x CPU throttle)",
    "ok": true,
-   "detail": "{\"normal\":{\"n\":358,\"mean_ms\":16.76,\"p95_ms\":16.7,\"max_ms\":50.1,\"viz_draw\":{\"n\":359,\"mean_ms\":0.71,\"p95_ms\":1,\"max_ms\":2.2}},\"cpu4x\":{\"n\":287,\"mean_ms\":21.02,\"p95_ms\":33.4,\"max_ms\":50,\"viz_draw\":{\"n\":288,\"mean_ms\":2.95,\"p95_ms\":4.8,\"max_ms\":5.8}}}"
+   "detail": "{\"normal\":{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.8,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":0.82,\"p95_ms\":1.1,\"max_ms\":1.8}},\"cpu4x\":{\"n\":242,\"mean_ms\":24.79,\"p95_ms\":50,\"max_ms\":66.6,\"viz_draw\":{\"n\":243,\"mean_ms\":3.39,\"p95_ms\":5.5,\"max_ms\":14.7}}}"
   },
   {
    "name": "reduced motion: transitions are 0s",
@@ -1269,17 +1446,17 @@
   {
    "name": "compose.html redirects into the app (stack)",
    "ok": true,
-   "detail": "http://127.0.0.1:34689/index.html#stack"
+   "detail": "http://127.0.0.1:46147/index.html#stack"
   },
   {
    "name": "plugins.html redirects into the app (ref)",
    "ok": true,
-   "detail": "http://127.0.0.1:34689/index.html#ref"
+   "detail": "http://127.0.0.1:46147/index.html#ref"
   },
   {
    "name": "practices.html redirects into the app (practice)",
    "ok": true,
-   "detail": "http://127.0.0.1:34689/index.html#practice"
+   "detail": "http://127.0.0.1:46147/index.html#practice"
   },
   {
    "name": "deep link #r/<id> selects that recipe",
@@ -1289,7 +1466,7 @@
   {
    "name": "graph: graph.js / graph.css are not loaded with the shell",
    "ok": true,
-   "detail": "0 graph requests on first load; shell 1206884 B same-origin"
+   "detail": "0 graph requests on first load; shell 1389737 B same-origin"
   },
   {
    "name": "graph: view opens from the nav and loads graph.js on first open",
@@ -1354,7 +1531,7 @@
   {
    "name": "graph: 150-node / 300-wire fixture pans and zooms with p95 frame time <= 16.7 ms (phone profile)",
    "ok": true,
-   "detail": "{\"profile\":\"smoke phone profile: 390x844, dpr 2, touch\",\"nodes\":150,\"wires\":300,\"empty_raf_loop\":{\"n\":120,\"mean_ms\":16.67,\"p95_ms\":16.7,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"pan\":{\"n\":240,\"mean_ms\":16.67,\"p95_ms\":16.7,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"zoom\":{\"n\":231,\"mean_ms\":17.32,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":2.2,\"max_ms\":66.7},\"all\":{\"n\":471,\"mean_ms\":16.98,\"p95_ms\":16.7,\"p95_vsync_ms\":16.67,\"dropped_pct\":1.1,\"max_ms\":66.7},\"cpu4x\":{\"pan\":{\"n\":236,\"mean_ms\":16.95,\"p95_ms\":16.7,\"p95_vsync_ms\":16.67,\"dropped_pct\":1.7,\"max_ms\":33.3},\"zoom\":{\"n\":104,\"mean_ms\":38.46,\"p95_ms\":50.1,\"p95_vsync_ms\":50,\"dropped_pct\":63.5,\"max_ms\":366.7}}}"
+   "detail": "{\"profile\":\"smoke phone profile: 390x844, dpr 2, touch\",\"nodes\":150,\"wires\":300,\"empty_raf_loop\":{\"n\":120,\"mean_ms\":16.67,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"pan\":{\"n\":240,\"mean_ms\":16.67,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"zoom\":{\"n\":222,\"mean_ms\":18.02,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":5,\"max_ms\":100},\"all\":{\"n\":462,\"mean_ms\":17.32,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":2.4,\"max_ms\":100},\"cpu4x\":{\"pan\":{\"n\":226,\"mean_ms\":17.7,\"p95_ms\":33.3,\"p95_vsync_ms\":33.33,\"dropped_pct\":6.2,\"max_ms\":33.4},\"zoom\":{\"n\":57,\"mean_ms\":70.17,\"p95_ms\":83.5,\"p95_vsync_ms\":83.33,\"dropped_pct\":100,\"max_ms\":416.7}}}"
   },
   {
    "name": "graph: keyboard-only wire through the outline list (Connect to...)",
@@ -1469,7 +1646,7 @@
   {
    "name": "atoms ui: Escape closes the popover; opening it shifts no code line",
    "ok": true,
-   "detail": "63,10,314,88 63,98,314,22 63,120,314,44 63,164,314,22 0,0,0,0 | 63,10,314,88 63,98,314,22 63,120,314,44 63,164,314,22 0,0,0,0"
+   "detail": "63,10,264,110 63,120,264,22 63,142,264,44 63,186,264,22 0,0,0,0 | 63,10,264,110 63,120,264,22 63,142,264,44 63,186,264,22 0,0,0,0"
   },
   {
    "name": "atoms ui: Detach replaces that one reference with its compiled string; the card count drops by 1",
@@ -1492,6 +1669,91 @@
    "detail": "[[3,3],[3,3],[3,3]]"
   },
   {
+   "name": "lanes ui: lanes-ui.js / .css load with the Graph view, not with the shell",
+   "ok": true,
+   "detail": "{\"shellLoaded\":false,\"graphLoaded\":true}"
+  },
+  {
+   "name": "lanes ui: LANES example 1 renders one lane card with three branch sub-chains (audio bars)",
+   "ok": true,
+   "detail": "{\"lanes\":1,\"branches\":[\"drypass-through\",\"wet.room.rsize.lpf\",\"grit.crush.hpf.gain\"],\"bars\":8}"
+  },
+  {
+   "name": "lanes ui: + Branch changes exactly the .split(...) call in the code",
+   "ok": true,
+   "detail": "{\"before\":\"split(dry => dry,\\n         wet => wet.room(0.9).rsize(6).lpf(900),\\n         grit => grit.crush(5).hpf(2000).gain(0.4))\",\"after\":\"split(dry => dry,\\n         wet => wet.room(0.9).rsize(6).lpf(900),\\n         grit => grit.crush(5).hpf(2000).gain(0.4), crush => crush.crush(4))\"}"
+  },
+  {
+   "name": "lanes ui: collapsing the fan keeps the card ports",
+   "ok": true,
+   "detail": "{\"ports\":[\"in:lpf:param\",\"out:out:pattern\",\"out:audio:audio\"],\"rows\":0,\"expanded\":\"false\"}"
+  },
+  {
+   "name": "lanes ui: an exported tap shows on the card edge and wires to another lane (.wire in code)",
+   "ok": true,
+   "detail": "{\"edge\":{\"exported\":true,\"edge\":true,\"local\":true,\"localInside\":true,\"localOnEdge\":false,\"refusedRow\":true},\"wired\":true}"
+  },
+  {
+   "name": "lanes ui: a local tap is refused with the E_LANE_CROSS text and working Export tap / Add send buttons",
+   "ok": true,
+   "detail": "{\"Export tap\":{\"sheet\":{\"msg\":\"E_LANE_CROSS: tap \\\"inner\\\" of lane \\\"a\\\" is local to its split and cannot be used in lane \\\"bass\\\"; export a tap or use a named send\",\"fixes\":[\"Export tap\",\"Add send\"]},\"added\":[\"a: s(\\\"hh*8\\\").tap(\\\"inner\\\", { export: true }).split(x => x.tap(\\\"inner\\\").lpf(500), y => y.room(0.4))\"],\"removed\":[\"a: s(\\\"hh*8\\\").split(x => x.tap(\\\"inner\\\").lpf(500), y => y.room(0.4))\"]},\"Add send\":{\"sheet\":{\"msg\":\"E_LANE_CROSS: tap \\\"inner\\\" of lane \\\"a\\\" is local to its split and cannot be used in lane \\\"bass\\\"; export a tap or use a named send\",\"fixes\":[\"Export tap\",\"Add send\"]},\"added\":[\"a: s(\\\"hh*8\\\").split(x => x.tap(\\\"inner\\\").lpf(500), y => y.room(0.4)).send(\\\"a\\\")\"],\"removed\":[\"a: s(\\\"hh*8\\\").split(x => x.tap(\\\"inner\\\").lpf(500), y => y.room(0.4))\"]}}"
+  },
+  {
+   "name": "lanes ui: LANES example 5 shows one verb bus with two sends and one return",
+   "ok": true,
+   "detail": "{\"nodes\":1,\"sends\":[\"snarevia tagged(\\\"wet\\\")\",\"keysvia tagged(\\\"wet\\\")\"],\"returns\":\"Returns verb\"}"
+  },
+  {
+   "name": "lanes ui: changing a send amount rewrites only that .send(...) argument",
+   "ok": true,
+   "detail": "{\"dSel\":{\"added\":[\"tagged(\\\"wet\\\").send(\\\"verb\\\", 0.3)\"],\"removed\":[\"tagged(\\\"wet\\\").send(\\\"verb\\\", 0.5)\"]},\"dOwn\":{\"added\":[\"pad: note(\\\"c4\\\").s(\\\"sawtooth\\\").send(\\\"verb\\\", 0.35)\"],\"removed\":[\"pad: note(\\\"c4\\\").s(\\\"sawtooth\\\").send(\\\"verb\\\", 0.6)\"]}}"
+  },
+  {
+   "name": "lanes ui: capture node shows ev / audio / level ports, the window in bars with steppers, its state in words, and coming actions",
+   "ok": true,
+   "detail": "{\"ports\":[\"ev:pattern\",\"audio:audio\",\"level:signal\"],\"state\":\"empty\",\"word\":\"Empty\",\"from\":\"1b\",\"until\":\"3b\",\"coming\":[\"Bounce to takes coming|true\",\"Freeze coming|true\",\"Use as sample coming|true\"],\"recallWire\":true,\"fromWire\":true,\"window_step\":{\"added\":[\"capture(\\\"groove\\\", \\\"drums\\\", { window: \\\"1b..4b\\\", what: [\\\"events\\\", \\\"audio\\\", \\\"level\\\"] })\"],\"removed\":[\"capture(\\\"groove\\\", \\\"drums\\\", { window: \\\"1b..3b\\\", what: [\\\"events\\\", \\\"audio\\\", \\\"level\\\"] })\"]}}"
+  },
+  {
+   "name": "lanes ui: every lanes control >= 44 x 44 CSS px at 390 (canvas cards and outline)",
+   "ok": true,
+   "detail": "{\"canvas\":{\"n\":29,\"min_w\":44,\"min_h\":44,\"small\":[]},\"outline\":{\"n\":26,\"min_w\":44,\"min_h\":44,\"small\":[]}}"
+  },
+  {
+   "name": "lanes ui: lanes text contrast >= 7:1 (canvas cards and outline)",
+   "ok": true,
+   "detail": "{\"canvas\":{\"min\":7.11,\"n\":71,\"worst\":\"span.gl-vres gl-why \\\"source + readers vs .lay\\\"\"},\"outline\":{\"min\":7.11,\"n\":75,\"worst\":\"span. \\\"#drums\\\"\"}}"
+  },
+  {
+   "name": "lanes ui: no horizontal scroll at 390 with lanes in the graph",
+   "ok": true,
+   "detail": "390"
+  },
+  {
+   "name": "lanes ui: the split of LANES example 1 shows the engine counts 12 source + 3 readers (.layer: 36)",
+   "ok": true,
+   "detail": "{\"shown\":\"12 + 3 = 15 voices / cycle.layer: 36 (12 × 3)\",\"recount\":{\"src\":12,\"rd\":3,\"bus_sounds\":[64]}}"
+  },
+  {
+   "name": "lanes ui: tag chip Mute adds one tagged(\"drums\").mute() and silences those lanes on the next cycle (queried events); again removes it",
+   "ok": true,
+   "detail": "{\"added\":[\"tagged(\\\"drums\\\").mute()\"],\"events_before\":[\"bd\",\"bd\",\"bd\",\"bd\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"sd\",\"triangle\",\"triangle\",\"triangle\"],\"events_muted\":[\"triangle\",\"triangle\",\"triangle\"],\"events_after_unmute\":[\"bd\",\"bd\",\"bd\",\"bd\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"sd\",\"triangle\",\"triangle\",\"triangle\"],\"chip\":{\"pressed\":\"true\",\"text\":\"■Muted\",\"icon\":\"■\"},\"solo\":{\"added\":[\"tagged(\\\"harm\\\").solo()\"],\"events\":[\"triangle\",\"triangle\",\"triangle\"]}}"
+  },
+  {
+   "name": "lanes ui: tag chip Solo adds one tagged(\"harm\").solo() and only those lanes sound",
+   "ok": true,
+   "detail": "{\"added\":[\"tagged(\\\"harm\\\").solo()\"],\"events\":[\"triangle\",\"triangle\",\"triangle\"]}"
+  },
+  {
+   "name": "lanes ui: keyboard only (outline Connect to… -> bus) adds .send(\"verb\", 0.3) to drums",
+   "ok": true,
+   "detail": "{\"tabs\":[1,38,0],\"keys\":46,\"added\":[\"drums: s(\\\"bd*4\\\").tags(\\\"drums\\\").send(\\\"verb\\\", 0.3)\"],\"removed\":[\"drums: s(\\\"bd*4\\\").tags(\\\"drums\\\")\"]}"
+  },
+  {
+   "name": "lanes ui: reduced motion - recording state style has no animation, the state word stays (CSS only; capture runtime #76)",
+   "ok": true,
+   "detail": "{\"animation\":\"none\",\"word\":\"Recording\"}"
+  },
+  {
    "name": "perform: tab strip is role=tablist with bank and board tabs",
    "ok": true,
    "detail": ""
@@ -1509,12 +1771,12 @@
   {
    "name": "perform: bar-quantised pad shows the queued mark until its boundary, then on; reduced motion: no animation, beats as text",
    "ok": true,
-   "detail": "{\"qd\":{\"state\":\"queued\",\"mark\":\"◔\",\"beats\":\"4 beats\",\"anim\":\"ppQ\"},\"qr\":{\"state\":\"queued\",\"beats\":\"3 beats\",\"anim\":\"none\",\"label\":\"Pad 0,0 lead, queued, 3 beats\"},\"qon\":\"on\"}"
+   "detail": "{\"qd\":{\"state\":\"queued\",\"mark\":\"◔\",\"beats\":\"3 beats\",\"anim\":\"ppQ\"},\"qr\":{\"state\":\"queued\",\"beats\":\"3 beats\",\"anim\":\"none\",\"label\":\"Pad 0,0 lead, queued, 3 beats\"},\"qon\":\"on\"}"
   },
   {
    "name": "perform: looper records a 1-bar take, Save stores a performance record, the loaded take replays",
    "ok": true,
-   "detail": "{\"events\":4,\"kind\":\"performance\",\"want\":[7.09375,7.21875],\"replayed\":[7.09375,7.21875]}"
+   "detail": "{\"events\":4,\"kind\":\"performance\",\"want\":[6.104166666666667,6.25],\"replayed\":[6.104166666666667,6.25]}"
   },
   {
    "name": "perform: declared-only type (encoder) renders its fallback with the \"basic view\" note",
@@ -1544,7 +1806,7 @@
   {
    "name": "perform: a 1-bar control move records a lane into the model and the control follows it on replay",
    "ok": true,
-   "detail": "{\"points\":12,\"follow\":[[960,960],[3145,3145],[2830,2830],[3335,3335]]}"
+   "detail": "{\"points\":18,\"follow\":[[3240,3240],[2754,2754],[3240,3240],[1150,1150]]}"
   },
   {
    "name": "perform: board edit mode resizes and moves a cell to another board; board saved to the library",
@@ -1564,7 +1826,7 @@
   {
    "name": "perform: pointerdown handler -> journal entry, main-thread work p95 <= 10 ms (phone profile); #55 adds <= 5 kB (gzip) to the shell",
    "ok": true,
-   "detail": "{\"phone\":{\"work\":{\"n\":40,\"mean_ms\":0.387,\"p95_ms\":0.7,\"max_ms\":0.7},\"from_event\":{\"n\":40,\"mean_ms\":12.047,\"p95_ms\":16.6,\"max_ms\":23.6}},\"cpu4x\":{\"work\":{\"n\":20,\"mean_ms\":3.335,\"p95_ms\":8.6,\"max_ms\":8.6},\"from_event\":{\"n\":20,\"mean_ms\":47.605,\"p95_ms\":69.7,\"max_ms\":69.7}},\"shell_gzip_bytes\":3456}"
+   "detail": "{\"phone\":{\"work\":{\"n\":40,\"mean_ms\":0.398,\"p95_ms\":0.7,\"max_ms\":0.8},\"from_event\":{\"n\":40,\"mean_ms\":28.128,\"p95_ms\":37.8,\"max_ms\":38.4}},\"cpu4x\":{\"work\":{\"n\":20,\"mean_ms\":3.095,\"p95_ms\":7.8,\"max_ms\":7.8},\"from_event\":{\"n\":20,\"mean_ms\":48.565,\"p95_ms\":80.9,\"max_ms\":80.9}},\"shell_gzip_bytes\":3456}"
   },
   {
    "name": "zero console errors / page errors",

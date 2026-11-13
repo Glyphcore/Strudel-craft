@@ -286,8 +286,8 @@ the Strudel `Pattern` and the hooks object) adds `Pattern.prototype.tags` and th
   outermost query wrapper before the control maps; selections serialise in `hooks.toJSON()` (`selections[]`) and live toggles (`lanes.set(id, op, on, at)`) journal as `sel` entries.
 - Text side: `scan(src)`, `compile(src)` -> `{ code, map, graph }` and `check(src, { strict })` (`E_LANE_DUP`, `W_LANE_ORBIT_FX`, `W_LANE_IMPLICIT_EXPORT`, `E_LANE_PRIVATE`); the
   lane graph is what `strudel lanes IN` will print (that command and `check --strict` wiring live in the CLI repo and are not done yet).
-- Not built yet (shown as "coming" in the Syntax view): `capture recall .from` (#76), the UI (#78); the CLI side of the audio layer (`strudel lanes`, `render`, `events`, `stems`).
-- **Consumers (L4, #77)** - data and engine only, no visible UI. Entry points for the lane UI (#78):
+- Not built yet (shown as "coming" in the Syntax view): `capture recall .from` (#76); the CLI side of the audio layer (`strudel lanes`, `render`, `events`, `stems`). The UI is built (#78, Graph > Lanes in the graph).
+- **Consumers (L4, #77)** - data and engine; the lane UI (#78, Graph > Lanes in the graph) reads these entry points:
   - `model.js` `parse` / `generate` / `applyOp` / `graph` / `checkWire`. Model additions (all derived from the code, so a no-edit round trip is byte-identical and models without lanes are unchanged):
     `tracks[].tags`, `tracks[].split` (`{ site, at, branches: [{ id, param, chain | null, src }], merge, mix, pre }`), `tracks[].sends` (`[{ bus, amount }]`), `tracks[].ret`, `buses` (`{ name: { returns } }`, names only, never bus numbers),
     `selections[]` (`{ id, selector, ops, gate? }`, the shape `hooks.toJSON()` uses), `captures` (`{ name: { picker, window | last, what, live, max } }`), `settings.lanes` (`open` | `closed`). Header statements `tagged(...)...`, `capture(...)`, `lanes.closed()` are kept verbatim like the hooks registry.
@@ -491,6 +491,25 @@ same document and undo is the shared history stack.
   1:1 reset and Fit; on phones one finger scrolls the page (`touch-action: pan-y`), two fingers pan and zoom, and "Interact" locks
   one-finger panning. Selection -> "Save to library" or "Collapse to subgraph" (new component plus `hooks.inst(...)` in the code).
 - Tests: `node tests/site/graph.mjs`, `graph_zoom.mjs`, `graph_scroll.mjs`; screenshots and metrics under `graph` in `docs/screens/`.
+- **Lanes in the graph** (`lanes-ui.js` + `lanes-ui.css`, #78, docs/LANES.md 11d; loaded with the Graph view, not with the shell). Drawn from `graph(model)`; edits go through `applyOp`
+  (`addBranch`, `exportTap`, `addSend`, `literal`) or, where model.js has no op yet, one splice of that statement on the graph's undo stack (adding / removing a `tagged(...)` statement, a group
+  send amount, a capture window).
+  - Lane card: tag chips with **Mute** / **Solo** (state as a word and a filled square: one `tagged("<tag>").mute()` / `.solo()` statement is added, tapping again removes it), an `audio` out port,
+    exported taps as ports on the card edge (wire one to another lane's param: facet and range sheet, `.wire(...)`), a `ret` input on return lanes.
+  - Split fan inside the card: one audio bar in, one row per branch (param and chain), local taps as ports inside the fan only, the join (sum or merge chain); **+ Branch** (site modal, `addBranch`),
+    fold / unfold (the card keeps its ports), **Voices** (compiles the lane alone through `strudelCraft.transport.compileCode` - it stops playback after asking - and counts one cycle of
+    queried events: source voices + `s("bus")` readers, against source x branches for `.layer`).
+  - Wiring a local tap to another lane is refused: the inspector shows the `E_LANE_CROSS` text with **Export tap** and **Add send** (the `fixes` of `checkWire` / `graph().refused`); code-level
+    refusals show as a red row on the reading lane.
+  - Bus node (`audio` in = sends, out = returns): one row per send with its amount (0..1; a lane's own `.send` through `literal`, a group send rewrites that `tagged(...).send(bus, x)` argument).
+    A lane's `audio` port wires to a bus input (amount asked in the site modal, `addSend`).
+  - Selection chip node: selector, ops, gate, matching lanes; "Send to pad" is **coming** (needs a pad-assign entry point in Perform).
+  - Capture node: picker chip and matches, window From / Until (or Last) with bar steppers that rewrite the window string, one out port per recorded layer (`ev`, `audio`, `level`), the state as
+    a word (Empty / Recording / Frozen; static under reduced motion); Bounce, Freeze / Thaw and Use as sample are **coming** (#76; state is Empty until the capture runtime reports one).
+  - Audio wires: thick bar with a ladder of slots, badge `BUS` + amount (`ret` on a return). Outline pane: a Lanes section (tag filter, lane list with Connect to…, tags with Mute / Solo,
+    split fans with Add branch / fold, buses with amounts, captures, refused wires with their fixes), so every action works without a pointer.
+  - `strudelCraft.lanesUI`: `toggleTag(tag, op)`, `setAmount(bus, lane, v)`, `setWindow(capture, field, value)`, `addBranch(lane)`, `countVoices(lane)`, `fold(lane, on?)`, `cross(c)`, `state()`.
+    Palette group Lanes. Test: `node tests/site/lanes_ui.mjs` (also run by the smoke test).
 
 ## Hooks wiring
 `app.js` runs every program through `strudelCraft.hooksLib.protect(code)` before `evaluate` (play and live swap), so gate strings such

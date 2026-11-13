@@ -120,6 +120,7 @@ A **track** is a chain: `pattern -> step -> ... -> out`. In the graph it is one 
 | `param` | a number, string or patterned value | dotted | literal args, `tap("var")`, `hooks.set` |
 | `gate` | open/closed over time | dashed, window badge (`17b ->`, `<- 17b`, `9b..17b`) | gate on a binding, read, wire, `let` |
 | `hook` | `pat -> pat` | double line | `hooks.bind`, decorator nesting, `{"$hook": ...}` |
+| `audio` | rendered sound on a bus (docs/LANES.md) | thick bar with a ladder of slots, badge `BUS` (with the send amount, `ret` on a return) | `.split` fan rows, `.send` / `tagged().send` to a bus node, `ret` out of it, capture `audio` |
 
 Type is shown by line style and a text badge, never by colour alone.
 

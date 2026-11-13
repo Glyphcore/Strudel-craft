@@ -178,6 +178,14 @@ export async function lanesUiSection({ browser, BASE, OUT, check, watch, metrics
     const page = await ctx.newPage(); watch(page, 'lanes-1440');
     await page.goto(BASE); await page.waitForSelector('#list li[data-id]');
     await openGraph(page);
+    // voice hint: LANES example 1 is 12 source voices + 3 readers per cycle, against 36 with .layer (section 7, example 1), counted from the engine's queried events
+    await load(page, EX1); await page.waitForTimeout(1500);
+    await press(page, '.gn[data-id="track:drums"] .gl-vc');
+    await page.waitForFunction(() => /\d+ \+ \d+/.test((document.querySelector('.gn[data-id="track:drums"] .gl-vres b') || {}).textContent || ''), null, { timeout: 60000 });
+    const vh = await page.evaluate(() => ({ text: document.querySelector('.gn[data-id="track:drums"] .gl-vres').textContent, api: window.strudelCraft.lanesUI.state && null }));
+    const vc = await page.evaluate(() => { const T = window.strudelCraft.transport; return T.compileCode(window.__graph.text).then((i) => { const hs = i.pattern.queryArc(0, 1).filter((h) => h.hasOnset()); return { src: hs.filter((h) => h.value.s !== 'bus').length, rd: hs.filter((h) => h.value.s === 'bus').length, bus_sounds: [...new Set(hs.filter((h) => h.value.s !== 'bus').map((h) => h.value.bus))] }; }); });
+    M.voices = { shown: vh.text, recount: vc };
+    check('lanes ui: the split of LANES example 1 shows the engine counts 12 source + 3 readers (.layer: 36)', /12 \+ 3/.test(vh.text) && /\.layer: 36/.test(vh.text) && vc.src === 12 && vc.rd === 3, JSON.stringify(M.voices));
     // tags: the chip's Mute adds one tagged("drums").mute() statement; the next cycle's events lose every drums lane; tapping again removes it
     const events = (code) => page.evaluate(async (code) => { const E = window.__sc.Engine; await E.idle(code); await E.idle(code); const c = Math.floor(E.scheduler.now ? E.scheduler.now() : 0) + 1; return E.scheduler.pattern.queryArc(c, c + 1).filter((h) => h.hasOnset()).map((h) => h.value.s); }, code);
     await load(page, TAGS);

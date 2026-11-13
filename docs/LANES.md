@@ -1,6 +1,6 @@
 # Lanes: splits, scoped taps, tags and capture without re-synthesis
 
-Status: **L1 built** (#74: memoised taps, lane-scoped taps, tags, selections, lane graph and checks; see "Built in L1" below) and **L2 built** (#75: `.split`, `.merge`, `.send`, `ret`, `.wire` to a bus, group `tagged().send`, as a compile pass on superdough buses; see "Built in L2", section 11c). The CLI commands (`strudel lanes`, `render`, `events`, `stems` for lane programs) are pending in the other repo. L3 to L5 are issued only (section 11). Builds on `docs/HOOKS_SYNTAX.md` (taps, gates, scopes), `docs/BLUEPRINT.md`
+Status: **L1 built** (#74: memoised taps, lane-scoped taps, tags, selections, lane graph and checks; see "Built in L1" below) and **L2 built** (#75: `.split`, `.merge`, `.send`, `ret`, `.wire` to a bus, group `tagged().send`, as a compile pass on superdough buses; see "Built in L2", section 11c). **L4 built** (#77, section 11b) and **L5 built** in the Graph view (#78, section 11d; capture actions wait on L3). The CLI commands (`strudel lanes`, `render`, `events`, `stems` for lane programs) are pending in the other repo. L3 is issued only (section 11). Builds on `docs/HOOKS_SYNTAX.md` (taps, gates, scopes), `docs/BLUEPRINT.md`
 (model, graph), `docs/ATOMS.md` (typed names), `docs/CONTROL_BINDING.md` (AST ids, param shapes), `docs/CAPTURE.md` (takes, offline
 render, recipes and Remake). Owner: `daw-sme`. UI parts are direction for `ui-designer`.
 
@@ -522,6 +522,22 @@ Files: `site/engine/lanes.js` (`compile`, `prepare`, `check`, runtime), `site/en
   -166 dB, max sample difference 3e-8): compare such renders with a tolerance, as Remake's level fingerprint does, not by hash.
 - **Not built** (marked coming where they appear in the Syntax view): the CLI side (`strudel lanes`, `render`, `events`, `stems` per lane group; these live in `engine/strudel-cli`, another repo), capture and recall (L3),
   model fields, graph nodes and typed param shapes (L4), lane cards and the split fan (L5).
+
+## 11d. Built in L5 (#78)
+Files: `site/lanes-ui.js`, `site/lanes-ui.css` (loaded by `graph.js` with the Graph view, like `atoms-ui.js`; nothing in the shell), small hook-ins in `site/graph.js` (decorate, rule, connect, inspector,
+outline, the `audio` wire style), test `tests/site/lanes_ui.mjs` (run by `tests/site/smoke.mjs`). Screens: `docs/screens/phone-390-lane-split.png`, `phone-390-capture-node.png`, `phone-390-lane-outline.png`,
+`desktop-1440-lanes.png`. Design choices and reasons are in the #78 comments. Where the build differs from, or settles, section 10:
+- **Edits**: `addBranch`, `exportTap`, `addSend`, `literal` (a lane's own send amount) go through `applyOp`. model.js has no op yet for adding / removing a `tagged(...)` statement, a group send's amount, or a
+  capture window: those are one splice of that statement's text on the same undo stack (wanted ops: `addSelection`, `removeSelection`, `setSelectionArg`, `setCaptureOpt`).
+- **Tag chips** act through code, not live toggles: Mute adds `tagged("<tag>").mute()` (Solo `.solo()`), tapping again removes exactly that statement; the chip shows "on" only for that exact form (no gate,
+  no other op). The selection runs from the next evaluation (next cycle when hot-swapped). "Send to pad" is coming: the Perform view has no entry point to assign a pad target from outside.
+- **Voices** (section 9): counted on demand by compiling the lane alone (`strudelCraft.transport.compileCode`, which stops playback; the button asks first) and querying cycle 0: source voices are the
+  haps whose sound is not `bus`, readers those whose sound is `bus`; `.layer` = source x branches. Example 1 gives 12 + 3 against 36, the figures of section 7.
+- **Exported taps** are ports on the card edge, read from the lane's own chain; wiring one to another lane's param uses the existing facet and range sheet (`addWire`). Local taps (inside a branch) are
+  ports inside the fan only; wiring them out opens the `E_LANE_CROSS` sheet with the two fixes. Known data issue: after "Export tap" the `graph()` data still lists the read as refused because the
+  branch-local tap has the same name (the code is right; bug #82).
+- **Capture node**: picker, window steppers, ports per recorded layer and the state word are built; the state is Empty until the capture runtime (L3, #76) reports one (`lanes.captureState(name)` is read when it
+  exists); Bounce, Freeze / Thaw and Use as sample are shown "coming" and disabled.
 
 ## 12. Open questions
 

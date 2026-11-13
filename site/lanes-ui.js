@@ -3,8 +3,8 @@
    graph(model) (model.js, L4 data) onto the view; every edit is one model.js applyOp through graph.js doOps, or, where model.js has no
    op yet (adding / removing a tagged(...) statement, a selection's .send amount, a capture window), one splice of that statement's
    text, committed on the graph's shared undo stack. The only view state is which split fans are folded and the tag filter.
-   Runtime: tags / tagged / mute / solo are live (#74). The audio layer (.split .merge .send ret, #75) and capture / recall (#76) are
-   not built: their nodes are drawn from the data, and every control that would need them to make sound is shown "coming" and disabled. */
+   Runtime: tags / tagged / mute / solo (#74) and the audio layer .split .merge .send ret (#75) are live. Capture / recall (#76) is not
+   built: capture nodes are drawn from the data, and every capture action that would need it is shown "coming" and disabled. */
 import * as acorn from './vendor/acorn-8.19.0.mjs';
 import { checkWire } from './model.js';
 
@@ -17,9 +17,10 @@ const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
 const store = { get: (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* full */ } } };
 const strOf = (v) => (typeof v === 'string' ? v : isObj(v) && typeof v.$mini === 'string' ? v.$mini : null);
 const fmt = (v) => (typeof v === 'number' ? String(+v.toFixed(3)) : String(v));
-const COMING = { audio: 'needs the audio layer (#75)', capture: 'needs capture and recall (#76)', voices: 'needs a per-site voice count from the audio layer (#75): no engine call returns it yet', pad: 'needs a pad-assign entry point in the Perform view' };
+const COMING = { capture: 'needs capture and recall (#76)', pad: 'needs a pad-assign entry point in the Perform view' };
 
 let X = null; // graph.js context (functions only)
+let V = {}; // voice counts per lane, valid only for the exact program text they were counted on (view cache, not lane state)
 let P = { on: false, lanes: [], tags: [], state: {}, buses: [], captures: [], selections: [], refused: [], model: null, g: null, fold: new Set(store.get(FOLD, [])), filter: null };
 
 export function loadCss() {
@@ -83,9 +84,26 @@ function laneCard(v, model, byG) {
   v.extraH = laneH(v.lane);
   v.body = (top) => `<div class="gl-card" style="top:${top}px">${laneHtml(v.lane)}</div>`;
 }
+// voice hint (LANES 9): one cycle of the lane, compiled by the engine on its own; source voices + readers vs what .layer would build
+function voicesHtml(l) {
+  const v = V[l.name], ok = v && X && v.key === X.text(), n = l.split.branches.length;
+  const res = ok ? `<span class="gl-vres" role="status"><b>${v.src} + ${v.rd}</b> = ${v.src + v.rd} voices / cycle<br><span class="gl-why">.layer: ${v.src * n} (${v.src} × ${n})</span></span>` : '<span class="gl-vres gl-why" role="status">source + readers vs .layer, per cycle</span>';
+  return `<div class="gl-voices"><button type="button" class="gl-b gl-vc" data-act="gl-voices" data-lane="${esc(l.name)}" aria-label="${esc(`Count the voices of ${l.name} for one cycle (compiles the lane; stops playback)`)}">Voices</button>${res}</div>`;
+}
+export async function countVoices(lane) {
+  const T = sc.transport; if (!T || !T.compileCode) return X.refuse('The engine is not available here');
+  const text = X.text(), body = topLevel(text), st = body && body.find((s) => s.type === 'LabeledStatement' && s.label.name === lane); if (!st) return X.refuse(`No lane ${lane} in the program`);
+  const L = P.lanes.find((x) => x.name === lane), n = L && L.t.split ? L.t.split.branches.length : 0; if (!n) return X.refuse(`${lane} has no split`);
+  if (T.playing && !(await sc.ui.askYesNo({ title: 'Count voices', message: `Counting compiles ${lane} on its own and stops playback. Stop and count?`, okText: 'Stop and count' }))) return null;
+  X.say(`Counting the voices of ${lane}…`);
+  let haps; try { const info = await T.compileCode(text.slice(st.start, st.end)); haps = info.pattern.queryArc(0, 1).filter((h) => h.hasOnset()); } catch (e) { X.refuse(`${lane} did not compile: ${e.message}`); return null; }
+  const rd = haps.filter((h) => h.value && h.value.s === 'bus').length, src = haps.length - rd;
+  V[lane] = { key: text, src, rd, branches: n, layer: src * n }; X.rerender(); X.say(`${lane}: ${src} source + ${rd} reader voices per cycle; .layer would build ${src * n}`);
+  return V[lane];
+}
 function laneH(l) {
   let h = l.tags.length * TAGH;
-  if (l.split) { h += ROWH; if (!l.folded) h += l.split.branches.reduce((s, b) => s + ROWH + b.taps.length * ROWH, 0) + 36 + 44; }
+  if (l.split) { h += ROWH; if (!l.folded) h += l.split.branches.reduce((s, b) => s + ROWH + b.taps.length * ROWH, 0) + 36 + ROWH; }
   h += l.refused.length * ROWH;
   return h ? h + PAD : 0;
 }
@@ -117,7 +135,7 @@ function laneHtml(l) {
       const svg = `<svg class="gl-fsvg" width="200" height="${H}" viewBox="0 0 200 ${H}" aria-hidden="true">${bar(`M8 0V${bot}`)}${rows.map((r) => bar(`M8 ${r}H22`)).join('')}${rows.map((r) => bar(`M180 ${r}H192`)).join('')}${bar(`M192 ${top}V${bot + 14}`)}</svg>`;
       const join = sp.merge && sp.merge !== true ? `merge ${esc(chainText(sp.merge))}` : sp.merge ? 'merge (sum bus)' : 'Σ sum at the orbit';
       html += `<div class="gl-fan" style="height:${H + 36}px">${svg}<ol class="gl-br" aria-label="${esc(`Split fan of ${l.name}: one audio input, ${n} branches`)}">${body}</ol><p class="gl-join" style="top:${H}px">${join}${sp.mix ? ` · mix ${esc(sp.mix.join(' / '))}` : ''}${sp.pre ? ' · pre' : ''}</p></div>`
-        + `<p class="gl-voices" title="${esc(COMING.voices)}"><b>Voices</b> <span class="gl-soon">coming</span> <span class="gl-why">source + readers vs .layer: ${esc(COMING.voices)}</span></p>`;
+        + voicesHtml(l);
     }
   }
   html += l.refused.map((r, i) => `<button type="button" class="gl-b gl-ref" data-act="gl-refused" data-i="${P.refused.indexOf(r)}" aria-label="${esc(r.message + '. Open the fixes.')}"><b>E_LANE_CROSS</b> ${esc(`refused: ${r.from.lane} tap read`)}</button>`).join('');
@@ -136,7 +154,7 @@ const selName = (id) => { const s = (P.model.selections || []).find((x) => x.id 
 function busHtml(b) {
   const rows = b.sends.map((s) => `<label class="gl-send"><span class="gl-sl"><b>${esc(s.lane)}</b>${s.own || s.via ? `<em>${s.own ? 'own .send' : ''}${s.own && s.via ? ' + ' : ''}${s.via ? 'via ' + esc(s.via.map(selName).join(', ')) : ''}</em>` : ''}</span><input class="gl-amt" type="number" inputmode="decimal" min="0" max="1" step="0.05" value="${esc(fmt(s.amount))}" data-bus="${esc(b.name)}" data-lane="${esc(s.lane)}" aria-label="${esc(`Send amount from ${s.lane} to bus ${b.name}, 0 to 1${s.own ? ', its own .send' : s.via ? ', set by ' + s.via.map(selName).join(', ') : ''}`)}"></label>`).join('');
   return rows + `<p class="gl-ret"><b>Returns</b> ${b.returns.length ? esc(b.returns.join(', ')) : '<i>none: add a lane that starts with ret("' + esc(b.name) + '")</i>'}</p>`
-    + `<p class="gl-coming" title="${esc(COMING.audio)}"><span class="gl-soon">coming</span> sound: #75</p>`;
+    + `<p class="gl-coming">${b.returns.length ? 'plays through its returns' : 'silent until a ret lane reads it (W_BUS_NO_RETURN)'}</p>`;
 }
 function selNode(v) {
   const r = v.raw; v.sel = { id: r.id.replace(/^selection:/, ''), selector: r.selector, ops: r.ops || [], matches: r.matches || [], gate: r.gate, error: r.error };
@@ -230,13 +248,13 @@ export function crossSheet(c) {
     h('div', { class: 'gx-acts' }, h('button', { type: 'button', class: 'ghost', 'data-act': 'close' }, 'Cancel'),
       ...cross.fixes.map((f, i) => h('button', { type: 'button', class: i ? 'ghost gl-fix' : 'gx-ok gl-fix', 'data-act': 'gl-fix', 'data-i': String(i), 'aria-label': `${f.label}: ${f.op.op === 'exportTap' ? `.tap("${f.op.tap}", { export: true }) on ${f.op.track}` : `.send("${f.op.bus}") on ${f.op.track}`}` }, f.label)))), { label: 'Refused wire: E_LANE_CROSS' });
   const first = document.querySelector('.gl-fix'); if (first) first.focus();
-  X.say('Refused: ' + cross.message); // the sheet itself is the alert (role=alert); no second toast
+  X.say('Refused: ' + cross.message); // the sheet is the live region; no second toast
   return cross;
 }
 function applyFix(i) {
   const f = P.cross && P.cross.fixes[i]; if (!f) return false;
   const ok = X.doOps([f.op], f.op.op === 'exportTap' ? `${f.op.track} exports tap ${f.op.tap}` : `${f.op.track} sends to bus ${f.op.bus}`);
-  if (ok) { X.closeSheet(); sc.ui.toast(f.op.op === 'exportTap' ? `Exported ${f.op.tap} from ${f.op.track}: wire it from the card edge` : `Added .send("${f.op.bus}") to ${f.op.track}; the bus plays once ${COMING.audio.replace('needs ', '')} lands`, { kind: 'ok' }); }
+  if (ok) { X.closeSheet(); sc.ui.toast(f.op.op === 'exportTap' ? `Exported ${f.op.tap} from ${f.op.track}: wire it from the card edge` : `Added .send("${f.op.bus}") to ${f.op.track}: add a ret("${f.op.bus}") lane to hear it`, { kind: 'ok' }); }
   return ok;
 }
 export function connectItems(n) { // non-pointer path for refused crossings: list them so they can be tried (and fixed) from the keyboard
@@ -360,6 +378,7 @@ export function install(ctx) {
       case 'gl-tag': return toggleTag(d.tag, d.op);
       case 'gl-fold': return fold(d.lane);
       case 'gl-addb': return addBranch(d.lane);
+      case 'gl-voices': return countVoices(d.lane);
       case 'gl-branch': return X.select('track:' + d.lane);
       case 'gl-refused': return crossSheet(P.refused[+d.i]);
       case 'gl-try': return crossSheet({ from: d.from, to: d.to });
@@ -380,6 +399,6 @@ export function install(ctx) {
     P2.register({ id: 'lanes.outline', group: 'Lanes', title: 'Lanes: lane list, tags, buses, captures (Graph outline)', run: () => { location.hash = '#graph'; const t = document.getElementById('gxTab-outline'); if (t) { t.click(); const hd = document.getElementById('glLanesH'); if (hd) hd.scrollIntoView({ block: 'start' }); } } });
     P2.register({ id: 'lanes.fold', group: 'Lanes', title: 'Lanes: collapse or expand every split fan', run: () => { const all = P.lanes.filter((l) => l.t.split).map((l) => l.name); const on = all.some((n) => !P.fold.has(n)); all.forEach((n) => (on ? P.fold.add(n) : P.fold.delete(n))); store.set(FOLD, [...P.fold]); X.rerender(); } });
   }
-  sc.lanesUI = { toggleTag, setAmount, setWindow, addBranch, fold, cross: crossSheet, state: () => ({ on: P.on, lanes: P.lanes.map((l) => ({ id: l.id, name: l.name, tags: l.tags })), tags: P.tags, chips: P.state, buses: P.buses, captures: P.captures, selections: P.selections, refused: P.refused, folded: [...P.fold] }) };
+  sc.lanesUI = { countVoices, toggleTag, setAmount, setWindow, addBranch, fold, cross: crossSheet, state: () => ({ on: P.on, lanes: P.lanes.map((l) => ({ id: l.id, name: l.name, tags: l.tags })), tags: P.tags, chips: P.state, buses: P.buses, captures: P.captures, selections: P.selections, refused: P.refused, folded: [...P.fold] }) };
   return sc.lanesUI;
 }

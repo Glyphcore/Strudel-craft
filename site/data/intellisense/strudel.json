@@ -609,6 +609,34 @@
    "category": "site api"
   },
   {
+   "label": "strudelCraft.lanesUI.toggleTag",
+   "method": false,
+   "detail": "toggleTag(tag, 'mute' | 'solo') -> boolean",
+   "info": "Graph view lane chips: add the statement tagged(\"tag\").mute() (or .solo()) to the graph program, or remove it when it is there. Same as a tag chip's Mute / Solo button.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.lanesUI.setAmount",
+   "method": false,
+   "detail": "setAmount(bus, laneId, amount)",
+   "info": "Graph view bus node: set one send amount (0..1). A lane's own .send(bus, x) is rewritten through applyOp literal; a group send rewrites that tagged(...).send(bus, x) argument.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.lanesUI.countVoices",
+   "method": false,
+   "detail": "countVoices(lane) -> Promise<{ src, rd, layer }>",
+   "info": "Graph view split fan: compile the lane alone (stops playback after asking) and count one cycle of events: source voices + bus readers, against source x branches for .layer.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.lanesUI.state",
+   "method": false,
+   "detail": "state() -> { lanes, tags, chips, buses, captures, selections, refused, folded }",
+   "info": "Graph view lanes projection: what the lane cards, bus / selection / capture nodes and the refused E_LANE_CROSS wires show (read-only; the model is the source).",
+   "category": "site api"
+  },
+  {
    "label": "strudelCraft.copycode.copy",
    "method": false,
    "detail": "copy(target?, mode?) -> Promise<boolean>",

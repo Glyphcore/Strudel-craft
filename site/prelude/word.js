@@ -5,11 +5,13 @@
 // Repitch: use the bank's pitched map (OUT_DIR/pitched/strudel.json, base note = sung MIDI) so .note('c4') retunes by speed shift (formants move).
 // vowel() works unchanged (fixed formant filter).
 // Banks: the demo bank (espeak-ng speech) auto-loads on first word(). voxBank('call-me-baby') switches to the owner's vocal bank (keys it lacks fall back to demo);
+//   voxBank('ljspeech') = ~500 common English/lyric words from LJSpeech (public domain, keys vox_<word>, 1-3 takes; word() works); voxBank('vocalset') = sustained sung vowels (CC BY 4.0, keys vs_<a|e|i|o|u>[_straight|_forte|_pp|_messa|_trill], use s('vs_a').note('c4'), no word()).
 //   voxBank(url) loads strudel.json from a URL (or a folder URL ending in /); voxBank() opens a folder picker (stays in the browser); voxBank.list() -> [{name,url,words,active}].
 (function () {
   const here = (typeof document !== 'undefined' && document.currentScript && document.currentScript.src) || (typeof location !== 'undefined' ? location.href : '');
   const root = (() => { try { return new URL('../data/vox/', here).href; } catch (e) { return 'data/vox/'; } })();
-  const banks = { demo: { url: root + 'demo/pitched/strudel.json' }, 'call-me-baby': { url: root + 'call-me-baby/pitched/strudel.json' } };
+  const banks = { demo: { url: root + 'demo/pitched/strudel.json' }, 'call-me-baby': { url: root + 'call-me-baby/pitched/strudel.json' },
+    ljspeech: { url: root + 'ljspeech/pitched/strudel.json' }, vocalset: { url: root + 'vocalset/pitched/strudel.json' } };
   let active = null, boot = null;
   const toast = (m, kind) => { const u = globalThis.window && window.strudelCraft && window.strudelCraft.ui; if (u && u.toast) u.toast(m, { kind: kind || 'info', ms: 6000 }); else console.warn('[vox] ' + m); };
   const register = async (name, jsonUrl, map) => {

@@ -384,6 +384,7 @@ packs.items(kind)                 // winners per bare name, plus shadowed
 packs.load(ingredientId)          // Promise<state>; pulls `requires`
 packs.add(source, opts) / packs.remove(id) / packs.prefer(id) / packs.grant(ingredientId) / packs.offline(id, on)
 packs.report()                    // {errors[], warnings[], resolution{}}; same JSON as `strudel packs list --report`
+packs.verify(ref, hash)           // Promise<{ok:true, ref, hash, source} | {ok:false, code, ref, expected, actual?, message, offline?}>; see 11.1
 packs.on(type, fn)                // "state", "report", "lock"
 packs.registerKind({ kind, formats: ["recipes@1"], hosts, apply(ingredient, data, ctx) -> dispose })
 ```
@@ -394,6 +395,26 @@ An adapter is the only code that knows both a kind and a registry (`intellisense
 module) and returns a dispose function so a pack can be removed without a reload. The CLI has the same `registerKind` in
 `lib/packs.mjs`; the resolution code (ids, precedence, report) is one shared ES module with no DOM or Node imports, imported by both
 hosts the way `site/engine/hooks.js` is today.
+
+### 11.1 `packs.verify(ref, hash)`
+
+Integrity check of a pinned reference without loading anything (also `verify` exported by `site/engine/packs-core.js` for node, default host = `fetch` +
+`crypto.subtle`, no cache). It never throws for an ordinary mismatch, has no UI, executes nothing and does not add, load or activate the pack.
+
+- `ref`: `author/pack` or `author/pack:ingredient`, optionally followed by `@<source>` where `<source>` is the lock's `source` (`github:owner/repo@<40 hex>[/path]`),
+  or `{ id, item?, source? }`. Without a source the pack's lock entry (shipped, user, session) supplies it. Only commit-pinned `github:` sources are
+  verifiable: `https:`, `file:`, `git+` and branch/tag sources give `E_PACK_SOURCE` without any fetch.
+- `hash`: exactly the lock's encoding, `sha256:` + 64 lower-case hex (not `sha256-`, not base64). Anything else is `E_PACK_HASH`.
+- Which bytes: a pack ref is checked against `craftpack.json` (the lock's `manifest`, the pack content hash); an item ref names an **ingredient id** (the
+  `pack:ingredient` form of the qualified id, the same unit `strudel packs hash` writes into the manifest) and is checked against that ingredient's entry file.
+  Items inside an entry file (a recipe id) have no hash of their own. Spec was silent on this; the reading follows `tools/packs/packs.py hash`/`lock`.
+- Same path as loading: mirrors of a matching lock entry first, then the pinned raw/jsDelivr URLs; the cache `sc-packs-1` is read first and written only after the
+  bytes match. A cached entry that does not match is re-read from the network once (a match replaces it); offline it is reported as `E_PACK_HASH` and kept.
+  An item ref needs the manifest: it is verified against the lock entry's `manifest` hash when the pack is in a lock layer (and cached), otherwise fetched
+  uncached, so it needs the network.
+- Results: `E_PACK_HASH` (mismatch, with `actual`), `E_PACK_ID` (malformed ref, or no such ingredient), `E_PACK_SOURCE` (no source known, or not commit-pinned),
+  `E_PACK_NAMESPACE` (manifest names another id), `E_PACK_PATH`, `E_PACK_SIZE`, `E_PACK_SCHEMA` (manifest not JSON), `E_PACK_UNAVAILABLE` (HTTP failure, `offline: false`, or
+  no network and no verified cache entry, `offline: true`).
 
 ## 12. CLI surface (`engine/strudel-cli`)
 
@@ -437,7 +458,7 @@ and `packs validate` list everything, errors exit 1.
 | `E_PACK_HASH` | bytes do not match the hash tree |
 | `E_PACK_PATH` | a path leaves the pack root, is absolute or has a scheme |
 | `E_PACK_NAMESPACE` | one pack id from two sources, or a registry entry outside its owner's namespace |
-| `E_PACK_ID` | duplicate ingredient id, or duplicate item id within one kind of one pack |
+| `E_PACK_ID` | duplicate ingredient id, or duplicate item id within one kind of one pack; `packs.verify`: malformed reference or unknown ingredient |
 | `E_PACK_ENGINE` | `engines` / `compat` range not met |
 | `E_PACK_DEP_UNDECLARED` / `_MISSING` / `_CONFLICT` / `_CYCLE` | section 6 |
 | `E_PACK_SOURCE` | source form this host cannot fetch and no mirror given |

@@ -77,7 +77,11 @@ a stale pin is `E_PACK_HASH` and that content is missing (fail closed). `shim.py
   grant code (user packs; still not run before #71). With no user packs the sheet shows a "No packs added" empty state; with an empty lock, "No packs loaded".
 - Recipes from a non-core pack show their pack id next to the title in the browser (`.row .pk`); core recipes have no badge. With no recipes at all the browser
   shows a "No recipes" empty state with **Open packs**. `strudelCraft.recipes.reload()` re-reads the catalog after the lock changes.
-- Tests: `node tests/site/packs.mjs` (loader; synthetic fixtures from `tests/packs/` plus packs it generates), `node tests/site/packs_ui.mjs` (sheet, badge, empty
+- `packs.verify(ref, hash)` (also `verify` in `engine/packs-core.js` for node): async integrity check of a pinned reference, no UI, nothing loaded. `ref` is `author/pack[:ingredient][@github:o/r@<40 hex>[/path]]`
+  or `{id, item, source}`; `hash` is `sha256:<64 hex>` (the lock encoding). Pack ref = `craftpack.json` hash, item ref = that ingredient's entry file. Resolves
+  `{ok:true, ref, hash, source}` or `{ok:false, code, ref, expected, actual?, offline?}` (`E_PACK_HASH`, `E_PACK_ID`, `E_PACK_SOURCE`, `E_PACK_UNAVAILABLE`, ...); uses the loader's
+  fetch, hash and `sc-packs-1` cache (verified entries only). PACK_SPEC 11.1.
+- Tests: `node tests/site/packs.mjs` (loader and `packs.verify`; synthetic fixtures from `tests/packs/` plus packs it generates), `node tests/site/packs_ui.mjs` (sheet, badge, empty
   states; writes `docs/screens/*-packs*.png`, `phone-360-empty-browser.png`).
 
 ## Regenerate the data

@@ -222,5 +222,42 @@ const errs = [];
   check('offline: cache sc-packs-1 survives a service-worker version change', keys.includes('sc-packs-1') && keys.includes('sc-test2') && !keys.includes('sc-dev'), keys.join());
   swVersion = null; await ctx.close();
 }
+
+// 13: packs.verify(ref, hash) - public integrity check of a pinned reference, same fetch+hash+cache path, nothing loaded
+{
+  const SHA40 = 'b'.repeat(40), SRC = `github:testco/fx@${SHA40}/good`, REF = 'testco/good', tamper = new Set(), seen = []; let down = false;
+  const gh = (ctx) => ctx.route(/raw\.githubusercontent\.com|cdn\.jsdelivr\.net/, (r) => { if (down) return r.abort('internetdisconnected'); const u = new URL(r.request().url()); seen.push(u.pathname); const m = /\/good\/(.+)$/.exec(u.pathname); const f = m && fxFile(`good/${m[1]}`);
+    if (!f) return r.fulfill({ status: 404 }); let b = fs.readFileSync(f); if (tamper.has(m[1])) { b = Buffer.from(b); b[4] ^= 1; } r.fulfill({ status: 200, headers: { 'access-control-allow-origin': '*' }, body: b }); });
+  const mb = fs.readFileSync(fxFile('good/craftpack.json')), man = JSON.parse(mb), ing = man.ingredients.find((i) => i.id === 'recipes'), ctl = man.ingredients.find((i) => i.id === 'controls');
+  const pyHash = (rel) => execFileSync('python3', ['-I', '-c', 'import sys; sys.path.insert(0, sys.argv[1]); import packs; print(packs.sha(open(sys.argv[2], "rb").read()))', path.join(ROOT, 'tools/packs'), fxFile('good/' + rel)]).toString().trim();
+  const MH = pyHash('craftpack.json'), IH = pyHash(ing.path), CH = pyHash(ctl.path);
+  const V = (page, ref, hash) => P(page, ([r, h]) => window.strudelCraft.packs.verify(r, h), [ref, hash]);
+  const e7 = []; const a = await open({ errors: e7 }); await gh(a.ctx);
+  const before = await P(a.page, () => JSON.stringify(window.strudelCraft.packs.list().map((p) => [p.id, p.state, p.ingredients.map((i) => i.state)])));
+  const ok1 = await V(a.page, `${REF}@${SRC}`, MH), ok2 = await V(a.page, { id: REF, item: 'recipes', source: SRC }, IH);
+  check('verify: pack ref and item ref match the hashes tools/packs/packs.py computes', ok1.ok === true && ok1.hash === MH && ok1.source === SRC && ok2.ok === true && IH === ing.hash, JSON.stringify([ok1, ok2]));
+  tamper.add(ctl.path); const bad = await V(a.page, `${REF}:controls@${SRC}`, CH); tamper.clear();
+  const ck = await P(a.page, () => caches.open('sc-packs-1').then((c) => c.keys()).then((ks) => ks.map((x) => x.url)));
+  check('verify: a tampered byte -> E_PACK_HASH with expected and actual, and it is not cached', bad.ok === false && bad.code === 'E_PACK_HASH' && bad.expected === CH && /^sha256:[0-9a-f]{64}$/.test(bad.actual) && bad.actual !== CH && ck.some((u) => u.endsWith('/good/craftpack.json')) && ck.every((u) => !u.endsWith('/' + ctl.path)), JSON.stringify(bad));
+  const un = await V(a.page, `${REF}:nope@${SRC}`, IH), mut = await V(a.page, `${REF}@github:testco/fx@main/good`, MH), none = await V(a.page, REF, MH), n404 = await V(a.page, `${REF}@github:testco/fx@${SHA40}/gone`, MH);
+  const seenBefore = seen.length; const url = await V(a.page, `${REF}@https://example.org/good/`, MH);
+  check('verify: unknown item, unpinned source, unknown pack, unreachable pack give existing codes and never throw', un.code === 'E_PACK_ID' && mut.code === 'E_PACK_SOURCE' && none.code === 'E_PACK_SOURCE' && n404.code === 'E_PACK_UNAVAILABLE' && n404.offline === false && url.code === 'E_PACK_SOURCE' && seen.length === seenBefore, JSON.stringify([un, mut, none, n404, url].map((x) => x.code)));
+  const after = await P(a.page, () => JSON.stringify(window.strudelCraft.packs.list().map((p) => [p.id, p.state, p.ingredients.map((i) => i.state)])));
+  check('verify: loads and activates nothing (pack list and ingredient states unchanged, no uncaught error)', before === after && e7.length === 0, e7.join(' | '));
+  // offline: the manifest was cached verified by the pack-ref check; the item entry file of a verified item is cached too
+  await a.ctx.setOffline(true); down = true;
+  const offOk = await V(a.page, `${REF}@${SRC}`, MH), offItem = await V(a.page, `${REF}:recipes@${SRC}`, IH), offNo = await V(a.page, `${REF}@${SRC}`, CH);
+  await P(a.page, async () => { const c = await caches.open('sc-packs-1'); await c.put(new URL('craftpack.json', `https://raw.githubusercontent.com/testco/fx/${'b'.repeat(40)}/other/`).href, new Response('junk')); });
+  const junk = await V(a.page, `testco/good@github:testco/fx@${SHA40}/other`, MH);
+  check('verify: offline, a verified cache entry verifies; an item whose manifest was never verified, a wrong hash (cache kept) and an unverified cache entry do not',
+    offOk.ok === true && offItem.ok === false && offItem.code === 'E_PACK_UNAVAILABLE' && offItem.offline === true && offNo.ok === false && offNo.code === 'E_PACK_HASH' && junk.ok === false && junk.code === 'E_PACK_HASH' && !!offNo.actual && offNo.actual === MH, JSON.stringify([offOk.ok, offItem, offNo, junk].map((x) => x.code || x.ok)));
+  await a.ctx.close(); down = false;
+  // with the pack in the user lock the manifest is verified by the lock's hash, so an item ref verifies offline once its entry file is cached
+  const g = { ...entry('good'), source: SRC, mirrors: [], manifest: MH };
+  const b = await open({ lock: userLock(g), errors: e7 }); await gh(b.ctx);
+  const on = await V(b.page, `${REF}:recipes`, IH); await b.ctx.setOffline(true); down = true; const off = await V(b.page, `${REF}:recipes`, IH);
+  check('verify: a ref without source takes it from the lock; the item verifies offline once cached', on.ok === true && on.source === SRC && off.ok === true, JSON.stringify([on, off]));
+  await b.ctx.close();
+}
 await browser.close(); server.close();
 const failed = results.filter((x) => !x).length; console.log(`${results.length} checks, ${failed} failed`); process.exit(failed ? 1 : 0);

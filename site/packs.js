@@ -2,7 +2,7 @@
 // kind adapters of packs-kinds.js, caches verified bytes for offline use and reports the resolution. Exposed as window.strudelCraft.packs.
 // Fail closed and never throw from loading: a bad ingredient is reported once and skipped. Code ingredients are never executed here
 // (the sandbox host is #71); assets are never fetched by the loader (they stream on first play, the service worker verifies them).
-import { resolve as coreResolve, API, aliasOf, itemIds } from './engine/packs-core.js';
+import { resolve as coreResolve, API, aliasOf, itemIds, verify as coreVerify, pinnedBases } from './engine/packs-core.js';
 import { KINDS, DEFERRED, sanitize, whenHas } from './packs-kinds.js';
 
 export { API, sanitize };
@@ -52,7 +52,6 @@ export function createPacks(opts = {}) {
     inflight.set(key, p); try { return await p; } finally { inflight.delete(key); }
   }
   async function keep(url, bytes) { const c = await cachePromise(); if (c) await c.put(url, new Response(bytes, { headers: { 'content-type': 'application/octet-stream' } })).catch(() => {}); }
-  async function drop(url) { const c = await cachePromise(); if (c) await c.delete(url).catch(() => {}); }
   // fetch one pack file, verify against `hash`, cache only after the hash matches. Tries every candidate base; the hash tree decides.
   async function getVerified(pack, rel, hash, cap = MAX_ENTRY) {
     let lastErr = null;
@@ -62,8 +61,8 @@ export function createPacks(opts = {}) {
         let r = await fetchBytes(url, pack.immutable);
         if (r.bytes.length > cap) throw Object.assign(new Error(`${rel} is larger than ${cap} bytes`), { code: 'E_PACK_SIZE' });
         if (hash && (await sha(r.bytes)) !== hash) {
-          if (r.cached) { await drop(url); r = await fetchBytes(url, false); } // a damaged cache entry: re-read once from the network
-          if ((await sha(r.bytes)) !== hash) { lastErr = Object.assign(new Error(`${rel} does not match its hash`), { code: 'E_PACK_HASH' }); continue; }
+          if (r.cached) { try { r = await fetchBytes(url, false); } catch (e) { /* offline: the cached bytes stay, reported as a mismatch */ } } // cached bytes that do not match: re-read once from the network; a matching read replaces the entry
+          const actual = await sha(r.bytes); if (actual !== hash) { lastErr = Object.assign(new Error(`${rel} does not match its hash`), { code: 'E_PACK_HASH', actual }); continue; }
         }
         if (pack.immutable && !r.cached) await keep(url, r.bytes);
         pack.base = b; return r.bytes;
@@ -75,12 +74,17 @@ export function createPacks(opts = {}) {
     throw lastErr || Object.assign(new Error('no source for ' + pack.id), { code: 'E_PACK_SOURCE' });
   }
 
+  // verify(ref, hash): public integrity check of a pinned reference through the same fetch+hash+cache path; loads and activates nothing (docs/PACK_SPEC.md 11.1)
+  const verify = async (ref, hash) => { await ready; return coreVerify(ref, hash, {
+    known: (id) => { const e = layers.flatMap((L) => L.packs).find((x) => x.id === id); return e ? { source: e.source, manifest: e.manifest, mirrors: e.mirrors } : null; },
+    bases: (source, k) => (k?.mirrors || []).map((m) => new URL(slash(m), base).href),
+    get: (bases, rel, hash, o) => getVerified({ id: 'verify', bases, immutable: !!o.cache, base: null }, rel, hash),
+  }); };
+
   // ---------------------------------------------------------------- lock layers
   const sourceBases = (entry, layer) => {
     const out = (entry.mirrors || []).map((m) => new URL(slash(m), base).href), s = String(entry.source || '');
-    let m;
-    if ((m = /^github:([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)@([0-9a-f]{40})(\/.*)?$/.exec(s))) { const path = (m[4] || '/').replace(/^\/|\/$/g, ''); const p = path ? path + '/' : '';
-      out.push(`https://raw.githubusercontent.com/${m[1]}/${m[2]}/${m[3]}/${p}`, `https://cdn.jsdelivr.net/gh/${m[1]}/${m[2]}@${m[3]}/${p}`); }
+    if (pinnedBases(s)) out.push(...pinnedBases(s));
     else if (/^https:\/\/[^\s]+\/$/.test(s)) out.push(s);
     else if (s.startsWith('file:') && layer === 'shipped') out.push(new URL(slash(s.slice(5)), base).href); // the shim pack: same-origin, hash-pinned
     return out;
@@ -336,7 +340,7 @@ export function createPacks(opts = {}) {
   if (typeof window !== 'undefined') window.addEventListener('online', () => { for (const i of allIngs()) if (i.state === 'unavailable') { i.promise = null; i.state = 'listed'; } for (const p of packs.values()) if (p.state === 'unavailable') loadPack(p.entry, p.layer).then(applyEager); applyEager(); });
 
   return {
-    api: API, ready, list, credits, describe, resolve: resolveRef, items, report, get, ...view, sanitize,
+    api: API, ready, verify, list, credits, describe, resolve: resolveRef, items, report, get, ...view, sanitize,
     load: async (ref) => { await ready; const i = findIng(ref); if (!i) return 'unknown'; return loadIng(i); },
     loadAll: async () => { await ready; await Promise.all(allIngs().map(loadIng)); return report(); },
     ensure: async (kind) => { await ready; await Promise.all(allIngs().filter((i) => i.kind === kind).map(loadIng)); return items(kind); },

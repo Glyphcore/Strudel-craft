@@ -134,6 +134,17 @@ SHA-256 of the value, `commits`, `meta`); falls back to `localStorage` `schist.*
   `get(id) -> {key: value}`, `diff(a, b|null=now) -> [{key,status,hunks:[{op:'+'|'-'|'=',text}]}]`, `checkout(id)`,
   `undo()`, `redo()`, `search(q, {regex, flags}) -> [{id,time,label,hits:[{key,line,context}]}]`,
   `subscribe(fn) -> unsubscribe` (events `{type:'commit',commit}` / `{type:'checkout',id}`), `snapshot()`, `flush()`, `head()`.
+- `window.strudelCraft.history.docs` (keyed, revisioned documents, async, rejects with a coded `E_DOC_*` error, shows no UI): own IndexedDB
+  object store `docs` of `sc-history` (database version 2; the upgrade only creates the missing store and never touches `blobs`, `commits`,
+  `meta`). Not part of the timeline, undo/redo or search. `put(ns, id, doc, {rev}?) -> {rev, hash}` (appends an immutable, content-hashed
+  revision; an identical put returns the latest rev; `rev` makes it idempotent and immutable: `E_DOC_IMMUTABLE`, `E_DOC_REV`),
+  `get(ns, id, rev?) -> {id, rev, hash, time, doc}`, `list(ns) -> [{id, rev, hash, time}]`, `revs(ns, id) -> [{rev, hash, time}]` (oldest first),
+  `delete(ns, id)`, `subscribe(ns, fn) -> unsubscribe` (events `{type:'put'|'delete', ns, id, rev?, hash?}`). Without IndexedDB it uses `localStorage` `schist.docs.*`.
+  If an old tab still holds version 1 open, the upgrade waits and a toast asks to close the other tabs; a tab that gets a newer version asks for a reload.
+- The component library (`library.js`) stores its records in `docs` namespace `library` through `library-store.js` (`docsStore`: synchronous
+  reads from a memory copy hydrated from docs, writes go through; warm cache in `localStorage` `schist.library`; a legacy `sc.library` copy is migrated once).
+  Node tests and browsers without IndexedDB use the in-memory + `localStorage` `fallbackStore`. Library saves add no timeline entries.
+- Tests: `node tests/site/history_upgrade.mjs` (v1 database upgrade, second-tab blocking, docs API, library persistence).
 - `window.strudelCraft.app.reload()` re-applies persisted state to the UI after a checkout.
 
 ## One transport, one clock

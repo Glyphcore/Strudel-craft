@@ -1,5 +1,5 @@
 {
- "date": "2026-11-13T16:31:55.962Z",
+ "date": "2026-11-13T16:49:52.698Z",
  "chromium": "153.0.8010.12",
  "recipes": [
   {
@@ -9,7 +9,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Four-on-the-floor",
-   "peak": "-14.1 dB",
+   "peak": "-12.2 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -20,7 +20,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Offbeat hat",
-   "peak": "-18.4 dB",
+   "peak": "-19.0 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -31,7 +31,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Euclid groove",
-   "peak": "-9.7 dB",
+   "peak": "-9.4 dB",
    "haps_next4cycles": 40,
    "ok": true
   },
@@ -42,7 +42,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Reese-style detuned bass",
-   "peak": "-14.4 dB",
+   "peak": "-13.9 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -64,7 +64,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Pad swell",
-   "peak": "-19.9 dB",
+   "peak": "-20.0 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -75,7 +75,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Filter sweep build",
-   "peak": "-17.1 dB",
+   "peak": "-13.8 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -86,7 +86,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Riser",
-   "peak": "-28.2 dB",
+   "peak": "-28.8 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -97,7 +97,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Breakdown/drop arrangement over bars",
-   "peak": "-8.8 dB",
+   "peak": "-8.5 dB",
    "haps_next4cycles": 48,
    "ok": true
   },
@@ -108,7 +108,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Half-time",
-   "peak": "-9.0 dB",
+   "peak": "-9.5 dB",
    "haps_next4cycles": 40,
    "ok": true
   },
@@ -119,7 +119,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Call-and-response",
-   "peak": "-20.6 dB",
+   "peak": "-20.9 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -130,7 +130,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Minor motif",
-   "peak": "-22.6 dB",
+   "peak": "-22.8 dB",
    "haps_next4cycles": 8,
    "ok": true
   },
@@ -141,7 +141,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Chord stabs",
-   "peak": "-16.8 dB",
+   "peak": "-16.5 dB",
    "haps_next4cycles": 38,
    "ok": true
   },
@@ -163,7 +163,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Fade out",
-   "peak": "-22.9 dB",
+   "peak": "-19.9 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -174,7 +174,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Synth kick (no samples)",
-   "peak": "-21.6 dB",
+   "peak": "-22.2 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -185,7 +185,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Noise tick on the offbeats",
-   "peak": "-24.3 dB",
+   "peak": "-24.8 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -196,7 +196,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Noise backbeat",
-   "peak": "-38.0 dB",
+   "peak": "-38.6 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -207,7 +207,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Euclid low pulse",
-   "peak": "-21.8 dB",
+   "peak": "-22.5 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -218,7 +218,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Syncopated bass line",
-   "peak": "-17.7 dB",
+   "peak": "-18.4 dB",
    "haps_next4cycles": 20,
    "ok": true
   },
@@ -229,7 +229,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Wide detuned pad",
-   "peak": "-22.4 dB",
+   "peak": "-23.8 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -240,7 +240,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Short pluck line",
-   "peak": "-20.6 dB",
+   "peak": "-21.3 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -251,7 +251,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Minor arpeggio",
-   "peak": "-19.1 dB",
+   "peak": "-19.9 dB",
    "haps_next4cycles": 48,
    "ok": true
   },
@@ -262,7 +262,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Four-chord progression",
-   "peak": "-12.5 dB",
+   "peak": "-11.6 dB",
    "haps_next4cycles": 19,
    "ok": true
   },
@@ -284,7 +284,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Echo tail",
-   "peak": "-25.5 dB",
+   "peak": "-23.0 dB",
    "haps_next4cycles": 8,
    "ok": true
   },
@@ -295,7 +295,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Reversed copy on the right",
-   "peak": "-16.5 dB",
+   "peak": "-17.0 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -306,7 +306,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Big reverb splash",
-   "peak": "-34.2 dB",
+   "peak": "-34.6 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -317,7 +317,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Dry and tight",
-   "peak": "-19.8 dB",
+   "peak": "-20.9 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -339,7 +339,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Tremolo shimmer",
-   "peak": "-21.2 dB",
+   "peak": "-22.0 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -350,7 +350,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Vowel formant colour",
-   "peak": "-34.3 dB",
+   "peak": "-35.3 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -361,7 +361,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing FM bell",
-   "peak": "-16.1 dB",
+   "peak": "-16.2 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -383,7 +383,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Drifting filter",
-   "peak": "-22.4 dB",
+   "peak": "-19.2 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -405,7 +405,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Accent pattern",
-   "peak": "-23.5 dB",
+   "peak": "-24.2 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -416,7 +416,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Sidechain pump (synth)",
-   "peak": "-18.4 dB",
+   "peak": "-18.7 dB",
    "haps_next4cycles": 20,
    "ok": true
   },
@@ -427,7 +427,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Build and drop sections",
-   "peak": "-14.5 dB",
+   "peak": "-14.0 dB",
    "haps_next4cycles": 30,
    "ok": true
   },
@@ -438,7 +438,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Layers entering one by one",
-   "peak": "-27.7 dB",
+   "peak": "-26.2 dB",
    "haps_next4cycles": 17,
    "ok": true
   },
@@ -449,7 +449,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Intro with an opening filter",
-   "peak": "-24.0 dB",
+   "peak": "-24.1 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -460,7 +460,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Random thinning",
-   "peak": "-28.5 dB",
+   "peak": "-27.2 dB",
    "haps_next4cycles": 34,
    "ok": true
   },
@@ -471,7 +471,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Polymeter",
-   "peak": "-20.7 dB",
+   "peak": "-21.2 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -482,7 +482,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Dark drone",
-   "peak": "-24.3 dB",
+   "peak": "-24.0 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -493,7 +493,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Sparse, spacious line",
-   "peak": "-24.8 dB",
+   "peak": "-26.7 dB",
    "haps_next4cycles": 8,
    "ok": true
   },
@@ -513,13 +513,13 @@
   "desktop_1440": {
    "n": 360,
    "mean_ms": 16.67,
-   "p95_ms": 16.7,
+   "p95_ms": 16.8,
    "max_ms": 16.8,
    "viz_draw": {
     "n": 361,
-    "mean_ms": 0.85,
-    "p95_ms": 1.2,
-    "max_ms": 3.9
+    "mean_ms": 0.71,
+    "p95_ms": 1,
+    "max_ms": 2.4
    }
   },
   "phone_390": {
@@ -529,26 +529,26 @@
    "max_ms": 16.8,
    "viz_draw": {
     "n": 361,
-    "mean_ms": 0.87,
-    "p95_ms": 1.3,
-    "max_ms": 7.9
+    "mean_ms": 0.65,
+    "p95_ms": 0.9,
+    "max_ms": 2
    }
   },
   "phone_390_cpu4x": {
-   "n": 216,
-   "mean_ms": 27.78,
-   "p95_ms": 50,
-   "max_ms": 66.8,
+   "n": 316,
+   "mean_ms": 18.99,
+   "p95_ms": 33.4,
+   "max_ms": 50.1,
    "viz_draw": {
-    "n": 217,
-    "mean_ms": 3.69,
-    "p95_ms": 5.9,
-    "max_ms": 8.1
+    "n": 317,
+    "mean_ms": 2.58,
+    "p95_ms": 4,
+    "max_ms": 7
    }
   },
   "reduced_motion_viz": {
    "n": 30,
-   "mean_ms": 99.99,
+   "mean_ms": 100,
    "p95_ms": 100.1,
    "max_ms": 100.1
   }
@@ -557,7 +557,7 @@
  "graph": {
   "shell": {
    "graph_files_requested_with_shell": 0,
-   "shell_same_origin_bytes": 1162365
+   "shell_same_origin_bytes": 1169733
   },
   "two_views": {
    "added": [
@@ -667,7 +667,7 @@
    "wires": 300,
    "empty_raf_loop": {
     "n": 120,
-    "mean_ms": 16.67,
+    "mean_ms": 16.66,
     "p95_ms": 16.8,
     "p95_vsync_ms": 16.67,
     "dropped_pct": 0,
@@ -676,43 +676,43 @@
    "pan": {
     "n": 240,
     "mean_ms": 16.67,
-    "p95_ms": 16.7,
+    "p95_ms": 16.8,
     "p95_vsync_ms": 16.67,
     "dropped_pct": 0,
     "max_ms": 16.8
    },
    "zoom": {
-    "n": 225,
-    "mean_ms": 17.78,
+    "n": 230,
+    "mean_ms": 17.39,
     "p95_ms": 16.8,
     "p95_vsync_ms": 16.67,
-    "dropped_pct": 3.6,
-    "max_ms": 100
+    "dropped_pct": 2.2,
+    "max_ms": 83.3
    },
    "all": {
-    "n": 465,
-    "mean_ms": 17.2,
+    "n": 470,
+    "mean_ms": 17.02,
     "p95_ms": 16.8,
     "p95_vsync_ms": 16.67,
-    "dropped_pct": 1.7,
-    "max_ms": 100
+    "dropped_pct": 1.1,
+    "max_ms": 83.3
    },
    "cpu4x": {
     "pan": {
-     "n": 236,
-     "mean_ms": 16.95,
+     "n": 238,
+     "mean_ms": 16.81,
      "p95_ms": 16.8,
      "p95_vsync_ms": 16.67,
-     "dropped_pct": 1.7,
+     "dropped_pct": 0.8,
      "max_ms": 33.4
     },
     "zoom": {
-     "n": 97,
-     "mean_ms": 41.41,
+     "n": 108,
+     "mean_ms": 37.04,
      "p95_ms": 66.6,
      "p95_vsync_ms": 66.67,
-     "dropped_pct": 69.1,
-     "max_ms": 450
+     "dropped_pct": 60.2,
+     "max_ms": 400
     }
    }
   },
@@ -839,48 +839,48 @@
   },
   "lazy": {
    "declared_5000": {
-    "first_paint_ms": 109.2,
+    "first_paint_ms": 98.4,
     "dom_cards": 3,
     "scene_cards": 3
    },
    "declared_3": {
-    "first_paint_ms": 78.6,
+    "first_paint_ms": 88.6,
     "dom_cards": 3
    },
-   "delta_pct": 38.9,
+   "delta_pct": 11.1,
    "rounds": [
     {
      "small": {
-      "ms": 69.1,
+      "ms": 69.4,
       "dom_cards": 3,
       "scene_cards": 3
      },
      "big": {
-      "ms": 121.9,
+      "ms": 98.4,
       "dom_cards": 3,
       "scene_cards": 3
      }
     },
     {
      "small": {
-      "ms": 224.9,
+      "ms": 101,
       "dom_cards": 3,
       "scene_cards": 3
      },
      "big": {
-      "ms": 109.2,
+      "ms": 86.1,
       "dom_cards": 3,
       "scene_cards": 3
      }
     },
     {
      "small": {
-      "ms": 78.6,
+      "ms": 88.6,
       "dom_cards": 3,
       "scene_cards": 3
      },
      "big": {
-      "ms": 79.1,
+      "ms": 103.7,
       "dom_cards": 3,
       "scene_cards": 3
      }
@@ -901,20 +901,20 @@
    "points": 17,
    "events_next_cycle": [
     [
-     1340,
-     1340
+     1720,
+     1720
     ],
     [
-     3240,
-     3240
+     3747,
+     3747
     ],
     [
-     2881,
-     2881
+     3324,
+     3324
     ],
     [
-     3145,
-     3145
+     2733,
+     2733
     ]
    ]
   },
@@ -962,29 +962,29 @@
   "latency_phone": {
    "work": {
     "n": 40,
-    "mean_ms": 0.387,
-    "p95_ms": 0.7,
-    "max_ms": 1.1
+    "mean_ms": 0.307,
+    "p95_ms": 0.6,
+    "max_ms": 0.7
    },
    "from_event": {
     "n": 40,
-    "mean_ms": 27.532,
-    "p95_ms": 35.5,
-    "max_ms": 39.5
+    "mean_ms": 12.983,
+    "p95_ms": 19.6,
+    "max_ms": 21.1
    }
   },
   "latency_phone_cpu4x": {
    "work": {
     "n": 20,
-    "mean_ms": 3.46,
-    "p95_ms": 7.3,
-    "max_ms": 7.3
+    "mean_ms": 2.575,
+    "p95_ms": 5.9,
+    "max_ms": 5.9
    },
    "from_event": {
     "n": 20,
-    "mean_ms": 57.235,
-    "p95_ms": 98.7,
-    "max_ms": 98.7
+    "mean_ms": 46.41,
+    "p95_ms": 69.3,
+    "max_ms": 69.3
    }
   },
   "shell_growth": {
@@ -1131,12 +1131,12 @@
   {
    "name": "master meter shows signal",
    "ok": true,
-   "detail": "-18.0 dB"
+   "detail": "-17.7 dB"
   },
   {
    "name": "frame time during playback measured (1440)",
    "ok": true,
-   "detail": "{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.7,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":0.85,\"p95_ms\":1.2,\"max_ms\":3.9}}"
+   "detail": "{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.8,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":0.71,\"p95_ms\":1,\"max_ms\":2.4}}"
   },
   {
    "name": "Space stops playback",
@@ -1181,7 +1181,7 @@
   {
    "name": "frame time during playback measured (390, and 4x CPU throttle)",
    "ok": true,
-   "detail": "{\"normal\":{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.7,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":0.87,\"p95_ms\":1.3,\"max_ms\":7.9}},\"cpu4x\":{\"n\":216,\"mean_ms\":27.78,\"p95_ms\":50,\"max_ms\":66.8,\"viz_draw\":{\"n\":217,\"mean_ms\":3.69,\"p95_ms\":5.9,\"max_ms\":8.1}}}"
+   "detail": "{\"normal\":{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.7,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":0.65,\"p95_ms\":0.9,\"max_ms\":2}},\"cpu4x\":{\"n\":316,\"mean_ms\":18.99,\"p95_ms\":33.4,\"max_ms\":50.1,\"viz_draw\":{\"n\":317,\"mean_ms\":2.58,\"p95_ms\":4,\"max_ms\":7}}}"
   },
   {
    "name": "reduced motion: transitions are 0s",
@@ -1196,7 +1196,7 @@
   {
    "name": "reduced motion: visualiser throttled to <= 10 fps",
    "ok": true,
-   "detail": "{\"n\":30,\"mean_ms\":99.99,\"p95_ms\":100.1,\"max_ms\":100.1}"
+   "detail": "{\"n\":30,\"mean_ms\":100,\"p95_ms\":100.1,\"max_ms\":100.1}"
   },
   {
    "name": "works offline after first load (service worker)",
@@ -1206,17 +1206,17 @@
   {
    "name": "compose.html redirects into the app (stack)",
    "ok": true,
-   "detail": "http://127.0.0.1:43233/index.html#stack"
+   "detail": "http://127.0.0.1:32945/index.html#stack"
   },
   {
    "name": "plugins.html redirects into the app (ref)",
    "ok": true,
-   "detail": "http://127.0.0.1:43233/index.html#ref"
+   "detail": "http://127.0.0.1:32945/index.html#ref"
   },
   {
    "name": "practices.html redirects into the app (practice)",
    "ok": true,
-   "detail": "http://127.0.0.1:43233/index.html#practice"
+   "detail": "http://127.0.0.1:32945/index.html#practice"
   },
   {
    "name": "deep link #r/<id> selects that recipe",
@@ -1226,7 +1226,7 @@
   {
    "name": "graph: graph.js / graph.css are not loaded with the shell",
    "ok": true,
-   "detail": "0 graph requests on first load; shell 1162365 B same-origin"
+   "detail": "0 graph requests on first load; shell 1169733 B same-origin"
   },
   {
    "name": "graph: view opens from the nav and loads graph.js on first open",
@@ -1291,7 +1291,7 @@
   {
    "name": "graph: 150-node / 300-wire fixture pans and zooms with p95 frame time <= 16.7 ms (phone profile)",
    "ok": true,
-   "detail": "{\"profile\":\"smoke phone profile: 390x844, dpr 2, touch\",\"nodes\":150,\"wires\":300,\"empty_raf_loop\":{\"n\":120,\"mean_ms\":16.67,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"pan\":{\"n\":240,\"mean_ms\":16.67,\"p95_ms\":16.7,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"zoom\":{\"n\":225,\"mean_ms\":17.78,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":3.6,\"max_ms\":100},\"all\":{\"n\":465,\"mean_ms\":17.2,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":1.7,\"max_ms\":100},\"cpu4x\":{\"pan\":{\"n\":236,\"mean_ms\":16.95,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":1.7,\"max_ms\":33.4},\"zoom\":{\"n\":97,\"mean_ms\":41.41,\"p95_ms\":66.6,\"p95_vsync_ms\":66.67,\"dropped_pct\":69.1,\"max_ms\":450}}}"
+   "detail": "{\"profile\":\"smoke phone profile: 390x844, dpr 2, touch\",\"nodes\":150,\"wires\":300,\"empty_raf_loop\":{\"n\":120,\"mean_ms\":16.66,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"pan\":{\"n\":240,\"mean_ms\":16.67,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"zoom\":{\"n\":230,\"mean_ms\":17.39,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":2.2,\"max_ms\":83.3},\"all\":{\"n\":470,\"mean_ms\":17.02,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":1.1,\"max_ms\":83.3},\"cpu4x\":{\"pan\":{\"n\":238,\"mean_ms\":16.81,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":0.8,\"max_ms\":33.4},\"zoom\":{\"n\":108,\"mean_ms\":37.04,\"p95_ms\":66.6,\"p95_vsync_ms\":66.67,\"dropped_pct\":60.2,\"max_ms\":400}}}"
   },
   {
    "name": "graph: keyboard-only wire through the outline list (Connect to...)",
@@ -1446,12 +1446,12 @@
   {
    "name": "perform: bar-quantised pad shows the queued mark until its boundary, then on; reduced motion: no animation, beats as text",
    "ok": true,
-   "detail": "{\"qd\":{\"state\":\"queued\",\"mark\":\"◔\",\"beats\":\"3 beats\",\"anim\":\"ppQ\"},\"qr\":{\"state\":\"queued\",\"beats\":\"3 beats\",\"anim\":\"none\",\"label\":\"Pad 0,0 lead, queued, 3 beats\"},\"qon\":\"on\"}"
+   "detail": "{\"qd\":{\"state\":\"queued\",\"mark\":\"◔\",\"beats\":\"4 beats\",\"anim\":\"ppQ\"},\"qr\":{\"state\":\"queued\",\"beats\":\"3 beats\",\"anim\":\"none\",\"label\":\"Pad 0,0 lead, queued, 3 beats\"},\"qon\":\"on\"}"
   },
   {
    "name": "perform: looper records a 1-bar take, Save stores a performance record, the loaded take replays",
    "ok": true,
-   "detail": "{\"events\":4,\"kind\":\"performance\",\"want\":[7.104166666666667,7.239583333333333],\"replayed\":[7.104166666666667,7.239583333333333]}"
+   "detail": "{\"events\":4,\"kind\":\"performance\",\"want\":[7.09375,7.229166666666667],\"replayed\":[7.09375,7.229166666666667]}"
   },
   {
    "name": "perform: declared-only type (encoder) renders its fallback with the \"basic view\" note",
@@ -1481,7 +1481,7 @@
   {
    "name": "perform: a 1-bar control move records a lane into the model and the control follows it on replay",
    "ok": true,
-   "detail": "{\"points\":17,\"follow\":[[1340,1340],[3240,3240],[2881,2881],[3145,3145]]}"
+   "detail": "{\"points\":17,\"follow\":[[1720,1720],[3747,3747],[3324,3324],[2733,2733]]}"
   },
   {
    "name": "perform: board edit mode resizes and moves a cell to another board; board saved to the library",
@@ -1501,7 +1501,7 @@
   {
    "name": "perform: pointerdown handler -> journal entry, main-thread work p95 <= 10 ms (phone profile); #55 adds <= 5 kB (gzip) to the shell",
    "ok": true,
-   "detail": "{\"phone\":{\"work\":{\"n\":40,\"mean_ms\":0.387,\"p95_ms\":0.7,\"max_ms\":1.1},\"from_event\":{\"n\":40,\"mean_ms\":27.532,\"p95_ms\":35.5,\"max_ms\":39.5}},\"cpu4x\":{\"work\":{\"n\":20,\"mean_ms\":3.46,\"p95_ms\":7.3,\"max_ms\":7.3},\"from_event\":{\"n\":20,\"mean_ms\":57.235,\"p95_ms\":98.7,\"max_ms\":98.7}},\"shell_gzip_bytes\":3456}"
+   "detail": "{\"phone\":{\"work\":{\"n\":40,\"mean_ms\":0.307,\"p95_ms\":0.6,\"max_ms\":0.7},\"from_event\":{\"n\":40,\"mean_ms\":12.983,\"p95_ms\":19.6,\"max_ms\":21.1}},\"cpu4x\":{\"work\":{\"n\":20,\"mean_ms\":2.575,\"p95_ms\":5.9,\"max_ms\":5.9},\"from_event\":{\"n\":20,\"mean_ms\":46.41,\"p95_ms\":69.3,\"max_ms\":69.3}},\"shell_gzip_bytes\":3456}"
   },
   {
    "name": "zero console errors / page errors",

@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createLibrary, expand, embed, extract, replaceWithInstance, verify, installInstances } from '../../site/library.js';
 import { bootRuntime, haps } from './fixtures/rt.mjs';
-import { fallbackStore } from '../../site/library-store.js';
+import { fallbackStore, docsStore } from '../../site/library-store.js';
 import { hash } from '../../site/model.js';
 
 const pass = (m) => console.log('PASS ' + m);
@@ -152,7 +152,7 @@ if (!RT) skip('Gate', NO_RT); else {
 }
 
 // 10 Adapter
-{
+await (async () => {
   const store = fallbackStore(mem()), seen = [];
   const un = store.subscribe(r => seen.push(r));
   const rec = (rev, h, parent) => ({ model: 1, meta: { name: 'a', kind: 'track', rev, hash: h, ...(parent ? { parent } : {}) } });
@@ -166,5 +166,16 @@ if (!RT) skip('Gate', NO_RT); else {
   assert.ok(s2);
   // persistence round trip through localStorage-like storage
   const st = mem(), s3 = fallbackStore(st); s3.put(rec(1, 'z')); assert.equal(fallbackStore(st).get('a').meta.hash, 'z');
-  pass('Adapter: put/get/list/revs/subscribe pass against the fallback store (memory + localStorage); window.strudelCraft.history on main has commit/log/diff/checkout, not these five calls, so it was NOT tested');
-}
+  pass('Adapter: put/get/list/revs/subscribe pass against the fallback store (memory + localStorage), the node-side fallback');
+  // docsStore over an in-memory docs fake with the history.docs contract (the real IndexedDB store is exercised in the browser by tests/site/history_upgrade.mjs)
+  const fake = () => { const m = new Map(); const k = (n, i) => n + '\0' + i; return { async put(n, i, d, o = {}) { const l = m.get(k(n, i)) || []; const h = JSON.stringify(d); if (o.rev && l[o.rev - 1]) return { rev: o.rev, hash: h }; if (o.rev && o.rev !== l.length + 1) throw Object.assign(new Error('E_DOC_REV'), { code: 'E_DOC_REV' }); l.push({ rev: l.length + 1, hash: h, doc: d }); m.set(k(n, i), l); return { rev: l.length, hash: h }; }, async get(n, i, r) { const l = m.get(k(n, i)) || []; const x = r === undefined ? l[l.length - 1] : l[r - 1]; return x && { ...x }; }, async list(n) { return [...m.keys()].filter((x) => x.startsWith(n + '\0')).map((x) => ({ id: x.split('\0')[1] })); }, async revs(n, i) { return (m.get(k(n, i)) || []).map(({ rev, hash }) => ({ rev, hash })); }, subscribe() { return () => {}; }, m }; };
+  const docs = fake(), ds = docsStore(docs, mem()); await ds.ready;
+  assert.deepEqual(ds.put(rec(1, 'h1')), { id: 'a', rev: 1, hash: 'h1' }); assert.deepEqual(ds.put(rec(2, 'h2', 'h1')), { id: 'a', rev: 2, hash: 'h2' });
+  assert.equal(code(() => ds.put(rec(2, 'zz'))), 'E_REV_IMMUTABLE');
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal(docs.m.get('library\0a').length, 2); assert.equal(ds.get('a', 1).meta.hash, 'h1'); assert.deepEqual(ds.revs('a').map((x) => x.rev), [1, 2]);
+  const ds2 = docsStore(docs, mem()); await ds2.ready; assert.equal(ds2.get('a').meta.rev, 2); assert.deepEqual(ds2.list().map((x) => x.id), ['a']);
+  const lg = mem(); lg.setItem('schist.library', JSON.stringify({ old: [{ model: 1, meta: { name: 'old', kind: 'track', rev: 1, hash: 'o1' } }] })); const ds3 = docsStore(docs, lg); await ds3.ready; await new Promise((r) => setTimeout(r, 20));
+  assert.equal(docs.m.get('library\0old').length, 1);
+  pass('Adapter: docsStore (browser binding to history.docs) keeps the five calls synchronous, writes through, hydrates a fresh store from docs and migrates a local copy');
+})();

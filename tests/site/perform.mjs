@@ -120,7 +120,7 @@ export async function performSection({ browser, BASE, OUT, check, watch, metrics
     await page.waitForFunction(() => !window.strudelCraft.perform.take.rec, null, { timeout: 8000 });
     const take = await P(page, () => window.strudelCraft.perform.looper().periodic());
     await page.click('#pfTakeSave'); await page.fill('.scm-input', 'smoke-take'); await page.keyboard.press('Enter'); await page.waitForTimeout(200);
-    const rec = await P(page, () => { const l = JSON.parse(localStorage.getItem('sc.library') || '{}')['smoke-take']; return l && l.at(-1); });
+    const rec = await P(page, async () => { const { lib } = await import('./library.js'); return lib.get('smoke-take'); });
     await page.click('#pfTakeLoad'); await page.click('.pf-opt[data-v="smoke-take"]');
     await page.click('#pfTakePlay'); const base = await P(page, () => window.strudelCraft.perform.take.play.base);
     const T = (s) => { const [a, b] = String(s).split('/').map(Number); return b ? a / b : a; };
@@ -176,7 +176,7 @@ export async function performSection({ browser, BASE, OUT, check, watch, metrics
     const sz = await page.getAttribute('#perform .pc-cell[data-name="cut"]', 'data-size'); await page.click('#perform .pc-cell[data-name="res"] .pc-edit'); await page.click('.pf-opt[data-v="to:main"]');
     const moved = await P(page, () => [window.strudelCraft.perform.model().boards.two.cells.includes('res'), window.strudelCraft.perform.model().boards.main.cells.includes('res')]); await page.click('#pfEdit');
     await page.click('.pf-more summary'); await page.click('#pfSaveTab'); await page.fill('.scm-input', 'smoke-board'); await page.keyboard.press('Enter'); await page.waitForTimeout(200);
-    const kinds = await P(page, () => Object.values(JSON.parse(localStorage.getItem('sc.library') || '{}')).map((l) => l.at(-1).meta.kind));
+    const kinds = await P(page, async () => { const { lib } = await import('./library.js'); return lib.list().map((m) => m.kind); });
     check('perform: board edit mode resizes and moves a cell to another board; board saved to the library', sz === '2x1' && !moved[0] && moved[1] && kinds.includes('board'), JSON.stringify({ sz, moved, kinds }));
     await P(page, () => window.__sc.stop && window.__sc.stop());
     await ctx.close();

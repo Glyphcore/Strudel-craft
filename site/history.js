@@ -1,16 +1,21 @@
 /* Git-like client-side version history for all persisted site state (localStorage keys "sc.*").
    Content-addressed: blobs (SHA-256 of the value) are stored once; a commit is {id, parent, time, label, tree, changed}.
    Storage: IndexedDB "sc-history" (localStorage "schist.*" fallback). Diffs use jsdiff (diff@5.2.0, esm.sh), loaded on demand.
-   API: window.strudelCraft.history = { commit, log, diff, checkout, search, subscribe, undo, redo, head, get, snapshot } */
+   API: window.strudelCraft.history = { commit, log, diff, checkout, search, subscribe, undo, redo, head, get, snapshot, docs: {put,get,list,revs,delete,subscribe} } */
 const OWN = (k) => k.startsWith('sc.') && k !== 'sc.theme.tmp';
 const nativeSet = Storage.prototype.setItem, nativeRemove = Storage.prototype.removeItem;
 
 /* ---------- storage backend ---------- */
+/* Schema versions: 1 = blobs, commits, meta. 2 = adds "docs" (keyed documents, library). The upgrade only creates missing stores and never touches existing ones. */
+const DB_VERSION = 2;
+const notify = (m, kind) => { try { window.strudelCraft.ui.toast(m, { kind: kind || 'info', ms: 8000 }); } catch (e) { setTimeout(() => { try { window.strudelCraft.ui.toast(m, { kind: kind || 'info', ms: 8000 }); } catch (e2) { console.warn('history:', m); } }, 1500); } };
 const idb = new Promise((res) => {
   try {
-    const rq = indexedDB.open('sc-history', 1);
-    rq.onupgradeneeded = () => { const db = rq.result; db.createObjectStore('blobs'); db.createObjectStore('commits', { keyPath: 'id' }); db.createObjectStore('meta'); };
-    rq.onsuccess = () => res(rq.result); rq.onerror = () => res(null);
+    const rq = indexedDB.open('sc-history', DB_VERSION);
+    rq.onupgradeneeded = () => { const db = rq.result; for (const [n, o] of [['blobs'], ['commits', { keyPath: 'id' }], ['meta'], ['docs']]) if (!db.objectStoreNames.contains(n)) db.createObjectStore(n, o); };
+    rq.onblocked = () => notify('History is upgrading but another Strudel Craft tab is still open on the old version. Close or reload the other tabs; nothing is lost.', 'error');
+    rq.onsuccess = () => { const db = rq.result; db.onversionchange = () => { db.close(); notify('Strudel Craft was updated in another tab. Reload this tab to keep saving history.', 'error'); }; res(db); };
+    rq.onerror = () => res(null);
   } catch (e) { res(null); }
 });
 function tx(db, store, mode, fn) { return new Promise((res, rej) => { const t = db.transaction(store, mode); const s = t.objectStore(store); const r = fn(s); t.oncomplete = () => res(r && r.result); t.onerror = () => rej(t.error); }); }
@@ -105,6 +110,47 @@ async function search(q, opts = {}) {
 }
 function subscribe(fn) { subs.add(fn); return () => subs.delete(fn); }
 
+/* ---------- docs: keyed, revisioned documents (own object store "docs"; never part of the timeline, undo/redo or search) ----------
+   One record per document key "ns\u0000id": { ns, id, revs: [{ rev, hash, time, doc }] } (revs oldest first, rev = index + 1). */
+const dsubs = new Map();
+const derr = (code, msg) => Object.assign(new Error(code + ' ' + msg), { code });
+const dkey = (ns, id) => { if (typeof ns !== 'string' || !ns || typeof id !== 'string' || !id) throw derr('E_DOC_ARG', 'ns and id must be non-empty strings'); return ns + '\u0000' + id; };
+const dclone = (v) => (v === undefined ? v : JSON.parse(JSON.stringify(v)));
+function docRmw(key, fn) {
+  /* one readwrite transaction: read, decide, write (atomic across tabs) */
+  return idb.then((db) => new Promise((res, rej) => {
+    if (!db) { try { const cur = JSON.parse(localStorage.getItem(LSP + 'docs.' + key)); const [next, out] = fn(cur); if (next) nativeSet.call(localStorage, LSP + 'docs.' + key, JSON.stringify(next)); else if (next === null) nativeRemove.call(localStorage, LSP + 'docs.' + key); res(out); } catch (e) { rej(e); } return; }
+    let out, failed = null; const t = db.transaction('docs', 'readwrite'); const s = t.objectStore('docs');
+    const g = s.get(key);
+    g.onsuccess = () => { try { const [next, o] = fn(g.result); out = o; if (next) s.put(next, key); else if (next === null) s.delete(key); } catch (e) { failed = e; t.abort(); } };
+    t.oncomplete = () => res(out); t.onabort = () => rej(failed || t.error || derr('E_DOC_IO', 'transaction aborted')); t.onerror = () => {};
+  }));
+}
+async function docRead(key) { const db = await idb; if (db) return tx(db, 'docs', 'readonly', (s) => s.get(key)); try { return JSON.parse(localStorage.getItem(LSP + 'docs.' + key)); } catch (e) { return undefined; } }
+const dfire = (ns, ev) => (dsubs.get(ns) || []).forEach((f) => { try { f(ev); } catch (e) { /* subscriber errors never break a put */ } });
+const docs = {
+  async put(ns, id, doc, opts = {}) {
+    const key = dkey(ns, id); if (doc === undefined) throw derr('E_DOC_ARG', 'doc is required');
+    const text = JSON.stringify(doc), h = await hash(text), want = opts.rev; let added = false;
+    const r = await docRmw(key, (cur) => {
+      const rec = cur || { ns, id, revs: [] }, last = rec.revs[rec.revs.length - 1];
+      if (want !== undefined) {
+        if (!Number.isInteger(want) || want < 1) throw derr('E_DOC_REV', 'rev must be a positive integer');
+        const old = rec.revs[want - 1]; if (old) { if (old.hash !== h) throw derr('E_DOC_IMMUTABLE', id + '@' + want + ' is stored and cannot be overwritten'); return [undefined, { rev: want, hash: h }]; }
+        if (want !== rec.revs.length + 1) throw derr('E_DOC_REV', id + ' next rev is ' + (rec.revs.length + 1) + ', got ' + want);
+      } else if (last && last.hash === h) return [undefined, { rev: last.rev, hash: h }];
+      const rev = rec.revs.length + 1; rec.revs.push({ rev, hash: h, time: Date.now(), doc: JSON.parse(text) }); added = true; return [rec, { rev, hash: h }];
+    });
+    if (added) dfire(ns, { type: 'put', ns, id, rev: r.rev, hash: r.hash });
+    return r;
+  },
+  async get(ns, id, rev) { const rec = await docRead(dkey(ns, id)); if (!rec || !rec.revs.length) return undefined; const r = rev === undefined ? rec.revs[rec.revs.length - 1] : rec.revs[rev - 1]; return r && { id, rev: r.rev, hash: r.hash, time: r.time, doc: dclone(r.doc) }; },
+  async list(ns) { dkey(ns, '-'); const all = (await backend.all('docs')) || []; return all.filter((r) => r && r.ns === ns && r.revs.length).map((r) => { const l = r.revs[r.revs.length - 1]; return { id: r.id, rev: l.rev, hash: l.hash, time: l.time }; }).sort((a, b) => (a.id < b.id ? -1 : 1)); },
+  async revs(ns, id) { const rec = await docRead(dkey(ns, id)); return rec ? rec.revs.map(({ rev, hash, time }) => ({ rev, hash, time })) : []; },
+  async delete(ns, id) { const key = dkey(ns, id); const had = await docRmw(key, (cur) => [cur ? null : undefined, !!cur]); if (had) dfire(ns, { type: 'delete', ns, id }); return had; },
+  subscribe(ns, fn) { dkey(ns, '-'); if (typeof fn !== 'function') throw derr('E_DOC_ARG', 'fn must be a function'); if (!dsubs.has(ns)) dsubs.set(ns, new Set()); dsubs.get(ns).add(fn); return () => dsubs.get(ns).delete(fn); },
+};
+
 /* ---------- auto-commit on debounced persisted edits ---------- */
 let suppress = false, autoT = 0, pending = null;
 function schedule(label) { pending = label; clearTimeout(autoT); autoT = setTimeout(() => { const l = pending; pending = null; commit(l, { auto: true }); }, 1200); }
@@ -118,7 +164,7 @@ let lastUi = '';
 setInterval(() => { if (suppress) return; const u = uiText(); const key = u['ui:rack-editor'] + '\u0000' + u['ui:stack-editor']; if (key !== lastUi) { const first = !lastUi; lastUi = key; if (!first && !(window.strudelCraft && window.strudelCraft.settle)) schedule('editor change'); } }, 700);
 window.addEventListener('live:swap', (e) => { clearTimeout(autoT); pending = null; commit('live swap: ' + e.detail.id + (e.detail.why ? ' (' + e.detail.why + ')' : ''), { auto: true, force: true }); });
 
-const api = { commit: (label, o) => commit(label, { ...(o || {}), named: !!label && !(o && o.auto) }), log, diff, checkout, search, subscribe, undo, redo, get, snapshot, flush, head: () => head };
+const api = { docs, commit: (label, o) => commit(label, { ...(o || {}), named: !!label && !(o && o.auto) }), log, diff, checkout, search, subscribe, undo, redo, get, snapshot, flush, head: () => head };
 window.strudelCraft = window.strudelCraft || {}; window.strudelCraft.history = api;
 load().then(() => { if (!head) commit('initial state', { auto: true }); });
 

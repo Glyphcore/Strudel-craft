@@ -284,9 +284,10 @@ A **component** is a model document with `meta.kind` and an `exports` block:
 - **Versions**: saving creates revision `rev + 1` with `parent` = previous hash; revisions are immutable. Identical content saves
   nothing (same hash). References are always pinned `name@rev`. "Update to latest" is an explicit edit that rewrites the pin and shows
   the changed exports.
-- **Store**: the site keeps components in the history store, `window.strudelCraft.history`. This design needs five calls from it:
-  `put(record) -> { id, rev, hash }`, `get(id, rev?)`, `list(filter?)`, `revs(id)`, `subscribe(fn)`. The store is not on `main` yet; the
-  library talks to it through one adapter, so a different final API changes one file.
+- **Store**: the site keeps components in the history database, `window.strudelCraft.history.docs` (namespace `library`, own IndexedDB object
+  store `docs`; keyed, revisioned documents: `put / get / list / revs / subscribe / delete`, async, not part of the timeline, undo/redo or search).
+  The library contract stays synchronous: `site/library-store.js` (`docsStore`) serves reads from a memory copy hydrated from docs and writes
+  through; that one file is the adapter. Node tests and browsers without IndexedDB use its in-memory + `localStorage` fallback store. Built (#58).
 - **Headless**: a library is a directory `library/<name>/<rev>.json`. `strudel ... --library DIR`. A model exported with
   `components` embedded needs no library at all; renders use the embedded copies and verify their hashes (`E_COMPONENT_HASH`).
 - Nothing in a component record identifies a person; `meta` has name, kind, rev, hash, parent, tags only.

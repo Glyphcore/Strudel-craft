@@ -5,7 +5,8 @@ import os from 'node:os';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { createLibrary, expand, embed, extract, replaceWithInstance, verify } from '../../site/library.js';
+import { createLibrary, expand, embed, extract, replaceWithInstance, verify, installInstances } from '../../site/library.js';
+import { bootRuntime, haps } from './fixtures/rt.mjs';
 import { fallbackStore } from '../../site/library-store.js';
 import { hash } from '../../site/model.js';
 
@@ -21,7 +22,10 @@ const cutoffs = (m) => (m.tracks || []).map(t => t.chain[0][1]);
 const CLI = spawnSync('strudel', ['--version'], { encoding: 'utf8' });
 const hasCli = !CLI.error && CLI.status === 0;
 const NO_CLI = '`strudel` CLI not available in this checkout (lives in another repo); needs `strudel events`';
-const NO_RT = 'hooks runtime (#47) has no hooks.inst/set/bind(lib:) yet; model-level expansion is checked, rendered events are not';
+const RT = await bootRuntime(); // unmodified @strudel/core+mini (node_modules or STRUDEL_MODULES) + site/engine/hooks.js
+const NO_RT = '@strudel/core/@strudel/mini not installed (set STRUDEL_MODULES=<dir with @strudel/>); cannot render events';
+const rtLib = () => { const L = lib(); if (RT) { RT.hooks.reset(); RT.hooks.live = false; installInstances(RT.hooks, { lib: L, S: RT.S, tap: RT.tap }); } return L; };
+const cut = (p, a = 0, b = 1) => haps(p, a, b).map((h) => h.v.cutoff);
 
 // 1 Versions
 {
@@ -45,9 +49,19 @@ const NO_RT = 'hooks runtime (#47) has no hooks.inst/set/bind(lib:) yet; model-l
   assert.deepEqual(two.tracks.map(t => t.chain[1][1]), ['pad2/env', 'pad3/env']);
   assert.equal(code(() => expand(host([{ component: 'pad@1', as: 'x', args: { nope: 1 } }]), { lookup: lk })), 'E_COMPONENT_ARG');
   pass('Instance (model level): inst pad@1 as pad2 args cutoff 900 expands to a track with lpf 900; pad2/pad3 get independent params and taps (pad2/env, pad3/env)');
-  skip('Instance (rendered events)', NO_RT);
+  if (!RT) skip('Instance (rendered events)', NO_RT); else {
+    const L2 = rtLib(); L2.save(PAD(), { name: 'pad', kind: 'track' }); const h = RT.hooks;
+    const p2 = h.inst('pad@1', { as: 'pad2', args: { cutoff: 900 } }), p3 = h.inst('pad@1', { as: 'pad3' });
+    assert.deepEqual(cut(p2), [900, 900]); assert.deepEqual(cut(p3), [400, 400]);
+    h.set('pad2.cutoff', 1500); assert.deepEqual(cut(p2), [1500, 1500]); assert.deepEqual(cut(p3), [400, 400]);
+    assert.equal(haps(RT.tap('pad2/env'), 0, 1).length, 2); assert.equal(haps(RT.tap('pad3/env'), 0, 1).length, 2);
+    pass('Instance (rendered): inst pad@1 as pad2 {cutoff:900} gives events with cutoff 900; pad3 keeps 400; hooks.set("pad2.cutoff",1500) moves only pad2; taps pad2/env and pad3/env both have 2 events');
+  }
   // 3 Namespacing
-  skip('Namespacing: tap("pad2/env") resolves / tap("env") is E_UNKNOWN_TAP', NO_RT);
+  if (!RT) skip('Namespacing (rendered)', NO_RT); else {
+    assert.equal(haps(RT.tap('env'), 0, 1).length, 0); assert.ok(RT.hooks.diag().some((d) => d.code === 'E_UNKNOWN_TAP' && /env/.test(d.msg)));
+    pass('Namespacing (rendered): tap("pad2/env") resolved above (2 events); tap("env") gives no events and a diag E_UNKNOWN_TAP');
+  }
   assert.ok(!two.tracks.some(t => t.chain.some(s => s[0] === 'tap' && s[1] === 'env')));
   pass('Namespacing (model level): no unscoped tap "env" is published after expansion, only pad2/env and pad3/env');
 }
@@ -63,7 +77,12 @@ const NO_RT = 'hooks runtime (#47) has no hooks.inst/set/bind(lib:) yet; model-l
 }
 
 // 5 Gate
-skip('Gate: gate "3b..5b" gives events only in cycles 2-3', NO_RT + ' (instance gate is applied by the runtime; expand() leaves `gate` on the instance)');
+if (!RT) skip('Gate', NO_RT); else {
+  const L3 = rtLib(); L3.save(PAD(), { name: 'pad', kind: 'track' });
+  const g = RT.hooks.inst('pad@1', { as: 'pad4', gate: '3b..5b' }), per = [0, 1, 2, 3, 4, 5].map((c) => haps(g, c, c + 1).length);
+  assert.deepEqual(per, [0, 0, 2, 2, 0, 0]);
+  pass('Gate: gate "3b..5b" on an instance gives events per cycle ' + per.join(','));
+}
 
 // 6 Pinning
 {
@@ -73,6 +92,12 @@ skip('Gate: gate "3b..5b" gives events only in cycles 2-3', NO_RT + ' (instance 
   // default is part of the stored exports, rev 2 contains lpf 500 under the same default -> pinned content differs only through the track
   assert.equal(L.get('pad', 1).tracks[0].chain[0][1], 400); assert.equal(L.get('pad', 2).tracks[0].chain[0][1], 500);
   pass('Pinning: after saving pad@2 the stored pad@1 is unchanged and a model pinning pad@1 expands to rev 1 content');
+  if (!RT) skip('Pinning (rendered)', NO_RT); else {
+    const L4 = rtLib(), v2 = PAD(400); v2.tracks[0].chain.push(['gain', 0.5]); L4.save(PAD(400), { name: 'pad', kind: 'track' }); L4.save(v2, { name: 'pad', kind: 'track' });
+    const gains = (r) => haps(RT.hooks.inst(`pad@${r}`, { as: 'q' + r }), 0, 1).map((h) => h.v.gain);
+    assert.deepEqual(gains(1), [undefined, undefined]); assert.deepEqual(gains(2), [0.5, 0.5]);
+    pass('Pinning (rendered): with pad@2 saved (adds gain 0.5), inst pad@1 still renders events without gain and pad@2 renders gain 0.5');
+  }
 }
 
 // 7 Extract
@@ -102,7 +127,12 @@ skip('Gate: gate "3b..5b" gives events only in cycles 2-3', NO_RT + ' (instance 
   const m = expand({ model: 1, bindings: [{ slot: 'fx', hook: 'lib:warmth@1(0.4)' }] }, { lookup: L.lookup });
   assert.equal(m.defs['lib:warmth@1/warm'].params.amt.default, 0.4); assert.equal(m.bindings[0].hook, 'lib:warmth@1/warm');
   pass('Fragment (model level): bind "lib:warmth@1(0.4)" resolves to the fragment hook with param amt = 0.4');
-  skip('Fragment (rendered effect)', NO_RT);
+  if (!RT) skip('Fragment (rendered)', NO_RT); else {
+    const L5 = rtLib(), f2 = { model: 1, defs: { warm: { params: { amt: { default: 0.1 } }, chain: [['gain', { $param: 'amt' }]] } }, exports: { hooks: ['warm'], params: { amt: { min: 0, max: 1, default: 0.1, target: 'def:warm.amt' } } } };
+    L5.save(f2, { name: 'warmth', kind: 'fragment' }); RT.hooks.bind('fx', 'lib:warmth@1(0.4)');
+    const g = haps(RT.S.note('c3').use('fx'), 0, 1).map((h) => h.v.gain); assert.deepEqual(g, [0.4]);
+    pass('Fragment (rendered): hooks.bind("fx","lib:warmth@1(0.4)") then .use("fx") gives gain 0.4 (fragment param amt)');
+  }
 }
 
 // 9 Headless

@@ -183,3 +183,77 @@ export function expand(model, { lookup, stack = [] } = {}) {
 }
 export const lib = createLibrary();
 export const { save, get, list, revs } = lib;
+
+// ---------------------------------------------------------------- runtime: hooks.inst and lib: hook-refs
+// installInstances(hooks, { lib, S, tap }) adds to the hooks runtime (site/engine/hooks.js, not modified here):
+//   hooks.inst("name@rev", { as, args, gate, remap }) -> Pattern of the instance's tracks (stack); params follow hooks.set("as.param", v);
+//   hooks.bind(slot, "lib:name@rev(args)") -> binds the fragment's hook (its defs are registered under a slug name);
+//   hooks.manifest() -> runtime registry (toJSON) plus { instances } for the intellisense.
+// Limits: tracks must be structured (source/chain); text-only `src` tracks and gated instance-param sets are not supported (they raise).
+const slug = (n) => n.replace(/[^\w-]/g, '_').replace(/^(?=[^A-Za-z])/, 'h');
+const unwrap = (x) => (x && typeof x === 'object' && typeof x.__pure === 'string' && typeof x.query === 'function' ? x.__pure : x);
+export function installInstances(hooks, { lib: L = lib, S = globalThis, tap = globalThis.tap } = {}) {
+  if (!hooks) return hooks;
+  const insts = new Map(), lookup = (n, r) => L.lookup(n, r), reg = new Set();
+  const sub = (v, as, ex) => { // structured step argument -> runtime value
+    if (Array.isArray(v)) return v.map(x => sub(x, as, ex));
+    if (!isObj(v)) return v;
+    if ('$mini' in v) return S.mini(v.$mini);
+    if ('$tap' in v) { const t = tap(v.$tap); return v.range ? t.range(...v.range) : t; }
+    if ('$code' in v) throw fail('E_UNSUPPORTED', 'inline $code arguments need the CLI/editor evaluator');
+    return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, sub(x, as, ex)]));
+  };
+  const registerFlat = (flat) => { // defs/vars/bindings of an expanded model -> runtime (names slugged: hook names cannot contain "/")
+    const hn = (h) => { const m = /^([^(]+)(\(.*)?$/.exec(h); return (flat.defs && m[1] in flat.defs ? slug(m[1]) : m[1]) + (m[2] || ''); };
+    for (const [k, d] of Object.entries(flat.defs || {})) if (!reg.has('d:' + k)) { reg.add('d:' + k); hooks.def(slug(k), d); }
+    for (const [k, l] of Object.entries(flat.vars || {})) if (!reg.has('v:' + k)) { reg.add('v:' + k); for (const a of l) hooks.let(k, a.value, a.gate); }
+    for (const b of flat.bindings || []) { const key = `b:${b.slot}|${b.hook}|${JSON.stringify(b.gate)}`; if (!reg.has(key)) { reg.add(key); hooks.bind(b.slot, hn(b.hook), b.gate); } }
+  };
+  const live = (as) => { // ungated hooks.set("as.param", v) values, latest wins
+    const out = {};
+    for (const s of JSON.parse(hooks.toJSON()).sets || []) if (s.key.startsWith(as + '.')) {
+      if (s.gate && Object.keys(s.gate).length) throw fail('E_UNSUPPORTED', `gated hooks.set("${s.key}") on an instance is not supported`);
+      out[s.key.slice(as.length + 1)] = s.value;
+    }
+    return out;
+  };
+  const compile = (flat, as, ex) => {
+    const slots = new Set(ex.slots || []), stage = (t, i) => {
+      if (!t.source) throw fail('E_UNSUPPORTED', `track "${t.name}" is text-only (src); instance tracks must have source/chain`);
+      const fn = S[t.source[0]] || globalThis[t.source[0]]; if (typeof fn !== 'function') throw fail('E_UNKNOWN_METHOD', t.source[0]);
+      let p = fn(...t.source.slice(1).map(x => sub(x, as, ex)));
+      for (const [m, ...a] of t.chain || []) p = p[m](...(m === 'use' && slots.has(a[0]) ? [`${as}/${a[0]}`, ...a.slice(1)] : a).map(x => sub(x, as, ex)));
+      return p;
+    };
+    return S.stack(...(flat.tracks || []).map(stage));
+  };
+  hooks.inst = (ref, o = {}) => {
+    ref = unwrap(ref); o = unwrap(o) || {}; const as = unwrap(o.as), { name } = parseRef(ref), rec = lookup(name, parseRef(ref).rev);
+    if (!as) throw fail('E_BAD_ARG', 'inst needs { as }');
+    if (!rec) throw fail('E_COMPONENT_MISSING', ref);
+    const spec = { component: ref, as, remap: o.remap };
+    const build = (args) => expand({ model: 1, instances: [{ ...spec, args }] }, { lookup });
+    const first = build(unwrap(o.args)); // eager: E_COMPONENT_REQUIRES / E_COMPONENT_ARG raise here
+    insts.set(as, { component: ref, as, ...(o.gate ? { gate: o.gate } : {}) }); registerFlat({ ...first, tracks: [] });
+    const ex = rec.exports || {}; let cache = { k: JSON.stringify(unwrap(o.args)), p: compile(first, as, ex) };
+    const Pat = S.Pattern, inner = new Pat((st) => {
+      const args = { ...(unwrap(o.args) || {}), ...live(as) }, k = JSON.stringify(args);
+      if (k !== cache.k) cache = { k, p: compile(build(args), as, ex) };
+      return cache.p.query(st);
+    });
+    if (!o.gate) return inner;
+    const gslot = `${slug(as)}-gate`; hooks.slot(gslot, { else: 'silence' }); hooks.bind(gslot, 'bypass', o.gate);
+    return inner.use(gslot);
+  };
+  const bind0 = hooks.__bind0 || (hooks.__bind0 = hooks.bind); // re-installing (new library) rebinds inst/bind/manifest
+  hooks.bind = (slot, hook, gate, o) => {
+    hook = unwrap(hook);
+    if (typeof hook === 'string' && hook.startsWith('lib:')) {
+      const flat = expand({ model: 1, bindings: [{ slot: unwrap(slot), hook }] }, { lookup: (n, r) => L.lookup(n, r) });
+      registerFlat({ defs: flat.defs, vars: flat.vars }); hook = slug(flat.bindings[0].hook);
+    }
+    return bind0(slot, hook, gate, o);
+  };
+  hooks.manifest = () => ({ ...JSON.parse(hooks.toJSON()), instances: [...insts.values()] });
+  return hooks;
+}

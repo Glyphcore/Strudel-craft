@@ -253,3 +253,9 @@ dialog::backdrop{background:rgba(5,6,8,.7)}
   .play[aria-pressed="true"]{box-shadow:none}
 }
 .editor .cm-editor{min-height:150px}
+.live-chip{display:inline-flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.08em;font-size:.72rem}
+.live-chip i{width:8px;height:8px;border-radius:50%;background:var(--dim)}
+.live-chip[data-state=live] i{background:var(--sig-2);box-shadow:0 0 8px var(--sig-2)}
+.live-chip[data-state=error] i{background:#ff5a4f;box-shadow:0 0 8px #ff5a4f}
+.live-chip[data-state=error]{color:#ff8a80}
+.live-msg{margin:0;padding:6px 14px;font-family:var(--mono);font-size:.78rem;color:#ff8a80;background:var(--panel-2);border-left:3px solid #ff5a4f}

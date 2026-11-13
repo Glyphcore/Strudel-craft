@@ -71,6 +71,7 @@ async function mount() {
     }
     return { from, options: opts, validFor: /^[\w$]*$/ };
   }
+  const lint = await import(`https://esm.sh/@codemirror/lint@6.8.5`);
   const docs = new Map(); (await staticData).forEach((d) => docs.set(d.label, d));
   const { hoverTooltip } = await import(`https://esm.sh/@codemirror/view@${V.view}`);
   const hover = hoverTooltip((view, pos) => {
@@ -85,7 +86,7 @@ async function mount() {
     const desc = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value'); let view; let syncing = false; let learnT = 0;
     view = new EditorView({
       doc: desc.get.call(ta), parent: ta.parentNode,
-      extensions: [basicSetup, javascript(), theme, hover, EditorView.lineWrapping, ac.autocompletion({ override: [source], activateOnTyping: true, icons: false }),
+      extensions: [basicSetup, lint.lintGutter(), javascript(), theme, hover, EditorView.lineWrapping, ac.autocompletion({ override: [source], activateOnTyping: true, icons: false }),
         EditorView.contentAttributes.of({ 'aria-label': ta.getAttribute('aria-label') || (id === 'code' ? 'Recipe code' : 'Stack program'), autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false' }),
         EditorView.updateListener.of((u) => { if (!u.docChanged || syncing) return; const v = u.state.doc.toString(); desc.set.call(ta, v); ta.dispatchEvent(new Event('input', { bubbles: true })); clearTimeout(learnT); learnT = setTimeout(() => learn(v), 1200); })],
     });
@@ -93,6 +94,13 @@ async function mount() {
     Object.defineProperty(ta, 'value', { configurable: true, get: () => desc.get.call(ta), set: (v) => { desc.set.call(ta, v); if (view.state.doc.toString() !== v) { syncing = true; view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: v } }); syncing = false; } } });
     ta.hidden = true; ta.style.display = 'none'; ta.tabIndex = -1; ta.cmView = view;
   }
+  const viewFor = (v) => document.getElementById(v === 'stack' ? 'stackCode' : 'code').cmView;
+  window.addEventListener('live:error', (e) => {
+    const view = viewFor(e.detail.view); if (!view) return; const doc = view.state.doc;
+    const ln = e.detail.line && e.detail.line >= 1 && e.detail.line <= doc.lines ? doc.line(e.detail.line) : doc.line(doc.lines);
+    view.dispatch(lint.setDiagnostics(view.state, [{ from: ln.from, to: ln.to, severity: 'error', message: e.detail.message }]));
+  });
+  window.addEventListener('live:ok', (e) => { const view = viewFor(e.detail.view); if (view) view.dispatch(lint.setDiagnostics(view.state, [])); });
   document.documentElement.dataset.editor = 'cm6';
 }
 mount().catch((e) => { console.warn('Intellisense editor unavailable, plain textarea kept:', e.message); });

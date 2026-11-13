@@ -94,6 +94,16 @@ const Engine = {
     const ctx = window.getAudioContext && window.getAudioContext();
     if (ctx && ctx.state !== 'running') throw new Error('Audio is blocked by the browser. Tap Play again to allow sound.');
   },
+  async swap(code) {
+    /* hot-swap on the next cycle boundary; on failure the previous pattern keeps playing */
+    const sch = this.scheduler; let wait = 0;
+    try { const now = sch.now(); const cps = sch.cps || 0.5; wait = Math.max(0, (Math.ceil(now) - now) / cps * 1000 - 30); } catch (e) { wait = 0; }
+    if (wait > 4000) wait = 0;
+    await new Promise((r) => setTimeout(r, wait));
+    this.state.evalError = undefined;
+    await window.evaluate(code);
+    if (this.state.evalError) throw this.state.evalError;
+  },
   stop() { muteBus(); try { if (this.repl) this.repl.stop(); else if (window.hush) window.hush(); } catch (e) { /* not started */ } },
   get started() { return !!(this.scheduler && this.scheduler.started); },
 };
@@ -300,7 +310,7 @@ async function play(src = currentSource()) {
     await Engine.play(src.code, src.samples, (m) => say(m + '…'));
     Engine.evalCount++;
     S.playing = true; S.playingId = src.id; S.playingSource = src.kind;
-    say('Playing ' + src.title); Viz.start();
+    say('Playing ' + src.title); Viz.start(); setLiveChip(S.live ? 'live' : 'off'); window.dispatchEvent(new CustomEvent('live:ok', { detail: { view: S.view } }));
   } catch (e) {
     say('Error: ' + (e && e.message ? e.message : e), true);
     if (!Engine.started) S.playing = false;
@@ -309,6 +319,7 @@ async function play(src = currentSource()) {
 function stop() { Engine.stop(); S.playing = false; S.playingId = null; say('Stopped'); Viz.stopSoon(); syncTransport(); }
 function toggle() { if (S.playing) stop(); else play(); }
 function syncTransport() {
+  if ($('#liveChip')) syncLiveChip();
   const b = $('#playBtn'); b.setAttribute('aria-pressed', S.playing); $('#playLabel').textContent = S.playing ? 'Stop' : 'Play';
   b.setAttribute('aria-label', S.playing ? 'Stop' : 'Play');
   document.body.classList.toggle('playing', S.playing);
@@ -316,7 +327,30 @@ function syncTransport() {
   const src = currentSource(); $('#srcLabel').textContent = S.view === 'stack' ? 'Stack' : (S.playing && S.playingSource === 'stack' ? 'Stack playing' : 'Solo');
   $('#nowTitle').textContent = src ? src.title : 'No recipe';
 }
-let liveT = 0;
+let liveT = 0, codeT = 0;
+S.live = (() => { try { return localStorage.getItem('sc.live') !== 'off'; } catch (e) { return true; } })();
+function setLiveChip(state, msg) {
+  const c = $('#liveChip'); if (!c) return; c.dataset.state = state; $('#liveState').textContent = state; c.title = msg || (state === 'live' ? 'Edits apply on the next cycle' : state === 'off' ? 'Live updates off: tap to turn on' : state === 'error' ? 'Last good pattern still playing' : 'Press Play to go live');
+  const m = $('#liveMsg'); if (m) { m.hidden = state !== 'error'; m.textContent = state === 'error' ? msg : ''; }
+}
+function syncLiveChip() { if (!S.live) setLiveChip('off'); else if (!S.playing) setLiveChip('paused'); else if ($('#liveChip').dataset.state !== 'error') setLiveChip('live'); }
+function errLine(e) { const m = /\((\d+):(\d+)\)/.exec(String(e && e.message)); if (e && e.loc && e.loc.line) return e.loc.line; return m ? +m[1] : null; }
+function liveCode() {
+  clearTimeout(codeT);
+  codeT = setTimeout(async () => {
+    if (!S.live || !S.playing || S.busy) return; const src = currentSource(); if (!src || src.id !== S.playingId || src.empty) return;
+    try {
+      await Engine.swap(src.code); Engine.evalCount++;
+      setLiveChip('live'); window.dispatchEvent(new CustomEvent('live:ok', { detail: { view: S.view } }));
+      window.dispatchEvent(new CustomEvent('live:swap', { detail: { id: src.id, kind: src.kind, code: src.code } }));
+    } catch (e) {
+      const msg = (e && e.message ? e.message : String(e)).split('\n')[0].slice(0, 140);
+      const off = src.kind === 'solo' && src.code !== recipeCode(cur()) ? (src.code.split('\n').length - recipeCode(cur()).split('\n').length) : 0;
+      const ln = errLine(e); setLiveChip('error', msg);
+      window.dispatchEvent(new CustomEvent('live:error', { detail: { view: S.view, line: ln ? ln - off : null, message: msg } }));
+    }
+  }, 300);
+}
 function liveUpdate() { clearTimeout(liveT); liveT = setTimeout(() => { if (!S.playing) return; const src = currentSource(); if (src && src.id === S.playingId) play(src); }, 160); }
 
 /* ---------- browser ---------- */
@@ -538,8 +572,10 @@ async function boot() {
   $('#clear').addEventListener('click', clearFilters);
   $('#filters').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (!b) return; const id = b.dataset.label; const on = !S.chips.has(id); on ? S.chips.add(id) : S.chips.delete(id); b.setAttribute('aria-pressed', on); renderList(); });
   const code = $('#code');
-  code.addEventListener('input', () => commitEdit(code.value));
-  const sc = $('#stackCode'); sc.addEventListener('input', () => { S.stackEdit = sc.value === stackProgram() ? null : sc.value; $('#stackOpen').href = strudelUrl(stackText()); });
+  code.addEventListener('input', () => { commitEdit(code.value); liveCode(); });
+  $('#liveChip').addEventListener('click', () => { S.live = !S.live; try { localStorage.setItem('sc.live', S.live ? 'on' : 'off'); } catch (e) { /* ignore */ } $('#liveChip').setAttribute('aria-pressed', S.live); setLiveChip(S.live ? (S.playing ? 'live' : 'paused') : 'off'); if (S.live) liveCode(); });
+  $('#liveChip').setAttribute('aria-pressed', S.live);
+  const sc = $('#stackCode'); sc.addEventListener('input', () => { S.stackEdit = sc.value === stackProgram() ? null : sc.value; $('#stackOpen').href = strudelUrl(stackText()); liveCode(); });
   $('#evalBtn').addEventListener('click', runEditor);
   $('#revertBtn').addEventListener('click', () => { const r = cur(); if (!r) return; delete S.edits[r.id]; code.value = r.code; renderSelection(false); liveUpdate(); });
   $('#stackCopy').addEventListener('click', (e) => copyText(stackText(), e.currentTarget));

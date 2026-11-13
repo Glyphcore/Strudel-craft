@@ -65,7 +65,8 @@
     <div class="view view-rack" data-for="rack">
       <div class="editor panel">
         <div class="panel-head"><h2>Code</h2><span class="dirty" id="dirty" hidden>edited</span>
-          <div class="acts"><button type="button" id="evalBtn" class="ghost" title="Evaluate (Ctrl+Enter)">Run <kbd>Ctrl+Enter</kbd></button><button type="button" id="revertBtn" class="ghost" disabled>Revert</button></div></div>
+          <div class="acts"><button type="button" id="liveChip" class="ghost live-chip" data-state="paused" aria-pressed="true" aria-label="Live updates (toggle)"><i aria-hidden="true"></i><span id="liveState">paused</span></button><button type="button" id="evalBtn" class="ghost" title="Evaluate (Ctrl+Enter)">Run <kbd>Ctrl+Enter</kbd></button><button type="button" id="revertBtn" class="ghost" disabled>Revert</button></div></div>
+        <p class="live-msg" id="liveMsg" role="status" hidden></p>
         <label class="sr" for="code">Recipe code</label>
         <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" rows="6"></textarea>
       </div>

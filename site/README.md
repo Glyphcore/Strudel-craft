@@ -34,9 +34,14 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
 4. Just after a deploy: the service worker revalidates every shell file with the server (`cache: 'no-cache'`, ETag) and precaches with
    `cache: 'reload'`, so an old build cached for 10 min (GitHub Pages `max-age=600`) is never mixed with new files. If the page still looks
    old, take the "New version, tap to reload" toast.
-5. Check: `node tests/site/audio.mjs` (S22 profile, real taps, fresh profile and a stale service worker from an older build): peak on the
+5. Phone layout: the page never scrolls sideways (`overflow-x: clip` on html/body; editor header actions wrap onto a second row with 44px
+   targets, #81). An edited Rack header used to be 386px wide on a 360px phone, which made mobile Chrome rescale the page: it shifted sideways
+   and the fixed transport slid partly off screen, so taps near Play landed on list rows. The viewport meta has
+   `interactive-widget=resizes-content`, so the on-screen keyboard shrinks the layout and the transport (Play) stays above it.
+6. Check: `node tests/site/audio.mjs` (S22 profile, real taps, fresh profile and a stale service worker from an older build): peak on the
    master AnalyserNode > 0.01, context running, non-blank scope and `_scope`/`_pianoroll` widgets, Rack default, Rack and Stack with a
-   typed program; `--live URL` runs the fresh case against a deployed site.
+   typed program; layout at 360px in every view, after typing and with the keyboard open (no sideways scroll, `elementFromPoint` at Play's
+   centre is Play, every Play press a real tap, Revert visible with a 44px target); `--live URL` runs the fresh case against a deployed site.
 
 ## Install on Android
 Strudel Craft is an installable app (PWA, #73). In Chrome on Android open https://glyphcore.github.io/Strudel-craft/, then tap

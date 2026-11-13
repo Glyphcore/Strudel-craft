@@ -7,6 +7,8 @@
    In each case: Rack default recipe, Rack with the user's program, Stack with the user's program typed into an empty Stack, and a
    _scope/_pianoroll program. After Play it measures the peak on the master AnalyserNode (> 0.01), the AudioContext state (running),
    the audio status dot, non-blank pixels on the stage scope and the inline widget canvases, and fails on any page error or console error.
+   Layout (fresh case): in every view, after typing in the editor and with the keyboard open (360x420): no horizontal overflow or viewport
+   rescale, Play's centre inside the viewport and elementFromPoint there lands on Play; every Play press is a real tap (a blocked tap fails).
    Usage (repo root): node tests/site/audio.mjs [--live URL]   -> PASS/FAIL lines, exit 1 on any FAIL.
    --live runs the fresh case against a deployed URL (no stale case). */
 import { createRequire } from 'module';
@@ -59,8 +61,27 @@ async function newPage(tag) {
   page.on('pageerror', (e) => errors.push(`[${tag}] pageerror: ${e.message}`));
   return { ctx, page, errors };
 }
-/* Play with a real touch (user activation); if the fixed transport is covered at that point, focus it and press Enter (also a user gesture) */
-async function pressPlay(page) { try { await page.tap('#playBtn', { timeout: 3000 }); } catch (e) { await page.focus('#playBtn'); await page.keyboard.press('Enter'); } }
+/* Play with a real touch only (user activation): a covered or off-screen Play button fails the run (no keyboard or JS-click fallback) */
+const tapFails = [];
+async function pressPlay(page) { try { await page.tap('#playBtn', { timeout: 5000 }); } catch (e) { tapFails.push(String(e.message).split('\n').find((l) => /intercepts|outside|not visible/.test(l)) || e.message.split('\n')[0]); await page.focus('#playBtn'); await page.keyboard.press('Enter'); } }
+/* layout at 360px: no horizontal overflow, no viewport rescale, Play's centre inside the viewport and elementFromPoint at it lands on Play */
+const layout = (page) => page.evaluate(() => {
+  const de = document.documentElement, b = document.querySelector('#playBtn').getBoundingClientRect(); const x = b.left + b.width / 2, y = b.top + b.height / 2;
+  const h = document.elementFromPoint(x, y); const hit = !!h && document.querySelector('#playBtn').contains(h);
+  return { ok: de.scrollWidth <= de.clientWidth && scrollX === 0 && innerHeight === de.clientHeight && y < de.clientHeight && hit, sw: de.scrollWidth, cw: de.clientWidth, ih: innerHeight, ch: de.clientHeight, sx: scrollX, play: [Math.round(x), Math.round(y)], at: h ? (h.closest('[id]')?.id || h.tagName) : null };
+});
+async function layoutCase(tag, page) {
+  for (const v of ['rack', 'stack', 'perform', 'graph', 'syntax', 'ref', 'practice']) { await page.evaluate((v) => window.__sc.setView(v), v); await page.waitForTimeout(500); const r = await layout(page); check(`[${tag}] layout ${v}: no sideways scroll, Play hit-tests at its centre`, r.ok, JSON.stringify(r)); }
+  await typeCode(page, 'rack', USER + '\n// a long comment line typed on a phone that runs well past the width of the editor pane');
+  let r = await layout(page); check(`[${tag}] layout after typing in the editor (edited badge, long line)`, r.ok, JSON.stringify(r));
+  const rv = await page.evaluate(() => { const e = document.querySelector('#revertBtn').getBoundingClientRect(); const d = document.querySelector('#dirty'); return { dirty: !!d && !d.hidden, l: Math.round(e.left), r: Math.round(e.right), w: Math.round(e.width), h: Math.round(e.height), vw: document.documentElement.clientWidth }; });
+  check(`[${tag}] #81 edited Rack header: Revert fully visible with a 44px target`, rv.dirty && rv.l >= 0 && rv.r <= rv.vw && rv.w >= 44 && rv.h >= 44, JSON.stringify(rv));
+  await page.setViewportSize({ width: 360, height: 420 }); await page.waitForTimeout(500); /* keyboard open: interactive-widget=resizes-content shrinks the layout viewport */
+  r = await layout(page); check(`[${tag}] layout with the keyboard open (360x420): Play above the keyboard and hit-testable`, r.ok, JSON.stringify(r));
+  await page.setViewportSize({ width: 360, height: 780 }); await page.waitForTimeout(400);
+  const meta = await page.evaluate(() => document.querySelector('meta[name=viewport]').content);
+  check(`[${tag}] viewport meta resizes content for the on-screen keyboard`, /interactive-widget=resizes-content/.test(meta), meta);
+}
 async function stopIfPlaying(page) { if (await page.evaluate(() => window.__sc.S.playing)) { await pressPlay(page); await page.waitForFunction(() => !window.__sc.S.playing, null, { timeout: 5000 }).catch(() => {}); } }
 async function typeCode(page, view, code) {
   await page.evaluate((v) => window.__sc.setView(v), view); await page.waitForTimeout(400);
@@ -119,6 +140,7 @@ async function scenario(tag, page) {
   await page.goto(BASE); await page.waitForSelector('#list li[data-id]', { timeout: 30000 }); await page.waitForTimeout(1500);
   check('[fresh] audio status dot present before Play', await page.evaluate(() => ['off', 'ready'].includes(document.querySelector('#audioSt')?.dataset.state)));
   await scenario('fresh', page);
+  await layoutCase('fresh', page);
   check('[fresh] no page errors, console errors or name collisions', errors.length === 0, errors.slice(0, 5).join(' | '));
   await ctx.close();
 }
@@ -137,6 +159,7 @@ if (!LIVE) {
   await ctx.close();
 }
 
+check('Play pressed with a real tap every time (never covered, never off screen)', tapFails.length === 0, tapFails.slice(0, 3).join(' | '));
 await browser.close(); server.close();
 const fails = checks.filter((c) => !c.ok);
 console.log(`\n${checks.length - fails.length}/${checks.length} checks passed`);

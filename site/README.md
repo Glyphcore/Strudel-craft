@@ -118,20 +118,23 @@ states), `closers` (open brackets/quotes). Register more:
 `voxBank()` work in both editors; they are intellisense items (category `vocals`). Add more preludes to `PRELUDES` in `app.js`.
 - `word("<call me baby>")` -> `s("vox_call vox_me vox_baby")` (mini-notation kept, `"baby:2"` = third take through `n`);
   `syl("0 1 2")` plays syllables in lyric order; `vowel()` is Strudel's fixed formant filter, not a formant shifter.
-- Banks live in `data/vox/<bank>/` (`ogg/`, `pitched/strudel.json` with the sung base note, `words.json`): `demo` (espeak-ng speech,
-  auto-loaded on the first `word()`) and `call-me-baby` (the owner's vocal bank). `voxBank('call-me-baby')` switches bank (keys it
-  lacks fall back to demo), `voxBank(url)` loads a `strudel.json` (or a folder URL ending in `/`), `voxBank()` opens a folder picker
-  (files stay in the browser), `voxBank.list()` -> `[{name, url, words, active}]`. Failures toast, they do not throw.
+- Banks live in `data/vox/<bank>/` (`ogg/`, `pitched/strudel.json` with the sung base note, `words.json`, a `README.md` with the
+  licence): `demo` (espeak-ng speech, auto-loaded on the first `word()`), `call-me-baby` (the owner's vocal bank), `ljspeech`
+  (~500 words from LJSpeech, public domain, 1-3 takes, clips fetched lazily per word) and `vocalset` (sustained sung vowels from
+  VocalSet, CC BY 4.0, keys `vs_<vowel>_<technique>`). `voxBank('ljspeech')` switches bank (keys it lacks fall back to demo),
+  `voxBank(url)` loads a `strudel.json` (or a folder URL ending in `/`), `voxBank()` opens a folder picker (files stay in the
+  browser), `voxBank.list()` -> `[{name, url, words, active}]`. Failures toast, they do not throw.
 - `.note()` on a pitched map retunes by speed, so formants move with the pitch. Formant-preserving takes are pre-rendered by the
   build-time CLI (`engine/vocals/wordbank.sh ... --formant-steps -5,7 [--formant-backend pyworld|rubberband]`, #45 - keys
   `vox_<word>_f<semi>`, gate them with `python3 engine/vocals/formant.py --selftest --backend all`): pyworld (in-process WORLD
   vocoder) passes that selftest, the external `rubberband --formant` binary is approximate and fails 3 of its 4 vowels, which the
   tool reports rather than hides. Lyric words missing from the stem can be filled with opt-in TTS clips (`--tts-fallback`, Shabda speech,
-  network, per-clip `source`/`licence` in `words.json`, #46). Neither is baked into the two site banks yet, and `word(...).formant(true)`
+  network, per-clip `source`/`licence` in `words.json`, #46). Neither is baked into the banks that ship here, and `word(...).formant(true)`
   is not built (#57) - the Syntax view marks it "coming".
-- Completions for word names come from `data/intellisense/words.json`; regenerate it with
+- Completions for word names come from `data/intellisense/words.json`, which covers the `demo` and `call-me-baby` banks (the ones
+  a fresh page can play without a `voxBank` call); every bank also ships its own `words.json`. Regenerate with
   `python3 engine/vocals/complete.py "" --samples-dir site/data/vox/call-me-baby --samples-dir site/data/vox/demo --kind word`
-  (merge duplicate names, keep the highest take count).
+  (add a `--samples-dir` per bank you want completed; merge duplicate names, keep the highest take count).
 
 ## Visual feedback (`visuals.js`)
 As on strudel.cc/learn/visual-feedback, using Strudel's own draw code in `@strudel/web` 1.3.0 (unmodified):

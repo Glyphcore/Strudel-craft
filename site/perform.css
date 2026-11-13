@@ -48,7 +48,7 @@
 .pf-tools{align-items:center}
 
 /* size caps so pads and knobs stay instrument-sized on wide screens */
-.perform .pp-grid{max-width:640px}
+.perform .pp-grid{max-width:560px}
 .pc-knob{width:100%;max-width:140px;justify-self:center}
 .pc-cell[data-size="2x2"] .pc-knob{max-width:240px}
 .pc-cell[data-size="2x2"] .pc-fader{height:240px}
@@ -96,3 +96,7 @@
 /* cells never push their grid track wider than its share (4 columns on a phone) */
 .pc-cell{min-width:0}.pc-cell>*{min-width:0;max-width:100%}
 .pc-xy{width:100%;min-height:0}
+.perform .pf-mode[aria-pressed=true]{color:var(--text);border-color:var(--sig);box-shadow:inset 0 -2px 0 var(--sig)}
+/* "on" keeps light text on a dark pad-tinted fill (>= 7:1 for any pad colour); the pad colour carries as a ring and glow */
+.pp-pad[data-state=on]{background:color-mix(in srgb,var(--pc) 25%,var(--panel-2));color:var(--text);border-color:var(--pc);box-shadow:inset 0 0 0 3px var(--pc),0 0 18px color-mix(in srgb,var(--pc) 55%,transparent)}
+:root[data-theme=light] .pp-pad[data-state=on]{background:color-mix(in srgb,var(--pc) 22%,#fff)}

@@ -1,5 +1,5 @@
 {
- "date": "2026-11-13T11:25:53.501Z",
+ "date": "2026-11-13T12:03:07.403Z",
  "chromium": "153.0.8010.12",
  "recipes": [
   {
@@ -20,7 +20,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Offbeat hat",
-   "peak": "-19.0 dB",
+   "peak": "-17.7 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -31,7 +31,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Euclid groove",
-   "peak": "-8.2 dB",
+   "peak": "-8.4 dB",
    "haps_next4cycles": 40,
    "ok": true
   },
@@ -42,7 +42,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Reese-style detuned bass",
-   "peak": "-12.9 dB",
+   "peak": "-13.4 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -53,7 +53,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Sub bass",
-   "peak": "-21.1 dB",
+   "peak": "-21.4 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -64,7 +64,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Pad swell",
-   "peak": "-20.9 dB",
+   "peak": "-19.9 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -75,7 +75,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Filter sweep build",
-   "peak": "-15.7 dB",
+   "peak": "-15.8 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -86,7 +86,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Riser",
-   "peak": "-29.4 dB",
+   "peak": "-28.5 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -97,7 +97,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Breakdown/drop arrangement over bars",
-   "peak": "-7.7 dB",
+   "peak": "-5.7 dB",
    "haps_next4cycles": 48,
    "ok": true
   },
@@ -108,7 +108,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Half-time",
-   "peak": "-9.0 dB",
+   "peak": "-19.9 dB",
    "haps_next4cycles": 40,
    "ok": true
   },
@@ -119,7 +119,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Call-and-response",
-   "peak": "-20.2 dB",
+   "peak": "-20.0 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -130,7 +130,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Minor motif",
-   "peak": "-22.5 dB",
+   "peak": "-22.1 dB",
    "haps_next4cycles": 8,
    "ok": true
   },
@@ -141,7 +141,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Chord stabs",
-   "peak": "-15.3 dB",
+   "peak": "-13.8 dB",
    "haps_next4cycles": 38,
    "ok": true
   },
@@ -152,7 +152,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Sidechain pump",
-   "peak": "-9.7 dB",
+   "peak": "-14.4 dB",
    "haps_next4cycles": 24,
    "ok": true
   },
@@ -163,7 +163,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Fade out",
-   "peak": "-22.9 dB",
+   "peak": "-22.1 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -174,7 +174,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Synth kick (no samples)",
-   "peak": "-20.5 dB",
+   "peak": "-25.1 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -185,7 +185,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Noise tick on the offbeats",
-   "peak": "-23.6 dB",
+   "peak": "-25.3 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -196,7 +196,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Noise backbeat",
-   "peak": "-38.7 dB",
+   "peak": "-36.7 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -207,7 +207,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Euclid low pulse",
-   "peak": "-21.0 dB",
+   "peak": "-18.5 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -218,7 +218,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Syncopated bass line",
-   "peak": "-23.6 dB",
+   "peak": "-20.6 dB",
    "haps_next4cycles": 20,
    "ok": true
   },
@@ -229,7 +229,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Wide detuned pad",
-   "peak": "-24.6 dB",
+   "peak": "-19.1 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -240,7 +240,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Short pluck line",
-   "peak": "-19.6 dB",
+   "peak": "-22.5 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -251,7 +251,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Minor arpeggio",
-   "peak": "-22.0 dB",
+   "peak": "-18.5 dB",
    "haps_next4cycles": 48,
    "ok": true
   },
@@ -262,7 +262,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Four-chord progression",
-   "peak": "-11.5 dB",
+   "peak": "-12.2 dB",
    "haps_next4cycles": 19,
    "ok": true
   },
@@ -273,7 +273,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Root-following bass",
-   "peak": "-22.7 dB",
+   "peak": "-22.6 dB",
    "haps_next4cycles": 8,
    "ok": true
   },
@@ -284,7 +284,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Echo tail",
-   "peak": "-25.3 dB",
+   "peak": "-34.0 dB",
    "haps_next4cycles": 8,
    "ok": true
   },
@@ -295,7 +295,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Reversed copy on the right",
-   "peak": "-15.0 dB",
+   "peak": "-19.5 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -306,7 +306,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Big reverb splash",
-   "peak": "-32.1 dB",
+   "peak": "-34.0 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -317,7 +317,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Dry and tight",
-   "peak": "-18.2 dB",
+   "peak": "-21.1 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -328,7 +328,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Phaser movement",
-   "peak": "-32.2 dB",
+   "peak": "-29.3 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -339,7 +339,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Tremolo shimmer",
-   "peak": "-20.9 dB",
+   "peak": "-21.3 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -350,7 +350,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Vowel formant colour",
-   "peak": "-32.6 dB",
+   "peak": "-29.5 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -361,7 +361,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing FM bell",
-   "peak": "-15.4 dB",
+   "peak": "-15.8 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -372,7 +372,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Lo-fi crunch",
-   "peak": "-24.7 dB",
+   "peak": "-24.1 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -383,7 +383,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Drifting filter",
-   "peak": "-19.6 dB",
+   "peak": "-22.5 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -394,7 +394,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Crescendo",
-   "peak": "-33.5 dB",
+   "peak": "-29.8 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -405,7 +405,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Accent pattern",
-   "peak": "-21.0 dB",
+   "peak": "-16.7 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -416,7 +416,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Sidechain pump (synth)",
-   "peak": "-21.9 dB",
+   "peak": "-18.4 dB",
    "haps_next4cycles": 20,
    "ok": true
   },
@@ -427,8 +427,8 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Build and drop sections",
-   "peak": "-14.1 dB",
-   "haps_next4cycles": 30,
+   "peak": "-11.5 dB",
+   "haps_next4cycles": 28,
    "ok": true
   },
   {
@@ -438,7 +438,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Layers entering one by one",
-   "peak": "-21.0 dB",
+   "peak": "-18.1 dB",
    "haps_next4cycles": 17,
    "ok": true
   },
@@ -449,7 +449,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Intro with an opening filter",
-   "peak": "-23.6 dB",
+   "peak": "-23.8 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -460,7 +460,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Random thinning",
-   "peak": "-27.1 dB",
+   "peak": "-29.2 dB",
    "haps_next4cycles": 35,
    "ok": true
   },
@@ -471,7 +471,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Polymeter",
-   "peak": "-21.5 dB",
+   "peak": "-18.2 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -493,7 +493,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Sparse, spacious line",
-   "peak": "-22.9 dB",
+   "peak": "-37.9 dB",
    "haps_next4cycles": 8,
    "ok": true
   },
@@ -504,7 +504,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Tense rising pitch",
-   "peak": "-25.5 dB",
+   "peak": "-27.4 dB",
    "haps_next4cycles": 4,
    "ok": true
   }
@@ -517,9 +517,9 @@
    "max_ms": 16.8,
    "viz_draw": {
     "n": 361,
-    "mean_ms": 0.89,
-    "p95_ms": 1.3,
-    "max_ms": 4.3
+    "mean_ms": 0.7,
+    "p95_ms": 1,
+    "max_ms": 3.5
    }
   },
   "phone_390": {
@@ -529,26 +529,26 @@
    "max_ms": 16.8,
    "viz_draw": {
     "n": 361,
-    "mean_ms": 0.67,
+    "mean_ms": 0.66,
     "p95_ms": 0.9,
-    "max_ms": 2.7
+    "max_ms": 4.1
    }
   },
   "phone_390_cpu4x": {
-   "n": 268,
-   "mean_ms": 22.39,
-   "p95_ms": 33.4,
-   "max_ms": 66.7,
+   "n": 313,
+   "mean_ms": 19.17,
+   "p95_ms": 33.3,
+   "max_ms": 33.5,
    "viz_draw": {
-    "n": 269,
-    "mean_ms": 2.96,
-    "p95_ms": 5.2,
-    "max_ms": 9
+    "n": 314,
+    "mean_ms": 2.87,
+    "p95_ms": 4.3,
+    "max_ms": 9.4
    }
   },
   "reduced_motion_viz": {
    "n": 30,
-   "mean_ms": 100,
+   "mean_ms": 99.99,
    "p95_ms": 100.1,
    "max_ms": 100.1
   }
@@ -557,7 +557,7 @@
  "graph": {
   "shell": {
    "graph_files_requested_with_shell": 0,
-   "shell_same_origin_bytes": 704914
+   "shell_same_origin_bytes": 705728
   },
   "two_views": {
    "added": [
@@ -590,7 +590,7 @@
   },
   "targets": {
    "zoom_100": {
-    "n": 16,
+    "n": 17,
     "ports": 4,
     "min_w": 46.3,
     "min_h": 44,
@@ -601,7 +601,7 @@
     "small": []
    },
    "zoom_85": {
-    "n": 16,
+    "n": 17,
     "ports": 4,
     "min_w": 46.3,
     "min_h": 44,
@@ -653,12 +653,12 @@
   },
   "contrast_light_390": {
    "min": 7.34,
-   "n": 116,
+   "n": 117,
    "worst": "button.gx-tab \"Code\" rgb(77, 84, 93) on rgb(251,250,247)"
   },
   "contrast_dark_390": {
    "min": 7.11,
-   "n": 116,
+   "n": 117,
    "worst": "button.gx-tab \"Code\" rgb(154, 163, 174) on rgb(18,22,27)"
   },
   "perf": {
@@ -666,8 +666,8 @@
    "nodes": 150,
    "wires": 300,
    "empty_raf_loop": {
-    "n": 121,
-    "mean_ms": 16.66,
+    "n": 120,
+    "mean_ms": 16.67,
     "p95_ms": 16.8,
     "p95_vsync_ms": 16.67,
     "dropped_pct": 0,
@@ -682,37 +682,37 @@
     "max_ms": 16.8
    },
    "zoom": {
-    "n": 233,
-    "mean_ms": 17.17,
+    "n": 232,
+    "mean_ms": 17.24,
     "p95_ms": 16.8,
     "p95_vsync_ms": 16.67,
     "dropped_pct": 1.7,
-    "max_ms": 66.8
+    "max_ms": 66.7
    },
    "all": {
-    "n": 473,
-    "mean_ms": 16.91,
+    "n": 472,
+    "mean_ms": 16.95,
     "p95_ms": 16.7,
     "p95_vsync_ms": 16.67,
     "dropped_pct": 0.8,
-    "max_ms": 66.8
+    "max_ms": 66.7
    },
    "cpu4x": {
     "pan": {
-     "n": 239,
-     "mean_ms": 16.74,
-     "p95_ms": 16.8,
+     "n": 240,
+     "mean_ms": 16.67,
+     "p95_ms": 16.7,
      "p95_vsync_ms": 16.67,
-     "dropped_pct": 0.4,
-     "max_ms": 33.4
+     "dropped_pct": 0,
+     "max_ms": 16.8
     },
     "zoom": {
-     "n": 128,
-     "mean_ms": 31.38,
+     "n": 125,
+     "mean_ms": 32.13,
      "p95_ms": 50,
      "p95_vsync_ms": 50,
-     "dropped_pct": 43.8,
-     "max_ms": 433.3
+     "dropped_pct": 46.4,
+     "max_ms": 383.33
     }
    }
   },
@@ -724,7 +724,7 @@
   },
   "contrast_dark_1440": {
    "min": 7.11,
-   "n": 73,
+   "n": 74,
    "worst": "button.gx-tab \"Outline\" rgb(154, 163, 174) on rgb(18,22,27)"
   },
   "animations_normal": 2,
@@ -734,6 +734,245 @@
    "pulse": "0.6",
    "badge": "\" ▸\"",
    "animations_without_reduce": 2
+  }
+ },
+ "perform": {
+  "date": "2026-11-13T12:07:42.834Z",
+  "take": {
+   "events": 4,
+   "record": {
+    "name": "smoke-take",
+    "rev": 1,
+    "kind": "performance"
+   }
+  },
+  "lane": {
+   "points": 8,
+   "events_next_cycle": [
+    [
+     3620,
+     3620
+    ],
+    [
+     1625,
+     1625
+    ],
+    [
+     2575,
+     2575
+    ],
+    [
+     2184,
+     2184
+    ]
+   ]
+  },
+  "targets_390": {
+   "pads": {
+    "n": 37,
+    "min_w": 44,
+    "min_h": 44,
+    "small": []
+   },
+   "board": {
+    "n": 26,
+    "min_w": 44,
+    "min_h": 44,
+    "small": []
+   }
+  },
+  "contrast": {
+   "pads": {
+    "min": 7.95,
+    "n": 63,
+    "worst": "span.pp-mark \"●\" rgb(230, 233, 238) on rgb(30,75,76)"
+   },
+   "board": {
+    "min": 10.25,
+    "n": 32,
+    "worst": "button. \"↶ Lane\" rgb(195, 202, 211) on rgb(24,29,36)"
+   }
+  },
+  "state_marks": {
+   "loaded": {
+    "mark": "○",
+    "label": true
+   },
+   "on": {
+    "mark": "●",
+    "label": true
+   },
+   "empty": {
+    "mark": "·",
+    "label": true
+   }
+  },
+  "board_columns_390": 4,
+  "latency_phone": {
+   "work": {
+    "n": 40,
+    "mean_ms": 0.3,
+    "p95_ms": 0.5,
+    "max_ms": 0.8
+   },
+   "from_event": {
+    "n": 40,
+    "mean_ms": 13.223,
+    "p95_ms": 18.2,
+    "max_ms": 21.9
+   }
+  },
+  "latency_phone_cpu4x": {
+   "work": {
+    "n": 20,
+    "mean_ms": 2.325,
+    "p95_ms": 5.4,
+    "max_ms": 5.4
+   },
+   "from_event": {
+    "n": 20,
+    "mean_ms": 37.655,
+    "p95_ms": 55.7,
+    "max_ms": 55.7
+   }
+  },
+  "shell_growth": {
+   "gzip_bytes": 2554,
+   "commits": [
+    "7e8ece3",
+    "eafa160",
+    "9800995"
+   ],
+   "per": [
+    "7e8ece3 site/style.css -996",
+    "eafa160 site/app.js +49",
+    "9800995 site/app.js +120",
+    "9800995 site/engine/hooks.js +1500",
+    "9800995 site/engine/index.js +771",
+    "9800995 site/index.html +69",
+    "9800995 site/style.css +1041"
+   ]
+  },
+  "checks": [
+   {
+    "name": "perform: tab strip is role=tablist with bank and board tabs",
+    "ok": true,
+    "detail": ""
+   },
+   {
+    "name": "perform: tabs add (bank + board), rename, reorder; arrow keys move between tabs",
+    "ok": true,
+    "detail": "{\"names2\":[\"▦Bank A (pad bank)\",\"◎Board (control board)\",\"◎Board 2 (control board)\",\"◎Knobs (control board)\",\"▦Bank B1 (pad bank)\"],\"sel\":[\"pft1\",\"true\"]}"
+   },
+   {
+    "name": "perform: KeyQ fires pad 1,0 in perform mode; with it off 1-4 and Space keep working; typing in the editor fires no pad",
+    "ok": true,
+    "detail": "{\"kq\":1,\"v2\":\"stack\",\"stopped\":true,\"typedFired\":0}"
+   },
+   {
+    "name": "perform: bar-quantised pad shows the queued mark until its boundary, then on; reduced motion: no animation, beats as text",
+    "ok": true,
+    "detail": "{\"qd\":{\"state\":\"queued\",\"mark\":\"◔\",\"beats\":\"4 beats\",\"anim\":\"ppQ\"},\"qr\":{\"state\":\"queued\",\"beats\":\"3 beats\",\"anim\":\"none\",\"label\":\"Pad 0,0 lead, queued, 3 beats\"},\"qon\":\"on\"}"
+   },
+   {
+    "name": "perform: looper records a 1-bar take, Save stores a performance record, the loaded take replays",
+    "ok": true,
+    "detail": "{\"events\":4,\"kind\":\"performance\",\"want\":[5.104166666666667,5.239583333333333],\"replayed\":[5.104166666666667,5.239583333333333]}"
+   },
+   {
+    "name": "perform: declared-only type (encoder) renders its fallback with the \"basic view\" note",
+    "ok": true,
+    "detail": "basic view (encoder shown as knob)"
+   },
+   {
+    "name": "perform: board knob changes the event value of its param on the next cycle; the inline control shows the same value",
+    "ok": true,
+    "detail": "{\"v0\":200,\"v1\":580,\"evc\":[580,580],\"inl\":[\"580 Hz\",\"580 Hz\"]}"
+   },
+   {
+    "name": "perform: knob arrow keys step, typed value accepted, aria-valuetext has value and unit; XY moves by arrow keys",
+    "ok": true,
+    "detail": "{\"step\":38,\"typedV\":1234,\"vt\":\"1234 Hz\",\"x0\":\"x 0.00, y 0.00\",\"x1\":\"x 0.02, y 0.02\"}"
+   },
+   {
+    "name": "perform: Learn + destination + move creates one maps entry and one hooks.map line; Unlearn removes both",
+    "ok": true,
+    "detail": "{\"lm\":[{\"control\":\"pos\",\"dest\":\"lpf\"}],\"ll\":[\"hooks.map('pos', 'lpf')\"],\"lm2\":[],\"ll2\":[]}"
+   },
+   {
+    "name": "perform: a 1-bar control move records a lane into the model and the control follows it on replay",
+    "ok": true,
+    "detail": "{\"points\":8,\"follow\":[[3620,3620],[1625,1625],[2575,2575],[2184,2184]]}"
+   },
+   {
+    "name": "perform: board edit mode resizes and moves a cell to another board; board saved to the library",
+    "ok": true,
+    "detail": "{\"sz\":\"2x1\",\"moved\":[false,true],\"kinds\":[\"performance\",\"board\"]}"
+   },
+   {
+    "name": "perform: perform-mode tap journals one on (hooks.journal); two touches fire two pads; edit-mode tap opens the pad sheet and journals nothing",
+    "ok": true,
+    "detail": "{\"one\":1,\"two\":[1,1],\"sheet\":1,\"j0\":5,\"j1\":5}"
+   },
+   {
+    "name": "perform: pads and controls >= 44x44 at 390, text contrast >= 7:1, every pad state has its own mark + text",
+    "ok": true,
+    "detail": "{\"tp\":[],\"tb\":[],\"cp\":7.95,\"cpw\":\"span.pp-mark \\\"●\\\" rgb(230, 233, 238) on rgb(30,75,76)\",\"cb\":10.25,\"cbw\":\"button. \\\"↶ Lane\\\" rgb(195, 202, 211) on rgb(24,29,36)\",\"marks\":{\"loaded\":{\"mark\":\"○\",\"label\":true},\"on\":{\"mark\":\"●\",\"label\":true},\"empty\":{\"mark\":\"·\",\"label\":true}},\"cols\":4}"
+   },
+   {
+    "name": "perform: pointerdown handler -> journal entry, main-thread work p95 <= 10 ms (phone profile); #55 adds <= 5 kB (gzip) to the shell",
+    "ok": true,
+    "detail": "{\"phone\":{\"work\":{\"n\":40,\"mean_ms\":0.3,\"p95_ms\":0.5,\"max_ms\":0.8},\"from_event\":{\"n\":40,\"mean_ms\":13.223,\"p95_ms\":18.2,\"max_ms\":21.9}},\"cpu4x\":{\"work\":{\"n\":20,\"mean_ms\":2.325,\"p95_ms\":5.4,\"max_ms\":5.4},\"from_event\":{\"n\":20,\"mean_ms\":37.655,\"p95_ms\":55.7,\"max_ms\":55.7}},\"shell_gzip_bytes\":2554}"
+   },
+   {
+    "name": "perform: zero console errors / page errors",
+    "ok": true,
+    "detail": ""
+   }
+  ],
+  "lighthouse": {
+   "date": "2026-11-13T12:01:58.418Z",
+   "lighthouse": "12.8.2",
+   "formFactor": "mobile",
+   "server": "python http.server (no cache headers)",
+   "runs": [
+    {
+     "url": "/",
+     "scores": {
+      "performance": 80,
+      "accessibility": 100,
+      "best-practices": 96
+     },
+     "a11y_failing": []
+    },
+    {
+     "url": "/#perform",
+     "scores": {
+      "performance": 54,
+      "accessibility": 99,
+      "best-practices": 96
+     },
+     "a11y_failing": [
+      "skip-link"
+     ]
+    }
+   ],
+   "baseline_file": {
+    "path": "docs/screens/lighthouse-mobile.json",
+    "accessibility": 100
+   },
+   "shell_perf_same_server": {
+    "before_session_c2633e8": [
+     80,
+     80
+    ],
+    "after": [
+     80,
+     79
+    ],
+    "note": "same machine, same server, run back to back: Perform adds no shell regression; the 90 performance gate is not met before or after (#59)"
+   },
+   "perform_skip_link_note": "/#perform flags the nav anchors href=#rack/#stack (hash routes without matching ids), not Perform markup"
   }
  },
  "console_errors": [],
@@ -856,12 +1095,12 @@
   {
    "name": "master meter shows signal",
    "ok": true,
-   "detail": "-18.2 dB"
+   "detail": "-17.7 dB"
   },
   {
    "name": "frame time during playback measured (1440)",
    "ok": true,
-   "detail": "{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.8,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":0.89,\"p95_ms\":1.3,\"max_ms\":4.3}}"
+   "detail": "{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.8,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":0.7,\"p95_ms\":1,\"max_ms\":3.5}}"
   },
   {
    "name": "Space stops playback",
@@ -906,7 +1145,7 @@
   {
    "name": "frame time during playback measured (390, and 4x CPU throttle)",
    "ok": true,
-   "detail": "{\"normal\":{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.7,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":0.67,\"p95_ms\":0.9,\"max_ms\":2.7}},\"cpu4x\":{\"n\":268,\"mean_ms\":22.39,\"p95_ms\":33.4,\"max_ms\":66.7,\"viz_draw\":{\"n\":269,\"mean_ms\":2.96,\"p95_ms\":5.2,\"max_ms\":9}}}"
+   "detail": "{\"normal\":{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.7,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":0.66,\"p95_ms\":0.9,\"max_ms\":4.1}},\"cpu4x\":{\"n\":313,\"mean_ms\":19.17,\"p95_ms\":33.3,\"max_ms\":33.5,\"viz_draw\":{\"n\":314,\"mean_ms\":2.87,\"p95_ms\":4.3,\"max_ms\":9.4}}}"
   },
   {
    "name": "reduced motion: transitions are 0s",
@@ -921,7 +1160,7 @@
   {
    "name": "reduced motion: visualiser throttled to <= 10 fps",
    "ok": true,
-   "detail": "{\"n\":30,\"mean_ms\":100,\"p95_ms\":100.1,\"max_ms\":100.1}"
+   "detail": "{\"n\":30,\"mean_ms\":99.99,\"p95_ms\":100.1,\"max_ms\":100.1}"
   },
   {
    "name": "works offline after first load (service worker)",
@@ -931,17 +1170,17 @@
   {
    "name": "compose.html redirects into the app (stack)",
    "ok": true,
-   "detail": "http://127.0.0.1:44461/index.html#stack"
+   "detail": "http://127.0.0.1:35081/index.html#stack"
   },
   {
    "name": "plugins.html redirects into the app (ref)",
    "ok": true,
-   "detail": "http://127.0.0.1:44461/index.html#ref"
+   "detail": "http://127.0.0.1:35081/index.html#ref"
   },
   {
    "name": "practices.html redirects into the app (practice)",
    "ok": true,
-   "detail": "http://127.0.0.1:44461/index.html#practice"
+   "detail": "http://127.0.0.1:35081/index.html#practice"
   },
   {
    "name": "deep link #r/<id> selects that recipe",
@@ -951,7 +1190,7 @@
   {
    "name": "graph: graph.js / graph.css are not loaded with the shell",
    "ok": true,
-   "detail": "0 graph requests on first load; shell 704914 B same-origin"
+   "detail": "0 graph requests on first load; shell 705728 B same-origin"
   },
   {
    "name": "graph: view opens from the nav and loads graph.js on first open",
@@ -996,7 +1235,7 @@
   {
    "name": "graph: ports and controls >= 44x44 CSS px at mid zoom (390px)",
    "ok": true,
-   "detail": "{\"zoom_100\":{\"n\":16,\"ports\":4,\"min_w\":46.3,\"min_h\":44,\"port_min\":[110,52],\"small\":[]},\"zoom_85\":{\"n\":16,\"ports\":4,\"min_w\":46.3,\"min_h\":44,\"port_min\":[93.5,44.2],\"small\":[]}}"
+   "detail": "{\"zoom_100\":{\"n\":17,\"ports\":4,\"min_w\":46.3,\"min_h\":44,\"port_min\":[110,52],\"small\":[]},\"zoom_85\":{\"n\":17,\"ports\":4,\"min_w\":46.3,\"min_h\":44,\"port_min\":[93.5,44.2],\"small\":[]}}"
   },
   {
    "name": "graph: long-press + tap multi-select, Collapse yields one component node with exported ports; entering shows the breadcrumb",
@@ -1016,7 +1255,7 @@
   {
    "name": "graph: 150-node / 300-wire fixture pans and zooms with p95 frame time <= 16.7 ms (phone profile)",
    "ok": true,
-   "detail": "{\"profile\":\"smoke phone profile: 390x844, dpr 2, touch\",\"nodes\":150,\"wires\":300,\"empty_raf_loop\":{\"n\":121,\"mean_ms\":16.66,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"pan\":{\"n\":240,\"mean_ms\":16.67,\"p95_ms\":16.7,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"zoom\":{\"n\":233,\"mean_ms\":17.17,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":1.7,\"max_ms\":66.8},\"all\":{\"n\":473,\"mean_ms\":16.91,\"p95_ms\":16.7,\"p95_vsync_ms\":16.67,\"dropped_pct\":0.8,\"max_ms\":66.8},\"cpu4x\":{\"pan\":{\"n\":239,\"mean_ms\":16.74,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":0.4,\"max_ms\":33.4},\"zoom\":{\"n\":128,\"mean_ms\":31.38,\"p95_ms\":50,\"p95_vsync_ms\":50,\"dropped_pct\":43.8,\"max_ms\":433.3}}}"
+   "detail": "{\"profile\":\"smoke phone profile: 390x844, dpr 2, touch\",\"nodes\":150,\"wires\":300,\"empty_raf_loop\":{\"n\":120,\"mean_ms\":16.67,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"pan\":{\"n\":240,\"mean_ms\":16.67,\"p95_ms\":16.7,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"zoom\":{\"n\":232,\"mean_ms\":17.24,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":1.7,\"max_ms\":66.7},\"all\":{\"n\":472,\"mean_ms\":16.95,\"p95_ms\":16.7,\"p95_vsync_ms\":16.67,\"dropped_pct\":0.8,\"max_ms\":66.7},\"cpu4x\":{\"pan\":{\"n\":240,\"mean_ms\":16.67,\"p95_ms\":16.7,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"zoom\":{\"n\":125,\"mean_ms\":32.13,\"p95_ms\":50,\"p95_vsync_ms\":50,\"dropped_pct\":46.4,\"max_ms\":383.33}}}"
   },
   {
    "name": "graph: keyboard-only wire through the outline list (Connect to...)",
@@ -1041,12 +1280,82 @@
   {
    "name": "graph: text contrast >= 7:1 (dark 1440, dark 390, light 390)",
    "ok": true,
-   "detail": "[{\"min\":7.11,\"n\":73,\"worst\":\"button.gx-tab \\\"Outline\\\" rgb(154, 163, 174) on rgb(18,22,27)\"},{\"min\":7.11,\"n\":116,\"worst\":\"button.gx-tab \\\"Code\\\" rgb(154, 163, 174) on rgb(18,22,27)\"},{\"min\":7.34,\"n\":116,\"worst\":\"button.gx-tab \\\"Code\\\" rgb(77, 84, 93) on rgb(251,250,247)\"}]"
+   "detail": "[{\"min\":7.11,\"n\":74,\"worst\":\"button.gx-tab \\\"Outline\\\" rgb(154, 163, 174) on rgb(18,22,27)\"},{\"min\":7.11,\"n\":117,\"worst\":\"button.gx-tab \\\"Code\\\" rgb(154, 163, 174) on rgb(18,22,27)\"},{\"min\":7.34,\"n\":117,\"worst\":\"button.gx-tab \\\"Code\\\" rgb(77, 84, 93) on rgb(251,250,247)\"}]"
   },
   {
    "name": "graph: reduced motion runs no wire animation; live state still shown",
    "ok": true,
    "detail": "{\"anims\":0,\"live\":true,\"pulse\":\"0.6\",\"badge\":\"\\\" ▸\\\"\",\"animations_without_reduce\":2}"
+  },
+  {
+   "name": "perform: tab strip is role=tablist with bank and board tabs",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "perform: tabs add (bank + board), rename, reorder; arrow keys move between tabs",
+   "ok": true,
+   "detail": "{\"names2\":[\"▦Bank A (pad bank)\",\"◎Board (control board)\",\"◎Board 2 (control board)\",\"◎Knobs (control board)\",\"▦Bank B1 (pad bank)\"],\"sel\":[\"pft1\",\"true\"]}"
+  },
+  {
+   "name": "perform: KeyQ fires pad 1,0 in perform mode; with it off 1-4 and Space keep working; typing in the editor fires no pad",
+   "ok": true,
+   "detail": "{\"kq\":1,\"v2\":\"stack\",\"stopped\":true,\"typedFired\":0}"
+  },
+  {
+   "name": "perform: bar-quantised pad shows the queued mark until its boundary, then on; reduced motion: no animation, beats as text",
+   "ok": true,
+   "detail": "{\"qd\":{\"state\":\"queued\",\"mark\":\"◔\",\"beats\":\"4 beats\",\"anim\":\"ppQ\"},\"qr\":{\"state\":\"queued\",\"beats\":\"3 beats\",\"anim\":\"none\",\"label\":\"Pad 0,0 lead, queued, 3 beats\"},\"qon\":\"on\"}"
+  },
+  {
+   "name": "perform: looper records a 1-bar take, Save stores a performance record, the loaded take replays",
+   "ok": true,
+   "detail": "{\"events\":4,\"kind\":\"performance\",\"want\":[5.09375,5.21875],\"replayed\":[5.09375,5.21875]}"
+  },
+  {
+   "name": "perform: declared-only type (encoder) renders its fallback with the \"basic view\" note",
+   "ok": true,
+   "detail": "basic view (encoder shown as knob)"
+  },
+  {
+   "name": "perform: board knob changes the event value of its param on the next cycle; the inline control shows the same value",
+   "ok": true,
+   "detail": "{\"v0\":200,\"v1\":580,\"evc\":[580,580],\"inl\":[\"580 Hz\",\"580 Hz\"]}"
+  },
+  {
+   "name": "perform: knob arrow keys step, typed value accepted, aria-valuetext has value and unit; XY moves by arrow keys",
+   "ok": true,
+   "detail": "{\"step\":38,\"typedV\":1234,\"vt\":\"1234 Hz\",\"x0\":\"x 0.00, y 0.00\",\"x1\":\"x 0.02, y 0.02\"}"
+  },
+  {
+   "name": "perform: Learn + destination + move creates one maps entry and one hooks.map line; Unlearn removes both",
+   "ok": true,
+   "detail": "{\"lm\":[{\"control\":\"pos\",\"dest\":\"lpf\"}],\"ll\":[\"hooks.map('pos', 'lpf')\"],\"lm2\":[],\"ll2\":[]}"
+  },
+  {
+   "name": "perform: a 1-bar control move records a lane into the model and the control follows it on replay",
+   "ok": true,
+   "detail": "{\"points\":11,\"follow\":[[3620,3620],[1720,1720],[2480,2480],[1994,1994]]}"
+  },
+  {
+   "name": "perform: board edit mode resizes and moves a cell to another board; board saved to the library",
+   "ok": true,
+   "detail": "{\"sz\":\"2x1\",\"moved\":[false,true],\"kinds\":[\"performance\",\"board\"]}"
+  },
+  {
+   "name": "perform: perform-mode tap journals one on (hooks.journal); two touches fire two pads; edit-mode tap opens the pad sheet and journals nothing",
+   "ok": true,
+   "detail": "{\"one\":1,\"two\":[1,1],\"sheet\":1,\"j0\":5,\"j1\":5}"
+  },
+  {
+   "name": "perform: pads and controls >= 44x44 at 390, text contrast >= 7:1, every pad state has its own mark + text",
+   "ok": true,
+   "detail": "{\"tp\":[],\"tb\":[],\"cp\":7.95,\"cpw\":\"span.pp-mark \\\"●\\\" rgb(230, 233, 238) on rgb(30,75,76)\",\"cb\":10.25,\"cbw\":\"button. \\\"↶ Lane\\\" rgb(195, 202, 211) on rgb(24,29,36)\",\"marks\":{\"loaded\":{\"mark\":\"○\",\"label\":true},\"on\":{\"mark\":\"●\",\"label\":true},\"empty\":{\"mark\":\"·\",\"label\":true}},\"cols\":4}"
+  },
+  {
+   "name": "perform: pointerdown handler -> journal entry, main-thread work p95 <= 10 ms (phone profile); #55 adds <= 5 kB (gzip) to the shell",
+   "ok": true,
+   "detail": "{\"phone\":{\"work\":{\"n\":40,\"mean_ms\":0.32,\"p95_ms\":0.7,\"max_ms\":0.8},\"from_event\":{\"n\":40,\"mean_ms\":12.485,\"p95_ms\":15.1,\"max_ms\":15.9}},\"cpu4x\":{\"work\":{\"n\":20,\"mean_ms\":2.155,\"p95_ms\":4.9,\"max_ms\":4.9},\"from_event\":{\"n\":20,\"mean_ms\":43.135,\"p95_ms\":61.8,\"max_ms\":61.8}},\"shell_gzip_bytes\":2554}"
   },
   {
    "name": "zero console errors / page errors",

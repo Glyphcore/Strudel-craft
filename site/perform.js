@@ -46,9 +46,9 @@ function bindStrudel() {
   window.ctl = (name, spec = {}) => {
     name = String(un(name)); spec = unSpec(spec);
     if (!controls.list().some((c) => c.name === name)) { try { controls.declare(name, { type: 'knob', min: 0, max: 1, ...spec }); } catch (e) { /* conflict: keep the first */ } persistControls(); }
-    if (!order.includes(name)) order.push(name); queueInline(); return sig(name);
+    declOrder(name); queueInline(); return sig(name);
   };
-  window.sliderWithID = (id, value, min = 0, max = 1) => { id = String(un(id)); value = +un(value); min = +un(min); max = +un(max); const f = controls.sliderWithID(id, value, min, max); if (!order.includes(f.controlName)) order.push(f.controlName); queueInline(); return sig(f.controlName); };
+  window.sliderWithID = (id, value, min = 0, max = 1) => { id = String(un(id)); value = +un(value); min = +un(min); max = +un(max); const f = controls.sliderWithID(id, value, min, max); declOrder(f.controlName); queueInline(); return sig(f.controlName); };
 }
 /* hooks runtime glue (engine/hooks.js is not modified): hooks.map(control, dest, opts?, gate?) -> controls.map (idempotent, the line
    re-runs on every evaluate); pad journal entries are written into hooks.journal in the runtime's journal format. */
@@ -63,8 +63,11 @@ function glue() {
   };
   bridge();
 }
-let inlineT = 0; function queueInline() { clearTimeout(inlineT); inlineT = setTimeout(() => { renderInline(); if (curTab().kind === 'board') render(); }, 60); }
-window.addEventListener('live:swap', () => { order.length = 0; });
+// a re-evaluation re-declares the same controls: the board only re-renders when the set of controls (or their maps) changed
+let inlineT = 0, boardSig = ''; function queueInline() { clearTimeout(inlineT); inlineT = setTimeout(() => { renderInline(); const sig = JSON.stringify(controls.list().map((c) => [c.name, c.maps])); if (sig !== boardSig) { boardSig = sig; if (curTab().kind === 'board') render(); } }, 60); }
+// source order of the running program: one evaluation calls ctl()/slider() back to back, so a gap starts a new list
+let lastDecl = 0; const declOrder = (name) => { const t = performance.now(); if (t - lastDecl > 250) order.length = 0; lastDecl = t; if (!order.includes(name)) order.push(name); };
+window.addEventListener('live:swap', (e) => { if (!/\b(ctl|slider)\s*\(/.test((e.detail && e.detail.code) || '')) { order.length = 0; queueInline(); } });
 
 /* ---------------- pad journal -> hooks.journal ----------------
    The hooks runtime replays journal entries {cycle, op, args} with op bind [slot, hook], unbind [slot], let [name, value], replace, set.
@@ -276,8 +279,8 @@ function renderBank(host, bank) {
   grid.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.pp-pad')) { e.preventDefault(); e.stopPropagation(); const pos = e.target.closest('.pp-pad').dataset.pos; if (M.perform && bank.pads.find((p) => p.pos === pos)) { press(bank, pos); release(bank, pos); } else padSheet(bank, pos); } });
   host.append(grid);
 }
-const lat = []; // pointerdown -> journal entry written (main thread, ms)
-function press(bank, pos, vel, t0) { if (!bank.pads.find((p) => p.pos === pos)) return; pads.press(`${bank.id}/${pos}`, nowCycle(), vel); journalChanged(); if (t0 != null) { lat.push(performance.now() - t0); if (lat.length > 500) lat.shift(); } }
+const lat = [], work = []; // ms: pointerdown event time -> journal entry written; pointerdown handler start -> journal entry written (main-thread work)
+function press(bank, pos, vel, t0) { const w0 = performance.now(); if (!bank.pads.find((p) => p.pos === pos)) return; pads.press(`${bank.id}/${pos}`, nowCycle(), vel); journalChanged(); if (t0 != null) { const t1 = performance.now(); lat.push(t1 - t0); work.push(t1 - w0); if (lat.length > 500) { lat.shift(); work.shift(); } } }
 function release(bank, pos) { if (!bank.pads.find((p) => p.pos === pos)) return; pads.release(`${bank.id}/${pos}`, nowCycle()); journalChanged(); }
 let jT = 0; function journalChanged() { const j = pads.resolve(); sc.perform.journal = j; bridge(j); window.dispatchEvent(new CustomEvent('pads:journal', { detail: j })); cancelAnimationFrame(jT); jT = requestAnimationFrame(renderPadsOnly); }
 function renderPadsOnly() { const t = curTab(); if (t.kind !== 'bank') return; const host = $('#pfBody'); if (!host) return; host.querySelectorAll('.pp-pad').forEach((b) => { const st = padState(M.banks[t.id], b.dataset.pos); if (b.dataset.state === st.state && st.state !== 'queued') return; b.dataset.state = st.state; b.querySelector('.pp-mark').textContent = STATE_MARK[st.state]; let bt = b.querySelector('.pp-beats'); if (st.state === 'queued') { if (!bt) { bt = h('span', { class: 'pp-beats' }); b.append(bt); } bt.textContent = st.beats + ' beats'; } else if (bt) bt.remove(); const pad = st.pad; b.setAttribute('aria-label', `Pad ${b.dataset.pos} ${pad ? (pad.label || pad.target.ref) : 'empty'}, ${st.state}${st.beats ? ', ' + st.beats + ' beats' : ''}`); }); }
@@ -441,7 +444,7 @@ function render() {
     ...M.tabs.map((tb, i) => h('button', { type: 'button', role: 'tab', id: 'pft' + i, class: 'pf-tab', 'aria-selected': String(i === M.active), tabindex: i === M.active ? 0 : -1, 'aria-controls': 'pfBody', 'data-i': i, 'data-kind': tb.kind },
       h('span', { class: 'pf-ic', 'aria-hidden': 'true' }, tb.kind === 'bank' ? '▦' : '◎'), h('span', {}, tb.name), h('span', { class: 'sr' }, tb.kind === 'bank' ? ' (pad bank)' : ' (control board)'))));
   strip.addEventListener('click', (e) => { const b = e.target.closest('[role=tab]'); if (b) select(+b.dataset.i); });
-  strip.addEventListener('keydown', (e) => { const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key]; if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); select(e.key === 'Home' ? 0 : M.tabs.length - 1, true); return; } if (!d) return; e.preventDefault(); e.stopPropagation(); if (e.altKey) move(d); else select((M.active + d + M.tabs.length) % M.tabs.length, true); });
+  strip.addEventListener('keydown', (e) => { const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key]; if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); select(e.key === 'Home' ? 0 : M.tabs.length - 1, true); return; } if (!d) return; e.preventDefault(); e.stopPropagation(); if (e.altKey) move(d); else { const i0 = +(e.target.closest('[role=tab]')?.dataset.i ?? M.active); select((i0 + d + M.tabs.length) % M.tabs.length, true); } });
   const bank = t.kind === 'bank' ? M.banks[t.id] : null;
   const tools = h('div', { class: 'pf-tools' }, h('details', { class: 'pf-more' }, h('summary', {}, 'Tabs ⋯'), h('div', { class: 'pf-menu' },
     h('button', { type: 'button', class: 'ghost', onclick: () => addTab('bank') }, '+ Bank'), h('button', { type: 'button', class: 'ghost', onclick: () => addTab('board') }, '+ Board'),
@@ -454,8 +457,8 @@ function render() {
   const body = h('div', { id: 'pfBody', class: 'pf-body', role: 'tabpanel', 'aria-labelledby': 'pft' + M.active, tabindex: 0 });
   if (bank) { renderBank(body, bank); renderLooper(body); body.append(h('p', { class: 'pf-hint' }, M.perform ? 'Perform: tap or hold pads (keys 1-4, Q-R, A-F, Z-V). Empty pads open the pad sheet.' : 'Edit: tap a pad to set its target, mode, quantise, choke, colour and label.')); }
   else renderBoard(body, M.boards[t.id]);
-  const keep = document.activeElement && root.contains(document.activeElement) ? document.activeElement.id : null;
-  root.replaceChildren(strip, tools, body); if (keep && document.getElementById(keep)) document.getElementById(keep).focus({ preventScroll: true });
+  const a = document.activeElement && root.contains(document.activeElement) ? document.activeElement : null; const keep = a && (a.id ? '#' + CSS.escape(a.id) : a.dataset.ctl ? `[data-ctl="${CSS.escape(a.dataset.ctl)}"]` : null);
+  root.replaceChildren(strip, tools, body); const back = keep && root.querySelector(keep); if (back) back.focus({ preventScroll: true });
 }
 function select(i, focus) { M.active = i; save(); if (curTab().kind === 'bank') pads.setBank(Object.keys(M.banks).indexOf(curTab().id)); render(); if (focus) $('#pft' + i).focus(); }
 function uid(p) { let i = 1; while (M.banks[p + i] || M.boards[p + i]) i++; return p + i; }
@@ -495,7 +498,7 @@ setInterval(() => {
 
 /* ---------------- boot ---------------- */
 rebuildPads();
-sc.perform = { model: () => M, render, renderInline, controls, pads: () => pads, journal: [], latency: lat, glue: bindStrudel, looper: () => Tk.looper, take: Tk, lanes: A,
+sc.perform = { model: () => M, render, renderInline, controls, pads: () => pads, journal: [], latency: lat, work, glue: bindStrudel, looper: () => Tk.looper, take: Tk, lanes: A,
   capturing: (e) => isPerformView() && !e.ctrlKey && !e.metaKey && !e.altKey && /^(Digit[1-4]|Key[QWERASDFZXCV]|Bracket(Left|Right))$/.test(e.code) && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) && !e.target.isContentEditable };
 bindStrudel(); window.addEventListener('strudel:ready', bindStrudel); wireInput();
 render();

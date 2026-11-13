@@ -132,22 +132,34 @@ literal into mini-notation, so write gate and hook strings with single quotes or
 does; `hooks.bind("fx", "x", "@3b")` is rewritten to single quotes). Design: `docs/HOOKS_SYNTAX.md`; tests: `node tests/hooks/p1.mjs`,
 `p2.mjs`. The CLI (`engine/strudel-cli` in suno-track-lab) imports this file from `$STRUDEL_CRAFT/site/engine/hooks.js`.
 
-## Perform (`perform.js`, view 5, #55 first pass)
-Loaded on first open of Perform or on first Play (not part of the shell). One tab strip (`role=tablist`, arrows, Home/End,
+## Perform (`perform.js` + `perform.css`, view 5, #55)
+Loaded on first open of Perform or on first Play (not part of the shell; `Engine.play` awaits it so `ctl()`/`hooks.map()` exist before the first evaluate). One tab strip (`role=tablist`, arrows, Home/End,
 Alt+arrows reorder) of pad banks and control boards; "Tabs ⋯" adds, renames, duplicates, moves and deletes (site modal).
 - Pads: 4x4 grid, multi-touch pointer events and the keyboard through `strudelCraft.input` (`keyboardProvider`, keys 1-4/Q-R/A-F/Z-V,
   only in Perform mode and never from text fields; the app's own shortcuts yield then). Perform vs Edit mode; Edit (or an empty pad)
   opens the pad sheet: target kind, reference (picker fed by the intellisense registry), mode, quantise, choke, label, colour.
   States empty / loaded / queued / on, each with a glyph mark as well as colour; queued shows beats remaining as text.
   Presses go to `strudelCraft.pads` (`press/release/resolve`); the resolved journal is `strudelCraft.perform.journal` and the
-  `pads:journal` event. Pads only journal until the hooks engine (#47/#48) consumes it.
+  `pads:journal` event, and the entries are written into `hooks.journal` (runtime format: hook pads `bind [slot, hook]` / `unbind [slot]`,
+  var pads with a value `let [name, value]`; other ops as `pad:<op>`, journaled but not applied: the runtime has no unlet/tap/open op,
+  and its `unbind` closes every binding on the slot, so a hook pad's off also closes program bindings on that slot).
+- Scenes: "Tabs ⋯ > Scenes" cycles off / rows / columns; launch cells call `pads.launchScene`.
+- Looper strip: Rec (window [next bar, +N bars)), length, Overdub, Undo, Play take (re-fed as pad intents), Save take (`performance`
+  record in the library), Takes… (load from the library). Recording needs the transport running.
 - Board: renderers for slider, fader, knob, number, toggle, button, select, xy, steps registered with `controls.registerRenderer`;
   declared-only types render through `fallbackChain` with a "basic view" note; 4 columns on phones. Each control shows its mapped
-  destination and "Map…" remaps it (`controls.map`).
+  destination; its sheet maps, unlearns, records/clears/saves a lane and sends it to another board.
+- Learn: Learn, pick a destination, move a control: one `maps` entry plus one `hooks.map('ctl', 'dest')` line at the top of the playing
+  editor; Unlearn removes both. `hooks.map` is glue on the runtime (idempotent; only lines still in an editor count).
+- Automation: "Rec lane" (or a cell's sheet) records the next moved number control for 1/2/4 bars into a lane (`recordLane`, period =
+  length, overdub keeps points outside the touched span); "↶ Lane" undoes; lanes persist in the model (`automation`) and `ctl()`
+  reads them at each event's time.
+- Edit layout: size presets 1x1/2x1/2x2, move earlier/later, "Move to" another board, Place, Remove. "Save to library" stores the
+  bank or board (`site/library.js`).
 - Code: `ctl("name", {type, min, max, ...})` and Strudel's `slider(v, min, max)` (via `sliderWithID`) read the controls engine as a
   continuous `signal`; controls found in the playing program appear in a strip under that editor in source order, same components.
-- Model persisted in `localStorage` `sc.perform` (so it is in history). Not yet built: learn mode, send to pad/board, automation
-  record/overdub, looper strip, scenes UI, library save, the smoke-test additions and Lighthouse/metrics acceptance items.
+- Model persisted in `localStorage` `sc.perform` (so it is in history). Not built: "Send to pad" (a control is not a pad target kind).
+- Test: `node tests/site/perform.mjs` (also part of `tests/site/smoke.mjs`); metrics under `perform` in `docs/screens/metrics.json`.
 ## Shared model (`model.js`, `data/schema/model.v1.json`)
 Standalone ES module: `parse(text)`, `generate(model)`, `applyOp(model, op)`, `graph(model)`, `layout(model)`, `canonical`, `hash`, `serialize`, `load`, `fromConfig`.
 - Parser: acorn 8.19.0 (MIT, (c) Marijn Haverbeke and others), loaded unmodified as its own file `vendor/acorn-8.19.0.mjs` (licence: `vendor/acorn-LICENSE.txt`), only when `model.js` is imported. No Strudel transpiler code is copied.

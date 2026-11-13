@@ -1675,7 +1675,9 @@
     "examples": [
      "{ window: \"1b..3b\" }",
      "{ last: \"2b\" }",
-     "{ window: \"1b..3b\", what: [\"events\", \"audio\", \"level\"] }"
+     "{ window: \"1b..3b\", what: [\"events\", \"audio\", \"level\"] }",
+     "{ window: \"1b..3b\", live: true }",
+     "{ window: \"1b..5b\", what: [\"events\"] }"
     ]
    }
   ],
@@ -1688,7 +1690,9 @@
     "name": "options",
     "shape": "pattern",
     "examples": [
-     "{ at: 0 }"
+     "{ at: 0 }",
+     "{ once: true }",
+     "{ gate: \"3b..\" }"
     ]
    }
   ],
@@ -1804,7 +1808,7 @@
   }
  },
  "lanes": {
-  "_doc": "docs/LANES.md section 10. Read by site/lanes-intellisense.js. branchControls: the only methods offered inside a split/merge branch callback (bus-safe: effects, filters, envelope, gain, pan, orbit, structure); never s, n, note, bus or dry (E_LANE_SOURCE). facets: recall facet -> the capture layer that must be recorded. status: built = parses and models today, coming = needs capture (#76) at runtime (the audio layer is built in #75).",
+  "_doc": "docs/LANES.md section 10. Read by site/lanes-intellisense.js. branchControls: the only methods offered inside a split/merge branch callback (bus-safe: effects, filters, envelope, gain, pan, orbit, structure); never s, n, note, bus or dry (E_LANE_SOURCE). facets: recall facet -> the capture layer that must be recorded. status: built = parses and models today, coming = not built; the audio layer is built in #75, capture / recall / from in #76 (audio of bus: and of rolling captures, Remake and the CLI passes are coming).",
   "status": {
    "tags": "built",
    "tagged": "built",
@@ -1812,9 +1816,9 @@
    "merge": "built",
    "send": "built",
    "ret": "built",
-   "capture": "coming",
-   "recall": "coming",
-   "from": "coming"
+   "capture": "built",
+   "recall": "built",
+   "from": "built"
   },
   "branchControls": [
    {

@@ -310,6 +310,7 @@ export function scan(src) {
 }
 
 // ---------------- checks (section 5.4, event-level codes) ----------------
+export const EXT = []; // static checks of later layers (lanes-capture.js registers its own): (src, o) -> diagnostics
 export function check(src, o = {}) {
   const g = typeof src === 'string' ? scan(src) : src; const diag = []; const add = (level, c, msg, extra = {}) => diag.push({ level, code: c, msg, ...extra });
   const byLabel = new Map(); for (const l of g.lanes) if (l.label !== '$') { if (!byLabel.has(l.label)) byLabel.set(l.label, []); byLabel.get(l.label).push(l); }
@@ -329,6 +330,7 @@ export function check(src, o = {}) {
   }
   for (const s of g.selections) { try { parseSelector(s.selector ?? ''); } catch (e) { add('error', 'E_BAD_SELECTOR', e.message.replace(/^E_\w+: /, ''), {}); } }
   for (const d of o.audio || (typeof src === 'string' ? audioPass(src, g, o).diag : [])) diag.push(d);
+  if (typeof src === 'string') for (const f of EXT) for (const d of f(src, o) || []) diag.push(d);
   const errors = diag.filter((d) => d.level === 'error'); const warnings = diag.filter((d) => d.level === 'warn');
   return { errors, warnings, ok: !errors.length, fail: errors.length > 0 || (!!o.strict && warnings.length > 0) };
 }
@@ -416,7 +418,11 @@ export function install(S, hooks, opts = {}) {
     }
     for (const { n, iv: ivs } of rd.values()) { const f = feed.get(n); if (!f) continue; const total = cover(f, b, e); if (total <= 1e-9) continue; const gap = (total - Math.min(total, cover(ivs, b, e))) / total; if (gap > 1e-6) rnote('warn', 'W_LANE_REFRAIN', `a reader of bus ${n} leaves ${(gap * 100).toFixed(0)}% of the playing source silent in cycles ${b}..${e} (fine for a gate, a surprise otherwise)`); }
   }
+  const after = []; const stampers = []; // observers of the outermost query's final haps (lanes-capture.js records live captures); extra reasons to stamp lane ids
   function apply(haps, args) {
+    const out = apply0(haps, args); if (after.length) for (const f of after) { try { f(out, args); } catch (err) { /* observers never break playback */ } } return out;
+  }
+  function apply0(haps, args) {
     if (alloc && alloc.size) { try { checkAudio(haps, args); } catch (err) { /* checks never break playback */ } }
     const list = live(); if (!list.length) return haps;
     const [b, e, ctrl] = args; let out = haps; const jr = journal(); const solos = [];
@@ -464,7 +470,7 @@ export function install(S, hooks, opts = {}) {
   Object.assign(L, {
     closed() { hooks.laneMode('closed'); return L; }, open() { hooks.laneMode('open'); return L; }, mode: () => hooks.laneMode(),
     reset() { sels.length = 0; n = 0; return L; }, selections: () => live().map((s) => ({ id: s.id, selector: selectorString(s.ast), ops: s.ops.map((o) => o.op) })),
-    stamping: () => live().length > 0,
+    stamping: () => live().length > 0 || stampers.some((f) => f()), after, stampers,
     // the compile pass the site runs before every evaluation (docs/LANES.md 8): compiled code, or a coded throw for the audio errors; remembers the bus allocation
     prepare(src, o = {}) {
       alloc = null; cdiag = []; rdiag.length = 0; rseen.clear();

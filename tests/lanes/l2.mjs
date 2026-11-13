@@ -146,10 +146,10 @@ const EX1_COMPILED = `drums: stack(
 // 9. syntax.json
 {
   const sx = JSON.parse(fs.readFileSync(new URL('../../site/data/syntax.json', import.meta.url), 'utf8')); const sec = sx.sections.find((x) => x.id === 'lanes');
-  const aud = sec.examples.filter((e) => /\.split\(|\.send\(|ret\(|\.merge\(|bus:/.test(e.code)); assert.ok(aud.length >= 4 && aud.every((e) => !e.coming), 'split/merge/send/ret/wire examples are built, not coming');
+  const aud = sec.examples.filter((e) => !/capture\(/.test(e.code) && /\.split\(|\.send\(|ret\(|\.merge\(|bus:/.test(e.code)); assert.ok(aud.length >= 4 && aud.every((e) => !e.coming), 'split/merge/send/ret/wire examples are built, not coming');
   let total = 0; for (const e of aud) { const p = await evalProgram(e.code); total += q(p, 0, 2).length; assert.deepEqual(compile(e.code).graph.diagnostics.filter((d) => d.level === 'error'), [], e.title); }
   assert.ok(sec.examples.some((e) => e.coming && /capture/.test(e.code)));
-  pass(`syntax.json: ${aud.length} audio-layer examples (split, merge, send/ret, wire) are runnable and compile without errors (${total} haps over 2 cycles); capture/recall stays "coming"`);
+  pass(`syntax.json: ${aud.length} audio-layer examples (split, merge, send/ret, wire) are runnable and compile without errors (${total} haps over 2 cycles); the unbuilt capture forms (bus and rolling audio) stay "coming"`);
 }
 skip('Stems: `strudel stems` one stem per output-carrying lane, stems sum to mix.wav within -60 dB', '`strudel stems` is in the CLI repo (engine/strudel-cli); lane groups come from graph.audio (sends, returns) here, the stems command must solo output-carrying lanes by postgain(0) on the other readers (docs/LANES.md 8)');
 skip('`strudel lanes IN` shows buses and edges', 'the command lives in the CLI repo; the data it prints is graph.audio of compile() (buses, splits, sends, returns, wires)');

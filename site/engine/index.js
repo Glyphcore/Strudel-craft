@@ -23,6 +23,13 @@ sc.engine = { time: timeMod, validate };
 sc.outer = sc.outer || []; // functions (haps, [begin, end, controls]) -> haps run by the outermost-query wrapper below, before the control maps (lanes selections)
 sc.hooksLib = { ...hooksMod, protect: (src) => { try { sc.lanes?.reset?.(); } catch (e) { /* selections stay */ } if (sc.lanes?.prepare) src = sc.lanes.prepare(src).code; return hooksMod.protect(src); } }; // lanes.prepare: .split/.merge/.send/ret compile to plain Strudel on superdough buses (docs/LANES.md 5); a coded E_LANE_* / E_BUS_RANGE error propagates to the evaluation // protect() runs before every evaluation: selections of the previous program are dropped, the new program re-registers its own
 sc.lanesLib = lanesMod;
+// capture / recall / .from (docs/LANES.md 6, issue #76) load lazily the first time a program names them; app.js awaits this before every evaluation
+sc.lanesCaptureEnsure = async (src) => {
+  if (sc.lanesCapture || !sc.lanes || !/\bcapture\s*\(|\brecall\s*\(|\.\s*from\s*\(/.test(String(src))) return sc.lanesCapture || null;
+  const m = await import('./lanes-capture.js'); if (sc.lanesCapture) return sc.lanesCapture; const C = m.installCapture(sc.lanes, globalThis, sc.hooks, {}); sc.lanesCapture = C; sc.lanesCaptureLib = m;
+  try { const h = await import('../lanes-capture-site.js'); C.host = h.createHost(sc); } catch (e) { console.warn('[lanes] capture audio host:', e.message); }
+  return C;
+};
 sc.installHooks = (S = globalThis, o = {}) => {
   if (!S.Pattern || !S.signal || !S.Fraction) throw new Error('installHooks: Strudel globals (Pattern, signal, Fraction, ...) not ready');
   const r = hooksMod.install({ Pattern: S.Pattern, stack: S.stack, silence: S.silence, reify: S.reify, signal: S.signal, Fraction: S.Fraction, mini: S.mini }, o);

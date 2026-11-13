@@ -172,6 +172,7 @@ const Engine = {
     await resumeAudio();
     this.state.evalError = undefined;
     unmuteBus();
+    try { await window.strudelCraft.lanesCaptureEnsure?.(code); } catch (e) { /* capture / recall load lazily; a failed load shows as the evaluation's own error */ }
     await window.evaluate(protectCode(code));
     if (this.state.evalError) throw this.state.evalError;
     const ctx = window.getAudioContext && window.getAudioContext();
@@ -185,6 +186,7 @@ const Engine = {
     if (!alive()) throw Object.assign(new Error('stale'), { stale: true });
     if (S.playing || this.started) return;
     this.state.evalError = undefined;
+    try { await window.strudelCraft.lanesCaptureEnsure?.(code); } catch (e) { /* capture / recall load lazily; a failed load shows as the evaluation's own error */ }
     await this.repl.evaluate(protectCode(code), false);
     if (this.state.evalError) throw this.state.evalError;
     window.dispatchEvent(new CustomEvent('strudel:idle', { detail: { ...this.state, srcView: view } }));
@@ -197,6 +199,7 @@ const Engine = {
     await new Promise((r) => setTimeout(r, wait));
     if (!alive()) throw Object.assign(new Error('stale'), { stale: true });
     this.state.evalError = undefined;
+    try { await window.strudelCraft.lanesCaptureEnsure?.(code); } catch (e) { /* capture / recall load lazily; a failed load shows as the evaluation's own error */ }
     await window.evaluate(protectCode(code));
     if (this.state.evalError) throw this.state.evalError;
   },

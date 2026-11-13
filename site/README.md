@@ -81,6 +81,8 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/atoms/a4_lazy.mjs       # atoms lazy declaration pass: lazy == eager, 5000 declared parse budget (#64)
     node tests/site/atoms_ui.mjs       # Playwright: atom cards, derived cards, browser, popover, keyboard path, 5000-atom paint (#64; also in smoke)
     STRUDEL_MODULES=... node tests/lanes/l1.mjs  # lanes L1: tap cache, lane scope, tags, selections, checks (#74); CLI box prints SKIP without the `strudel` CLI
+    STRUDEL_MODULES=... node tests/lanes/l3.mjs  # lanes L3: capture / recall / .from events, time rules, cycles, bounds (#76); CLI and Remake boxes print SKIP
+    node tests/site/lanes_capture.mjs  # lanes L3: audio pass, frame count, level, captured sample plays (Playwright, real superdough)
     STRUDEL_MODULES=... node tests/lanes/l4.mjs  # lanes L4: model schema, round trip, completion, atom types, ids, bus numbers, invariants (#77); needs core, mini, transpiler
     node tests/site/lanes_data.mjs     # lanes L4: graph() data (lane cards, buses, selection chips, split fan, capture node, E_LANE_CROSS fixes), no runtime needed
     node tests/hooks/p3.mjs            # model round trip (#49); the `strudel` CLI checks print SKIP without it
@@ -300,7 +302,7 @@ the Strudel `Pattern` and the hooks object) adds `Pattern.prototype.tags` and th
   outermost query wrapper before the control maps; selections serialise in `hooks.toJSON()` (`selections[]`) and live toggles (`lanes.set(id, op, on, at)`) journal as `sel` entries.
 - Text side: `scan(src)`, `compile(src)` -> `{ code, map, graph }` and `check(src, { strict })` (`E_LANE_DUP`, `W_LANE_ORBIT_FX`, `W_LANE_IMPLICIT_EXPORT`, `E_LANE_PRIVATE`); the
   lane graph is what `strudel lanes IN` will print (that command and `check --strict` wiring live in the CLI repo and are not done yet).
-- Not built yet (shown as "coming" in the Syntax view): `capture recall .from` (#76); the CLI side of the audio layer (`strudel lanes`, `render`, `events`, `stems`). The UI is built (#78, Graph > Lanes in the graph).
+- Not built yet (shown as "coming" in the Syntax view): the CLI side of the audio layer (`strudel lanes`, `render`, `events`, `stems`) and of capture. The UI is built (#78, Graph > Lanes in the graph).
 - **Consumers (L4, #77)** - data and engine; the lane UI (#78, Graph > Lanes in the graph) reads these entry points:
   - `model.js` `parse` / `generate` / `applyOp` / `graph` / `checkWire`. Model additions (all derived from the code, so a no-edit round trip is byte-identical and models without lanes are unchanged):
     `tracks[].tags`, `tracks[].split` (`{ site, at, branches: [{ id, param, chain | null, src }], merge, mix, pre }`), `tracks[].sends` (`[{ bus, amount }]`), `tracks[].ret`, `buses` (`{ name: { returns } }`, names only, never bus numbers),
@@ -328,6 +330,16 @@ Same module. `compile(src, { host })` is a text-to-text pass (before atoms-free 
 - Checks: `E_LANE_SOURCE E_LANE_CROSS E_LANE_CYCLE E_BUS_RANGE E_LANE_HOST E_LANE_OPTS`, `W_LANE_POST_SPLIT W_BUS_NO_RETURN W_LANE_SELECT_EMPTY` (text, in `compile().graph.diagnostics`, with `line`), and on the queried haps `E_LANE_SOURCE`, `W_LANE_REFRAIN` (`lanes.diagnostics()`).
   `compile().graph.audio` holds the buses, splits, sends, returns and wires (what `strudel lanes` will print; the CLI commands and `stems` per lane group are in the CLI repo, not done yet).
 Tests: `STRUDEL_MODULES=... node tests/lanes/l2.mjs` (events, checks, compile) and `node tests/site/lanes.mjs` (Playwright: seam, parallel FX, merge, allocation hash, cost, the page plays the program).
+
+## Lanes: capture and recall (`engine/lanes-capture.js`, `lanes-capture-site.js`, #76; docs/LANES.md 6, section 11e)
+`engine/lanes-capture.js` is loaded lazily the first time a program names `capture(`, `recall(` or `.from(` (`strudelCraft.lanesCaptureEnsure(code)`, awaited by `app.js` before every evaluation; `strudelCraft.lanesCapture` exists afterwards). It adds the globals `capture` and `recall` and `Pattern.prototype.from`,
+and registers its static checks in `lanes.check` (`E_CAPTURE_LAYER LIVE EARLY CYCLE LIMIT NAME MEMORY`, `W_CAPTURE_TEMPO W_CAPTURE_UNKNOWN`; `E_CAPTURE_EARLY` is a warning, so `--strict` fails on it). A program that uses none of the three is untouched (`prepare` returns it byte for byte).
+- `capture(name, picker, { window: "1b..3b" | last: "2b", what, live, max })`; pickers selector, `lane/tap` (events only), `master`; `bus:<name>` is parsed, its audio is coming. `recall("name[:ev|onset|gate|level|audio|<control>]", { at, once, gate })`, `pat.from("name")` = `pat.s("cap_name")`.
+  Note Strudel's `slice` needs its index pattern: `s("x").from("groove").slice(8, "0 3 2 1 4 7 6 5")`.
+- API on `strudelCraft.lanesCapture`: `defs()`, `analyze()` (captures with `pure` / `isLive` / `availableAt`, dependency `order`, diagnostics), `content(name, cycle)` (events as plain data), `availableAt(name)`, `freeze(name, at)` / `thaw(name, at)` (journaled), `setAudio(name, { L, R, sr }, { cps })`, `audio(name)`, `level(name)`, `budget`, `host.resolve(src)` (pass 1: renders the picked lanes through `strudelCraft.capture.renderRecipe` and registers `cap_<name>`; the original program is compiled again), `diagnostics()`.
+  Pure helpers (also for the CLI): `analyze(src, { automated })`, `define`, `levelOf`, `createBudget`, `memoryLimit(deviceMemory)`, `frames(cycles, cps, sr)`.
+- Not built (marked coming): audio of `bus:<name>` and of rolling captures, Remake of recipes that use captures and the bounce take (hooks in `site/capture.js`), the pattern methods `.freeze()` / `.thaw()`, the CLI (`strudel capture`, capture passes in `render` / `stems` / `events`; another repo), the UI (#78).
+Tests: `STRUDEL_MODULES=... node tests/lanes/l3.mjs` (events, time rules, cycles, bounds; CLI and Remake boxes print SKIP with the missing piece) and `node tests/site/lanes_capture.mjs` (Playwright: offline pass 1, frames, level, the captured sample plays).
 
 ## Perform (`perform.js` + `perform.css`, view 5, #55)
 Loaded on first open of Perform or on first Play (not part of the shell; `Engine.play` awaits it so `ctl()`/`hooks.map()` exist before the first evaluate). One tab strip (`role=tablist`, arrows, Home/End,

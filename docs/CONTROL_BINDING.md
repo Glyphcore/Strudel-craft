@@ -94,6 +94,13 @@ When validate or compile fails: the editor gets a lint underline and a gutter ma
 the chip title and the diagnostic tooltip. Nothing else changes: the playing pattern, the controls strip, values and mappings stay
 on the last good compile. No message row is inserted (no layout shift); no overlay covers code or controls.
 
+Caret placement stays free in every state (invalid, dirty, live swap, playing): no decoration, marker or tooltip takes pointer events
+from the text (signature help is `pointer-events: none`, lint marks are plain marks), the validation path never dispatches a selection,
+and visual decorations (active-event highlights, inline widget placement) only dispatch when their content changes and wait while a
+pointer is down in an editor (+300 ms), because a transaction that races a tap's pending DOM selection made the caret snap back.
+Test: `node tests/site/binding.mjs` (taps at several positions in the error state, after it clears, after a value menu opened, broken
+and valid code while playing).
+
 ## 6. Without Play
 
 Strudel loads at boot. Every settled run on a stopped transport evaluates the program with `repl.evaluate(code, false)` (no

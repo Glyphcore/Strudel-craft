@@ -36,6 +36,7 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
     node tests/site/perform.mjs        # Perform view, learn/map, lanes, looper (#55)
     node tests/site/word_intellisense.mjs  # word() completions from data/intellisense/words.json (#44)
     node tests/site/vox.mjs            # vocal banks and voxBank()
+    node tests/site/capture.mjs        # audio capture at 360px: 2-cycle take, waveform, WAV header/length, exact render (#72)
 
 Outputs go to `docs/screens/` (`metrics.json`, `lighthouse-mobile.json`, PNG screenshots at 390px and 1440px).
 
@@ -365,3 +366,12 @@ keeps existing brackets, arguments and chain calls, does nothing when the text i
 Suggestions (ghost text, popup, cycling) are inert until accepted and dismiss themselves on a tap elsewhere, blur, scroll, view or
 modal switch, Esc or 5 s idle (CONTROL_BINDING section 11). Literal menus open from the tap itself, even with the editor focused; a tap
 on another literal switches, the same literal toggles (section 7).
+
+## Audio capture (`capture.js` + `capture.css`, #72; detail docs/CAPTURE.md)
+- **Record button** in the transport (after Next) opens the capture sheet; it pulses red while a take runs. Palette: Capture > Open capture, Record / stop take, Record N cycles (loop), Render exact N cycles.
+- **Tap**: an AudioWorklet (ScriptProcessor fallback) on the master bus (`strudelCraft.transport.bus`, post master level); its output is silent, so capture never changes what is heard. Record starts the transport if stopped.
+- **Arm**: Free, Cycles (start and end on cycle boundaries, length `round(N / cps * sr)` frames, loops cleanly) or Until stop (play-time limit is the cap); count-in (cycles) and pre-roll (seconds, Free / Until stop). Takes keep running across Rack/Stack tab switches and a hidden browser tab.
+- **Render exact N cycles**: offline through an OfflineAudioContext (superdough swapped in and restored), sample-exact and faster than real time; Fold tail adds the release back onto the start. Hooks, pads and live seek are not in offline renders (limits in docs/CAPTURE.md).
+- **Takes**: IndexedDB `sc-capture` (`{meta, audio}`), settings `sc.capture.*`; each take has a waveform, play (looping preview, never recorded), rename and delete (site modals), download: WAV 16 / 24 bit, the browser's compressed format (WEBM/Opus on Chrome), JSON sidecar with source and cps. File names `<name>_<cycles>c_<cps>cps.wav`. Storage usage line turns into a warning near the quota.
+- API `strudelCraft.capture = { open, configure, record, stop, renderExact, list, get, remove, rename, download, encodeWav, sidecar, fileName }`.
+Caret placement works in every state: highlight and widget decorations never dispatch while a pointer is down in an editor and only when they change (CONTROL_BINDING section 5).

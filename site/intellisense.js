@@ -224,10 +224,19 @@ async function mount() {
   }, provide: (f) => [EditorView.decorations.from(f, (v) => v.deco), vmod.gutterLineClass.from(f, (v) => v.gut)] });
   api.refMarks = (id, marks) => { const t = document.getElementById(id); const v = t && t.cmView; if (!v) return; v.dispatch({ effects: [setRef.of(marks || {})].concat(marks && marks.primary && marks.scroll !== false ? [EditorView.scrollIntoView(marks.primary[0], { y: 'center' })] : []) }); };
   api.refView = (id) => { const t = document.getElementById(id); return t && t.cmView; };
+  /* while a pointer is down in an editor (and shortly after), visual decorations wait: no transaction may race the tap's selection */
+  let ptrBusy = 0; const busy = () => performance.now() < ptrBusy;
+  document.addEventListener('pointerdown', (e) => { if (e.target.closest && e.target.closest('.cm-editor')) ptrBusy = performance.now() + 10000; }, true);
+  const release = () => { if (ptrBusy) ptrBusy = performance.now() + 300; }; document.addEventListener('pointerup', release, true); document.addEventListener('pointercancel', release, true);
   const vizApi = {
     doc: (id) => { const t = document.getElementById(id); return t && t.cmView ? t.cmView.state.doc.toString() : ''; },
-    setHighlights: (id, hs) => { const t = document.getElementById(id); const v = t && t.cmView; if (!v) return; const n = v.state.doc.length; v.dispatch({ effects: setHl.of(hs.filter((h) => h.to <= n)) }); },
-    setWidgets: (id, ws) => { const t = document.getElementById(id); const v = t && t.cmView; if (!v) return; const n = v.state.doc.length; const lineEnd = (p) => v.state.doc.lineAt(Math.min(p, n)).to; v.dispatch({ effects: setW.of(ws.filter((w) => w.pos <= n).map((w) => ({ ...w, pos: lineEnd(w.pos) })).sort((a, b) => a.pos - b.pos)) }); },
+    setHighlights: (id, hs) => { const t = document.getElementById(id); const v = t && t.cmView; if (!v) return; const n = v.state.doc.length; const list = hs.filter((h) => h.to <= n); const key = JSON.stringify(list.map((h) => [h.from, h.to, h.color]));
+      if ((key === v.__hKey && v.__hDoc === v.state.doc) || busy()) return; v.__hKey = key; v.__hDoc = v.state.doc; v.dispatch({ effects: setHl.of(list) }); },
+    /* only dispatch when the widget set really changes: a transaction while a tap's DOM selection is pending makes the caret snap back */
+    setWidgets: (id, ws) => { const t = document.getElementById(id); const v = t && t.cmView; if (!v) return; const n = v.state.doc.length; const lineEnd = (p) => v.state.doc.lineAt(Math.min(p, n)).to;
+      const list = ws.filter((w) => w.pos <= n).map((w) => ({ ...w, pos: lineEnd(w.pos) })).sort((a, b) => a.pos - b.pos);
+      const ids = (v.__wIds = v.__wIds || new WeakMap()); let k = v.__wKeyN || 0; const key = list.map((w) => { if (!ids.has(w.el)) ids.set(w.el, ++k); return w.pos + ':' + ids.get(w.el); }).join(','); v.__wKeyN = k;
+      if ((key === v.__wKey && v.__wDoc === v.state.doc) || busy()) return; v.__wKey = key; v.__wDoc = v.state.doc; v.dispatch({ effects: setW.of(list) }); },
   };
   for (const id of ['code', 'stackCode']) {
     const ta = document.getElementById(id); if (!ta) continue;

@@ -117,6 +117,24 @@ await setDoc(CODE); await settle();
   check('typing again brings a suggestion back', back, String(back));
   await page.keyboard.press('Escape'); await setDoc(CODE); await settle(); }
 
+// 11. caret is freely placeable while the code is invalid, after it clears and after a value menu opened
+{ const BAD = `$: note("c3 e3 g3").s("sawtooth").lpf(800)).room(0.2)\n$: s("sawtooth*2").gain(0.4)\n`;
+  await setDoc(BAD); await settle();
+  const st = await page.evaluate(() => ({ dot: document.querySelector('#liveChip').dataset.v, err: !!document.querySelector('.cm-lintRange-error, .cm-lint-marker-error') }));
+  const tapAt = async (needle, k) => { const p = await at(needle, k); await tap(p); await page.waitForTimeout(120); return page.evaluate(() => document.getElementById('code').cmView.state.selection.main.head); };
+  const want = (needle, k) => page.evaluate(([n, k]) => document.getElementById('code').cmView.state.doc.toString().indexOf(n) + k, [needle, k]);
+  const hits = [];
+
+  for (const [n, k] of [['sawtooth")', 3], ['.room', 3], ['note(', 2], ['gain', 2], ['g3', 1], ['(800)', 2], ['gain', 1], ['s("sawtooth*2', 4], ['$: s', 1]]) { const got = await tapAt(n, k); const w = await want(n, k); hits.push([n, got, w]); }
+  check('error state: taps place the caret where tapped', st.dot === 'invalid' && st.err && hits.every(([, g, w]) => Math.abs(g - w) <= 1), JSON.stringify({ st, hits }));
+  await page.evaluate(() => { const v = document.getElementById('code').cmView; const t = v.state.doc.toString(); const i = t.indexOf('(800))') + 5; v.dispatch({ changes: { from: i, to: i + 1, insert: '' }, userEvent: 'input' }); }); await settle();
+  const h2 = []; for (const [n, k] of [['.room', 2], ['s("saw', 1]]) { const got = await tapAt(n, k); h2.push([n, got, await want(n, k)]); }
+  check('after the error clears: taps place the caret', h2.every(([, g, w]) => Math.abs(g - w) <= 1), JSON.stringify(h2));
+  await tapAt('800', 1); const menu = await page.evaluate(() => !!document.querySelector('.lit-pop'));
+  const h3 = []; for (const [n, k] of [['.room', 3], ['note(', 3]]) { const got = await tapAt(n, k); h3.push([n, got, await want(n, k)]); }
+  check('after a value menu opened: taps place the caret (and close the menu)', menu && h3.every(([, g, w]) => Math.abs(g - w) <= 1) && !(await page.$('.lit-pop')), JSON.stringify({ menu, h3 }));
+  await page.evaluate(() => window.strudelCraft.literals.close()); await setDoc(CODE); await settle(); }
+
 // 8. node-aware accept (CONTROL_BINDING section 10): ghost Tab and popup accept replace/merge the node, never duplicate; one undo step
 { const caseG = async (doc, caret, ghost) => { await setDoc(doc); await page.evaluate(([c, g]) => { const v = document.getElementById('code').cmView; v.focus(); v.dispatch({ selection: { anchor: c } }); window.strudelCraft.intellisense.ghost.show(v, g); }, [caret, ghost]); await page.keyboard.press('Tab'); await page.waitForTimeout(80); return docText(); };
   const R = {};
@@ -185,12 +203,16 @@ await settle();
 const broken = await snap(); const marks = await page.evaluate(() => ({ dot: document.querySelector('#liveChip').dataset.v, underline: !!document.querySelector('.cm-lintRange-error'), gutter: !!document.querySelector('.cm-lint-marker-error'), playing: window.__sc.S.playing }));
 check('broken code: audio + controls unchanged, no layout shift', JSON.stringify(before) === JSON.stringify(broken) && marks.playing, JSON.stringify({ before, broken }));
 check('broken code: gutter marker, underline, chip dot', marks.dot === 'invalid' && marks.underline && marks.gutter, JSON.stringify(marks));
+{ const hp = []; for (const [n, k] of [['note(', 2], ['sawtooth*2', 3], ['binding', 2], ['.lpf', 2]]) { const p = await at(n, k); await tap(p); await page.waitForTimeout(150); hp.push([n, await page.evaluate(() => document.getElementById('code').cmView.state.selection.main.head), await page.evaluate(([n, k]) => document.getElementById('code').cmView.state.doc.toString().indexOf(n) + k, [n, k])]); }
+  check('broken code while playing (live): taps place the caret', hp.every(([, g, w]) => Math.abs(g - w) <= 1), JSON.stringify(hp)); await page.evaluate(() => window.strudelCraft.literals.close()); }
 await setDoc(CODE); await settleLive();
 
 // 4. rapid typing -> one compile after settle
 await page.evaluate(() => { const v = document.getElementById('code').cmView; v.dispatch({ selection: { anchor: v.state.doc.line(1).to } }); v.focus(); });
 const s0 = await stats(); await page.keyboard.type(' quick typing', { delay: 40 }); await settleLive(); const s1 = await stats();
 check('rapid typing triggers one compile after settle', s1.compiles - s0.compiles === 1 && s1.pokes - s0.pokes >= 10, JSON.stringify({ compiles: s1.compiles - s0.compiles, pokes: s1.pokes - s0.pokes }));
+{ const hp = []; for (const [n, k] of [['note(', 2], ['sawtooth*2', 3], ['.lpf', 2], ['gain', 2]]) { const p = await at(n, k); await tap(p); await page.waitForTimeout(150); hp.push([n, await page.evaluate(() => document.getElementById('code').cmView.state.selection.main.head), await page.evaluate(([n, k]) => document.getElementById('code').cmView.state.doc.toString().indexOf(n) + k, [n, k])]); }
+  check('valid code while playing (live highlights): taps place the caret', hp.every(([, g, w]) => Math.abs(g - w) <= 1), JSON.stringify(hp)); await page.evaluate(() => window.strudelCraft.literals.close()); }
 await page.screenshot({ path: path.join(SITE, '../docs/screens/binding-360.png') });
 const bad = errors.filter((e) => !/Failed to load resource|favicon/.test(e));
 check('no console errors', bad.length === 0, bad.slice(0, 3).join(' | '));

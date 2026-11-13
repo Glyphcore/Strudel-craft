@@ -442,7 +442,7 @@ function liveCode(view = S.view) {
 }
 function bindPrep(view, code) { const b = window.strudelCraft.binder; if (!b) return { ok: true, code, sites: null }; const r = b.prepare(view, code); return r.ok ? r : { ...r, code }; }
 function bindApply(view, prep) {
-  const b = window.strudelCraft.binder; if (!b || !prep.sites) return; b.commit(view, prep.sites);
+  const b = window.strudelCraft.binder; if (!b || !prep.sites) return; b.commit(view, prep.sites, prep.orig);
   window.dispatchEvent(new CustomEvent('controls:sites', { detail: { view, sites: prep.sites } }));
 }
 function liveUpdate() { liveCode(playView()); }

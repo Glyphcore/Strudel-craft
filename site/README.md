@@ -295,3 +295,11 @@ and the chip dot. Test: `node tests/site/binding.mjs`.
 - **Workspace** (`W` or the layout button): docks Code, Graph, Recipes, Perform, Syntax, History and Tracker as panes pinned below the visuals. Each pane: move up/down/left/right, split (own row / join row above), collapse, close; desktop rows resize by dragging the gutter (arrow keys on a focused gutter); phones stack panes, reorder with the grip. Layouts Code, Perform, Visual, Full studio (`Alt+1..4`) plus saved ones (name + optional hotkey) live in `sc.ws.*`, so the history store versions them. API `strudelCraft.workspace = { on, off, load, save, layout, configs }`.
 - **Command palette** (`Ctrl+K`, configurable via the palette's "Set palette chord"; floating button on phones): type to filter (prefix, word prefix, substring, then fuzzy subsequence), arrows/Enter or digits 1-9 pick. Add actions with `strudelCraft.palette.register({id, title, group, keys, run})`.
 - Test: `node tests/site/workspace.mjs` (palette fuzzy, pane move/split/close, layout save/load, scrub and loop via queried scheduler spans, readout, 44px targets, clamp + override at 360 and 1440 px).
+Smart literal editors (`literals.js`): tap a number, name, chord or mini-notation token to edit it in a fixed popover (scrub, combobox,
+chips, piano, sound list, toggle, step chips); a drag on a number rewrites the source once on release. Reference inspector (`refs.js`,
+`strudelCraft.refs`: resolve/related/highlight/describe): selecting a control marks its source span and related references;
+long-press, hover or focus shows its id, path, label, type, value, range and mappings; the caret on a call makes its controls glow.
+Design: docs/CONTROL_BINDING.md sections 7 and 8.
+Range spec: numeric controls carry min/max/step/unit/curve/clamp (override per AST id > code > param shape > 0..1); tap the number for
+exact unit-aware entry (1.5k, -6 dB, 2:30) with "Extend range to fit"; "Range…" in the control sheet edits the range. Typed literal
+editors apply live (no confirm tap). Docs: docs/CONTROL_BINDING.md sections 7 to 9.

@@ -15,6 +15,25 @@ const shape = {
 export const curveOut = (curve = 'lin', t, lo, hi) => (shape[curve] || shape.lin)[0](Math.min(1, Math.max(0, t)), lo, hi);
 export const curveIn = (curve = 'lin', v, lo, hi) => (shape[curve] || shape.lin)[1](v, lo, hi);
 
+// ---------- unit-aware value parsing (CONTROL_BINDING section 9): "1.5k" Hz, "-6 dB", "2:30", "250ms", "50%" ----------
+export function parseValue(text, { unit = '' } = {}) {
+  let t = String(text ?? '').trim().replace(/\u2212/g, '-').replace(/,/g, '.'); if (!t) return NaN;
+  const mmss = /^(-?)(\d+):(\d{1,2}(?:\.\d+)?)$/.exec(t); if (mmss) { const sec = (+mmss[2]) * 60 + (+mmss[3]); const v = unit === 'min' ? sec / 60 : sec; return mmss[1] ? -v : v; }
+  const m = /^([-+]?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?)\s*([a-zA-Z%]*)$/.exec(t); if (!m) return NaN;
+  let v = parseFloat(m[1]); const suf = m[2].toLowerCase(); const u = String(unit).toLowerCase();
+  if (!suf) return v;
+  if (suf === 'k' || suf === 'khz') return v * 1000;
+  if (suf === 'm' && u !== 'min') return v * 1e6;
+  if (suf === 'hz' || suf === 'db' || suf === 'st' || suf === 'cycles' || suf === 'bars' || suf === u) return v;
+  if (suf === 'ms') return u === 'ms' ? v : v / 1000;
+  if (suf === 's' || suf === 'sec') return u === 'ms' ? v * 1000 : u === 'min' ? v / 60 : v;
+  if (suf === 'min') return u === 'min' ? v : v * 60;
+  if (suf === 'h') return u === 'min' ? v * 60 : v * 3600;
+  if (suf === '%') return v / 100;
+  return NaN;
+}
+export const CLAMPS = ['hard', 'soft', 'none'];
+
 // ---------- gates (subset of HOOKS_SYNTAX 4.3 needed here) ----------
 export function gateOpen(gate, cycle, ctx = {}) {
   if (gate == null || gate === '*') return true;
@@ -130,7 +149,7 @@ export function createControls({ registry = createRegistry(), model = {}, time =
     if (k === 'number' && n.min == null && n.max == null && ['slider', 'fader', 'knob', 'encoder', 'ribbon'].includes(n.type)) { n.min = 0; n.max = 1; }
     return n; };
   const range = (s) => [s.min ?? 0, s.max ?? 1];
-  const checkVal = (name, s, v) => { if (kindOf(s) !== 'number' || typeof v !== 'number') return;
+  const checkVal = (name, s, v) => { if (kindOf(s) !== 'number' || typeof v !== 'number' || s.clamp === 'soft' || s.clamp === 'none') return; /* soft/none: typed values may leave the range */
     const [lo, hi] = range(s); if (v < lo - 1e-9 || v > hi + 1e-9) throw err('E_BAD_ARG', `${name}=${v} outside ${lo}..${hi}`); };
   const initialValue = (s) => s.value ?? s.default ?? (kindOf(s) === 'bool' ? 0 : kindOf(s) === 'vec2' ? { x: s.axes?.x?.default ?? 0, y: s.axes?.y?.default ?? 0 } : kindOf(s) === 'steps' ? 'x ~ ~ ~' : kindOf(s) === 'enum' ? s.options?.[0] : (s.min ?? 0));
 
@@ -144,9 +163,12 @@ export function createControls({ registry = createRegistry(), model = {}, time =
     specs.set(name, s); hist.set(name, [{ cycle: -Infinity, value: v }]); return s;
   }
   // spec change from code (range edit): replace the spec, keep the value clamped into the new range
+  // range override from the UI (min, max, step, unit, curve, clamp); value kept unless the clamp is hard
+  function setRange(name, r = {}) { name = R(name); const s0 = declare(name); const n = { ...s0 }; for (const k of ['min', 'max', 'step', 'unit', 'curve', 'clamp']) if (r[k] !== undefined) { if (r[k] === null) delete n[k]; else n[k] = r[k]; }
+    if (n.min != null && n.max != null && n.min > n.max) throw err('E_BAD_ARG', 'min > max'); return redeclare(name, n); }
   function redeclare(name, spec) {
     if (!specs.has(name)) return declare(name, spec); const s = baseSpec(spec); const h = hist.get(name);
-    specs.set(name, s); if (kindOf(s) === 'number') { const [lo, hi] = range(s); for (const e of h) if (typeof e.value === 'number') e.value = Math.min(hi, Math.max(lo, e.value)); }
+    specs.set(name, s); if (kindOf(s) === 'number' && (s.clamp ?? 'hard') === 'hard') { const [lo, hi] = range(s); for (const e of h) if (typeof e.value === 'number') e.value = Math.min(hi, Math.max(lo, e.value)); }
     return s;
   }
   const manual = (name, cycle = Infinity) => { const h = hist.get(name); let v = h[0].value; for (const e of h) if (e.cycle <= cycle) v = e.value; return v; };
@@ -260,7 +282,7 @@ export function createControls({ registry = createRegistry(), model = {}, time =
     return [...names.map(([n, s]) => ({ label: n, category: 'control', detail: `${s.type} control`, info: JSON.stringify(range(s)), inside: ['tap("', 'hooks.map("'] })),
       ...registry.types().map(t => ({ label: t.id, category: 'control-type', detail: `control type (${t.value})`, inside: ['type: "'] }))];
   }
-  const api = { registry, declare, redeclare, has: (n) => specs.has(n), alias: (label, id) => { if (!label || label === id || specs.has(label) && !specs.get(label).site) { if (label && label !== id && !aliases.has(label) && !specs.has(label)) aliases.set(label, id); return; } aliases.set(label, id); }, resolve: R, labelOf: (id) => { for (const [l, i] of aliases) if (i === id) return l; return null; }, ctl, sliderWithID, set, get: (n, c) => valueAt(n, c), valueAt, input, nudge, travelOf, map, maps: () => maps, registerDest, resolveDest, applyMaps, addLane, lanes: () => lanes,
+  const api = { registry, declare, redeclare, setRange, parseValue, has: (n) => specs.has(n), alias: (label, id) => { if (!label || label === id || specs.has(label) && !specs.get(label).site) { if (label && label !== id && !aliases.has(label) && !specs.has(label)) aliases.set(label, id); return; } aliases.set(label, id); }, resolve: R, labelOf: (id) => { for (const [l, i] of aliases) if (i === id) return l; return null; }, ctl, sliderWithID, set, get: (n, c) => valueAt(n, c), valueAt, input, nudge, travelOf, map, maps: () => maps, registerDest, resolveDest, applyMaps, addLane, lanes: () => lanes,
     load, toModel, list, applySet, completions, boards: () => boards, gateOpen: (g, c) => gateOpen(g, c, ctx),
     // gate helper: a toggle control as a bind `when`
     when: (name, quant = 1) => ({ control: name, quant }) };

@@ -73,8 +73,10 @@ function seek(c) {
 }
 async function settings() {
   if (!sc.ui) return;
-  const v = await sc.ui.ask({ title: 'Play-time limit', label: 'Maximum minutes per run (projected stop)', value: String(st.maxMin), okText: 'Save' });
-  if (v == null) return; const n = parseFloat(v); if (!(n > 0 && n <= 600)) { sc.ui.toast('Enter minutes between 0 and 600', { kind: 'error' }); return; }
+  const v = await sc.ui.ask({ title: 'Play-time limit', label: 'Maximum minutes per run (e.g. 20, 2:30, 90s, 1h; range 1 to 600 min)', value: String(st.maxMin), okText: 'Save' });
+  if (v == null) return; const p = sc.controls && sc.controls.lib && sc.controls.lib.parseValue; const n = p ? p(v, { unit: 'min' }) : parseFloat(v);
+  if (!(n > 0)) { sc.ui.toast('Enter a positive time (e.g. 20, 2:30, 90s)', { kind: 'error' }); return; }
+  if (n > 600 && !(await sc.ui.askYesNo({ title: 'Beyond the 600 min range', message: `Extend the play-time range to fit ${+n.toFixed(2)} min?`, okText: 'Extend range to fit' }))) return;
   st.maxMin = n; set('range.maxMin', n);
   const f = await sc.ui.askYesNo({ title: 'At the limit', message: 'Fade out over 4 seconds before stopping? (No = stop at once)', okText: 'Fade out' });
   st.atLimit = f ? 'fade' : 'stop'; set('range.atLimit', st.atLimit); sc.ui.toast(`Limit ${n} min, ${st.atLimit === 'fade' ? 'fade out' : 'hard stop'}`, { kind: 'ok' });

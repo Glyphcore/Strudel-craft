@@ -86,11 +86,15 @@ const EDITORS = {
   combobox(host, ctx) { listPick(host, ctx, ctx.param.options || []); },
   list(host, ctx) { ctx.items.then((items) => listPick(host, ctx, [...new Set(items.filter((i) => i.string && /sounds/.test(i.category || '')).map((i) => i.label))], { search: true })); },
   toggle(host, ctx) { const on = ctx.lit.value === true || ctx.lit.value === 'true'; host.append(h('button', { type: 'button', class: 'lit-tog', 'aria-pressed': String(on), onclick: () => { ctx.set(on ? 'false' : 'true'); ctx.close(); } }, on ? 'true → false' : 'false → true')); },
-  piano(host, ctx) {
-    const cur = String(ctx.lit.value); let oct = +((/(\d+)$/.exec(cur) || [, 3])[1]);
-    const keys = h('div', { class: 'lit-piano', role: 'group', 'aria-label': 'Note' }); const lab = h('span', { class: 'lit-oct' });
-    const draw = () => { lab.textContent = 'oct ' + oct; keys.replaceChildren(...(SPEC.pools.note || []).map((n) => h('button', { type: 'button', class: 'lit-key' + (n.length > 1 ? ' blk' : ''), 'aria-pressed': String(cur === n + oct), onclick: () => { ctx.set(n + oct); ctx.close(); ctx.view.focus(); } }, n))); };
-    host.append(h('div', { class: 'lit-row' }, h('button', { type: 'button', class: 'lit-mini', 'aria-label': 'Octave down', onclick: () => { oct--; draw(); } }, '−'), lab, h('button', { type: 'button', class: 'lit-mini', 'aria-label': 'Octave up', onclick: () => { oct++; draw(); } }, '+')), keys); draw();
+  piano(host, ctx) { /* live: every key / octave change rewrites the literal at once (no confirm); octave keeps pitch class + accidental */
+    const parse = (t) => { const m = /^([a-gA-G])(#|b|s|f)?(-?\d+)?$/.exec(String(t)); return m ? { pc: m[1].toLowerCase(), acc: m[2] || '', oct: m[3] != null ? +m[3] : null } : null; };
+    let cur = String(ctx.lit.value); const p0 = parse(cur) || { pc: 'c', acc: '', oct: 3 }; let oct = p0.oct ?? 3;
+    const name = h('output', { class: 'lit-val', 'aria-live': 'polite' }); const keys = h('div', { class: 'lit-piano', role: 'group', 'aria-label': 'Pitch' }); const lab = h('span', { class: 'lit-oct' });
+    const apply = (n) => { cur = n; ctx.set(n); draw(); };
+    const draw = () => { name.textContent = cur; lab.textContent = 'oct ' + oct; const q = parse(cur);
+      keys.replaceChildren(...(SPEC.pools.note || []).map((n) => h('button', { type: 'button', class: 'lit-key' + (n.length > 1 ? ' blk' : ''), 'data-v': n, 'aria-pressed': String(!!q && q.pc + q.acc === n), onclick: () => apply(n + oct) }, n))); };
+    const shift = (d) => { oct += d; const q = parse(cur); if (q) apply(q.pc + q.acc + oct); else draw(); };
+    host.append(h('div', { class: 'lit-row' }, name, h('span', { class: 'lit-row' }, h('button', { type: 'button', class: 'lit-mini', id: 'litOctDown', 'aria-label': 'Octave down', onclick: () => shift(-1) }, '−'), lab, h('button', { type: 'button', class: 'lit-mini', id: 'litOctUp', 'aria-label': 'Octave up', onclick: () => shift(1) }, '+'))), keys); draw();
   },
   chips(host, ctx) { /* set / multi-value: chord [a,b,c] or alternatives <a b c>; toggling rewrites only the group span */
     const l = ctx.lit, g = l.group; const doc = ctx.view.state.doc; const inner = doc.sliceString(g.from + 1, g.to - 1); const sep = g.chord ? ',' : ' ';
@@ -107,7 +111,7 @@ const EDITORS = {
     const toks = (literals(ctx.view.state.doc.toString()).literals || []).filter((x) => x.kind === 'token' && x.str && x.str.from === s.from && !x.mod);
     const wrap = h('div', { class: 'lit-steps', role: 'group', 'aria-label': 'Steps' });
     toks.forEach((t) => { const i = h('input', { class: 'lit-step', value: t.value, size: Math.max(1, t.value.length), 'aria-label': 'Step ' + t.value, 'data-lit': t.id, autocapitalize: 'off', spellcheck: 'false' });
-      i.addEventListener('change', () => { if (i.value.trim()) setLit(t.id, i.value.trim().replace(/\s+/g, ''), ctx.view.__scId); }); wrap.append(i); });
+      i.addEventListener('input', () => { const v = i.value.trim().replace(/\s+/g, ''); if (v && /^[~A-Za-z0-9#_.\-]+$/.test(v)) setLit(t.id, v, ctx.view.__scId); }); wrap.append(i); }); /* live: each keystroke rewrites that token; the settle scheduler compiles once */
     host.append(wrap);
   },
 };

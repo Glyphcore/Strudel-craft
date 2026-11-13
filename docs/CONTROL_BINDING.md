@@ -135,5 +135,53 @@ Editor choice order: registered providers -> number `scrub` / boolean `toggle` -
   on release. Alt+Up/Down nudges the number under the caret (Shift = x10).
 - Without the caret: `strudelCraft.literals.set(id, text)`, `.nudge(id, steps)`, `.open(id)`, `.list(viewId)`; control surfaces and
   key maps bind to literal ids the same way controls bind to site ids.
+- **Live apply**: every typed editor applies as soon as a value is chosen, with no confirm tap: piano keys and octave -/+ (octave
+  keeps the pitch class and accidental: `eb3` -> `eb4`; the shown note name and the source change together; the popover stays open),
+  combobox and sound list options, chips, toggle, and each step chip as you type. The number scrub commits on release.
 - Each edit is one CodeMirror change covering only the literal span (chips: only the group's inner span), tagged `input.literal`;
   it flows through the settle scheduler, so one compile and one history commit per settled edit.
+
+## 8. Reference inspector (`site/refs.js`)
+
+One shared service, `window.strudelCraft.refs`, for every surface (inline strip, board, pads, graph cards; atoms, packs and hooks later):
+
+| call | returns / does |
+|---|---|
+| `resolve(id)` | `{ id, kind: 'control' \| 'literal', view, site \| literal, off }`; accepts site ids, literal ids and label aliases (`controls.resolve`) |
+| `related(id)` | `{ spans, ids, dests, slot }`: the mapped param (the call name the site sits in), explicit map dests (`.dest(` and `hooks.map` lines), the hook slot string, `tap('label')` sites, other controls with the same label |
+| `highlight(id \| null, { scroll, editor })` | marks the source span (`.cm-ref-primary`, soft background) plus a gutter indicator (`.cm-ref-gutter`), tints related spans in the same colour (`.cm-ref-related`), scrolls the span into view, and adds `.ref-glow` / `.ref-glow-rel` to every element carrying the id; fires `refs:highlight` |
+| `describe(id)` | `{ id, path, label, type, shape, value, range, maps, slot, view }` |
+| `tip(el, id)`, `hideTip()`, `clear()` | the tooltip; `clear` drops every mark and glow |
+
+Elements opt in with `data-site`, `data-ctl`, `data-id` or `data-ref` set to an id or label (pads and graph cards use `data-ref`).
+
+- **Select**: pointerdown or focus on such an element highlights it. **Inspect**: long-press 450 ms on touch, hover 350 ms with a mouse,
+  or keyboard focus opens `#scRefTip` (`role=tooltip`, fixed position, so no layout shift). The element gets `aria-describedby="scRefTip"`.
+  Escape, the dismiss button or a tap elsewhere closes it.
+- **Reverse**: the caret or a tap inside a control call, or inside the param call that holds it (`lpf(slider(800...))`), makes the
+  matching controls glow and marks the span. Site offsets are mapped from evaluated source to editor text (`binder.source(view)`).
+- Theme: `--sig-2` and its soft variant; related items use the same colour, dashed. Test: `node tests/site/binding.mjs`
+  (long-press a knob: tooltip id + path, span and gutter marked; tap a literal: its control glows).
+
+## 9. Range spec (numeric controls and atom params)
+
+No control assumes 0..1. Each numeric control carries `{ min, max, step, unit, curve: lin|log|exp, clamp: hard|soft|none }`.
+
+Precedence (highest first): user override per AST id (`perform` model `ranges[<id>]`, persisted in `sc.perform`) > code literal
+(`slider(v, min, max)`) or `ctl` spec > param shape (`strudel.json` `params`, which now carry `clamp`; `rangeSpec` documents the keys)
+> 0..1. Clamp default for code sites is `soft`.
+
+- `hard`: values are clamped into the range; `soft`: slider travel stays in range, typed values may go beyond; `none`: no bounds.
+- **Exact entry**: tap the number on a knob, slider or fader (or "Set value…" in the control's sheet, or Enter on it) to open a
+  site modal (never a native prompt). It is unit-aware and accepts values outside the range; "Extend range to fit" widens min/max to
+  include the value and saves that as the override. A range hint (`Range 0 to 1 · clamp soft`) is shown in the modal, and under every
+  numeric control (`0 to 1 Hz · soft`).
+- **Range editing**: "Range (min, max, step)…" in the control's sheet edits min, max, step, unit, curve and clamp; "Shape default"
+  drops the override.
+- **Parsing** (`controls.parseValue(text, { unit })`, exported from `engine/controls.js`): `1.5k` -> 1500, `-6 dB` -> -6, `2:30` -> 150
+  (seconds; 2.5 when the unit is `min`), `250ms` -> 0.25 s, `90s`, `1h`, `50%` -> 0.5.
+- Applies to inline widgets and board knobs (same renderers), pad values (pad sheet "Value", parsed the same way) and the transport:
+  loop start/end are parsed with the same parser, and the play-time limit accepts `20`, `2:30`, `90s`, `1h`; above its 600 min range
+  it offers "Extend range to fit".
+- Engine: `controls.setRange(id, r)` (null deletes a key), `redeclare` keeps values unless the clamp is `hard`.
+- Test: `node tests/site/binding.mjs` (typing 5000 into a 0..1 slider extends the range and persists it per id; parser cases).

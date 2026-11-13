@@ -31,6 +31,7 @@ const shapes = Promise.all([fetch('data/intellisense/strudel.json').then((r) => 
     return P;
   });
 api.params = () => shapes;
+shapes.then((P) => { api.__paramsSync = P; });
 /* argument context: innermost open call at pos, its arg index and whether the cursor is inside a string */
 function argContext(text, pos) {
   const st = []; let q = null; const from = Math.max(0, pos - 4000);
@@ -181,6 +182,21 @@ async function mount() {
   class CanvasW extends vmod.WidgetType { constructor(el) { super(); this.el = el; } eq(o) { return o.el === this.el; } toDOM() { const d = document.createElement('div'); d.className = 'cm-sc-widget'; d.append(this.el); return d; } ignoreEvent() { return true; } }
   const hlField = smod.StateField.define({ create: () => vmod.Decoration.none, update(v, tr) { v = v.map(tr.changes); for (const e of tr.effects) if (e.is(setHl)) v = vmod.Decoration.set(e.value.map((h) => vmod.Decoration.mark({ class: 'cm-sc-active', attributes: h.color ? { style: `outline-color:${h.color};background:color-mix(in srgb, ${h.color} 25%, transparent)` } : {} }).range(h.from, h.to)), true); return v; }, provide: (f) => EditorView.decorations.from(f) });
   const wField = smod.StateField.define({ create: () => vmod.Decoration.none, update(v, tr) { v = v.map(tr.changes); for (const e of tr.effects) if (e.is(setW)) v = vmod.Decoration.set(e.value.map((w) => vmod.Decoration.widget({ widget: new CanvasW(w.el), block: true, side: 1 }).range(w.pos)), true); return v; }, provide: (f) => EditorView.decorations.from(f) });
+  /* reference inspector marks (refs.js): soft background on the source span, matching tint on related spans, gutter indicator */
+  const setRef = smod.StateEffect.define();
+  class RefGutter extends vmod.GutterMarker { constructor(c) { super(); this.elementClass = c; } }
+  const refField = smod.StateField.define({ create: () => ({ deco: vmod.Decoration.none, gut: smod.RangeSet.empty }), update(v, tr) {
+    let { deco, gut } = v; deco = deco.map(tr.changes); gut = gut.map(tr.changes);
+    for (const e of tr.effects) if (e.is(setRef)) { const n = tr.state.doc.length; const ok = (r) => r && r[0] >= 0 && r[1] <= n && r[0] < r[1]; const rs = [];
+      if (ok(e.value.primary)) rs.push(vmod.Decoration.mark({ class: 'cm-ref-primary', attributes: { 'data-ref': e.value.id || '' } }).range(e.value.primary[0], e.value.primary[1]));
+      for (const r of e.value.related || []) if (ok(r)) rs.push(vmod.Decoration.mark({ class: 'cm-ref-related' }).range(r[0], r[1]));
+      deco = vmod.Decoration.set(rs, true);
+      const lines = new Set(); if (ok(e.value.primary)) lines.add(tr.state.doc.lineAt(e.value.primary[0]).from); for (const r of e.value.related || []) if (ok(r)) lines.add(tr.state.doc.lineAt(r[0]).from);
+      gut = smod.RangeSet.of([...lines].sort((a, b) => a - b).map((f) => new RefGutter(ok(e.value.primary) && tr.state.doc.lineAt(e.value.primary[0]).from === f ? 'cm-ref-gutter' : 'cm-ref-gutter rel').range(f)), true); }
+    return { deco, gut };
+  }, provide: (f) => [EditorView.decorations.from(f, (v) => v.deco), vmod.gutterLineClass.from(f, (v) => v.gut)] });
+  api.refMarks = (id, marks) => { const t = document.getElementById(id); const v = t && t.cmView; if (!v) return; v.dispatch({ effects: [setRef.of(marks || {})].concat(marks && marks.primary && marks.scroll !== false ? [EditorView.scrollIntoView(marks.primary[0], { y: 'center' })] : []) }); };
+  api.refView = (id) => { const t = document.getElementById(id); return t && t.cmView; };
   const vizApi = {
     doc: (id) => { const t = document.getElementById(id); return t && t.cmView ? t.cmView.state.doc.toString() : ''; },
     setHighlights: (id, hs) => { const t = document.getElementById(id); const v = t && t.cmView; if (!v) return; const n = v.state.doc.length; v.dispatch({ effects: setHl.of(hs.filter((h) => h.to <= n)) }); },
@@ -191,13 +207,14 @@ async function mount() {
     const desc = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value'); let view; let syncing = false; let learnT = 0;
     view = new EditorView({
       doc: desc.get.call(ta), parent: ta.parentNode,
-      extensions: [ghost.extension, hlField, wField, sigField, basicSetup, lint.lintGutter(), javascript(), theme, hl, hover, EditorView.lineWrapping, ac.autocompletion({ override: [source], activateOnTyping: true, icons: false }),
+      extensions: [ghost.extension, hlField, wField, sigField, refField, basicSetup, lint.lintGutter(), javascript(), theme, hl, hover, EditorView.lineWrapping, ac.autocompletion({ override: [source], activateOnTyping: true, icons: false }),
         EditorView.contentAttributes.of({ 'aria-label': ta.getAttribute('aria-label') || (id === 'code' ? 'Recipe code' : 'Stack program'), autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false' }),
         EditorView.updateListener.of((u) => { if (!u.docChanged || syncing) return; const v = u.state.doc.toString(); desc.set.call(ta, v); ta.dispatchEvent(new Event('input', { bubbles: true })); clearTimeout(learnT); learnT = setTimeout(() => learn(v), 1200); })],
     });
     ta.after(view.dom);
     Object.defineProperty(ta, 'value', { configurable: true, get: () => desc.get.call(ta), set: (v) => { desc.set.call(ta, v); if (view.state.doc.toString() !== v) { syncing = true; view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: v } }); syncing = false; } } });
     ta.hidden = true; ta.style.display = 'none'; ta.tabIndex = -1; ta.cmView = view;
+    import('./refs.js').then((m) => m.attachEditor(view, id)).catch((e) => console.warn('reference inspector unavailable:', e.message));
     import('./literals.js').then((m) => m.attach(view, id)).catch((e) => console.warn('literal editors unavailable:', e.message));
   }
   const viewFor = (v) => document.getElementById(v === 'stack' ? 'stackCode' : 'code').cmView;

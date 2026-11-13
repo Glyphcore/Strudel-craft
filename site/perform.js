@@ -122,6 +122,44 @@ const paramList = () => sc.intellisense.all().then((items) => [...new Set(items.
 /* ---------------- control renderers ---------------- */
 const fmt = (v, s) => (typeof v === 'number' ? (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2)) : String(v)) + (s.unit ? ' ' + s.unit : '');
 const cur = (name) => controls.get(name, nowCycle());
+/* exact numeric entry (site modal, never a native prompt): unit-aware, accepts values outside the range, offers "Extend range to fit" */
+function enterValue(name) {
+  name = controls.resolve(name); const s = controls.declare(name); const lo = s.min ?? 0, hi = s.max ?? 1; const clamp = s.clamp || 'hard';
+  return new Promise((res) => {
+    let d; const done = (v) => { d.close(); d.remove(); res(v); };
+    const inp = h('input', { id: 'pfNum', class: 'scm-input', inputmode: 'decimal', autocomplete: 'off', spellcheck: 'false', value: String(+(+controls.get(name)).toFixed(6)), 'aria-describedby': 'pfNumHint' });
+    const hint = h('p', { id: 'pfNumHint', class: 'pc-range-hint' }); const ext = h('button', { type: 'button', class: 'ghost', id: 'pfExtend', disabled: true }, 'Extend range to fit');
+    const parse = () => controls.parseValue(inp.value, { unit: s.unit || '' });
+    const upd = () => { const v = parse(); const out = !isNaN(v) && (v < lo || v > hi); ext.disabled = !out; hint.textContent = isNaN(v) ? `Not a value. Range ${lo} to ${hi}${s.unit ? ' ' + s.unit : ''}` : `Range ${lo} to ${hi}${s.unit ? ' ' + s.unit : ''} · clamp ${clamp}` + (out ? (clamp === 'hard' ? ' · Set clamps to the range' : ' · outside the range') : ''); };
+    ext.addEventListener('click', () => { const v = parse(); if (isNaN(v)) return; setRange(name, { min: Math.min(lo, v), max: Math.max(hi, v) }); setVal(name, v); done(v); });
+    const f = h('form', { class: 'scm-body', method: 'dialog' }, h('label', { class: 'scm-lab', for: 'pfNum' }, `Value${s.unit ? ' (' + s.unit + ')' : ''}: e.g. 1.5k, -6 dB, 2:30`), inp, hint,
+      h('div', { class: 'scm-acts' }, h('button', { type: 'button', class: 'ghost', onclick: () => done(null) }, 'Cancel'), ext, h('button', { type: 'submit', class: 'scm-ok' }, 'Set')));
+    f.addEventListener('submit', (e) => { e.preventDefault(); const v = parse(); if (isNaN(v)) { upd(); inp.focus(); return; } setVal(name, clamp === 'hard' ? Math.min(hi, Math.max(lo, v)) : v); done(v); });
+    inp.addEventListener('input', upd); upd();
+    d = dlg('Set ' + (controls.labelOf(name) || name), f); d.classList.add('pc-num-dlg'); d.addEventListener('cancel', (e) => { e.preventDefault(); done(null); }); inp.focus(); inp.select();
+  });
+}
+/* range override per AST id, persisted in the model (M.ranges); the param shape stays the fallback */
+function setRange(name, r) { name = controls.resolve(name); M.ranges = M.ranges || {}; M.ranges[name] = { ...(M.ranges[name] || {}), ...r }; try { controls.setRange(name, M.ranges[name]); } catch (e) { ui().toast(e.message, { kind: 'error' }); } persistControls(); render(); renderInline(); }
+function rangeSheet(name) {
+  name = controls.resolve(name); const s = controls.declare(name);
+  return new Promise((res) => {
+    let d; const done = (v) => { d.close(); d.remove(); res(v); };
+    const fld = (id, lab, val, attrs = {}) => h('label', { class: 'scm-lab pc-rf', for: id }, lab, h('input', { id, class: 'scm-input', inputmode: 'decimal', value: val ?? '', ...attrs }));
+    const sel = (id, lab, opts, val) => h('label', { class: 'scm-lab pc-rf', for: id }, lab, h('select', { id, class: 'scm-input' }, ...opts.map((o) => { const e = h('option', { value: o }, o); if (o === val) e.selected = true; return e; })));
+    const f = h('form', { class: 'scm-body pc-range-form', method: 'dialog' },
+      fld('pfMin', 'Min', s.min), fld('pfMax', 'Max', s.max), fld('pfStep', 'Step', s.step ?? ''), fld('pfUnit', 'Unit', s.unit ?? '', { inputmode: 'text' }),
+      sel('pfCurve', 'Curve', ['lin', 'log', 'exp'], s.curve || 'lin'), sel('pfClamp', 'Clamp', ['hard', 'soft', 'none'], s.clamp || 'hard'),
+      h('div', { class: 'scm-acts' }, h('button', { type: 'button', class: 'ghost', onclick: () => done(null) }, 'Cancel'),
+        h('button', { type: 'button', class: 'ghost', id: 'pfRangeReset', onclick: () => { if (M.ranges) delete M.ranges[name]; const st = [...(SITES.rack || []), ...(SITES.stack || [])].find((x) => x.id === name); if (st) { try { controls.redeclare(name, specOf(st)); } catch (e) { /* keep */ } } persistControls(); render(); renderInline(); done('reset'); } }, 'Shape default'),
+        h('button', { type: 'submit', class: 'scm-ok' }, 'Save')));
+    f.addEventListener('submit', (e) => { e.preventDefault(); const u = d.querySelector('#pfUnit').value.trim(); const num = (id) => { const t = d.querySelector(id).value.trim(); return t === '' ? null : controls.parseValue(t, { unit: u }); };
+      const r = { min: num('#pfMin'), max: num('#pfMax'), step: num('#pfStep'), unit: u || null, curve: d.querySelector('#pfCurve').value, clamp: d.querySelector('#pfClamp').value };
+      if ([r.min, r.max].some((x) => x == null || isNaN(x)) || r.min >= r.max) { ui().toast('Min must be below max', { kind: 'error' }); return; } if (r.step != null && !(r.step > 0)) r.step = null;
+      setRange(name, r); done(r); });
+    d = dlg('Range: ' + (controls.labelOf(name) || name), f); d.addEventListener('cancel', (e) => { e.preventDefault(); done(null); });
+  });
+}
 function setVal(name, v) { try { controls.set(name, v); } catch (e) { ui().toast(e.message, { kind: 'error' }); } persistControls(); refreshValues(name); touched(name); }
 function refreshValues(name) { document.querySelectorAll(`[data-ctl="${CSS.escape(name)}"]`).forEach((el) => el.__sync && el.__sync()); }
 function numberish(kind) {
@@ -132,9 +170,10 @@ function numberish(kind) {
     el.append(fill, out);
     el.__sync = () => { const v = cur(name); const t = controls.travelOf(name, v); el.setAttribute('aria-valuenow', v); el.setAttribute('aria-valuetext', fmt(v, s)); out.textContent = fmt(v, s); el.style.setProperty('--t', t); };
     let drag = null;
-    el.addEventListener('pointerdown', (e) => { el.setPointerCapture(e.pointerId); drag = { y: e.clientY, x: e.clientX, t: controls.travelOf(name) }; e.preventDefault(); el.focus({ preventScroll: true }); });
-    el.addEventListener('pointermove', (e) => { if (!drag) return; const d = kind === 'slider' ? (e.clientX - drag.x) / Math.max(80, el.clientWidth) : (drag.y - e.clientY) / 160; controls.input('value', name, Math.min(1, Math.max(0, drag.t + d))); persistControls(); refreshValues(name); touched(name); });
-    const end = () => { drag = null; }; el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+    el.addEventListener('pointerdown', (e) => { el.setPointerCapture(e.pointerId); drag = { y: e.clientY, x: e.clientX, t: controls.travelOf(name), onVal: e.target === out, t0: performance.now() }; e.preventDefault(); el.focus({ preventScroll: true }); });
+    el.addEventListener('pointermove', (e) => { if (!drag) return; if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 4) drag.moved = true; else if (!drag.moved) return; const d = kind === 'slider' ? (e.clientX - drag.x) / Math.max(80, el.clientWidth) : (drag.y - e.clientY) / 160; controls.input('value', name, Math.min(1, Math.max(0, drag.t + d))); persistControls(); refreshValues(name); touched(name); });
+    const end = (e) => { const d = drag; drag = null; if (!d) return; if (e.type === 'pointerup' && d.onVal && !d.moved && performance.now() - d.t0 < 400) typed(); }; /* tap the number: exact entry (long-press = reference inspector) */
+    el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
     el.addEventListener('keydown', (e) => {
       const m = { ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1, PageUp: 10, PageDown: -10 }[e.key];
       if (m) { e.preventDefault(); e.stopPropagation(); setVal(name, Math.min(hi, Math.max(lo, +(controls.get(name) + m * step).toFixed(6)))); }
@@ -142,7 +181,7 @@ function numberish(kind) {
       else if (e.key === 'Enter') { e.preventDefault(); typed(); }
     });
     el.addEventListener('dblclick', typed);
-    async function typed() { const v = await ui().ask({ title: 'Set ' + name, label: `Value (${lo} to ${hi})`, value: String(controls.get(name)), okText: 'Set' }); if (v != null && v !== '' && !isNaN(+v)) setVal(name, Math.min(hi, Math.max(lo, +v))); }
+    function typed() { return enterValue(name); }
     el.__sync(); host.append(el); return el;
   };
 }
@@ -174,6 +213,7 @@ function renderControl(host, name, { board, site } = {}) {
   const label = site ? (site.label || labels.get(name) || `${site.param || 'ctl'}·${site.arg < 0 ? 0 : site.arg}`) : (labels.get(name) || name);
   cell.append(h('div', { class: 'pc-head', title: site ? `${name} · ${site.path}` : name }, h('b', {}, label), site && site.slot ? h('span', { class: 'pc-type' }, 'slot ' + site.slot) : null, laneOf(name) ? h('span', { class: 'pc-lane', title: 'Automation lane' }, '◆ lane') : null, h('span', { class: 'pc-type' }, s.type)));
   const body = h('div', { class: 'pc-body' }); (R[drawn] || R.number)(body, name, s); cell.append(body);
+  if (isNum(name)) cell.append(h('p', { class: 'pc-range', title: 'Range (tap the value to type one; Range… in the menu to edit)' }, `${s.min ?? 0} to ${s.max ?? 1}${s.unit ? ' ' + s.unit : ''}${s.clamp && s.clamp !== 'hard' ? ' · ' + s.clamp : ''}`));
   if (drawn !== s.type) cell.append(h('p', { class: 'pc-note' }, `basic view (${s.type} shown as ${drawn})`));
   if (board && M.boardEdit) cell.append(h('button', { type: 'button', class: 'pc-map pc-edit', onclick: () => cellEdit(board, name) }, '✥ Edit cell'));
   else cell.append(h('button', { type: 'button', class: 'pc-map ghost', title: 'Map, learn, lane, send', 'aria-label': `${name}: ${maps.length ? 'mapped to ' + maps.join(', ') : 'not mapped'}. Options`, onclick: () => cellSheet(name) }, maps.length ? '→ ' + maps.join(', ') : 'Map…'));
@@ -209,12 +249,15 @@ async function cellSheet(name) {
   const maps = controls.maps().filter((m) => m.control.split(':')[0] === name).map((m) => m.dest); const lane = laneOf(name);
   const boards = M.tabs.filter((t) => t.kind === 'board' && !(M.boards[t.id].cells.includes(name)));
   const v = await choose({ title: name, message: maps.length ? `Mapped to ${maps.join(', ')}` : 'Not mapped yet', options: [
+    ...(isNum(name) ? [{ label: 'Set value…', value: 'value' }, { label: 'Range (min, max, step)…', value: 'range' }] : []),
     { label: 'Map to…', value: 'map' }, ...maps.map((d) => ({ label: `Unlearn → ${d}`, value: 'un:' + d, danger: true })),
     ...(isNum(name) ? [{ label: lane ? 'Overdub lane (1 bar)' : 'Record lane (1 bar)', value: 'rec' }] : []),
     ...(lane ? [{ label: 'Save lane to library', value: 'savelane' }, { label: 'Clear lane', value: 'clearlane', danger: true }] : []),
     ...boards.map((t) => ({ label: `Send to board "${t.name}"`, value: 'send:' + t.id })),
   ] });
   if (!v) return;
+  if (v === 'value') { await enterValue(name); return; }
+  if (v === 'range') { await rangeSheet(name); return; }
   if (v === 'map') { const d = await askList({ title: 'Map ' + name, label: 'Destination (param, or track.param)', value: 'cutoff', okText: 'Map', list: paramList() }); if (d) doMap(name, d); }
   else if (v.startsWith('un:')) unlearn(name, v.slice(3));
   else if (v === 'rec') { A.overdub = !!lane; A.armed = true; A.only = name; render(); renderInline(); ui().toast(`Lane armed: move ${name} to record 1 bar`, { kind: 'info' }); }
@@ -300,6 +343,7 @@ async function padSheet(bank, pos) {
     h('label', { class: 'scm-lab', for: 'pfR' }, 'Target (reference)'), h('input', { id: 'pfR', class: 'scm-input', list: 'pfTargets', value: pad.target.ref, autocomplete: 'off' }), targetOptions(),
     h('label', { class: 'scm-lab', for: 'pfM' }, 'Mode'), h('select', { id: 'pfM', class: 'scm-input' }, ...['', 'toggle', 'gate', 'oneshot', 'retrigger'].map((k) => h('option', { value: k, selected: (pad.mode || '') === k }, k || 'default'))),
     h('label', { class: 'scm-lab', for: 'pfQ' }, 'Quantise'), h('select', { id: 'pfQ', class: 'scm-input' }, ...['', 'none', 'beat', 'bar', '2b', '4b'].map((k) => h('option', { value: k, selected: (pad.quant || '') === k }, k || 'default'))),
+    h('label', { class: 'scm-lab', for: 'pfV' }, 'Value for var targets (unit-aware: 1.5k, -6 dB, 2:30; empty = on/off)'), h('input', { id: 'pfV', class: 'scm-input', inputmode: 'decimal', value: pad.target.value ?? '', autocomplete: 'off' }),
     h('label', { class: 'scm-lab', for: 'pfC' }, 'Choke group (number, empty for none)'), h('input', { id: 'pfC', class: 'scm-input', inputmode: 'numeric', value: pad.choke ?? '' }),
     h('label', { class: 'scm-lab', for: 'pfL' }, 'Label'), h('input', { id: 'pfL', class: 'scm-input', value: pad.label || '' }),
     h('label', { class: 'scm-lab', for: 'pfCo' }, 'Colour'), h('input', { id: 'pfCo', class: 'scm-input', type: 'color', value: pad.color || '#2ed3c6' }),
@@ -313,6 +357,7 @@ async function padSheet(bank, pos) {
     e.preventDefault(); const ref = $('#pfR', d).value.trim(); if (!ref) { ui().toast('Pick a target first', { kind: 'info' }); return; }
     const np = { pos, target: { kind: $('#pfK', d).value, ref }, label: $('#pfL', d).value.trim() || undefined, color: $('#pfCo', d).value };
     const m = $('#pfM', d).value, q = $('#pfQ', d).value, ch = $('#pfC', d).value.trim(); if (m) np.mode = m; if (q) np.quant = q; if (ch !== '') np.choke = +ch;
+    const vt = $('#pfV', d).value.trim(); if (vt !== '') { const pv = controls.parseValue(vt); if (isNaN(pv)) { ui().toast('Value: not a number (try 1.5k, -6 dB, 2:30)', { kind: 'error' }); return; } np.target.value = pv; }
     bank.pads = bank.pads.filter((p) => p.pos !== pos).concat([np]); save(); rebuildPads(); close(); render(); ui().toast(`Pad ${pos}: ${np.target.kind}:${ref}`, { kind: 'ok' });
   });
 }
@@ -433,14 +478,24 @@ async function cellEdit(board, name) {
 
 /* ---------------- AST-bound sites (docs/CONTROL_BINDING.md) ---------------- */
 const SITES = { rack: [], stack: [] }; const lits = new Map(); const labels = new Map();
-function specOf(site) { return site.kind === 'slider' ? { type: 'slider', min: site.min ?? 0, max: site.max ?? 1, default: site.value ?? site.min ?? 0, site: true } : { type: 'knob', min: 0, max: 1, ...(site.spec || {}), site: true }; }
+/* range spec (CONTROL_BINDING section 9): user override per AST id (M.ranges) > code literal / ctl spec > param shape > 0..1 */
+const CURVE = { linear: 'lin', lin: 'lin', log: 'log', exp: 'exp', db: 'db', bipolar: 'bipolar' };
+const pick = (o, ks) => Object.fromEntries(ks.filter((k) => o && o[k] !== undefined).map((k) => [k, k === 'curve' ? CURVE[o[k]] || 'lin' : o[k]]));
+function shapeOf(site) { const P = sc.intellisense && sc.intellisense.__paramsSync; const sh = P && site.param && P[site.param] && P[site.param][Math.max(0, site.arg)]; return sh && sh.shape === 'number' ? sh : null; }
+function specOf(site) {
+  const sh = shapeOf(site); const ov = (M.ranges || {})[site.id] || {};
+  const base = site.kind === 'slider' ? { type: 'slider', ...pick(sh, ['step', 'unit', 'curve', 'clamp']), min: site.min ?? 0, max: site.max ?? 1, default: site.value ?? site.min ?? 0 }
+    : { type: 'knob', min: 0, max: 1, ...pick(sh, ['min', 'max', 'step', 'unit', 'curve', 'clamp']), ...(site.spec || {}) };
+  if (base.curve) base.curve = CURVE[base.curve] || 'lin';
+  return { clamp: 'soft', ...base, ...pick(ov, ['min', 'max', 'step', 'unit', 'curve', 'clamp']), site: true };
+}
 function ensureSite(site) {
   const sp = specOf(site); if (site.label) { labels.set(site.id, site.label); controls.alias(site.label, site.id); }
   try {
     if (!controls.has(site.id)) controls.declare(site.id, sp);
-    else { const c = controls.declare(site.id); if (c.type !== sp.type || c.min !== sp.min || c.max !== sp.max || c.curve !== sp.curve || c.unit !== sp.unit) controls.redeclare(site.id, sp); }
+    else { const c = controls.declare(site.id); if (['type', 'min', 'max', 'curve', 'unit', 'step', 'clamp'].some((k) => c[k] !== sp[k])) controls.redeclare(site.id, sp); }
     const lit = sp.default; const prev = lits.get(site.id); /* literal edit in code = intent: value follows it */
-    if (prev !== undefined && lit !== undefined && prev !== lit && typeof lit === 'number') controls.set(site.id, Math.min(sp.max, Math.max(sp.min, lit)));
+    if (prev !== undefined && lit !== undefined && prev !== lit && typeof lit === 'number') controls.set(site.id, sp.clamp === 'hard' ? Math.min(sp.max, Math.max(sp.min, lit)) : lit);
     if (lit !== undefined) lits.set(site.id, lit);
   } catch (e) { /* bad spec: keep the last good one */ }
 }

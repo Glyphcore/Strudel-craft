@@ -1,0 +1,13 @@
+/* Installable app (#73): install offer row in the ? dialog, standalone (installed) layout. */
+.pwa-help{display:flex;align-items:center;gap:12px;margin:12px 14px 0;padding:10px 10px 10px 14px;border:1px solid var(--line-2);border-left:3px solid var(--sig);border-radius:var(--r2);background:var(--panel-2)}
+.pwa-help[hidden]{display:none}
+.pwa-help div{flex:1;display:grid;gap:2px;min-width:0}
+.pwa-help b{font-family:var(--display);font-weight:700;letter-spacing:.02em}
+.pwa-help div span{font-size:.8rem;color:var(--dim)}
+.pwa-help .pwa-btn{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border:1px solid var(--sig);border-radius:var(--r2);background:var(--sig);color:var(--sig-ink);font-weight:700}
+.pwa-help .pwa-btn:hover{box-shadow:var(--glow)}
+.pwa-help .pwa-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+#installBtn[hidden]{display:none}
+#installBtn svg{stroke-linecap:round;stroke-linejoin:round}
+/* installed: no browser chrome above the header, so the header owns the status-bar inset on every width */
+.pwa-standalone .top{padding-top:env(safe-area-inset-top);height:calc(var(--top) + env(safe-area-inset-top))}

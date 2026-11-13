@@ -609,6 +609,13 @@
    "category": "site api"
   },
   {
+   "label": "strudelCraft.pwa.install",
+   "method": false,
+   "detail": "install()",
+   "info": "Install the site as an app (Android Chrome install prompt; elsewhere an Add to Home Screen hint in the site modal). Also in the ? dialog, the overflow menu and Ctrl+K > App. strudelCraft.pwa.installed / .standalone report the state.",
+   "category": "site api"
+  },
+  {
    "label": "strudelCraft.range.seek",
    "method": false,
    "detail": "seek(cycle)",

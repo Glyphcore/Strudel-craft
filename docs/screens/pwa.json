@@ -1,0 +1,124 @@
+{
+  "date": "2026-11-13T18:05:03.752Z",
+  "base": "http://127.0.0.1:37321/Strudel-craft/",
+  "installabilityErrors": [],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "w": 192,
+      "h": 192,
+      "ok": true
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "w": 512,
+      "h": 512,
+      "ok": true
+    },
+    {
+      "src": "icons/maskable-192.png",
+      "sizes": "192x192",
+      "w": 192,
+      "h": 192,
+      "ok": true
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "w": 512,
+      "h": 512,
+      "ok": true
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "w": 150,
+      "h": 150,
+      "ok": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "CDP Page.getInstallabilityErrors is empty at /Strudel-craft/",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "name": "manifest parsed without errors",
+      "ok": true,
+      "detail": "http://127.0.0.1:37321/Strudel-craft/manifest.webmanifest []"
+    },
+    {
+      "name": "manifest fields",
+      "ok": true,
+      "detail": "Rack,Stack,Record,Perform"
+    },
+    {
+      "name": "manifest icons load at declared sizes",
+      "ok": true,
+      "detail": "icons/icon-192.png 192x192, icons/icon-512.png 512x512, icons/maskable-192.png 192x192, icons/maskable-512.png 512x512, icons/icon.svg 150x150"
+    },
+    {
+      "name": "apple-touch-icon 200",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "install offer in ? dialog, overflow menu and palette",
+      "ok": true,
+      "detail": "{\"help\":true,\"tools\":true,\"pal\":true}"
+    },
+    {
+      "name": "Install without a prompt event opens the site hint modal",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "every same-origin file the shell fetched is cached",
+      "ok": true,
+      "detail": "74 files"
+    },
+    {
+      "name": "every fetched shell file (outside data/) is in the SHELL precache list",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "offline reload renders the app shell with recipes",
+      "ok": true,
+      "detail": "{\"rows\":46,\"title\":\"Four-on-the-floor\",\"manifest\":true}"
+    },
+    {
+      "name": "uncached sample bank offline -> \"Offline\" toast",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "\"New version, tap to reload\" toast after a new sw.js",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "tapping it reloads into the new version",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "standalone: offers hidden, layout class set",
+      "ok": true,
+      "detail": "{\"cls\":true,\"help\":true,\"tools\":true,\"pal\":false,\"url\":\"\",\"cap\":true}"
+    },
+    {
+      "name": "shortcut ?action=record opens capture and cleans the URL",
+      "ok": true,
+      "detail": "{\"cap\":true,\"url\":\"\"}"
+    },
+    {
+      "name": "no console errors",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

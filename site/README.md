@@ -16,7 +16,25 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
 - Tempo: the knob writes `setcpm(BPM/4)` in front of the recipe, or rewrites an existing `setcpm(...)` call.
 - "Open in strudel.cc" builds `https://strudel.cc/#` + `encodeURIComponent(btoa(UTF-8 code))`, the format the strudel.cc REPL writes.
 - Fonts: Chakra Petch and JetBrains Mono, self-hosted woff2 (latin subset), SIL OFL 1.1; licences in `fonts/`.
-- `sw.js` caches the shell, data, fonts and the pinned Strudel bundle so the app works offline after one online play (sample banks still need network).
+- `sw.js` precaches the shell (every script, stylesheet, lazy view, font, icon and the manifest), data and the pinned Strudel bundle, so the page loads offline after the first visit. Sample maps and their audio (raw.githubusercontent.com) are lazy: cached on first use in `sc-banks-1` (kept across deploys, last 1500 files); an uncached bank while offline shows an "Offline: this sample bank is not cached yet" toast (vocal pack banks: "vocal bank").
+
+## Install on Android
+Strudel Craft is an installable app (PWA, #73). In Chrome on Android open https://glyphcore.github.io/Strudel-craft/, then tap
+**Install app** (in the `?` dialog, the `...` overflow menu or Ctrl+K > App); Chrome's own menu > *Install app* works too. After you
+have played something for a while, a one-time toast offers it as well (never on first load). Installed, it opens full screen
+(`display: standalone`), keeps working offline after the first visit, follows the "New version, tap to reload" toast on deploys,
+and a long-press on its icon gives Rack, Stack, Record (opens capture) and Perform shortcuts. iPhone / iPad: Safari > Share >
+*Add to Home Screen* (the Install app button shows this hint in browsers without an install prompt). Desktop Chrome/Edge can also
+open recipe `.json` files with the installed app (file handler -> Record panel `importRecipe`).
+- Files: `manifest.webmanifest` (relative `start_url`/`scope` `./` for the `/Strudel-craft/` path, theme/background `#0b0d10`,
+  icons 192/512 any + maskable + SVG, shortcuts, `file_handlers`), `icons/` (sources `icon.svg`, `maskable.svg`; PNGs from
+  `node tools/pwa/icons.mjs`), `pwa.js` + `pwa.css` (install offer, `beforeinstallprompt`, `appinstalled`, `display-mode: standalone`
+  -> `html.pwa-standalone` with the header owning the status-bar inset, `?action=record`, `launchQueue`, offline toasts).
+- API: `strudelCraft.pwa = { install(), hint(), canPrompt, installed, standalone }`.
+- Check: `node tests/site/pwa.mjs` serves `site/` under `/Strudel-craft/` and asserts CDP `Page.getInstallabilityErrors` is empty,
+  icons load at their declared sizes, every fetched shell file is precached, offline reload, the offline bank toast, the update toast,
+  and the standalone layout (writes `docs/screens/pwa.json` and `pwa-*.png`).
+- Not done: `share_target` (a POST target needs the service worker to be in control before the share, otherwise Pages answers 405).
 
 ## Run locally
     python3 -m http.server 8000 --directory site     # open http://localhost:8000
@@ -42,6 +60,7 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
     node tests/site/vox.mjs            # vocal banks and voxBank()
     STRUDEL_MODULES=... node tests/vocals/formant_helper.mjs  # word().formant(true) on a synthetic bank (#57)
     node tests/site/record.mjs         # Record panel + recipes at 360px: record, download, clean-profile Remake hash match, tamper refused (#72)
+    node tests/site/pwa.mjs            # installable PWA at /Strudel-craft/: installability errors (CDP), icons, precache, offline reload, offline bank toast, update toast, standalone (#73)
 
 Outputs go to `docs/screens/` (`metrics.json`, `lighthouse-mobile.json`, PNG screenshots at 390px and 1440px).
 

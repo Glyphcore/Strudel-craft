@@ -8,10 +8,22 @@
    "n": 1
   },
   {
+   "name": "again",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
    "name": "all",
    "kind": "word",
    "detail": "vox word",
    "n": 8
+  },
+  {
+   "name": "alone",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
   },
   {
    "name": "ay",
@@ -32,6 +44,12 @@
    "n": 12
   },
   {
+   "name": "bass",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
    "name": "bay_bee",
    "kind": "word",
    "detail": "vox word",
@@ -44,10 +62,22 @@
    "n": 2
   },
   {
+   "name": "beat",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
    "name": "boo",
    "kind": "word",
    "detail": "vox word",
    "n": 3
+  },
+  {
+   "name": "break",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
   },
   {
    "name": "by",
@@ -86,6 +116,18 @@
    "n": 2
   },
   {
+   "name": "dance",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "dark",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
    "name": "day",
    "kind": "word",
    "detail": "vox word",
@@ -116,6 +158,18 @@
    "n": 6
   },
   {
+   "name": "down",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "dream",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
    "name": "dreams",
    "kind": "word",
    "detail": "vox word",
@@ -123,6 +177,18 @@
   },
   {
    "name": "drive",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "drop",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "edge",
    "kind": "word",
    "detail": "vox word",
    "n": 1
@@ -140,7 +206,43 @@
    "n": 3
   },
   {
+   "name": "fall",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "feel",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "fire",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "forever",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "go",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
    "name": "goodbye",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "heart",
    "kind": "word",
    "detail": "vox word",
    "n": 1
@@ -150,6 +252,12 @@
    "kind": "word",
    "detail": "vox word",
    "n": 8
+  },
+  {
+   "name": "high",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
   },
   {
    "name": "honey",
@@ -218,6 +326,12 @@
    "n": 2
   },
   {
+   "name": "la",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
    "name": "la_la",
    "kind": "word",
    "detail": "vox word",
@@ -248,7 +362,19 @@
    "n": 1
   },
   {
+   "name": "light",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
    "name": "love",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "low",
    "kind": "word",
    "detail": "vox word",
    "n": 1
@@ -272,10 +398,28 @@
    "n": 5
   },
   {
+   "name": "moon",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "move",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
    "name": "my",
    "kind": "word",
    "detail": "vox word",
    "n": 5
+  },
+  {
+   "name": "need",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
   },
   {
    "name": "never",
@@ -296,6 +440,12 @@
    "n": 2
   },
   {
+   "name": "oh",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
    "name": "ooh",
    "kind": "word",
    "detail": "vox word",
@@ -314,6 +464,24 @@
    "n": 2
   },
   {
+   "name": "rain",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "rise",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "run",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
    "name": "say",
    "kind": "word",
    "detail": "vox word",
@@ -326,10 +494,40 @@
    "n": 3
   },
   {
+   "name": "sky",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "song",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "sound",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "star",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
    "name": "stay",
    "kind": "word",
    "detail": "vox word",
    "n": 2
+  },
+  {
+   "name": "sun",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
   },
   {
    "name": "swear",
@@ -374,13 +572,37 @@
    "n": 7
   },
   {
+   "name": "together",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "tonight",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
    "name": "true",
    "kind": "word",
    "detail": "vox word",
    "n": 1
   },
   {
+   "name": "up",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
    "name": "us",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "voice",
    "kind": "word",
    "detail": "vox word",
    "n": 1
@@ -417,6 +639,12 @@
   },
   {
    "name": "would",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "yeah",
    "kind": "word",
    "detail": "vox word",
    "n": 1

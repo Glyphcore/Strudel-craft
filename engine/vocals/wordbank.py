@@ -4,7 +4,7 @@
   engine/vocals/wordbank.sh STEM.wav LYRICS.txt OUT_DIR [--bank vox] [--timings T.json] [--syll rule|pyphen] [--aligner whisperx|mfa] [--per-section] [--no-norm] [--own-file]
   engine/vocals/wordbank.sh --selftest
 
-Writes OUT_DIR/{strudel.json, words.json, wav/*.wav, WORDBANK.md}.
+Writes OUT_DIR/{strudel.json, words.json, wav/*.wav, WORDBANK.md} and OUT_DIR/pitched/{strudel.json, wav/} (note()-retunable map: --samples-dir OUT_DIR/pitched).
 Timings (--timings): JSON list of {"word","start","end"[,"score"]} in lyric order, or {"words":[...]}; skips the aligner.
 Keys: <bank>_<word> (repeats = n-indices in order), <bank>_syl (all syllables, lyric order), <bank>_<word>_s<k>.
 Owner guard: STEM must sit under tracks/<slug>/ whose source/*.json handle is in data/suno/owners.json, or pass --own-file
@@ -190,7 +190,7 @@ def build(stem, lyrics_txt, out, bank, timings, syll, norm, aligner, own, per_se
     x = x.astype(np.float32)
     (out / 'wav').mkdir(parents=True, exist_ok=True)
     for o in (out / 'wav').glob('*.wav'): o.unlink()
-    smap, meta, seen = {}, [], {}
+    smap, meta, seen, pit = {}, [], {}, {}
 
     def write(seg, name):
         if norm and len(seg) and np.max(np.abs(seg)) > 0: seg = seg / np.max(np.abs(seg)) * 10 ** (-1 / 20)
@@ -203,7 +203,7 @@ def build(stem, lyrics_txt, out, bank, timings, syll, norm, aligner, own, per_se
         seg, ta = cut(x, sr, a['start'], a['end'])
         seg, p = write(seg, f'{s}_{k}.wav')
         f0, midi = f0_stats(seg, sr)
-        smap.setdefault(f'{bank}_{s}', []).append(p.resolve().as_uri())
+        smap.setdefault(f'{bank}_{s}', []).append(p.resolve().as_uri()); pit.setdefault(f'{bank}_{s}', []).append((midi, f0, seg, p.name))
         rec = {'word': w, 'key': f'{bank}_{s}', 'n': k, 'line': li, 'section': sec, 'adlib': bool(ad), 'occurrence': k, 'index': i, 't_start': round(ta, 4), 't_end': round(ta + len(seg) / sr, 4),
                'aligned_start': a['start'], 'aligned_end': a['end'], 'dur': round(len(seg) / sr, 4), 'f0_hz': f0, 'midi': midi, 'rms_dbfs': db(seg),
                'confidence': float(a.get('score', 1.0) if a.get('score') is not None else 1.0), 'file': str(p.relative_to(out)), 'low_confidence': bool((a.get('score', 1.0) if a.get('score') is not None else 1.0) <= 0.5), 'refined': bool(a.get('refined')), 'syllables': []}
@@ -214,9 +214,25 @@ def build(stem, lyrics_txt, out, bank, timings, syll, norm, aligner, own, per_se
             fi, fo = min(len(ss), int(.005 * sr)), min(len(ss), int(.015 * sr)); ss[:fi] *= np.linspace(0, 1, fi); ss[-fo:] *= np.linspace(1, 0, fo)
             ss, sp = write(ss, f'{s}_{k}_s{j}.wav'); u = sp.resolve().as_uri()
             smap.setdefault(f'{bank}_{s}_s{j}', []).append(u); smap.setdefault(f'{bank}_syl', []).append(u)
+            sf0, sm_ = f0_stats(ss, sr); sm_ = sm_ or midi; sf0 = sf0 or f0
+            for pk_ in (f'{bank}_{s}_s{j}', f'{bank}_syl'): pit.setdefault(pk_, []).append((sm_, sf0, ss, sp.name))
             rec['syllables'].append({'text': part, 'k': j, 'syl_n': len(smap[f'{bank}_syl']) - 1, 't_start': round(ta + sb[j] / sr, 4), 't_end': round(ta + sb[j + 1] / sr, 4), 'dur': round(len(ss) / sr, 4)})
         meta.append(rec)
     (out / 'strudel.json').write_text(json.dumps(smap, indent=1) + '\n')
+    # pitched map (word-vocals P2, #43): {key: {basenote: [urls]}} in OUT_DIR/pitched/. Each key's slices are speed-shifted so their sung f0 sits exactly on
+    # the key's base note (median MIDI, rounded), so note("c4") retunes exactly relative to base. The flat strudel.json keeps natural intonation untouched.
+    NN = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b']
+    pm = {}; (out / 'pitched' / 'wav').mkdir(parents=True, exist_ok=True)
+    for k_, lst in pit.items():
+        ms = [m_ for m_, *_ in lst if m_]
+        b = int(round(float(np.median(ms)))) if ms else 60; fb = 440.0 * 2 ** ((b - 69) / 12); urls = []
+        for ci, (m_, hz_, seg_, nm_) in enumerate(lst):
+            y_ = seg_
+            if hz_ and abs(hz_ - fb) > 0.0001 * fb:
+                y_ = librosa.resample(seg_.astype(np.float32), orig_sr=SR, target_sr=SR * hz_ / fb).astype(np.float32)  # played back at SR: pitch x fb/hz
+            fn_ = f'{k_}__{ci}_{nm_}'; sf.write(out / 'pitched' / 'wav' / fn_, y_, SR, subtype='FLOAT'); urls.append((out / 'pitched' / 'wav' / fn_).resolve().as_uri())
+        pm[k_] = {f'{NN[b % 12]}{b // 12 - 1}': urls}
+    (out / 'pitched' / 'strudel.json').write_text(json.dumps(pm, indent=1) + '\n')
     (out / 'words.json').write_text(json.dumps({'bank': bank, 'source': str(stem), 'sr': SR, 'words': meta}, indent=1) + '\n')
     good = [m for m in meta if not m.get('skipped')]; hi = [m for m in good if m['confidence'] > 0.5]
     pct = 100 * len(hi) / len(words)

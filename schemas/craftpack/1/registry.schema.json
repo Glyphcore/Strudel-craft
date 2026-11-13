@@ -1,0 +1,146 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/registry.schema.json",
+ "title": "registry index",
+ "type": "object",
+ "required": [
+  "registry",
+  "packs"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "$schema": {
+   "type": "string"
+  },
+  "registry": {
+   "const": 1
+  },
+  "name": {
+   "type": "string"
+  },
+  "updated": {
+   "type": "string",
+   "format": "date-time"
+  },
+  "packs": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "license",
+     "versions"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?/[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?$"
+     },
+     "title": {
+      "type": "string"
+     },
+     "description": {
+      "type": "string"
+     },
+     "repository": {
+      "type": "string",
+      "format": "uri"
+     },
+     "license": {
+      "type": "string"
+     },
+     "keywords": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "redistribution": {
+      "type": "boolean"
+     },
+     "versions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+       "type": "object",
+       "required": [
+        "version",
+        "source",
+        "manifest",
+        "craftpack"
+       ],
+       "additionalProperties": false,
+       "properties": {
+        "version": {
+         "type": "string",
+         "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+        },
+        "source": {
+         "type": "string",
+         "pattern": "^(github:[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@[0-9a-f]{40}(/[^\\s]*)?|git\\+(https|ssh)://[^\\s@]+@[0-9a-f]{40}(/[^\\s]*)?|https://[^\\s]+/|file:[^\\s]+)$"
+        },
+        "manifest": {
+         "type": "string",
+         "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "craftpack": {
+         "type": "string",
+         "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+        },
+        "engines": {
+         "type": "object",
+         "additionalProperties": false,
+         "properties": {
+          "craft": {
+           "type": "string",
+           "pattern": "^[0-9xX*^~<>=|&. -]+$",
+           "maxLength": 128,
+           "description": "range of the host pack API (strudelCraft.packs.api, same number in site and CLI)"
+          },
+          "strudel": {
+           "type": "string",
+           "pattern": "^[0-9xX*^~<>=|&. -]+$",
+           "maxLength": 128,
+           "description": "range of @strudel/core as loaded by the host"
+          }
+         }
+        },
+        "dependencies": {
+         "type": "object",
+         "additionalProperties": {
+          "type": "string",
+          "pattern": "^[0-9xX*^~<>=|&. -]+$",
+          "maxLength": 128
+         }
+        },
+        "kinds": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        },
+        "code": {
+         "type": "boolean",
+         "description": "true if any ingredient is code-bearing"
+        },
+        "bytes": {
+         "type": "integer",
+         "minimum": 0
+        },
+        "published": {
+         "type": "string",
+         "format": "date"
+        },
+        "yanked": {
+         "type": "string",
+         "description": "reason; yanked versions resolve only from an existing lock"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

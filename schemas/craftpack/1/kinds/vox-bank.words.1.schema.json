@@ -1,0 +1,107 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/vox-bank.words.1.schema.json",
+ "title": "vox-bank.words@1",
+ "type": "object",
+ "required": [
+  "bank",
+  "words"
+ ],
+ "properties": {
+  "bank": {
+   "type": "string"
+  },
+  "source": {
+   "type": "string"
+  },
+  "sr": {
+   "type": "integer"
+  },
+  "words": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "file"
+    ],
+    "description": "one clip; word banks carry word/key/n and timings, tone banks carry their own descriptors (vowel, technique, note)",
+    "properties": {
+     "word": {
+      "type": "string"
+     },
+     "key": {
+      "type": "string"
+     },
+     "n": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "file": {
+      "type": "string",
+      "pattern": "^(?![A-Za-z][A-Za-z0-9+.-]*:)(?!/)(?!.*\\\\)[^\\x00-\\x1f]+$",
+      "maxLength": 512
+     },
+     "t_start": {
+      "type": "number"
+     },
+     "t_end": {
+      "type": "number"
+     },
+     "dur": {
+      "type": "number"
+     },
+     "f0_hz": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "midi": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "rms_dbfs": {
+      "type": "number"
+     },
+     "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+     },
+     "syllables": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "required": [
+        "text",
+        "k"
+       ],
+       "properties": {
+        "text": {
+         "type": "string"
+        },
+        "k": {
+         "type": "integer"
+        },
+        "syl_n": {
+         "type": "integer"
+        },
+        "t_start": {
+         "type": "number"
+        },
+        "t_end": {
+         "type": "number"
+        },
+        "dur": {
+         "type": "number"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

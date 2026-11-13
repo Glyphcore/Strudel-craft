@@ -1,0 +1,161 @@
+{
+ "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+ "craftpack": "1.0.0",
+ "id": "glyphcore/core",
+ "version": "1.0.0",
+ "title": "Strudel Craft core",
+ "description": "First-party content of the Strudel Craft site: recipes, completions, typed params, control types, syntax lessons, reference pages, visuals, layouts, palette actions.",
+ "repository": "https://github.com/Glyphcore/Strudel-craft",
+ "license": "LicenseRef-undecided",
+ "engines": {
+  "craft": "^1.0.0",
+  "strudel": "^1.3.0"
+ },
+ "ingredients": [
+  {
+   "id": "catalog",
+   "kind": "recipes",
+   "format": "recipes@1",
+   "version": "1.0.0",
+   "path": "recipes/catalog.json",
+   "hash": "sha256:0d12cb575150e3c0a2f64c945da22227043c783ea845c731adf79b94d4a1454f",
+   "bytes": 43677,
+   "load": "eager",
+   "title": "Recipe catalog"
+  },
+  {
+   "id": "strudel-docs",
+   "kind": "intellisense",
+   "format": "intellisense@1",
+   "version": "1.0.0",
+   "path": "intellisense/strudel.json",
+   "hash": "sha256:b119387e3338cb61db12477670f76e01a1450394bbc8ec5c4aa474a36bf30b7d",
+   "bytes": 11653,
+   "load": "eager"
+  },
+  {
+   "id": "params",
+   "kind": "param-shapes",
+   "format": "param-shapes@1",
+   "version": "1.0.0",
+   "path": "params/shapes.json",
+   "hash": "sha256:777441a06147db91ad0797744096263b645c43d235bcdbcbe23e56d41bf24c5c",
+   "bytes": 11430,
+   "load": "eager"
+  },
+  {
+   "id": "editors",
+   "kind": "param-editors",
+   "format": "param-editors@1",
+   "version": "1.0.0",
+   "path": "params/editors.json",
+   "hash": "sha256:87a45ec02d0b8ccc95889c3aadccbbbe8bbdcf6184d8d251e25958b4e5c1554b",
+   "bytes": 732,
+   "load": "lazy",
+   "hosts": [
+    "site"
+   ]
+  },
+  {
+   "id": "controls",
+   "kind": "control-types",
+   "format": "control-types@1",
+   "version": "1.0.0",
+   "path": "controls/types.json",
+   "hash": "sha256:5ba7f8c0a1eeff21e657a08067578f4eef581f50d731cc68f68ab43da130226a",
+   "bytes": 3602,
+   "load": "eager"
+  },
+  {
+   "id": "syntax",
+   "kind": "syntax",
+   "format": "syntax@1",
+   "version": "1.0.0",
+   "path": "syntax/syntax.json",
+   "hash": "sha256:715c4167a55ec5ec6ac0bb64b931215d5ac16db8afe71edb15bc311f62a4363a",
+   "bytes": 5459,
+   "hosts": [
+    "site"
+   ]
+  },
+  {
+   "id": "plugins",
+   "kind": "docs",
+   "format": "docs@1",
+   "version": "1.0.0",
+   "path": "docs/plugins.json",
+   "hash": "sha256:495c617f2b372cb517eae6c22c062e6b9c11129c732adf6774874ca90cff17da",
+   "bytes": 17845,
+   "hosts": [
+    "site"
+   ]
+  },
+  {
+   "id": "practices",
+   "kind": "docs",
+   "format": "docs@1",
+   "version": "1.0.0",
+   "path": "docs/practices.json",
+   "hash": "sha256:adb08ce73ecb4d24b469c63e076030c99c97beee28132dc2a8038c8bef345642",
+   "bytes": 11727,
+   "hosts": [
+    "site"
+   ]
+  },
+  {
+   "id": "visuals",
+   "kind": "visuals",
+   "format": "visuals@1",
+   "version": "1.0.0",
+   "path": "visuals/visuals.json",
+   "hash": "sha256:6c17ba52fb2ab86c5f5981cb53cb09f001db2ab6e66c828fc3be13f072ae3f00",
+   "bytes": 1560,
+   "hosts": [
+    "site"
+   ]
+  },
+  {
+   "id": "layouts",
+   "kind": "layouts",
+   "format": "layouts@1",
+   "version": "1.0.0",
+   "path": "layouts/layouts.json",
+   "hash": "sha256:cd2c84d7f858b643bdb81ec42406f7cf5beee4ea8f52edadc6b6a89794982720",
+   "bytes": 215,
+   "hosts": [
+    "site"
+   ]
+  },
+  {
+   "id": "actions",
+   "kind": "palette-actions",
+   "format": "palette-actions@1",
+   "version": "1.0.0",
+   "path": "palette/actions.json",
+   "hash": "sha256:7df6d2aa18a545f15bc3a2cc5333bf5e4949b7fa9945826fdfa5b25bafae30c9",
+   "bytes": 179,
+   "hosts": [
+    "site"
+   ]
+  },
+  {
+   "id": "word",
+   "kind": "prelude",
+   "format": "prelude@1",
+   "version": "1.0.0",
+   "path": "prelude/word.json",
+   "hash": "sha256:abd9f15d313c28c0450ef272fb6f6b7497fdb7a771168031abe8578df3dc4485",
+   "bytes": 148,
+   "code": true,
+   "modules": [
+    {
+     "path": "prelude/word.js",
+     "hash": "sha256:7288a5c7393fadb78599a1512c1ee484de201363d1c3d5477f2ed35eec9df3a3",
+     "bytes": 5650,
+     "realm": "main"
+    }
+   ],
+   "load": "eager"
+  }
+ ]
+}

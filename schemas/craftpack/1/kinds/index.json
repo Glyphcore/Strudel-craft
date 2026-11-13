@@ -1,0 +1,146 @@
+{
+ "reserved": {
+  "atoms": "docs/ATOMS.md section 10; schema ships with issue #63 (docs/PACK_SPEC.md 5.1)"
+ },
+ "kinds": {
+  "sounds": {
+   "formats": [
+    "sounds@1"
+   ],
+   "schema": "kinds/sounds.1.schema.json",
+   "code": "never",
+   "about": "strudel.json-compatible sound map; keys are sound names, values are file lists or note->file maps"
+  },
+  "vox-bank": {
+   "formats": [
+    "vox-bank@1"
+   ],
+   "schema": "kinds/vox-bank.1.schema.json",
+   "code": "never",
+   "about": "word/syllable vocal bank: sound maps (flat + pitched) plus words metadata"
+  },
+  "recipes": {
+   "formats": [
+    "recipes@1"
+   ],
+   "schema": "kinds/recipes.1.schema.json",
+   "code": "never",
+   "about": "catalog recipes with categories and labels (program text, run only on a user gesture)"
+  },
+  "syntax": {
+   "formats": [
+    "syntax@1"
+   ],
+   "schema": "kinds/syntax.1.schema.json",
+   "code": "never",
+   "about": "syntax lessons with runnable examples (program text)"
+  },
+  "docs": {
+   "formats": [
+    "docs@1"
+   ],
+   "schema": "kinds/docs.1.schema.json",
+   "code": "never",
+   "about": "reference and practice pages as sanitised blocks"
+  },
+  "intellisense": {
+   "formats": [
+    "intellisense@1"
+   ],
+   "schema": "kinds/intellisense.1.schema.json",
+   "code": "never",
+   "about": "static completion items"
+  },
+  "intellisense-provider": {
+   "formats": [
+    "intellisense-provider@1"
+   ],
+   "schema": "kinds/intellisense-provider.1.schema.json",
+   "code": "always",
+   "about": "completion or inline-suggestion provider module"
+  },
+  "param-shapes": {
+   "formats": [
+    "param-shapes@1"
+   ],
+   "schema": "kinds/param-shapes.1.schema.json",
+   "code": "never",
+   "about": "typed parameter shapes per function, modulation ranges and canonical names"
+  },
+  "param-editors": {
+   "formats": [
+    "param-editors@1"
+   ],
+   "schema": "kinds/param-editors.1.schema.json",
+   "code": "optional",
+   "about": "shape -> inline editor mapping, gestures, pools; optional editor modules"
+  },
+  "control-types": {
+   "formats": [
+    "control-types@1"
+   ],
+   "schema": "kinds/control-types.1.schema.json",
+   "code": "optional",
+   "about": "control type declarations; optional renderer modules"
+  },
+  "visuals": {
+   "formats": [
+    "visuals@1"
+   ],
+   "schema": "kinds/visuals.1.schema.json",
+   "code": "optional",
+   "about": "visual declarations (global and inline); optional painter modules"
+  },
+  "hooks": {
+   "formats": [
+    "hooks@1"
+   ],
+   "schema": "kinds/hooks.1.schema.json",
+   "code": "optional",
+   "about": "hook defs, decorators, slots, markers, vars as a model document; opaque (function) hooks are code"
+  },
+  "components": {
+   "formats": [
+    "components@1"
+   ],
+   "schema": "kinds/components.1.schema.json",
+   "code": "optional",
+   "about": "library components (model documents with exports), keyed name@rev"
+  },
+  "layouts": {
+   "formats": [
+    "layouts@1"
+   ],
+   "schema": "kinds/layouts.1.schema.json",
+   "code": "never",
+   "about": "workspace layouts"
+  },
+  "palette-actions": {
+   "formats": [
+    "palette-actions@1"
+   ],
+   "schema": "kinds/palette-actions.1.schema.json",
+   "code": "optional",
+   "about": "command palette actions; declarative ops are data, run modules are code"
+  },
+  "prelude": {
+   "formats": [
+    "prelude@1"
+   ],
+   "schema": "kinds/prelude.1.schema.json",
+   "code": "always",
+   "about": "module evaluated into the Strudel eval context (defines pattern functions)"
+  }
+ },
+ "ops": [
+  "view",
+  "layout",
+  "recipe.load",
+  "recipe.play",
+  "insert",
+  "bank.activate",
+  "pack.load",
+  "transport",
+  "open-url"
+ ]
+}

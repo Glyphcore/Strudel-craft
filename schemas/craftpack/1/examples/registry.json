@@ -1,0 +1,40 @@
+{
+ "registry": 1,
+ "name": "glyphcore",
+ "updated": "2026-11-13T00:00:00Z",
+ "packs": [
+  {
+   "id": "glyphcore/core",
+   "title": "Strudel Craft core",
+   "repository": "https://github.com/Glyphcore/Strudel-craft",
+   "license": "LicenseRef-undecided",
+   "versions": [
+    {
+     "version": "1.0.0",
+     "source": "github:Glyphcore/Strudel-craft@0123456789abcdef0123456789abcdef01234567/packs/glyphcore/core",
+     "manifest": "sha256:acc90efea9c1bde745466cb2197b41733121ff03597fae32d7fe472119c7e615",
+     "craftpack": "1.0.0",
+     "engines": {
+      "craft": "^1.0.0",
+      "strudel": "^1.3.0"
+     },
+     "kinds": [
+      "control-types",
+      "docs",
+      "intellisense",
+      "layouts",
+      "palette-actions",
+      "param-editors",
+      "param-shapes",
+      "prelude",
+      "recipes",
+      "syntax",
+      "visuals"
+     ],
+     "code": true,
+     "published": "2026-11-13"
+    }
+   ]
+  }
+ ]
+}

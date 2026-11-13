@@ -1,0 +1,34 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/hooks.1.schema.json",
+ "title": "hooks@1",
+ "description": "strudelcraft.model/1 document restricted to registry keys; also validated against site/data/schema/model.v1.json. A def with `opaque: true` or a `$code` arg makes the ingredient code-bearing.",
+ "type": "object",
+ "required": [
+  "model"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "model": {
+   "const": 1
+  },
+  "meta": {
+   "type": "object"
+  },
+  "markers": {
+   "type": "object"
+  },
+  "scopes": {
+   "type": "object"
+  },
+  "slots": {
+   "type": "object"
+  },
+  "defs": {
+   "type": "object"
+  },
+  "vars": {
+   "type": "object"
+  }
+ }
+}

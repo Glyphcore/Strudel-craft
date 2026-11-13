@@ -1,0 +1,80 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/packs.schema.json",
+ "title": "packs.json",
+ "type": "object",
+ "required": [
+  "packs",
+  "want"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "$schema": {
+   "type": "string"
+  },
+  "packs": {
+   "const": 1
+  },
+  "registries": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "pattern": "^(https://|\\./|file:)"
+   }
+  },
+  "want": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id"
+    ],
+    "additionalProperties": false,
+    "anyOf": [
+     {
+      "required": [
+       "source"
+      ]
+     },
+     {
+      "required": [
+       "version"
+      ]
+     }
+    ],
+    "properties": {
+     "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?/[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?$"
+     },
+     "source": {
+      "type": "string",
+      "pattern": "^(github:[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+(@[^/\\s]+)?(/[^\\s]*)?|git\\+(https|ssh)://[^\\s]+|https://[^\\s]+/|file:[^\\s]+)$",
+      "description": "may name a branch or tag; `packs lock` resolves it to a commit"
+     },
+     "version": {
+      "type": "string",
+      "pattern": "^[0-9xX*^~<>=|&. -]+$",
+      "maxLength": 128,
+      "description": "range looked up in the registries when no source is given"
+     },
+     "priority": {
+      "type": "integer",
+      "minimum": -100,
+      "maximum": 99
+     },
+     "allowCode": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"
+      }
+     },
+     "bundle": {
+      "type": "boolean"
+     }
+    }
+   }
+  }
+ }
+}

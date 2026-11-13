@@ -1,0 +1,47 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/intellisense-provider.1.schema.json",
+ "title": "intellisense-provider@1",
+ "description": "completion or inline-suggestion provider module",
+ "type": "object",
+ "required": [
+  "id",
+  "module",
+  "provides"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "id": {
+   "type": "string",
+   "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"
+  },
+  "title": {
+   "type": "string"
+  },
+  "module": {
+   "type": "string",
+   "pattern": "^(?![A-Za-z][A-Za-z0-9+.-]*:)(?!/)(?!.*\\\\)[^\\x00-\\x1f]+$",
+   "maxLength": 512,
+   "description": "module path; must be listed in the ingredient's `modules`"
+  },
+  "provides": {
+   "type": "array",
+   "minItems": 1,
+   "items": {
+    "enum": [
+     "items",
+     "inline"
+    ]
+   }
+  },
+  "timeoutMs": {
+   "type": "integer",
+   "minimum": 10,
+   "maximum": 2000,
+   "default": 150
+  },
+  "priority": {
+   "type": "integer"
+  }
+ }
+}

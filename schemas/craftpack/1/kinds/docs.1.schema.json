@@ -1,0 +1,104 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/docs.1.schema.json",
+ "title": "docs@1",
+ "description": "reference and practice pages as sanitised blocks",
+ "type": "object",
+ "required": [
+  "sections"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "title": {
+   "type": "string"
+  },
+  "view": {
+   "type": "string",
+   "description": "site view the page is offered in, e.g. ref, practice"
+  },
+  "sections": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "blocks"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "title": {
+      "type": "string"
+     },
+     "blocks": {
+      "type": "array",
+      "items": {
+       "oneOf": [
+        {
+         "type": "object",
+         "required": [
+          "type",
+          "html"
+         ],
+         "additionalProperties": false,
+         "properties": {
+          "type": {
+           "const": "html"
+          },
+          "html": {
+           "type": "string",
+           "description": "sanitised by the host: allow-listed tags, no script/style/on*/iframe, links get rel=noopener"
+          }
+         }
+        },
+        {
+         "type": "object",
+         "required": [
+          "type",
+          "columns",
+          "rows"
+         ],
+         "additionalProperties": false,
+         "properties": {
+          "type": {
+           "const": "table"
+          },
+          "columns": {
+           "type": "array",
+           "items": {
+            "type": "string"
+           }
+          },
+          "rows": {
+           "type": "array",
+           "items": {
+            "type": "array"
+           }
+          }
+         }
+        },
+        {
+         "type": "object",
+         "required": [
+          "type",
+          "code"
+         ],
+         "additionalProperties": false,
+         "properties": {
+          "type": {
+           "const": "code"
+          },
+          "code": {
+           "type": "string"
+          },
+          "runnable": {
+           "type": "boolean"
+          }
+         }
+        }
+       ]
+      }
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,74 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/param-editors.1.schema.json",
+ "title": "param-editors@1",
+ "description": "shape -> inline editor mapping, gestures, pools; optional editor modules",
+ "type": "object",
+ "additionalProperties": false,
+ "properties": {
+  "_doc": {
+   "type": "string"
+  },
+  "byShape": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "string"
+   }
+  },
+  "byGroup": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "string"
+   }
+  },
+  "gestures": {
+   "type": "object",
+   "additionalProperties": {
+    "type": [
+     "number",
+     "boolean"
+    ]
+   }
+  },
+  "defaults": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "object"
+   }
+  },
+  "pools": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "array"
+   }
+  },
+  "editors": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "module"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "shapes": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "module": {
+      "type": "string",
+      "pattern": "^(?![A-Za-z][A-Za-z0-9+.-]*:)(?!/)(?!.*\\\\)[^\\x00-\\x1f]+$",
+      "maxLength": 512,
+      "description": "module path; must be listed in the ingredient's `modules`"
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,737 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+ "title": "craftpack.json",
+ "type": "object",
+ "required": [
+  "craftpack",
+  "id",
+  "version",
+  "license",
+  "ingredients"
+ ],
+ "additionalProperties": false,
+ "patternProperties": {
+  "^x-": {}
+ },
+ "properties": {
+  "$schema": {
+   "type": "string"
+  },
+  "craftpack": {
+   "type": "string",
+   "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+   "description": "spec version this manifest is written against"
+  },
+  "id": {
+   "type": "string",
+   "pattern": "^[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?/[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?$",
+   "description": "author/pack, lower case"
+  },
+  "version": {
+   "type": "string",
+   "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+  },
+  "title": {
+   "type": "string",
+   "maxLength": 80
+  },
+  "description": {
+   "type": "string",
+   "maxLength": 600
+  },
+  "authors": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "name"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "name": {
+      "type": "string"
+     },
+     "url": {
+      "type": "string",
+      "format": "uri"
+     }
+    }
+   }
+  },
+  "homepage": {
+   "type": "string",
+   "format": "uri"
+  },
+  "repository": {
+   "type": "string",
+   "format": "uri"
+  },
+  "keywords": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "maxLength": 32
+   },
+   "maxItems": 16
+  },
+  "license": {
+   "type": "string",
+   "description": "SPDX expression or LicenseRef-<id>; default for every ingredient"
+  },
+  "licenseFile": {
+   "type": "string",
+   "pattern": "^(?![A-Za-z][A-Za-z0-9+.-]*:)(?!/)(?!.*\\\\)[^\\x00-\\x1f]+$",
+   "maxLength": 512
+  },
+  "attribution": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/attribution"
+   }
+  },
+  "engines": {
+   "$ref": "#/$defs/engines"
+  },
+  "dependencies": {
+   "type": "object",
+   "propertyNames": {
+    "pattern": "^[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?/[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?$"
+   },
+   "additionalProperties": {
+    "type": "string",
+    "pattern": "^[0-9xX*^~<>=|&. -]+$",
+    "maxLength": 128
+   }
+  },
+  "ingredients": {
+   "type": "array",
+   "minItems": 1,
+   "maxItems": 512,
+   "items": {
+    "$ref": "#/$defs/ingredient"
+   }
+  }
+ },
+ "$defs": {
+  "ingredient": {
+   "type": "object",
+   "required": [
+    "id",
+    "kind",
+    "format",
+    "version",
+    "path",
+    "hash"
+   ],
+   "additionalProperties": false,
+   "patternProperties": {
+    "^x-": {}
+   },
+   "properties": {
+    "id": {
+     "type": "string",
+     "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$",
+     "description": "unique in the pack; addressed as author/pack:id"
+    },
+    "kind": {
+     "type": "string",
+     "pattern": "^([a-z][a-z0-9-]*|x-[a-z0-9-]+\\.[a-z0-9-]+)$",
+     "description": "one of the standard kinds, or x-<author>.<kind> for an extension kind (ignored by hosts without an adapter)"
+    },
+    "format": {
+     "type": "string",
+     "pattern": "^[a-z][a-z0-9.-]*@[1-9]\\d*(\\.\\d+)?$",
+     "description": "<kind>@<major>[.<minor>] of the kind sub-schema the entry file follows"
+    },
+    "version": {
+     "type": "string",
+     "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$",
+     "description": "content version of this ingredient"
+    },
+    "path": {
+     "type": "string",
+     "pattern": "^(?![A-Za-z][A-Za-z0-9+.-]*:)(?!/)(?!.*\\\\)[^\\x00-\\x1f]+$",
+     "maxLength": 512,
+     "description": "entry file, relative to the pack root"
+    },
+    "hash": {
+     "type": "string",
+     "pattern": "^sha256:[0-9a-f]{64}$",
+     "description": "SHA-256 of the entry file bytes"
+    },
+    "bytes": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "title": {
+     "type": "string",
+     "maxLength": 80
+    },
+    "description": {
+     "type": "string",
+     "maxLength": 400
+    },
+    "tags": {
+     "type": "array",
+     "items": {
+      "type": "string",
+      "maxLength": 32
+     },
+     "maxItems": 16
+    },
+    "license": {
+     "type": "string",
+     "description": "SPDX expression or LicenseRef-<id>; overrides the pack licence"
+    },
+    "licenseFile": {
+     "type": "string",
+     "pattern": "^(?![A-Za-z][A-Za-z0-9+.-]*:)(?!/)(?!.*\\\\)[^\\x00-\\x1f]+$",
+     "maxLength": 512
+    },
+    "redistribution": {
+     "type": "boolean",
+     "default": true,
+     "description": "false = may be loaded from this source but not mirrored, bundled into other packs or re-published"
+    },
+    "attribution": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/attribution"
+     }
+    },
+    "requires": {
+     "type": "array",
+     "uniqueItems": true,
+     "items": {
+      "type": "string",
+      "pattern": "^([a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?/[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?:)?[a-z0-9][a-z0-9._-]{0,63}$"
+     },
+     "description": "ingredients loaded first; bare = same pack, qualified = a pack in dependencies"
+    },
+    "compat": {
+     "$ref": "#/$defs/engines"
+    },
+    "hosts": {
+     "type": "array",
+     "uniqueItems": true,
+     "items": {
+      "enum": [
+       "site",
+       "cli"
+      ]
+     },
+     "description": "omit = every host with an adapter for the kind"
+    },
+    "load": {
+     "enum": [
+      "eager",
+      "lazy",
+      "manual"
+     ],
+     "default": "lazy"
+    },
+    "code": {
+     "type": "boolean",
+     "default": false,
+     "description": "true = carries executable modules or opaque functions; never loaded without a grant"
+    },
+    "modules": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/module"
+     },
+     "description": "every executable file of the ingredient, hash-pinned"
+    },
+    "assets": {
+     "type": "object",
+     "required": [
+      "root",
+      "index",
+      "hash",
+      "files",
+      "bytes"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "root": {
+       "type": "string",
+       "pattern": "^(?![A-Za-z][A-Za-z0-9+.-]*:)(?!/)(?!.*\\\\)[^\\x00-\\x1f]+$",
+       "maxLength": 512,
+       "description": "folder holding the binary files"
+      },
+      "index": {
+       "type": "string",
+       "pattern": "^(?![A-Za-z][A-Za-z0-9+.-]*:)(?!/)(?!.*\\\\)[^\\x00-\\x1f]+$",
+       "maxLength": 512,
+       "description": "sha256sum-format list of every file under root (\"<hex>  <path>\\n\", sorted by path, LF)"
+      },
+      "hash": {
+       "type": "string",
+       "pattern": "^sha256:[0-9a-f]{64}$",
+       "description": "SHA-256 of the index file"
+      },
+      "files": {
+       "type": "integer",
+       "minimum": 1
+      },
+      "bytes": {
+       "type": "integer",
+       "minimum": 0
+      }
+     }
+    },
+    "options": {
+     "type": "object",
+     "description": "kind-specific switches, defined by the kind sub-schema ($defs.options)"
+    }
+   },
+   "allOf": [
+    {
+     "if": {
+      "required": [
+       "modules"
+      ]
+     },
+     "then": {
+      "required": [
+       "code"
+      ],
+      "properties": {
+       "code": {
+        "const": true
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "sounds"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^sounds@"
+       },
+       "code": {
+        "const": false
+       },
+       "modules": false
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "vox-bank"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^vox-bank@"
+       },
+       "code": {
+        "const": false
+       },
+       "modules": false
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "recipes"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^recipes@"
+       },
+       "code": {
+        "const": false
+       },
+       "modules": false
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "syntax"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^syntax@"
+       },
+       "code": {
+        "const": false
+       },
+       "modules": false
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "docs"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^docs@"
+       },
+       "code": {
+        "const": false
+       },
+       "modules": false
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "intellisense"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^intellisense@"
+       },
+       "code": {
+        "const": false
+       },
+       "modules": false
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "intellisense-provider"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^intellisense-provider@"
+       },
+       "code": {
+        "const": true
+       }
+      },
+      "required": [
+       "code",
+       "modules"
+      ]
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "param-shapes"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^param-shapes@"
+       },
+       "code": {
+        "const": false
+       },
+       "modules": false
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "param-editors"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^param-editors@"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "control-types"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^control-types@"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "visuals"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^visuals@"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "hooks"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^hooks@"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "components"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^components@"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "layouts"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^layouts@"
+       },
+       "code": {
+        "const": false
+       },
+       "modules": false
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "palette-actions"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^palette-actions@"
+       }
+      }
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "prelude"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^prelude@"
+       },
+       "code": {
+        "const": true
+       }
+      },
+      "required": [
+       "code",
+       "modules"
+      ]
+     }
+    }
+   ]
+  },
+  "attribution": {
+   "type": "object",
+   "required": [
+    "name"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "name": {
+     "type": "string",
+     "description": "work or author to credit"
+    },
+    "url": {
+     "type": "string",
+     "format": "uri"
+    },
+    "license": {
+     "type": "string"
+    },
+    "text": {
+     "type": "string",
+     "description": "exact credit line to display where the licence requires one"
+    },
+    "changes": {
+     "type": "string",
+     "description": "what was modified (CC BY 4.0 section 3.a.1.B)"
+    }
+   }
+  },
+  "module": {
+   "type": "object",
+   "required": [
+    "path",
+    "hash"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "path": {
+     "type": "string",
+     "pattern": "^(?![A-Za-z][A-Za-z0-9+.-]*:)(?!/)(?!.*\\\\)[^\\x00-\\x1f]+$",
+     "maxLength": 512
+    },
+    "hash": {
+     "type": "string",
+     "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "bytes": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "realm": {
+     "enum": [
+      "sandbox",
+      "main"
+     ],
+     "default": "sandbox",
+     "description": "main = needs the page or Node realm (prelude, opaque hooks); first-party or local packs only"
+    }
+   }
+  },
+  "engines": {
+   "type": "object",
+   "additionalProperties": false,
+   "properties": {
+    "craft": {
+     "type": "string",
+     "pattern": "^[0-9xX*^~<>=|&. -]+$",
+     "maxLength": 128,
+     "description": "range of the host pack API (strudelCraft.packs.api, same number in site and CLI)"
+    },
+    "strudel": {
+     "type": "string",
+     "pattern": "^[0-9xX*^~<>=|&. -]+$",
+     "maxLength": 128,
+     "description": "range of @strudel/core as loaded by the host"
+    }
+   }
+  }
+ }
+}

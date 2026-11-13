@@ -1,0 +1,110 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/lock.schema.json",
+ "title": "packs.lock.json",
+ "type": "object",
+ "required": [
+  "lock",
+  "craftpack",
+  "packs"
+ ],
+ "additionalProperties": false,
+ "patternProperties": {
+  "^x-": {}
+ },
+ "properties": {
+  "$schema": {
+   "type": "string"
+  },
+  "lock": {
+   "const": 1
+  },
+  "craftpack": {
+   "type": "string",
+   "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+  },
+  "generator": {
+   "type": "string"
+  },
+  "packs": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "version",
+     "source",
+     "manifest"
+    ],
+    "additionalProperties": false,
+    "patternProperties": {
+     "^x-": {}
+    },
+    "properties": {
+     "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?/[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?$"
+     },
+     "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+     },
+     "source": {
+      "type": "string",
+      "pattern": "^(github:[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@[0-9a-f]{40}(/[^\\s]*)?|git\\+(https|ssh)://[^\\s@]+@[0-9a-f]{40}(/[^\\s]*)?|https://[^\\s]+/|file:[^\\s]+)$",
+      "description": "pinned source: commit sha for git sources; https and file sources are pinned by `manifest` only"
+     },
+     "requested": {
+      "type": "string",
+      "description": "what packs.json asked for, kept for `packs lock --update`"
+     },
+     "manifest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "SHA-256 of craftpack.json; root of the hash tree (manifest -> entry files, modules, asset indexes -> assets)"
+     },
+     "mirrors": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "pattern": "^(\\./|https://)[^\\s]*/$"
+      },
+      "description": "base URLs tried in order before the source; every byte is still checked against the hash tree"
+     },
+     "priority": {
+      "type": "integer",
+      "minimum": -100,
+      "maximum": 99,
+      "default": 0,
+      "description": "bare-name precedence; higher wins, ties go to the earlier lock entry"
+     },
+     "allowCode": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+       "type": "string",
+       "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"
+      },
+      "description": "code ingredients granted for exactly this manifest hash"
+     },
+     "bundle": {
+      "type": "boolean",
+      "default": false,
+      "description": "site lock only: copy the pack into the deploy under packs/<id>/<manifest hash prefix>/"
+     },
+     "dependencies": {
+      "type": "object",
+      "propertyNames": {
+       "pattern": "^[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?/[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?$"
+      },
+      "additionalProperties": {
+       "type": "string",
+       "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+      },
+      "description": "resolved versions"
+     }
+    }
+   }
+  }
+ }
+}

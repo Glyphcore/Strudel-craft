@@ -1,0 +1,56 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/intellisense.1.schema.json",
+ "title": "intellisense@1",
+ "description": "static completion items",
+ "type": "object",
+ "required": [
+  "items"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "version": {
+   "type": "integer"
+  },
+  "source": {
+   "type": "string"
+  },
+  "provider": {
+   "type": "string",
+   "description": "provider id the items register under, default <author>/<pack>:<ingredient>"
+  },
+  "items": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "label"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "label": {
+      "type": "string"
+     },
+     "detail": {
+      "type": "string"
+     },
+     "info": {
+      "type": "string"
+     },
+     "category": {
+      "type": "string"
+     },
+     "method": {
+      "type": "boolean"
+     },
+     "string": {
+      "type": "boolean"
+     },
+     "apply": {
+      "type": "string"
+     }
+    }
+   }
+  }
+ }
+}

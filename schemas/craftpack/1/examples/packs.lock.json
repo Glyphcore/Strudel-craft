@@ -1,0 +1,23 @@
+{
+ "lock": 1,
+ "craftpack": "1.0.0",
+ "generator": "strudel packs lock",
+ "packs": [
+  {
+   "id": "glyphcore/core",
+   "version": "1.0.0",
+   "source": "github:Glyphcore/Strudel-craft@0123456789abcdef0123456789abcdef01234567/packs/glyphcore/core",
+   "requested": "github:Glyphcore/Strudel-craft@packs/packs/glyphcore/core",
+   "manifest": "sha256:acc90efea9c1bde745466cb2197b41733121ff03597fae32d7fe472119c7e615",
+   "mirrors": [
+    "./packs/glyphcore/core/acc90efea9c1/"
+   ],
+   "priority": 0,
+   "allowCode": [
+    "word"
+   ],
+   "bundle": true,
+   "dependencies": {}
+  }
+ ]
+}

@@ -61,7 +61,16 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | atoms-migration (extract / parse / inline, catalog atoms) | atoms-core | issued | #62 |
 | atoms-consumers (intellisense, typed arg editors, hooks/model/pads `$atom`, pack ingredient) | atoms-core, hooks-intellisense, pack-spec | issued | #63 |
 | atoms-ui (lazy reference-counted graph cards, atom browser, reference popover; ui-designer) | atoms-core, atoms-consumers, graph-editor-ui | issued | #64 |
-| pack-spec (pack format and ingredients) | component-library | scouted (in progress elsewhere, not on main) | - |
+| pack-spec (craftpack manifest, kind sub-schemas, hash tree, lock, registry, validator; docs/PACK_SPEC.md, schemas/) | issues-protocol | issued | #65 |
+| licence-decision-pack-content (first-party pack licences) | issues-protocol | issued | #66 |
+| pack-loader-site (`strudelCraft.packs`, kind adapters, precedence, lazy load, service-worker pack cache, pack sheet) | pack-spec, intellisense-provider-registry, controls-engine | issued | #67 |
+| pack-loader-cli (`--packs`, `--pack`, install/verify/list, render.json credits, shared resolution module) | pack-spec | issued | #68 |
+| core-pack-migration (site/data -> glyphcore/core on branch `packs`, shipped lock, deploy bundling; vox packs prepared, publish needs owner approval) | pack-loader-site, pack-loader-cli, licence-decision-pack-content | issued | #69 |
+| pack-authoring (contributor guide, template layout, pack CI, registry CI) | pack-spec, core-pack-migration | issued | #70 |
+| pack-code-sandbox (iframe sandbox host, per-kind RPC, hash-bound grants) | pack-loader-site | issued | #71 |
+| pack-signatures (registry-side signing of manifests) | pack-spec | unexplored | - |
+| pack-external-assets (hash-pinned remote sample files in sound maps) | pack-spec | unexplored | - |
+| pack-kind-atoms (`atoms@1` ingredient kind and schema; reserved in docs/PACK_SPEC.md 5.1, record defined by #63) | pack-spec, atoms-core | designed | #63 |
 
 ## Waiting nodes
 - live-mic-input: Strudel has no live input; needs browser/Node audio capture and an AGPL licence-decision issue before touching Strudel code (do not copy PR #1414). Size L. Waits for #14 and that decision.
@@ -70,4 +79,5 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 - word-mapped-vocals (needs vocal-chop-slicer #4): issued #42 (P1 word bank), #43 (word()/note), #44 (intellisense provider), #45 (formant pyworld/rubberband ext), #46 (Shabda TTS). State: issued.
 - stem-export-presets: low value now that #36/#40 cover mixdown; scouted only.
 - hooks toolkit (#47-#55): build order #47 -> #48 -> #49, then #50 / #51 / #53 on disjoint files, then #54, then UI #52 and #55 via ui-designer. Design: docs/HOOKS_SYNTAX.md, docs/BLUEPRINT.md. The CLI parts live in the engine/strudel-cli that tests/smoke.sh calls, outside this repo.
-- atoms (#61-#64): build order #61, then #62 and #63 on disjoint files, then UI #64 via ui-designer. The pack-ingredient box of #63 waits for pack-spec. Design: docs/ATOMS.md.
+- atoms (#61-#64): build order #61, then #62 and #63 on disjoint files, then UI #64 via ui-designer. The pack-ingredient box of #63 follows docs/PACK_SPEC.md 5.1 (kind `atoms`). Design: docs/ATOMS.md.
+- content packs (#65-#71): build order #65, then #67 and #68 in parallel (site files vs CLI repo, disjoint), then #69 (needs #66 and, for vox, owner approval), #70 after #65 with examples from #69, #71 after #67. Design: docs/PACK_SPEC.md.

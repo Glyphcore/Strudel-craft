@@ -1,0 +1,55 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/components.1.schema.json",
+ "title": "components@1",
+ "description": "library components (model documents with exports), keyed name@rev",
+ "type": "object",
+ "required": [
+  "components"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "components": {
+   "type": "object",
+   "propertyNames": {
+    "pattern": "^[A-Za-z][\\w-]*@[0-9]+$"
+   },
+   "additionalProperties": {
+    "type": "object",
+    "required": [
+     "model",
+     "meta"
+    ],
+    "properties": {
+     "model": {
+      "const": 1
+     },
+     "meta": {
+      "type": "object",
+      "required": [
+       "name",
+       "kind",
+       "rev",
+       "hash"
+      ],
+      "properties": {
+       "kind": {
+        "enum": [
+         "fragment",
+         "track",
+         "set",
+         "song",
+         "bank",
+         "performance",
+         "board",
+         "automation"
+        ]
+       }
+      }
+     }
+    },
+    "description": "strudelcraft.model/1 document; `meta.hash` is re-computed on load (E_COMPONENT_HASH)"
+   }
+  }
+ }
+}

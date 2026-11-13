@@ -1,0 +1,44 @@
+{
+ "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+ "craftpack": "1.0.0",
+ "id": "glyphcore/vox-vocalset",
+ "version": "1.0.0",
+ "title": "VocalSet sustained vowels",
+ "license": "CC-BY-4.0",
+ "attribution": [
+  {
+   "name": "VocalSet: A Singing Voice Dataset, Julia Wilkins et al.",
+   "url": "https://doi.org/10.5281/zenodo.1193957",
+   "license": "CC-BY-4.0",
+   "text": "VocalSet: A Singing Voice Dataset, Julia Wilkins et al., https://doi.org/10.5281/zenodo.1193957 (CC BY 4.0)",
+   "changes": "trimmed to the steadiest ~3 s, faded, peak-normalised, mono 22.05 kHz ogg"
+  }
+ ],
+ "engines": {
+  "craft": "^1.0.0"
+ },
+ "dependencies": {
+  "glyphcore/core": "^1.0.0"
+ },
+ "ingredients": [
+  {
+   "id": "bank",
+   "kind": "vox-bank",
+   "format": "vox-bank@1",
+   "version": "1.0.0",
+   "path": "bank.json",
+   "hash": "sha256:d73140bf0960577d9d2ff5398cb189d5ec11f8aae3be826414132ee909659f14",
+   "load": "manual",
+   "requires": [
+    "glyphcore/core:word"
+   ],
+   "assets": {
+    "root": ".",
+    "index": "files.sha256",
+    "hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "files": 198,
+    "bytes": 3003050
+   }
+  }
+ ]
+}

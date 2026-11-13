@@ -1,0 +1,54 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/visuals.1.schema.json",
+ "title": "visuals@1",
+ "description": "visual declarations (global and inline); optional painter modules",
+ "type": "object",
+ "required": [
+  "visuals"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "visuals": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "method"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"
+     },
+     "title": {
+      "type": "string"
+     },
+     "method": {
+      "type": "string",
+      "pattern": "^_?[A-Za-z][A-Za-z0-9]*$",
+      "description": "Pattern method name; leading _ = inline widget"
+     },
+     "inline": {
+      "type": "boolean"
+     },
+     "info": {
+      "type": "string"
+     },
+     "builtin": {
+      "type": "boolean",
+      "description": "true = drawn by the host's unmodified Strudel draw code; no module"
+     },
+     "painter": {
+      "type": "string",
+      "pattern": "^(?![A-Za-z][A-Za-z0-9+.-]*:)(?!/)(?!.*\\\\)[^\\x00-\\x1f]+$",
+      "maxLength": 512,
+      "description": "module path; must be listed in the ingredient's `modules`"
+     }
+    }
+   }
+  }
+ }
+}

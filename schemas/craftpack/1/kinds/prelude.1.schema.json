@@ -1,0 +1,42 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/prelude.1.schema.json",
+ "title": "prelude@1",
+ "description": "module evaluated into the Strudel eval context (defines pattern functions)",
+ "type": "object",
+ "required": [
+  "id",
+  "module",
+  "defines"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "id": {
+   "type": "string",
+   "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"
+  },
+  "title": {
+   "type": "string"
+  },
+  "module": {
+   "type": "string",
+   "pattern": "^(?![A-Za-z][A-Za-z0-9+.-]*:)(?!/)(?!.*\\\\)[^\\x00-\\x1f]+$",
+   "maxLength": 512,
+   "description": "module path; must be listed in the ingredient's `modules`"
+  },
+  "defines": {
+   "type": "array",
+   "minItems": 1,
+   "items": {
+    "type": "string",
+    "pattern": "^[A-Za-z_$][\\w$]*(\\.[A-Za-z_$][\\w$]*)?$"
+   },
+   "description": "every global and Pattern.prototype name the module adds; adding any other name, or an existing one, is E_NAME_COLLISION"
+  },
+  "intellisense": {
+   "type": "string",
+   "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$",
+   "description": "intellisense ingredient describing the defined functions"
+  }
+ }
+}

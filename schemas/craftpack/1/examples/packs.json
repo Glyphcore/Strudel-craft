@@ -1,0 +1,16 @@
+{
+ "packs": 1,
+ "registries": [
+  "https://raw.githubusercontent.com/Glyphcore/Strudel-craft/packs/registry/index.json"
+ ],
+ "want": [
+  {
+   "id": "glyphcore/core",
+   "source": "github:Glyphcore/Strudel-craft@packs/packs/glyphcore/core",
+   "bundle": true,
+   "allowCode": [
+    "word"
+   ]
+  }
+ ]
+}

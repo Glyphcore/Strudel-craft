@@ -1,0 +1,181 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/recipes.1.schema.json",
+ "title": "recipes@1",
+ "description": "catalog recipes with categories and labels (program text, run only on a user gesture)",
+ "type": "object",
+ "required": [
+  "recipes"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "version": {
+   "type": "integer"
+  },
+  "strudel_web": {
+   "type": "string"
+  },
+  "url_format": {
+   "type": "string"
+  },
+  "url_format_verified": {
+   "type": "string"
+  },
+  "categories": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "title"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "title": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "labels": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "title"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "title": {
+      "type": "string"
+     },
+     "category": {
+      "type": "string"
+     },
+     "words": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "recipes": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/recipe"
+   }
+  }
+ },
+ "$defs": {
+  "recipe": {
+   "type": "object",
+   "required": [
+    "id",
+    "title",
+    "code"
+   ],
+   "additionalProperties": false,
+   "patternProperties": {
+    "^x-": {}
+   },
+   "properties": {
+    "id": {
+     "type": "string",
+     "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$"
+    },
+    "title": {
+     "type": "string",
+     "maxLength": 80
+    },
+    "intent": {
+     "type": "string"
+    },
+    "code": {
+     "type": "string",
+     "maxLength": 20000,
+     "description": "Strudel program text; evaluated only on a user gesture"
+    },
+    "expr": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "notes": {
+     "type": "string"
+    },
+    "labels": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "source": {
+     "type": "string"
+    },
+    "origin": {
+     "type": "string"
+    },
+    "unverified": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "needs_samples": {
+     "type": "boolean"
+    },
+    "needs": {
+     "type": "array",
+     "items": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?/[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?:[a-z0-9][a-z0-9._-]{0,63}$"
+     },
+     "description": "ingredients (sound maps, vox banks, hooks) the recipe needs loaded"
+    },
+    "bpm_hint": {
+     "type": [
+      "number",
+      "null"
+     ]
+    },
+    "verified": {
+     "type": "boolean"
+    },
+    "rms_dbfs": {
+     "type": [
+      "number",
+      "null"
+     ]
+    },
+    "centroid_hz": {
+     "type": [
+      "number",
+      "null"
+     ]
+    },
+    "peak": {
+     "type": [
+      "number",
+      "null"
+     ]
+    },
+    "error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   }
+  }
+ }
+}

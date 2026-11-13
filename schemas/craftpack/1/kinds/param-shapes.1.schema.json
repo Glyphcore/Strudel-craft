@@ -1,0 +1,119 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/param-shapes.1.schema.json",
+ "title": "param-shapes@1",
+ "description": "typed parameter shapes per function, modulation ranges and canonical names",
+ "type": "object",
+ "additionalProperties": false,
+ "minProperties": 1,
+ "properties": {
+  "version": {
+   "type": "integer"
+  },
+  "source": {
+   "type": "string"
+  },
+  "shapes": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "uniqueItems": true
+  },
+  "params": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "array",
+    "items": {
+     "type": "object",
+     "required": [
+      "name",
+      "shape"
+     ],
+     "additionalProperties": false,
+     "properties": {
+      "name": {
+       "type": "string"
+      },
+      "shape": {
+       "type": "string",
+       "description": "one of `shapes`"
+      },
+      "min": {
+       "type": "number"
+      },
+      "max": {
+       "type": "number"
+      },
+      "default": {},
+      "step": {
+       "type": "number"
+      },
+      "unit": {
+       "type": "string"
+      },
+      "curve": {
+       "enum": [
+        "lin",
+        "exp",
+        "log",
+        "db",
+        "bipolar"
+       ]
+      },
+      "control": {
+       "type": "string",
+       "description": "control type ref"
+      },
+      "options": {
+       "type": "array"
+      },
+      "examples": {
+       "type": "array"
+      },
+      "presets": {
+       "type": "array"
+      },
+      "range": {
+       "type": "string"
+      }
+     }
+    }
+   },
+   "description": "function name -> positional args"
+  },
+  "ranges": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "object",
+    "required": [
+     "min",
+     "max"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "min": {
+      "type": "number"
+     },
+     "max": {
+      "type": "number"
+     },
+     "span": {
+      "type": "number"
+     },
+     "base": {
+      "type": "number"
+     }
+    }
+   },
+   "description": "modulation ranges by canonical control name (the CLI mod matrix reads the same table)"
+  },
+  "canon": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "string"
+   },
+   "description": "alias -> canonical control name"
+  }
+ }
+}

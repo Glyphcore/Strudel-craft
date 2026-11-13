@@ -1,0 +1,580 @@
+{
+ "version": 1,
+ "source": "https://strudel.cc/learn/",
+ "items": [
+  {
+   "label": "s",
+   "method": false,
+   "detail": "s(pattern)",
+   "info": "Play samples / synth sounds by name, e.g. s(\"bd sd\")",
+   "category": "sound"
+  },
+  {
+   "label": "sound",
+   "method": false,
+   "detail": "sound(pattern)",
+   "info": "Alias of s()",
+   "category": "sound"
+  },
+  {
+   "label": "note",
+   "method": false,
+   "detail": "note(pattern)",
+   "info": "Notes by name or MIDI number, e.g. note(\"c3 e3 g3\")",
+   "category": "pitch"
+  },
+  {
+   "label": "n",
+   "method": false,
+   "detail": "n(pattern)",
+   "info": "Sample index or scale degree",
+   "category": "pitch"
+  },
+  {
+   "label": "freq",
+   "method": false,
+   "detail": "freq(pattern)",
+   "info": "Frequency in Hz",
+   "category": "pitch"
+  },
+  {
+   "label": "stack",
+   "method": false,
+   "detail": "stack(...patterns)",
+   "info": "Play patterns at the same time",
+   "category": "structure"
+  },
+  {
+   "label": "cat",
+   "method": false,
+   "detail": "cat(...patterns)",
+   "info": "One pattern per cycle, in turn",
+   "category": "structure"
+  },
+  {
+   "label": "seq",
+   "method": false,
+   "detail": "seq(...patterns)",
+   "info": "Squash patterns into one cycle",
+   "category": "structure"
+  },
+  {
+   "label": "silence",
+   "method": false,
+   "detail": "silence",
+   "info": "Empty pattern",
+   "category": "structure"
+  },
+  {
+   "label": "setcpm",
+   "method": false,
+   "detail": "setcpm(cpm)",
+   "info": "Set cycles per minute (BPM/4 in 4/4)",
+   "category": "tempo"
+  },
+  {
+   "label": "setcps",
+   "method": false,
+   "detail": "setcps(cps)",
+   "info": "Set cycles per second",
+   "category": "tempo"
+  },
+  {
+   "label": "samples",
+   "method": false,
+   "detail": "samples(url|map)",
+   "info": "Load a sample map",
+   "category": "sound"
+  },
+  {
+   "label": "bank",
+   "method": true,
+   "detail": "bank(name)",
+   "info": "Choose a drum machine bank, e.g. RolandTR909",
+   "category": "sound"
+  },
+  {
+   "label": "gain",
+   "method": true,
+   "detail": "gain(amount)",
+   "info": "Volume (0..1+)",
+   "category": "level"
+  },
+  {
+   "label": "postgain",
+   "method": true,
+   "detail": "postgain(amount)",
+   "info": "Gain after effects",
+   "category": "level"
+  },
+  {
+   "label": "velocity",
+   "method": true,
+   "detail": "velocity(amount)",
+   "info": "Note velocity 0..1",
+   "category": "level"
+  },
+  {
+   "label": "lpf",
+   "method": true,
+   "detail": "lpf(hz)",
+   "info": "Low-pass filter cutoff (Hz)",
+   "category": "filter"
+  },
+  {
+   "label": "hpf",
+   "method": true,
+   "detail": "hpf(hz)",
+   "info": "High-pass filter cutoff (Hz)",
+   "category": "filter"
+  },
+  {
+   "label": "bpf",
+   "method": true,
+   "detail": "bpf(hz)",
+   "info": "Band-pass filter centre (Hz)",
+   "category": "filter"
+  },
+  {
+   "label": "lpq",
+   "method": true,
+   "detail": "lpq(q)",
+   "info": "Low-pass resonance",
+   "category": "filter"
+  },
+  {
+   "label": "vowel",
+   "method": true,
+   "detail": "vowel(\"a e i o u\")",
+   "info": "Formant filter",
+   "category": "filter"
+  },
+  {
+   "label": "room",
+   "method": true,
+   "detail": "room(amount)",
+   "info": "Reverb send 0..1",
+   "category": "fx"
+  },
+  {
+   "label": "size",
+   "method": true,
+   "detail": "size(amount)",
+   "info": "Reverb size",
+   "category": "fx"
+  },
+  {
+   "label": "delay",
+   "method": true,
+   "detail": "delay(amount)",
+   "info": "Delay send 0..1",
+   "category": "fx"
+  },
+  {
+   "label": "delaytime",
+   "method": true,
+   "detail": "delaytime(sec)",
+   "info": "Delay time",
+   "category": "fx"
+  },
+  {
+   "label": "delayfeedback",
+   "method": true,
+   "detail": "delayfeedback(0..1)",
+   "info": "Delay feedback",
+   "category": "fx"
+  },
+  {
+   "label": "distort",
+   "method": true,
+   "detail": "distort(amount)",
+   "info": "Distortion",
+   "category": "fx"
+  },
+  {
+   "label": "crush",
+   "method": true,
+   "detail": "crush(bits)",
+   "info": "Bit crusher",
+   "category": "fx"
+  },
+  {
+   "label": "shape",
+   "method": true,
+   "detail": "shape(0..1)",
+   "info": "Waveshaping",
+   "category": "fx"
+  },
+  {
+   "label": "pan",
+   "method": true,
+   "detail": "pan(0..1)",
+   "info": "Stereo position",
+   "category": "fx"
+  },
+  {
+   "label": "attack",
+   "method": true,
+   "detail": "attack(sec)",
+   "info": "Envelope attack",
+   "category": "envelope"
+  },
+  {
+   "label": "decay",
+   "method": true,
+   "detail": "decay(sec)",
+   "info": "Envelope decay",
+   "category": "envelope"
+  },
+  {
+   "label": "sustain",
+   "method": true,
+   "detail": "sustain(0..1)",
+   "info": "Envelope sustain",
+   "category": "envelope"
+  },
+  {
+   "label": "release",
+   "method": true,
+   "detail": "release(sec)",
+   "info": "Envelope release",
+   "category": "envelope"
+  },
+  {
+   "label": "fast",
+   "method": true,
+   "detail": "fast(factor)",
+   "info": "Speed up the pattern",
+   "category": "time"
+  },
+  {
+   "label": "slow",
+   "method": true,
+   "detail": "slow(factor)",
+   "info": "Slow down the pattern",
+   "category": "time"
+  },
+  {
+   "label": "early",
+   "method": true,
+   "detail": "early(cycles)",
+   "info": "Shift earlier",
+   "category": "time"
+  },
+  {
+   "label": "late",
+   "method": true,
+   "detail": "late(cycles)",
+   "info": "Shift later",
+   "category": "time"
+  },
+  {
+   "label": "rev",
+   "method": true,
+   "detail": "rev()",
+   "info": "Reverse each cycle",
+   "category": "time"
+  },
+  {
+   "label": "every",
+   "method": true,
+   "detail": "every(n, fn)",
+   "info": "Apply fn every n cycles",
+   "category": "time"
+  },
+  {
+   "label": "sometimes",
+   "method": true,
+   "detail": "sometimes(fn)",
+   "info": "Apply fn about half the time",
+   "category": "random"
+  },
+  {
+   "label": "degradeBy",
+   "method": true,
+   "detail": "degradeBy(0..1)",
+   "info": "Randomly drop events",
+   "category": "random"
+  },
+  {
+   "label": "jux",
+   "method": true,
+   "detail": "jux(fn)",
+   "info": "Apply fn to the right channel only",
+   "category": "fx"
+  },
+  {
+   "label": "off",
+   "method": true,
+   "detail": "off(time, fn)",
+   "info": "Layer a shifted, modified copy",
+   "category": "time"
+  },
+  {
+   "label": "struct",
+   "method": true,
+   "detail": "struct(\"x ~ x\")",
+   "info": "Impose a rhythm",
+   "category": "structure"
+  },
+  {
+   "label": "euclid",
+   "method": true,
+   "detail": "euclid(k, n)",
+   "info": "Euclidean rhythm",
+   "category": "structure"
+  },
+  {
+   "label": "scale",
+   "method": true,
+   "detail": "scale(\"C:minor\")",
+   "info": "Map n to a scale",
+   "category": "pitch"
+  },
+  {
+   "label": "transpose",
+   "method": true,
+   "detail": "transpose(semitones)",
+   "info": "Transpose notes",
+   "category": "pitch"
+  },
+  {
+   "label": "add",
+   "method": true,
+   "detail": "add(value)",
+   "info": "Add to values",
+   "category": "pitch"
+  },
+  {
+   "label": "chop",
+   "method": true,
+   "detail": "chop(n)",
+   "info": "Cut each sample into n parts",
+   "category": "sound"
+  },
+  {
+   "label": "speed",
+   "method": true,
+   "detail": "speed(rate)",
+   "info": "Sample playback rate",
+   "category": "sound"
+  },
+  {
+   "label": "clip",
+   "method": true,
+   "detail": "clip(0..1)",
+   "info": "Note length multiplier",
+   "category": "envelope"
+  },
+  {
+   "label": "orbit",
+   "method": true,
+   "detail": "orbit(n)",
+   "info": "Effect bus",
+   "category": "fx"
+  },
+  {
+   "label": "range",
+   "method": true,
+   "detail": "range(min, max)",
+   "info": "Scale a continuous signal",
+   "category": "signal"
+  },
+  {
+   "label": "segment",
+   "method": true,
+   "detail": "segment(n)",
+   "info": "Sample a signal n times per cycle",
+   "category": "signal"
+  },
+  {
+   "label": "sine",
+   "method": false,
+   "detail": "sine",
+   "info": "Continuous sine 0..1",
+   "category": "signal"
+  },
+  {
+   "label": "saw",
+   "method": false,
+   "detail": "saw",
+   "info": "Continuous saw 0..1",
+   "category": "signal"
+  },
+  {
+   "label": "perlin",
+   "method": false,
+   "detail": "perlin",
+   "info": "Smooth noise 0..1",
+   "category": "signal"
+  },
+  {
+   "label": "rand",
+   "method": false,
+   "detail": "rand",
+   "info": "Random 0..1",
+   "category": "signal"
+  },
+  {
+   "label": "bd",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "sd",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "hh",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "oh",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "cp",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "rim",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "lt",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "mt",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "ht",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "cr",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "rd",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "sawtooth",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "square",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "triangle",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "sine",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "supersaw",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "gm_acoustic_bass",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "piano",
+   "string": true,
+   "detail": "sound",
+   "info": "Common sound name",
+   "category": "sounds"
+  },
+  {
+   "label": "RolandTR909",
+   "string": true,
+   "detail": "bank",
+   "info": "Drum machine bank",
+   "category": "banks"
+  },
+  {
+   "label": "RolandTR808",
+   "string": true,
+   "detail": "bank",
+   "info": "Drum machine bank",
+   "category": "banks"
+  },
+  {
+   "label": "RolandTR707",
+   "string": true,
+   "detail": "bank",
+   "info": "Drum machine bank",
+   "category": "banks"
+  },
+  {
+   "label": "LinnDrum",
+   "string": true,
+   "detail": "bank",
+   "info": "Drum machine bank",
+   "category": "banks"
+  },
+  {
+   "label": "AkaiLinn",
+   "string": true,
+   "detail": "bank",
+   "info": "Drum machine bank",
+   "category": "banks"
+  }
+ ]
+}

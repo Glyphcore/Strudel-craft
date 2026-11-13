@@ -75,7 +75,7 @@ const Engine = {
     if (!this.ready) this.ready = new Promise((res, rej) => {
       const s = document.createElement('script'); s.src = STRUDEL_WEB; s.crossOrigin = 'anonymous';
       s.onload = () => {
-        try { window.initStrudel({ onUpdateState: (st) => { this.state = st; } }).then((r) => { this.repl = r; res(r); }, rej); } catch (e) { rej(e); }
+        try { window.initStrudel({ onUpdateState: (st) => { this.state = st; } }).then((r) => { this.repl = r; res(r); try { window.dispatchEvent(new CustomEvent('strudel:ready')); } catch (e2) { /* ignore */ } }, rej); } catch (e) { rej(e); }
       };
       s.onerror = () => { this.ready = null; rej(new Error('Could not load the Strudel engine from unpkg (offline?)')); };
       document.head.append(s);
@@ -473,7 +473,7 @@ function onKey(e) {
   const t = e.target, mod = e.ctrlKey || e.metaKey;
   if (mod && e.key === 'Enter') { e.preventDefault(); runEditor(); return; }
   if (isField(t)) {
-    if (e.key === 'Escape') { if (t.type === 'search' && t.value) { t.value = ''; t.dispatchEvent(new Event('input')); } else t.blur(); e.preventDefault(); }
+    if (e.key === 'Escape') { if (document.querySelector('.cm-tooltip-autocomplete')) return; if (t.type === 'search' && t.value) { t.value = ''; t.dispatchEvent(new Event('input')); } else t.blur(); e.preventDefault(); }
     else if (t.id === 'q' && (e.key === 'ArrowDown' || e.key === 'Enter')) { e.preventDefault(); t.blur(); const b = $$('#list .row')[S.sel]; if (b) b.focus(); if (e.key === 'Enter') play(); }
     return;
   }

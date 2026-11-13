@@ -424,9 +424,10 @@ async function settleRun(views, ctx) {
     const live = S.playing && view === playView();
     try {
       if (S.playing) { if (live && S.live && !S.busy) { ctx.stats.compiles++; await Engine.swap(prep.code, ctx.alive); Engine.evalCount++; S.playingId = src.id; } }
-      else if (!S.busy && window.strudelCraft.idleCompile !== false) { ctx.stats.compiles++; await Engine.idle(prep.code, ctx.alive, view); }
+      else if (!S.busy && window.strudelCraft.idleCompile !== false && navigator.onLine && Engine.loadable !== false) { ctx.stats.compiles++; await Engine.idle(prep.code, ctx.alive, view); } /* offline: controls still render from the AST */
     } catch (e) {
       if (e && e.stale) { ctx.cancelled(); return; }
+      if (e && /Could not load the Strudel engine/.test(e.message || '')) { Engine.loadable = false; bindApply(view, prep); ctx.emit('ok', view); continue; }
       reportError(view, src, errLine(e), e && e.message ? e.message : e); ctx.emit('invalid', view); continue;
     }
     bindApply(view, prep);

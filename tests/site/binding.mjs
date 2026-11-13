@@ -33,6 +33,7 @@ const setDoc = (text) => page.evaluate((t) => { const v = document.getElementByI
 const cells = () => page.$$eval('#code ~ .cm-editor, .pc-inline .pc-cell', () => [...document.querySelectorAll('.pc-inline:not([hidden]) .pc-cell')].map((c) => c.dataset.site));
 const stats = () => page.evaluate(() => ({ ...window.strudelCraft.settle.stats }));
 const settle = () => page.waitForTimeout(1800);
+const settleLive = async () => { await page.waitForTimeout(600); await page.waitForFunction(() => !window.strudelCraft.settle.pending().length, null, { timeout: 5000 }); await page.waitForTimeout(3200); }; /* a live swap waits for the next cycle boundary */
 
 await page.goto(BASE); await page.waitForFunction(() => document.documentElement.dataset.editor === 'cm6' && !!window.strudelCraft.createSettle, null, { timeout: 30000 });
 await page.waitForSelector('#list li .row');
@@ -56,15 +57,38 @@ check('signature help highlights active param', sigb === 'frequency', sigb);
 await page.keyboard.press('Escape');
 await setDoc(CODE); await settle();
 
+// 5. smart literal editors (CONTROL_BINDING section 7)
+const LIT = `$: note("<[c3,e3,g3] [a2,c3]>").s("sawtooth").lpf(800).vowel("a")\n`;
+await setDoc(LIT); await settle();
+const at = async (needle, k = 1) => { await page.evaluate(() => document.getElementById('code').cmView.dom.scrollIntoView({ block: 'center' })); await page.waitForTimeout(600); return page.evaluate(([n, k]) => { const v = document.getElementById('code').cmView; const i = v.state.doc.toString().indexOf(n) + k; const c = v.coordsAtPos(i); const vv = window.visualViewport || { offsetLeft: 0, offsetTop: 0 }; return { x: c.left + 1 - vv.offsetLeft, y: (c.top + c.bottom) / 2 - vv.offsetTop }; }, [needle, k]); }; /* touch input is in visual-viewport coordinates */
+const cdp = await page.context().newCDPSession(page); /* real touch input: pointer events of type touch, like a phone */
+const touch = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+const tap = async (pt) => { await touch('touchStart', pt.x, pt.y); await page.waitForTimeout(40); await touch('touchEnd'); await page.waitForTimeout(80); };
+const docText = () => page.evaluate(() => document.getElementById('code').cmView.state.doc.toString());
+{ const c0 = await stats(); const p0 = await at('800', 1); await touch('touchStart', p0.x, p0.y);
+  for (let i = 1; i <= 8; i++) { await touch('touchMove', p0.x + i * 8, p0.y); await page.waitForTimeout(16); }
+  const mid = await docText(); await touch('touchEnd'); await settle(); const end = await docText(); const c1 = await stats();
+  const m = /lpf\(([\d.]+)\)/.exec(end);
+  check('drag on lpf(800) scrubs: source unchanged mid-gesture, one rewrite + one compile after release', mid.includes('lpf(800)') && m && +m[1] > 800 && +m[1] <= 20000 && c1.compiles - c0.compiles === 1, JSON.stringify({ now: m && m[1], compiles: c1.compiles - c0.compiles })); }
+{ const p1 = await at('vowel("a', 7); await tap(p1); await page.waitForSelector('.lit-pop[data-editor="combobox"]', { timeout: 3000 }).catch(() => {});
+  const ed = await page.getAttribute('.lit-pop', 'data-editor').catch(() => null); await page.click('.lit-pop .lit-opt[data-v="o"]').catch(() => {}); await settle();
+  check('vowel("a") opens an enum combobox; picking o rewrites only that literal', ed === 'combobox' && (await docText()).includes('vowel("o")') && (await docText()).includes('lpf('), ed); }
+{ const p2 = await at('e3', 1); await tap(p2); await page.waitForSelector('.lit-pop[data-editor="chips"]', { timeout: 3000 }).catch(() => {});
+  const ed = await page.getAttribute('.lit-pop', 'data-editor').catch(() => null); const box0 = await page.evaluate(() => document.querySelector('.cm-editor').getBoundingClientRect().height);
+  await page.click('.lit-pop .lit-chip[data-v="b3"]').catch(() => {}); await settle(); const t = await docText();
+  check('chord token opens a multiselect; adding b3 rewrites the chord group', ed === 'chips' && t.includes('[c3,e3,g3,b3]') && t.includes('[a2,c3]'), JSON.stringify({ ed, t: t.slice(0, 60), box0 })); await page.keyboard.press('Escape'); }
+await page.evaluate(() => window.strudelCraft.literals.close());
+await setDoc(CODE); await settle();
+
 // play for the inert and settle checks
 await page.evaluate(() => window.__sc.play()); await page.waitForFunction(() => window.__sc.S.playing && window.__sc.Engine.started, null, { timeout: 60000 });
-await settle();
+await settleLive();
 // 2. value survives an unrelated edit
 const id = (await cells())[0];
 check('site ids stable across reload', id === ids0[0], `${id} vs ${ids0[0]}`);
 await page.evaluate((i) => { window.strudelCraft.perform.controls.set(i, 3000); window.strudelCraft.perform.renderInline(); }, id);
-await page.evaluate(() => { const v = document.getElementById('code').cmView; v.dispatch({ changes: { from: 0, insert: 'setcpm(30)\n// unrelated\n' }, userEvent: 'input' }); });
-await settle();
+await page.evaluate(() => { const v = document.getElementById('code').cmView; v.dispatch({ changes: { from: 0, insert: '// unrelated\n' }, userEvent: 'input' }); });
+await settleLive();
 const after = await page.evaluate((i) => ({ v: window.strudelCraft.perform.controls.get(i), ids: [...document.querySelectorAll('.pc-inline .pc-cell')].map((c) => c.dataset.site) }), id);
 check('control keeps value + id after an unrelated edit', after.v === 3000 && after.ids[0] === id, JSON.stringify(after));
 
@@ -77,11 +101,11 @@ await settle();
 const broken = await snap(); const marks = await page.evaluate(() => ({ dot: document.querySelector('#liveChip').dataset.v, underline: !!document.querySelector('.cm-lintRange-error'), gutter: !!document.querySelector('.cm-lint-marker-error'), playing: window.__sc.S.playing }));
 check('broken code: audio + controls unchanged, no layout shift', JSON.stringify(before) === JSON.stringify(broken) && marks.playing, JSON.stringify({ before, broken }));
 check('broken code: gutter marker, underline, chip dot', marks.dot === 'invalid' && marks.underline && marks.gutter, JSON.stringify(marks));
-await setDoc(CODE); await settle();
+await setDoc(CODE); await settleLive();
 
 // 4. rapid typing -> one compile after settle
 await page.evaluate(() => { const v = document.getElementById('code').cmView; v.dispatch({ selection: { anchor: v.state.doc.line(1).to } }); v.focus(); });
-const s0 = await stats(); await page.keyboard.type(' quick typing', { delay: 40 }); await settle(); const s1 = await stats();
+const s0 = await stats(); await page.keyboard.type(' quick typing', { delay: 40 }); await settleLive(); const s1 = await stats();
 check('rapid typing triggers one compile after settle', s1.compiles - s0.compiles === 1 && s1.pokes - s0.pokes >= 10, JSON.stringify({ compiles: s1.compiles - s0.compiles, pokes: s1.pokes - s0.pokes }));
 await page.screenshot({ path: path.join(SITE, '../docs/screens/binding-360.png') });
 const bad = errors.filter((e) => !/Failed to load resource|favicon/.test(e));

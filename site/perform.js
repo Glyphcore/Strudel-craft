@@ -166,9 +166,10 @@ const R = {
 for (const [id, fn] of Object.entries(R)) sc.controls.registerRenderer(id, fn);
 const laneOf = (name) => controls.lanes().get('lane:' + name);
 function renderControl(host, name, { board, site } = {}) {
+  const ref = name; name = controls.resolve(name);
   const s = controls.declare(name); const chain = sc.controls.registry.fallbackChain(s.type); const drawn = chain[chain.length - 1];
   const size = board ? board.size[name] || '1x1' : '1x1';
-  const cell = h('div', { class: 'pc-cell', 'data-name': name, 'data-size': size, 'data-learn': M.learn ? 'armed' : null, 'data-rec': A.run && A.run.name === name ? 'on' : A.armed && isNum(name) ? 'armed' : null });
+  const cell = h('div', { class: 'pc-cell', 'data-name': controls.labelOf(name) || ref, 'data-id': name, 'data-size': size, 'data-learn': M.learn ? 'armed' : null, 'data-rec': A.run && A.run.name === name ? 'on' : A.armed && isNum(name) ? 'armed' : null });
   const maps = controls.maps().filter((m) => m.control.split(':')[0] === name).map((m) => m.dest);
   const label = site ? (site.label || labels.get(name) || `${site.param || 'ctl'}·${site.arg < 0 ? 0 : site.arg}`) : (labels.get(name) || name);
   cell.append(h('div', { class: 'pc-head', title: site ? `${name} · ${site.path}` : name }, h('b', {}, label), site && site.slot ? h('span', { class: 'pc-type' }, 'slot ' + site.slot) : null, laneOf(name) ? h('span', { class: 'pc-lane', title: 'Automation lane' }, '◆ lane') : null, h('span', { class: 'pc-type' }, s.type)));
@@ -432,9 +433,9 @@ async function cellEdit(board, name) {
 
 /* ---------------- AST-bound sites (docs/CONTROL_BINDING.md) ---------------- */
 const SITES = { rack: [], stack: [] }; const lits = new Map(); const labels = new Map();
-function specOf(site) { return site.kind === 'slider' ? { type: 'slider', min: site.min ?? 0, max: site.max ?? 1, default: site.value ?? site.min ?? 0 } : { type: 'knob', min: 0, max: 1, ...(site.spec || {}) }; }
+function specOf(site) { return site.kind === 'slider' ? { type: 'slider', min: site.min ?? 0, max: site.max ?? 1, default: site.value ?? site.min ?? 0, site: true } : { type: 'knob', min: 0, max: 1, ...(site.spec || {}), site: true }; }
 function ensureSite(site) {
-  const sp = specOf(site); if (site.label) labels.set(site.id, site.label);
+  const sp = specOf(site); if (site.label) { labels.set(site.id, site.label); controls.alias(site.label, site.id); }
   try {
     if (!controls.has(site.id)) controls.declare(site.id, sp);
     else { const c = controls.declare(site.id); if (c.type !== sp.type || c.min !== sp.min || c.max !== sp.max || c.curve !== sp.curve || c.unit !== sp.unit) controls.redeclare(site.id, sp); }

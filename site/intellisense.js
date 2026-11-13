@@ -198,6 +198,7 @@ async function mount() {
     ta.after(view.dom);
     Object.defineProperty(ta, 'value', { configurable: true, get: () => desc.get.call(ta), set: (v) => { desc.set.call(ta, v); if (view.state.doc.toString() !== v) { syncing = true; view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: v } }); syncing = false; } } });
     ta.hidden = true; ta.style.display = 'none'; ta.tabIndex = -1; ta.cmView = view;
+    import('./literals.js').then((m) => m.attach(view, id)).catch((e) => console.warn('literal editors unavailable:', e.message));
   }
   const viewFor = (v) => document.getElementById(v === 'stack' ? 'stackCode' : 'code').cmView;
   window.addEventListener('live:error', (e) => {

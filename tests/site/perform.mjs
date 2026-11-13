@@ -141,7 +141,7 @@ export async function performSection({ browser, BASE, OUT, check, watch, metrics
     const v1 = await P(page, () => window.strudelCraft.perform.controls.get('cut'));
     const c0 = Math.ceil(await now(page)) + 1; await page.waitForTimeout(200);
     const evc = await P(page, (c) => window.__sc.Engine.scheduler.pattern.queryArc(c, c + 0.5).map((x) => x.value.cutoff), c0);
-    const inl = await P(page, () => [document.querySelector('.editor .pc-inline [data-ctl="cut"]')?.getAttribute('aria-valuetext'), document.querySelector('#perform [data-ctl="cut"]').getAttribute('aria-valuetext')]);
+    const inl = await P(page, () => [document.querySelector('.editor .pc-inline [data-ctl="' + window.strudelCraft.perform.controls.resolve('cut') + '"]')?.getAttribute('aria-valuetext'), document.querySelector('#perform [data-ctl="' + window.strudelCraft.perform.controls.resolve('cut') + '"]').getAttribute('aria-valuetext')]);
     check('perform: board knob changes the event value of its param on the next cycle; the inline control shows the same value', v1 > v0 && evc.length && evc.every((x) => Math.abs(x - v1) < 1e-6) && inl[0] && inl[0] === inl[1], JSON.stringify({ v0, v1, evc, inl }));
     const step = await P(page, () => window.strudelCraft.perform.controls.get('cut'));
     await page.focus(knob); await page.keyboard.press('ArrowUp'); const st1 = await P(page, () => window.strudelCraft.perform.controls.get('cut'));
@@ -165,8 +165,8 @@ export async function performSection({ browser, BASE, OUT, check, watch, metrics
     check('perform: Learn + destination + move creates one maps entry and one hooks.map line; Unlearn removes both', lm.length === 1 && ll.length === 1 && ll[0] === "hooks.map('pos', 'lpf')" && lm2.length === 0 && ll2.length === 0, JSON.stringify({ lm, ll, lm2, ll2 }));
     // Automation
     await page.click('#pfLaneRec'); let i = 0; const t0 = Date.now();
-    while (Date.now() - t0 < 8000 && !(await P(page, () => !window.strudelCraft.perform.lanes.run && window.strudelCraft.perform.controls.lanes().has('lane:cut')))) { await page.focus(knob); await page.keyboard.press(i++ % 16 < 8 ? 'PageUp' : 'PageDown'); await page.waitForTimeout(70); }
-    const lane = await P(page, () => window.strudelCraft.perform.model().automation['lane:cut']);
+    while (Date.now() - t0 < 8000 && !(await P(page, () => !window.strudelCraft.perform.lanes.run && window.strudelCraft.perform.controls.lanes().has('lane:' + window.strudelCraft.perform.controls.resolve('cut'))))) { await page.focus(knob); await page.keyboard.press(i++ % 16 < 8 ? 'PageUp' : 'PageDown'); await page.waitForTimeout(70); }
+    const lane = await P(page, () => window.strudelCraft.perform.model().automation['lane:' + window.strudelCraft.perform.controls.resolve('cut')]);
     const cc = Math.ceil(await now(page)) + 1; const follow = await P(page, (c) => { const C = window.strudelCraft.perform.controls; return window.__sc.Engine.scheduler.pattern.queryArc(c, c + 1).map((x) => [Math.round(x.value.cutoff), Math.round(C.get('cut', x.whole.begin.valueOf()))]); }, cc);
     const distinct = new Set(follow.map((x) => x[0])).size;
     check('perform: a 1-bar control move records a lane into the model and the control follows it on replay', lane && lane.points.length > 2 && follow.length && follow.every(([a, b]) => a === b) && distinct > 1, JSON.stringify({ points: lane && lane.points.length, follow }));

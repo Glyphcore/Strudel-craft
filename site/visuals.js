@@ -88,14 +88,16 @@ function highlight(st, t, haps) {
 }
 
 /* idle (no Play): place the canvases and paint once from the queried events, static (CONTROL_BINDING section 6) */
-window.addEventListener('strudel:idle', (e) => {
-  const st = e.detail; if (!st || !st.pattern) return; install(); placeWidgets(st);
+let lastIdle = null; /* idle compile can finish before the editor attaches: re-place on attach */
+window.addEventListener('strudel:idle', (e) => idlePaint(e.detail));
+function idlePaint(st) {
+  lastIdle = st; if (!st || !st.pattern || !cmApi) return; install(); placeWidgets(st);
   requestAnimationFrame(() => { try {
     const haps = st.pattern.queryArc(0, 4); const painters = st.pattern.getPainters ? st.pattern.getPainters() : [];
     for (const id of painted) { const c = widgetCanvases.get(id); if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height); }
     painters.forEach((p) => { try { p(globalCtx(), 2, haps, [-2, 2]); } catch (err) { /* bad painter */ } });
   } catch (err) { /* query failed: canvas stays blank */ } });
-});
+}
 /* inline widgets: place each _visual canvas under its code line */
 function placeWidgets(st) {
   if (!cmApi) return; const id = st.srcView === 'stack' ? 'stackCode' : 'code'; const doc = cmApi.doc(id); const { code, back } = unbind(st.activeCode || '');
@@ -133,4 +135,4 @@ function registerIntellisense() {
 }
 if (!registerIntellisense()) { const iv = setInterval(() => { if (registerIntellisense()) clearInterval(iv); }, 300); setTimeout(() => clearInterval(iv), 20000); }
 
-sc.visuals = { list: VIS, attach(api) { cmApi = api; }, canvas: (id) => widgetCanvases.get(id) };
+sc.visuals = { list: VIS, attach(api) { cmApi = api; const es = sc.engineState && sc.engineState(); if (lastIdle && !(es && es.playing)) idlePaint(lastIdle); }, canvas: (id) => widgetCanvases.get(id) };

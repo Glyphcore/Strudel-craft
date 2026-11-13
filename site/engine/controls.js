@@ -123,7 +123,8 @@ const eqSpec = (a, b) => canonical(a) === canonical(b);
 
 export function createControls({ registry = createRegistry(), model = {}, time = {}, strict = false, markers = {} } = {}) {
   const specs = new Map(), hist = new Map(), maps = [], lanes = new Map(), dests = new Map(), picked = new Map(), boards = [];
-  let anon = 0;
+  let anon = 0; const aliases = new Map(); /* display label -> site id (CONTROL_BINDING section 2); ids stay the identity */
+  const R = (n) => { if (typeof n !== 'string') return n; const [b, ax] = n.split(':'); const id = aliases.has(b) ? aliases.get(b) : b; return ax ? id + ':' + ax : id; };
   const ctx = { time, markers, valueAt: (n, c, o) => api.valueAt(n, c, o) };
   const baseSpec = (s) => { const k = kindOf(s); const n = { ...s };
     if (k === 'number' && n.min == null && n.max == null && ['slider', 'fader', 'knob', 'encoder', 'ribbon'].includes(n.type)) { n.min = 0; n.max = 1; }
@@ -134,6 +135,7 @@ export function createControls({ registry = createRegistry(), model = {}, time =
   const initialValue = (s) => s.value ?? s.default ?? (kindOf(s) === 'bool' ? 0 : kindOf(s) === 'vec2' ? { x: s.axes?.x?.default ?? 0, y: s.axes?.y?.default ?? 0 } : kindOf(s) === 'steps' ? 'x ~ ~ ~' : kindOf(s) === 'enum' ? s.options?.[0] : (s.min ?? 0));
 
   function declare(name, spec) {
+    if (spec == null) name = R(name);
     if (spec == null) { if (!specs.has(name)) throw err('E_CONTROL_UNKNOWN', name); return specs.get(name); }
     const s = baseSpec(spec); registry.checkSpec(s, { strict });
     if (specs.has(name)) { const { value, ...old } = specs.get(name), { value: _v, ...nw } = s; if (!eqSpec(old, nw)) throw err('E_CONTROL_CONFLICT', `control "${name}" declared with a different spec`); return specs.get(name); }
@@ -150,6 +152,7 @@ export function createControls({ registry = createRegistry(), model = {}, time =
   const manual = (name, cycle = Infinity) => { const h = hist.get(name); let v = h[0].value; for (const e of h) if (e.cycle <= cycle) v = e.value; return v; };
   // value of a control at a cycle: open lane (highest priority), else manual value. opts.quant: gate semantics (state as of last boundary)
   function valueAt(name, cycle = 0, { quant } = {}) {
+    name = R(name);
     const c = quant ? Math.floor(cycle / quant) * quant : cycle;
     let best = null;
     for (const l of lanes.values()) if (l.control === name && gateOpen(l.gate, c, ctx) && (!best || (l.priority ?? 0) >= (best.priority ?? 0))) best = l;
@@ -176,14 +179,16 @@ export function createControls({ registry = createRegistry(), model = {}, time =
     const r = ctl(name); const f = (b, e) => r.query(b, e); f.id = id; f.controlName = name; f.valueAt = r.valueAt; return f;
   }
   function set(name, value, cycle = -Infinity) {
+    name = R(name);
     const s = declare(name); const k = kindOf(s); if (k === 'bool') value = value ? 1 : 0;
     if (k === 'vec2' && typeof value === 'object') { for (const a of ['x', 'y']) { const ax = s.axes?.[a]; if (ax?.min != null && (value[a] < ax.min || value[a] > ax.max)) throw err('E_BAD_ARG', `${name}:${a}`); } }
     checkVal(name, s, value); const h = hist.get(name); h.push({ cycle, value }); h.sort((a, b) => a.cycle - b.cycle); return value;
   }
-  const travelOf = (name, v = manual(name)) => { const s = specs.get(name), [lo, hi] = range(s); return Math.min(1, Math.max(0, curveIn(s.curve, v, lo, hi))); };
-  const fromTravel = (name, t) => { const s = specs.get(name), [lo, hi] = range(s); let v = curveOut(s.curve, t, lo, hi); if (s.step) v = Math.round(v / s.step) * s.step; return Math.min(hi, Math.max(lo, v)); };
+  const travelOf = (name, v) => { name = R(name); if (v === undefined) v = manual(name); const s = specs.get(name), [lo, hi] = range(s); return Math.min(1, Math.max(0, curveIn(s.curve, v, lo, hi))); };
+  const fromTravel = (name, t) => { name = R(name); const s = specs.get(name), [lo, hi] = range(s); let v = curveOut(s.curve, t, lo, hi); if (s.step) v = Math.round(v / s.step) * s.step; return Math.min(hi, Math.max(lo, v)); };
   // input events: absolute 'value' with soft takeover, relative 'delta', nudge
   function input(type, name, value, { control = name } = {}) {
+    name = R(name);
     const s = declare(name); if (type === 'delta') return set(name, fromTravel(name, travelOf(name) + value));
     const mode = model.pads?.settings?.takeover ?? 'pickup', key = control + '>' + name, st = picked.get(key) || { picked: false, prev: null };
     const cur = travelOf(name);
@@ -197,7 +202,7 @@ export function createControls({ registry = createRegistry(), model = {}, time =
 
   // ---------- maps ----------
   function registerDest(dest, { min, max, base }) { dests.set(dest, { min, max, base }); }
-  function map(control, dest, opts = {}, gate) { const m = { control, dest, ...(opts.range ? { range: opts.range } : {}), ...(opts.curve ? { curve: opts.curve } : {}), ...(opts.op ? { op: opts.op } : {}), ...(opts.priority != null ? { priority: opts.priority } : {}), ...((gate ?? opts.gate) != null ? { gate: gate ?? opts.gate } : {}) };
+  function map(control, dest, opts = {}, gate) { control = R(control); const m = { control, dest, ...(opts.range ? { range: opts.range } : {}), ...(opts.curve ? { curve: opts.curve } : {}), ...(opts.op ? { op: opts.op } : {}), ...(opts.priority != null ? { priority: opts.priority } : {}), ...((gate ?? opts.gate) != null ? { gate: gate ?? opts.gate } : {}) };
     declare(control.split(':')[0]); maps.push(m); return m; }
   function mapOut(m, cycle) {
     const [cn, ax] = m.control.split(':'); const s = specs.get(cn); let v = valueAt(cn, cycle); if (kindOf(s) === 'vec2') v = v[ax || 'x'];
@@ -255,7 +260,7 @@ export function createControls({ registry = createRegistry(), model = {}, time =
     return [...names.map(([n, s]) => ({ label: n, category: 'control', detail: `${s.type} control`, info: JSON.stringify(range(s)), inside: ['tap("', 'hooks.map("'] })),
       ...registry.types().map(t => ({ label: t.id, category: 'control-type', detail: `control type (${t.value})`, inside: ['type: "'] }))];
   }
-  const api = { registry, declare, redeclare, has: (n) => specs.has(n), ctl, sliderWithID, set, get: (n, c) => valueAt(n, c), valueAt, input, nudge, travelOf, map, maps: () => maps, registerDest, resolveDest, applyMaps, addLane, lanes: () => lanes,
+  const api = { registry, declare, redeclare, has: (n) => specs.has(n), alias: (label, id) => { if (!label || label === id || specs.has(label) && !specs.get(label).site) { if (label && label !== id && !aliases.has(label) && !specs.has(label)) aliases.set(label, id); return; } aliases.set(label, id); }, resolve: R, labelOf: (id) => { for (const [l, i] of aliases) if (i === id) return l; return null; }, ctl, sliderWithID, set, get: (n, c) => valueAt(n, c), valueAt, input, nudge, travelOf, map, maps: () => maps, registerDest, resolveDest, applyMaps, addLane, lanes: () => lanes,
     load, toModel, list, applySet, completions, boards: () => boards, gateOpen: (g, c) => gateOpen(g, c, ctx),
     // gate helper: a toggle control as a bind `when`
     when: (name, quant = 1) => ({ control: name, quant }) };

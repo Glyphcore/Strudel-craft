@@ -1317,5 +1317,52 @@
   "bool",
   "pattern",
   "control"
- ]
+ ],
+ "editors": {
+  "_doc": "Smart parameter spec (docs/CONTROL_BINDING.md section 7): literal kind/shape -> inline editor. Providers extend via strudelCraft.literals.registerEditor.",
+  "byShape": {
+   "number": "scrub",
+   "enum": "combobox",
+   "sound": "list",
+   "note": "piano",
+   "bool": "toggle",
+   "mini": "steps",
+   "pattern": "steps",
+   "control": "combobox"
+  },
+  "byGroup": {
+   "chord": "chips",
+   "alt": "chips"
+  },
+  "gestures": {
+   "scrubPx": 240,
+   "finePx": 1200,
+   "longPressMs": 450,
+   "tapSlopPx": 5,
+   "pinch": true
+  },
+  "defaults": {
+   "number": {
+    "min": 0,
+    "max": 1,
+    "curve": "lin"
+   }
+  },
+  "pools": {
+   "note": [
+    "c",
+    "db",
+    "d",
+    "eb",
+    "e",
+    "f",
+    "gb",
+    "g",
+    "ab",
+    "a",
+    "bb",
+    "b"
+   ]
+  }
+ }
 }

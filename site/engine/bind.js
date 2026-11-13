@@ -96,3 +96,51 @@ export function createBinder() {
     toOriginal: (rew, pos) => { const m = maps.get(rew); return m ? toOriginal(m.edits, pos) : pos; },
   };
 }
+
+// ---------- literal sites (smart parameter editors, CONTROL_BINDING section 7) ----------
+// mini-notation tokens inside a string: words, numbers, rests; groups = innermost [..] / <..> around a token
+const TOK = /~|[A-Za-z0-9#_.\-]+/g;
+export function miniTokens(str) {
+  const out = []; let m; TOK.lastIndex = 0;
+  while ((m = TOK.exec(str))) {
+    const from = m.index, to = from + m[0].length; let depth = 0, open = -1, oc = '';
+    for (let i = from - 1; i >= 0; i--) { const c = str[i]; if (c === ']' || c === '>' || c === '}') depth++; else if (c === '[' || c === '<' || c === '{') { if (depth) depth--; else { open = i; oc = c; break; } } }
+    let close = -1; if (open >= 0) { depth = 0; for (let i = to; i < str.length; i++) { const c = str[i]; if (c === '[' || c === '<' || c === '{') depth++; else if (c === ']' || c === '>' || c === '}') { if (depth) depth--; else { close = i; break; } } } }
+    const prevCh = str[from - 1];
+    if (prevCh === '*' || prevCh === '/' || prevCh === '@' || prevCh === '!' || prevCh === ':' || prevCh === '?' || prevCh === '(') { out.push({ text: m[0], from, to, mod: true }); continue; }
+    out.push({ text: m[0], from, to, group: open >= 0 && close > open ? { open, close, kind: oc, chord: oc === '[' && str.slice(open + 1, close).includes(',') } : null });
+  }
+  return out;
+}
+// literals(code) -> [{ id, path, kind: number|string|bool|token, param, arg, from, to, value, token?, group?, strFrom }]
+export function literals(code) {
+  const p = parse(code); if (!p.ok) return { ok: false, error: p };
+  const out = [];
+  const walk = (node, anc, layer) => {
+    if (!node || typeof node.type !== 'string') return;
+    const isNeg = node.type === 'UnaryExpression' && node.operator === '-' && node.argument.type === 'Literal' && typeof node.argument.value === 'number';
+    if (node.type === 'Literal' || isNeg) {
+      const segs = []; let param = null, arg = -1;
+      for (let i = 0; i < anc.length; i++) { const a = anc[i], child = anc[i + 1] || node;
+        if (a.type === 'CallExpression') { const ai = a.arguments.indexOf(child); if (ai >= 0) { segs.push(chainOf(a) + '#' + ai); param = calleeName(a.callee); arg = ai; } }
+        else if (a.type === 'ArrayExpression') { const ai = a.elements.indexOf(child); if (ai >= 0) segs.push('[' + ai + ']'); } }
+      const path = `L${layer}/${segs.join('>') || 'top'}`; const v = isNeg ? -node.argument.value : node.value;
+      if (typeof v === 'number' || typeof v === 'boolean') out.push({ path, kind: typeof v, param, arg, from: node.start, to: node.end, value: v });
+      else if (typeof v === 'string') {
+        const q = code[node.start]; const body = node.start + 1;
+        out.push({ path, kind: 'string', param, arg, from: node.start, to: node.end, value: v, quote: q });
+        if (q !== '`') miniTokens(v).forEach((t, i) => out.push({ path: path + '@' + i, kind: 'token', param, arg, from: body + t.from, to: body + t.to, value: t.text, mod: !!t.mod,
+          group: t.group ? { from: body + t.group.open, to: body + t.group.close + 1, kind: t.group.kind, chord: t.group.chord } : null, str: { from: node.start, to: node.end } }));
+      }
+      return;
+    }
+    anc.push(node);
+    for (const k in node) { if (k === 'type' || k === 'start' || k === 'end' || k === 'loc') continue; const v = node[k];
+      if (Array.isArray(v)) v.forEach((c) => c && typeof c.type === 'string' && walk(c, anc, layer)); else if (v && typeof v.type === 'string') walk(v, anc, layer); }
+    anc.pop();
+  };
+  p.ast.body.forEach((st, i) => walk(st, [], i));
+  const seen = new Map(); for (const l of out) { const n = seen.get(l.path) || 0; seen.set(l.path, n + 1); if (n) l.path += '~' + n; l.id = 'l' + hashId(l.path).slice(1); }
+  return { ok: true, literals: out };
+}
+export const literalAt = (code, pos) => { const r = literals(code); if (!r.ok) return null; const hit = r.literals.filter((l) => pos >= l.from && pos <= l.to); return hit.find((l) => l.kind === 'token') || hit[0] || null; };

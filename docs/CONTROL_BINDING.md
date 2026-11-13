@@ -99,3 +99,41 @@ on the last good compile. No message row is inserted (no layout shift); no overl
 Strudel loads at boot. Every settled run on a stopped transport evaluates the program with `repl.evaluate(code, false)` (no
 autostart): controls are declared, inline `_pianoroll` etc. get their canvases and are painted once from the queried events
 (cycles 0..2, static); they animate once Play starts. Controls render from the AST even when Strudel is offline.
+
+## 7. Smart parameter spec (literal editors)
+
+Every literal AST node gets an inline editor chosen from its param shape. Code: `site/literals.js`; literal sites from
+`literals(code)` in `site/engine/bind.js`; data in `site/data/intellisense/strudel.json` (`params` + `editors`).
+
+### Literal sites
+`{ id, path, kind, param, arg, from, to, value, group?, str?, mod? }`
+- `kind`: `number` (incl. `-n`), `boolean`, `string` (whole literal), `token` (one mini-notation token inside a string).
+- `path`: same structural path as control sites plus `[i]` for array elements and `@n` for the n-th token in a string; `~k` on duplicates.
+- `id` = `l` + 6 base-36 chars of FNV-1a(path). Ids are recomputed per parse (literals are not reconciled; control sites are).
+- `group` (tokens): innermost `[...]`, `<...>` or `{...}` span; `chord: true` for `[a,b,c]`. `mod: true` for modifier operands (`*2`, `@3`, `:1`).
+
+### Spec schema (`editors` in strudel.json)
+```json
+{ "byShape":  { "<shape>": "<editor>" },          // number: scrub, enum: combobox, sound: list, note: piano, bool: toggle, mini: steps
+  "byGroup":  { "chord": "chips", "alt": "chips" }, // set / multi-value tokens
+  "gestures": { "scrubPx": 240, "finePx": 1200, "longPressMs": 450, "tapSlopPx": 5, "pinch": true },
+  "defaults": { "number": { "min": 0, "max": 1, "curve": "lin" } },
+  "pools":    { "note": ["c", "db", ...] } }
+```
+Param keys used by editors: `min max step unit curve` (number travel via the controls engine curves `lin|exp|log|db|bipolar`),
+`options` (enum, chips pool), `examples` (mini/pattern). Numbers without a param get a range derived from the literal.
+
+Editor choice order: registered providers -> number `scrub` / boolean `toggle` -> chord or `<...>` token `chips` -> whole string
+`steps` -> `byShape[param.shape]`. Extension:
+`strudelCraft.literals.registerEditor({ id, match(lit, param) -> editorName|null, render?(host, { lit, param, set, close, view }) })`.
+
+### Gestures and edits
+- Tap: opens the compact popover (position: fixed, below or above the literal, never in flow, so nothing shifts). Long-press opens
+  it with focus. Escape or a tap outside closes it.
+- Number literal: horizontal drag scrubs the travel (`scrubPx` per full range), vertical drag adds fine control (`finePx`), two-pointer
+  pinch scales the travel (log2 of the pinch ratio * 0.25). A value badge shows during the gesture; the source is rewritten **once**
+  on release. Alt+Up/Down nudges the number under the caret (Shift = x10).
+- Without the caret: `strudelCraft.literals.set(id, text)`, `.nudge(id, steps)`, `.open(id)`, `.list(viewId)`; control surfaces and
+  key maps bind to literal ids the same way controls bind to site ids.
+- Each edit is one CodeMirror change covering only the literal span (chips: only the group's inner span), tagged `input.literal`;
+  it flows through the settle scheduler, so one compile and one history commit per settled edit.

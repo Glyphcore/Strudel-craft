@@ -9,3 +9,4 @@ Follow docs/ISSUES_PROTOCOL.md: CHECKOUT, implement exactly the issue's design n
 Never use the gh CLI for anything except search (no gh api, no gh issue edit). All GitHub writes go through mcp__github__* tools; if a write is impossible there, report it in your one-line reply instead.
 
 Test budget: verify each acceptance box once with a minimal behavioral check; no exhaustive per-detail suites and no repeated regression re-runs unless an issue asks for one. Specs and implementations are zero-shot stitched.
+- Docs follow code: any change that adds, alters or removes a feature, syntax, function, param, control, pack kind or workflow must also update the informative content in the same push: site/data/syntax.json (Syntax view examples), intellisense data and param shapes, site/README.md, the relevant docs/*.md, and the #56 tracker. Remove stale entries; mark unbuilt ones "coming". User directive 2026-11-13.

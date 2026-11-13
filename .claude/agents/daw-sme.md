@@ -16,3 +16,4 @@ Directives (rigorous):
 - Token economy: implementers and critics report one line only (issue #, ACCEPT/REJECT/READY). For anything longer, spawn `digest` (haiku) and read only its digest. Never pull full logs or outputs into your own context.
 
 Never use the gh CLI for anything except search (no gh api, no gh issue edit). All GitHub writes go through mcp__github__* tools; if a write is impossible there, report it in your one-line reply instead.
+- Docs follow code: any change that adds, alters or removes a feature, syntax, function, param, control, pack kind or workflow must also update the informative content in the same push: site/data/syntax.json (Syntax view examples), intellisense data and param shapes, site/README.md, the relevant docs/*.md, and the #56 tracker. Remove stale entries; mark unbuilt ones "coming". User directive 2026-11-13.

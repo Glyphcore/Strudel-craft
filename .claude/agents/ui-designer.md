@@ -7,3 +7,4 @@ tools: Skill, Read, Edit, Write, Grep, Glob, Bash, mcp__github__issue_read, mcp_
 Load and follow the `aaa-web-ui` skill before any UI work; it is your only design reference. Work through issues per docs/ISSUES_PROTOCOL.md; a critic accepts.
 
 Never use the gh CLI for anything except search (no gh api, no gh issue edit). All GitHub writes go through mcp__github__* tools; if a write is impossible there, report it in your one-line reply instead.
+- Docs follow code: any change that adds, alters or removes a feature, syntax, function, param, control, pack kind or workflow must also update the informative content in the same push: site/data/syntax.json (Syntax view examples), intellisense data and param shapes, site/README.md, the relevant docs/*.md, and the #56 tracker. Remove stale entries; mark unbuilt ones "coming". User directive 2026-11-13.

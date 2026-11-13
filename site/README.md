@@ -27,6 +27,8 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
     node tests/site/lighthouse.mjs     # needs `npm i -g lighthouse@12`; mobile perf / a11y scores
     node tests/atoms/a1.mjs            # atoms core (#61); STRUDEL_MODULES=<dir with @strudel/> for the rendered checks
     node tests/atoms/a2.mjs            # atoms migration: extract / parse / inline / catalog (#62)
+    node tests/atoms/a3.mjs            # atoms consumers: intellisense data, hooks / model / pads / maps $atom, packs (#63)
+    node tests/site/atoms.mjs          # Playwright: atom completion, signature help, "use atoms.name", scrub on a reference arg (#63)
     node tests/hooks/p3.mjs            # model round trip (#49); the `strudel` CLI checks print SKIP without it
     node tests/hooks/p4.mjs            # component library, instances, lib: fragments (#50)
     node tests/hooks/p5.mjs            # hooks + model intellisense providers (#51)
@@ -64,6 +66,12 @@ API:
     strudelCraft.intellisense.providers();    // ids
     strudelCraft.intellisense.learn(text);    // feed the user list; .forget() clears it
 Item flags: `method: true` = offered after `.`; `string: true` = offered inside quotes; `apply` = text to insert; `category` groups the popup.
+Context-sensitive extras (one position at a time, #63):
+    strudelCraft.intellisense.registerSource({ id, complete(ctx) });     // { from, options, merge?, validFor? } | null
+    strudelCraft.intellisense.registerSignature({ id, signature(ctx) }); // { fn, params: [{ name, shape, min, max, unit, ... }] } | null
+`ctx` = `{ text` (doc up to the caret)`, doc, pos, explicit, arg }` with `arg` = `intellisense.argContext(...)`. A source without `merge`
+owns that position (its options replace the shape suggestions); with `merge: true` its options are added. A signature provider answers for
+callees the typed-param table does not know, in the same tooltip. The `atoms` provider (`atoms-site.js`) uses both.
 
 ## Live coding
 While playing, every edit in the Code or Stack editor is evaluated after ~300 ms. A good pattern is hot-swapped on the next
@@ -202,6 +210,10 @@ Standalone ES module: `parse(text)`, `generate(model)`, `applyOp(model, op)`, `g
 - Version key is `model` (`"model": 1`), as in HOOKS_SYNTAX section 5 and the schema; there is no `hooks` key. The section 5 config keeps `cps/cpb/bpb` at top level, the schema holds them in `settings`; `load()` / `fromConfig()` move them.
 - Lossless: each layer keeps its verbatim `src` (with leading comments) and is re-emitted unchanged while its structure matches; edit ops splice that text, so only the touched statement changes. Statements outside the subset (loops, helpers, IIFEs) are `code` nodes (`src` only); `tap/.tap/.use/.wrap` literals in them become ports. `hooks.*` lines are re-emitted canonically, one per line, before the layers; anonymous `$:` layers are named `$1`, `$2`.
 - Code carries `header, markers, scopes, slots, defs, vars, bindings, instances, tracks` and `layout` (as a final `// @model-layout {...}` comment). `meta`, `settings`, `wires`, `journal`, pads, controls, components live only in the JSON model file.
+- Atoms (#63): `atom(...)` declarations become `model.atoms` (id -> `{ name, type, params?, body | from, rev, hash }`, ids reconciled so a
+  rename keeps them) and every static `atoms.*` reference becomes `{ "$atom": id, args?, ops? }` in step args, `bindings` slot/hook/gate/else,
+  marker points and var values. `generate` re-emits references as code and writes declarations only when the kept text does not already have
+  them, so the round trip stays byte-identical. `graph(model)` adds one `atom` node per referenced atom with its reference sites.
 - Quotes: double-quoted args of ordinary methods are mini-notation (`{"$mini"}`); reference methods (`tap use wrap ns wire`) and object/array members are plain strings. The generator never changes the quote of text it keeps; new text uses double quotes for mini and references, single quotes for other plain strings.
 - Test: `node tests/hooks/p3.mjs`. The `strudel model`, `--model` CLI commands and the "Same sound" `strudel events` check need the `strudel` CLI (other repo) and print SKIP.
 
@@ -235,10 +247,38 @@ same file on the site and in the CLI; it imports acorn from `vendor/` and never 
   `atoms.scale.minor({ root: "C" })`, `atoms.chord.m7({ root: "D" })`; names that are not identifiers use `atoms.snd["808bd"]`. The host
   passes the catalogs with `configure({ catalog: { snd, bank, scale, chord } })`; an unknown sound or bank warns `W_ATOM_UNKNOWN_SOUND`.
   `extract` turns catalog names into references only with `catalog: true`.
-- Tests: `node tests/atoms/a1.mjs`, `node tests/atoms/a2.mjs` (need `STRUDEL_MODULES=<dir with @strudel/>`), `node tests/site/atoms_inline.mjs`
-  (Playwright: the strudel.cc link of an atoms program decodes to plain Strudel that evaluates). Not built yet: the editor, intellisense and
-  hooks consumers (#63), graph cards (#64) and the `strudel atoms` CLI subcommands (`list | show | refs | compile | extract | check`, CLI
-  in another repo) — those print SKIP / are marked "coming" in the Syntax view.
+- Consumers (A3, #63; `engine/atoms-consumers.js`, wired by `atoms-site.js`). The compile pass runs before every evaluation
+  (`app.js` `protectCode`: `atoms.prepare(code)` -> `protect()` -> Strudel's transpiler; the code comes back unchanged when a program has
+  no atoms or an atom fails to compile). What the module provides, all pure data:
+  - intellisense: `argItems` (only the atoms whose type fits the position in `positions.json`), `memberItems` (names, namespaces and
+    catalog entries by prefix query, at most 50), `signature` + `values` (ranges respected), `literalAction` ("use `atoms.name`" on a
+    string literal an atom already produces). Registered as one source and one signature provider through the new
+    `intellisense.registerSource({ id, complete(ctx) })` / `registerSignature({ id, signature(ctx) })` hooks (a source may replace the
+    options of a position or add to them with `merge: true`).
+  - literal editors: `sites(code, env)` gives every reference site (compiled string, params, arg literal spans, Detach text, actions) and
+    `shapeAt` the `atomParam` shape of one arg literal, registered through `literals.registerEditor({ id, shape(lit) })`, so scrub /
+    chips / steps / piano work on reference args with the atom's own range and no new editor code. `strudelCraft.atoms.sites()` and
+    `.open(siteId)` are the popover's data (the popover itself is #64).
+  - hooks: `installHooks(hooks, env)` registers the point atoms as markers and the atom id map plus a `$atom` resolver on the runtime's
+    new `hooks.atoms` channel, so `hooks.plan`, `hooks.toJSON` and journal entries carry atom ids next to the resolved strings, and
+    `hooks.load` accepts `{ "$atom": id }` wherever a string goes. String-typed atoms compile single-quoted, so such a line needs no `protect()`.
+  - model: `model.js` projects `atom(...)` declarations into `model.atoms` (reconciled ids, `rev`, `hash`) and every static reference into
+    `{ "$atom": id, args?, ops? }`; `generate` writes them back (declarations kept verbatim when the text still has them), so
+    `generate(parse(code))` is byte-identical. `graph(model)` adds one `atom` card per *referenced* atom with its reference sites
+    (`atomCards` / `modelRefs`, cost proportional to references, not to the environment).
+  - pads, boards, maps: `createPads({ atoms })` and `createControls({ atoms })` take a resolver, so a pad target, a board cell or a map
+    may address its target by `{ "$atom": id }` and survive renames. A map destination `atom:<id>.<param>` drives a live atom param
+    (`checkMapDest`, `mapOverrides`, `compile(code, env, { overrides })`): only `number` params of `mini` atoms in repeat or step
+    position, else `E_ATOM_ARG`.
+  - history: `revisions(prev, next)` gives one `{ kind: "atom", id, name, rev, hash, parent }` record per new revision; the site appends
+    them to `sc.atoms.log` in `localStorage`, which the history store snapshots with everything else.
+  - packs: `modelDeps`, `atomIngredient` (`kind: "atom"`), `atomsetIngredient` (`kind: "atomset"`, entry file `atoms@1`),
+    `verifyIngredient` / `importedAtoms` (`E_ATOM_HASH`); `atoms.import("pack:…", { as })` namespaces an imported set.
+    Schema: `schemas/craftpack/1/kinds/atoms.1.schema.json`, kind `atoms` in `kinds/index.json` (code `never`).
+- Tests: `node tests/atoms/a1.mjs`, `node tests/atoms/a2.mjs`, `node tests/atoms/a3.mjs` (need `STRUDEL_MODULES=<dir with @strudel/>`),
+  `node tests/site/atoms.mjs` and `node tests/site/atoms_inline.mjs` (Playwright). Not built yet: graph cards, the atom browser and the
+  reference popover (#64) and the `strudel atoms` CLI subcommands (`list | show | refs | compile | extract | check`, CLI in another repo)
+  — those print SKIP / are marked "coming" in the Syntax view.
 
 ## Component library (`library.js`, `library-store.js`, #50)
 Versioned components over the shared model; storage goes through `library-store.js` (`strudelCraft.history` when a host provides it,
@@ -311,7 +351,9 @@ and the chip dot. Test: `node tests/site/binding.mjs`.
 - **Command palette** (`Ctrl+K`, configurable via the palette's "Set palette chord"; floating button on phones): type to filter (prefix, word prefix, substring, then fuzzy subsequence), arrows/Enter or digits 1-9 pick. Add actions with `strudelCraft.palette.register({id, title, group, keys, run})`.
 - Test: `node tests/site/workspace.mjs` (palette fuzzy, pane move/split/close, layout save/load, scrub and loop via queried scheduler spans, readout, 44px targets, clamp + override at 360 and 1440 px).
 Smart literal editors (`literals.js`): tap a number, name, chord or mini-notation token to edit it in a fixed popover (scrub, combobox,
-chips, piano, sound list, toggle, step chips); a drag on a number rewrites the source once on release. Reference inspector (`refs.js`,
+chips, piano, sound list, toggle, step chips); a drag on a number rewrites the source once on release. A provider may own a literal's
+shape or editor: `strudelCraft.literals.registerEditor({ id, shape(lit), match(lit, param), render(host, ctx) })` - the atoms provider gives
+an atom reference's args the atom's own `atomParam` range (#63). Reference inspector (`refs.js`,
 `strudelCraft.refs`: resolve/related/highlight/describe): selecting a control marks its source span and related references;
 long-press, hover or focus shows its id, path, label, type, value, range and mappings; the caret on a call makes its controls glow.
 Design: docs/CONTROL_BINDING.md sections 7 and 8.

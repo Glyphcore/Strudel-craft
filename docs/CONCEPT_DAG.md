@@ -59,7 +59,7 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | webmidi-gamepad-input-providers | pad-engine | unexplored | - |
 | atoms-core (typed, parameterised, id-addressed definitions for magic strings; compile pass to plain Strudel strings; docs/ATOMS.md) | model-schema-roundtrip, controls-engine | issued | #61 |
 | atoms-migration (extract / parse / inline, catalog atoms) | atoms-core | issued | #62 |
-| atoms-consumers (intellisense, typed arg editors, hooks/model/pads `$atom`, pack ingredient) | atoms-core, hooks-intellisense, pack-spec | issued | #63 |
+| atoms-consumers (intellisense, typed arg editors, hooks/model/pads `$atom`, pack ingredient) | atoms-core, hooks-intellisense, pack-spec | built | #63 |
 | atoms-ui (lazy reference-counted graph cards, atom browser, reference popover; ui-designer) | atoms-core, atoms-consumers, graph-editor-ui | issued | #64 |
 | pack-spec (craftpack manifest, kind sub-schemas, hash tree, lock, registry, validator; docs/PACK_SPEC.md, schemas/) | issues-protocol | issued | #65 |
 | licence-decision-pack-content (first-party pack licences) | issues-protocol | issued | #66 |
@@ -70,7 +70,7 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | pack-code-sandbox (iframe sandbox host, per-kind RPC, hash-bound grants) | pack-loader-site | issued | #71 |
 | pack-signatures (registry-side signing of manifests) | pack-spec | unexplored | - |
 | pack-external-assets (hash-pinned remote sample files in sound maps) | pack-spec | unexplored | - |
-| pack-kind-atoms (`atoms@1` ingredient kind and schema; reserved in docs/PACK_SPEC.md 5.1, record defined by #63) | pack-spec, atoms-core | designed | #63 |
+| pack-kind-atoms (`atoms@1` ingredient kind and schema, docs/PACK_SPEC.md 5.1) | pack-spec, atoms-core | built | #63 |
 
 ## Waiting nodes
 - live-mic-input: Strudel has no live input; needs browser/Node audio capture and an AGPL licence-decision issue before touching Strudel code (do not copy PR #1414). Size L. Waits for #14 and that decision.

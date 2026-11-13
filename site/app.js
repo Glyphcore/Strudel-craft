@@ -72,7 +72,12 @@ function unmuteBus() {
 
 /* ---------- engine ---------- */
 /* hooks calls take plain strings: protect them from mini-notation before Strudel's transpiler sees them (engine/hooks.js) */
-function protectCode(code) { try { const p = window.strudelCraft.hooksLib && window.strudelCraft.hooksLib.protect; return p ? p(code) : code; } catch (e) { return code; } }
+/* pipeline before every evaluation (docs/ATOMS.md section 5): atoms.compile -> protect() -> Strudel's transpiler.
+   atoms.prepare returns the code unchanged when the program has no atoms or an atom fails to compile (the eval error is then reported). */
+function protectCode(code) {
+  try { const a = window.strudelCraft.atoms; if (a && a.prepare) code = a.prepare(code); } catch (e) { /* atoms stay as written */ }
+  try { const p = window.strudelCraft.hooksLib && window.strudelCraft.hooksLib.protect; return p ? p(code) : code; } catch (e) { return code; }
+}
 /* user-space preludes (plain JS, Strudel unmodified) loaded into the eval context once Strudel's globals exist */
 const PRELUDES = ['prelude/word.js'];
 function loadPreludes() { return Promise.all(PRELUDES.map((src) => new Promise((ok) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => { console.warn('prelude failed: ' + src); ok(); }; document.head.append(s); }))); }

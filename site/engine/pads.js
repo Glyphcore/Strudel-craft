@@ -11,10 +11,19 @@ export function padDefaults(pad) {
   return { mode, quant, offQuant: pad.offQuant ?? quant, velocity: pad.velocity ?? 0.8, length: pad.length };
 }
 
-export function createPads({ banks = [], settings = {}, model = {} } = {}) {
+// atoms: a resolver for `$atom` pad targets / board cells (docs/ATOMS.md section 10); the host passes
+// (ref) => compiled string, normally site/engine/atoms-consumers.js `target(env, ref)`. Without it a `$atom` target is an error.
+export function createPads({ banks = [], settings = {}, model = {}, atoms = null } = {}) {
   const t = { bpb: model.settings?.bpb ?? model.bpb ?? 4, cpb: model.settings?.cpb ?? model.cpb ?? 1, cps: model.settings?.cps ?? model.cps };
   let intents = [], seq = 0, bankIx = 0;
   const bankOf = (id) => banks.find(b => b.id === id);
+  const refOf = (ref) => { // a target addressed by `$atom` survives renames: the id is the address, the string is resolved on use
+    if (!ref || typeof ref !== 'object' || typeof ref.$atom !== 'string') return ref;
+    if (!atoms) throw new Error('E_ATOM_UNKNOWN: pad target { $atom } needs an atom resolver (createPads({ atoms }))');
+    const v = atoms(ref); if (typeof v !== 'string') throw new Error(`E_ATOM_UNKNOWN: pad target atom "${ref.$atom}" does not resolve`);
+    return v;
+  };
+  const padRef = (pad) => refOf(pad.target.ref);
   const parse = (addr) => { // "bank/r,c" or "r,c" (active bank)
     const [b, rc] = addr.includes('/') ? addr.split('/') : [banks[bankIx]?.id, addr];
     const [r, c] = rc.split(',').map(Number); const bank = bankOf(b);
@@ -30,7 +39,7 @@ export function createPads({ banks = [], settings = {}, model = {} } = {}) {
     const p = parse(addr); if (!p.pad) return;
     const d = padDefaults(p.pad), kind = p.pad.target.kind;
     const vel = p.pad.velocity === 'input' ? (velocity ?? 0.8) : (typeof p.pad.velocity === 'number' ? p.pad.velocity : 0.8);
-    if (kind === 'scene') { const n = Number(p.pad.target.ref.replace('scene:', '')); return launchScene(p.bank.id, n, cycle); }
+    if (kind === 'scene') { const n = Number(padRef(p.pad).replace('scene:', '')); return launchScene(p.bank.id, n, cycle); }
     if (kind === 'action') { intents.push({ cycle: q(cycle, 'none'), type: 'act', addr: p.addr, seq: seq++ }); return; }
     const base = { addr: p.addr, velocity: vel, seq: seq++ };
     if (d.mode === 'toggle') intents.push({ ...base, type: 'toggle', cycle: q(cycle, d.quant), offCycle: q(cycle, d.offQuant) });
@@ -59,7 +68,7 @@ export function createPads({ banks = [], settings = {}, model = {} } = {}) {
     const active = new Map(); // addr -> {epoch}
     let pending = intents.map(i => ({ ...i })), epoch = 0; const out = [];
     const emit = (cycle, on, addr, extra = {}) => {
-      const { pad } = parse(addr), kind = pad.target.kind, ref = pad.target.ref;
+      const { pad } = parse(addr), kind = pad.target.kind, ref = padRef(pad);
       const args = { ...(pad.args || {}) };
       if (kind === 'hook') Object.assign(args, { slot: pad.target.slot, hook: ref });
       if (kind === 'var') Object.assign(args, { name: ref, ...(on ? { value: pad.target.value } : {}) });
@@ -85,7 +94,7 @@ export function createPads({ banks = [], settings = {}, model = {} } = {}) {
           for (const a of active.keys()) { const pp = parse(a); if (pp.bank.id !== bank.id) continue; const lane = [pp.r, pp.c][ix], sc = [pp.r, pp.c][1 - ix];
             if (sc !== i.n && (lanes.has(lane) || bank.sceneStopsEmpty)) offs.push(a); }
           for (const p of row) ons.push({ addr: `${bank.id}/${p.pos}`, type: 'on', velocity: padDefaults(p).velocity, scene: true, seq: i.seq });
-        } else if (i.type === 'act') out.push({ cycle: toFrac(c), op: 'action', pad: i.addr || null, target: { kind: 'action', ref: i.action || parse(i.addr).pad.target.ref }, args: {} });
+        } else if (i.type === 'act') out.push({ cycle: toFrac(c), op: 'action', pad: i.addr || null, target: { kind: 'action', ref: i.action || padRef(parse(i.addr).pad) }, args: {} });
       }
       for (const [addr, list] of byPad) { if (list.length % 2 === 0) continue; // parity of toggles in one window
         const i = list[0];

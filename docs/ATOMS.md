@@ -1,7 +1,11 @@
 # Atoms: typed, parameterised definitions in place of magic strings
 
-Status: **A1 built** (core: `site/engine/atoms.js`, `site/data/atoms/types.json`, the `atoms` schema, `tests/atoms/a1.mjs`; #61) and **A2 built** (`site/engine/atoms-migrate.js`: `extract`, `parse`, `inline`; catalog atoms `atoms.snd|bank|scale|chord`; strudel.cc / Copy inline; `tests/atoms/a2.mjs`; #62).
-A3-A4 and the `strudel atoms` CLI subcommands of section 12 (CLI in another repo) are still design only; phases and issues in section 14. Extends `docs/HOOKS_SYNTAX.md`, `docs/BLUEPRINT.md` and the AST-bound control
+Status: **A1 built** (core: `site/engine/atoms.js`, `site/data/atoms/types.json`, the `atoms` schema, `tests/atoms/a1.mjs`; #61), **A2 built**
+(`site/engine/atoms-migrate.js`: `extract`, `parse`, `inline`; catalog atoms `atoms.snd|bank|scale|chord`; strudel.cc / Copy inline; `tests/atoms/a2.mjs`; #62)
+and **A3 built** (consumers: `site/engine/atoms-consumers.js`, `site/atoms-site.js`, the compile pass before every evaluation, intellisense
+source and signature provider, literal-editor shapes, `$atom` in hooks / model / pads / boards / maps, mapped atom params, revision
+records, the `atoms@1` pack ingredient; `tests/atoms/a3.mjs`, `tests/site/atoms.mjs`; #63).
+A4 (UI: graph cards, browser, reference popover) and the `strudel atoms` CLI subcommands of section 12 (CLI in another repo) are still design only; phases and issues in section 14. Extends `docs/HOOKS_SYNTAX.md`, `docs/BLUEPRINT.md` and the AST-bound control
 work (control binding: structural ids, literal sites, typed param shapes). Owner: `daw-sme`. UI parts are direction for `ui-designer`.
 
 ## 1. The problem and the idea
@@ -255,6 +259,11 @@ Policy as elsewhere: while the program is invalid the site stays inert on the la
 
 ## 10. Consumers
 
+Built in A3 (#63). The pass runs on every evaluation (`site/app.js` `protectCode`: `atoms.prepare` -> `protect()` -> Strudel's transpiler);
+everything below is data in `site/engine/atoms-consumers.js`, registered by `site/atoms-site.js` through the existing APIs
+(`intellisense.registerSource` / `registerSignature`, `literals.registerEditor({ shape })`, `hooks.atoms.use`, `createPads({ atoms })`,
+`createControls({ atoms })`). Drawing (popover, cards, browser) stays with A4.
+
 **Intellisense.** One provider, `atoms`, on the existing registry:
 - in an argument position whose param shape is S: atoms whose type satisfies S come first (`label: atoms.kick4`, `detail`: compiled
   preview, `info`: params and doc); other types are not offered;
@@ -277,9 +286,11 @@ reference into a live value, so that atom's compiled output becomes a pattern of
 atoms in step or repeat position; elsewhere `E_ATOM_ARG` at map time). This is the one place an atom is not purely static, and it is opt-in.
 
 **Packs.** An atom is a pack ingredient: `{ kind: "atom", id, rev, hash, name, type, deps: [atom ids], requires: { sounds: [...] } }`;
-a namespace of atoms is one ingredient `kind: "atomset"`. A pack pins `id@rev` + hash; importing gives `atoms.<as>.*`. Other ingredients
-(components, boards, banks) list the atoms they reference in `deps`, so a pack is closed under references. The pack format is being
-specified separately; this is the contract atoms need from it.
+a namespace of atoms is one ingredient `kind: "atomset"` whose entry file is `atoms@1`
+(`schemas/craftpack/1/kinds/atoms.1.schema.json`, code policy `never`; docs/PACK_SPEC.md 5.1). A pack pins `id@rev` + hash; importing gives
+`atoms.<as>.*`. Other ingredients (components, boards, banks) list the atoms they reference in `deps` (`modelDeps(model)`, closed under
+`from` chains and atom-valued params), so a pack is closed under references. `verifyIngredient` / `importedAtoms` re-check every hash:
+`E_ATOM_HASH` on a tampered or stale ingredient.
 
 ## 11. Migration from string code
 
@@ -376,7 +387,7 @@ $: chord(atoms.turn).voicing()
 |---|---|---|---|---|
 | A1 | #61 | atoms core **built** (type registry, schema, `compile` with source map, runtime fallback, params / partial application / composition, ids, hashes); the `strudel atoms` CLI subcommands are **coming** (the CLI lives in another repo) | model schema (#49), control-binding parser | daw-implementer |
 | A2 | #62 | migration **built** in the toolkit: `extract`, `parse`, `inline`, catalog atoms, strudel.cc export inlines (the `strudel atoms extract` CLI is **coming**) | A1 | daw-implementer |
-| A3 | #63 | consumers: intellisense provider, atom args in literal editors, `$atom` in hooks / model / pads / maps, pack ingredient record | A1 (pack record waits for the pack spec) | daw-implementer |
+| A3 | #63 | consumers **built**: intellisense source + signature provider, atom args in literal editors, `$atom` in hooks / model / pads / boards / maps, mapped atom params, revision records, `atoms@1` pack ingredient | A1, pack spec | daw-implementer |
 | A4 | #64 | UI: lazy reference-counted atom cards in the graph, atom browser / palette, reference popover | A1, A3 | ui-designer |
 
 ## 15. Open questions
@@ -389,7 +400,8 @@ $: chord(atoms.turn).voicing()
    cached catalog (may be stale) or only warn at play time?
 4. **`mini` sub-token atoms.** Extraction works on whole strings. Should a repeated cell inside larger strings (`[~ sd]`) be
    extractable as an atom referenced by `${...}` from other atoms? It needs the mini parser's AST; feasible, not in A2.
-5. **Pack spec.** The ingredient record in section 10 is this design's side of the contract; align field names when the pack spec lands.
+5. ~~**Pack spec.**~~ Settled: the pack spec landed (docs/PACK_SPEC.md 5.1) and the `atoms@1` kind, its schema and the ingredient records
+   ship with A3; `deps` / `requires` map onto the manifest fields of section 5.1.
 6. **Highlight mapping.** Mapping Strudel's mini-notation highlight back to a whole reference loses per-step highlighting for atom
    bodies. Show per-step highlight on the card or in the popover instead?
 7. **Editor identity for `atoms`.** `atoms` is a reserved identifier in programs. Programs that already define a variable named

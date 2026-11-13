@@ -167,10 +167,10 @@ Notes per kind:
 - **prelude**: must list every global and `Pattern.prototype` name it adds in `defines`; anything else, or a name that already exists, is
   `E_NAME_COLLISION` (same rule as the hooks runtime).
 
-### 5.1 Reserved kind: `atoms`
+### 5.1 Kind `atoms` (**built**, #63)
 
-`docs/ATOMS.md` section 10 defines atoms as pack content. The kind name `atoms` is reserved for it (one ingredient = one namespace of
-atoms, the "atomset" of that document); its sub-schema `kinds/atoms.1.schema.json` ships with #63, not here. The mapping to this spec:
+`docs/ATOMS.md` section 10 defines atoms as pack content. The kind `atoms` holds it (one ingredient = one namespace of atoms, the
+"atomset" of that document); format `atoms@1`, schema `kinds/atoms.1.schema.json`, code policy `never`, hosts site + cli. The mapping to this spec:
 
 | ATOMS.md record | craftpack |
 |---|---|
@@ -181,6 +181,8 @@ atoms, the "atomset" of that document); its sub-schema `kinds/atoms.1.schema.jso
 | `requires: { sounds: [...] }` | `requires` naming the `sounds` / `vox-bank` ingredients |
 
 Code policy `never`: an atom is data compiled to plain Strudel strings; an atom that needs `$code` falls under the `hooks` rule (code-bearing).
+Every atom in the entry file carries `rev` and `hash`; the host re-checks both on load and refuses a mismatch with `E_ATOM_HASH`
+(`site/engine/atoms-consumers.js`: `atomIngredient`, `atomsetIngredient`, `verifyIngredient`, `importedAtoms`).
 
 ## 6. Dependencies and compatibility
 

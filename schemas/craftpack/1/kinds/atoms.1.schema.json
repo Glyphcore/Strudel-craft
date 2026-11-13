@@ -1,0 +1,164 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/atoms.1.schema.json",
+ "title": "atoms@1",
+ "description": "one namespace of atoms (an \"atomset\", docs/ATOMS.md section 10, docs/PACK_SPEC.md 5.1): typed, parameterised definitions that compile away into plain Strudel strings. Keyed by atom id; every atom pins `rev` and `hash` (E_ATOM_HASH on mismatch). Data only: an atom that needs `$code` falls under the `hooks` rule.",
+ "type": "object",
+ "required": [
+  "atoms"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "format": {
+   "const": "atoms@1"
+  },
+  "name": {
+   "type": "string",
+   "description": "suggested import namespace (`atoms.import(\"pack:…\", { as })` wins over it)"
+  },
+  "doc": {
+   "type": "string"
+  },
+  "atoms": {
+   "type": "object",
+   "propertyNames": {
+    "pattern": "^[a-z0-9]{7,}$"
+   },
+   "additionalProperties": {
+    "$ref": "#/$defs/atom"
+   }
+  }
+ },
+ "$defs": {
+  "atom": {
+   "type": "object",
+   "required": [
+    "name",
+    "type",
+    "rev",
+    "hash"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "name": {
+     "type": "string",
+     "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+    },
+    "type": {
+     "type": "string",
+     "description": "id in the atom type registry (site/data/atoms/types.json)"
+    },
+    "params": {
+     "type": "object",
+     "additionalProperties": {
+      "$ref": "#/$defs/atomParam"
+     }
+    },
+    "body": {
+     "description": "string with ${param} holes, or object, or composition node ($seq $stack $alt $rep $slow $euclid $union $shift $atom $param)"
+    },
+    "from": {
+     "type": "object",
+     "required": [
+      "atom"
+     ],
+     "properties": {
+      "atom": {
+       "type": "string"
+      },
+      "args": {
+       "type": "object"
+      },
+      "ops": {
+       "type": "array",
+       "items": {
+        "type": "array"
+       }
+      }
+     }
+    },
+    "rev": {
+     "type": "integer",
+     "minimum": 1
+    },
+    "hash": {
+     "type": "string",
+     "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "parent": {
+     "type": "string"
+    },
+    "doc": {
+     "type": "string"
+    },
+    "tags": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "pack": {
+     "type": "string",
+     "description": "pack id this atom was imported from (set by the host on import)"
+    }
+   },
+   "oneOf": [
+    {
+     "required": [
+      "body"
+     ]
+    },
+    {
+     "required": [
+      "from"
+     ]
+    }
+   ]
+  },
+  "atomParam": {
+   "type": "object",
+   "required": [
+    "shape"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "shape": {
+     "type": "string",
+     "description": "number | enum | bool | note | sound | mini | name | atom:<type>"
+    },
+    "min": {
+     "type": "number"
+    },
+    "max": {
+     "type": "number"
+    },
+    "step": {
+     "type": "number"
+    },
+    "unit": {
+     "type": "string"
+    },
+    "curve": {
+     "enum": [
+      "lin",
+      "exp",
+      "log",
+      "db",
+      "bipolar"
+     ]
+    },
+    "clamp": {
+     "enum": [
+      "hard",
+      "soft",
+      "none"
+     ]
+    },
+    "options": {
+     "type": "array"
+    },
+    "default": {}
+   }
+  }
+ }
+}

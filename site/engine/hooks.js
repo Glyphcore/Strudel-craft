@@ -53,6 +53,11 @@ export function install(S, opts = {}) {
   const frStr = (f) => { const g = F(f); const n = g.s * g.n; return String(g.d) === '1' ? String(n) : `${n}/${g.d}`; };
   const hooks = { cpb: 1, bpb: 4, cps: undefined, horizon: undefined, live: false, position: undefined, scanLimit: 256, ranges: opts.ranges, canon: opts.canon, journal: [], __hooks: true, version: 1 };
 
+  // atoms channel (docs/ATOMS.md section 10): the host registers the id map ("<type>:<compiled string>" -> atom id) and a resolver for
+  // `{ $atom }` arguments; `plan`, `toJSON` and the journal then carry atom ids next to the resolved strings. No atoms code is imported here.
+  const ATOMS = { map: {}, resolve: null, seen: {} }; const atomsSeen = []; // map / seen: atom id -> its compiled string
+  const atomIds = () => { const o = { ...ATOMS.map, ...ATOMS.seen }; return Object.keys(o).length ? sortKeys(o) : null; };
+
   // ---------------- registry state ----------------
   const R = {};
   const diag = []; const seen = new Set();
@@ -648,14 +653,14 @@ export function install(S, opts = {}) {
     },
     unbind(idOrSlot, at) {
       const targets = find(idOrSlot); const lp = livePoint(at);
-      if (lp) { hooks.journal.push({ cycle: frStr(lp), op: 'unbind', args: [normSlot(idOrSlot)] }); touch(); return hooks; }
+      if (lp) { hooks.journal.push({ cycle: frStr(lp), op: 'unbind', args: [normSlot(idOrSlot)], ...(atomsSeen.length ? { atoms: [...new Set(atomsSeen)] } : {}) }); touch(); return hooks; }
       if (at == null) R.bindings = R.bindings.filter((b) => !targets.includes(b));
       else { normGate({ from: 0, until: at }); targets.forEach((b) => { b.closes = [...(b.closes || []), at]; }); }
       touch(); return hooks;
     },
     replace(slot, hook, at, o) {
       const lp = livePoint(at, R.slots.get(splitSlot(slot).name)?.quant ?? 1);
-      if (lp) { hooks.journal.push({ cycle: frStr(lp), op: 'replace', args: o ? [normSlot(slot), specOf(hook), o] : [normSlot(slot), specOf(hook)] }); touch(); return hooks; }
+      if (lp) { hooks.journal.push({ cycle: frStr(lp), op: 'replace', args: o ? [normSlot(slot), specOf(hook), o] : [normSlot(slot), specOf(hook)], ...(atomsSeen.length ? { atoms: [...new Set(atomsSeen)] } : {}) }); touch(); return hooks; }
       if (at != null) hooks.unbind(slot, at);
       else R.bindings = R.bindings.filter((b) => b.slot !== normSlot(slot));
       return hooks.bind(slot, hook, at == null ? '*' : { from: at }, o);
@@ -690,6 +695,13 @@ export function install(S, opts = {}) {
     diag: () => diag.map((d) => ({ ...d })),
     clearDiag() { diag.length = 0; seen.clear(); },
   });
+  // hooks.atoms: use({ map, resolve }) registers the id map and the `{ $atom }` resolver; ids() is what plan / toJSON carry
+  hooks.atoms = {
+    use(d = {}) { if (d.map) Object.assign(ATOMS.map, d.map); if (d.resolve) ATOMS.resolve = d.resolve; touch(); return hooks; },
+    ids: () => atomIds() || {}, textOf: (id) => ATOMS.map[id] ?? ATOMS.seen[id] ?? null,
+    idOf: (text) => Object.entries({ ...ATOMS.map, ...ATOMS.seen }).find(([, t]) => t === text)?.[0] || null,
+    clear() { ATOMS.map = {}; ATOMS.seen = {}; ATOMS.resolve = null; touch(); return hooks; },
+  };
   const declareSeen = (b) => { const { name } = splitSlot(b.slot); void name; };
 
   // ---------------- check / plan ----------------
@@ -727,8 +739,9 @@ export function install(S, opts = {}) {
           if (pcs.some((x) => x.bindings.some((b) => !b.startsWith('else:')) ) || sc === '') slots[name].scopes[sc || '*global*'] = pcs;
         }
       }
+      const atoms = atomIds();
       return sortKeys({ horizon: T ? frStr(T) : null, cps: cps ?? null, slots, taps: [...R.taps.keys()].sort(), vars: [...E.vars.keys()].sort(), markers: Object.fromEntries(R.markers),
-        diagnostics: diag.map((d) => ({ ...d })) });
+        ...(atoms ? { atoms } : {}), diagnostics: diag.map((d) => ({ ...d })) });
     } finally { hooks.horizon = prev; }
   };
 
@@ -740,6 +753,7 @@ export function install(S, opts = {}) {
     const o = { model: 1 };
     if (hooks.cpb !== 1) o.cpb = hooks.cpb; if (hooks.bpb !== 4) o.bpb = hooks.bpb; if (hooks.cps != null) o.cps = hooks.cps;
     if (R.markers.size) o.markers = Object.fromEntries(R.markers);
+    { const a = atomIds(); if (a) o.atoms = a; }
     if (R.scopes.size) o.scopes = Object.fromEntries(R.scopes);
     const slots = Object.fromEntries([...R.slots].filter(([, v]) => Object.keys(v).length)); if (Object.keys(slots).length) o.slots = slots;
     if (R.defs.size) o.defs = Object.fromEntries([...R.defs].map(([k, d]) => { const { apply, opaque, ...rest } = d; return [k, apply ? { ...rest, opaque: true, src: apply.toString() } : rest]; }));
@@ -748,7 +762,7 @@ export function install(S, opts = {}) {
     if (R.vars.size) o.vars = Object.fromEntries([...R.vars].map(([k, l]) => [k, l.map((a) => ({ value: valJSON(a.value), ...(Object.keys(a.gate).length ? { gate: gateJSON(a.gate) } : {}), ...(a.priority ? { priority: a.priority } : {}) }))]));
     if (R.sets.length) o.sets = R.sets.map((s) => ({ key: s.key, value: valJSON(s.value), ...(Object.keys(s.gate).length ? { gate: gateJSON(s.gate) } : {}) }));
     if (R.wires.length) o.wires = R.wires.map((w) => ({ ...w }));
-    if (hooks.journal.length) o.journal = hooks.journal.map((e) => ({ cycle: String(e.cycle), op: e.op, args: e.args.map((x) => (typeof x === 'function' ? { opaque: true, src: x.toString() } : x)) }));
+    if (hooks.journal.length) o.journal = hooks.journal.map((e) => ({ cycle: String(e.cycle), op: e.op, args: e.args.map((x) => (typeof x === 'function' ? { opaque: true, src: x.toString() } : x)), ...(e.atoms ? { atoms: e.atoms } : {}) }));
     return JSON.stringify(sortKeys(o), null, 1);
   };
   hooks.load = (json, lo = {}) => {
@@ -756,6 +770,7 @@ export function install(S, opts = {}) {
     if (j.model != null && j.model > 1) throw code('E_BAD_ARG', `config model ${j.model} is newer than this runtime (1)`);
     const un = (x, where) => { if (isObj(x) && x.opaque) { if (!lo.allowCode) throw code('E_OPAQUE', `${where} is an opaque function hook; load with { allowCode: true } to accept it`); return (0, eval)(`(${x.src})`); } return x; };
     if (j.cpb != null) hooks.cpb = j.cpb; if (j.bpb != null) hooks.bpb = j.bpb; if (j.cps != null) hooks.cps = j.cps;
+    if (j.atoms) hooks.atoms.use({ map: j.atoms });
     for (const [k, v] of Object.entries(j.markers || {})) hooks.marker(k, v);
     for (const [k, v] of Object.entries(j.scopes || {})) hooks.scope(k, v);
     for (const [k, v] of Object.entries(j.slots || {})) hooks.slot(k, v);
@@ -768,7 +783,7 @@ export function install(S, opts = {}) {
     for (const [k, l] of Object.entries(j.vars || {})) for (const a of l) hooks.let(k, un(a.value, `var ${k}`), a.gate, { priority: a.priority });
     for (const s of j.sets || []) hooks.set(s.key, un(s.value, `set ${s.key}`), s.gate);
     for (const w of j.wires || []) { const { dest, tap: tr, ...wo } = w; hooks.wire(dest, tr, wo); }
-    for (const e of j.journal || []) hooks.journal.push({ cycle: String(e.cycle), op: e.op, args: (e.args || []).map((x, i) => un(x, `journal ${e.op}`)) });
+    for (const e of j.journal || []) hooks.journal.push({ cycle: String(e.cycle), op: e.op, args: (e.args || []).map((x, i) => un(x, `journal ${e.op}`)), ...(e.atoms ? { atoms: e.atoms } : {}) });
     touch(); return hooks;
   };
 
@@ -778,12 +793,15 @@ export function install(S, opts = {}) {
   const plain = (x) => {
     if (x && typeof x === 'object') {
       if (typeof x.__pure === 'string' && typeof x.query === 'function') return x.__pure;
+      // atom references (docs/ATOMS.md section 10): `{ $atom: id }` in any string position resolves to the compiled string and the
+      // id is kept next to it (plan, toJSON, journal). The resolver is handed in by the host (site/engine/atoms-consumers.js).
+      if (typeof x.$atom === 'string' && ATOMS.resolve) { const s = ATOMS.resolve(x); if (typeof s === 'string') { atomsSeen.push(x.$atom); ATOMS.seen[x.$atom] = s; return s; } }
       if (Array.isArray(x)) return x.map(plain);
       if (isObj(x)) return Object.fromEntries(Object.entries(x).map(([k, v]) => [k, plain(v)]));
     }
     return x;
   };
-  for (const k of Object.keys(hooks)) if (typeof hooks[k] === 'function' && !['diag', 'clearDiag', 'toJSON', 'check', 'plan', 'fn', 'pipe', 'publish'].includes(k)) { const f = hooks[k]; hooks[k] = (...a) => f(...a.map(plain)); }
+  for (const k of Object.keys(hooks)) if (typeof hooks[k] === 'function' && !['diag', 'clearDiag', 'toJSON', 'check', 'plan', 'fn', 'pipe', 'publish'].includes(k)) { const f = hooks[k]; hooks[k] = (...a) => { atomsSeen.length = 0; return f(...a.map(plain)); }; }
   for (const k of METHODS) { const f = proto[k]; proto[k] = mark(function (...a) { return f.apply(this, a.map(plain)); }); }
   const tap0 = tap; const tapP = mark((...a) => tap0(...a.map(plain)));
 

@@ -13,6 +13,8 @@ const providers = new Map(); const custom = new Map();
 const h = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (v == null || v === false) continue; if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? '' : v); } e.append(...kids.flat().filter((x) => x != null)); return e; };
 
 function shapeFor(l) {
+  /* a provider may own this literal's shape (atom reference args carry the atom's atomParam shape, docs/ATOMS.md section 10) */
+  for (const pr of providers.values()) { if (!pr.shape) continue; try { const s = pr.shape(l); if (s) return s; } catch (err) { /* provider offline */ } }
   const ps = P[l.param]; let p = ps && ps[l.arg];
   if (l.kind === 'number' && (!p || p.shape !== 'number')) { const a = Math.abs(l.value); p = { name: 'value', shape: 'number', min: l.value < 0 ? -Math.max(1, a * 4) : 0, max: a <= 1 ? 1 : Math.max(1, a * 4), curve: 'lin' }; }
   if (l.kind === 'boolean') p = { name: 'value', shape: 'bool' };
@@ -161,7 +163,8 @@ export async function attach(view, id) {
   attachGestures(view);
 }
 sc.literals = {
-  registerEditor(p) { if (!p || !p.id) throw new Error('editor provider needs {id}'); if (p.match) providers.set(p.id, p); if (p.render) custom.set(p.id, p.render); return () => { providers.delete(p.id); custom.delete(p.id); }; },
+  /* { id, match?(lit, param) -> editorName|null, shape?(lit) -> param|null, render?(host, ctx) } */
+  registerEditor(p) { if (!p || !p.id) throw new Error('editor provider needs {id}'); if (p.match || p.shape) providers.set(p.id, p); if (p.render) custom.set(p.id, p.render); return () => { providers.delete(p.id); custom.delete(p.id); }; },
   list: (viewId) => { const v = viewOf(viewId); const r = v ? literals(v.state.doc.toString()) : { literals: [] }; return (r.literals || []).map((l) => ({ ...l, editor: editorFor(l, shapeFor(l)), shape: shapeFor(l) })); },
   set: setLit, nudge, open: (litId, viewId) => { const v = viewOf(viewId); const l = v && find(v, litId); return l ? open(v, l) : false; }, close,
 };

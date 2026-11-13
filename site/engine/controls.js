@@ -140,7 +140,9 @@ export async function loadBuiltinTypes(registry, fetcher) {
 const kindOf = (spec) => ({ toggle: 'bool', button: 'bool', xy: 'vec2', steps: 'steps', select: 'enum' })[spec.type] || 'number';
 const eqSpec = (a, b) => canonical(a) === canonical(b);
 
-export function createControls({ registry = createRegistry(), model = {}, time = {}, strict = false, markers = {} } = {}) {
+// atoms: { checkDest(dest), target(ref) } for atom-param map destinations and `$atom` board / map targets (docs/ATOMS.md section 10);
+// normally site/engine/atoms-consumers.js (checkMapDest / target). Without it an `atom:` destination is refused.
+export function createControls({ registry = createRegistry(), model = {}, time = {}, strict = false, markers = {}, atoms = null } = {}) {
   const specs = new Map(), hist = new Map(), maps = [], lanes = new Map(), dests = new Map(), picked = new Map(), boards = [];
   let anon = 0; const aliases = new Map(); /* display label -> site id (CONTROL_BINDING section 2); ids stay the identity */
   const R = (n) => { if (typeof n !== 'string') return n; const [b, ax] = n.split(':'); const id = aliases.has(b) ? aliases.get(b) : b; return ax ? id + ':' + ax : id; };
@@ -224,7 +226,17 @@ export function createControls({ registry = createRegistry(), model = {}, time =
 
   // ---------- maps ----------
   function registerDest(dest, { min, max, base }) { dests.set(dest, { min, max, base }); }
-  function map(control, dest, opts = {}, gate) { control = R(control); const m = { control, dest, ...(opts.range ? { range: opts.range } : {}), ...(opts.curve ? { curve: opts.curve } : {}), ...(opts.op ? { op: opts.op } : {}), ...(opts.priority != null ? { priority: opts.priority } : {}), ...((gate ?? opts.gate) != null ? { gate: gate ?? opts.gate } : {}) };
+  const ATOM_DEST = /^atom:[A-Za-z0-9_:.-]+\.[A-Za-z_]\w*$/;
+  // mapped atom params (ATOMS 10): only number params of mini atoms in repeat or step position; anything else is E_ATOM_ARG at map time
+  function checkAtomDest(dest) {
+    if (typeof dest !== 'string' || !dest.startsWith('atom:')) return;
+    if (!ATOM_DEST.test(dest)) { const e = new Error(`E_ATOM_ARG: map destination "${dest}" is not atom:<id>.<param>`); e.code = 'E_ATOM_ARG'; throw e; }
+    if (!atoms || typeof atoms.checkDest !== 'function') { const e = new Error(`E_ATOM_ARG: atom destination "${dest}" needs an atom environment (createControls({ atoms }))`); e.code = 'E_ATOM_ARG'; throw e; }
+    atoms.checkDest(dest);
+  }
+  function map(control, dest, opts = {}, gate) { control = R(control);
+    if (typeof dest === 'object' && dest && typeof dest.$atom === 'string' && atoms && atoms.target) dest = atoms.target(dest);
+    checkAtomDest(dest); const m = { control, dest, ...(opts.range ? { range: opts.range } : {}), ...(opts.curve ? { curve: opts.curve } : {}), ...(opts.op ? { op: opts.op } : {}), ...(opts.priority != null ? { priority: opts.priority } : {}), ...((gate ?? opts.gate) != null ? { gate: gate ?? opts.gate } : {}) };
     declare(control.split(':')[0]); maps.push(m); return m; }
   function mapOut(m, cycle) {
     const [cn, ax] = m.control.split(':'); const s = specs.get(cn); let v = valueAt(cn, cycle); if (kindOf(s) === 'vec2') v = v[ax || 'x'];
@@ -247,7 +259,9 @@ export function createControls({ registry = createRegistry(), model = {}, time =
   // No maps -> the haps are returned untouched (same array).
   function applyMaps(haps, { key = (d) => d, rangeOf } = {}) {
     if (!maps.length) return haps;
-    const ds = [...new Set(maps.map((m) => m.dest))];
+    // `atom:<id>.<param>` destinations are not event keys: they feed the atom compile pass (atoms-consumers.mapOverrides), not the haps
+    const ds = [...new Set(maps.map((m) => m.dest))].filter((d) => !String(d).startsWith('atom:'));
+    if (!ds.length) return haps;
     for (const d of ds) if (rangeOf && !dests.has(d)) { const r = rangeOf(d); if (r) dests.set(d, { min: r[0], max: r[1] }); }
     return haps.map((h) => {
       const v = h.value; if (!v || typeof v !== 'object' || typeof h.withValue !== 'function') return h;
@@ -262,7 +276,7 @@ export function createControls({ registry = createRegistry(), model = {}, time =
   const addLane = (id, lane) => { lanes.set(id, lane); return lane; };
   function load(m) {
     for (const [n, s] of Object.entries(m.controls || {})) { const { value, ...rest } = s; declare(n, rest); if (value !== undefined) hist.get(n)[0].value = value; }
-    maps.length = 0; (m.maps || []).forEach(x => maps.push({ ...x })); boards.length = 0; (m.boards || []).forEach(b => boards.push(b));
+    maps.length = 0; (m.maps || []).forEach(x => { checkAtomDest(x.dest); maps.push({ ...x }); }); boards.length = 0; (m.boards || []).forEach(b => boards.push(b));
     lanes.clear(); for (const [id, l] of Object.entries(m.automation || {})) lanes.set(id, l); return api;
   }
   function toModel() {

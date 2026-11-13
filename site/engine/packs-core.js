@@ -17,6 +17,7 @@ const ITEMS = {
   'sounds': (d) => Object.keys(d).filter((k) => k !== '_base'),
   'vox-bank': (d) => Object.keys({ ...(d.maps?.flat || {}), ...(d.maps?.pitched || {}) }).filter((k) => k !== '_base'),
   'param-shapes': (d) => ['params', 'ranges', 'canon'].flatMap((s) => Object.keys(d[s] || {}).map((k) => `${s}.${k}`)),
+  'atoms': (d) => Object.values(d.atoms || {}).map((a) => a.name), // one ingredient = one namespace of atoms (ATOMS 10, PACK_SPEC 5.1)
   'intellisense': (d) => (d.items || []).map((i) => `${i.category || ''}|${i.label}`),
 };
 export const itemIds = (kind, data) => (data && ITEMS[kind] ? ITEMS[kind](data) : []);

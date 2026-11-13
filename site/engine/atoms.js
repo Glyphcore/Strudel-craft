@@ -63,6 +63,12 @@ function sv(n) { // static value (number | string | boolean | null | array | obj
   }
 }
 const segsOf = (segs) => segs.map((s) => { if (s.dyn) throw new NotStatic(); return s.call ? { call: s.call.map(sv) } : s; });
+// one AST node -> { $segs } when it is a static reference rooted at `atoms` (used by model.js parse), else null
+export function refOfNode(node) {
+  if (!isNode(node) || (node.type !== 'MemberExpression' && node.type !== 'CallExpression')) return null;
+  const segs = flatten(node); if (!segs) return null;
+  try { return { $segs: segsOf(segs) }; } catch { return null; }
+}
 const posKey = (c) => c.type === 'Identifier' ? c.name : c.type === 'MemberExpression' && !c.computed ? (c.object.type === 'Identifier' && c.object.name === 'hooks' ? 'hooks.' : '.') + c.property.name : null;
 
 const SCANS = new Map();
@@ -393,6 +399,20 @@ export function apply(env, atom, args = {}) {
   const preset = { ...f.preset, ...args }, remaining = Object.keys(f.all).filter((k) => !(k in preset));
   return { type: rec.type, params: Object.fromEntries(remaining.map((k) => [k, f.all[k]])), remaining, from: { atom: rec.name, args: { ...args } } };
 }
+// resolve one reference ({ $atom, args?, ops? } | { $segs } | name) to its compiled value { type, text | obj }
+export function resolve(env, ref) { return evalRef(env, ref, newSt()); }
+// the params still open on an atom (name | record), with their shapes: signature help, literal editors, map destinations
+export function paramsOf(env, atom) {
+  const rec = recOf(env, atom); if (!rec) throw err('E_ATOM_UNKNOWN', `unknown atom "${atom}"`);
+  const f = flat(env, rec); if (f.ops) return {};
+  return Object.fromEntries(remainingOf(f).map((k) => [k, f.all[k]]));
+}
+// every declared `point` atom as a marker (ATOMS section 3: a point atom *is* a marker) -> [{ name, point }]
+export function pointMarkers(env) {
+  const out = [];
+  for (const rec of env.byName.values()) { if (rec.type !== 'point') continue; try { out.push({ name: rec.name, point: instantiate(env, rec, {}).text }); } catch { /* needs args: not a marker */ } }
+  return out;
+}
 // named derivation: a record to declare (same as atom("name", { type, from: atoms.parent({...}) }))
 export const derive = (env, name, derived, extra = {}) => ({ name, type: derived.type, from: { atom: derived.from.atom, args: derived.from.args }, ...extra });
 // runtime fallback: frozen object, members are compiled strings (param-less atoms) or functions returning them
@@ -408,6 +428,8 @@ export function runtimeAtoms(env) {
 
 // ---------------------------------------------------------------- compile pass
 // -> { code, map: [{ from, to, outFrom, outTo, atom }], refs: [{ id, atom, args, path, from, to, type }], warnings: [{ code, message, ...span }] }
+// opts.overrides: { <atom id | name>: { param: value } } merged into the args of every reference to that atom
+// (ATOMS section 10, mapped atom params: a control mapped to `atom:<id>.<param>` recompiles with the live value).
 export function compile(code, env, opts = {}) {
   const none = { code, map: [], refs: [], warnings: [] };
   if (!/\batoms?\b/.test(code)) return none; // idempotent on code with no atoms: every existing program is already valid
@@ -428,6 +450,8 @@ function analyze(code, env, diag, opts = {}) {
     try {
       const v = withAt(at, () => {
         let ref; try { ref = toRef(env, { $segs: s.segs }); } catch (e) { throw e; }
+        const ov = opts.overrides; // mapped atom params: the live value wins over the written arg
+        if (ov) { const r0 = lookup(env, ref.$atom); const o = ov[ref.$atom] || (r0 && r0.id ? ov[r0.id] : null); if (o) ref = { ...ref, args: { ...ref.args, ...o } }; }
         s.ref = ref; const v = evalRef(env, ref, newSt());
         const acc = s.callee && CFG.positions?.[s.callee]?.[s.arg];
         if (acc && !acc.includes(v.type) && v.type !== 'text') throw err('E_ATOM_TYPE', `a ${v.type} atom does not fit argument ${s.arg} of ${s.callee}() (expects ${acc.join(' | ')})`);
@@ -478,6 +502,8 @@ export function check(code, extra = {}, opts = {}) {
 export const buildAndCompile = (code, extra, opts) => { const env = buildEnv(code, extra); return { env, ...compile(code, env, opts) }; };
 
 // ---------------------------------------------------------------- ids, hashes, reconciliation (section 7)
+// structural site id (control binding: `r` + 6 base-36 chars of FNV-1a(path)); same rule for code reference sites and model ref paths
+export const siteId = (path) => 'r' + b36(FNV(path));
 export const idFor = (type, name, taken = new Set()) => { let id = 'a' + b36(FNV(`${type}/${name}`)), n = 2; const base = id; while (taken.has(id)) id = base + (n++).toString(36); return id; };
 const hashOf = (rec) => 'sha256:' + modelHash({ type: rec.type, params: rec.params ?? null, ...(rec.from ? { from: rec.from } : { body: rec.body }) });
 export const atomHash = hashOf;
@@ -513,6 +539,33 @@ export function reconcile(prev = {}, env, { keep = new Set() } = {}) {
   const notInCode = [];
   for (const [id, a] of Object.entries(prev)) if (!atoms[id] && keep.has(id)) { atoms[id] = a; notInCode.push(id); }
   return { atoms, ids, renamed, notInCode };
+}
+
+// ---------------------------------------------------------------- model references and graph cards (sections 4, 9)
+// every `$atom` reference in a model (outside `atoms`) with its structural site id: [{ id, atom, path, ref }]
+export function modelRefs(model = {}) {
+  const out = [], walk = (x, path) => {
+    if (Array.isArray(x)) return x.forEach((v, i) => walk(v, `${path}/${i}`));
+    if (!isObj(x)) return;
+    if (typeof x.$atom === 'string') { // the reference itself, then the references nested in its args / ops
+      out.push({ id: siteId(path), atom: x.$atom.replace(/@\d+$/, ''), path, ref: x });
+      for (const k of ['args', 'ops']) if (x[k]) walk(x[k], `${path}/${k}`);
+      return;
+    }
+    for (const [k, v] of Object.entries(x)) walk(v, `${path}/${k}`);
+  };
+  for (const [k, v] of Object.entries(model)) if (k !== 'atoms') walk(v, `/${k}`);
+  return out;
+}
+// cards on reference (section 9): one entry per *referenced* atom, built from the reference list, never from model.atoms
+export function atomCards(model = {}) {
+  const atoms = model.atoms || {}, by = new Map();
+  for (const r of modelRefs(model)) {
+    const rec = atoms[r.atom] || null;
+    const e = by.get(r.atom) || { id: `atom:${r.atom}`, kind: 'atom', atom: r.atom, name: rec ? rec.name : r.atom, type: rec ? rec.type : null, refs: [], count: 0 };
+    e.refs.push({ id: r.id, path: r.path }); e.count++; by.set(r.atom, e);
+  }
+  return [...by.values()].sort((a, b) => a.id.localeCompare(b.id));
 }
 
 // ---------------------------------------------------------------- model checks (section 4)

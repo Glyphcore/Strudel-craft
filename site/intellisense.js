@@ -16,6 +16,17 @@ const api = {
     return cache;
   },
 };
+/* context-sensitive extras, registered by site modules (atoms-site.js): a completion source may add to or replace the options of one
+   position, a signature provider answers for callees the typed-param table does not know (docs/ATOMS.md section 10).
+   source    = { id, complete(ctx) -> { from, options, merge?, validFor? } | null }
+   signature = { id, signature(ctx) -> { fn, params: [{ name, shape, min, max, unit, options, default }], arg? } | null }
+   ctx = { text (doc up to the caret), pos, explicit, arg (argContext) } */
+const sources = new Map(), sigs = new Map();
+api.registerSource = (p) => { if (!p || !p.id || typeof p.complete !== 'function') throw new Error('source needs {id, complete()}'); sources.set(p.id, p); cache = null; return () => { sources.delete(p.id); }; };
+api.registerSignature = (p) => { if (!p || !p.id || typeof p.signature !== 'function') throw new Error('signature provider needs {id, signature()}'); sigs.set(p.id, p); return () => { sigs.delete(p.id); }; };
+api.sources = () => [...sources.keys()];
+api.signatureAt = (ctx) => { for (const s of sigs.values()) { try { const r = s.signature(ctx); if (r) return r; } catch (e) { /* provider offline */ } } return null; };
+api.completeFrom = async (ctx) => { const out = []; for (const s of sources.values()) { try { const r = await s.complete(ctx); if (r && r.options && r.options.length) out.push({ id: s.id, ...r }); } catch (e) { /* provider offline */ } } return out; };
 window.strudelCraft = window.strudelCraft || {}; window.strudelCraft.intellisense = api;
 
 /* 1. static config data */
@@ -112,13 +123,19 @@ async function mount() {
     return { ...o, apply: (view, completion, from) => { const r = inlineMod.mergeAccept(view.state.doc.toString(), view.state.selection.main.head, text, { from });
       view.dispatch({ ...(r.noop ? {} : { changes: { from: r.from, to: r.to, insert: r.insert } }), selection: { anchor: r.caret }, annotations: ac.pickedCompletion.of(completion), userEvent: 'input.complete' }); } }; };
   async function source(context) {
+    /* registered sources first: one may replace the options of this position (merge: true adds to them) */
+    const pre = context.state.doc.sliceString(0, context.pos);
+    const extra = await api.completeFrom({ text: pre, doc: context.state.doc.toString(), pos: context.pos, explicit: context.explicit, arg: argContext(pre, pre.length) });
+    const excl = extra.find((r) => !r.merge);
+    if (excl) return { from: excl.from, options: excl.options.map(mergedApply), validFor: excl.validFor };
+    const added = extra.filter((r) => r.merge).flatMap((r) => r.options);
     { /* typed argument position: shape-driven suggestions only */
       const text = context.state.doc.sliceString(Math.max(0, context.pos - 4000), context.pos); const base = Math.max(0, context.pos - 4000);
       const ctx = argContext(text, text.length); const P = await shapes; const p = ctx && P[ctx.fn] && P[ctx.fn][ctx.arg];
       if (p) {
         const wre = ctx.quote ? /[^\s"'`]*$/ : /[\w$.]*$/; const w = wre.exec(text)[0]; let from = context.pos - w.length;
         if (!ctx.quote && !w && !context.explicit && !/[(,]\s*$/.test(text)) return null;
-        const opts = shapeOptions(p, ctx, await api.all());
+        const opts = [...shapeOptions(p, ctx, await api.all()), ...added];
         if (ctx.quote && opts.length) { /* inside quotes: replace the word, drop our quotes */ opts.forEach((o) => { o.label = o.label.replace(/^"|"$/g, ''); }); }
         if (opts.length) return { from, options: opts.map(mergedApply).map((o, i) => ({ ...o, section: { name: `${ctx.fn} · ${p.name}${p.unit ? ' (' + p.unit + ')' : ''}`, rank: -1 }, boost: 50 - i })), validFor: ctx.quote ? /^[^\s"'`]*$/ : /^[\w$.]*$/, filter: !!w && !context.explicit };
         void base;
@@ -136,7 +153,7 @@ async function mount() {
       const k = it.label + '|' + it.category; if (seen.has(k)) continue; seen.add(k);
       opts.push({ label: it.label, type: it.method ? 'method' : it.string ? 'text' : it.category === 'presets' ? 'variable' : 'function', detail: it.detail, info: it.info, section: { name: it.category, rank: it.provider === 'strudel-docs' ? 0 : it.provider === 'user' ? 1 : it.provider === 'catalog' ? 2 : 3 }, apply: it.apply, boost: it.provider === 'strudel-docs' ? 2 : it.provider === 'user' ? 1 : 0 });
     }
-    return { from, options: opts.map(mergedApply), validFor: /^[\w$]*$/ };
+    return { from, options: [...opts, ...added].map(mergedApply), validFor: /^[\w$]*$/ };
   }
   const [{ HighlightStyle, syntaxHighlighting }, { tags: t }] = await Promise.all([import('https://esm.sh/@codemirror/language@6'), import('https://esm.sh/@lezer/highlight@1')]);
   const hl = syntaxHighlighting(HighlightStyle.define([
@@ -168,8 +185,14 @@ async function mount() {
     update(v, tr) {
       if (!tr.docChanged && !tr.selection) return v; const st = tr.state; const pos = st.selection.main.head;
       const text = st.doc.sliceString(Math.max(0, pos - 4000), pos); const ctx = argContext(text, text.length);
-      const ps = ctx && P0[ctx.fn]; if (!ps) return null;
-      return { pos: pos - text.length + ctx.open, fn: ctx.fn, arg: Math.min(ctx.arg, ps.length - 1), ps, over: ctx.arg >= ps.length };
+      if (!ctx) return null;
+      let ps = P0[ctx.fn], fn = ctx.fn;
+      if (!ps) { /* callees the typed-param table does not know (atoms, docs/ATOMS.md section 10) */
+        const r = api.signatureAt({ text, pos, explicit: false, arg: ctx });
+        if (!r || !r.params || !r.params.length) return null;
+        ps = r.params; fn = r.fn || ctx.fn;
+      }
+      return { pos: pos - text.length + ctx.open, fn, arg: Math.min(ctx.arg, ps.length - 1), ps, over: ctx.arg >= ps.length };
     },
     provide: (f) => vmod.showTooltip.from(f, (v) => v && { pos: v.pos, above: true, strictSide: false, arrow: false, create() {
       const dom = document.createElement('div'); dom.className = 'cm-sig cm-sighelp'; dom.setAttribute('role', 'tooltip');

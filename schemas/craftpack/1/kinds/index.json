@@ -1,7 +1,4 @@
 {
- "reserved": {
-  "atoms": "docs/ATOMS.md section 10; schema ships with issue #63 (docs/PACK_SPEC.md 5.1)"
- },
  "kinds": {
   "sounds": {
    "formats": [
@@ -66,6 +63,14 @@
    "schema": "kinds/param-shapes.1.schema.json",
    "code": "never",
    "about": "typed parameter shapes per function, modulation ranges and canonical names"
+  },
+  "atoms": {
+   "formats": [
+    "atoms@1"
+   ],
+   "schema": "kinds/atoms.1.schema.json",
+   "code": "never",
+   "about": "one namespace of atoms (atomset): typed, parameterised definitions compiled away into plain Strudel strings (docs/ATOMS.md section 10)"
   },
   "param-editors": {
    "formats": [

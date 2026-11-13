@@ -3,6 +3,7 @@
 // Lossless by construction: every layer statement keeps its verbatim `src` (including leading comments/blank lines) and is re-emitted as is
 // while its structure still matches that text; edit ops splice the text, so only the touched statement changes.
 import * as acorn from './vendor/acorn-8.19.0.mjs';
+import * as AT from './engine/atoms.js';
 
 const LAYOUT_RE = /\/\/ @model-layout (\{[^\n]*\})\n?$/;
 const REF_METHODS = new Set(['tap', 'use', 'wrap', 'ns', 'wire']); // string args are references, not mini-notation: plain strings
@@ -65,6 +66,57 @@ const tapRead = (n) => n.type === 'CallExpression' && n.callee.type === 'Identif
   && n.arguments.length <= 2 && isStr(n.arguments[0]) && (n.arguments.length === 1 || n.arguments[1].type === 'ObjectExpression');
 const hasCode = (v) => Array.isArray(v) ? v.some(hasCode) : isObj(v) ? ('$code' in v) || Object.values(v).some(hasCode) : false;
 
+// ---------------------------------------------------------------- atoms (docs/ATOMS.md sections 4, 10)
+// `atom(...)` declarations stay verbatim in the header (or in their statement) and are projected into `model.atoms` keyed by id;
+// every static `atoms.*` reference becomes an { $atom: id, args?, ops? } ref, so a rename touches the declaration only.
+// The document's atom environment is kept here so a track-level re-parse (trackSync) and generate() resolve the same references.
+let ATOMS = null; // { env, ids: name -> id, names: id -> name }
+const atomsIn = (text) => /\batom\s*\(|\batoms\s*\./.test(text);
+function atomsFromCode(text) {
+  if (!atomsIn(text)) return null;
+  try {
+    const env = AT.buildEnv(text, {}, { diag: [] }), r = AT.reconcile({}, env);
+    if (!Object.keys(r.atoms).length) return null;
+    return { env, ids: r.ids, names: Object.fromEntries(Object.entries(r.atoms).map(([id, a]) => [id, a.name])), atoms: r.atoms };
+  } catch { return null; }
+}
+function atomsFromModel(model) {
+  const atoms = model.atoms || {}; if (!Object.keys(atoms).length) return null;
+  try {
+    return { env: AT.buildEnv('', { atoms }), ids: Object.fromEntries(Object.entries(atoms).map(([id, a]) => [a.name, id])),
+      names: Object.fromEntries(Object.entries(atoms).map(([id, a]) => [id, a.name])), atoms };
+  } catch { return null; }
+}
+const normAtomArgs = (v) => Array.isArray(v) ? v.map(normAtomArgs) : isObj(v)
+  ? (v.$segs ? atomRefOf(v) || v : Object.fromEntries(Object.entries(v).map(([k, x]) => [k, normAtomArgs(x)]))) : v;
+function atomRefOf(sg) { // { $segs } -> { $atom, args?, ops? } (ids, never names), or null
+  if (!ATOMS) return null;
+  try {
+    const r = AT.toRef(ATOMS.env, sg), args = normAtomArgs(r.args), ops = normAtomArgs(r.ops);
+    return { $atom: ATOMS.ids[r.$atom] || r.$atom, ...(Object.keys(args).length ? { args } : {}), ...(ops.length ? { ops } : {}) };
+  } catch { return null; }
+}
+const atomRefNode = (n) => { const sg = ATOMS ? AT.refOfNode(n) : null; return sg ? atomRefOf(sg) : null; };
+export const isAtomRef = (v) => isObj(v) && typeof v.$atom === 'string';
+const atomKeys = (v) => Object.keys(v).every(k => ['$atom', 'args', 'ops'].includes(k));
+function atomText(v) { // { $atom } -> `atoms.name(...)...` (the code form)
+  const name = (ATOMS && ATOMS.names[v.$atom]) || v.$atom;
+  const args = v.args && Object.keys(v.args).length ? `({ ${Object.keys(v.args).map(k => `${key(k)}: ${emitArg(v.args[k])}`).join(', ')} })` : '';
+  const ops = (v.ops || []).map(([o, ...a]) => `.${o}(${a.map(x => emitArg(x)).join(', ')})`).join('');
+  return `atoms.${name}${args}${ops}`;
+}
+// the compiled string of an atom reference, for positions the model keys by name (marker / scope / slot / def keys)
+const atomStr = (v) => { try { return String(AT.resolve(ATOMS.env, { ...v, $atom: (ATOMS.names[v.$atom] || v.$atom) }).text); } catch { return null; } };
+function emitAtomDecl(a) {
+  const parts = [`type: ${JSON.stringify(a.type)}`];
+  if (a.params) parts.push(`params: ${emitArg(a.params)}`);
+  if (a.from) parts.push(`from: ${atomText({ $atom: a.from.atom, args: a.from.args, ops: a.from.ops })}`);
+  else parts.push(`body: ${emitArg(a.body)}`);
+  if (a.doc) parts.push(`doc: ${JSON.stringify(a.doc)}`);
+  if (a.tags) parts.push(`tags: ${emitArg(a.tags)}`);
+  return `atom(${JSON.stringify(a.name)}, { ${parts.join(', ')} })`;
+}
+
 function parseArg(n, text, mode) {
   const code = () => ({ $code: text.slice(n.start, n.end) });
   if (n.type === 'Literal') {
@@ -89,6 +141,7 @@ function parseArg(n, text, mode) {
     if (n.arguments[1]) { const o = parseArg(n.arguments[1], text, 'plain'); if (hasCode(o)) return code(); r.opts = o; }
     return r;
   }
+  { const ar = atomRefNode(n); if (ar) return ar; }
   if (n.type === 'CallExpression' && n.callee.type === 'MemberExpression' && !n.callee.computed && n.callee.property.name === 'range'
     && n.arguments.length === 2 && tapRead(n.callee.object)) {
     const lo = num(n.arguments[0]), hi = num(n.arguments[1]), r = parseArg(n.callee.object, text, 'plain');
@@ -107,6 +160,7 @@ function emitArg(v, sq = false) {
   const ks = Object.keys(v).filter(k => v[k] !== undefined);
   if (ks.length === 1 && ks[0] === '$code') return v.$code;
   if (ks.length === 1 && ks[0] === '$mini') return JSON.stringify(v.$mini);
+  if (typeof v.$atom === 'string' && atomKeys(v)) return atomText(v);
   if (v.$tap !== undefined && ks.every(k => ['$tap', 'opts', 'range'].includes(k))) {
     return `tap(${JSON.stringify(v.$tap)}${v.opts ? ', ' + emitArg(v.opts) : ''})${v.range ? `.range(${v.range.map(x => emitArg(x)).join(', ')})` : ''}`;
   }
@@ -188,7 +242,7 @@ function analyseInst(st, text) {
 const gateOpts = (rest) => {
   const a = rest.filter(x => x !== undefined);
   let gate, opts = {};
-  if (a.length && (typeof a[0] === 'string' || (isObj(a[0]) && Object.keys(a[0]).some(k => GATE_KEYS.has(k))))) gate = a.shift();
+  if (a.length && (typeof a[0] === 'string' || isAtomRef(a[0]) || (isObj(a[0]) && Object.keys(a[0]).some(k => GATE_KEYS.has(k))))) gate = a.shift();
   if (a.length && isObj(a[0])) opts = a.shift();
   if (a.length) return null;
   return { gate, opts };
@@ -202,16 +256,18 @@ function analyseRegistry(st, text, m) {
   const fn = e.callee.property.name, a = e.arguments.map(x => parseArg(x, text, 'plain'));
   const okObj = (o, keys) => isObj(o) && Object.keys(o).every(k => keys.includes(k));
   if (fn !== 'let' && hasCode(a)) return false;
-  if (fn === 'marker' && a.length === 2 && typeof a[0] === 'string' && ['string', 'number'].includes(typeof a[1])) { (m.markers ||= {})[a[0]] = a[1]; return true; }
-  if (fn === 'scope' && a.length >= 1 && typeof a[0] === 'string' && (a[1] === undefined || okObj(a[1], ['stem', 'bus']))) { (m.scopes ||= {})[a[0]] = a[1] || {}; return true; }
-  if (fn === 'slot' && a.length >= 1 && typeof a[0] === 'string' && (a[1] === undefined || okObj(a[1], ['mode', 'else', 'quant']))) { (m.slots ||= {})[a[0]] = a[1] || {}; return true; }
+  // names the model uses as a key (marker / scope / slot) may be written as a `name` atom: the key is the compiled string, the value keeps its ref
+  const nameOf = (v) => (typeof v === 'string' ? v : isAtomRef(v) ? atomStr(v) : null);
+  if (fn === 'marker' && a.length === 2 && nameOf(a[0]) && (['string', 'number'].includes(typeof a[1]) || isAtomRef(a[1]))) { (m.markers ||= {})[nameOf(a[0])] = a[1]; return true; }
+  if (fn === 'scope' && a.length >= 1 && nameOf(a[0]) && (a[1] === undefined || okObj(a[1], ['stem', 'bus']))) { (m.scopes ||= {})[nameOf(a[0])] = a[1] || {}; return true; }
+  if (fn === 'slot' && a.length >= 1 && nameOf(a[0]) && (a[1] === undefined || okObj(a[1], ['mode', 'else', 'quant']))) { (m.slots ||= {})[nameOf(a[0])] = a[1] || {}; return true; }
   if (fn === 'def' && a.length === 2 && typeof a[0] === 'string' && okObj(a[1], ['params', 'taps', 'chain', 'decorator', 'opaque', 'src'])) { (m.defs ||= {})[a[0]] = a[1]; return true; }
-  if (fn === 'let' && a.length >= 2 && a.length <= 4 && typeof a[0] === 'string') {
+  if (fn === 'let' && a.length >= 2 && a.length <= 4 && nameOf(a[0])) {
     const g = gateOpts(a.slice(2)); if (!g || !okObj(g.opts, ['priority', 'min', 'max', 'unit', 'ns'])) return false;
     if (hasCode(g.gate) || hasCode(g.opts)) return false;
-    (((m.vars ||= {})[a[0]]) ||= []).push({ value: a[1], ...(g.gate !== undefined ? { gate: g.gate } : {}), ...g.opts }); return true;
+    (((m.vars ||= {})[nameOf(a[0])]) ||= []).push({ value: a[1], ...(g.gate !== undefined ? { gate: g.gate } : {}), ...g.opts }); return true;
   }
-  if (fn === 'bind' && a.length >= 2 && a.length <= 4 && typeof a[0] === 'string' && typeof a[1] === 'string') {
+  if (fn === 'bind' && a.length >= 2 && a.length <= 4 && (typeof a[0] === 'string' || isAtomRef(a[0])) && (typeof a[1] === 'string' || isAtomRef(a[1]))) {
     const g = gateOpts(a.slice(2)); if (!g || !okObj(g.opts, ['id', 'args', 'order', 'priority', 'else', 'rebase'])) return false;
     (m.bindings ||= []).push({ slot: a[0], hook: a[1], ...(g.gate !== undefined ? { gate: g.gate } : {}), ...g.opts }); return true;
   }
@@ -228,6 +284,8 @@ export function parse(text) {
   }
   let ast;
   try { ast = parseJs(body); } catch { if (body) m.header = body; return m; }
+  ATOMS = atomsFromCode(body); // `atom(...)` declarations -> model.atoms; references resolve to ids below
+  if (ATOMS) m.atoms = clone(ATOMS.atoms);
   let header = '', structural = false, pos = 0, codeN = 0;
   const n = ast.body.length;
   ast.body.forEach((st, i) => {
@@ -282,10 +340,17 @@ function emitTrack(t) {
   return s;
 }
 export function generate(model) {
+  ATOMS = atomsFromModel(model);
   let out = model.header || '';
   const sep = () => { if (out && !out.endsWith('\n')) out += '\n'; };
   const line = (s) => { sep(); out += s + '\n'; };
   const call = (fn, ...args) => `hooks.${fn}(${args.map(a => emitArg(a)).join(', ')})`;
+  // atom declarations: emitted only when the kept text does not already declare them (then the text is re-emitted verbatim)
+  if (ATOMS) {
+    const text = (model.header || '') + (model.tracks || []).map(t => t.src || '').join('\n');
+    const declared = new Set([...text.matchAll(/\batom\s*\(\s*["']([^"']+)["']/g)].map(x => x[1]));
+    for (const a of Object.values(model.atoms)) if (!declared.has(a.name)) line(emitAtomDecl(a));
+  }
   for (const [k, v] of Object.entries(model.markers || {})) line(call('marker', k, v));
   for (const [k, v] of Object.entries(model.scopes || {})) line(call('scope', k, v));
   for (const [k, v] of Object.entries(model.slots || {})) line(call('slot', k, v));
@@ -402,6 +467,8 @@ export function graph(model) {
   for (const [k, v] of Object.entries(model.defs || {})) add({ id: `def:${k}`, kind: v.decorator ? 'decorator' : (v.params || v.taps ? 'module' : 'hook'), params: Object.keys(v.params || {}), taps: Object.keys(v.taps || {}) });
   for (const k of Object.keys(model.vars || {})) add({ id: `var:${k}`, kind: 'var' });
   for (const k of Object.keys(model.controls || {})) add({ id: `control:${k}`, kind: 'control', type: model.controls[k].type });
+  // atom cards exist only while something references them (ATOMS 9): built from the reference list, never from model.atoms
+  for (const c of AT.atomCards(model)) add({ ...c });
   const addSlot = (scope, name) => add({ id: `slot:${scope}/${name}`, kind: 'slot', scope, name });
   const publish = (name, from, port, track) => { const tn = add({ id: `tap:${name}`, kind: 'tap', name, facets: [] }); wire('pattern', from, port, tn.id, 'in'); if (track.ns) tn.ns = track.ns; };
   (model.tracks || []).forEach((t) => {
@@ -458,6 +525,11 @@ export function graph(model) {
       for (const mk of gateMarkers(b.gate, markers)) wire('gate', `marker:${mk}`, 'point', s.id, `gate:${id}`);
     });
   });
+  for (const c of AT.atomCards(model)) for (const r of c.refs) { // one param wire per referencing track (BLUEPRINT 4.2, badge = atom type)
+    const mt = /^\/tracks\/(\d+)\//.exec(r.path); if (!mt) continue;
+    const t = (model.tracks || [])[+mt[1]]; if (!t) continue;
+    const id = trackNode(t.name); if (byId.has(id)) wire('param', c.id, 'out', id, 'atom');
+  }
   return { nodes, wires };
 }
 

@@ -10,7 +10,7 @@ export function validate(schema, doc) {
     if ('const' in s && v !== s.const) return err('const');
     if (s.enum && !s.enum.includes(v)) return err('enum ' + JSON.stringify(v));
     if (s.type) { const ts = [].concat(s.type); if (!ts.some(t => typeOk(t, v))) return err('type ' + ts); }
-    if (s.oneOf) { const n = s.oneOf.filter(o => { const e = errors.length; const ok = go(o, v, path); errors.length = e; return ok; }).length; if (n !== 1) return err('oneOf'); }
+    if (s.oneOf) { const n = s.oneOf.filter(o => { const e = errors.length; const ok = go(o, v, path) && errors.length === e; errors.length = e; return ok; }).length; if (n !== 1) return err('oneOf'); } // a branch matches only when it adds no errors (go() keeps going after a failed `required`)
     if (s.allOf) s.allOf.forEach(o => go(o, v, path));
     if (typeof v === 'number') {
       if (s.minimum != null && v < s.minimum) err('minimum'); if (s.maximum != null && v > s.maximum) err('maximum');

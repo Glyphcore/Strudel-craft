@@ -1,0 +1,149 @@
+{
+ "_doc": "callee -> argument index -> atom types accepted there (docs/ATOMS.md section 5 step 2). Callee: `name`, `hooks.method`, or `.method` for any method call. Unlisted callees are not checked; `text` fits anywhere.",
+ "s": {
+  "0": [
+   "sound",
+   "mini"
+  ]
+ },
+ "sound": {
+  "0": [
+   "sound",
+   "mini"
+  ]
+ },
+ "note": {
+  "0": [
+   "note",
+   "mini",
+   "chord"
+  ]
+ },
+ "n": {
+  "0": [
+   "note",
+   "mini"
+  ]
+ },
+ "bank": {
+  "0": [
+   "bank",
+   "mini"
+  ]
+ },
+ ".bank": {
+  "0": [
+   "bank",
+   "mini"
+  ]
+ },
+ ".scale": {
+  "0": [
+   "scale"
+  ]
+ },
+ "scale": {
+  "0": [
+   "scale"
+  ]
+ },
+ "chord": {
+  "0": [
+   "chord",
+   "progression",
+   "mini"
+  ]
+ },
+ ".chord": {
+  "0": [
+   "chord",
+   "progression",
+   "mini"
+  ]
+ },
+ "tap": {
+  "0": [
+   "tapref",
+   "name"
+  ]
+ },
+ ".tap": {
+  "0": [
+   "name"
+  ]
+ },
+ ".use": {
+  "0": [
+   "slot",
+   "name"
+  ]
+ },
+ ".ns": {
+  "0": [
+   "name"
+  ]
+ },
+ ".wire": {
+  "1": [
+   "tapref"
+  ]
+ },
+ "hooks.bind": {
+  "0": [
+   "slot",
+   "name"
+  ],
+  "1": [
+   "hook",
+   "name"
+  ],
+  "2": [
+   "gate",
+   "point"
+  ]
+ },
+ "hooks.marker": {
+  "0": [
+   "name"
+  ],
+  "1": [
+   "point"
+  ]
+ },
+ "hooks.slot": {
+  "0": [
+   "slot",
+   "name"
+  ]
+ },
+ "hooks.wire": {
+  "1": [
+   "tapref"
+  ]
+ },
+ ".struct": {
+  "0": [
+   "mini"
+  ]
+ },
+ ".mask": {
+  "0": [
+   "mini"
+  ]
+ },
+ ".gain": {
+  "0": [
+   "mini"
+  ]
+ },
+ ".fast": {
+  "0": [
+   "mini"
+  ]
+ },
+ ".slow": {
+  "0": [
+   "mini"
+  ]
+ }
+}

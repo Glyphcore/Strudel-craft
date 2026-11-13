@@ -1,0 +1,211 @@
+[
+ {
+  "id": "mini",
+  "compiles": "pattern",
+  "quote": "\"",
+  "shape": [
+   "mini",
+   "pattern"
+  ],
+  "validator": "mini",
+  "editor": "steps",
+  "ops": [
+   "seq",
+   "stack",
+   "alt",
+   "rep",
+   "slow",
+   "euclid"
+  ]
+ },
+ {
+  "id": "sound",
+  "compiles": "pattern",
+  "quote": "\"",
+  "shape": [
+   "sound"
+  ],
+  "validator": "sound",
+  "editor": "chips",
+  "ops": [
+   "n"
+  ]
+ },
+ {
+  "id": "bank",
+  "compiles": "pattern",
+  "quote": "\"",
+  "shape": [
+   "enum"
+  ],
+  "validator": "bank",
+  "editor": "chips",
+  "ops": []
+ },
+ {
+  "id": "note",
+  "compiles": "pattern",
+  "quote": "\"",
+  "shape": [
+   "note"
+  ],
+  "validator": "note",
+  "editor": "piano",
+  "ops": [
+   "root",
+   "transpose"
+  ]
+ },
+ {
+  "id": "chord",
+  "compiles": "pattern",
+  "quote": "\"",
+  "shape": [
+   "note"
+  ],
+  "validator": "chord",
+  "editor": "chips",
+  "ops": [
+   "root",
+   "transpose"
+  ]
+ },
+ {
+  "id": "scale",
+  "compiles": "pattern",
+  "quote": "\"",
+  "shape": [
+   "scale"
+  ],
+  "validator": "scale",
+  "editor": "chips",
+  "ops": [
+   "root"
+  ]
+ },
+ {
+  "id": "voicing",
+  "compiles": "object",
+  "quote": null,
+  "shape": [
+   "voicing"
+  ],
+  "validator": "voicing",
+  "editor": "fields",
+  "ops": []
+ },
+ {
+  "id": "progression",
+  "compiles": "pattern",
+  "quote": "\"",
+  "shape": [
+   "mini"
+  ],
+  "validator": "progression",
+  "editor": "chips",
+  "ops": [
+   "seq",
+   "stack",
+   "alt",
+   "rep",
+   "slow",
+   "euclid"
+  ]
+ },
+ {
+  "id": "gate",
+  "compiles": "string",
+  "quote": "'",
+  "shape": [
+   "gate"
+  ],
+  "validator": "gate",
+  "editor": "gate",
+  "ops": [
+   "union",
+   "shift",
+   "until",
+   "from"
+  ]
+ },
+ {
+  "id": "point",
+  "compiles": "string",
+  "quote": "'",
+  "shape": [
+   "point"
+  ],
+  "validator": "point",
+  "editor": "point",
+  "ops": [
+   "after",
+   "before",
+   "to",
+   "shift"
+  ]
+ },
+ {
+  "id": "tapref",
+  "compiles": "string",
+  "quote": "'",
+  "shape": [
+   "tapref"
+  ],
+  "validator": "tapref",
+  "editor": "text",
+  "ops": [
+   "facet",
+   "in"
+  ]
+ },
+ {
+  "id": "slot",
+  "compiles": "string",
+  "quote": "'",
+  "shape": [
+   "slot"
+  ],
+  "validator": "slot",
+  "editor": "text",
+  "ops": [
+   "in"
+  ]
+ },
+ {
+  "id": "hook",
+  "compiles": "string",
+  "quote": "'",
+  "shape": [
+   "hook"
+  ],
+  "validator": "hook-expr",
+  "editor": "text",
+  "ops": [
+   "pipe",
+   "wrap"
+  ]
+ },
+ {
+  "id": "name",
+  "compiles": "string",
+  "quote": "'",
+  "shape": [
+   "name"
+  ],
+  "validator": "name",
+  "editor": "text",
+  "ops": [
+   "facet",
+   "in"
+  ]
+ },
+ {
+  "id": "text",
+  "compiles": "string",
+  "quote": "as declared",
+  "shape": [],
+  "validator": "none",
+  "editor": "text",
+  "ops": []
+ }
+]

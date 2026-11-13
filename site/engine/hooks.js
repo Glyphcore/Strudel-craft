@@ -793,6 +793,8 @@ export function install(S, opts = {}) {
     const f = hooks[k]; hooks[k] = (...a) => (frozen ? (k === 'bind' || k === 'set' ? undefined : hooks) : f(...a));
   }
   hooks.freeze = () => { frozen = true; return hooks; }; hooks.thaw = () => { frozen = false; return hooks; }; Object.defineProperty(hooks, 'frozen', { get: () => frozen });
+  // Pure grammar checks for atoms (site/engine/atoms.js validators): the runtime's own parsers, exposed read-only, no second copies.
+  hooks.parsers = Object.freeze({ gate: normGate, point: (s) => { try { return parsePoint(s, pctx()); } catch (e) { if (e.code === 'E_NO_CPS') return null; throw e; } }, ref: parseRef, expr: parseExpr });
   if (useGlobal) { globalThis.hooks = hooks; globalThis.tap = tapP; }
   return { hooks, tap: tapP };
 }

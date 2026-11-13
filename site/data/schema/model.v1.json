@@ -263,15 +263,29 @@
      }
     }
    }
+  },
+  "atoms": {
+   "type": "object",
+   "description": "atoms (docs/ATOMS.md section 4), keyed by id",
+   "additionalProperties": {
+    "$ref": "#/$defs/atom"
+   }
   }
  },
  "$defs": {
   "point": {
-   "type": [
-    "string",
-    "number"
-   ],
-   "description": "HOOKS_SYNTAX gate point: 16, \"17b\", \"17.3b\", \"90s\", \"1:30\", \"drop-2b\""
+   "oneOf": [
+    {
+     "type": [
+      "string",
+      "number"
+     ],
+     "description": "HOOKS_SYNTAX gate point: 16, \"17b\", \"17.3b\", \"90s\", \"1:30\", \"drop-2b\""
+    },
+    {
+     "$ref": "#/$defs/atomRef"
+    }
+   ]
   },
   "gate": {
    "oneOf": [
@@ -307,6 +321,9 @@
       },
       "unreached": {}
      }
+    },
+    {
+     "$ref": "#/$defs/atomRef"
     }
    ]
   },
@@ -326,7 +343,7 @@
    }
   },
   "arg": {
-   "description": "JSON literal, or {$param}, {$tap}, {$mini}, {$expr}, {$hook}, {$events}, {$curve}, {$code: 'arrow function text'}"
+   "description": "JSON literal, or {$param}, {$tap}, {$mini}, {$expr}, {$hook}, {$events}, {$curve}, {$atom}, {$code: 'arrow function text'}"
   },
   "step": {
    "type": "array",
@@ -409,10 +426,24 @@
      "type": "string"
     },
     "slot": {
-     "type": "string"
+     "oneOf": [
+      {
+       "type": "string"
+      },
+      {
+       "$ref": "#/$defs/atomRef"
+      }
+     ]
     },
     "hook": {
-     "type": "string"
+     "oneOf": [
+      {
+       "type": "string"
+      },
+      {
+       "$ref": "#/$defs/atomRef"
+      }
+     ]
     },
     "args": {
      "type": "object"
@@ -427,7 +458,14 @@
      "type": "number"
     },
     "else": {
-     "type": "string"
+     "oneOf": [
+      {
+       "type": "string"
+      },
+      {
+       "$ref": "#/$defs/atomRef"
+      }
+     ]
     },
     "rebase": {
      "type": "boolean"
@@ -445,7 +483,14 @@
      "type": "string"
     },
     "tap": {
-     "type": "string"
+     "oneOf": [
+      {
+       "type": "string"
+      },
+      {
+       "$ref": "#/$defs/atomRef"
+      }
+     ]
     },
     "range": {
      "type": "array"
@@ -605,7 +650,14 @@
        ]
       },
       "ref": {
-       "type": "string"
+       "oneOf": [
+        {
+         "type": "string"
+        },
+        {
+         "$ref": "#/$defs/atomRef"
+        }
+       ]
       },
       "slot": {
        "type": "string"
@@ -799,7 +851,14 @@
      "type": "string"
     },
     "dest": {
-     "type": "string"
+     "oneOf": [
+      {
+       "type": "string"
+      },
+      {
+       "$ref": "#/$defs/atomRef"
+      }
+     ]
     },
     "range": {
      "type": "array",
@@ -980,6 +1039,144 @@
       "markers": {
        "type": "array"
       }
+     }
+    }
+   }
+  },
+  "atom": {
+   "type": "object",
+   "required": [
+    "name",
+    "type"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "name": {
+     "type": "string",
+     "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+    },
+    "type": {
+     "type": "string",
+     "description": "id in the atom type registry"
+    },
+    "params": {
+     "type": "object",
+     "additionalProperties": {
+      "$ref": "#/$defs/atomParam"
+     }
+    },
+    "body": {
+     "description": "string with ${param} holes, or object, or composition node ($seq $stack $alt $rep $slow $euclid $union $shift $atom $param)"
+    },
+    "from": {
+     "type": "object",
+     "required": [
+      "atom"
+     ],
+     "properties": {
+      "atom": {
+       "type": "string"
+      },
+      "args": {
+       "type": "object"
+      },
+      "ops": {
+       "type": "array",
+       "items": {
+        "type": "array"
+       }
+      }
+     }
+    },
+    "rev": {
+     "type": "integer",
+     "minimum": 1
+    },
+    "hash": {
+     "type": "string"
+    },
+    "parent": {
+     "type": "string"
+    },
+    "doc": {
+     "type": "string"
+    },
+    "tags": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   },
+   "oneOf": [
+    {
+     "required": [
+      "body"
+     ]
+    },
+    {
+     "required": [
+      "from"
+     ]
+    }
+   ]
+  },
+  "atomParam": {
+   "type": "object",
+   "required": [
+    "shape"
+   ],
+   "properties": {
+    "shape": {
+     "type": "string",
+     "description": "number | enum | bool | note | sound | mini | name | atom:<type>"
+    },
+    "min": {
+     "type": "number"
+    },
+    "max": {
+     "type": "number"
+    },
+    "step": {
+     "type": "number"
+    },
+    "unit": {
+     "type": "string"
+    },
+    "curve": {
+     "enum": [
+      "lin",
+      "exp",
+      "log",
+      "db",
+      "bipolar"
+     ]
+    },
+    "options": {
+     "type": "array"
+    },
+    "default": {}
+   }
+  },
+  "atomRef": {
+   "type": "object",
+   "required": [
+    "$atom"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "$atom": {
+     "type": "string",
+     "description": "atom id, or catalog ref such as snd:bd"
+    },
+    "args": {
+     "type": "object"
+    },
+    "ops": {
+     "type": "array",
+     "description": "composition ops applied at the use site, in order: [[\"after\"], [\"shift\", \"2b\"]]",
+     "items": {
+      "type": "array"
      }
     }
    }

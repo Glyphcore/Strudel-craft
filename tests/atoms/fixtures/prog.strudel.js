@@ -1,0 +1,5 @@
+atom("kick4", { type: "mini", params: { n: { shape: "number", min: 1, max: 16, step: 1, default: 4 } }, body: "bd*${n}" })
+atom("backbeat", { type: "mini", body: "~ sd ~ sd" })
+atom("hats", { type: "mini", params: { n: { shape: "number", min: 1, max: 32, step: 1, default: 8 }, snd: { shape: "sound", default: "hh" } }, body: "${snd}*${n}" })
+$: s(atoms.kick4.stack(atoms.backbeat))
+$: s(atoms.hats({ n: 16, snd: "oh" })).gain(0.4)

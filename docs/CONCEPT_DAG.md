@@ -10,5 +10,5 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | spectral-freeze-paulstretch | local-samples-ir-bounce | issued | #5 |
 | envelope-follower-ducking | issues-protocol | accepted | #6 |
 | granulator | local-samples-ir-bounce | accepted | #7 |
-| vocoder | issues-protocol | issued | #8 |
+| vocoder | issues-protocol | accepted | #8 |
 | external-renderers-sf2-ks | local-samples-ir-bounce | issued | #9 |

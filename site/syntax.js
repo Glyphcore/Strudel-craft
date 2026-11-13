@@ -15,6 +15,7 @@ const HAS = {
   word: () => typeof window.word === 'function' || !window.Pattern,
   ghost: () => !!(sc.intellisense && sc.intellisense.registerInline),
   workspace: () => !!(sc.palette && sc.workspace && sc.range),
+  capture: () => !!sc.capture,
 };
 const data = fetch('data/syntax.json').then((r) => r.json()).catch(() => ({ sections: [] }));
 

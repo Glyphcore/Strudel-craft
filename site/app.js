@@ -723,7 +723,18 @@ async function boot() {
   }
 }
 /* transport hook for transport-range.js / palette.js */
-window.strudelCraft.transport = { play: () => play(), stop: () => stop(), toggle: () => toggle(), get playing() { return S.playing; }, setMaster: (db) => setMaster(db), get masterDb() { return S.master; } };
+window.strudelCraft.transport = { play: () => play(), stop: () => stop(), toggle: () => toggle(), get playing() { return S.playing; }, setMaster: (db) => setMaster(db), get masterDb() { return S.master; },
+  /* capture.js hooks: master bus (post master level, what is heard), the source the transport plays, and an idle compile for offline renders */
+  get bus() { return Bus.ctx ? { ctx: Bus.ctx, node: Bus.gain, own: Bus.own } : null; },
+  get scheduler() { return Engine.scheduler; },
+  source: () => { const s = S.playing ? currentSource(S.srcView || 'rack') : currentSource(); return s && { kind: s.kind, id: s.id, title: s.title, code: s.code, samples: !!s.samples, empty: !!s.empty }; },
+  async compile() {
+    const src = S.playing ? currentSource(S.srcView || 'rack') : currentSource(); if (!src || src.empty) throw new Error('Nothing to render: pick a recipe or add Stack layers');
+    if (!S.playing && !Engine.started) await Engine.idle(src.code, () => true, playView());
+    else await Engine.load();
+    if (src.samples && !Engine.samplesLoaded) { for (const m of SAMPLE_MAPS) await window.samples(m); Engine.samplesLoaded = true; }
+    const sch = Engine.scheduler; return { pattern: sch && sch.pattern, cps: (sch && sch.cps) || S.tempo / 240, code: src.code, title: src.title, kind: src.kind };
+  } };
 window.strudelCraft.engineState = () => ({ ...Engine.state, scheduler: Engine.scheduler, playing: S.playing, srcView: S.srcView || 'rack' });
 window.__sc = { S, Engine, Bus, play, stop, select, setView, History, toggleStack };
 document.addEventListener('DOMContentLoaded', boot);

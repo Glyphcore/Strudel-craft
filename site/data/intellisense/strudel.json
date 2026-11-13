@@ -630,6 +630,62 @@
    "category": "site api"
   },
   {
+   "label": "strudelCraft.capture.open",
+   "method": false,
+   "detail": "open()",
+   "info": "Open the capture sheet (record button in the transport; Ctrl+K > Capture).",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.capture.configure",
+   "method": false,
+   "detail": "configure({mode, n, countIn, preRoll, name, bits, fold})",
+   "info": "Set capture options: mode 'free'|'cycles'|'until', n cycles (1-64), count-in cycles, pre-roll seconds, take name, WAV bits 16|24, fold tail on exact renders. Persisted in sc.capture.*.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.capture.record",
+   "method": false,
+   "detail": "record(opts?)",
+   "info": "Arm and record a take of the master output (starts the transport if stopped). Cycles mode cuts on cycle boundaries; ignored while a take is running.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.capture.stop",
+   "method": false,
+   "detail": "stop()",
+   "info": "Stop the running take and save it (a cycles take stopped early keeps what was recorded).",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.capture.renderExact",
+   "method": false,
+   "detail": "renderExact(n)",
+   "info": "Render n cycles of the current Rack/Stack program offline (OfflineAudioContext): sample-exact length n/cps*sampleRate, saved as a take.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.capture.list",
+   "method": false,
+   "detail": "list() -> Promise<meta[]>",
+   "info": "Takes on this device, newest first: {id, name, frames, sr, cycles, cps, mode, exact, how, source, peaks}.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.capture.download",
+   "method": false,
+   "detail": "download(id, 'wav16'|'wav24'|'comp'|'json')",
+   "info": "Download a take: WAV 16/24 bit, compressed (webm/opus where supported) or the JSON sidecar. File name <name>_<cycles>c_<cps>cps.<ext>.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.capture.encodeWav",
+   "method": false,
+   "detail": "encodeWav(take, bits) -> Blob",
+   "info": "PCM WAV (16 or 24 bit, stereo) with a LIST/INFO chunk holding name, cps, cycles and the pattern source.",
+   "category": "site api"
+  },
+  {
    "label": "atom",
    "method": false,
    "detail": "atom(name, { type, params?, body | from, doc? })",

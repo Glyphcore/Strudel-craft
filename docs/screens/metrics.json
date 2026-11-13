@@ -1,5 +1,5 @@
 {
- "date": "2026-11-13T13:59:40.590Z",
+ "date": "2026-11-13T15:57:13.988Z",
  "chromium": "153.0.8010.12",
  "recipes": [
   {
@@ -9,7 +9,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Four-on-the-floor",
-   "peak": "-7.4 dB",
+   "peak": "-8.1 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -20,7 +20,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Offbeat hat",
-   "peak": "-19.7 dB",
+   "peak": "-22.1 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -31,7 +31,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Euclid groove",
-   "peak": "-9.1 dB",
+   "peak": "-9.3 dB",
    "haps_next4cycles": 40,
    "ok": true
   },
@@ -42,7 +42,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Reese-style detuned bass",
-   "peak": "-17.2 dB",
+   "peak": "-16.4 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -53,7 +53,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Sub bass",
-   "peak": "-18.0 dB",
+   "peak": "-21.4 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -64,7 +64,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Pad swell",
-   "peak": "-16.4 dB",
+   "peak": "-17.3 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -75,7 +75,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Filter sweep build",
-   "peak": "-17.1 dB",
+   "peak": "-15.1 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -86,7 +86,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Riser",
-   "peak": "-28.8 dB",
+   "peak": "-28.7 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -97,7 +97,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Breakdown/drop arrangement over bars",
-   "peak": "-4.6 dB",
+   "peak": "-10.2 dB",
    "haps_next4cycles": 48,
    "ok": true
   },
@@ -108,7 +108,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Half-time",
-   "peak": "-15.4 dB",
+   "peak": "-13.6 dB",
    "haps_next4cycles": 40,
    "ok": true
   },
@@ -119,7 +119,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Call-and-response",
-   "peak": "-19.5 dB",
+   "peak": "-16.3 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -130,7 +130,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Minor motif",
-   "peak": "-22.6 dB",
+   "peak": "-22.7 dB",
    "haps_next4cycles": 8,
    "ok": true
   },
@@ -141,7 +141,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Chord stabs",
-   "peak": "-21.6 dB",
+   "peak": "-19.3 dB",
    "haps_next4cycles": 38,
    "ok": true
   },
@@ -152,7 +152,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Sidechain pump",
-   "peak": "-10.9 dB",
+   "peak": "-8.7 dB",
    "haps_next4cycles": 24,
    "ok": true
   },
@@ -163,7 +163,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Fade out",
-   "peak": "-25.1 dB",
+   "peak": "-22.6 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -174,7 +174,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Synth kick (no samples)",
-   "peak": "-20.1 dB",
+   "peak": "-25.0 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -185,7 +185,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Noise tick on the offbeats",
-   "peak": "-25.5 dB",
+   "peak": "-30.1 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -196,7 +196,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Noise backbeat",
-   "peak": "-43.3 dB",
+   "peak": "-43.0 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -207,7 +207,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Euclid low pulse",
-   "peak": "-27.8 dB",
+   "peak": "-25.3 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -218,7 +218,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Syncopated bass line",
-   "peak": "-19.6 dB",
+   "peak": "-17.6 dB",
    "haps_next4cycles": 20,
    "ok": true
   },
@@ -229,7 +229,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Wide detuned pad",
-   "peak": "-20.9 dB",
+   "peak": "-19.1 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -240,7 +240,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Short pluck line",
-   "peak": "-20.0 dB",
+   "peak": "-17.5 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -251,7 +251,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Minor arpeggio",
-   "peak": "-22.3 dB",
+   "peak": "-21.0 dB",
    "haps_next4cycles": 48,
    "ok": true
   },
@@ -262,7 +262,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Four-chord progression",
-   "peak": "-10.7 dB",
+   "peak": "-11.0 dB",
    "haps_next4cycles": 19,
    "ok": true
   },
@@ -284,7 +284,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Echo tail",
-   "peak": "-26.9 dB",
+   "peak": "-25.4 dB",
    "haps_next4cycles": 8,
    "ok": true
   },
@@ -295,7 +295,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Reversed copy on the right",
-   "peak": "-20.8 dB",
+   "peak": "-20.0 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -306,7 +306,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Big reverb splash",
-   "peak": "-21.5 dB",
+   "peak": "-20.1 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -317,7 +317,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Dry and tight",
-   "peak": "-24.6 dB",
+   "peak": "-23.1 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -328,7 +328,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Phaser movement",
-   "peak": "-30.9 dB",
+   "peak": "-30.6 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -339,7 +339,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Tremolo shimmer",
-   "peak": "-21.6 dB",
+   "peak": "-21.2 dB",
    "haps_next4cycles": 12,
    "ok": true
   },
@@ -350,7 +350,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Vowel formant colour",
-   "peak": "-32.5 dB",
+   "peak": "-32.2 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -361,7 +361,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing FM bell",
-   "peak": "-14.0 dB",
+   "peak": "-18.4 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -372,7 +372,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Lo-fi crunch",
-   "peak": "-23.2 dB",
+   "peak": "-22.8 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -383,7 +383,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Drifting filter",
-   "peak": "-19.3 dB",
+   "peak": "-22.5 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -394,7 +394,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Crescendo",
-   "peak": "-32.3 dB",
+   "peak": "-32.0 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -405,7 +405,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Accent pattern",
-   "peak": "-21.3 dB",
+   "peak": "-21.2 dB",
    "haps_next4cycles": 32,
    "ok": true
   },
@@ -416,7 +416,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Sidechain pump (synth)",
-   "peak": "-21.6 dB",
+   "peak": "-21.5 dB",
    "haps_next4cycles": 20,
    "ok": true
   },
@@ -427,7 +427,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Build and drop sections",
-   "peak": "-18.5 dB",
+   "peak": "-25.4 dB",
    "haps_next4cycles": 30,
    "ok": true
   },
@@ -449,7 +449,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Intro with an opening filter",
-   "peak": "-23.6 dB",
+   "peak": "-23.9 dB",
    "haps_next4cycles": 16,
    "ok": true
   },
@@ -460,7 +460,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Random thinning",
-   "peak": "-25.9 dB",
+   "peak": "-28.4 dB",
    "haps_next4cycles": 34,
    "ok": true
   },
@@ -482,7 +482,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Dark drone",
-   "peak": "-24.3 dB",
+   "peak": "-24.0 dB",
    "haps_next4cycles": 4,
    "ok": true
   },
@@ -493,7 +493,7 @@
    "evalError": null,
    "schedulerError": null,
    "status": "Playing Sparse, spacious line",
-   "peak": "-22.7 dB",
+   "peak": "-22.8 dB",
    "haps_next4cycles": 8,
    "ok": true
   },
@@ -511,54 +511,53 @@
  ],
  "frame": {
   "desktop_1440": {
-   "n": 361,
+   "n": 360,
    "mean_ms": 16.67,
    "p95_ms": 16.8,
    "max_ms": 16.8,
    "viz_draw": {
-    "n": 362,
-    "mean_ms": 0.9,
-    "p95_ms": 1.4,
-    "max_ms": 5.7
+    "n": 361,
+    "mean_ms": 0.76,
+    "p95_ms": 1.1,
+    "max_ms": 1.9
    }
   },
   "phone_390": {
    "n": 360,
    "mean_ms": 16.67,
-   "p95_ms": 16.7,
+   "p95_ms": 16.8,
    "max_ms": 16.8,
    "viz_draw": {
     "n": 361,
-    "mean_ms": 0.71,
+    "mean_ms": 0.68,
     "p95_ms": 1,
-    "max_ms": 2.7
+    "max_ms": 3
    }
   },
   "phone_390_cpu4x": {
-   "n": 302,
-   "mean_ms": 19.92,
+   "n": 260,
+   "mean_ms": 23.14,
    "p95_ms": 33.4,
-   "max_ms": 50.1,
+   "max_ms": 66.6,
    "viz_draw": {
-    "n": 303,
-    "mean_ms": 2.71,
-    "p95_ms": 4,
-    "max_ms": 7
+    "n": 261,
+    "mean_ms": 3.13,
+    "p95_ms": 4.8,
+    "max_ms": 6.9
    }
   },
   "reduced_motion_viz": {
    "n": 30,
-   "mean_ms": 99.99,
+   "mean_ms": 100,
    "p95_ms": 100.1,
    "max_ms": 100.1
   }
  },
  "recipes_audible": 46,
  "graph": {
-  "date": "2026-11-13T15:30:22.453Z",
   "shell": {
    "graph_files_requested_with_shell": 0,
-   "shell_same_origin_bytes": 1139750
+   "shell_same_origin_bytes": 1156291
   },
   "two_views": {
    "added": [
@@ -667,7 +666,7 @@
    "nodes": 150,
    "wires": 300,
    "empty_raf_loop": {
-    "n": 120,
+    "n": 121,
     "mean_ms": 16.67,
     "p95_ms": 16.7,
     "p95_vsync_ms": 16.67,
@@ -675,45 +674,45 @@
     "max_ms": 16.8
    },
    "pan": {
-    "n": 239,
-    "mean_ms": 16.74,
+    "n": 240,
+    "mean_ms": 16.67,
     "p95_ms": 16.7,
     "p95_vsync_ms": 16.67,
-    "dropped_pct": 0.4,
-    "max_ms": 33.3
+    "dropped_pct": 0,
+    "max_ms": 16.8
    },
    "zoom": {
-    "n": 226,
-    "mean_ms": 17.7,
+    "n": 227,
+    "mean_ms": 17.62,
     "p95_ms": 16.8,
     "p95_vsync_ms": 16.67,
     "dropped_pct": 4,
-    "max_ms": 66.7
+    "max_ms": 66.6
    },
    "all": {
-    "n": 465,
-    "mean_ms": 17.2,
+    "n": 467,
+    "mean_ms": 17.13,
     "p95_ms": 16.8,
     "p95_vsync_ms": 16.67,
-    "dropped_pct": 2.2,
-    "max_ms": 66.7
+    "dropped_pct": 1.9,
+    "max_ms": 66.6
    },
    "cpu4x": {
     "pan": {
-     "n": 237,
-     "mean_ms": 16.88,
+     "n": 228,
+     "mean_ms": 17.54,
      "p95_ms": 16.8,
      "p95_vsync_ms": 16.67,
-     "dropped_pct": 1.3,
-     "max_ms": 33.4
+     "dropped_pct": 4.8,
+     "max_ms": 50
     },
     "zoom": {
-     "n": 84,
-     "mean_ms": 47.62,
+     "n": 87,
+     "mean_ms": 46.17,
      "p95_ms": 66.7,
      "p95_vsync_ms": 66.67,
-     "dropped_pct": 79.8,
-     "max_ms": 466.7
+     "dropped_pct": 78.2,
+     "max_ms": 500
     }
    }
   },
@@ -737,6 +736,158 @@
    "animations_without_reduce": 2
   }
  },
+ "atoms_ui": {
+  "derived_edit": {
+   "added": [
+    "k2: s(atoms.kick4({ n: 6 })).gain(0.5)"
+   ],
+   "removed": [
+    "k2: s(atoms.kick4({ n: 8 })).gain(0.5)"
+   ]
+  },
+  "body_edit": {
+   "commits": 1,
+   "diff": {
+    "added": [
+     "atom(\"kick4\", { type: \"mini\", params: { n: { shape: \"number\", min: 1, max: 16, step: 1, default: 4 } }, body: \"bd*${n} [~ sd]\", doc: \"four on the floor\" })"
+    ],
+    "removed": [
+     "atom(\"kick4\", { type: \"mini\", params: { n: { shape: \"number\", min: 1, max: 16, step: 1, default: 4 } }, body: \"bd*${n}\", doc: \"four on the floor\" })"
+    ]
+   }
+  },
+  "browser_pages": [
+   50,
+   100,
+   150
+  ],
+  "targets": {
+   "card": {
+    "n": 14,
+    "min_w": 110,
+    "min_h": 44,
+    "small": []
+   },
+   "browser": {
+    "n": 12,
+    "min_w": 44,
+    "min_h": 44,
+    "small": []
+   }
+  },
+  "contrast": {
+   "card": {
+    "min": 7.11,
+    "n": 36,
+    "worst": "span.gp-t \"par\""
+   },
+   "browser": {
+    "min": 7.11,
+    "n": 19,
+    "worst": "p.gx-hint \"Choose an atom for kick.\""
+   }
+  },
+  "type_badges": [
+   "MINI",
+   "GATE",
+   "MINI",
+   "MINI"
+  ],
+  "popover": {
+   "tap": 1,
+   "enter": 1,
+   "escape_closes": true,
+   "line_boxes_unchanged": true,
+   "count": [
+    {
+     "sites": 2,
+     "card": 2
+    },
+    {
+     "sites": 1,
+     "card": 1
+    }
+   ]
+  },
+  "keyboard": {
+   "steps": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "diff": {
+    "added": [
+     "hat: s(atoms.hats).gain(atoms.loud)"
+    ],
+    "removed": [
+     "hat: s(atoms.hats).gain(0.5)"
+    ]
+   }
+  },
+  "reduced_motion": {
+   "full": {
+    "appear": "ax-appear",
+    "ghosts": 1,
+    "ghostAnim": "ax-leave"
+   },
+   "reduce": {
+    "appear": "none",
+    "ghosts": 0,
+    "ghostAnim": "none"
+   }
+  },
+  "lazy": {
+   "declared_5000": {
+    "first_paint_ms": 86.3,
+    "dom_cards": 3,
+    "scene_cards": 3
+   },
+   "declared_3": {
+    "first_paint_ms": 118.9,
+    "dom_cards": 3
+   },
+   "delta_pct": -27.4,
+   "rounds": [
+    {
+     "small": {
+      "ms": 215.1,
+      "dom_cards": 3,
+      "scene_cards": 3
+     },
+     "big": {
+      "ms": 86.3,
+      "dom_cards": 3,
+      "scene_cards": 3
+     }
+    },
+    {
+     "small": {
+      "ms": 118.9,
+      "dom_cards": 3,
+      "scene_cards": 3
+     },
+     "big": {
+      "ms": 81.9,
+      "dom_cards": 3,
+      "scene_cards": 3
+     }
+    },
+    {
+     "small": {
+      "ms": 112.1,
+      "dom_cards": 3,
+      "scene_cards": 3
+     },
+     "big": {
+      "ms": 153.3,
+      "dom_cards": 3,
+      "scene_cards": 3
+     }
+    }
+   ]
+  }
+ },
  "perform": {
   "take": {
    "events": 4,
@@ -747,23 +898,23 @@
    }
   },
   "lane": {
-   "points": 13,
+   "points": 20,
    "events_next_cycle": [
     [
-     2860,
-     2860
+     1340,
+     1340
     ],
     [
-     960,
-     960
+     3430,
+     3430
     ],
     [
-     3240,
-     3240
+     3134,
+     3134
     ],
     [
-     2881,
-     2881
+     2955,
+     2955
     ]
    ]
   },
@@ -811,33 +962,33 @@
   "latency_phone": {
    "work": {
     "n": 40,
-    "mean_ms": 0.405,
-    "p95_ms": 0.6,
-    "max_ms": 1.5
+    "mean_ms": 0.39,
+    "p95_ms": 0.9,
+    "max_ms": 1.3
    },
    "from_event": {
     "n": 40,
-    "mean_ms": 25.918,
-    "p95_ms": 31.5,
-    "max_ms": 31.6
+    "mean_ms": 16.917,
+    "p95_ms": 30.6,
+    "max_ms": 35.3
    }
   },
   "latency_phone_cpu4x": {
    "work": {
     "n": 20,
-    "mean_ms": 2.445,
-    "p95_ms": 5,
-    "max_ms": 5
+    "mean_ms": 3,
+    "p95_ms": 6,
+    "max_ms": 6
    },
    "from_event": {
     "n": 20,
-    "mean_ms": 42.525,
-    "p95_ms": 75,
-    "max_ms": 75
+    "mean_ms": 47.08,
+    "p95_ms": 78,
+    "max_ms": 78
    }
   },
   "shell_growth": {
-   "gzip_bytes": 5077,
+   "gzip_bytes": 3456,
    "commits": [
     "5174f96",
     "6ef850d",
@@ -848,7 +999,6 @@
     "9800995"
    ],
    "per": [
-    "6ef850d site/data/syntax.json +1621",
     "9ef74c3 site/engine/controls.js +436",
     "9ef74c3 site/engine/index.js +466",
     "7e8ece3 site/style.css -996",
@@ -861,12 +1011,7 @@
    ]
   }
  },
- "console_errors": [
-  "[reduced] console.error: Failed to load resource: net::ERR_FAILED",
-  "[reduced] console.error: Failed to load resource: net::ERR_FAILED",
-  "[reduced] console.error: Failed to load resource: net::ERR_FAILED",
-  "[reduced] console.error: Failed to load resource: net::ERR_FAILED"
- ],
+ "console_errors": [],
  "checks": [
   {
    "name": "no native alert/prompt/confirm in site/",
@@ -986,12 +1131,12 @@
   {
    "name": "master meter shows signal",
    "ok": true,
-   "detail": "-18.5 dB"
+   "detail": "-18.0 dB"
   },
   {
    "name": "frame time during playback measured (1440)",
    "ok": true,
-   "detail": "{\"n\":361,\"mean_ms\":16.67,\"p95_ms\":16.8,\"max_ms\":16.8,\"viz_draw\":{\"n\":362,\"mean_ms\":0.9,\"p95_ms\":1.4,\"max_ms\":5.7}}"
+   "detail": "{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.8,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":0.76,\"p95_ms\":1.1,\"max_ms\":1.9}}"
   },
   {
    "name": "Space stops playback",
@@ -1036,7 +1181,7 @@
   {
    "name": "frame time during playback measured (390, and 4x CPU throttle)",
    "ok": true,
-   "detail": "{\"normal\":{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.7,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":0.71,\"p95_ms\":1,\"max_ms\":2.7}},\"cpu4x\":{\"n\":302,\"mean_ms\":19.92,\"p95_ms\":33.4,\"max_ms\":50.1,\"viz_draw\":{\"n\":303,\"mean_ms\":2.71,\"p95_ms\":4,\"max_ms\":7}}}"
+   "detail": "{\"normal\":{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.8,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":0.68,\"p95_ms\":1,\"max_ms\":3}},\"cpu4x\":{\"n\":260,\"mean_ms\":23.14,\"p95_ms\":33.4,\"max_ms\":66.6,\"viz_draw\":{\"n\":261,\"mean_ms\":3.13,\"p95_ms\":4.8,\"max_ms\":6.9}}}"
   },
   {
    "name": "reduced motion: transitions are 0s",
@@ -1051,7 +1196,7 @@
   {
    "name": "reduced motion: visualiser throttled to <= 10 fps",
    "ok": true,
-   "detail": "{\"n\":30,\"mean_ms\":99.99,\"p95_ms\":100.1,\"max_ms\":100.1}"
+   "detail": "{\"n\":30,\"mean_ms\":100,\"p95_ms\":100.1,\"max_ms\":100.1}"
   },
   {
    "name": "works offline after first load (service worker)",
@@ -1061,17 +1206,17 @@
   {
    "name": "compose.html redirects into the app (stack)",
    "ok": true,
-   "detail": "http://127.0.0.1:38343/index.html#stack"
+   "detail": "http://127.0.0.1:38917/index.html#stack"
   },
   {
    "name": "plugins.html redirects into the app (ref)",
    "ok": true,
-   "detail": "http://127.0.0.1:38343/index.html#ref"
+   "detail": "http://127.0.0.1:38917/index.html#ref"
   },
   {
    "name": "practices.html redirects into the app (practice)",
    "ok": true,
-   "detail": "http://127.0.0.1:38343/index.html#practice"
+   "detail": "http://127.0.0.1:38917/index.html#practice"
   },
   {
    "name": "deep link #r/<id> selects that recipe",
@@ -1081,7 +1226,7 @@
   {
    "name": "graph: graph.js / graph.css are not loaded with the shell",
    "ok": true,
-   "detail": "0 graph requests on first load; shell 1055008 B same-origin"
+   "detail": "0 graph requests on first load; shell 1156291 B same-origin"
   },
   {
    "name": "graph: view opens from the nav and loads graph.js on first open",
@@ -1126,7 +1271,7 @@
   {
    "name": "graph: ports and controls >= 44x44 CSS px at mid zoom (390px)",
    "ok": true,
-   "detail": "{\"zoom_100\":{\"n\":22,\"ports\":4,\"min_w\":46.3,\"min_h\":44,\"port_min\":[110,52],\"small\":[]},\"zoom_85\":{\"n\":22,\"ports\":4,\"min_w\":46.3,\"min_h\":44,\"port_min\":[93.5,44.2],\"small\":[]}}"
+   "detail": "{\"zoom_100\":{\"n\":23,\"ports\":4,\"min_w\":46.3,\"min_h\":44,\"port_min\":[110,52],\"small\":[]},\"zoom_85\":{\"n\":23,\"ports\":4,\"min_w\":46.3,\"min_h\":44,\"port_min\":[93.5,44.2],\"small\":[]}}"
   },
   {
    "name": "graph: long-press + tap multi-select, Collapse yields one component node with exported ports; entering shows the breadcrumb",
@@ -1146,7 +1291,7 @@
   {
    "name": "graph: 150-node / 300-wire fixture pans and zooms with p95 frame time <= 16.7 ms (phone profile)",
    "ok": true,
-   "detail": "{\"profile\":\"smoke phone profile: 390x844, dpr 2, touch\",\"nodes\":150,\"wires\":300,\"empty_raf_loop\":{\"n\":120,\"mean_ms\":16.67,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"pan\":{\"n\":240,\"mean_ms\":16.67,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"zoom\":{\"n\":229,\"mean_ms\":17.47,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":3.1,\"max_ms\":66.7},\"all\":{\"n\":469,\"mean_ms\":17.06,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":1.5,\"max_ms\":66.7},\"cpu4x\":{\"pan\":{\"n\":233,\"mean_ms\":17.17,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":3,\"max_ms\":33.4},\"zoom\":{\"n\":60,\"mean_ms\":67.22,\"p95_ms\":100,\"p95_vsync_ms\":100,\"dropped_pct\":100,\"max_ms\":616.6}}}"
+   "detail": "{\"profile\":\"smoke phone profile: 390x844, dpr 2, touch\",\"nodes\":150,\"wires\":300,\"empty_raf_loop\":{\"n\":121,\"mean_ms\":16.67,\"p95_ms\":16.7,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"pan\":{\"n\":240,\"mean_ms\":16.67,\"p95_ms\":16.7,\"p95_vsync_ms\":16.67,\"dropped_pct\":0,\"max_ms\":16.8},\"zoom\":{\"n\":227,\"mean_ms\":17.62,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":4,\"max_ms\":66.6},\"all\":{\"n\":467,\"mean_ms\":17.13,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":1.9,\"max_ms\":66.6},\"cpu4x\":{\"pan\":{\"n\":228,\"mean_ms\":17.54,\"p95_ms\":16.8,\"p95_vsync_ms\":16.67,\"dropped_pct\":4.8,\"max_ms\":50},\"zoom\":{\"n\":87,\"mean_ms\":46.17,\"p95_ms\":66.7,\"p95_vsync_ms\":66.67,\"dropped_pct\":78.2,\"max_ms\":500}}}"
   },
   {
    "name": "graph: keyboard-only wire through the outline list (Connect to...)",
@@ -1171,12 +1316,117 @@
   {
    "name": "graph: text contrast >= 7:1 (dark 1440, dark 390, light 390)",
    "ok": true,
-   "detail": "[{\"min\":7.11,\"n\":75,\"worst\":\"button.gx-tab \\\"Outline\\\" rgb(154, 163, 174) on rgb(18,22,27)\"},{\"min\":7.11,\"n\":119,\"worst\":\"button.gx-tab \\\"Code\\\" rgb(154, 163, 174) on rgb(18,22,27)\"},{\"min\":7.34,\"n\":119,\"worst\":\"button.gx-tab \\\"Code\\\" rgb(77, 84, 93) on rgb(251,250,247)\"}]"
+   "detail": "[{\"min\":7.11,\"n\":76,\"worst\":\"button.gx-tab \\\"Outline\\\" rgb(154, 163, 174) on rgb(18,22,27)\"},{\"min\":7.11,\"n\":120,\"worst\":\"button.gx-tab \\\"Code\\\" rgb(154, 163, 174) on rgb(18,22,27)\"},{\"min\":7.34,\"n\":120,\"worst\":\"button.gx-tab \\\"Code\\\" rgb(77, 84, 93) on rgb(251,250,247)\"}]"
   },
   {
    "name": "graph: reduced motion runs no wire animation; live state still shown",
    "ok": true,
    "detail": "{\"anims\":0,\"live\":true,\"pulse\":\"0.6\",\"badge\":\"\\\" ▸\\\"\",\"animations_without_reduce\":2}"
+  },
+  {
+   "name": "atoms ui: atoms-ui.js / atoms-pop.js are not loaded with the shell",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "atoms ui: atoms-ui.js loads with the Graph view",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "atoms ui: cards only for referenced atoms (5 declared, kick4 + derived kick4({ n: 8 }) + hats)",
+   "ok": true,
+   "detail": "hats x1, kick4 x1, kick4* x1; 3 in DOM"
+  },
+  {
+   "name": "atoms ui: derived atoms.kick4({ n: 8 }) has its own card linked to the kick4 card",
+   "ok": true,
+   "detail": "[\"atom:az1dsgr>atom:az1dsgr~{\\\"args\\\":{\\\"n\\\":8},\\\"ops\\\":[]}\"]"
+  },
+  {
+   "name": "atoms ui: changing n on the derived card rewrites only that argument",
+   "ok": true,
+   "detail": "{\"added\":[\"k2: s(atoms.kick4({ n: 6 })).gain(0.5)\"],\"removed\":[\"k2: s(atoms.kick4({ n: 8 })).gain(0.5)\"]}"
+  },
+  {
+   "name": "atoms ui: browser from a param port filters by the port (gain: MINI)",
+   "ok": true,
+   "detail": "MINI"
+  },
+  {
+   "name": "atoms ui: a second port on the same atom raises the shown count to 2, no second card",
+   "ok": true,
+   "detail": "after 1: 1; after 2: 2 shown \"×2\""
+  },
+  {
+   "name": "atoms ui: removing both references removes the card; undo brings it back at the same position",
+   "ok": true,
+   "detail": "gone 0; before 330px,248px; after undo 330px,248px"
+  },
+  {
+   "name": "atoms ui: editing the card body updates every referencing node preview after one commit",
+   "ok": true,
+   "detail": "commits 1; s(atoms.kick4 \"bd*4 [~ sd]\").gain(\"0.8 0.6\") | s(atoms.kick4(n: 6) \"bd*6 [~ sd]\").gain(0.5)"
+  },
+  {
+   "name": "atoms ui: the code shows one changed declaration line",
+   "ok": true,
+   "detail": "{\"added\":[\"atom(\\\"kick4\\\", { type: \\\"mini\\\", params: { n: { shape: \\\"number\\\", min: 1, max: 16, step: 1, default: 4 } }, body: \\\"bd*${n} [~ sd]\\\", doc: \\\"four on the floor\\\" })\"],\"removed\":[\"atom(\\\"kick4\\\", { type: \\\"mini\\\", params: { n: { shape: \\\"number\\\", min: 1, max: 16, step: 1, default: 4 } }, body: \\\"bd*${n}\\\", doc: \\\"four on the floor\\\" })\"]}"
+  },
+  {
+   "name": "atoms ui: browser from a gate port lists only gate / point atoms",
+   "ok": true,
+   "detail": "[[\"atDrop\",\"GATE\"],[\"onDrop\",\"POINT\"]]"
+  },
+  {
+   "name": "atoms ui: choosing a gate atom sets the binding gate",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "atoms ui: catalog namespace shows 50 rows per page; More and scroll fetch the next page",
+   "ok": true,
+   "detail": "50 -> More 100 -> scroll 150"
+  },
+  {
+   "name": "atoms ui: card controls and browser rows at least 44 x 44 CSS px at 390",
+   "ok": true,
+   "detail": "{\"tCard\":{\"n\":14,\"min_w\":110,\"min_h\":44,\"small\":[]},\"tBrowser\":{\"n\":12,\"min_w\":44,\"min_h\":44,\"small\":[]}}"
+  },
+  {
+   "name": "atoms ui: card and browser text contrast at least 7:1; type shown as a text badge",
+   "ok": true,
+   "detail": "{\"cCard\":{\"min\":7.11,\"n\":36,\"worst\":\"span.gp-t \\\"par\\\"\"},\"cBrowser\":{\"min\":7.11,\"n\":19,\"worst\":\"p.gx-hint \\\"Choose an atom for kick.\\\"\"},\"badges\":[\"MINI\",\"GATE\",\"MINI\",\"MINI\"]}"
+  },
+  {
+   "name": "atoms ui: popover opens on tap and on Enter with the caret on a reference (Enter inserts nothing)",
+   "ok": true,
+   "detail": "tap 1, enter 1; \"MINIatoms.kick4×\"bd*4\"nEdit definitionDerive…DetachGo to card\""
+  },
+  {
+   "name": "atoms ui: Escape closes the popover; opening it shifts no code line",
+   "ok": true,
+   "detail": "63,10,314,88 63,98,314,22 63,120,314,44 63,164,314,22 0,0,0,0 | 63,10,314,88 63,98,314,22 63,120,314,44 63,164,314,22 0,0,0,0"
+  },
+  {
+   "name": "atoms ui: Detach replaces that one reference with its compiled string; the card count drops by 1",
+   "ok": true,
+   "detail": "{\"sites\":2,\"card\":2} -> {\"sites\":1,\"card\":1}"
+  },
+  {
+   "name": "atoms ui: keyboard only (Tab, Enter, type, ArrowDown) creates an atom reference on a port",
+   "ok": true,
+   "detail": "steps true,true,true,true; {\"added\":[\"hat: s(atoms.hats).gain(atoms.loud)\"],\"removed\":[\"hat: s(atoms.hats).gain(0.5)\"]}"
+  },
+  {
+   "name": "atoms ui: card appear / disappear animate, and not with reduced motion",
+   "ok": true,
+   "detail": "{\"full\":{\"appear\":\"ax-appear\",\"ghosts\":1,\"ghostAnim\":\"ax-leave\"},\"reduce\":{\"appear\":\"none\",\"ghosts\":0,\"ghostAnim\":\"none\"}}"
+  },
+  {
+   "name": "atoms ui: 5000 declared atoms and 3 referenced render exactly 3 atom cards",
+   "ok": true,
+   "detail": "[[3,3],[3,3],[3,3]]"
   },
   {
    "name": "perform: tab strip is role=tablist with bank and board tabs",
@@ -1196,12 +1446,12 @@
   {
    "name": "perform: bar-quantised pad shows the queued mark until its boundary, then on; reduced motion: no animation, beats as text",
    "ok": true,
-   "detail": "{\"qd\":{\"state\":\"queued\",\"mark\":\"◔\",\"beats\":\"4 beats\",\"anim\":\"ppQ\"},\"qr\":{\"state\":\"queued\",\"beats\":\"3 beats\",\"anim\":\"none\",\"label\":\"Pad 0,0 lead, queued, 3 beats\"},\"qon\":\"on\"}"
+   "detail": "{\"qd\":{\"state\":\"queued\",\"mark\":\"◔\",\"beats\":\"3 beats\",\"anim\":\"ppQ\"},\"qr\":{\"state\":\"queued\",\"beats\":\"3 beats\",\"anim\":\"none\",\"label\":\"Pad 0,0 lead, queued, 3 beats\"},\"qon\":\"on\"}"
   },
   {
    "name": "perform: looper records a 1-bar take, Save stores a performance record, the loaded take replays",
    "ok": true,
-   "detail": "{\"events\":4,\"kind\":\"performance\",\"want\":[5.114583333333333,5.25],\"replayed\":[5.114583333333333,5.25]}"
+   "detail": "{\"events\":4,\"kind\":\"performance\",\"want\":[7.104166666666667,7.239583333333333],\"replayed\":[7.104166666666667,7.239583333333333]}"
   },
   {
    "name": "perform: declared-only type (encoder) renders its fallback with the \"basic view\" note",
@@ -1231,7 +1481,7 @@
   {
    "name": "perform: a 1-bar control move records a lane into the model and the control follows it on replay",
    "ok": true,
-   "detail": "{\"points\":13,\"follow\":[[2860,2860],[960,960],[3240,3240],[2881,2881]]}"
+   "detail": "{\"points\":20,\"follow\":[[1340,1340],[3430,3430],[3134,3134],[2955,2955]]}"
   },
   {
    "name": "perform: board edit mode resizes and moves a cell to another board; board saved to the library",
@@ -1251,165 +1501,12 @@
   {
    "name": "perform: pointerdown handler -> journal entry, main-thread work p95 <= 10 ms (phone profile); #55 adds <= 5 kB (gzip) to the shell",
    "ok": true,
-   "detail": "{\"phone\":{\"work\":{\"n\":40,\"mean_ms\":0.405,\"p95_ms\":0.6,\"max_ms\":1.5},\"from_event\":{\"n\":40,\"mean_ms\":25.918,\"p95_ms\":31.5,\"max_ms\":31.6}},\"cpu4x\":{\"work\":{\"n\":20,\"mean_ms\":2.445,\"p95_ms\":5,\"max_ms\":5},\"from_event\":{\"n\":20,\"mean_ms\":42.525,\"p95_ms\":75,\"max_ms\":75}},\"shell_gzip_bytes\":5077}"
+   "detail": "{\"phone\":{\"work\":{\"n\":40,\"mean_ms\":0.39,\"p95_ms\":0.9,\"max_ms\":1.3},\"from_event\":{\"n\":40,\"mean_ms\":16.917,\"p95_ms\":30.6,\"max_ms\":35.3}},\"cpu4x\":{\"work\":{\"n\":20,\"mean_ms\":3,\"p95_ms\":6,\"max_ms\":6},\"from_event\":{\"n\":20,\"mean_ms\":47.08,\"p95_ms\":78,\"max_ms\":78}},\"shell_gzip_bytes\":3456}"
   },
   {
    "name": "zero console errors / page errors",
-   "ok": false,
-   "detail": "[reduced] console.error: Failed to load resource: net::ERR_FAILED | [reduced] console.error: Failed to load resource: net::ERR_FAILED | [reduced] console.error: Failed to load resource: net::ERR_FAILED | [reduced] console.error: Failed to load resource: net::ERR_FAILED"
+   "ok": true,
+   "detail": ""
   }
- ],
- "atoms_ui": {
-  "date": "2026-11-13T15:29:37.158Z",
-  "derived_edit": {
-   "added": [
-    "k2: s(atoms.kick4({ n: 6 })).gain(0.5)"
-   ],
-   "removed": [
-    "k2: s(atoms.kick4({ n: 8 })).gain(0.5)"
-   ]
-  },
-  "body_edit": {
-   "commits": 1,
-   "diff": {
-    "added": [
-     "atom(\"kick4\", { type: \"mini\", params: { n: { shape: \"number\", min: 1, max: 16, step: 1, default: 4 } }, body: \"bd*${n} [~ sd]\", doc: \"four on the floor\" })"
-    ],
-    "removed": [
-     "atom(\"kick4\", { type: \"mini\", params: { n: { shape: \"number\", min: 1, max: 16, step: 1, default: 4 } }, body: \"bd*${n}\", doc: \"four on the floor\" })"
-    ]
-   }
-  },
-  "browser_pages": [
-   50,
-   100,
-   150
-  ],
-  "targets": {
-   "card": {
-    "n": 14,
-    "min_w": 110,
-    "min_h": 44,
-    "small": []
-   },
-   "browser": {
-    "n": 12,
-    "min_w": 44,
-    "min_h": 44,
-    "small": []
-   }
-  },
-  "contrast": {
-   "card": {
-    "min": 7.11,
-    "n": 36,
-    "worst": "span.gp-t \"par\""
-   },
-   "browser": {
-    "min": 7.11,
-    "n": 19,
-    "worst": "p.gx-hint \"Choose an atom for kick.\""
-   }
-  },
-  "type_badges": [
-   "MINI",
-   "GATE",
-   "MINI",
-   "MINI"
-  ],
-  "popover": {
-   "tap": 1,
-   "enter": 1,
-   "escape_closes": true,
-   "line_boxes_unchanged": true,
-   "count": [
-    {
-     "sites": 2,
-     "card": 2
-    },
-    {
-     "sites": 1,
-     "card": 1
-    }
-   ]
-  },
-  "keyboard": {
-   "steps": [
-    true,
-    true,
-    true,
-    true
-   ],
-   "diff": {
-    "added": [
-     "hat: s(atoms.hats).gain(atoms.loud)"
-    ],
-    "removed": [
-     "hat: s(atoms.hats).gain(0.5)"
-    ]
-   }
-  },
-  "reduced_motion": {
-   "full": {
-    "appear": "ax-appear",
-    "ghosts": 1,
-    "ghostAnim": "ax-leave"
-   },
-   "reduce": {
-    "appear": "none",
-    "ghosts": 0,
-    "ghostAnim": "none"
-   }
-  },
-  "lazy": {
-   "declared_5000": {
-    "first_paint_ms": 100.8,
-    "dom_cards": 3,
-    "scene_cards": 3
-   },
-   "declared_3": {
-    "first_paint_ms": 119.5,
-    "dom_cards": 3
-   },
-   "delta_pct": -15.6,
-   "rounds": [
-    {
-     "small": {
-      "ms": 122.5,
-      "dom_cards": 3,
-      "scene_cards": 3
-     },
-     "big": {
-      "ms": 131,
-      "dom_cards": 3,
-      "scene_cards": 3
-     }
-    },
-    {
-     "small": {
-      "ms": 119.5,
-      "dom_cards": 3,
-      "scene_cards": 3
-     },
-     "big": {
-      "ms": 100.8,
-      "dom_cards": 3,
-      "scene_cards": 3
-     }
-    },
-    {
-     "small": {
-      "ms": 54.5,
-      "dom_cards": 3,
-      "scene_cards": 3
-     },
-     "big": {
-      "ms": 80,
-      "dom_cards": 3,
-      "scene_cards": 3
-     }
-    }
-   ]
-  }
- }
+ ]
 }

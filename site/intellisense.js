@@ -128,4 +128,6 @@ async function mount() {
   if (window.strudelCraft.visuals) window.strudelCraft.visuals.attach(vizApi); else window.addEventListener('load', () => window.strudelCraft.visuals && window.strudelCraft.visuals.attach(vizApi));
   document.documentElement.dataset.editor = 'cm6';
 }
-mount().catch((e) => { console.warn('Intellisense editor unavailable, plain textarea kept:', e.message); window.strudelCraft.ui && window.strudelCraft.ui.toast('Code helper offline: plain editor in use', { kind: 'info' }); });
+const start = () => mount().catch((e) => { console.warn('Intellisense editor unavailable, plain textarea kept:', e.message); window.strudelCraft.ui && window.strudelCraft.ui.toast('Code helper offline: plain editor in use', { kind: 'info' }); });
+/* offline: keep the plain editable textarea, upgrade when the network is back */
+if (navigator.onLine) start(); else window.addEventListener('online', start, { once: true });

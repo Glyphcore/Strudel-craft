@@ -31,6 +31,7 @@ async function get(url, etag) {
   return { etag: r.headers.get('ETag'), json: await r.json() };
 }
 async function poll() {
+  if (!navigator.onLine) { cache.err = 'offline'; render(); schedule(); return; }
   try {
     const a = await get(API, cache.etag);
     if (!a.notModified) { cache = { ...cache, etag: a.etag, body: a.json.body, title: a.json.title, url: a.json.html_url }; }
@@ -64,5 +65,6 @@ function ui() {
   setInterval(() => { const a = $('#tkAgo'); if (a) a.textContent = 'updated ' + ago(cache.at); }, 1000);
   poll();
 }
+window.addEventListener('online', () => poll());
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ui); else ui();
 window.strudelCraft = window.strudelCraft || {}; window.strudelCraft.tracker = { parse, poll, data: () => cache };

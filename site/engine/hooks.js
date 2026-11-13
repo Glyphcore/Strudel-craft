@@ -17,7 +17,7 @@ const METHODS = ['use', 'wrap', 'ns', 'tap', 'wire'];
 // tap(...) into single-quoted ones, so Strudel's transpiler does not turn gates ("@3b"), hook expressions ("a | b") or slot names
 // into mini-notation. Strings inside nested calls (s("bd*4") inside a wrap callback) are left alone.
 export function protect(src) {
-  const re = /(?:\bhooks\s*\.\s*[A-Za-z]+|\.\s*(?:use|wrap|ns|tap|wire)|\btap)\s*\(/g; const edits = new Map(); let m;
+  const re = /(?:\bhooks\s*\.\s*[A-Za-z]+|\.\s*(?:use|wrap|ns|tap|wire)|\btap|\bctl)\s*\(/g; const edits = new Map(); let m;
   while ((m = re.exec(src))) {
     let i = m.index + m[0].length; let depth = 1;
     while (i < src.length && depth > 0) {

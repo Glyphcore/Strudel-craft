@@ -30,7 +30,7 @@ tryHooks(); globalThis.addEventListener?.('strudel:ready', tryHooks);
 
 // Intellisense: control names and type ids from every controls engine created through strudelCraft.controls.create (the Perform view makes one).
 const instances = new Set(); const baseCreate = sc.controls.create;
-sc.controls.create = (o) => { const c = baseCreate(o); const d = c.declare; c.declare = (...a) => { const r = d(...a); sc.intellisense?.invalidate?.(); return r; }; instances.add(c); return c; };
+sc.controls.create = (o) => { const c = baseCreate(o); for (const k of ['declare', 'ctl', 'load']) { const f = c[k]; c[k] = (...a) => { const r = f(...a); sc.intellisense?.invalidate?.(); return r; }; } instances.add(c); return c; };
 sc.controls.completions = () => [...instances].flatMap((c) => c.completions());
 const regControls = () => sc.intellisense?.register({ id: 'controls', items: () => sc.controls.completions() });
 if (!regControls()) { const later = () => regControls(); if (typeof document !== 'undefined' && document.readyState === 'loading') document.addEventListener('DOMContentLoaded', later); else setTimeout(later, 0); }

@@ -189,3 +189,24 @@ export function expandGate(gate, from, to, origin = 0) {
   for (let k = 0; origin + k * P < to; k++) for (const [a, b] of gate.windows) { const x = origin + k * P + fromFrac(a), y = origin + k * P + fromFrac(b); if (x < to) out.push([x, Math.min(y, to)]); }
   return out;
 }
+
+// Bounce to Strudel program text (hooks calls with single-quoted strings, see hooks.js protect): tap pads -> hooks.publish(ref, pattern)
+// (quant 'none': exact [on, off) haps with the pressed velocity; 'grid': one `x` cell per 1/grid cycle), other pads -> bindings / variables
+// with `windows` + `period` gates (nothing unrolled). `pads` maps a pad address to its target ({ kind, ref, slot?, value? }).
+export function bounceCode(perf, { pads = {}, grid = 16, quant = 'grid', name = 'take' } = {}) {
+  const w = performanceWindows(perf), L = fromFrac(perf.length), o = fromFrac(perf.origin ?? 0);
+  const num = (x) => { const f = toFrac(x); return f.includes('/') ? `(${f})` : f; };
+  const wins = (ws) => `windows: [${ws.map((x) => `['${toFrac(o + x.on)}', '${toFrac(o + x.off)}']`).join(', ')}], period: ${num(L)}`;
+  const lines = [`// bounced from "${name}": length ${perf.length}, origin ${perf.origin ?? '0'}`];
+  for (const [pad, ws] of Object.entries(w).sort(([a], [b]) => (a < b ? -1 : 1))) {
+    const t = pads[pad]; if (!t) continue;
+    if (t.kind === 'tap') {
+      let pat;
+      if (quant === 'none') pat = `stack(${ws.map((x) => `pure({ velocity: ${x.velocity ?? 0.8} }).compress(${num(x.on / L)}, ${num(x.off / L)})`).join(', ')}).slow(${num(L)})`;
+      else { const steps = grid * L, cells = Array(steps).fill('~'); ws.forEach((x) => { cells[Math.round(x.on * grid) % steps] = 'x'; }); pat = `mini('${cells.join(' ')}').slow(${num(L)})`; }
+      lines.push(`hooks.publish('${t.ref}', ${o ? `${pat}.late(${num(o)})` : pat})`);
+    } else if (t.kind === 'hook') lines.push(`hooks.bind('${t.slot}', '${t.ref}', { ${wins(ws)} })`);
+    else if (t.kind === 'var') lines.push(`hooks.let('${t.ref}', ${JSON.stringify(t.value)}, { ${wins(ws)} })`);
+  }
+  return lines.join('\n') + '\n';
+}

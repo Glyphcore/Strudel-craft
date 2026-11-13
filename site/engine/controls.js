@@ -76,6 +76,17 @@ export function bounceLane(lane, { grid = 16 } = {}) {
   }
   return { $curve: lane.points.map(p => p.slice()), period: P };
 }
+// Bounce a lane to Strudel program text: a continuous `signal` (curve lanes, same arithmetic as sampleLane) or a mini-notation cat (steps lanes).
+export function laneCode(lane, name) {
+  const n = (t) => { const f = toFrac(t); return f.includes('/') ? `(${f})` : f; };
+  const P = lane.period != null ? parseLength(lane.period) : null;
+  if (lane.mode === 'steps') { const b = bounceLane(lane); return `const ${name} = mini('${b.$mini}')\n`; }
+  const pts = lane.points.map(([t, v, s]) => `[${n(t)}, ${v}, '${s || 'lin'}']`).join(', ');
+  return `const ${name} = signal((t) => { const pts = [${pts}]; const P = ${P}; let c = +t; if (P) c = ((c % P) + P) % P; if (c <= pts[0][0]) return pts[0][1];
+  for (let i = 0; i < pts.length; i++) { const t0 = pts[i][0], v0 = pts[i][1], s = pts[i][2], nx = pts[i + 1]; if (!nx) return v0;
+    if (c >= t0 && c < nx[0]) { if (s === 'hold') return v0; const u = (c - t0) / (nx[0] - t0); return s === 'exp' && v0 > 0 && nx[1] > 0 ? v0 * Math.pow(nx[1] / v0, u) : v0 + (nx[1] - v0) * u; } }
+  return pts[pts.length - 1][1]; })\n`;
+}
 export function evalBounced(b, cycle, grid = 16) {
   if (b.$curve) return sampleLane({ points: b.$curve, period: b.period, length: b.period }, cycle);
   const cells = [...b.$mini.slice(1, -1).matchAll(/\[([^\]]*)\]/g)].map(m => m[1].split(' ').map(Number));

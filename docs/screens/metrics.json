@@ -1258,5 +1258,230 @@
    "ok": false,
    "detail": "[reduced] console.error: Failed to load resource: net::ERR_FAILED | [reduced] console.error: Failed to load resource: net::ERR_FAILED | [reduced] console.error: Failed to load resource: net::ERR_FAILED | [reduced] console.error: Failed to load resource: net::ERR_FAILED"
   }
- ]
+ ],
+ "atoms_ui": {
+  "date": "2026-11-13T14:41:14.300Z",
+  "derived_edit": {
+   "added": [
+    "k2: s(atoms.kick4({ n: 6 })).gain(0.5)"
+   ],
+   "removed": [
+    "k2: s(atoms.kick4({ n: 8 })).gain(0.5)"
+   ]
+  },
+  "body_edit": {
+   "commits": 1,
+   "diff": {
+    "added": [
+     "atom(\"kick4\", { type: \"mini\", params: { n: { shape: \"number\", min: 1, max: 16, step: 1, default: 4 } }, body: \"bd*${n} [~ sd]\", doc: \"four on the floor\" })"
+    ],
+    "removed": [
+     "atom(\"kick4\", { type: \"mini\", params: { n: { shape: \"number\", min: 1, max: 16, step: 1, default: 4 } }, body: \"bd*${n}\", doc: \"four on the floor\" })"
+    ]
+   }
+  },
+  "browser_pages": [
+   50,
+   100,
+   150
+  ],
+  "targets": {
+   "card": {
+    "n": 14,
+    "min_w": 110,
+    "min_h": 44,
+    "small": []
+   },
+   "browser": {
+    "n": 12,
+    "min_w": 44,
+    "min_h": 44,
+    "small": []
+   }
+  },
+  "contrast": {
+   "card": {
+    "min": 7.11,
+    "n": 36,
+    "worst": "span.gp-t \"par\""
+   },
+   "browser": {
+    "min": 7.11,
+    "n": 19,
+    "worst": "p.gx-hint \"Choose an atom for kick.\""
+   }
+  },
+  "type_badges": [
+   "MINI",
+   "GATE",
+   "MINI",
+   "MINI"
+  ],
+  "popover": {
+   "tap": 1,
+   "enter": 1,
+   "escape_closes": true,
+   "line_boxes_unchanged": true,
+   "count": [
+    {
+     "sites": 2,
+     "card": 2
+    },
+    {
+     "sites": 1,
+     "card": 1
+    }
+   ]
+  },
+  "keyboard": {
+   "steps": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "diff": {
+    "added": [
+     "hat: s(atoms.hats).gain(atoms.loud)"
+    ],
+    "removed": [
+     "hat: s(atoms.hats).gain(0.5)"
+    ]
+   }
+  },
+  "reduced_motion": {
+   "full": {
+    "appear": "ax-appear",
+    "ghosts": 1,
+    "ghostAnim": "ax-leave"
+   },
+   "reduce": {
+    "appear": "none",
+    "ghosts": 0,
+    "ghostAnim": "none"
+   }
+  },
+  "lazy": {
+   "declared_5000": {
+    "first_paint_ms": 709.4,
+    "dom_cards": 3,
+    "scene_cards": 3
+   },
+   "declared_3": {
+    "first_paint_ms": 123.7,
+    "dom_cards": 3
+   },
+   "delta_pct": 473.5,
+   "rounds": [
+    {
+     "small": {
+      "ms": 267,
+      "dom_cards": 3,
+      "scene_cards": 3
+     },
+     "big": {
+      "ms": 707.2,
+      "dom_cards": 3,
+      "scene_cards": 3
+     }
+    },
+    {
+     "small": {
+      "ms": 80.3,
+      "dom_cards": 3,
+      "scene_cards": 3
+     },
+     "big": {
+      "ms": 850.6,
+      "dom_cards": 3,
+      "scene_cards": 3
+     }
+    },
+    {
+     "small": {
+      "ms": 123.7,
+      "dom_cards": 3,
+      "scene_cards": 3
+     },
+     "big": {
+      "ms": 709.4,
+      "dom_cards": 3,
+      "scene_cards": 3
+     }
+    }
+   ]
+  },
+  "shell": {
+   "note": "same-origin bytes on first load (literals + atoms ready), uncompressed as served; base = HEAD before #64",
+   "base_bytes": 1189385,
+   "now_bytes": 1191123,
+   "delta_bytes": 1738,
+   "changed": {
+    "atoms-site.js": 1738
+   },
+   "lazy_files": {
+    "atoms-ui.js": 30602,
+    "atoms-ui.css": 5586,
+    "atoms-pop.js": 9534
+   }
+  },
+  "lighthouse_mobile": {
+   "note": "lighthouse 12, mobile, simulate; 4 alternating runs each",
+   "shell_now": [
+    {
+     "performance": 64,
+     "accessibility": 100,
+     "FCP": 3070
+    },
+    {
+     "performance": 64,
+     "accessibility": 100,
+     "FCP": 3049
+    },
+    {
+     "performance": 65,
+     "accessibility": 100,
+     "FCP": 3065
+    },
+    {
+     "performance": 67,
+     "accessibility": 100,
+     "FCP": 2525
+    }
+   ],
+   "shell_base": [
+    {
+     "performance": 65,
+     "accessibility": 100,
+     "FCP": 2909
+    },
+    {
+     "performance": 67,
+     "accessibility": 100,
+     "FCP": 2442
+    },
+    {
+     "performance": 67,
+     "accessibility": 100,
+     "FCP": 2549
+    },
+    {
+     "performance": 66,
+     "accessibility": 100,
+     "FCP": 2709
+    }
+   ],
+   "graph_now": {
+    "performance": 49,
+    "accessibility": 98,
+    "FCP": 3015
+   },
+   "graph_base": {
+    "performance": 48,
+    "accessibility": 98,
+    "FCP": 3086
+   },
+   "reference_accessibility": 100
+  }
+ }
 }

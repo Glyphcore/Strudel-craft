@@ -1,0 +1,65 @@
+/* Atoms A4 (#64): atom cards in the Graph view, the atom browser, and the code-editor reference popover.
+   Loaded with the Graph view (atoms-ui.js) or on the first tap on a reference (atoms-pop.js), never with the shell.
+   Language: an atom is a definition, so its card is "ruled" (double top rule, square corners on the head) rather than lit; the
+   type is always a text badge (MINI, GATE, ...), never colour alone. Signal colour stays reserved for selection, arming and live flow.
+   Text uses --text / --dim only (>= 7:1 on the panels, both themes). Every control is at least 44 x 44 CSS px. */
+
+/* ---- cards ---- */
+.gk-atom{border-top:3px double var(--text);border-radius:0 0 var(--r2) var(--r2)}
+.gk-atom .gn-head{border-radius:0;background:var(--panel-3)}
+.gk-atom.ax-d{border-style:dashed;border-top-style:double}
+.ax-card{position:absolute;left:0;right:0;margin:0;padding:4px 10px 8px;border-top:1px solid var(--line)}
+.ax-pv{display:flex;align-items:center;gap:8px;height:44px;margin:0;min-width:0}
+.ax-pv code{flex:1;min-width:0;font:500 .74rem var(--mono);color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ax-pv i{font-style:normal;color:var(--text);border-bottom:1px dashed var(--bad)}
+.ax-pv-l{height:auto;min-height:44px;padding:6px 8px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--r1)}
+.ax-pv-l code{white-space:normal;word-break:break-all}
+.ax-badge{flex:none;font:700 .62rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--text);border:1px solid var(--text);border-radius:var(--r1);padding:3px 5px}
+.ax-n{flex:none;font:700 .9rem var(--mono);color:var(--text)}
+.ax-row{display:grid;grid-template-columns:52px 1fr;align-items:center;gap:6px;height:52px;margin:0}
+.ax-row>span{font:500 .7rem var(--mono);color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ax-row em{display:block;font-style:normal;font-size:.58rem;text-transform:uppercase;letter-spacing:.06em}
+.ax-in{width:100%;min-width:0;height:44px;min-height:44px;padding:0 8px;font:500 .78rem var(--mono);color:var(--text);background:var(--bg);border:1px solid var(--line-2);border-radius:var(--r1)}
+.ax-in:focus-visible{outline:2px solid var(--sig-2);outline-offset:1px}
+.ax-in[aria-invalid=true]{border-color:var(--bad);border-style:dashed}
+.gx[data-zoom="far"] .ax-card{display:none}
+.gx.gx-glyph .ax-card{display:none}
+/* appear / disappear (reduced motion: no animation, no ghost) */
+@keyframes ax-appear{from{opacity:0;transform:translateY(6px) scale(.97)}}
+@keyframes ax-leave{to{opacity:0;transform:scale(.94)}}
+.gn.ax-new{animation:ax-appear var(--t2) var(--ease) both}
+.ax-ghost{pointer-events:none;display:flex;align-items:flex-start;padding:14px 10px;font:700 .86rem var(--display);color:var(--text);animation:ax-leave var(--t2) var(--ease) forwards}
+@media (prefers-reduced-motion:reduce){.gn.ax-new,.ax-ghost{animation:none}.ax-ghost{display:none}}
+
+/* ---- card inspector ---- */
+.ax-h{margin:12px 0 4px;font:700 .72rem var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--text)}
+.ax-refs li{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.ax-where{font:500 .78rem var(--mono);color:var(--text)}
+.ax-refs button,.gx-insp [data-act=ax-goto]{min-height:44px;min-width:44px}
+
+/* ---- browser ---- */
+.ax-br{display:flex;flex-direction:column;gap:8px}
+.ax-types,.ax-ns{display:flex;flex-wrap:wrap;gap:6px}
+.ax-chip,.ax-nsb{min-height:44px;min-width:44px;padding:0 10px;font:700 .66rem var(--mono);letter-spacing:.04em;color:var(--text)}
+.ax-chip[aria-pressed=true],.ax-nsb[aria-checked=true]{border-color:var(--text);box-shadow:inset 0 -3px 0 var(--sig-2)}
+.ax-chip:disabled{opacity:1;color:var(--text);cursor:default}
+.ax-q{min-height:44px}
+.ax-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.ax-rowb{width:100%;min-height:44px;display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,auto);align-items:center;gap:10px;padding:0 10px;text-align:left;text-transform:none;letter-spacing:0;color:var(--text)}
+.ax-rowb b{font:600 .8rem var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ax-rowb code{font:400 .72rem var(--mono);color:var(--text);opacity:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ax-rowb:focus-visible{outline:2px solid var(--sig-2);outline-offset:-2px}
+.ax-more{min-height:44px;align-self:stretch}
+.ax-st{margin:0}
+
+/* ---- code-editor reference popover (fixed: never shifts the code lines) ---- */
+.ax-pop{position:fixed;z-index:120;width:min(360px,calc(100vw - 12px));max-height:min(70vh,520px);overflow:auto;background:var(--panel);color:var(--text);border:1px solid var(--line-2);border-top:3px double var(--text);border-radius:0 0 var(--r2) var(--r2);box-shadow:0 14px 36px rgba(0,0,0,.45);padding:0 10px 10px}
+.ax-pop-h{display:flex;align-items:center;gap:8px;min-height:48px;border-bottom:1px solid var(--line);margin:0 -10px 8px;padding:0 4px 0 10px}
+.ax-pop-h b{flex:1;min-width:0;font:600 .82rem var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ax-pop-x{min-width:44px;min-height:44px;font-size:1.2rem}
+.ax-pop .ax-row{grid-template-columns:72px 1fr}
+.ax-acts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.ax-acts button{min-height:44px;color:var(--text)}
+.ax-pop .gx-hint,.ax-pop-hint{margin:6px 0 0;font:400 .72rem var(--mono);color:var(--dim)}
+.ax-popping .cm-tooltip-hover{display:none}
+@media (prefers-reduced-motion:no-preference){.ax-pop{animation:ax-appear var(--t1) var(--ease) both}}

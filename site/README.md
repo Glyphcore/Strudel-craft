@@ -29,6 +29,7 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
     node tests/atoms/a2.mjs            # atoms migration: extract / parse / inline / catalog (#62)
     node tests/atoms/a3.mjs            # atoms consumers: intellisense data, hooks / model / pads / maps $atom, packs (#63)
     node tests/site/atoms.mjs          # Playwright: atom completion, signature help, "use atoms.name", scrub on a reference arg (#63)
+    node tests/site/atoms_ui.mjs       # Playwright: atom cards, derived cards, browser, popover, keyboard path, 5000-atom paint (#64; also in smoke)
     node tests/hooks/p3.mjs            # model round trip (#49); the `strudel` CLI checks print SKIP without it
     node tests/hooks/p4.mjs            # component library, instances, lib: fragments (#50)
     node tests/hooks/p5.mjs            # hooks + model intellisense providers (#51)
@@ -259,7 +260,7 @@ same file on the site and in the CLI; it imports acorn from `vendor/` and never 
   - literal editors: `sites(code, env)` gives every reference site (compiled string, params, arg literal spans, Detach text, actions) and
     `shapeAt` the `atomParam` shape of one arg literal, registered through `literals.registerEditor({ id, shape(lit) })`, so scrub /
     chips / steps / piano work on reference args with the atom's own range and no new editor code. `strudelCraft.atoms.sites()` and
-    `.open(siteId)` are the popover's data (the popover itself is #64).
+    `.open(siteId)` are the popover's data (the popover is `atoms-pop.js`, #64).
   - hooks: `installHooks(hooks, env)` registers the point atoms as markers and the atom id map plus a `$atom` resolver on the runtime's
     new `hooks.atoms` channel, so `hooks.plan`, `hooks.toJSON` and journal entries carry atom ids next to the resolved strings, and
     `hooks.load` accepts `{ "$atom": id }` wherever a string goes. String-typed atoms compile single-quoted, so such a line needs no `protect()`.
@@ -277,9 +278,33 @@ same file on the site and in the CLI; it imports acorn from `vendor/` and never 
     `verifyIngredient` / `importedAtoms` (`E_ATOM_HASH`); `atoms.import("pack:…", { as })` namespaces an imported set.
     Schema: `schemas/craftpack/1/kinds/atoms.1.schema.json`, kind `atoms` in `kinds/index.json` (code `never`).
 - Tests: `node tests/atoms/a1.mjs`, `node tests/atoms/a2.mjs`, `node tests/atoms/a3.mjs` (need `STRUDEL_MODULES=<dir with @strudel/>`),
-  `node tests/site/atoms.mjs` and `node tests/site/atoms_inline.mjs` (Playwright). Not built yet: graph cards, the atom browser and the
-  reference popover (#64) and the `strudel atoms` CLI subcommands (`list | show | refs | compile | extract | check`, CLI in another repo)
-  — those print SKIP / are marked "coming" in the Syntax view.
+  `node tests/site/atoms.mjs`, `node tests/site/atoms_inline.mjs` and `node tests/site/atoms_ui.mjs` (Playwright). Not built yet: the
+  `strudel atoms` CLI subcommands (`list | show | refs | compile | extract | check`, CLI in another repo) — those print SKIP / are marked
+  "coming" in the Syntax view.
+- UI (A4, #64; `atoms-ui.js` + `atoms-ui.css` load with the Graph view, `atoms-pop.js` on the first tap on a reference; none of them
+  with the shell):
+  - Graph atom cards: one card per referenced atom at the visible level (from `graph(model)`; never from `model.atoms`, so 5000
+    declared atoms with 3 referenced draw 3 cards), shared by all its references: name, text type badge (`MINI`, `GATE`, ...), the
+    reference count (`×2`), the compiled preview, and editors for the body and param defaults. A derived reference
+    (`atoms.kick4({ n: 8 })`) gets its own dashed card keyed by `{ atom, args, ops }`, wired from the parent card's `out` to its
+    `from` port; its argument editors rewrite only that argument (`literal` op). One `param` wire per reference into the step port
+    that holds it (badge = atom type), or into the slot's `gate:<binding>` port for a binding gate. Referencing nodes show
+    `atoms.kick4 "bd*4"` in their step list. Body / default edits splice that one literal in the `atom(...)` declaration (validated
+    first with the type's validator; model.js has no atom op yet), so the code shows one changed declaration line. Cards fade in
+    when a reference appears and leave a fading ghost when the last one goes (no animation with reduced motion); placement is the
+    deterministic layout, so undo brings a card back where it was. The card inspector lists the references with Detach (inline the
+    compiled string at that reference).
+  - Atom browser (Graph toolbar "Atoms", or "Atom for <port>…" in Outline > Connect to…): opens for the armed port, filters by the
+    types that port accepts (`positions.json`: `gain` -> `MINI`; a binding gate -> `GATE / POINT`), text filter, namespaces Document,
+    `atoms.snd`, `atoms.bank`, `atoms.scale`, `atoms.chord` (catalogs by prefix, from `atoms.configure({ catalog })`, else the
+    site's sound / bank / scale names), 50 rows per page with More and scroll-to-load. Choosing a row makes the reference
+    (`literal` or `setGate` op) and the card appears by the rule. Keyboard: Tab / Enter to "Atom for…", type, ArrowDown, Enter.
+    `strudelCraft.atomsUI = { browse(port), query({ ns, text, types, page }), goto(atomId), accepts(port), cards(), refLabel(ref) }`.
+  - Reference popover (code editor): a tap on an `atoms.*` reference, or Enter with the caret inside it, opens a fixed popover (no
+    line moves): type badge, compiled string, param editors (rewrite the reference's args), Edit definition (selects the
+    declaration), Derive… (site modal: name the current args as `atom("name", { type, from: atoms.x({...}) })` and use it here),
+    Detach (inline the compiled literal here), Go to card (Graph view). Escape or a tap outside closes it; taps on an argument
+    literal inside the reference stay with the literal editors. `strudelCraft.atomsPop = { open, close, current }`.
 
 ## Component library (`library.js`, `library-store.js`, #50)
 Versioned components over the shared model; storage goes through `library-store.js` (`strudelCraft.history` when a host provides it,
@@ -314,7 +339,8 @@ Blueprint node editor over `model.js` and `library.js`, lazy-loaded on first ope
 fields directly: every edit is one `model.js` op (or the library's `extract` / `replaceWithInstance`), so code, graph and model stay the
 same document and undo is the shared history stack.
 - Nodes come from `graph(model)`: tracks (source + chain), defs, slots with their bindings and gates, taps and wires, variables,
-  markers and component instances (a missing component shows `E_COMPONENT_MISSING` on the node). Placement from `layout(model)`,
+  markers, component instances (a missing component shows `E_COMPONENT_MISSING` on the node) and atom cards for referenced atoms
+  (`atoms-ui.js`, see Atoms > UI). Placement from `layout(model)`,
   persisted as the `// @model-layout {...}` comment.
 - Canvas: pan and pinch zoom with a content-derived minimum zoom (zoom out always keeps every node visible), glyph level of detail,
   1:1 reset and Fit; on phones one finger scrolls the page (`touch-action: pan-y`), two fingers pan and zoom, and "Interact" locks

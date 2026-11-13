@@ -5,7 +5,10 @@ Status: **A1 built** (core: `site/engine/atoms.js`, `site/data/atoms/types.json`
 and **A3 built** (consumers: `site/engine/atoms-consumers.js`, `site/atoms-site.js`, the compile pass before every evaluation, intellisense
 source and signature provider, literal-editor shapes, `$atom` in hooks / model / pads / boards / maps, mapped atom params, revision
 records, the `atoms@1` pack ingredient; `tests/atoms/a3.mjs`, `tests/site/atoms.mjs`; #63).
-A4 (UI: graph cards, browser, reference popover) and the `strudel atoms` CLI subcommands of section 12 (CLI in another repo) are still design only; phases and issues in section 14. Extends `docs/HOOKS_SYNTAX.md`, `docs/BLUEPRINT.md` and the AST-bound control
+**A4 built** (UI, #64: `site/atoms-ui.js` + `site/atoms-ui.css` graph atom cards and atom browser, loaded with the Graph view; `site/atoms-pop.js`
+reference popover, loaded on first use; `tests/site/atoms_ui.mjs`, also a section of the site smoke test). Not yet: per-reference playback
+highlight mapping (open question 6) and a model.js op for atom bodies (card body / default edits splice the declaration literal). The
+`strudel atoms` CLI subcommands of section 12 (CLI in another repo) are still design only; phases and issues in section 14. Extends `docs/HOOKS_SYNTAX.md`, `docs/BLUEPRINT.md` and the AST-bound control
 work (control binding: structural ids, literal sites, typed param shapes). Owner: `daw-sme`. UI parts are direction for `ui-designer`.
 
 ## 1. The problem and the idea
@@ -262,7 +265,7 @@ Policy as elsewhere: while the program is invalid the site stays inert on the la
 Built in A3 (#63). The pass runs on every evaluation (`site/app.js` `protectCode`: `atoms.prepare` -> `protect()` -> Strudel's transpiler);
 everything below is data in `site/engine/atoms-consumers.js`, registered by `site/atoms-site.js` through the existing APIs
 (`intellisense.registerSource` / `registerSignature`, `literals.registerEditor({ shape })`, `hooks.atoms.use`, `createPads({ atoms })`,
-`createControls({ atoms })`). Drawing (popover, cards, browser) stays with A4.
+`createControls({ atoms })`). Drawing (popover, cards, browser) is A4 (#64): `site/atoms-pop.js`, `site/atoms-ui.js`.
 
 **Intellisense.** One provider, `atoms`, on the existing registry:
 - in an argument position whose param shape is S: atoms whose type satisfies S come first (`label: atoms.kick4`, `detail`: compiled
@@ -388,7 +391,7 @@ $: chord(atoms.turn).voicing()
 | A1 | #61 | atoms core **built** (type registry, schema, `compile` with source map, runtime fallback, params / partial application / composition, ids, hashes); the `strudel atoms` CLI subcommands are **coming** (the CLI lives in another repo) | model schema (#49), control-binding parser | daw-implementer |
 | A2 | #62 | migration **built** in the toolkit: `extract`, `parse`, `inline`, catalog atoms, strudel.cc export inlines (the `strudel atoms extract` CLI is **coming**) | A1 | daw-implementer |
 | A3 | #63 | consumers **built**: intellisense source + signature provider, atom args in literal editors, `$atom` in hooks / model / pads / boards / maps, mapped atom params, revision records, `atoms@1` pack ingredient | A1, pack spec | daw-implementer |
-| A4 | #64 | UI: lazy reference-counted atom cards in the graph, atom browser / palette, reference popover | A1, A3 | ui-designer |
+| A4 | #64 | UI **built**: lazy reference-counted atom cards in the graph (derived cards linked to their parent), atom browser / palette (port type filter, pages of 50), reference popover (Edit definition, Derive, Detach, Go to card); playback highlight of a whole reference is **coming** | A1, A3 | ui-designer |
 
 ## 15. Open questions
 

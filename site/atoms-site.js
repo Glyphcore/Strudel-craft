@@ -128,6 +128,19 @@ function installEditors() {
   });
 }
 
+// reference popover (#64): an `atoms.*` reference is one token; a tap on it or Enter with the caret inside opens atoms-pop.js (loaded
+// on first use). Taps on an argument literal inside the reference stay with the literal editors.
+function installPopover() {
+  for (const id of ['code', 'stackCode']) {
+    const v = sc.intellisense.refView && sc.intellisense.refView(id); if (!v || v.__axPop) continue; v.__axPop = 1;
+    const at = (pos) => { const doc = v.state.doc.toString(); if (!/\batoms\./.test(doc)) return null; const s = sc.atoms.sites(doc).find((x) => pos >= x.from && pos <= x.to); return s && !s.argSites.some((a) => pos >= a.from && pos <= a.to) ? s : null; };
+    const go = (s, focus) => import('./atoms-pop.js').then((m) => m.open(v, s, { focus })).catch((e) => console.warn('atom popover unavailable:', e.message));
+    let down = null;
+    v.scrollDOM.addEventListener('pointerdown', (e) => { down = { x: e.clientX, y: e.clientY }; }, true);
+    v.scrollDOM.addEventListener('pointerup', (e) => { const d = down; down = null; if (!d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 6) return; const p = v.posAtCoords({ x: e.clientX, y: e.clientY }); const s = p == null ? null : at(p); if (s) go(s, false); }, true);
+    v.contentDOM.addEventListener('keydown', (e) => { if (e.key !== 'Enter' || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey || document.querySelector('.cm-tooltip-autocomplete')) return; const r = v.state.selection.main; if (!r.empty) return; const s = at(r.head); if (s && r.head > s.from && r.head < s.to) { e.preventDefault(); e.stopPropagation(); go(s, true); } }, true);
+  }
+}
 // Strudel's own mini() and the hooks runtime parsers are the atom validators (no second copies, ATOMS section 3)
 function wireRuntime() {
   try {
@@ -144,7 +157,7 @@ window.addEventListener('strudel:hooks-changed', wireRuntime);
 Promise.all([json('data/atoms/types.json'), json('data/atoms/positions.json')])
   .then(([types, positions]) => {
     A.loadTypes(types); A.configure({ positions }); sc.atoms.ready = true;
-    whenReady(() => sc.intellisense, install); whenReady(() => sc.literals, installEditors); wireRuntime();
+    whenReady(() => sc.intellisense, install); whenReady(() => sc.literals, installEditors); whenReady(() => sc.intellisense && sc.intellisense.refView && sc.intellisense.refView('code'), installPopover); wireRuntime();
     try { const s = sc.sounds || (sc.perform && sc.perform.sounds); if (s) A.configure({ catalog: { snd: s } }); } catch (e) { /* no sound catalog yet */ }
     document.addEventListener('input', () => envCache.clear(), true);
   })

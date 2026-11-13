@@ -51,7 +51,8 @@ const DRUMS = 'drums: s("bd hh sd hh").tags("drums").tap("kick")\n';
 // 2. Causality
 {
   const prog = DRUMS + 'capture("g", "drums", { window: "1b..3b", live: true })\nr: recall("g").gain(0.5)\n';
-  const p = await run(prog); const per = seq(p, 0, 7).map((hs) => hs.filter((h) => h.value.gain === 0.5).length);
+  const p = await run(prog); assert.equal(lanes.captureState('g'), 'empty'); const sq = seq(p, 0, 7); assert.equal(lanes.captureState('g'), 'frozen', 'the window closed'); assert.equal(lanes.captureState('nope'), 'empty');
+  const per = sq.map((hs) => hs.filter((h) => h.value.gain === 0.5).length);
   assert.deepEqual(per.slice(0, 3), [0, 0, 0], 'nothing before until + 1 cycle'); assert.ok(per.slice(3).every((n) => n > 0), `content from cycle 3: ${per}`);
   assert.equal(cap.availableAt('g'), 3);
   const early = LM.check(prog + 'e: recall("g", { gate: "3b.." })\n', { strict: true }); const ok = LM.check(prog + 'e: recall("g", { gate: "4b.." })\n', { strict: true });

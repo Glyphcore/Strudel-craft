@@ -1,6 +1,6 @@
 # Craftpack: content packs for Strudel Craft (spec 1.0.0)
 
-Status: design, 2026-11-13; P1 (#65) and the engine half of P2 (#67: loader, adapters, service-worker cache) built, pack sheet UI coming. Owner: `daw-sme`. Schemas: `schemas/craftpack/1/`. Issues: section 16.
+Status: design, 2026-11-13; P1 (#65) and P2 (#67: loader, adapters, service-worker cache, pack sheet `site/packs-ui.js`) built; the #67 Lighthouse box is still open. Owner: `daw-sme`. Schemas: `schemas/craftpack/1/`. Issues: section 16.
 Related: `docs/BLUEPRINT.md` (model, library, registries), `docs/HOOKS_SYNTAX.md` (config JSON, `E_OPAQUE`), `site/README.md` (what the site reads today).
 
 ## 1. What this is
@@ -309,7 +309,7 @@ A registry is one static JSON file: `packs[{id, title, license, repository, redi
 craftpack, engines, dependencies, kinds, code, bytes, published, yanked}]}]`. It is **discovery, not trust**: it tells a host where a
 version lives and what hash to expect; the user's lock is what pins it. The first-party registry is `registry/index.json` on the `packs`
 branch, built by `strudel packs registry build` from the manifests it lists and checked in CI (namespace rule of section 3, licence
-present, hashes match, `code` flag correct). More registries are added by URL in `packs.json` `registries` or the site's pack sheet.
+present, hashes match, `code` flag correct). More registries are added by URL in `packs.json` `registries` or the site's pack sheet (coming: the sheet has no registry field yet).
 A yanked version resolves only from an existing lock and shows its reason.
 
 ## 10. Security

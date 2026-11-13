@@ -108,6 +108,9 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .add{border:0;border-left:1px solid var(--line);border-radius:0;background:transparent;font-family:var(--mono);font-size:1.1rem;color:var(--dim);width:48px;flex:none}
 .add[aria-pressed="true"]{color:var(--sig-2)}
 .list .empty{padding:16px;color:var(--dim)}
+.list .empty.none{display:grid;gap:6px;justify-items:start}.list .empty.none b{color:var(--text);text-transform:uppercase;letter-spacing:.08em;font-size:.78rem}
+.row .pk{flex:none;max-width:14ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono);font-size:.62rem;letter-spacing:.02em;color:var(--sig-2);border:1px solid var(--sig-2-soft);border-radius:var(--r1);padding:1px 5px}
+button.badge.pkb{min-height:44px;min-width:0;padding:0 8px;color:var(--sig-2);background:transparent;text-transform:none}
 
 /* stage */
 .stage{overflow:hidden}

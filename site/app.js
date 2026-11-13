@@ -463,17 +463,24 @@ function matches(r) {
   const hay = norm([r.title, r.intent, r.notes, r.code, ...r.labels.flatMap((l) => [l, ...(S.labelsById[l] ? S.labelsById[l].words : [])])].join(' '));
   return q.split(/\s+/).every((w) => hay.includes(w));
 }
+/* packs (#67): recipes from a non-core pack carry a pack-id badge; the pack sheet (packs-ui.js) loads on first open */
+function foreignPacks() { const P = window.strudelCraft.packs, out = new Set(); try { for (const p of P ? P.list() : []) if (p.tier !== 'core') out.add(p.id); } catch (e) { /* loader not ready */ } return out; }
+const openPacks = (o) => import('./packs-ui.js').then((m) => m.open(o)).catch((e) => window.strudelCraft.ui.toast('Packs could not open: ' + e.message, { kind: 'error' }));
 function renderList(keepId) {
   const prevId = keepId || (cur() && cur().id);
   S.filtered = S.recipes.filter(matches);
   const idx = S.filtered.findIndex((r) => r.id === prevId); S.sel = idx >= 0 ? idx : 0;
   const list = $('#list');
-  if (!S.filtered.length) list.replaceChildren(el('li', { class: 'empty' }, 'No recipe matches. Clear filters with Esc.'));
+  const foreign = foreignPacks();
+  if (!S.recipes.length && S.cat) list.replaceChildren(el('li', { class: 'empty none' }, el('b', {}, 'No recipes'), el('span', {}, 'No content pack provides any. Type a program in the Stack view, or add a pack.'),
+    el('button', { type: 'button', class: 'ghost', id: 'emptyPacks', onclick: () => openPacks() }, 'Open packs')));
+  else if (!S.filtered.length) list.replaceChildren(el('li', { class: 'empty' }, 'No recipe matches. Clear filters with Esc.'));
   else list.replaceChildren(...S.filtered.map((r, i) => {
     const inStack = S.stack.some((l) => l.id === r.id);
     return el('li', { 'data-id': r.id, 'aria-current': i === S.sel ? 'true' : 'false', class: S.playing && r.id === S.playingId ? 'playing' : null },
       el('button', { type: 'button', class: 'row', 'data-i': i, title: r.intent },
         el('span', { class: 'n', 'aria-hidden': 'true' }, String(S.recipes.indexOf(r) + 1).padStart(2, '0')), el('span', { class: 't' }, r.title),
+        foreign.has(r.pack) ? el('span', { class: 'pk', title: 'From pack ' + r.pack }, r.pack) : null,
         el('span', { class: 'k' + (r.verified ? ' ok' : '') }, r.verified ? 'ok' : r.needs_samples ? 'smp' : '·')),
       el('button', { type: 'button', class: 'add', 'data-add': r.id, 'aria-pressed': inStack ? 'true' : 'false', disabled: !r.expr, 'aria-label': (inStack ? 'Remove ' : 'Add ') + r.title + (inStack ? ' from stack' : ' to stack'), title: r.expr ? 'Stack (A)' : 'Uses top-level statements: solo only' }, inStack ? '−' : '+'));
   }));
@@ -502,7 +509,8 @@ function renderSelection(updateHash) {
     el('h2', {}, 'Inspector'), el('p', { class: 'title' }, r.title), el('p', { class: 'intent', html: mdInline(r.intent.charAt(0).toUpperCase() + r.intent.slice(1)) }),
     el('div', { class: 'badges' }, r.verified ? el('span', { class: 'badge ok' }, 'Rendered OK') : el('span', { class: 'badge dim' }, r.needs_samples ? 'Sample banks · not headless-checked' : 'Not verified'),
       r.unverified.length ? el('span', { class: 'badge warn', title: r.unverified.join(', ') }, 'Docs unverified: ' + r.unverified.join(', ')) : null,
-      hasOwnTempo(r.code) ? el('span', { class: 'badge dim' }, 'Tempo in code: knob rewrites setcpm') : null),
+      hasOwnTempo(r.code) ? el('span', { class: 'badge dim' }, 'Tempo in code: knob rewrites setcpm') : null,
+      foreignPacks().has(r.pack) ? el('button', { type: 'button', class: 'badge pkb', title: 'Open the pack sheet', onclick: () => openPacks() }, 'Pack ' + r.pack) : null),
     r.verified ? el('div', { class: 'meas' }, el('div', {}, el('i', {}, 'RMS'), el('b', {}, r.rms_dbfs + ' dBFS')), el('div', {}, el('i', {}, 'Centroid'), el('b', {}, r.centroid_hz + ' Hz'))) : null,
     el('div', { class: 'tags' }, labs),
     r.notes ? el('p', { html: mdInline(r.notes) }) : null,
@@ -711,6 +719,9 @@ async function boot() {
     buildFilters(); renderList(); renderStack(); route();
     say(S.recipes.length ? `${S.recipes.length} recipes loaded. Press Play or Space.` : 'No recipes: no content pack provides any. Type a program in the Stack view, or add a pack.');
   } catch (e) { say('Failed to load recipes: ' + e.message, true); $('#nowTitle').textContent = 'Offline'; }
+  window.strudelCraft.recipes = { async reload() { S.cat = await loadJSON('catalog'); S.labelsById = Object.fromEntries(S.cat.labels.map((l) => [l.id, l])); S.recipes = S.cat.recipes; buildFilters(); renderList(); renderStack(); } };
+  window.strudelCraft.packsSheet = { open: openPacks };
+  packsReady.then((P) => P.ready.then(() => { if (P.proposals().some((x) => x.state === 'new')) window.strudelCraft.ui.toast('A link proposes a pack. Review it', { sticky: true, onClick: () => openPacks() }); }));
 
   fetch('build.json', { cache: 'no-store' }).then((r) => r.json()).then((b) => { const e = $('#buildBadge'); if (e) { e.textContent = b.sha === 'dev' ? 'dev' : b.sha + (b.date ? ' ' + b.date : ''); e.title = 'Build ' + b.sha + (b.date ? ', ' + b.date : ''); } }).catch(() => {});
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {

@@ -70,6 +70,7 @@ const nav = (v, n) => register({ id: 'view.' + v, group: 'View', title: n, run: 
 [['rack', 'Rack'], ['stack', 'Stack'], ['ref', 'Reference'], ['practice', 'Practice'], ['perform', 'Perform'], ['syntax', 'Syntax'], ['graph', 'Graph']].forEach(([v, n]) => nav(v, n));
 register({ id: 'transport.toggle', group: 'Transport', title: 'Play / stop', keys: 'Space', run: () => document.getElementById('playBtn').click() });
 register({ id: 'ui.theme', group: 'View', title: 'Toggle theme', keys: 'T', run: () => document.getElementById('themeBtn').click() });
+register({ id: 'packs.sheet', group: 'Packs', title: 'Packs, licences and credits', run: () => import('./packs-ui.js').then((m) => m.open()) }); /* #67: sheet loads on first use */
 register({ id: 'ui.help', group: 'View', title: 'Shortcuts and progress', keys: '?', run: () => document.getElementById('helpBtn').click() });
 
 sc.palette = { register, open, close, list: () => [...items.values()], filter, score };

@@ -73,7 +73,7 @@ function unmuteBus() {
 /* ---------- engine ---------- */
 /* hooks calls take plain strings: protect them from mini-notation before Strudel's transpiler sees them (engine/hooks.js) */
 /* pipeline before every evaluation (docs/ATOMS.md section 5): atoms.compile -> protect() -> Strudel's transpiler.
-   atoms.prepare returns the code unchanged when the program has no atoms or an atom fails to compile (the eval error is then reported). */
+   atoms.prepare returns the code unchanged when the program has no atoms ; an atom compile error (E_ATOM_*) makes the eval throw that coded error, which the error box and toast report. */
 function protectCode(code) {
   try { const a = window.strudelCraft.atoms; if (a && a.prepare) code = a.prepare(code); } catch (e) { /* atoms stay as written */ }
   try { const p = window.strudelCraft.hooksLib && window.strudelCraft.hooksLib.protect; return p ? p(code) : code; } catch (e) { return code; }

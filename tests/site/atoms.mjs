@@ -123,7 +123,16 @@ check('editors: scrubbing the 8 in atoms.kick4({ n: 8 }) rewrites only that numb
   && c1.compiles - c0.compiles === 1 && h1 - h0 === 1,
   JSON.stringify({ shape: litInfo && litInfo.shape, editor: litInfo && litInfo.editor, end: end.slice(DECLS.length).trim(), compiles: c1.compiles - c0.compiles, commits: h1 - h0 }));
 
-check('no page errors', errors.length === 0, errors.slice(0, 3).join(' | '));
+await setDoc('$: s(atoms.nope)\n');
+let dlg = 0; page.on('dialog', (d) => { dlg++; d.dismiss(); });
+await page.click('#playBtn');
+await page.waitForFunction(() => document.querySelector('#status').classList.contains('err'), null, { timeout: 60000 }).catch(() => {});
+const unk = await page.evaluate(() => ({ status: document.querySelector('#status').textContent, toast: [...document.querySelectorAll('.toast')].map((t) => t.textContent).join('|'), playing: window.__sc ? window.__sc.S.playing : null }));
+check('unknown atom: playing s(atoms.nope) shows E_ATOM_UNKNOWN with the name (no "is not defined"), the code is unchanged, nothing plays and no native dialog fires',
+  /E_ATOM_UNKNOWN/.test(unk.status) && /nope/.test(unk.status) && !/is not defined/.test(unk.status + unk.toast) && (await docText()) === '$: s(atoms.nope)\n' && !unk.playing && dlg === 0, JSON.stringify({ ...unk, dlg }));
+
+const realErrors = errors.filter((e) => !/E_ATOM_UNKNOWN/.test(e)); // the reported eval error is logged by the engine
+check('no page errors', realErrors.length === 0, realErrors.slice(0, 3).join(' | '));
 await browser.close(); server.close();
 const bad = checks.filter((c) => !c.ok);
 console.log(`\n${checks.length - bad.length}/${checks.length} checks passed.`);

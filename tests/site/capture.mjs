@@ -87,7 +87,7 @@ ok('recording survives tab switches', mid.phase === 'recording' && fr.mode === '
 // exact offline render
 await page.evaluate(() => window.strudelCraft.capture.renderExact(2));
 const ex = await page.evaluate(async () => (await window.strudelCraft.capture.list())[0]);
-ok('render exact 2 cycles: sample-exact length, non-silent', ex.how === 'offline' && ex.frames === Math.round(2 / ex.cps * ex.sr) && ex.peak > 0.01 && ex.haps > 0 && ex.fails === 0, JSON.stringify({ how: ex.how, frames: ex.frames, peak: ex.peak, haps: ex.haps, fails: ex.fails }));
+ok('render exact 2 cycles: sample-exact length, non-silent', ex.how === 'offline' && ex.frames === Math.round(2 / ex.cps * ex.sr) && ex.peak > 0.01 && ex.haps > 0 && ex.fails === 0, JSON.stringify({ how: ex.how, frames: ex.frames, peak: ex.peak, haps: ex.haps, fails: ex.fails, retries: ex.retries }));
 const lag = await page.evaluate(async () => {
   const C = window.strudelCraft.capture; const all = await C.list(); const rt = await C.get(all.find((m) => m.how === 'realtime' && m.mode === 'cycles').id), of = await C.get(all.find((m) => m.how === 'offline').id);
   const env = (x, sr) => { const hop = Math.round(sr / 1000), n = Math.floor(Math.min(x.length, sr * 3) / hop), e = new Float32Array(n); for (let i = 0; i < n; i++) { let s = 0; for (let k = 0; k < hop; k++) s += x[i * hop + k] ** 2; e[i] = Math.sqrt(s / hop); } return e; };
@@ -104,6 +104,13 @@ await page.click('.sx-run[data-sec="capture"][data-i="0"]');
 await page.waitForFunction(() => window.strudelCraft.capture.opts.n === 4 && window.strudelCraft.capture.opts.name === 'arp-loop', null, { timeout: 30000 }).catch(() => {});
 const sx = await page.evaluate(() => ({ n: window.strudelCraft.capture.opts.n, mode: window.strudelCraft.capture.opts.mode, open: !document.getElementById('capSheet').hidden, ui: document.getElementById('capN').textContent }));
 ok('Syntax example configures and opens capture', sx.n === 4 && sx.mode === 'cycles' && sx.open && sx.ui === '4', JSON.stringify(sx));
+// pooled superdough nodes (filters, supersaw): live -> offline -> live must never cross contexts
+await page.evaluate(() => { window.__sc.setView('rack'); const ta = document.getElementById('code'); ta.value = 'note("c3 e3 g3 b3*2").s("supersaw").lpf(900).hpf(120).lpq(4)'; ta.dispatchEvent(new Event('input', { bubbles: true })); });
+await page.evaluate(async () => { if (!window.__sc.S.playing) await window.__sc.play(); }); await page.waitForTimeout(2500);
+await page.evaluate(() => window.strudelCraft.capture.renderExact(2));
+const pl = await page.evaluate(async () => (await window.strudelCraft.capture.list())[0]);
+await page.evaluate(() => window.__sc.play()); await page.waitForTimeout(2500); await page.evaluate(() => window.__sc.stop());
+ok('pooled-node pattern: exact render complete, live play after it clean', pl.how === 'offline' && pl.fails === 0 && pl.peak > 0.01 && errs.length === 0, JSON.stringify({ haps: pl.haps, fails: pl.fails, retries: pl.retries, peak: pl.peak, errs: errs.length }));
 ok('no console errors', errs.length === 0, errs.slice(0, 3).join(' | '));
 await page.setViewportSize({ width: 1440, height: 900 }); await page.evaluate(() => { window.__sc.setView('rack'); window.strudelCraft.capture.open(); }); await page.waitForTimeout(500);
 await page.screenshot({ path: path.join(REPO, 'docs/screens/desktop-1440-capture.png') });

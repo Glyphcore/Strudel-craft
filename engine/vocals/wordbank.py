@@ -174,7 +174,7 @@ def syl_bounds(seg, n):
     return [0] + [int(np.searchsorted(c, k / n)) for k in range(1, n)] + [len(seg)]
 
 
-def build(stem, lyrics_txt, out, bank, timings, syll, norm, aligner, own, per_section=False):
+def build(stem, lyrics_txt, out, bank, timings, syll, norm, aligner, own, per_section=False, formant_steps=None, formant_backend='pyworld'):
     stem, out = Path(stem), Path(out)
     if not own and not owner_ok(stem):
         print(f'owner guard: {stem} has no owner provenance (tracks/<slug>/source/*.json handle in data/suno/owners.json); use --own-file only for audio you recorded', file=sys.stderr); return 4
@@ -233,6 +233,10 @@ def build(stem, lyrics_txt, out, bank, timings, syll, norm, aligner, own, per_se
             fn_ = f'{k_}__{ci}_{nm_}'; sf.write(out / 'pitched' / 'wav' / fn_, y_, SR, subtype='FLOAT'); urls.append((out / 'pitched' / 'wav' / fn_).resolve().as_uri())
         pm[k_] = {f'{NN[b % 12]}{b // 12 - 1}': urls}
     (out / 'pitched' / 'strudel.json').write_text(json.dumps(pm, indent=1) + '\n')
+    if formant_steps:  # P4 (#45): formant-preserving per-word pitch variants vox_<word>_f<semi>, see formant.py
+        import formant
+        fs = {k_: [(nm_, sg_) for _, _, sg_, nm_ in lst] for k_, lst in pit.items() if not re.search(r'_s\d+$', k_) and not k_.endswith('_syl')}
+        formant.render_variants(fs, out, bank, formant_steps, formant_backend)
     (out / 'words.json').write_text(json.dumps({'bank': bank, 'source': str(stem), 'sr': SR, 'words': meta}, indent=1) + '\n')
     good = [m for m in meta if not m.get('skipped')]; hi = [m for m in good if m['confidence'] > 0.5]
     pct = 100 * len(hi) / len(words)
@@ -277,10 +281,11 @@ def main():
     ap.add_argument('--bank', default='vox'); ap.add_argument('--timings'); ap.add_argument('--syll', choices=['rule', 'pyphen'], default='rule')
     ap.add_argument('--aligner', choices=['whisperx', 'mfa'], default='whisperx'); ap.add_argument('--no-norm', action='store_true')
     ap.add_argument('--own-file', action='store_true'); ap.add_argument('--per-section', action='store_true'); ap.add_argument('--selftest', action='store_true')
+    ap.add_argument('--formant-steps', help='e.g. -12..12 or -5,7: pre-render formant-preserving pitch variants (default off)'); ap.add_argument('--formant-backend', choices=['pyworld', 'rubberband'], default='pyworld')
     a = ap.parse_args()
     if a.selftest: return selftest()
     if not (a.stem and a.lyrics and a.out): ap.print_usage(sys.stderr); return 2
-    return build(a.stem, a.lyrics, a.out, a.bank, a.timings, a.syll, not a.no_norm, a.aligner, a.own_file, a.per_section)
+    return build(a.stem, a.lyrics, a.out, a.bank, a.timings, a.syll, not a.no_norm, a.aligner, a.own_file, a.per_section, __import__('formant').parse_steps(a.formant_steps) if a.formant_steps else None, a.formant_backend)
 
 
 if __name__ == '__main__':

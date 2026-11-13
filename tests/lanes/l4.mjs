@@ -107,7 +107,10 @@ const NM = process.env.STRUDEL_MODULES;
       const run = async (src) => { RT.hooks.reset(); RT.hooks.live = false; lanes.reset(); await R.evaluate(protect(src), false); return R.scheduler.pattern.queryArc(0, 2, { _cps: 1 }).map((h) => JSON.stringify([+h.whole.begin, h.value, h.context?.tags || []])).sort(); };
       const a = await run(A.compile(DECL + prog + 'tagged(atoms.wetDrums).mute()\n', A.buildEnv(DECL + prog + 'tagged(atoms.wetDrums).mute()\n', {}, { diag: [] })).code), b = await run(prog + "tagged('drums & wet').mute()\n"), none = await run(prog);
       assert.deepEqual(a, b); assert.ok(a.length > 0 && a.length < none.length, 'the selection acts (snare muted)');
-      ran = `selector atom runs: ${a.length} events, identical to the string form (${none.length} without the selection)`;
+      const runP = async (src) => { RT.hooks.reset(); RT.hooks.live = false; lanes.reset(); await R.evaluate(protect(lanes.prepare(src).code), false); return R.scheduler.pattern.queryArc(0, 2, { _cps: 1 }).map((h) => JSON.stringify([+h.whole.begin, h.value])).sort(); };
+      const BP = 'w: s("hh*4").send(\'verb\', 0.5)\nv: ret(\'verb\').room(1)\n', BD = DECL + 'w: s("hh*4").send(atoms.verb, 0.5)\nv: ret(atoms.verb).room(1)\n';
+      const ba = await runP(A.compile(BD, A.buildEnv(BD, {}, { diag: [] })).code), bb = await runP(BP); assert.deepEqual(ba, bb); assert.ok(ba.length > 0 && ba.some((x) => /bus/.test(x)), 'send runs on the lanes runtime');
+      ran = `busname atom runs through .send/ret: ${ba.length} events identical to the string form; selector atom runs: ${a.length} events, identical to the string form (${none.length} without the selection)`;
     }
   }
   { const c = compileLanes("d: s('bd').send('verb', 0.5)\nv: ret('verb')"); assert.deepEqual(c.graph.audio.buses.named, { verb: 512 }); assert.deepEqual(c.graph.diagnostics, []); } // the single-quoted busname atom form runs through the audio compile pass (#75)

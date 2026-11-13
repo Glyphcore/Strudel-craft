@@ -233,7 +233,7 @@ export function createPacks(opts = {}) {
 
   // ---------------------------------------------------------------- public data API (for the pack sheet)
   const ingInfo = (i) => ({ id: i.id, qualified: ingQ(i.pack, i), kind: i.kind, format: i.format, version: i.version, title: i.title, description: i.description, tags: i.tags, state: i.state, reason: i.reason,
-    code: i.code, granted: !!i.granted, modules: i.modules.map((m) => ({ path: m.path, hash: m.hash, realm: m.realm || 'sandbox', bytes: m.bytes })), bytes: i.bytes, load: i.load, license: i.license, attribution: i.attribution, redistribution: i.redistribution,
+    code: i.code, granted: !!i.granted, modules: i.modules.map((m) => ({ path: m.path, hash: m.hash, realm: m.realm || 'sandbox', bytes: m.bytes })), bytes: i.bytes, hash: i.hash, path: i.path, load: i.load, license: i.license, attribution: i.attribution, redistribution: i.redistribution,
     assets: i.assets ? { files: i.assets.files, bytes: i.assets.bytes } : null, requires: i.requires });
   const list = () => [...packs.values()].map((p) => ({ id: p.id, version: p.version, title: p.title, description: p.description, tier: p.tier, layer: p.layer, source: p.source, manifest: p.manifest, priority: effective().flatMap((L) => L.packs).find((e) => e.id === p.id)?.priority ?? 0,
     state: p.state, errors: p.errors.slice(), license: p.license, licenseFile: p.licenseFile, attribution: p.attribution, authors: p.authors, homepage: p.homepage, repository: p.repository,
@@ -288,6 +288,7 @@ export function createPacks(opts = {}) {
     const ing = findIng(ref); if (!ing || !ing.code) return false; const l = readUser(), e = l.packs.find((x) => x.id === ing.pack.id); if (!e) return false;
     e.allowCode = [...new Set([...(e.allowCode || []), ing.id])]; saveUser(l); ing.pack.entry.allowCode = e.allowCode; ing.granted = true; dirty = true; emit('state', { pack: ing.pack.id, ingredient: ing.id }); return true;
   }
+  const raw = async (ref) => { await indexed; const i = findIng(ref); if (!i || ['skipped', 'failed'].includes(i.state)) return null; await loadIng(i); return i.data || null; }; // an ingredient's whole parsed file (e.g. the lanes block no kind view carries)
   const describe = (ref) => { const i = findIng(ref); return i ? { ...ingInfo(i), pack: i.pack.id, manifest: i.pack.manifest, tier: i.pack.tier } : null; };
 
   // ---------------------------------------------------------------- cache housekeeping and offline
@@ -340,7 +341,7 @@ export function createPacks(opts = {}) {
   if (typeof window !== 'undefined') window.addEventListener('online', () => { for (const i of allIngs()) if (i.state === 'unavailable') { i.promise = null; i.state = 'listed'; } for (const p of packs.values()) if (p.state === 'unavailable') loadPack(p.entry, p.layer).then(applyEager); applyEager(); });
 
   return {
-    api: API, ready, verify, list, credits, describe, resolve: resolveRef, items, report, get, ...view, sanitize,
+    api: API, ready, verify, list, credits, describe, resolve: resolveRef, items, report, get, raw, ...view, sanitize,
     load: async (ref) => { await ready; const i = findIng(ref); if (!i) return 'unknown'; return loadIng(i); },
     loadAll: async () => { await ready; await Promise.all(allIngs().map(loadIng)); return report(); },
     // a view's own retry (Syntax Retry button): failed or unavailable ingredients of `kind` are read again; failure(kind) names why they failed

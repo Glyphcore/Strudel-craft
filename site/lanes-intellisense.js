@@ -103,7 +103,7 @@ export function textModel(doc) {
 }
 export function install(win = window) {
   const sc = win.strudelCraft; if (!sc || !sc.intellisense || !sc.intellisense.registerSource) return null;
-  let data = null, cache = { text: null, model: null }; const load = fetch('data/intellisense/strudel.json').then((r) => r.json()).then((d) => { data = d; }).catch(() => { data = {}; });
+  let data = null, cache = { text: null, model: null }; const load = (async () => { while (!sc.packs) await new Promise((ok) => setTimeout(ok, 8)); await sc.packs.ready; return sc.packs.raw('glyphcore/shim:strudel-docs'); })().then((d) => { data = d || {}; }).catch(() => { data = {}; });
   const modelOf = async (doc) => { if (cache.text === doc) return cache.model; const { parse } = await import('./model.js'); let m = {}; try { m = parse(doc); } catch (e) { m = {}; } if (!m.tracks && !m.captures && !m.selections) m = textModel(doc); cache = { text: doc, model: m }; return m; };
   sc.intellisense.registerSource({ id: 'lanes', async complete(ctx) { await load; const r = complete(ctx, data, await modelOf(ctx.doc || ctx.text)); return r && r.options.length ? r : null; } });
   const lit = sc.literals;

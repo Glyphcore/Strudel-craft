@@ -121,10 +121,10 @@ async function codeState(srcOverride) {
   let resolved = src.code; try { if (sc.atoms && sc.atoms.inline) resolved = sc.atoms.inline(src.code); } catch (e) { /* keep */ }
   const C = sc.perform && sc.perform.controls;
   let sites = []; try { sites = (sc.binder && sc.binder.sites ? sc.binder.sites(src.kind === 'stack' ? 'stack' : 'rack') : []).map((s) => ({ id: s.id, path: s.path, label: s.label, param: s.param, type: s.type, value: s.value, range: s.range })); } catch (e) { sites = []; }
-  if (!modHash) try { modHash = sha256(new Uint8Array(await (await fetch('data/mod_ranges.json')).arrayBuffer())); } catch (e) { modHash = null; }
+  if (!modHash) try { modHash = (await (async () => { const P = sc.packs; await P.ready; const d = P.describe('glyphcore/shim:ranges'); if (!d || !d.hash) throw new Error('no ranges'); return { path: d.path, sha256: d.hash }; })()); } catch (e) { modHash = null; }
   return JSON.parse(JSON.stringify({
     source: { kind: src.kind || 'solo', title: src.title || '', code: src.code || '', resolved, atoms: [...new Set((src.code || '').match(/\batoms\.[\w.]+/g) || [])] },
-    controls: C ? C.toModel() : null, aliases: C && C.labelOf ? Object.fromEntries(C.list().map((x) => [C.labelOf(x.name), x.name]).filter(([l]) => l)) : {}, sites, perform: lsj('perform'), modRanges: modHash ? { path: 'data/mod_ranges.json', sha256: await modHash } : null,
+    controls: C ? C.toModel() : null, aliases: C && C.labelOf ? Object.fromEntries(C.list().map((x) => [C.labelOf(x.name), x.name]).filter(([l]) => l)) : {}, sites, perform: lsj('perform'), modRanges: modHash ? { path: modHash.path, sha256: modHash.sha256 } : null,
     settings: { tempo: lsj('tempo'), masterDb: T ? T.masterDb : null, follow: lsj('follow'), range: { start: lsj('range.start'), end: lsj('range.end'), loop: lsj('range.loop'), unit: lsj('range.unit') } },
   }));
 }

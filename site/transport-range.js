@@ -47,10 +47,18 @@ function build() {
   sc.palette && sc.palette.register({ id: 'range.extend', group: 'Transport', title: 'Extend play time +5 min', run: () => extend(300) });
   setInterval(tick, 100);
 }
+/* Strudel 1.3.0's default Cyclist has no setCycle (only the worker neocyclist does). Its time origin is settable:
+   each tick queries [lastEnd, num_cycles_at_cps_change + ticks*dur*cps], and when num_ticks_since_cps_change is 0 the
+   next tick re-anchors num_cycles_at_cps_change = lastEnd at the current clock time. So setting lastEnd and zeroing the
+   tick count makes the next query start exactly at cycle c (sample-accurate at the next clock tick, about 50 ms). */
 function seek(c) {
-  const s = sch(); if (!s || !playing()) return;
-  if (typeof s.setCycle === 'function') { try { s.setCycle(c); } catch (e) { /* engine refused */ } }
-  else if (!seek.warned) { seek.warned = true; sc.ui && sc.ui.toast('Scrub needs a newer Strudel scheduler', { kind: 'error' }); }
+  const s = sch(); if (!s || !playing()) return false; c = Math.max(0, +c || 0);
+  try {
+    if (typeof s.setCycle === 'function') s.setCycle(c);
+    else if ('num_ticks_since_cps_change' in s && 'lastEnd' in s) { s.lastEnd = c; s.lastBegin = c; s.num_ticks_since_cps_change = 0; }
+    else return false;
+    return true;
+  } catch (e) { return false; }
 }
 async function settings() {
   if (!sc.ui) return;
@@ -84,13 +92,23 @@ function tick() {
   if (p && left <= 0 && !st.fading) hitLimit();
   if (!el.pos) return;
   const s = sch(); let c = 0; try { c = p && s ? s.now() : 0; } catch (e) { c = 0; }
-  if (p && st.loop && c >= st.end && !st.fading) { seek(st.start); c = st.start; }
+  if (p && s) installLoop(s);
   if (c > +el.pos.max && !st.loop) el.pos.max = Math.ceil(c / 4) * 4;
   if (document.activeElement !== el.pos) el.pos.value = c;
   el.pos.setAttribute('aria-valuetext', st.unit + ' ' + u(c).toFixed(1));
   el.out.textContent = (st.unit === 'bar' ? 'bar ' + Math.floor(u(c)) : 'cyc ' + c.toFixed(2));
   el.left.textContent = fmt(left) + ' left'; el.left.dataset.warn = String(p && left < 60);
   el.more.hidden = !(p && (left < 60 || st.fading));
+}
+/* sample-accurate loop: the Cyclist writes lastEnd after each tick's query; when it crosses End we store
+   Start + overshoot and zero the tick count, so the next tick re-anchors its time origin there (no timer lag). */
+function installLoop(s) {
+  if (s.__scLoop || !('num_ticks_since_cps_change' in s)) return; s.__scLoop = true;
+  let raw = s.lastEnd;
+  Object.defineProperty(s, 'lastEnd', { configurable: true, get: () => raw, set: (x) => {
+    if (st.loop && !st.fading && playing() && x >= st.end && st.end > st.start) { raw = st.start + Math.min(x - st.end, st.end - st.start); s.num_ticks_since_cps_change = 0; }
+    else raw = x;
+  } });
 }
 function setLimit(min) { st.maxMin = min; set('range.maxMin', min); }
 sc.range = { state: st, setLimit, extend, tick, seek };

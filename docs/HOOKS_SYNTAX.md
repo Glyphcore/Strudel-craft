@@ -1,6 +1,6 @@
 # Hooks, slots and taps: middleware syntax for Strudel-craft patterns
 
-Status: **issued** (design note only, nothing built). DAG nodes `hooks-core` (#47) and `taps-vars-decorators` (#48). Owner: `daw-sme`.
+Status: **built on main** for the site and the CLI runtime (`site/engine/hooks.js`, #47/#48; model, library and intellisense on top of it in #49-#51). This file stays the design note and the reference for the syntax; what the site actually loads is summarised in `site/README.md`. DAG nodes `hooks-core` (#47) and `taps-vars-decorators` (#48). Owner: `daw-sme`.
 Extended by `docs/BLUEPRINT.md` (variables, decorators, node graph, component library, shared JSON model, phases).
 Gate strings, tap refs, slot and hook names can be declared once as typed atoms and referenced: `docs/ATOMS.md`.
 Target runtime: unmodified Strudel (`@strudel/web` 1.3.0 on the site, `@strudel/core` 1.2.6 in the headless CLI). Everything here is an
@@ -316,11 +316,16 @@ name. **Headless** = `strudel check` lists all; errors exit 1; `--strict` promot
 
 ## 7. Intellisense (data-driven)
 
-One provider, registered through the existing registry; no editor changes:
+Built as **two** providers (#51, `site/hooks-intellisense.js`), registered through the existing registry; no editor changes:
 
 ```js
-window.strudelCraft.intellisense.register({ id: 'hooks', items: (ctx) => hooks.completions(ctx) });
+window.strudelCraft.intellisense.register({ id: 'hooks', items: () => staticItems() });        // fixed vocabulary
+window.strudelCraft.intellisense.register({ id: 'model', items: () => modelItems(model, lib) }); // names in this program
 ```
+
+The `model` items come from `hooks.manifest()` when the runtime is up (merged with `model.parse()` of the editors otherwise) and from
+the component library, so they also cover `decorators`, `variables`, `components` (`name@rev`) and instance names (`as/slot`, `as/tap`).
+Tap facets include the controls actually seen on the tapped events (`model.tapControls`).
 
 Items (the registry's item shape: `label, method, string, detail, info, category, apply`):
 

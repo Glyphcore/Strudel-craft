@@ -39,8 +39,8 @@ Key limit: all time-fitting (`loopAt`, `fit`, `splice`) works by resampling, so 
 | Need | Strudel | Notes |
 |---|---|---|
 | Formant filter | `vowel` (a e i o u + ae aa oe ue y uh un en an on) | fixed-formant bandpass bank on any source; not a formant shifter |
-| Speech / TTS | Shabda speech samples (see above) | third-party service, network, licence per sample |
-| Pitch-shift a sample | `speed`, `note()` on a pitched map | shifts formants and duration together (chipmunk) |
+| Speech / TTS | Shabda speech samples (see above) | third-party service, network, licence per sample; used as the opt-in word-bank fallback, section 5 |
+| Pitch-shift a sample | `speed`, `note()` on a pitched map | shifts formants and duration together (chipmunk); formant-preserving takes have to be rendered before playback, section 5 |
 | Granular-ish | `chop`, `striate`, `slice`, `scrub`, `begin/end` | event-level, not a grain cloud; no per-grain random pitch/pan |
 | Vocoder / harmonizer | none | no carrier/modulator input |
 | Live sampling / recording | no mic input or recorder found in docs or the input-output page; community threads request it (https://club.tidalcycles.org/t/baked-in-support-for-midi-in-audio-in-and-audio-devices-channels/5098) | UNVERIFIED, treat as absent |
@@ -53,3 +53,21 @@ Key limit: all time-fitting (`loopAt`, `fit`, `splice`) works by resampling, so 
 - Fixed effect chain per voice, then per-orbit delay/reverb; `duckorbit` is the only cross-bus modulation. No envelope follower, no external sidechain input.
 - Our CLI renders offline on node-web-audio-api with superdough's own worklets (supersaw, pulse, distort, crush, coarse, shape, ladder, LFOs); worklet voices are slow; samples: URL map or `--samples-dir DIR` (local folders, also as `ir`; `strudel bounce` re-uses a stem as a sample, Glyphcore/Strudel-craft#2); nothing preloaded.
 - Licence: Strudel and superdough are AGPL-3.0-or-later; load unmodified. Sample packs vary (CC0 / CC-BY / CC-BY-SA); keep attribution. Shabda/freesound clips carry their own licences.
+
+## 5. Our word-vocal toolchain (`engine/vocals`, `site/prelude/word.js`, #42-#46)
+
+Built on main; nothing here patches Strudel. A bank is cut from one stem plus its lyrics and played back as ordinary samples.
+
+| Part | Command / call | State |
+|---|---|---|
+| Build a bank | `engine/vocals/wordbank.sh STEM.wav LYRICS.txt OUT_DIR [--bank vox] [--syll rule\|pyphen] [--aligner whisperx\|mfa] [--per-section] [--own-file]` | built (CLI, needs the aligner locally) |
+| Bank output | `OUT/ogg/`, `OUT/strudel.json`, `OUT/pitched/strudel.json` (keys `vox_<word>`, `vox_<word>_s<k>`, `vox_syl`; `pitched` carries the sung base note so `note()` retunes) | built |
+| Play it | `word("<call me baby>")`, `word("baby:2")` (take index), `syl("0 1 2")`, `vowel("<a o>")` | built (site prelude #43) |
+| Banks on the site | `data/vox/demo` (espeak-ng speech, auto-loaded on the first `word()`) and `data/vox/call-me-baby`; `voxBank(name\|url)`, `voxBank()` folder picker, `voxBank.list()` | built |
+| Word completions | `engine/vocals/complete.py PREFIX [--samples-dir D] [--config providers.json] [--kind word\|syllable\|sample]`; providers `samples-dir` (strudel.json) and `wordbank` (words.json), plus `module:` plugins. The site reads the same item shape from `data/intellisense/words.json` | built (#44) |
+| Formant-preserving variants | `wordbank.sh ... --formant-steps -12..12 [--formant-backend pyworld\|rubberband]` -> `OUT/formant/wav/<key>_f<semi>__<n>.wav` + `OUT/formant/strudel.json` (`vox_<word>_f<semi>`); gate with `python3 engine/vocals/formant.py --selftest --backend all` | built at build time (#45). pyworld (MIT, in-process WORLD) passes the selftest; the external `rubberband --formant` binary (GPL-2, spawned, never linked or vendored) is approximate and fails 3 of its 4 vowels - the selftest reports that instead of hiding it |
+| Picking a variant at play time | `word(...).formant(true)` (nearest pre-rendered step, residual <= 50 cents applied with `speed`) | **coming** (#57): the helper contract is in `formant.py`, the Strudel-side call is not built. The Syntax view marks the example "coming" |
+| Missing lyric words | `wordbank.sh ... --tts-fallback` fetches Shabda speech clips for words absent from the stem | built, opt-in (#46). Without the flag `tts_fallback.py` is never imported and the run makes no network call; each clip is recorded in `words.json` with `source: 'tts'`, its URL and a plain licence note (Shabda publishes no per-clip licence) |
+
+Licences per bank part are listed in `engine/vocals/LICENSES.md`; neither formant variants nor TTS clips are baked into the two
+site banks today.

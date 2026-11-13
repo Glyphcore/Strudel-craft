@@ -1,6 +1,6 @@
 # Studio toolkit blueprint: code, graph, beatpad, board and library over one model
 
-Status: **issued** (design note only; phases and issues in section 12). Extends `docs/HOOKS_SYNTAX.md` (hooks, slots, bindings, gates, taps); read that first.
+Status: **P1-P9 built on main** (design note first written as `issued`; phases and issues in section 12, state per phase in that table). Extends `docs/HOOKS_SYNTAX.md` (hooks, slots, bindings, gates, taps); read that first. What the site actually loads is summarised in `site/README.md`.
 Owner: `daw-sme`. Magic strings (mini-notation, gates, tap refs, names) as typed atoms: `docs/ATOMS.md`. UI parts are direction for `ui-designer` (built later through the `aaa-web-ui` skill), not a UI spec.
 
 ## 1. The idea
@@ -617,17 +617,17 @@ Direction and constraints, not a layout. Phone first (390 px wide), then desktop
 
 ## 12. Phases
 
-| phase | issue | deliverable | depends on | owner |
-|---|---|---|---|---|
-| P1 | #47 | hooks core: slots, bindings, gates, journal, config JSON, CLI `--hooks` / `hooks` | - | daw-implementer |
-| P2 | #48 | taps, `wire`, modules, variables, decorators | P1 | daw-implementer |
-| P3 | #49 | model schema file, code <-> model parser and generator, `strudel model` | P1, P2 | daw-implementer |
-| P4 | #50 | library: components, instances, versions, history adapter, `--library` | P3 | daw-implementer |
-| P5 | #51 | intellisense providers `hooks` and `model` | P1 (grows with P2-P4), registry on `main` | daw-implementer |
-| P6 | #52 | graph editor view | P3 (library actions need P4) | ui-designer |
-| P7 | #53 | pad engine: banks, pad targets and modes, quantise, choke, scenes, looper, input-provider registry (touch, keyboard), `strudel perf` | P2 (component pads and save need P4) | daw-implementer |
-| P8 | #54 | controls engine: control type registry, `ctl`, slider shim, `hooks.map`, automation lanes, `strudel controls`, `--set` | P2, P7 (input registry, recorder) | daw-implementer |
-| P9 | #55 | Perform views: pad banks and boards in one tab strip, inline controls, learn, automation record | P7, P8 | ui-designer |
+| phase | issue | deliverable | depends on | owner | state |
+|---|---|---|---|---|---|
+| P1 | #47 | hooks core: slots, bindings, gates, journal, config JSON, CLI `--hooks` / `hooks` | - | daw-implementer | built (`site/engine/hooks.js`) |
+| P2 | #48 | taps, `wire`, modules, variables, decorators | P1 | daw-implementer | built (same file) |
+| P3 | #49 | model schema file, code <-> model parser and generator, `strudel model` | P1, P2 | daw-implementer | built (`site/model.js`, `data/schema/model.v1.json`; the `strudel model` CLI lives in the CLI repo) |
+| P4 | #50 | library: components, instances, versions, history adapter, `--library` | P3 | daw-implementer | built (`site/library.js`, `site/library-store.js`; `hooks.inst` and `lib:` hook-refs on the runtime) |
+| P5 | #51 | intellisense providers `hooks` and `model` | P1 (grows with P2-P4), registry on `main` | daw-implementer | built (`site/hooks-intellisense.js`) |
+| P6 | #52 | graph editor view | P3 (library actions need P4) | ui-designer | built (`site/graph.js`, view 7) |
+| P7 | #53 | pad engine: banks, pad targets and modes, quantise, choke, scenes, looper, input-provider registry (touch, keyboard), `strudel perf` | P2 (component pads and save need P4) | daw-implementer | built on the site (`site/engine/pads.js`); `strudel perf` is CLI work |
+| P8 | #54 | controls engine: control type registry, `ctl`, slider shim, `hooks.map`, automation lanes, `strudel controls`, `--set` | P2, P7 (input registry, recorder) | daw-implementer | built on the site (`site/engine/controls.js`; maps are applied to queried events); CLI subcommands are CLI work |
+| P9 | #55 | Perform views: pad banks and boards in one tab strip, inline controls, learn, automation record | P7, P8 | ui-designer | built (`site/perform.js`, view 5) |
 
 Later, not issued: `webmidi` and `gamepad` input providers (same registry).
 

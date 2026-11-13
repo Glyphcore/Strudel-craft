@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Word-keyed vocal sample bank from forced alignment. Glyphcore/Strudel-craft#42 (word-vocals P1)
 
-  engine/vocals/wordbank.sh STEM.wav LYRICS.txt OUT_DIR [--bank vox] [--timings T.json] [--syll rule|pyphen] [--aligner whisperx|mfa] [--no-norm] [--own-file]
+  engine/vocals/wordbank.sh STEM.wav LYRICS.txt OUT_DIR [--bank vox] [--timings T.json] [--syll rule|pyphen] [--aligner whisperx|mfa] [--per-section] [--no-norm] [--own-file]
   engine/vocals/wordbank.sh --selftest
 
 Writes OUT_DIR/{strudel.json, words.json, wav/*.wav, WORDBANK.md}.
@@ -45,12 +45,19 @@ def owner_ok(stem):
 
 
 def lyric_words(text):
-    out = []
+    """-> [(word, line, section, adlib)]; a section starts at a bracket line containing ' - ' (e.g. [Verse 1 - ...]).
+    adlib = inside parentheses, or a la-la / ayy / hey vocable."""
+    out, sec = [], 0
     for li, line in enumerate([l for l in text.splitlines() if l.strip()]):
+        if re.match(r'\s*\[[^\]]* - ', line): sec += 1
         line = re.sub(r'\[[^\]]*\]', ' ', line)
+        depth = 0
         for w in line.split():
+            if '(' in w: depth += 1
+            ad = depth > 0 or bool(re.fullmatch(r'(la[-\s]*)+|ay+|hey|oh+|ooh+', re.sub(r'[^a-z-]', '', w.lower())))
+            if ')' in w: depth = max(0, depth - 1)
             if re.search(r'[A-Za-z0-9]', w):
-                out.append((w, li))
+                out.append((w, li, sec, ad))
     return out
 
 
@@ -58,12 +65,11 @@ def slug(w):
     return re.sub(r'[^a-z0-9]', '_', w.lower().encode('ascii', 'ignore').decode()).strip('_') or 'x'
 
 
-def align_whisperx(stem, words):
+def align_whisperx(stem, words, per_section=False):
     try:
         import whisperx, torch
     except Exception as ex:
         print(f'whisperX not installed ({ex}); use --timings T.json or pip install whisperx', file=sys.stderr); sys.exit(3)
-    dev = 'cuda' if torch.cuda.is_available() else 'cpu'
     import whisperx.alignment as wa
     try:
         wa.nltk_load('tokenizers/punkt_tab/english.pickle')
@@ -71,19 +77,38 @@ def align_whisperx(stem, words):
         class _One:
             def span_tokenize(self, t): return [(0, len(t))]
         wa.nltk_load = lambda *_a, **_k: _One()
+    dev = 'cuda' if torch.cuda.is_available() else 'cpu'
     audio = whisperx.load_audio(str(stem))
     model, meta = whisperx.load_align_model(language_code='en', device=dev)  # default en model = WAV2VEC2_ASR_BASE_960H
-    seg = [{'text': ' '.join(w for w, _ in words), 'start': 0.0, 'end': len(audio) / 16000}]
-    res = whisperx.align(seg, model, meta, audio, dev, return_char_alignments=False)
-    ws = [w for s in res['segments'] for w in s.get('words', [])]
-    out = []
-    for i, (w, _) in enumerate(words):
-        a = ws[i] if i < len(ws) else {}
-        out.append({'word': w, 'start': a.get('start'), 'end': a.get('end'), 'score': a.get('score', 0.0)})
+    dur = len(audio) / 16000
+
+    def run(ws, t0, t1):
+        a = audio[int(t0 * 16000):int(t1 * 16000)]
+        seg = [{'text': ' '.join(w[0] for w in ws), 'start': 0.0, 'end': len(a) / 16000}]
+        res = whisperx.align(seg, model, meta, a, dev, return_char_alignments=False)
+        got = [w for s in res['segments'] for w in s.get('words', [])]
+        o = []
+        for i in range(len(ws)):
+            g = got[i] if i < len(got) else {}
+            o.append({'start': None if g.get('start') is None else g['start'] + t0, 'end': None if g.get('end') is None else g['end'] + t0, 'score': g.get('score', 0.0)})
+        return o
+
+    out = run(words, 0.0, dur)
+    for i, w in enumerate(words): out[i]['word'] = w[0]
+    if per_section:  # pass 2: window each section by its confident words (+/- margin), re-align its own text there, keep the better score per word
+        for sec in sorted({w[2] for w in words}):
+            idx = [i for i, w in enumerate(words) if w[2] == sec]
+            conf = [i for i in idx if out[i]['score'] > 0.5 and out[i]['start'] is not None]
+            if len(conf) < 2: continue
+            for margin in (1.0, 3.0):
+                t0 = max(0.0, min(out[i]['start'] for i in conf) - margin); t1 = min(dur, max(out[i]['end'] for i in conf) + margin)
+                new = run([words[i] for i in idx], t0, t1)
+                for i, n in zip(idx, new):
+                    if n['start'] is not None and n['score'] > out[i]['score']: out[i].update(n, word=words[i][0], refined=True)
     return out
 
 
-def align_mfa(stem, words):
+def align_mfa(stem, words, per_section=False):
     print('MFA backend is an alt: run mfa align externally and pass its word times via --timings', file=sys.stderr); sys.exit(3)
 
 
@@ -149,7 +174,7 @@ def syl_bounds(seg, n):
     return [0] + [int(np.searchsorted(c, k / n)) for k in range(1, n)] + [len(seg)]
 
 
-def build(stem, lyrics_txt, out, bank, timings, syll, norm, aligner, own):
+def build(stem, lyrics_txt, out, bank, timings, syll, norm, aligner, own, per_section=False):
     stem, out = Path(stem), Path(out)
     if not own and not owner_ok(stem):
         print(f'owner guard: {stem} has no owner provenance (tracks/<slug>/source/*.json handle in data/suno/owners.json); use --own-file only for audio you recorded', file=sys.stderr); return 4
@@ -159,7 +184,7 @@ def build(stem, lyrics_txt, out, bank, timings, syll, norm, aligner, own):
         t = json.loads(Path(timings).read_text()); t = t['words'] if isinstance(t, dict) else t
         if len(t) != len(words): print(f'timings has {len(t)} words, lyrics {len(words)}', file=sys.stderr); return 1
     else:
-        t = (align_mfa if aligner == 'mfa' else align_whisperx)(stem, words)
+        t = (align_mfa if aligner == 'mfa' else align_whisperx)(stem, words, per_section)
     x, sr = sf.read(stem, always_2d=True); x = x.mean(axis=1)
     if sr != SR: x = librosa.resample(x.astype(np.float64), orig_sr=sr, target_sr=SR); sr = SR
     x = x.astype(np.float32)
@@ -171,17 +196,17 @@ def build(stem, lyrics_txt, out, bank, timings, syll, norm, aligner, own):
         if norm and len(seg) and np.max(np.abs(seg)) > 0: seg = seg / np.max(np.abs(seg)) * 10 ** (-1 / 20)
         p = out / 'wav' / name; sf.write(p, seg.astype(np.float32), SR, subtype='FLOAT'); return seg, p
 
-    for i, ((w, li), a) in enumerate(zip(words, t)):
+    for i, ((w, li, sec, ad), a) in enumerate(zip(words, t)):
         if a.get('start') is None or a.get('end') is None or a['end'] <= a['start']:
-            meta.append({'word': w, 'line': li, 'index': i, 'skipped': True, 'confidence': float(a.get('score') or 0)}); continue
+            meta.append({'word': w, 'line': li, 'section': sec, 'adlib': bool(ad), 'index': i, 'skipped': True, 'confidence': float(a.get('score') or 0)}); continue
         s = slug(w); k = seen.get(s, 0); seen[s] = k + 1
         seg, ta = cut(x, sr, a['start'], a['end'])
         seg, p = write(seg, f'{s}_{k}.wav')
         f0, midi = f0_stats(seg, sr)
         smap.setdefault(f'{bank}_{s}', []).append(p.resolve().as_uri())
-        rec = {'word': w, 'key': f'{bank}_{s}', 'n': k, 'line': li, 'occurrence': k, 'index': i, 't_start': round(ta, 4), 't_end': round(ta + len(seg) / sr, 4),
+        rec = {'word': w, 'key': f'{bank}_{s}', 'n': k, 'line': li, 'section': sec, 'adlib': bool(ad), 'occurrence': k, 'index': i, 't_start': round(ta, 4), 't_end': round(ta + len(seg) / sr, 4),
                'aligned_start': a['start'], 'aligned_end': a['end'], 'dur': round(len(seg) / sr, 4), 'f0_hz': f0, 'midi': midi, 'rms_dbfs': db(seg),
-               'confidence': float(a.get('score', 1.0) if a.get('score') is not None else 1.0), 'file': str(p.relative_to(out)), 'syllables': []}
+               'confidence': float(a.get('score', 1.0) if a.get('score') is not None else 1.0), 'file': str(p.relative_to(out)), 'low_confidence': bool((a.get('score', 1.0) if a.get('score') is not None else 1.0) <= 0.5), 'refined': bool(a.get('refined')), 'syllables': []}
         parts = split_syll(w, syll); sb = syl_bounds(seg, len(parts))
         for j, part in enumerate(parts):
             ss = seg[sb[j]:sb[j + 1]].copy()
@@ -195,13 +220,15 @@ def build(stem, lyrics_txt, out, bank, timings, syll, norm, aligner, own):
     (out / 'words.json').write_text(json.dumps({'bank': bank, 'source': str(stem), 'sr': SR, 'words': meta}, indent=1) + '\n')
     good = [m for m in meta if not m.get('skipped')]; hi = [m for m in good if m['confidence'] > 0.5]
     pct = 100 * len(hi) / len(words)
+    noad = [m for m in meta if not m.get('adlib')]; noad_hi = [m for m in noad if not m.get('skipped') and m['confidence'] > 0.5]
+    pct_noad = 100 * len(noad_hi) / max(1, len(noad)); lowc = len(good) - len(hi)
     voiced = sum(1 for m in good if m['f0_hz'])
     (out / 'WORDBANK.md').write_text(
         f'# Word bank `{bank}`\n\nSource: `{stem}`  \nAligner: {"timings file (" + str(timings) + ")" if timings else aligner}  \nSyllables: {syll}\n\n'
-        f'- lyric words: {len(words)}\n- sliced: {len(good)}\n- aligned with confidence > 0.5: {len(hi)} ({pct:.1f}%)\n- voiced slices (f0/MIDI): {voiced}\n- sounds: {len(smap)}\n\n'
+        f'- lyric words: {len(words)} (ad-libs/vocables: {len(words) - len(noad)})\n- matched (conf > 0.5) excluding ad-libs: {len(noad_hi)}/{len(noad)} ({pct_noad:.1f}%)\n- kept but tagged low_confidence: {lowc}\n- per-section pass: {per_section}\n- sliced: {len(good)}\n- aligned with confidence > 0.5: {len(hi)} ({pct:.1f}%)\n- voiced slices (f0/MIDI): {voiced}\n- sounds: {len(smap)}\n\n'
         '| key | n | word | t_start | t_end | f0 Hz | MIDI | conf |\n|---|---|---|---|---|---|---|---|\n' +
         ''.join(f"| {m['key']} | {m['n']} | {m['word']} | {m['t_start']} | {m['t_end']} | {m['f0_hz']} | {m['midi']} | {m['confidence']:.2f} |\n" for m in good))
-    print(json.dumps({'words': len(words), 'sliced': len(good), 'conf_gt_0.5_pct': round(pct, 1), 'sounds': len(smap), 'map': str(out / 'strudel.json')}))
+    print(json.dumps({'words': len(words), 'sliced': len(good), 'conf_gt_0.5_pct': round(pct, 1), 'excl_adlibs_pct': round(pct_noad, 1), 'low_confidence': lowc, 'sounds': len(smap), 'map': str(out / 'strudel.json')}))
     return 0
 
 
@@ -233,11 +260,11 @@ def main():
     ap.add_argument('stem', nargs='?'); ap.add_argument('lyrics', nargs='?'); ap.add_argument('out', nargs='?')
     ap.add_argument('--bank', default='vox'); ap.add_argument('--timings'); ap.add_argument('--syll', choices=['rule', 'pyphen'], default='rule')
     ap.add_argument('--aligner', choices=['whisperx', 'mfa'], default='whisperx'); ap.add_argument('--no-norm', action='store_true')
-    ap.add_argument('--own-file', action='store_true'); ap.add_argument('--selftest', action='store_true')
+    ap.add_argument('--own-file', action='store_true'); ap.add_argument('--per-section', action='store_true'); ap.add_argument('--selftest', action='store_true')
     a = ap.parse_args()
     if a.selftest: return selftest()
     if not (a.stem and a.lyrics and a.out): ap.print_usage(sys.stderr); return 2
-    return build(a.stem, a.lyrics, a.out, a.bank, a.timings, a.syll, not a.no_norm, a.aligner, a.own_file)
+    return build(a.stem, a.lyrics, a.out, a.bank, a.timings, a.syll, not a.no_norm, a.aligner, a.own_file, a.per_section)
 
 
 if __name__ == '__main__':

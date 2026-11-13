@@ -161,7 +161,7 @@ export async function graphSection({ browser, BASE, OUT, check, watch, metrics }
     const op = await page.evaluate(() => { const n = window.__graph.view.nmap.get('code:code1'); return { ins: n.ins.map((p) => p.name), outs: n.outs.map((p) => p.name), editors: document.querySelectorAll('.gn[data-id="code:code1"] input, .gx-sheet .gx-lit').length, text: !!document.querySelector('.gx-sheet [data-act=edittext]') }; });
     await page.evaluate(() => window.__graph.center('tap:kick', 1)); await settle(page);
     await page.tap('.gp[data-node="tap:kick"][data-port="ev"]'); await page.evaluate(() => window.__graph.center('code:code1', 1)); await settle(page);
-    const tc = await page.evaluate(() => window.__graph.text); await page.tap('.gp[data-node="code:code1"][data-port="kick:env"]'); await page.waitForTimeout(150);
+    const tc = await page.evaluate(() => window.__graph.text); await page.evaluate(() => window.__graph.center('code:code1', 1)); await settle(page); await page.tap('.gp[data-node="code:code1"][data-port="kick:env"]'); await page.waitForTimeout(150);
     const ref2 = await page.textContent('.gx-msg');
     check('graph: opaque code node renders detected ports and is not editable beyond text', op.ins.includes('kick:env') && op.outs.includes('out') && op.editors === 0 && op.text && /Refused: Opaque code/.test(ref2) && (await page.evaluate(() => window.__graph.text)) === tc, JSON.stringify({ ...op, refusal: ref2 }));
     M.opaque = op;

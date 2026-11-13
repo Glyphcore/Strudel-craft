@@ -264,6 +264,12 @@ function mount(host) {
             badgesEl = h('div', { class: 'gx-badges' }), nodesEl = h('div', { class: 'gx-nodes' }))), // nodes over badges: a node is never covered by a wire label
         msgEl = h('p', { class: 'gx-msg', role: 'status', 'aria-live': 'polite' }),
         zoomEl = h('output', { class: 'gx-zoom', 'aria-label': 'Zoom level' }, '100%'),
+        h('div', { class: 'gx-hud', role: 'toolbar', 'aria-label': 'Canvas view' },
+          tool('gxHudFit', 'Fit graph to view', 'Fit', { 'data-hud': 'fit' }), tool('gxHudOut', 'Zoom out', '\u2212', { 'data-hud': 'out' }),
+          tool('gxHudReset', 'Reset zoom to 100%', '1:1', { 'data-hud': 'reset' }),
+          tool('gxLock', 'Interact: one-finger drag pans the graph instead of scrolling the page', 'Interact', { 'aria-pressed': 'false', 'data-hud': 'lock' }),
+          tool('gxCollapse', 'Collapse graph canvas', '\u2303', { 'aria-pressed': 'false', 'aria-expanded': 'true', 'data-hud': 'collapse' })),
+        h('p', { class: 'gx-touchhint', 'aria-hidden': 'true' }, '2 fingers to move graph'),
         selbar = h('div', { class: 'gx-selbar', hidden: true, role: 'toolbar', 'aria-label': 'Selection actions' }),
         sheetEl = h('div', { class: 'gx-sheet', hidden: true, role: 'region', 'aria-label': 'Inspector', tabindex: '-1' })),
       h('div', { class: 'gx-side' },
@@ -650,7 +656,11 @@ async function onClick(e) {
     case 'gxAdd': return paletteSheet();
     case 'gxUndo': return undo();
     case 'gxRedo': return redo();
-    case 'gxFit': return fit();
+    case 'gxFit': case 'gxHudFit': return fit();
+    case 'gxHudOut': { const r = vp.getBoundingClientRect(); return zoomAt(V.s / 1.25, r.width / 2, r.height / 2); }
+    case 'gxHudReset': return resetView();
+    case 'gxLock': { const on = root.dataset.lock !== 'on'; root.dataset.lock = on ? 'on' : 'off'; b.setAttribute('aria-pressed', String(on)); return say(on ? 'Interact on: one finger pans the graph' : 'Interact off: one finger scrolls the page, two fingers move the graph'); }
+    case 'gxCollapse': { const c = root.dataset.collapsed !== 'on'; root.dataset.collapsed = c ? 'on' : 'off'; b.setAttribute('aria-pressed', String(c)); b.setAttribute('aria-expanded', String(!c)); b.textContent = c ? '\u2304' : '\u2303'; b.setAttribute('aria-label', c ? 'Expand graph canvas' : 'Collapse graph canvas'); if (!c) fit(); return; }
     case 'gxReset': return resetView();
     case 'gxMulti': return setMulti(!G.multi);
     case 'gxPlanBtn': planEl.hidden = !planEl.hidden; b.setAttribute('aria-pressed', String(!planEl.hidden)); return renderPlan();
@@ -708,7 +718,20 @@ function pointer() {
   const pts = new Map(); let g = null; let lastTap = { id: null, t: 0 };
   const local = (e) => { const r = vp.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
   const toWorld = (p) => ({ x: (p.x - V.x) / V.s, y: (p.y - V.y) / V.s });
-  vp.addEventListener('wheel', (e) => { e.preventDefault(); const p = local(e); if (e.ctrlKey || e.metaKey) zoomAt(V.s * Math.exp(-e.deltaY * 0.01), p.x, p.y); else { V.x -= e.deltaX; V.y -= e.deltaY; applyView(); } }, { passive: false });
+  const locked = () => root.dataset.lock === 'on';
+  // wheel pans until the content edge reaches the viewport edge, then the page scrolls (scroll chaining, no trap)
+  vp.addEventListener('wheel', (e) => {
+    const p = local(e);
+    if (e.ctrlKey || e.metaKey) { e.preventDefault(); return zoomAt(V.s * Math.exp(-e.deltaY * 0.01), p.x, p.y); }
+    const b = bounds(), r = vp.getBoundingClientRect(); if (!b) return;
+    const lim = (v, d, lo, hi) => { const n = v - d; return Math.min(Math.max(n, Math.min(lo, v)), Math.max(hi, v)); };
+    const nx = lim(V.x, e.deltaX, r.width - 48 - b.x1 * V.s, 48 - b.x0 * V.s), ny = lim(V.y, e.deltaY, r.height - 48 - b.y1 * V.s, 48 - b.y0 * V.s);
+    if (Math.abs(nx - V.x) < 0.5 && Math.abs(ny - V.y) < 0.5) return; // at the edge: let the page scroll
+    e.preventDefault(); V.x = nx; V.y = ny; applyView();
+  }, { passive: false });
+  // touch-action: pan-y lets one finger scroll the page; with 2+ touches (or Interact on) we take the gesture
+  vp.addEventListener('touchmove', (e) => { if (e.touches.length > 1 || locked()) e.preventDefault(); }, { passive: false });
+  vp.addEventListener('touchstart', (e) => { if (e.touches.length > 1 || locked()) root.classList.add('gx-touched'); else { root.classList.add('gx-hinting'); clearTimeout(vp.ht); vp.ht = setTimeout(() => root.classList.remove('gx-hinting'), 1600); } }, { passive: true });
   vp.addEventListener('pointerdown', (e) => {
     cancelAnimationFrame(glide.raf);
     if (e.target.closest('input, select, textarea')) return;
@@ -725,6 +748,7 @@ function pointer() {
   vp.addEventListener('pointermove', (e) => {
     if (!pts.has(e.pointerId) || !g) return; pts.set(e.pointerId, local(e));
     if (g.kind === 'pinch') { if (pts.size < 2) return; const [a, b] = [...pts.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y); const s = Math.min(ZMAX, Math.max(zmin(), g.s0 * d / g.d0)); const m = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; const k = s / g.s0; V.s = s; V.x = m.x - (g.m.x - g.x0) * k; V.y = m.y - (g.m.y - g.y0) * k; applyView(); return; }
+    if (e.pointerType === 'touch' && !locked()) return; // one finger belongs to the page
     const p = local(e), dx = p.x - g.p0.x, dy = p.y - g.p0.y;
     if (!g.moved && Math.hypot(dx, dy) < 8) return;
     if (!g.moved) { g.moved = true; clearTimeout(g.lp); }

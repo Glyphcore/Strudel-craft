@@ -8,7 +8,7 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | warp-formant (rubberband) | local-samples-ir-bounce | accepted | #3 |
 | slicer | local-samples-ir-bounce | issued | #4 |
 | spectral-freeze-paulstretch | local-samples-ir-bounce | issued | #5 |
-| envelope-follower-ducking | issues-protocol | built | #6 |
+| envelope-follower-ducking | issues-protocol | accepted | #6 |
 | granulator | local-samples-ir-bounce | issued | #7 |
 | vocoder | issues-protocol | issued | #8 |
 | external-renderers-sf2-ks | local-samples-ir-bounce | issued | #9 |

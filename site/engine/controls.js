@@ -209,6 +209,22 @@ export function createControls({ registry = createRegistry(), model = {}, time =
     return v;
   }
 
+  // Apply maps to queried events (the same point ctl() values are resolved: at each event's start cycle, lanes included).
+  // dest is a param name ("lpf"); key(dest) gives the event key ("cutoff"), rangeOf(dest) the destination's own range when the map has none.
+  // No maps -> the haps are returned untouched (same array).
+  function applyMaps(haps, { key = (d) => d, rangeOf } = {}) {
+    if (!maps.length) return haps;
+    const ds = [...new Set(maps.map((m) => m.dest))];
+    for (const d of ds) if (rangeOf && !dests.has(d)) { const r = rangeOf(d); if (r) dests.set(d, { min: r[0], max: r[1] }); }
+    return haps.map((h) => {
+      const v = h.value; if (!v || typeof v !== 'object' || typeof h.withValue !== 'function') return h;
+      const c0 = h.whole ? h.whole.begin : h.part.begin, cycle = +c0.valueOf(); let out = v;
+      for (const d of ds) { const k = key(d); const nv = resolveDest(d, cycle, typeof v[k] === 'number' ? v[k] : undefined);
+        if (typeof nv === 'number' && !Number.isNaN(nv) && nv !== out[k]) out = { ...out, [k]: nv }; }
+      return out === v ? h : h.withValue(() => out);
+    });
+  }
+
   // ---------- lanes / model io ----------
   const addLane = (id, lane) => { lanes.set(id, lane); return lane; };
   function load(m) {
@@ -233,7 +249,7 @@ export function createControls({ registry = createRegistry(), model = {}, time =
     return [...names.map(([n, s]) => ({ label: n, category: 'control', detail: `${s.type} control`, info: JSON.stringify(range(s)), inside: ['tap("', 'hooks.map("'] })),
       ...registry.types().map(t => ({ label: t.id, category: 'control-type', detail: `control type (${t.value})`, inside: ['type: "'] }))];
   }
-  const api = { registry, declare, ctl, sliderWithID, set, get: (n, c) => valueAt(n, c), valueAt, input, nudge, travelOf, map, maps: () => maps, registerDest, resolveDest, addLane, lanes: () => lanes,
+  const api = { registry, declare, ctl, sliderWithID, set, get: (n, c) => valueAt(n, c), valueAt, input, nudge, travelOf, map, maps: () => maps, registerDest, resolveDest, applyMaps, addLane, lanes: () => lanes,
     load, toModel, list, applySet, completions, boards: () => boards, gateOpen: (g, c) => gateOpen(g, c, ctx),
     // gate helper: a toggle control as a bind `when`
     when: (name, quant = 1) => ({ control: name, quant }) };

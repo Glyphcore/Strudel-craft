@@ -154,6 +154,12 @@ export async function performSection({ browser, BASE, OUT, check, watch, metrics
     await page.click('#pfLearn'); await page.fill('#pfAsk', 'lpf'); await page.keyboard.press('Enter');
     await page.focus(xy); await page.keyboard.press('ArrowLeft'); await page.waitForTimeout(200);
     const lm = await P(page, () => window.strudelCraft.perform.controls.maps().filter((m) => m.dest === 'lpf')); const ll = await lines();
+    // mapped path (Learn + hooks.map, nothing but the map ties 'pos' to cutoff): moving the control changes the event value on the next cycle
+    const mapEv = () => P(page, () => { const C = window.strudelCraft.perform.controls, H = window.strudelCraft.hooks, c = Math.ceil(window.__sc.Engine.scheduler.now()) + 1, r = H.ranges && (H.ranges.cutoff || H.ranges.lpf);
+      return { x: C.get('pos').x, lo: r ? r.min : 0, hi: r ? r.max : 1, cut: C.get('cut'), ev: window.__sc.Engine.scheduler.pattern.queryArc(c, c + 0.5).map((h) => h.value.cutoff) }; });
+    const m0 = await mapEv(); await page.focus(xy); for (let i = 0; i < 3; i++) await page.keyboard.press('ArrowRight'); await page.waitForTimeout(200); const m1 = await mapEv();
+    const wantM = (m) => m.lo + m.x * (m.hi - m.lo);
+    check('perform: a Learn/hooks.map mapping (no ctl() for it) changes the mapped param\'s event value on the next cycle', m1.x !== m0.x && m1.ev.length && m0.ev.length && m1.ev.every((v) => Math.abs(v - wantM(m1)) < 1e-6) && m0.ev.every((v) => Math.abs(v - wantM(m0)) < 1e-6) && Math.abs(wantM(m1) - m1.cut) > 1e-6 && m1.ev[0] !== m0.ev[0], JSON.stringify({ m0, m1 }));
     await page.click('#perform .pc-cell[data-name="pos"] .pc-map'); await page.click('.pf-opt[data-v="un:lpf"]'); await page.waitForTimeout(2600);
     const lm2 = await P(page, () => window.strudelCraft.perform.controls.maps().filter((m) => m.dest === 'lpf')); const ll2 = await lines();
     check('perform: Learn + destination + move creates one maps entry and one hooks.map line; Unlearn removes both', lm.length === 1 && ll.length === 1 && ll[0] === "hooks.map('pos', 'lpf')" && lm2.length === 0 && ll2.length === 0, JSON.stringify({ lm, ll, lm2, ll2 }));

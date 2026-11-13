@@ -38,7 +38,11 @@ function prepare(code) {
   if (!/\batoms?\b/.test(code)) return code;
   const env = envFor(code); if (!env) return code;
   wireRuntime();
-  let res; try { res = A.compile(code, env, { overrides: overrides(env) }); } catch (e) { return code; }
+  let res; try { res = A.compile(code, env, { overrides: overrides(env) }); } catch (e) {
+    // an atom error (E_ATOM_UNKNOWN ...) is surfaced at evaluate time: the doc stays as written, the eval throws the coded error, nothing plays
+    if (e && /^E_ATOM/.test(String(e.code || e.message))) { const m = /^E_ATOM/.test(String(e.message)) ? e.message : (e.code + ': ' + e.message); return '(() => { throw new Error(String.fromCharCode(' + Array.from(m, (c) => c.charCodeAt(0)).join(',') + ')); })()'; } // char codes: the transpiler would turn a string literal into mini-notation
+    return code;
+  }
   const r = record(env);
   try { const rt = sc.hooks; if (rt && rt.atoms) C.installHooks(rt, env, { ids: r ? r.ids : {} }); } catch (e) { /* runtime not ready */ }
   return res.code;

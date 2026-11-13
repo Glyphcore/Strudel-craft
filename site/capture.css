@@ -1,0 +1,85 @@
+/* Audio capture sheet (capture.js). Docked above the transport; non-modal, so the Rack and Stack stay playable while recording.
+   Red (--bad) is the record signal only. */
+.cap-btn svg{width:22px;height:22px}
+.cap-btn .cap-dot{fill:var(--bad);stroke:none}
+.cap-btn .cap-ring{fill:none;stroke:currentColor;stroke-width:1.6;opacity:.5}
+.cap-btn[aria-expanded="true"]{border-color:var(--bad)}
+.cap-btn[data-phase="recording"],.cap-btn[data-phase="waiting"]{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad),0 0 16px rgba(255,107,107,.45)}
+.cap-btn[data-phase="recording"] .cap-dot{animation:capPulse 1s var(--ease) infinite alternate}
+.cap-btn[data-phase="waiting"] .cap-dot{opacity:.45}
+@keyframes capPulse{from{opacity:1}to{opacity:.35}}
+
+.cap{position:fixed;z-index:50;left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));bottom:calc(var(--cap-bottom,var(--tp)) + 8px);
+  margin:0 auto;width:min(560px,calc(100vw - 16px));max-height:min(70vh,640px);overflow:auto;overscroll-behavior:contain;
+  background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r2);box-shadow:0 18px 48px rgba(0,0,0,.5);padding:0 0 8px}
+.cap[hidden]{display:none}
+.cap[data-phase="recording"]{border-color:var(--bad)}
+body.cap-open .pal-fab{display:none}
+
+.cap-head{position:sticky;top:0;z-index:1;display:grid;grid-template-columns:auto minmax(0,1fr) minmax(56px,120px) auto;align-items:center;gap:10px;padding:8px 8px 8px 10px;background:var(--panel);border-bottom:1px solid var(--line)}
+.cap-rec{min-width:112px;height:48px;gap:8px;border-color:var(--bad);color:var(--text)}
+.cap-rec svg{width:22px;height:22px}.cap-rec .cap-dot{fill:var(--bad)}.cap-rec .cap-ring{fill:none;stroke:var(--bad);stroke-width:1.6}
+.cap-rec[aria-pressed="true"]{background:var(--bad);color:var(--sig-ink)}
+.cap-rec[aria-pressed="true"] .cap-dot{fill:var(--sig-ink)}.cap-rec[aria-pressed="true"] .cap-ring{stroke:var(--sig-ink)}
+.cap-read{display:flex;flex-direction:column;min-width:0;line-height:1.15}
+.cap-time{font-family:var(--mono);font-size:1.15rem;font-weight:700;font-variant-numeric:tabular-nums}
+.cap[data-phase="recording"] .cap-time{color:var(--bad)}
+.cap-state{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cap-meter{display:block;width:100%;height:12px;border-radius:var(--r1)}
+
+.cap-opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px 10px;padding:10px}
+.cap-lab,.cap-seg legend{display:block;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:4px;padding:0}
+.cap-seg{border:0;margin:0;padding:0;min-width:0}
+.cap-seg[data-k="mode"]{grid-column:1 / -1}
+.cap-seg label{display:inline-flex;position:relative}
+.cap-seg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.cap-seg span{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 12px;border:1px solid var(--line-2);margin-right:-1px;background:var(--panel-2);font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.cap-seg label:first-of-type span{border-radius:var(--r2) 0 0 var(--r2)}.cap-seg label:last-of-type span{border-radius:0 var(--r2) var(--r2) 0}
+.cap-seg input:checked+span{color:var(--text);background:var(--panel-3);box-shadow:inset 0 -2px 0 var(--sig)}
+.cap-seg input:focus-visible+span{outline:2px solid var(--sig-2);outline-offset:1px}
+.cap-seg input:disabled+span{opacity:.5}
+.cap-num.off{opacity:.45}
+.cap-step{display:flex;align-items:center}
+.cap-step button{width:44px;padding:0;font-size:1.1rem}
+.cap-step output{min-width:44px;text-align:center;font-family:var(--mono);font-size:1rem;font-weight:700;font-variant-numeric:tabular-nums}
+.cap-sel select,.cap-name input{width:100%;min-height:44px;padding:0 10px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--r2);font-size:16px}
+.cap-name{grid-column:span 2}
+.cap-exact{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:0 10px}
+.cap-exact b{font-family:var(--mono);color:var(--sig)}
+.cap-hint{margin:6px 10px 0;font-size:.74rem;color:var(--dim)}
+
+.cap-takes{list-style:none;margin:8px 0 0;padding:0 10px;display:grid;gap:6px}
+.cap-tk{display:grid;grid-template-columns:96px minmax(0,1fr);grid-template-areas:"w i" "a a" "d d";gap:4px 10px;align-items:center;padding:6px;border:1px solid var(--line);border-radius:var(--r2);background:var(--panel-2)}
+.cap-wave{grid-area:w;width:96px;height:40px;display:block;background:var(--bg);border-radius:var(--r1)}
+.cap-tk-info{grid-area:i;display:flex;flex-direction:column;min-width:0}
+.cap-tk-name{font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cap-tk-sub{font-family:var(--mono);font-size:.7rem;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cap-tk-acts{grid-area:a;display:flex;gap:4px;justify-content:flex-end}
+.cap-tk-acts [aria-pressed="true"],.cap-tk-acts [aria-expanded="true"]{border-color:var(--sig-2);color:var(--sig-2)}
+.cap-dl{grid-area:d;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.cap-dl[hidden]{display:none}
+.cap-dl button{min-width:72px}
+.cap-empty{color:var(--dim);font-size:.8rem;padding:8px 0}
+.cap-quota{margin:8px 10px 0;font-family:var(--mono);font-size:.68rem;color:var(--faint)}
+.cap-quota.warn{color:var(--warn)}
+@media (min-width:520px){.cap-tk{grid-template-columns:120px minmax(0,1fr) auto;grid-template-areas:"w i a" "d d d"}.cap-wave{width:120px}}
+@media (max-width:440px){
+  .cap-head{grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto auto}
+  .cap-meter{grid-column:1 / -1;grid-row:2}
+  .cap-rec{min-width:0;padding:0 12px}
+  .cap-name{grid-column:1 / -1}
+  .cap-opts{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){.cap-btn[data-phase="recording"] .cap-dot{animation:none}}
+/* the capture button takes 48px of the one-row phone transport: tighten gaps so both knob readouts stay whole at 360px */
+@media (max-width:400px){
+  .transport{gap:4px;padding-left:max(6px,env(safe-area-inset-left));padding-right:max(6px,env(safe-area-inset-right))}
+  .tp-main{gap:2px}
+  .tp-meter .meter{width:30px}
+}
+/* take type badge: audio takes vs Perform motion takes (lane = control automation, pads = pad take) */
+.cap-badge{display:inline-block;font-style:normal;font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:1px 5px;margin-right:6px;border-radius:var(--r1);border:1px solid var(--sig-2);color:var(--sig-2);vertical-align:1px}
+.cap-badge[data-type="lane"]{border-color:var(--sig);color:var(--sig)}
+.cap-tk[data-type="lane"] .cap-wave,.cap-tk[data-type="pads"] .cap-wave{background:var(--panel-3)}
+.cap-tk-acts [data-act="load"]{padding:0 10px}
+.cap-imp{display:flex;justify-content:flex-end;padding:8px 10px 0}

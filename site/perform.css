@@ -1,0 +1,41 @@
+/* Perform view (#55): loaded by perform.js on first open, never with the shell. Tokens come from style.css. */
+/* text inside Perform uses a brighter dim/faint pair so every label clears 7:1 on the panel colours */
+.perform,.pc-inline,.pf-sheet{--dim:#c3cad3;--faint:#b9c0c9}
+:root[data-theme=light] .perform,:root[data-theme=light] .pc-inline,:root[data-theme=light] .pf-sheet{--dim:#363c43;--faint:#3d434a}
+.perform .pf-tab,.perform button,.pc-inline button{color:var(--text)}
+.perform button:disabled{opacity:1;color:var(--dim);border-style:dashed}
+
+/* banners and the looper strip */
+.pf-banner{margin:0;padding:10px 12px;border:1px solid var(--sig-2);border-left-width:4px;border-radius:var(--r2);background:var(--panel-2);color:var(--text);font-size:.82rem}
+.pf-banner[hidden]{display:none}
+.pf-looper,.pf-boardbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px}
+.pf-looper button,.pf-boardbar button{min-height:44px;min-width:44px;padding:0 12px}
+.pf-looper [aria-pressed=true],.pf-boardbar [aria-pressed=true]{border-color:var(--sig-2);box-shadow:inset 0 -2px 0 var(--sig-2)}
+.pf-rec[aria-pressed=true]{border-color:var(--warn);box-shadow:inset 0 -2px 0 var(--warn)}
+.pf-sel select{min-height:44px;padding:0 8px;background:var(--panel-2);color:var(--text);border:1px solid var(--line-2);border-radius:var(--r2);font:inherit}
+.pf-stat{flex:1 1 100%;font-family:var(--mono);font-size:.74rem;color:var(--text)}
+.pf-body{display:grid;gap:10px;align-content:start}
+
+/* scenes: a launch cell at the end of each row, or a row of launch cells under the grid */
+.pp-scell{display:grid}
+.pp-scene{min-height:44px;min-width:44px;display:grid;place-items:center;gap:2px;border-radius:var(--r2);border:1px solid var(--line-2);background:var(--panel);font-family:var(--mono);font-size:.72rem}
+.pp-srow .pp-scene{aspect-ratio:auto}
+.pp-pad[data-state=recording]{border-color:var(--warn);box-shadow:inset 0 0 0 2px var(--warn)}
+
+/* board cells: size presets, learn / record marks */
+.pc-board{grid-auto-flow:dense}
+.pc-cell[data-size="2x1"]{grid-column:span 2}
+.pc-cell[data-size="2x2"]{grid-column:span 2;grid-row:span 2}
+.pc-cell[data-learn=armed]{border-color:var(--sig-2);border-style:dashed}
+.pc-cell[data-rec=armed]{border-color:var(--warn);border-style:dashed}
+.pc-cell[data-rec=on]{border-color:var(--warn);box-shadow:inset 0 0 0 2px var(--warn)}
+.pc-lane{font-family:var(--mono);font-size:.64rem;color:var(--text);border:1px solid var(--line-2);border-radius:var(--r1);padding:0 4px;white-space:nowrap}
+.pc-board[data-edit=on] .pc-body{pointer-events:none;opacity:.75}
+.pc-edit{border-color:var(--sig-2)}
+.pc-map{color:var(--text)}
+
+/* choose sheet */
+.pf-opts{display:grid;gap:6px}
+.pf-opt{min-height:44px;text-align:left;padding:0 12px}
+.pf-opt.danger{border-color:var(--warn)}
+@media (max-width:520px){.pf-looper .pf-stat{order:-1}.pc-board .pc-cell[data-size="2x2"]{grid-row:span 2}}

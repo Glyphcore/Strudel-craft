@@ -91,6 +91,7 @@ const Engine = {
   async play(code, needsSamples, say) {
     say('Loading engine'); await this.load();
     try { if (!window.strudelCraft.hooks && window.strudelCraft.installHooks) window.strudelCraft.installHooks(); await applyRanges(); } catch (e) { /* hooks optional */ }
+    try { await loadPerform(); window.strudelCraft.perform && window.strudelCraft.perform.glue(); } catch (e) { /* perform tools optional: ctl()/hooks.map() need them */ }
     if (needsSamples && !this.samplesLoaded) { say('Loading sample banks'); for (const m of SAMPLE_MAPS) await window.samples(m); this.samplesLoaded = true; }
     try { const c = window.getAudioContext && window.getAudioContext(); if (c && c.state !== 'running') await c.resume(); } catch (e) { /* resumed on gesture below */ }
     this.state.evalError = undefined;

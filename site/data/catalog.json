@@ -1,0 +1,1676 @@
+{
+ "version": 1,
+ "strudel_web": "1.3.0",
+ "url_format": "https://strudel.cc/#encodeURIComponent(btoa(utf8 bytes of code))",
+ "url_format_verified": "read from the strudel.cc REPL bundle (hash = encodeURIComponent(base64(UTF-8 code)))",
+ "categories": [
+  {
+   "id": "texture",
+   "title": "Texture"
+  },
+  {
+   "id": "rhythm",
+   "title": "Rhythm"
+  },
+  {
+   "id": "harmony",
+   "title": "Harmony"
+  },
+  {
+   "id": "motif",
+   "title": "Motif"
+  },
+  {
+   "id": "arrangement",
+   "title": "Arrangement / form"
+  },
+  {
+   "id": "dynamics",
+   "title": "Dynamics / automation"
+  },
+  {
+   "id": "space",
+   "title": "Space / FX"
+  },
+  {
+   "id": "feel",
+   "title": "Feel / vibe"
+  }
+ ],
+ "labels": [
+  {
+   "id": "pad",
+   "title": "Pad",
+   "category": "texture",
+   "words": [
+    "soft",
+    "held",
+    "wash",
+    "bed",
+    "atmosphere"
+   ]
+  },
+  {
+   "id": "bass",
+   "title": "Bass",
+   "category": "texture",
+   "words": [
+    "low line",
+    "bassline"
+   ]
+  },
+  {
+   "id": "low-end",
+   "title": "Low end",
+   "category": "texture",
+   "words": [
+    "sub",
+    "weight",
+    "rumble",
+    "thump"
+   ]
+  },
+  {
+   "id": "pluck",
+   "title": "Pluck",
+   "category": "texture",
+   "words": [
+    "short",
+    "plucked",
+    "staccato"
+   ]
+  },
+  {
+   "id": "wide",
+   "title": "Wide",
+   "category": "texture",
+   "words": [
+    "stereo",
+    "spread",
+    "huge",
+    "big image"
+   ]
+  },
+  {
+   "id": "gritty",
+   "title": "Gritty",
+   "category": "texture",
+   "words": [
+    "dirty",
+    "crunchy",
+    "rough",
+    "distorted"
+   ]
+  },
+  {
+   "id": "lofi",
+   "title": "Lo-fi",
+   "category": "texture",
+   "words": [
+    "degraded",
+    "crushed",
+    "old"
+   ]
+  },
+  {
+   "id": "bell-like",
+   "title": "Bell-like",
+   "category": "texture",
+   "words": [
+    "metallic",
+    "glassy",
+    "chime"
+   ]
+  },
+  {
+   "id": "fm",
+   "title": "FM",
+   "category": "texture",
+   "words": [
+    "frequency modulation",
+    "metallic"
+   ]
+  },
+  {
+   "id": "formant",
+   "title": "Formant",
+   "category": "texture",
+   "words": [
+    "vowel",
+    "voice-like filter"
+   ]
+  },
+  {
+   "id": "texture-vocal-like",
+   "title": "Vocal-like colour",
+   "category": "texture",
+   "words": [
+    "vowel",
+    "human",
+    "ooh",
+    "aah"
+   ]
+  },
+  {
+   "id": "drone",
+   "title": "Drone",
+   "category": "texture",
+   "words": [
+    "held",
+    "constant",
+    "ambient"
+   ]
+  },
+  {
+   "id": "bright",
+   "title": "Bright",
+   "category": "texture",
+   "words": [
+    "airy",
+    "shiny",
+    "high"
+   ]
+  },
+  {
+   "id": "texture-moving",
+   "title": "Moving texture",
+   "category": "texture",
+   "words": [
+    "swirl",
+    "shifting",
+    "evolving"
+   ]
+  },
+  {
+   "id": "four-floor",
+   "title": "Four on the floor",
+   "category": "rhythm",
+   "words": [
+    "steady kick",
+    "house",
+    "techno pulse"
+   ]
+  },
+  {
+   "id": "offbeat",
+   "title": "Offbeat",
+   "category": "rhythm",
+   "words": [
+    "between the beats",
+    "upbeat"
+   ]
+  },
+  {
+   "id": "euclid",
+   "title": "Euclidean",
+   "category": "rhythm",
+   "words": [
+    "uneven",
+    "spread",
+    "non-straight"
+   ]
+  },
+  {
+   "id": "half-time",
+   "title": "Half-time",
+   "category": "rhythm",
+   "words": [
+    "slow backbeat",
+    "heavy"
+   ]
+  },
+  {
+   "id": "syncopated",
+   "title": "Syncopated",
+   "category": "rhythm",
+   "words": [
+    "off-grid",
+    "gaps",
+    "bounce",
+    "groove"
+   ]
+  },
+  {
+   "id": "polyrhythm",
+   "title": "Polyrhythm",
+   "category": "rhythm",
+   "words": [
+    "polymeter",
+    "against each other",
+    "cross"
+   ]
+  },
+  {
+   "id": "probability",
+   "title": "Probability",
+   "category": "rhythm",
+   "words": [
+    "random",
+    "chance",
+    "gaps",
+    "variation"
+   ]
+  },
+  {
+   "id": "human-feel",
+   "title": "Human feel",
+   "category": "rhythm",
+   "words": [
+    "loose",
+    "imperfect",
+    "alive"
+   ]
+  },
+  {
+   "id": "chord-progression",
+   "title": "Chord progression",
+   "category": "harmony",
+   "words": [
+    "changes",
+    "chords",
+    "loop of chords"
+   ]
+  },
+  {
+   "id": "minor",
+   "title": "Minor",
+   "category": "harmony",
+   "words": [
+    "sad",
+    "dark key",
+    "melancholy"
+   ]
+  },
+  {
+   "id": "voicing",
+   "title": "Voicing",
+   "category": "harmony",
+   "words": [
+    "chord shape",
+    "inversions"
+   ]
+  },
+  {
+   "id": "arpeggio",
+   "title": "Arpeggio",
+   "category": "harmony",
+   "words": [
+    "broken chord",
+    "running notes"
+   ]
+  },
+  {
+   "id": "motif",
+   "title": "Motif / hook",
+   "category": "motif",
+   "words": [
+    "melody",
+    "riff",
+    "theme",
+    "hook"
+   ]
+  },
+  {
+   "id": "call-response",
+   "title": "Call and response",
+   "category": "motif",
+   "words": [
+    "answer",
+    "question and answer",
+    "phrase"
+   ]
+  },
+  {
+   "id": "sections",
+   "title": "Sections",
+   "category": "arrangement",
+   "words": [
+    "verse",
+    "chorus",
+    "parts",
+    "structure"
+   ]
+  },
+  {
+   "id": "build-drop",
+   "title": "Build and drop",
+   "category": "arrangement",
+   "words": [
+    "buildup",
+    "drop",
+    "release"
+   ]
+  },
+  {
+   "id": "intro-reveal",
+   "title": "Intro reveal",
+   "category": "arrangement",
+   "words": [
+    "opening up",
+    "starts closed"
+   ]
+  },
+  {
+   "id": "layers-in",
+   "title": "Layers entering",
+   "category": "arrangement",
+   "words": [
+    "adds parts",
+    "stacking in"
+   ]
+  },
+  {
+   "id": "arrangement",
+   "title": "Arrangement",
+   "category": "arrangement",
+   "words": [
+    "song form",
+    "order"
+   ]
+  },
+  {
+   "id": "breakdown",
+   "title": "Breakdown",
+   "category": "arrangement",
+   "words": [
+    "strip back",
+    "empty out"
+   ]
+  },
+  {
+   "id": "dynamics",
+   "title": "Dynamics",
+   "category": "dynamics",
+   "words": [
+    "loud quiet",
+    "volume movement"
+   ]
+  },
+  {
+   "id": "crescendo",
+   "title": "Crescendo",
+   "category": "dynamics",
+   "words": [
+    "get louder",
+    "swell"
+   ]
+  },
+  {
+   "id": "fade-out",
+   "title": "Fade out",
+   "category": "dynamics",
+   "words": [
+    "outro",
+    "disappear",
+    "end"
+   ]
+  },
+  {
+   "id": "accents",
+   "title": "Accents",
+   "category": "dynamics",
+   "words": [
+    "emphasis",
+    "strong weak"
+   ]
+  },
+  {
+   "id": "sidechain",
+   "title": "Sidechain / duck",
+   "category": "dynamics",
+   "words": [
+    "pump",
+    "breathing",
+    "ducking"
+   ]
+  },
+  {
+   "id": "filter-sweep",
+   "title": "Filter sweep",
+   "category": "dynamics",
+   "words": [
+    "opening",
+    "closing",
+    "wah",
+    "rising cutoff"
+   ]
+  },
+  {
+   "id": "automation-drift",
+   "title": "Drifting automation",
+   "category": "dynamics",
+   "words": [
+    "wander",
+    "random movement",
+    "evolving"
+   ]
+  },
+  {
+   "id": "movement",
+   "title": "Movement",
+   "category": "dynamics",
+   "words": [
+    "motion",
+    "change over time"
+   ]
+  },
+  {
+   "id": "build",
+   "title": "Build",
+   "category": "dynamics",
+   "words": [
+    "rise",
+    "tension up",
+    "ramp"
+   ]
+  },
+  {
+   "id": "space",
+   "title": "Space",
+   "category": "space",
+   "words": [
+    "room",
+    "ambience"
+   ]
+  },
+  {
+   "id": "reverb-big",
+   "title": "Big reverb",
+   "category": "space",
+   "words": [
+    "cathedral",
+    "huge room",
+    "wash"
+   ]
+  },
+  {
+   "id": "dry-tight",
+   "title": "Dry and tight",
+   "category": "space",
+   "words": [
+    "close",
+    "intimate",
+    "no reverb"
+   ]
+  },
+  {
+   "id": "delay-echo",
+   "title": "Delay / echo",
+   "category": "space",
+   "words": [
+    "echo",
+    "repeats",
+    "dub"
+   ]
+  },
+  {
+   "id": "stereo",
+   "title": "Stereo",
+   "category": "space",
+   "words": [
+    "left right",
+    "panning",
+    "width"
+   ]
+  },
+  {
+   "id": "phaser",
+   "title": "Phaser",
+   "category": "space",
+   "words": [
+    "swirl",
+    "sweeping notches"
+   ]
+  },
+  {
+   "id": "tremolo",
+   "title": "Tremolo",
+   "category": "space",
+   "words": [
+    "wobble",
+    "shimmer",
+    "pulsing volume"
+   ]
+  },
+  {
+   "id": "riser",
+   "title": "Riser",
+   "category": "space",
+   "words": [
+    "swoosh",
+    "uplifter",
+    "noise sweep"
+   ]
+  },
+  {
+   "id": "dark",
+   "title": "Dark",
+   "category": "feel",
+   "words": [
+    "brooding",
+    "heavy",
+    "ominous"
+   ]
+  },
+  {
+   "id": "driving",
+   "title": "Driving",
+   "category": "feel",
+   "words": [
+    "propulsive",
+    "forward",
+    "relentless",
+    "energetic"
+   ]
+  },
+  {
+   "id": "hypnotic",
+   "title": "Hypnotic",
+   "category": "feel",
+   "words": [
+    "trance",
+    "loop",
+    "repetitive",
+    "mesmerising"
+   ]
+  },
+  {
+   "id": "tense",
+   "title": "Tense",
+   "category": "feel",
+   "words": [
+    "anxious",
+    "edge",
+    "suspense"
+   ]
+  },
+  {
+   "id": "floaty",
+   "title": "Floaty",
+   "category": "feel",
+   "words": [
+    "dreamy",
+    "weightless",
+    "drifting",
+    "spacious"
+   ]
+  },
+  {
+   "id": "sparse",
+   "title": "Sparse",
+   "category": "feel",
+   "words": [
+    "minimal",
+    "empty",
+    "laid back",
+    "room to breathe"
+   ]
+  }
+ ],
+ "recipes": [
+  {
+   "id": "four-on-the-floor",
+   "title": "Four-on-the-floor",
+   "intent": "steady kick for house or techno.",
+   "code": "$: s(\"bd*4\").bank(\"RolandTR909\")",
+   "notes": "`bd*4` is four kicks per cycle. Add a hat in recipe 2.",
+   "labels": [
+    "four-floor",
+    "driving"
+   ],
+   "source": "https://strudel.cc/learn/samples/",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "needs_samples": true,
+   "expr": "s(\"bd*4\").bank(\"RolandTR909\")",
+   "bpm_hint": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR909_bd not found! Is it loaded?"
+  },
+  {
+   "id": "offbeat-hat",
+   "title": "Offbeat hat",
+   "intent": "open-hat feel between kicks.",
+   "code": "$: s(\"~ hh ~ hh ~ hh ~ hh\").bank(\"RolandTR808\").gain(0.8)",
+   "notes": "`~` rests shift the hat to the offbeats.",
+   "labels": [
+    "offbeat",
+    "bright"
+   ],
+   "source": "https://strudel.cc/learn/samples/",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "needs_samples": true,
+   "expr": "s(\"~ hh ~ hh ~ hh ~ hh\").bank(\"RolandTR808\").gain(0.8)",
+   "bpm_hint": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR808_hh not found! Is it loaded?"
+  },
+  {
+   "id": "euclid-groove",
+   "title": "Euclid groove",
+   "intent": "non-straight rhythm from euclidean distribution.",
+   "code": "$: s(\"bd(3,8), hh(5,8,2), sd(2,8,4)\").bank(\"RolandTR909\")",
+   "notes": "`(beats,segments,rotation)`. Source: https://strudel.cc/learn/mini-notation/",
+   "labels": [
+    "euclid",
+    "syncopated"
+   ],
+   "source": "https://strudel.cc/learn/mini-notation/",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "needs_samples": true,
+   "expr": "s(\"bd(3,8), hh(5,8,2), sd(2,8,4)\").bank(\"RolandTR909\")",
+   "bpm_hint": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR909_bd not found! Is it loaded?"
+  },
+  {
+   "id": "reese-style-detuned-bass",
+   "title": "Reese-style detuned bass",
+   "intent": "thick, moving bass from two detuned saws.",
+   "code": "$: stack(\n  note(\"c2 c2 eb2 g1\").s(\"sawtooth\"),\n  note(\"c2 c2 eb2 g1\").s(\"sawtooth\").add(note(0.12))\n).lpf(400).lpq(8).gain(0.6)",
+   "notes": "the `add(note(0.12))` detune is UNVERIFIED (it is a semitone offset via documented `add`). A true supersaw is `s(\"supersaw\")`, which appears in a documented example. Keep `lpq` below about 15 for stability (judgement, UNVERIFIED).",
+   "labels": [
+    "bass",
+    "gritty",
+    "wide",
+    "low-end"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [
+    "see notes"
+   ],
+   "origin": "RECIPES.md",
+   "needs_samples": false,
+   "expr": "stack(\n  note(\"c2 c2 eb2 g1\").s(\"sawtooth\"),\n  note(\"c2 c2 eb2 g1\").s(\"sawtooth\").add(note(0.12))\n).lpf(400).lpq(8).gain(0.6)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -19.5,
+   "centroid_hz": 276,
+   "peak": 0.5541,
+   "error": null
+  },
+  {
+   "id": "sub-bass",
+   "title": "Sub bass",
+   "intent": "clean low sine under the kick.",
+   "code": "$: note(\"c1 c1 eb1 g0\").s(\"sine\").lpf(120).gain(0.9)",
+   "notes": "low-pass keeps it sub. Remove the filter for purer sine.",
+   "labels": [
+    "bass",
+    "low-end",
+    "dark"
+   ],
+   "source": "https://strudel.cc/learn/synths/",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "needs_samples": false,
+   "expr": "note(\"c1 c1 eb1 g0\").s(\"sine\").lpf(120).gain(0.9)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -18.1,
+   "centroid_hz": 34,
+   "peak": 0.297,
+   "error": null
+  },
+  {
+   "id": "pad-swell",
+   "title": "Pad swell",
+   "intent": "slow-attack chord pad with a room tail.",
+   "code": "$: note(\"<[c3,eb3,g3] [bb2,d3,f3]>\").s(\"triangle\")\n  .attack(2).release(3).room(0.5).roomsize(6).gain(0.4)",
+   "notes": "`attack`/`release` in seconds, `roomsize` 0 to 10.",
+   "labels": [
+    "pad",
+    "floaty",
+    "reverb-big",
+    "chord-progression"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "needs_samples": false,
+   "expr": "note(\"<[c3,eb3,g3] [bb2,d3,f3]>\").s(\"triangle\")\n  .attack(2).release(3).room(0.5).roomsize(6).gain(0.4)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -20.8,
+   "centroid_hz": 382,
+   "peak": 0.3583,
+   "error": null
+  },
+  {
+   "id": "filter-sweep-build",
+   "title": "Filter sweep build",
+   "intent": "rising cutoff on a sawtooth loop, over bars.",
+   "code": "$: note(\"c2*4\").s(\"sawtooth\")\n  .lpf(sine.slow(8).range(200,4000)).lpq(6)",
+   "notes": "`sine.slow(8).range(200,4000)` is a signal on `lpf`. Cutoff is 0 to 20000 Hz.",
+   "labels": [
+    "filter-sweep",
+    "build",
+    "movement"
+   ],
+   "source": "https://strudel.cc/learn/signals/",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "needs_samples": false,
+   "expr": "note(\"c2*4\").s(\"sawtooth\")\n  .lpf(sine.slow(8).range(200,4000)).lpq(6)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -22.5,
+   "centroid_hz": 1410,
+   "peak": 0.3578,
+   "error": null
+  },
+  {
+   "id": "riser",
+   "title": "Riser",
+   "intent": "noise rising in pitch and brightness into a drop.",
+   "code": "$: s(\"white\").hpf(saw.range(200,8000).slow(8))\n  .gain(saw.slow(8)).room(0.3)",
+   "notes": "`saw.slow(8)` runs 0 to 1 over 8 cycles, so the riser fades in.",
+   "labels": [
+    "riser",
+    "build",
+    "tense"
+   ],
+   "source": "https://strudel.cc/learn/signals/",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "needs_samples": false,
+   "expr": "s(\"white\").hpf(saw.range(200,8000).slow(8))\n  .gain(saw.slow(8)).room(0.3)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -40.6,
+   "centroid_hz": 11183,
+   "peak": 0.0531,
+   "error": null
+  },
+  {
+   "id": "breakdown-drop-arrangement-over-bars",
+   "title": "Breakdown/drop arrangement over bars",
+   "intent": "sections of 8 cycles: pad, drums, then both.",
+   "code": "const drums = s(\"bd*4,hh*8\").bank(\"RolandTR909\")\nconst pad = note(\"c3 eb3 g3 bb3\").s(\"triangle\").slow(2).room(0.4)\nsetcpm(128/4)\narrange([8, pad], [8, drums], [8, stack(drums, pad)])",
+   "notes": "`arrange([cycles, pattern], ...)` syntax is verified from the Strudel FAQ mirror (https://warm.strudel.cc/learn/faq). Confirm on strudel.cc. `setcpm(BPM/4)` for 4/4.",
+   "labels": [
+    "sections",
+    "build-drop",
+    "arrangement",
+    "breakdown"
+   ],
+   "source": "https://warm.strudel.cc/learn/faq",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "needs_samples": true,
+   "expr": null,
+   "bpm_hint": 128.0,
+   "verified": true,
+   "rms_dbfs": -21.4,
+   "centroid_hz": 452,
+   "peak": 0.2583,
+   "error": null
+  },
+  {
+   "id": "half-time",
+   "title": "Half-time",
+   "intent": "backbeat on beat 3 at half speed.",
+   "code": "$: s(\"bd ~ ~ ~ ~ ~ ~ ~, ~ ~ ~ ~ sd ~ ~ ~, hh*8\").bank(\"RolandTR808\")",
+   "notes": "one kick and one snare per cycle; cycle length is one bar at the set tempo. Use `.slow(2)` on the hat to thin it.",
+   "labels": [
+    "half-time",
+    "sparse"
+   ],
+   "source": "https://strudel.cc/learn/samples/",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "needs_samples": true,
+   "expr": "s(\"bd ~ ~ ~ ~ ~ ~ ~, ~ ~ ~ ~ sd ~ ~ ~, hh*8\").bank(\"RolandTR808\")",
+   "bpm_hint": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR808_bd not found! Is it loaded?"
+  },
+  {
+   "id": "call-and-response",
+   "title": "Call-and-response",
+   "intent": "phrase, then answer in the next cycle.",
+   "code": "$: note(\"<[c4 e4 g4 e4] ~>\").s(\"triangle\").room(0.3)\n$: note(\"<~ [g4 a4 b4 c5]>\").s(\"square\").gain(0.5)",
+   "notes": "alternation `< >` swaps the phrase and answer each cycle.",
+   "labels": [
+    "call-response",
+    "motif"
+   ],
+   "source": "https://strudel.cc/learn/mini-notation/",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "needs_samples": false,
+   "expr": "stack(\n  note(\"<[c4 e4 g4 e4] ~>\").s(\"triangle\").room(0.3),\n  note(\"<~ [g4 a4 b4 c5]>\").s(\"square\").gain(0.5)\n)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -21.6,
+   "centroid_hz": 3042,
+   "peak": 0.2888,
+   "error": null
+  },
+  {
+   "id": "minor-motif",
+   "title": "Minor motif",
+   "intent": "short repeating melody in A minor.",
+   "code": "$: n(\"0 2 <3 4> 2\").scale(\"A:minor\").s(\"triangle\").slow(2)",
+   "notes": "`scale(\"A:minor\")` uses root:scale syntax from the tonal page. Numbers index the scale.",
+   "labels": [
+    "motif",
+    "minor"
+   ],
+   "source": "https://strudel.cc/learn/tonal/",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "needs_samples": false,
+   "expr": "n(\"0 2 <3 4> 2\").scale(\"A:minor\").s(\"triangle\").slow(2)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -21.4,
+   "centroid_hz": 637,
+   "peak": 0.3426,
+   "error": null
+  },
+  {
+   "id": "chord-stabs",
+   "title": "Chord stabs",
+   "intent": "short plucked chords on each beat pair.",
+   "code": "$: chord(\"<Am7 F^7 C G>*2\").voicing()\n  .s(\"sawtooth\").lpf(1800).decay(0.2).sustain(0)",
+   "notes": "`^` marks major seventh. `decay` and `sustain(0)` cut each chord short.",
+   "labels": [
+    "chord-progression",
+    "voicing",
+    "pluck"
+   ],
+   "source": "https://strudel.cc/learn/tonal/",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "needs_samples": false,
+   "expr": "chord(\"<Am7 F^7 C G>*2\").voicing()\n  .s(\"sawtooth\").lpf(1800).decay(0.2).sustain(0)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -24.3,
+   "centroid_hz": 1117,
+   "peak": 0.6651,
+   "error": null
+  },
+  {
+   "id": "sidechain-pump",
+   "title": "Sidechain pump",
+   "intent": "pad ducks under the kick.",
+   "code": "$: note(\"<c3 eb3 g3 bb3>\").s(\"sawtooth\").orbit(2).lpf(900)\n$: s(\"bd:4!4\").beat(\"0,4,8,11,14\",16)\n  .duckorbit(2).duckattack(0.2).duckdepth(1)",
+   "notes": "the pattern on `orbit(2)` is the one that ducks. Structure taken from the duck section of https://strudel.cc/learn/effects/. Ducked layer is listed first: otherwise superdough reports 'duck target orbit 2 does not exist'. The offline renderer also logs a harmless t=0 stop-time warning for ducking (ignored by the verifier).",
+   "labels": [
+    "sidechain",
+    "dynamics",
+    "driving"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "needs_samples": true,
+   "expr": "stack(\n  note(\"<c3 eb3 g3 bb3>\").s(\"sawtooth\").orbit(2).lpf(900),\n  s(\"bd:4!4\").beat(\"0,4,8,11,14\",16)\n    .duckorbit(2).duckattack(0.2).duckdepth(1)\n)",
+   "bpm_hint": null,
+   "verified": false,
+   "rms_dbfs": -24.9,
+   "centroid_hz": 1024,
+   "peak": 0.2583,
+   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound bd not found! Is it loaded?"
+  },
+  {
+   "id": "fade-out",
+   "title": "Fade out",
+   "intent": "volume steps down to silence over the last bars.",
+   "code": "$: note(\"c3 eb3 g3\").s(\"triangle\").gain(\"<1 .8 .6 .4 .2 0>\")",
+   "notes": "`gain` accepts a pattern, so each cycle drops one step. Use `saw.range(1,0).slow(8)` for a smooth fade (signal form documented on https://strudel.cc/learn/signals/).",
+   "labels": [
+    "fade-out",
+    "dynamics"
+   ],
+   "source": "https://strudel.cc/learn/signals/",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "needs_samples": false,
+   "expr": "note(\"c3 eb3 g3\").s(\"triangle\").gain(\"<1 .8 .6 .4 .2 0>\")",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -20.2,
+   "centroid_hz": 410,
+   "peak": 0.3495,
+   "error": null
+  },
+  {
+   "id": "synth-kick",
+   "title": "Synth kick (no samples)",
+   "intent": "Four low thumps from a sine with a falling pitch, no sample bank needed.",
+   "code": "$: note(\"c1*4\").s(\"sine\").penv(24).pdecay(0.08).decay(0.25).sustain(0)",
+   "notes": "Pitch envelope drops 24 semitones in 0.08 s; decay cuts the tail. Same idea as the kick mapping in docs/STRUDEL_PORT.md.",
+   "labels": [
+    "four-floor",
+    "driving",
+    "low-end"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c1*4\").s(\"sine\").penv(24).pdecay(0.08).decay(0.25).sustain(0)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -23.2,
+   "centroid_hz": 119,
+   "peak": 0.2387,
+   "error": null
+  },
+  {
+   "id": "synth-hat-offbeat",
+   "title": "Noise tick on the offbeats",
+   "intent": "Short filtered noise between the beats.",
+   "code": "$: s(\"~ white ~ white ~ white ~ white\").hpf(7000).decay(0.05).sustain(0).gain(0.5)",
+   "notes": "`white` is the built-in noise source. hpf keeps only the top; decay/sustain(0) make it short.",
+   "labels": [
+    "offbeat",
+    "bright"
+   ],
+   "source": "https://strudel.cc/learn/synths/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "s(\"~ white ~ white ~ white ~ white\").hpf(7000).decay(0.05).sustain(0).gain(0.5)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -36.4,
+   "centroid_hz": 13086,
+   "peak": 0.1918,
+   "error": null
+  },
+  {
+   "id": "synth-backbeat",
+   "title": "Noise backbeat",
+   "intent": "One short noise burst on beat 2 of each bar, band-limited.",
+   "code": "$: s(\"~ white\").hpf(900).lpf(3500).decay(0.15).sustain(0).gain(0.6)",
+   "notes": "Two-step bar, so the burst lands on the second half (a half-time feel).",
+   "labels": [
+    "half-time",
+    "sparse"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "s(\"~ white\").hpf(900).lpf(3500).decay(0.15).sustain(0).gain(0.6)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -40.8,
+   "centroid_hz": 3735,
+   "peak": 0.1743,
+   "error": null
+  },
+  {
+   "id": "synth-euclid",
+   "title": "Euclid low pulse",
+   "intent": "Three pulses spread over eight steps, uneven on purpose.",
+   "code": "$: note(\"c1(3,8)\").s(\"sine\").penv(12).pdecay(0.06).decay(0.2).sustain(0)",
+   "notes": "`(beats,segments)` euclidean mini-notation.",
+   "labels": [
+    "euclid",
+    "low-end",
+    "hypnotic"
+   ],
+   "source": "https://strudel.cc/learn/mini-notation/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c1(3,8)\").s(\"sine\").penv(12).pdecay(0.06).decay(0.2).sustain(0)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -25.4,
+   "centroid_hz": 86,
+   "peak": 0.2362,
+   "error": null
+  },
+  {
+   "id": "syncopated-bass",
+   "title": "Syncopated bass line",
+   "intent": "Bass that leaves gaps and lands off the beat.",
+   "code": "$: note(\"c2 ~ c2 eb2 ~ g1 ~ c2\").s(\"sawtooth\").lpf(500).decay(0.25).sustain(0.2)",
+   "notes": "Rests (`~`) make the groove; lower the lpf for darker.",
+   "labels": [
+    "syncopated",
+    "bass",
+    "driving"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c2 ~ c2 eb2 ~ g1 ~ c2\").s(\"sawtooth\").lpf(500).decay(0.25).sustain(0.2)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -24.3,
+   "centroid_hz": 302,
+   "peak": 0.2641,
+   "error": null
+  },
+  {
+   "id": "supersaw-pad",
+   "title": "Wide detuned pad",
+   "intent": "Slow chord pad with stereo spread from a detuned saw stack.",
+   "code": "$: note(\"<[c3,eb3,g3] [bb2,d3,f3]>\").s(\"supersaw\").unison(3).detune(0.3).spread(0.8).lpf(1500).attack(1).release(2).gain(0.4)",
+   "notes": "`s(\"supersaw\")` is in a documented example; `unison`, `detune`, `spread` come from docs/STRUDEL_PORT.md (not on the fetched official pages).",
+   "labels": [
+    "pad",
+    "wide",
+    "floaty",
+    "chord-progression"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [
+    "unison",
+    "detune",
+    "spread"
+   ],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"<[c3,eb3,g3] [bb2,d3,f3]>\").s(\"supersaw\").unison(3).detune(0.3).spread(0.8).lpf(1500).attack(1).release(2).gain(0.4)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -23.1,
+   "centroid_hz": 854,
+   "peak": 0.3105,
+   "error": null
+  },
+  {
+   "id": "pluck",
+   "title": "Short pluck line",
+   "intent": "Plucked notes: a filter envelope closes quickly on each note.",
+   "code": "$: note(\"c4 eb4 g4 bb4\").s(\"triangle\").lpf(2000).lpenv(3).lpa(0).lpd(0.15).decay(0.2).sustain(0)",
+   "notes": "`lpenv` is the filter envelope depth; lpa/lpd its attack/decay.",
+   "labels": [
+    "pluck",
+    "motif"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c4 eb4 g4 bb4\").s(\"triangle\").lpf(2000).lpenv(3).lpa(0).lpd(0.15).decay(0.2).sustain(0)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -25.9,
+   "centroid_hz": 761,
+   "peak": 0.2365,
+   "error": null
+  },
+  {
+   "id": "minor-arp",
+   "title": "Minor arpeggio",
+   "intent": "Rising and falling arpeggio in A minor, twice per cycle.",
+   "code": "$: n(\"[0 2 4 7 4 2]*2\").scale(\"A:minor\").s(\"triangle\").gain(0.6)",
+   "notes": "Scale degrees via `scale(\"A:minor\")`.",
+   "labels": [
+    "arpeggio",
+    "minor",
+    "motif"
+   ],
+   "source": "https://strudel.cc/learn/tonal/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "n(\"[0 2 4 7 4 2]*2\").scale(\"A:minor\").s(\"triangle\").gain(0.6)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -23.1,
+   "centroid_hz": 693,
+   "peak": 0.2672,
+   "error": null
+  },
+  {
+   "id": "chord-progression",
+   "title": "Four-chord progression",
+   "intent": "Am7 - Fmaj7 - C - G, one chord per cycle, voiced automatically.",
+   "code": "$: chord(\"<Am7 F^7 C G>\").voicing().s(\"triangle\").attack(0.05).release(0.4).gain(0.5)",
+   "notes": "`^` = major seventh. `voicing()` picks chord tones near a default anchor.",
+   "labels": [
+    "chord-progression",
+    "voicing",
+    "minor"
+   ],
+   "source": "https://strudel.cc/learn/tonal/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "chord(\"<Am7 F^7 C G>\").voicing().s(\"triangle\").attack(0.05).release(0.4).gain(0.5)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -14.3,
+   "centroid_hz": 711,
+   "peak": 0.6314,
+   "error": null
+  },
+  {
+   "id": "root-bass",
+   "title": "Root-following bass",
+   "intent": "Bass that plays the root of each chord, two hits per cycle.",
+   "code": "$: note(\"<a1 f1 c2 g1>*2\").s(\"sine\").lpf(300).gain(0.8)",
+   "notes": "Match the roots to the chord recipe above.",
+   "labels": [
+    "bass",
+    "chord-progression",
+    "low-end"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"<a1 f1 c2 g1>*2\").s(\"sine\").lpf(300).gain(0.8)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -19.5,
+   "centroid_hz": 66,
+   "peak": 0.3038,
+   "error": null
+  },
+  {
+   "id": "delay-echo",
+   "title": "Echo tail",
+   "intent": "A sparse line with repeating echoes.",
+   "code": "$: note(\"c4 ~ eb4 ~\").s(\"triangle\").delay(0.5).delaytime(0.375).delayfeedback(0.55).gain(0.5)",
+   "notes": "delay = send level, delaytime in seconds, feedback 0 to 1 (below 1).",
+   "labels": [
+    "delay-echo",
+    "space",
+    "floaty"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c4 ~ eb4 ~\").s(\"triangle\").delay(0.5).delaytime(0.375).delayfeedback(0.55).gain(0.5)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -27.0,
+   "centroid_hz": 644,
+   "peak": 0.1615,
+   "error": null
+  },
+  {
+   "id": "stereo-jux",
+   "title": "Reversed copy on the right",
+   "intent": "Wide image: original left, reversed pattern right.",
+   "code": "$: note(\"c3 eb3 g3 bb3\").s(\"sawtooth\").lpf(1200).jux(rev)",
+   "notes": "`jux` applies a function to the right channel only. `rev` appears in a jux example only.",
+   "labels": [
+    "wide",
+    "stereo"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [
+    "rev"
+   ],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c3 eb3 g3 bb3\").s(\"sawtooth\").lpf(1200).jux(rev)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -25.6,
+   "centroid_hz": 718,
+   "peak": 0.2302,
+   "error": null
+  },
+  {
+   "id": "big-reverb",
+   "title": "Big reverb splash",
+   "intent": "A single short note blooming into a long room.",
+   "code": "$: note(\"c4 ~ ~ ~\").s(\"triangle\").room(0.9).roomsize(9).decay(0.3).sustain(0)",
+   "notes": "roomsize 0 to 10.",
+   "labels": [
+    "reverb-big",
+    "space",
+    "floaty",
+    "sparse"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c4 ~ ~ ~\").s(\"triangle\").room(0.9).roomsize(9).decay(0.3).sustain(0)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -30.2,
+   "centroid_hz": 612,
+   "peak": 0.2363,
+   "error": null
+  },
+  {
+   "id": "dry-tight",
+   "title": "Dry and tight",
+   "intent": "No reverb, short notes, close and intimate.",
+   "code": "$: note(\"c3 eb3 g3 eb3\").s(\"triangle\").room(0).decay(0.1).sustain(0).lpf(2500)",
+   "notes": "Contrast with the big reverb recipe.",
+   "labels": [
+    "dry-tight",
+    "space"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c3 eb3 g3 eb3\").s(\"triangle\").room(0).decay(0.1).sustain(0).lpf(2500)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -28.8,
+   "centroid_hz": 316,
+   "peak": 0.2374,
+   "error": null
+  },
+  {
+   "id": "phaser-sweep",
+   "title": "Phaser movement",
+   "intent": "Slow swirling motion on a held saw.",
+   "code": "$: note(\"<c3 eb3>\").s(\"sawtooth\").lpf(1500).phaser(2).phaserdepth(0.8).gain(0.4)",
+   "notes": "phaser = speed; depth 0 to 1.",
+   "labels": [
+    "phaser",
+    "movement",
+    "texture-moving"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"<c3 eb3>\").s(\"sawtooth\").lpf(1500).phaser(2).phaserdepth(0.8).gain(0.4)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -30.4,
+   "centroid_hz": 830,
+   "peak": 0.0786,
+   "error": null
+  },
+  {
+   "id": "tremolo-pad",
+   "title": "Tremolo shimmer",
+   "intent": "Amplitude wobble on a chord.",
+   "code": "$: note(\"[c3,eb3,g3]\").s(\"triangle\").tremolo(6).tremolodepth(0.8).gain(0.5)",
+   "notes": "tremolo speed in Hz; tremolodepth amount.",
+   "labels": [
+    "tremolo",
+    "movement",
+    "floaty"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"[c3,eb3,g3]\").s(\"triangle\").tremolo(6).tremolodepth(0.8).gain(0.5)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -26.4,
+   "centroid_hz": 2031,
+   "peak": 0.2278,
+   "error": null
+  },
+  {
+   "id": "vowel-voice",
+   "title": "Vowel formant colour",
+   "intent": "Saw notes shaped like vowel sounds, a different vowel each cycle.",
+   "code": "$: note(\"c3 eb3 g3 eb3\").s(\"sawtooth\").vowel(\"<a e i o>\").gain(0.5)",
+   "notes": "`vowel` is a formant filter, not a sampled voice.",
+   "labels": [
+    "formant",
+    "texture-vocal-like"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c3 eb3 g3 eb3\").s(\"sawtooth\").vowel(\"<a e i o>\").gain(0.5)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -36.2,
+   "centroid_hz": 1190,
+   "peak": 0.0794,
+   "error": null
+  },
+  {
+   "id": "fm-bell",
+   "title": "FM bell",
+   "intent": "Metallic bell tones from frequency modulation.",
+   "code": "$: note(\"c5 g5 eb5 bb4\").s(\"sine\").fm(4).fmh(2.5).decay(0.6).sustain(0).room(0.4)",
+   "notes": "fm = modulation index, fmh = harmonicity ratio.",
+   "labels": [
+    "fm",
+    "bell-like",
+    "bright",
+    "motif"
+   ],
+   "source": "https://strudel.cc/learn/synths/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c5 g5 eb5 bb4\").s(\"sine\").fm(4).fmh(2.5).decay(0.6).sustain(0).room(0.4)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -19.4,
+   "centroid_hz": 4282,
+   "peak": 0.2718,
+   "error": null
+  },
+  {
+   "id": "lofi-crunch",
+   "title": "Lo-fi crunch",
+   "intent": "Bit and sample-rate reduction for a degraded, gritty tone.",
+   "code": "$: note(\"c3 eb3 g3 bb3\").s(\"square\").crush(6).coarse(4).lpf(2500).gain(0.4)",
+   "notes": "crush 1 to 16 bits (lower = rougher); coarse divides the sample rate.",
+   "labels": [
+    "gritty",
+    "lofi"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c3 eb3 g3 bb3\").s(\"square\").crush(6).coarse(4).lpf(2500).gain(0.4)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -23.7,
+   "centroid_hz": 3890,
+   "peak": 0.1562,
+   "error": null
+  },
+  {
+   "id": "perlin-drift",
+   "title": "Drifting filter",
+   "intent": "Cutoff wanders smoothly by itself.",
+   "code": "$: note(\"c2*8\").s(\"sawtooth\").lpf(perlin.range(300,3000)).lpq(5).gain(0.5)",
+   "notes": "perlin = smooth noise 0..1; `.range` scales it. The cutoff is read once per note.",
+   "labels": [
+    "automation-drift",
+    "movement",
+    "hypnotic"
+   ],
+   "source": "https://strudel.cc/learn/signals/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c2*8\").s(\"sawtooth\").lpf(perlin.range(300,3000)).lpq(5).gain(0.5)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -26.2,
+   "centroid_hz": 869,
+   "peak": 0.2183,
+   "error": null
+  },
+  {
+   "id": "crescendo",
+   "title": "Crescendo",
+   "intent": "Volume rises over eight cycles.",
+   "code": "$: note(\"c3*4\").s(\"sawtooth\").lpf(1200).gain(saw.range(0.1,1).slow(8))",
+   "notes": "saw ramps 0 to 1 each period.",
+   "labels": [
+    "crescendo",
+    "dynamics",
+    "build"
+   ],
+   "source": "https://strudel.cc/learn/signals/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c3*4\").s(\"sawtooth\").lpf(1200).gain(saw.range(0.1,1).slow(8))",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -34.3,
+   "centroid_hz": 660,
+   "peak": 0.1004,
+   "error": null
+  },
+  {
+   "id": "accents",
+   "title": "Accent pattern",
+   "intent": "Strong-weak-medium-weak pulse on a bass note.",
+   "code": "$: note(\"c2*8\").s(\"square\").lpf(600).velocity(\"1 0.4 0.7 0.4\").gain(0.7)",
+   "notes": "velocity multiplies gain, 0 to 1.",
+   "labels": [
+    "accents",
+    "dynamics",
+    "driving"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c2*8\").s(\"square\").lpf(600).velocity(\"1 0.4 0.7 0.4\").gain(0.7)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -22.1,
+   "centroid_hz": 301,
+   "peak": 0.2908,
+   "error": null
+  },
+  {
+   "id": "sidechain-synth",
+   "title": "Sidechain pump (synth)",
+   "intent": "Pad ducks under a synth kick.",
+   "code": "$: note(\"<c3 eb3 g3 bb3>\").s(\"sawtooth\").orbit(2).lpf(900)\n$: note(\"c1*4\").s(\"sine\").penv(24).pdecay(0.08).decay(0.25).sustain(0).duckorbit(2).duckattack(0.2).duckdepth(1)",
+   "notes": "The pattern on orbit 2 is the one that ducks. Ducked layer is listed first: otherwise superdough reports 'duck target orbit 2 does not exist'. The offline renderer also logs a harmless t=0 stop-time warning for ducking (ignored by the verifier).",
+   "labels": [
+    "sidechain",
+    "dynamics",
+    "driving"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "stack(\n  note(\"<c3 eb3 g3 bb3>\").s(\"sawtooth\").orbit(2).lpf(900),\n  note(\"c1*4\").s(\"sine\").penv(24).pdecay(0.08).decay(0.25).sustain(0).duckorbit(2).duckattack(0.2).duckdepth(1)\n)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -21.1,
+   "centroid_hz": 630,
+   "peak": 0.4153,
+   "error": null
+  },
+  {
+   "id": "build-drop",
+   "title": "Build and drop sections",
+   "intent": "Pad alone, then pulse and pad, then everything, 4 cycles each.",
+   "code": "setcpm(124/4)\nconst kick = note(\"c1*4\").s(\"sine\").penv(24).pdecay(0.08).decay(0.25).sustain(0)\nconst pad = note(\"<[c3,eb3,g3] [bb2,d3,f3]>\").s(\"triangle\").slow(2).room(0.4)\nconst top = s(\"~ white ~ white\").hpf(7000).decay(0.05).sustain(0).gain(0.4)\narrange([4, pad], [4, stack(kick, pad)], [4, stack(kick, pad, top)])",
+   "notes": "`arrange([cycles, pattern], ...)` from the FAQ mirror. Not stackable in the compose page (it has top-level statements).",
+   "labels": [
+    "sections",
+    "build-drop",
+    "arrangement"
+   ],
+   "source": "https://warm.strudel.cc/learn/faq",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 124.0,
+   "verified": true,
+   "rms_dbfs": -16.8,
+   "centroid_hz": 388,
+   "peak": 0.6155,
+   "error": null
+  },
+  {
+   "id": "layers-in",
+   "title": "Layers entering one by one",
+   "intent": "Three layers join at bars 1, 3 and 5 using masks.",
+   "code": "setcpm(120/4)\n$: note(\"c1*4\").s(\"sine\").penv(24).pdecay(0.08).decay(0.25).sustain(0).mask(\"<0 0 1 1 1 1>\")\n$: note(\"c2 ~ c2 eb2\").s(\"sawtooth\").lpf(500).decay(0.2).sustain(0.1).mask(\"<0 1 1 1 1 1>\")\n$: note(\"<[c4,eb4,g4]>\").s(\"triangle\").room(0.4).gain(0.4).mask(\"<0 0 0 0 1 1>\")",
+   "notes": "`mask` with a `<>` pattern switches a layer on/off per cycle (used by docs/STRUDEL_PORT.md; not on the fetched official pages).",
+   "labels": [
+    "layers-in",
+    "arrangement",
+    "sections"
+   ],
+   "source": "https://warm.strudel.cc/learn/faq",
+   "unverified": [
+    "mask"
+   ],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 120.0,
+   "verified": true,
+   "rms_dbfs": -30.8,
+   "centroid_hz": 306,
+   "peak": 0.2586,
+   "error": null
+  },
+  {
+   "id": "filter-open-intro",
+   "title": "Intro with an opening filter",
+   "intent": "Cutoff steps up each cycle to reveal the loop.",
+   "code": "$: note(\"c2 c3 c2 eb2\").s(\"sawtooth\").lpf(\"<400 600 1000 1600 2600 4000>\").lpq(4).gain(0.5)",
+   "notes": "A `<>` list on `lpf` is one value per cycle.",
+   "labels": [
+    "intro-reveal",
+    "build",
+    "arrangement"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c2 c3 c2 eb2\").s(\"sawtooth\").lpf(\"<400 600 1000 1600 2600 4000>\").lpq(4).gain(0.5)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -26.2,
+   "centroid_hz": 351,
+   "peak": 0.2041,
+   "error": null
+  },
+  {
+   "id": "random-thin",
+   "title": "Random thinning",
+   "intent": "Sixteenth ticks with random gaps; differs each cycle.",
+   "code": "$: s(\"white*16?\").hpf(7000).decay(0.03).sustain(0).gain(0.3)",
+   "notes": "`?` removes events at random (50%); `?0.2` removes fewer.",
+   "labels": [
+    "probability",
+    "human-feel",
+    "bright"
+   ],
+   "source": "https://strudel.cc/learn/mini-notation/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "s(\"white*16?\").hpf(7000).decay(0.03).sustain(0).gain(0.3)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -42.6,
+   "centroid_hz": 12401,
+   "peak": 0.1131,
+   "error": null
+  },
+  {
+   "id": "polymeter",
+   "title": "Polymeter",
+   "intent": "Three-note and four-note lines share one pulse, drifting against each other.",
+   "code": "$: note(\"{c3 eb3 g3, c2 g2 bb2 d3}%4\").s(\"triangle\").gain(0.5)",
+   "notes": "Curly braces with `%steps`; not on the fetched official pages.",
+   "labels": [
+    "polyrhythm",
+    "hypnotic"
+   ],
+   "source": "https://strudel.cc/learn/mini-notation/",
+   "unverified": [
+    "{ }%n polymeter syntax"
+   ],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"{c3 eb3 g3, c2 g2 bb2 d3}%4\").s(\"triangle\").gain(0.5)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -22.3,
+   "centroid_hz": 338,
+   "peak": 0.3722,
+   "error": null
+  },
+  {
+   "id": "dark-drone",
+   "title": "Dark drone",
+   "intent": "Low held saw with a slowly breathing filter.",
+   "code": "$: note(\"<c1 c1>\").s(\"sawtooth\").lpf(sine.range(100,500).slow(8)).lpq(4).gain(0.5)",
+   "notes": "Low root, low cutoff, slow movement.",
+   "labels": [
+    "dark",
+    "drone",
+    "low-end",
+    "movement"
+   ],
+   "source": "https://strudel.cc/learn/signals/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"<c1 c1>\").s(\"sawtooth\").lpf(sine.range(100,500).slow(8)).lpq(4).gain(0.5)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -26.7,
+   "centroid_hz": 223,
+   "peak": 0.1843,
+   "error": null
+  },
+  {
+   "id": "sparse-line",
+   "title": "Sparse, spacious line",
+   "intent": "Two notes a bar with plenty of silence and a soft tail.",
+   "code": "$: note(\"c4 ~ ~ ~ ~ ~ eb4 ~\").s(\"triangle\").room(0.6).roomsize(6).gain(0.5)",
+   "notes": "Rests carry the feel.",
+   "labels": [
+    "sparse",
+    "floaty",
+    "space"
+   ],
+   "source": "https://strudel.cc/learn/mini-notation/",
+   "unverified": [],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c4 ~ ~ ~ ~ ~ eb4 ~\").s(\"triangle\").room(0.6).roomsize(6).gain(0.5)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -31.0,
+   "centroid_hz": 650,
+   "peak": 0.147,
+   "error": null
+  },
+  {
+   "id": "tense-riser",
+   "title": "Tense rising pitch",
+   "intent": "A held tone gliding upward over eight cycles.",
+   "code": "$: note(\"c3\").s(\"sawtooth\").lpf(1500).penv(12).pattack(8).pdecay(0.01).gain(0.4)",
+   "notes": "Pitch envelope attack stretches the climb. Check by ear: panchor/pcurve behaviour is documented loosely.",
+   "labels": [
+    "tense",
+    "build",
+    "riser"
+   ],
+   "source": "https://strudel.cc/learn/effects/",
+   "unverified": [
+    "glide timing"
+   ],
+   "origin": "new",
+   "needs_samples": false,
+   "expr": "note(\"c3\").s(\"sawtooth\").lpf(1500).penv(12).pattack(8).pdecay(0.01).gain(0.4)",
+   "bpm_hint": null,
+   "verified": true,
+   "rms_dbfs": -28.9,
+   "centroid_hz": 944,
+   "peak": 0.134,
+   "error": null
+  }
+ ]
+}

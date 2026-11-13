@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strudel Craft - Catalog</title>
+<meta name="description" content="Recipes for sounds, harmony, rhythm and feel in Strudel, filterable by concept.">
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body data-page="catalog">
+<main class="wrap">
+<h2>Recipe catalog</h2>
+<p class="lead">Find a sound by what it does or how it feels, then play it, copy it or open it in strudel.cc. Recipes marked "rendered ok" were rendered headless and were not silent.</p>
+<input id="q" type="search" placeholder="Search: dark, pad, echo, build..." aria-label="Search recipes">
+<div id="filters"></div>
+<div class="row"><label><input id="vonly" type="checkbox"> Verified only</label><button id="clear" type="button">Clear filters</button></div>
+<p id="count" class="meta" role="status"></p>
+<div id="list"></div>
+</main>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strudel Craft - Compose</title>
+<meta name="description" content="Stack chosen recipes into one Strudel program.">
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body data-page="compose">
+<main class="wrap">
+<h2>Compose from recipes</h2>
+<p class="lead">Filter by label, tick recipes, and they are stacked into one <code>$:</code> program at your tempo.</p>
+<div id="filters"></div>
+<div id="list"></div>
+<h3>Program <span id="npick" class="meta"></span></h3>
+<label for="bpm">Tempo (BPM, 4/4)</label>
+<input id="bpm" type="number" value="120" min="40" max="240" inputmode="numeric">
+<textarea id="out" spellcheck="false" aria-label="Composed Strudel program"></textarea>
+<div class="row"><span id="play" class="row"></span><button id="copy" type="button">Copy</button><a id="open" class="btn" target="_blank" rel="noopener" href="https://strudel.cc/">Open in strudel.cc</a></div>
+<div id="status" class="status" role="status"></div>
+<p class="meta">Recipes with top-level statements (<code>const</code>, <code>arrange</code>, <code>setcpm</code>) are not offered here.</p>
+</main>
+</body>
+</html>

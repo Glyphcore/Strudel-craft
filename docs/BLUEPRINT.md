@@ -1,7 +1,7 @@
 # Studio toolkit blueprint: code, graph, beatpad, board and library over one model
 
 Status: **issued** (design note only; phases and issues in section 12). Extends `docs/HOOKS_SYNTAX.md` (hooks, slots, bindings, gates, taps); read that first.
-Owner: `daw-sme`. UI parts are direction for `ui-designer` (built later through the `aaa-web-ui` skill), not a UI spec.
+Owner: `daw-sme`. Magic strings (mini-notation, gates, tap refs, names) as typed atoms: `docs/ATOMS.md`. UI parts are direction for `ui-designer` (built later through the `aaa-web-ui` skill), not a UI spec.
 
 ## 1. The idea
 

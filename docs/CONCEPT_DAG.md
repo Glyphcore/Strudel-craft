@@ -57,6 +57,11 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | intellisense-provider-registry (`window.strudelCraft.intellisense.register`, site) | behavioral-smoke-tests | scouted (in progress elsewhere, not on main) | - |
 | history-store (`window.strudelCraft.history`) | behavioral-smoke-tests | scouted (not on main; interface needed is in docs/BLUEPRINT.md section 6) | - |
 | webmidi-gamepad-input-providers | pad-engine | unexplored | - |
+| atoms-core (typed, parameterised, id-addressed definitions for magic strings; compile pass to plain Strudel strings; docs/ATOMS.md) | model-schema-roundtrip, controls-engine | issued | #61 |
+| atoms-migration (extract / parse / inline, catalog atoms) | atoms-core | issued | #62 |
+| atoms-consumers (intellisense, typed arg editors, hooks/model/pads `$atom`, pack ingredient) | atoms-core, hooks-intellisense, pack-spec | issued | #63 |
+| atoms-ui (lazy reference-counted graph cards, atom browser, reference popover; ui-designer) | atoms-core, atoms-consumers, graph-editor-ui | issued | #64 |
+| pack-spec (pack format and ingredients) | component-library | scouted (in progress elsewhere, not on main) | - |
 
 ## Waiting nodes
 - live-mic-input: Strudel has no live input; needs browser/Node audio capture and an AGPL licence-decision issue before touching Strudel code (do not copy PR #1414). Size L. Waits for #14 and that decision.
@@ -65,3 +70,4 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 - word-mapped-vocals (needs vocal-chop-slicer #4): issued #42 (P1 word bank), #43 (word()/note), #44 (intellisense provider), #45 (formant pyworld/rubberband ext), #46 (Shabda TTS). State: issued.
 - stem-export-presets: low value now that #36/#40 cover mixdown; scouted only.
 - hooks toolkit (#47-#55): build order #47 -> #48 -> #49, then #50 / #51 / #53 on disjoint files, then #54, then UI #52 and #55 via ui-designer. Design: docs/HOOKS_SYNTAX.md, docs/BLUEPRINT.md. The CLI parts live in the engine/strudel-cli that tests/smoke.sh calls, outside this repo.
+- atoms (#61-#64): build order #61, then #62 and #63 on disjoint files, then UI #64 via ui-designer. The pack-ingredient box of #63 waits for pack-spec. Design: docs/ATOMS.md.

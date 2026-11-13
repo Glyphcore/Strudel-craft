@@ -2,6 +2,7 @@
 
 Status: **issued** (design note only, nothing built). DAG nodes `hooks-core` (#47) and `taps-vars-decorators` (#48). Owner: `daw-sme`.
 Extended by `docs/BLUEPRINT.md` (variables, decorators, node graph, component library, shared JSON model, phases).
+Gate strings, tap refs, slot and hook names can be declared once as typed atoms and referenced: `docs/ATOMS.md`.
 Target runtime: unmodified Strudel (`@strudel/web` 1.3.0 on the site, `@strudel/core` 1.2.6 in the headless CLI). Everything here is an
 add-on that calls Strudel's public Pattern API. No Strudel source is copied, patched or vendored.
 

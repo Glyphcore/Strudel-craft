@@ -115,9 +115,8 @@ def synth_vowel(f0=120.0, dur=0.6, sr=SR, forms=(700.0, 1220.0), bws=(80.0, 90.0
 
 
 VOWELS = {'700/1220': (700.0, 1220.0), 'a 800/1150': (800.0, 1150.0), '500/1500': (500.0, 1500.0), 'i 400/2000': (400.0, 2000.0)}
-# pyworld must pass every vowel. rubberband's cepstral formant model is vowel-dependent (measured: ~2% on /a/, 10-17% on close vowels), so it is
-# gated on the open vowel and the others are reported only (documented limitation; pyworld is the default backend).
-GATE = {'pyworld': set(VOWELS), 'rubberband': {'a 800/1150'}}
+# Every vowel is gated for every available backend (issue #45 box 1 and 2 use the same check). Known: rubberband 3.3.0 fails 3 of 4 (see issue).
+GATE = {b: set(VOWELS) for b in BACKENDS}
 
 
 def selftest(backend='all'):

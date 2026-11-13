@@ -107,6 +107,10 @@ async function mount() {
   const [{ EditorView, basicSetup }, ac, { javascript }, { keymap }] = await Promise.all([
     import(`https://esm.sh/codemirror@${V.cm}${DEPS}`), import(`https://esm.sh/@codemirror/autocomplete@${V.ac}${DEPS}`),
     import(`https://esm.sh/@codemirror/lang-javascript@${V.js}${DEPS}`), import(`https://esm.sh/@codemirror/view@${V.view}`)]);
+  /* popup accept = node-aware merge (inline.js mergeAccept): replaces the node under the caret, no duplicate parens/args/chain calls, one transaction */
+  const mergedApply = (o) => { const text = typeof o.apply === 'string' ? o.apply : typeof o.apply === 'function' ? null : o.label; if (text == null) return o;
+    return { ...o, apply: (view, completion, from) => { const r = inlineMod.mergeAccept(view.state.doc.toString(), view.state.selection.main.head, text, { from });
+      view.dispatch({ ...(r.noop ? {} : { changes: { from: r.from, to: r.to, insert: r.insert } }), selection: { anchor: r.caret }, annotations: ac.pickedCompletion.of(completion), userEvent: 'input.complete' }); } }; };
   async function source(context) {
     { /* typed argument position: shape-driven suggestions only */
       const text = context.state.doc.sliceString(Math.max(0, context.pos - 4000), context.pos); const base = Math.max(0, context.pos - 4000);
@@ -116,7 +120,7 @@ async function mount() {
         if (!ctx.quote && !w && !context.explicit && !/[(,]\s*$/.test(text)) return null;
         const opts = shapeOptions(p, ctx, await api.all());
         if (ctx.quote && opts.length) { /* inside quotes: replace the word, drop our quotes */ opts.forEach((o) => { o.label = o.label.replace(/^"|"$/g, ''); }); }
-        if (opts.length) return { from, options: opts.map((o, i) => ({ ...o, section: { name: `${ctx.fn} · ${p.name}${p.unit ? ' (' + p.unit + ')' : ''}`, rank: -1 }, boost: 50 - i })), validFor: ctx.quote ? /^[^\s"'`]*$/ : /^[\w$.]*$/, filter: !!w };
+        if (opts.length) return { from, options: opts.map(mergedApply).map((o, i) => ({ ...o, section: { name: `${ctx.fn} · ${p.name}${p.unit ? ' (' + p.unit + ')' : ''}`, rank: -1 }, boost: 50 - i })), validFor: ctx.quote ? /^[^\s"'`]*$/ : /^[\w$.]*$/, filter: !!w && !context.explicit };
         void base;
       }
     }
@@ -132,7 +136,7 @@ async function mount() {
       const k = it.label + '|' + it.category; if (seen.has(k)) continue; seen.add(k);
       opts.push({ label: it.label, type: it.method ? 'method' : it.string ? 'text' : it.category === 'presets' ? 'variable' : 'function', detail: it.detail, info: it.info, section: { name: it.category, rank: it.provider === 'strudel-docs' ? 0 : it.provider === 'user' ? 1 : it.provider === 'catalog' ? 2 : 3 }, apply: it.apply, boost: it.provider === 'strudel-docs' ? 2 : it.provider === 'user' ? 1 : 0 });
     }
-    return { from, options: opts, validFor: /^[\w$]*$/ };
+    return { from, options: opts.map(mergedApply), validFor: /^[\w$]*$/ };
   }
   const [{ HighlightStyle, syntaxHighlighting }, { tags: t }] = await Promise.all([import('https://esm.sh/@codemirror/language@6'), import('https://esm.sh/@lezer/highlight@1')]);
   const hl = syntaxHighlighting(HighlightStyle.define([
@@ -148,7 +152,7 @@ async function mount() {
   const lint = await import(`https://esm.sh/@codemirror/lint@6.8.5`);
   const [vmod, smod, cmds, inlineMod] = await Promise.all([import(`https://esm.sh/@codemirror/view@${V.view}`), import('https://esm.sh/@codemirror/state@6'), import('https://esm.sh/@codemirror/commands@6'), import('./inline.js')]);
   const ghost = inlineMod.setupInline(api, { EditorView, Decoration: vmod.Decoration, WidgetType: vmod.WidgetType, StateField: smod.StateField, StateEffect: smod.StateEffect, Prec: smod.Prec, keymap, ac, indentMore: cmds.indentMore });
-  api.ghost = ghost;
+  api.ghost = ghost; api.startCompletion = (view) => ac.startCompletion(view);
   const docs = new Map(); (await staticData).forEach((d) => docs.set(d.label, d));
   const { hoverTooltip } = await import(`https://esm.sh/@codemirror/view@${V.view}`);
   const hover = hoverTooltip((view, pos) => {

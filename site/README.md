@@ -303,3 +303,5 @@ Design: docs/CONTROL_BINDING.md sections 7 and 8.
 Range spec: numeric controls carry min/max/step/unit/curve/clamp (override per AST id > code > param shape > 0..1); tap the number for
 exact unit-aware entry (1.5k, -6 dB, 2:30) with "Extend range to fit"; "Range…" in the control sheet edits the range. Typed literal
 editors apply live (no confirm tap). Docs: docs/CONTROL_BINDING.md sections 7 to 9.
+Accept (Tab on ghost text, or a popup item) is node-aware (`mergeAccept` in inline.js): it replaces the word or value under the caret,
+keeps existing brackets, arguments and chain calls, does nothing when the text is already there, and is one undo step.

@@ -181,7 +181,23 @@ Precedence (highest first): user override per AST id (`perform` model `ranges[<i
 - **Parsing** (`controls.parseValue(text, { unit })`, exported from `engine/controls.js`): `1.5k` -> 1500, `-6 dB` -> -6, `2:30` -> 150
   (seconds; 2.5 when the unit is `min`), `250ms` -> 0.25 s, `90s`, `1h`, `50%` -> 0.5.
 - Applies to inline widgets and board knobs (same renderers), pad values (pad sheet "Value", parsed the same way) and the transport:
-  loop start/end are parsed with the same parser, and the play-time limit accepts `20`, `2:30`, `90s`, `1h`; above its 600 min range
-  it offers "Extend range to fit".
+  loop start/end accept cycles, bars or m:ss (transport-range.js converts with the live cps), and the play-time limit is parsed with
+  `parseValue` (`20`, `2:30`, `90s`, `1h`); above its 600 min range it offers "Extend range to fit".
 - Engine: `controls.setRange(id, r)` (null deletes a key), `redeclare` keeps values unless the clamp is `hard`.
 - Test: `node tests/site/binding.mjs` (typing 5000 into a 0..1 slider extends the range and persists it per id; parser cases).
+
+## 10. Node-aware accept (ghost text Tab and popup completions)
+
+`mergeAccept(doc, pos, text, { from })` in `site/inline.js` computes one change for any accept:
+- **Popup** (`from` = start of the typed prefix): the whole node under the caret is replaced, i.e. the identifier or call name, the
+  arg literal or the mini-notation token (`[\w$]` outside quotes, token chars inside), not only the prefix: caret in `lp|f` + `lpf`
+  gives one `lpf`; caret in `8|00` inside `lpf(` + `2000` gives `lpf(2000)` (explicit Ctrl+Space shows the whole shape list).
+- **Ghost text** (no `from`): the suggestion continues at the caret.
+- **Merge**: the rest of the suggestion after the node is matched against the text already after it; existing `(`, `)`, quotes,
+  arguments and closers are consumed, not re-inserted (`lpf()` + `(800)` gives `lpf(800)`). A chain call such as `.decay(0.1)` that is
+  already present later in the statement is dropped from the suggestion.
+- **No-op**: if the result equals the text already there, nothing changes and the caret moves past the node.
+- One CodeMirror transaction (`input.complete`), so one undo step and one settle run (one compile, one history commit); the ghost text
+  is recomputed afterwards against the new document, never batched.
+- Test: `node tests/site/binding.mjs` (prefix partial, caret mid-token, already complete, existing parens, arg value swap, chained
+  call already present, one-step undo).

@@ -87,6 +87,28 @@ await page.evaluate(() => window.strudelCraft.literals.close());
 await page.evaluate(() => window.strudelCraft.literals.close());
 await setDoc(CODE); await settle();
 
+// 8. node-aware accept (CONTROL_BINDING section 10): ghost Tab and popup accept replace/merge the node, never duplicate; one undo step
+{ const caseG = async (doc, caret, ghost) => { await setDoc(doc); await page.evaluate(([c, g]) => { const v = document.getElementById('code').cmView; v.focus(); v.dispatch({ selection: { anchor: c } }); window.strudelCraft.intellisense.ghost.show(v, g); }, [caret, ghost]); await page.keyboard.press('Tab'); await page.waitForTimeout(80); return docText(); };
+  const R = {};
+  R.prefix = await caseG('$: n("0").lp\n', 12, 'f(800)');
+  R.complete = await caseG('$: n("0").lpf(800)\n', 13, '(800)');
+  R.parens = await caseG('$: n("0").lpf()\n', 13, '(800)');
+  await page.keyboard.press('Control+z'); await page.waitForTimeout(80); R.undo = await docText();
+  R.chain = await caseG('$: n("0").lpf(800).decay(0.1)\n', 18, '.decay(0.1)');
+  // popup: caret mid-token "lp|f" picks lpf; caret in an arg value swaps it
+  const caseP = async (doc, caret, pick) => { await setDoc(doc); await page.evaluate((c) => { const v = document.getElementById('code').cmView; v.focus(); v.dispatch({ selection: { anchor: c } }); window.strudelCraft.intellisense.startCompletion(v); }, caret); await page.waitForSelector('.cm-tooltip-autocomplete li', { timeout: 3000 }).catch(() => {});
+    const ok = await page.evaluate((p) => { const li = [...document.querySelectorAll('.cm-tooltip-autocomplete li')].find((l) => l.textContent.startsWith(p)); if (li) { li.dispatchEvent(new MouseEvent('mousedown', { bubbles: true })); li.click(); } return !!li; }, pick); await page.waitForTimeout(120); return ok ? docText() : 'no option ' + pick; };
+  R.mid = await caseP('$: n("0").lpf(800)\n', 12, 'lpf');
+  R.swap = await caseP('$: n("0").lpf(800)\n', 15, '2000');
+  check('accept: prefix partial lp + f(800) -> lpf(800)', R.prefix.startsWith('$: n("0").lpf(800)\n'), R.prefix);
+  check('accept: already-complete token is a no-op (no duplicate)', R.complete.startsWith('$: n("0").lpf(800)\n'), R.complete);
+  check('accept: existing parens merge (lpf() + (800) -> lpf(800))', R.parens.startsWith('$: n("0").lpf(800)\n'), R.parens);
+  check('accept: chained call already present is not re-inserted', R.chain.startsWith('$: n("0").lpf(800).decay(0.1)\n'), R.chain);
+  check('accept: one undo step restores the pre-accept text', R.undo.startsWith('$: n("0").lpf()\n'), R.undo.slice(0, 40));
+  check('accept: caret mid-token (lp|f) picks lpf without duplicating', R.mid.startsWith('$: n("0").lpf(800)\n'), R.mid);
+  check('accept: caret in an arg value swaps the value (800 -> 2000)', R.swap.startsWith('$: n("0").lpf(2000)\n'), R.swap);
+  await setDoc(CODE); await settle(); }
+
 // 7. range spec (CONTROL_BINDING section 9): type 5000 into a 0..1 slider, "Extend range to fit" widens it and persists per id
 { await setDoc(`$: note("c3").s("sawtooth").gain(slider(0.5, 0, 1))\n`); await settle();
   await page.evaluate(() => document.querySelector('.pc-inline').scrollIntoView({ block: 'center' })); await page.waitForTimeout(600);

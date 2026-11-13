@@ -113,3 +113,10 @@ As on strudel.cc/learn/visual-feedback, using Strudel's own draw code in `@strud
 - inline `_pianoroll` ... `_pitchwheel` render in a canvas under their code line (widget types registered with the transpiler).
 Each visual is a control type `visual.<name>` / `visual._<name>` in `strudelCraft.controls` and an intellisense item (`visuals`).
 `engine/index.js` (controls, pads, input) is now loaded by `index.html`.
+
+## Live progress tracker (`tracker.js`)
+The `?` dialog shows the checklist of issue #56 (public GitHub API, unauthenticated): `##` headings are groups, `[x]` done,
+`(~)` in progress (pulsing dot), progress bars per group and overall, "updated Xs ago", and a flash on items whose state changed
+since the last poll; open issues labelled `status:*` are listed below. Polls every 60 s while the dialog is open, 5 min while
+closed, with `If-None-Match` (ETag) so 304s don't count against the rate limit. On failure or rate limit it shows the cached copy
+(`localStorage` `sctrack.cache`) with a toast. Toasts now use the Popover API so they show above open dialogs.

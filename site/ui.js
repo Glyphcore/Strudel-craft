@@ -42,7 +42,8 @@
     const kill = () => { t.classList.add('out'); setTimeout(() => t.remove(), 200); };
     t.querySelector('button').addEventListener('click', kill);
     if (onClick) { const sp = t.querySelector('span'); const b = h('button', { type: 'button', class: 'toast-act' }, String(message)); sp.replaceWith(b); b.addEventListener('click', () => { onClick(); kill(); }); }
-    stack.append(t); while (stack.children.length > 3) stack.firstChild.remove();
+    stack.append(t); try { if (!stack.hasAttribute('popover')) stack.setAttribute('popover', 'manual'); if (stack.matches(':popover-open')) stack.hidePopover(); stack.showPopover(); } catch (e) { /* no popover API: plain fixed layer */ }
+    while (stack.children.length > 3) stack.firstChild.remove();
     if (!sticky) setTimeout(kill, ms || (kind === 'error' ? 6000 : 2600)); return t;
   }
   sc.ui = { ask: (o) => modal({ ...o, input: true }), askYesNo: (o) => modal({ ...o, input: false }), toast };

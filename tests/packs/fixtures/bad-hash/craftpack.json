@@ -1,0 +1,19 @@
+{
+  "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+  "craftpack": "1.0.0",
+  "id": "testco/bad-hash",
+  "version": "1.0.0",
+  "title": "bad-hash fixture",
+  "license": "CC0-1.0",
+  "ingredients": [
+    {
+      "id": "recipes",
+      "kind": "recipes",
+      "format": "recipes@1",
+      "version": "1.0.0",
+      "path": "recipes/recipes.json",
+      "hash": "sha256:b187369689eb14c877a749719e2ecca36ac5d6c975eb86cfe4add8cf87b5b70a",
+      "bytes": 377
+    }
+  ]
+}

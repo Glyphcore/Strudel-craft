@@ -1,0 +1,19 @@
+{
+  "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+  "craftpack": "1.0.0",
+  "id": "testco/base",
+  "version": "1.0.0",
+  "title": "base fixture",
+  "license": "CC0-1.0",
+  "ingredients": [
+    {
+      "id": "recipes",
+      "kind": "recipes",
+      "format": "recipes@1",
+      "version": "1.0.0",
+      "path": "recipes/recipes.json",
+      "hash": "sha256:03ecb151d92c8afb98f4f93e76877acf83250bc54eadc5a6350ed22ffc330443",
+      "bytes": 377
+    }
+  ]
+}

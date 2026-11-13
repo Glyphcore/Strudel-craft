@@ -1,0 +1,17 @@
+{
+  "packs": 1,
+  "want": [
+    {
+      "id": "testco/base",
+      "source": "file:./base"
+    },
+    {
+      "id": "testco/app-a",
+      "source": "file:./app-a"
+    },
+    {
+      "id": "testco/app-b",
+      "source": "file:./app-b"
+    }
+  ]
+}

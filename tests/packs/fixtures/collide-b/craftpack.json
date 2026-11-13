@@ -1,0 +1,36 @@
+{
+  "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+  "craftpack": "1.0.0",
+  "id": "testco/collide-b",
+  "version": "1.0.0",
+  "title": "collide-b fixture",
+  "license": "CC0-1.0",
+  "ingredients": [
+    {
+      "id": "recipes",
+      "kind": "recipes",
+      "format": "recipes@1",
+      "version": "1.0.0",
+      "path": "recipes/recipes.json",
+      "hash": "sha256:c8ac800724668a3e8d3046f00551a38b9c3e7cf775612d9d6c0936bcd189d68d",
+      "bytes": 395
+    },
+    {
+      "id": "sounds",
+      "kind": "sounds",
+      "format": "sounds@1",
+      "version": "1.0.0",
+      "path": "sounds/strudel.json",
+      "hash": "sha256:081ad99a57c472d22c3571d8b8d81b5045deaa3111873952f4b562061e69669b",
+      "load": "manual",
+      "assets": {
+        "root": "sounds",
+        "index": "files.sha256",
+        "hash": "sha256:4d55e59d4ce3e46c5e3ae2e660ec18b777eeb8eea1836f3768c96f094df97099",
+        "files": 2,
+        "bytes": 737
+      },
+      "bytes": 53
+    }
+  ]
+}

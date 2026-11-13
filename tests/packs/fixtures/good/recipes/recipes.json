@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "id": "test",
+      "title": "Test"
+    }
+  ],
+  "labels": [
+    {
+      "id": "test",
+      "title": "Test",
+      "category": "test"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "test-thump",
+      "title": "Test thump",
+      "code": "s(\"tkick*4\").gain(0.7)",
+      "labels": [
+        "test"
+      ],
+      "verified": false
+    }
+  ]
+}

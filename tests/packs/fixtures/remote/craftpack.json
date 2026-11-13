@@ -1,0 +1,19 @@
+{
+  "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+  "craftpack": "1.0.0",
+  "id": "testco/remote",
+  "version": "1.0.0",
+  "title": "fixture-remote fixture",
+  "license": "CC0-1.0",
+  "ingredients": [
+    {
+      "id": "recipes",
+      "kind": "recipes",
+      "format": "recipes@1",
+      "version": "1.0.0",
+      "path": "recipes/recipes.json",
+      "hash": "sha256:654da308f7745a6adca32d7a7c85660fb03bf676551181b12484a25995403f95",
+      "bytes": 381
+    }
+  ]
+}

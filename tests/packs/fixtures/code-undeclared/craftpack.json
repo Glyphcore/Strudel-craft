@@ -1,0 +1,27 @@
+{
+  "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+  "craftpack": "1.0.0",
+  "id": "testco/code-undeclared",
+  "version": "1.0.0",
+  "title": "code-undeclared fixture",
+  "license": "CC0-1.0",
+  "ingredients": [
+    {
+      "id": "controls",
+      "kind": "control-types",
+      "format": "control-types@1",
+      "version": "1.0.0",
+      "path": "controls/types.json",
+      "hash": "sha256:460f3115a7e238fa94bb7ca0f36c5afb98a4016ec1ec48f12df623db429aff4f",
+      "modules": [
+        {
+          "path": "controls/render.js",
+          "hash": "sha256:1e2aa0e3e1985f261c6c7a902ab8f3129584aad90d2100368970ef0e868f3961",
+          "realm": "sandbox",
+          "bytes": 50
+        }
+      ],
+      "bytes": 235
+    }
+  ]
+}

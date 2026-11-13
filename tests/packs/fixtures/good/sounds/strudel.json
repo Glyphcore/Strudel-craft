@@ -1,0 +1,9 @@
+{
+  "_base": ".",
+  "tkick": [
+    "tkick.wav"
+  ],
+  "tsnare": [
+    "tsnare.wav"
+  ]
+}

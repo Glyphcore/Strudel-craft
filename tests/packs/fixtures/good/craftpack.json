@@ -1,0 +1,50 @@
+{
+  "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+  "craftpack": "1.0.0",
+  "id": "testco/good",
+  "version": "1.0.0",
+  "title": "good fixture",
+  "license": "CC0-1.0",
+  "ingredients": [
+    {
+      "id": "sounds",
+      "kind": "sounds",
+      "format": "sounds@1",
+      "version": "1.0.0",
+      "path": "sounds/strudel.json",
+      "hash": "sha256:2ef30cde33ca99f02706c79157ef554d5f90f989ad027b732882da44b86d4758",
+      "load": "manual",
+      "assets": {
+        "root": "sounds",
+        "index": "files.sha256",
+        "hash": "sha256:9eb3a05de45dcbc43857767bd3e31204b215fa40c0e6dd0a26ee3eb5c3ba4089",
+        "files": 3,
+        "bytes": 1457
+      },
+      "bytes": 89
+    },
+    {
+      "id": "recipes",
+      "kind": "recipes",
+      "format": "recipes@1",
+      "version": "1.0.0",
+      "path": "recipes/recipes.json",
+      "hash": "sha256:73ed184ea8e305200e3749fad90baeb9fd177601edc8532c6567c290477085a0",
+      "load": "eager",
+      "requires": [
+        "sounds"
+      ],
+      "bytes": 390
+    },
+    {
+      "id": "controls",
+      "kind": "control-types",
+      "format": "control-types@1",
+      "version": "1.0.0",
+      "path": "controls/types.json",
+      "hash": "sha256:e1c028d3b5f4284ba0edbf743ee1c9273bf293bdbab537a8746da54ce8b87796",
+      "load": "eager",
+      "bytes": 195
+    }
+  ]
+}

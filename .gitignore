@@ -1,2 +1,6 @@
 __pycache__/
 *.pyc
+# pack fixture audio is generated, never committed (first-party content licence: #66)
+tests/packs/fixtures/**/*.wav
+# schemas are copied here by the Pages workflow
+site/schemas/

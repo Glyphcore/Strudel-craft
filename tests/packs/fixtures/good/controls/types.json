@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "types": [
+    {
+      "id": "test-knob",
+      "value": "number",
+      "keys": [
+        "value"
+      ],
+      "render": {
+        "fallback": "slider"
+      }
+    }
+  ]
+}

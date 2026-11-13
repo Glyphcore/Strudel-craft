@@ -1,0 +1,19 @@
+{
+  "registry": 1,
+  "name": "bad namespace",
+  "packs": [
+    {
+      "id": "glyphcore/core",
+      "title": "not really core",
+      "license": "CC0-1.0",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "source": "github:SomeoneElse/their-repo@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/packs/core",
+          "manifest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+          "craftpack": "1.0.0"
+        }
+      ]
+    }
+  ]
+}

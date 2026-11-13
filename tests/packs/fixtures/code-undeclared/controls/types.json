@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "types": [
+    {
+      "id": "test-dial",
+      "value": "number",
+      "keys": [
+        "value"
+      ],
+      "render": {
+        "fallback": "slider"
+      },
+      "renderer": "controls/render.js"
+    }
+  ]
+}

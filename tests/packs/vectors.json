@@ -1,0 +1,134 @@
+{
+  "vectors": 1,
+  "about": "Conformance vectors for the shared resolution module (docs/PACK_SPEC.md 9.3, 15). Each case names fixture packs plus lock layers and the report both hosts (site loader, CLI) must produce. Runner: node tests/packs/core.mjs",
+  "cases": [
+    {
+      "name": "collide-b at priority 0 loses to collide-a",
+      "packs": ["collide-a", "collide-b"],
+      "layers": [
+        {
+          "name": "shipped",
+          "packs": [
+            { "id": "testco/collide-a", "source": "file:./collide-a", "priority": 0 },
+            { "id": "testco/collide-b", "source": "file:./collide-b", "priority": 0 }
+          ]
+        }
+      ],
+      "expect": {
+        "errors": [],
+        "warnings": [
+          { "code": "W_PACK_SHADOW", "kind": "recipes", "name": "thump", "winner": "testco/collide-a:thump", "shadowed": ["testco/collide-b:thump"] },
+          { "code": "W_PACK_SHADOW", "kind": "sounds", "name": "tkick", "winner": "testco/collide-a:tkick", "shadowed": ["testco/collide-b:tkick"] }
+        ],
+        "resolution": {
+          "recipes": {
+            "thump": { "winner": "testco/collide-a:thump", "shadowed": ["testco/collide-b:thump"] }
+          },
+          "sounds": {
+            "tkick": {
+              "winner": "testco/collide-a:tkick",
+              "shadowed": ["testco/collide-b:tkick"],
+              "aliases": {
+                "testco_collide_a__tkick": "testco/collide-a:tkick",
+                "testco_collide_b__tkick": "testco/collide-b:tkick"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "collide-b at priority 10 wins",
+      "packs": ["collide-a", "collide-b"],
+      "layers": [
+        {
+          "name": "shipped",
+          "packs": [
+            { "id": "testco/collide-a", "source": "file:./collide-a", "priority": 0 },
+            { "id": "testco/collide-b", "source": "file:./collide-b", "priority": 10 }
+          ]
+        }
+      ],
+      "expect": {
+        "errors": [],
+        "warnings": [
+          { "code": "W_PACK_SHADOW", "kind": "recipes", "name": "thump", "winner": "testco/collide-b:thump", "shadowed": ["testco/collide-a:thump"] },
+          { "code": "W_PACK_SHADOW", "kind": "sounds", "name": "tkick", "winner": "testco/collide-b:tkick", "shadowed": ["testco/collide-a:tkick"] }
+        ],
+        "resolution": {
+          "recipes": {
+            "thump": { "winner": "testco/collide-b:thump", "shadowed": ["testco/collide-a:thump"] }
+          },
+          "sounds": {
+            "tkick": {
+              "winner": "testco/collide-b:tkick",
+              "shadowed": ["testco/collide-a:tkick"],
+              "aliases": {
+                "testco_collide_a__tkick": "testco/collide-a:tkick",
+                "testco_collide_b__tkick": "testco/collide-b:tkick"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "one pack id from two sources is E_PACK_NAMESPACE; the earlier layer wins",
+      "packs": ["collide-a", "collide-b"],
+      "layers": [
+        {
+          "name": "shipped",
+          "packs": [{ "id": "testco/collide-a", "source": "file:./collide-a", "priority": 0 }]
+        },
+        {
+          "name": "user",
+          "packs": [
+            { "id": "testco/collide-a", "source": "https://example.invalid/collide-a/", "priority": 50 },
+            { "id": "testco/collide-b", "source": "file:./collide-b", "priority": 0 }
+          ]
+        }
+      ],
+      "expect": {
+        "errors": [{ "code": "E_PACK_NAMESPACE", "id": "testco/collide-a" }],
+        "warnings": [
+          { "code": "W_PACK_SHADOW", "kind": "recipes", "name": "thump", "winner": "testco/collide-a:thump", "shadowed": ["testco/collide-b:thump"] },
+          { "code": "W_PACK_SHADOW", "kind": "sounds", "name": "tkick", "winner": "testco/collide-a:tkick", "shadowed": ["testco/collide-b:tkick"] }
+        ],
+        "resolution": {
+          "recipes": {
+            "thump": { "winner": "testco/collide-a:thump", "shadowed": ["testco/collide-b:thump"] }
+          },
+          "sounds": {
+            "tkick": {
+              "winner": "testco/collide-a:tkick",
+              "shadowed": ["testco/collide-b:tkick"],
+              "aliases": {
+                "testco_collide_a__tkick": "testco/collide-a:tkick",
+                "testco_collide_b__tkick": "testco/collide-b:tkick"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "good pack alone: every id is a winner, no shadowing",
+      "packs": ["good"],
+      "layers": [
+        { "name": "shipped", "packs": [{ "id": "testco/good", "source": "file:./good", "priority": 0 }] }
+      ],
+      "expect": {
+        "errors": [],
+        "warnings": [],
+        "resolution": {
+          "control-types": { "test-knob": { "winner": "testco/good:test-knob", "shadowed": [] } },
+          "recipes": { "test-thump": { "winner": "testco/good:test-thump", "shadowed": [] } },
+          "sounds": {
+            "tkick": { "winner": "testco/good:tkick", "shadowed": [], "aliases": { "testco_good__tkick": "testco/good:tkick" } },
+            "tsnare": { "winner": "testco/good:tsnare", "shadowed": [], "aliases": { "testco_good__tsnare": "testco/good:tsnare" } }
+          }
+        }
+      }
+    }
+  ]
+}

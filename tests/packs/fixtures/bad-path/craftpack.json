@@ -1,0 +1,27 @@
+{
+  "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+  "craftpack": "1.0.0",
+  "id": "testco/bad-path",
+  "version": "1.0.0",
+  "title": "bad-path fixture",
+  "license": "CC0-1.0",
+  "ingredients": [
+    {
+      "id": "escape",
+      "kind": "recipes",
+      "format": "recipes@1",
+      "version": "1.0.0",
+      "path": "../outside/recipes.json",
+      "hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "id": "sounds",
+      "kind": "sounds",
+      "format": "sounds@1",
+      "version": "1.0.0",
+      "path": "sounds/strudel.json",
+      "hash": "sha256:d5c97add65974857f3b458edb07124bb60111088d6f3e124b6f0ee5abc3d280d",
+      "bytes": 57
+    }
+  ]
+}

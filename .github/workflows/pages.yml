@@ -2,7 +2,7 @@ name: Deploy site to GitHub Pages
 on:
   push:
     branches: [main]
-    paths: ['site/**', '.github/workflows/pages.yml']
+    paths: ['site/**', 'schemas/**', '.github/workflows/pages.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -25,6 +25,11 @@ jobs:
           sed -i "s/const VERSION = 'sc-dev';/const VERSION = 'sc-$SHA';/" site/sw.js
           grep -q "sc-$SHA" site/sw.js
           printf '{"sha": "%s", "date": "%s"}\n' "$SHA" "$DATE" > site/build.json
+      - name: Publish craftpack schemas under the site (docs/PACK_SPEC.md 14.2, so the $id URLs resolve)
+        run: |
+          mkdir -p site/schemas
+          cp -r schemas/craftpack site/schemas/craftpack
+          test -f site/schemas/craftpack/1/manifest.schema.json
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

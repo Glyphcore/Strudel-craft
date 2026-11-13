@@ -1,0 +1,18 @@
+{
+  "registry": 1,
+  "name": "undecided licence",
+  "packs": [
+    {
+      "id": "testco/undecided",
+      "license": "LicenseRef-undecided",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "source": "github:testco/their-repo@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/packs/undecided",
+          "manifest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+          "craftpack": "1.0.0"
+        }
+      ]
+    }
+  ]
+}

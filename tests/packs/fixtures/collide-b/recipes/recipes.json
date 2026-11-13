@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "id": "test",
+      "title": "Test"
+    }
+  ],
+  "labels": [
+    {
+      "id": "test",
+      "title": "Test",
+      "category": "test"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "thump",
+      "title": "Thump (collide-b)",
+      "code": "s(\"tkick*4\") // collide-b",
+      "labels": [
+        "test"
+      ],
+      "verified": false
+    }
+  ]
+}

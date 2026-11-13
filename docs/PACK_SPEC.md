@@ -409,6 +409,12 @@ on events | render | stems | check | info | hooks | perf | controls | complete:
   --packs-allow-code ID[,ID]
 ```
 
+Reference implementation in this repository (P1, #65): `tools/packs/packs.py` (`tools/packs/README.md`) runs
+`validate | hash | lock | registry build | registry check | --api` with the same codes and exit statuses, offline,
+with Python 3 + `jsonschema`. The CLI in `engine/strudel-cli` (another repository) wraps it; until that lands the
+`strudel packs ...` spellings above are "coming" and the Python entry point is what CI and the fixtures use.
+Shared resolution is `site/engine/packs-core.js`; fixtures and conformance vectors are `tests/packs/`.
+
 `render.json` gains `packs: [{id, version, manifest}]` and `attribution[]`. `strudel check` reports pack errors and warnings with the
 codes of section 13 and `--strict` promotes warnings. Sound maps and vox banks are registered through the same file-URL path as
 `--samples`; `voxBank()` in the CLI resolves ids through the lock instead of `site/data/vox/`.
@@ -442,6 +448,8 @@ and `packs validate` list everything, errors exit 1.
 | `W_PACK_EAGER` | eager budget exceeded: treated as lazy |
 | `W_PACK_LICENSE` | `LicenseRef-*` without `licenseFile`, or CC BY content without `attribution.text` |
 | `W_PACK_YANKED` | locked version is yanked in a registry |
+| `E_PACK_LICENSE` | a registry index entry has no licence, or `LicenseRef-undecided` (section 7: registries refuse it); hosts only warn (`W_PACK_LICENSE`) |
+| `E_LOCK_FROZEN` | `packs lock --frozen` and the lock on disk would change |
 
 ## 14. Migration plan
 

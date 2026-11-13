@@ -1,0 +1,14 @@
+{
+  "packs": 1,
+  "want": [
+    {
+      "id": "testco/good",
+      "source": "file:../good",
+      "bundle": true
+    },
+    {
+      "id": "testco/remote",
+      "source": "github:Glyphcore/Strudel-craft@main/tests/packs/fixtures/remote"
+    }
+  ]
+}

@@ -35,7 +35,10 @@ for (const [tag,vp] of [['360',{width:360,height:780}],['1440',{width:1440,heigh
   const q1=await pg.evaluate(()=>window.__q); const after=q1.filter(x=>x[0]>=7.99); ok(tag+' scrub to cycle 8: queries jump', after.length>0 && Math.abs(after[0][0]-8)<0.01 && q1.every((x,i)=>!i||Math.abs(x[0]-q1[i-1][1])<1e-6||x[0]===8), JSON.stringify(after[0]));
   await pg.evaluate(()=>{const st=strudelCraft.range.state; st.start=2; st.end=3; st.loop=true; window.__q=[];});
   await pg.waitForTimeout(4500);
-  const q2=await pg.evaluate(()=>window.__q); const loopQ=q2.slice(2); const back=q2.filter((x,i)=>i&&x[0]<q2[i-1][0]).length;
+  const q2=await pg.evaluate(()=>window.__q); const loopQ=q2.slice(2); const wr=q2.map((x,i)=>i&&x[0]<q2[i-1][0]?i:-1).filter(i=>i>0); const back=wr.length;
+  const cps=await pg.evaluate(()=>strudelCraft.engineState().scheduler.cps); const span=q2[1]?q2[1][1]-q2[1][0]:0.025, perPass=Math.round((3-2)/span);
+  /* 4.5 s at cps 0.5 = 2.25 cycles: 1 entry jump + 2 wraps, entry lands exactly on Start, wraps one loop length apart */
+  ok(tag+' loop wrap count', cps===0.5 && back===3 && q2[wr[0]][0]===2 && wr.slice(1).every((w,k)=>Math.abs(w-(k?wr[k]:wr[0])-perPass)<=1), 'cps='+cps+' wraps='+back+' at '+JSON.stringify(wr.map(i=>[i,+q2[i][0].toFixed(3)])));
   ok(tag+' loop 2-3: queries stay in range and wrap', back>=1 && loopQ.every(x=>x[0]>=2-1e-6 && x[1]<3.03), 'wraps='+back+' max='+Math.max(...loopQ.map(x=>x[1])).toFixed(3));
   await pg.evaluate(()=>{strudelCraft.range.state.loop=false;}); await pg.click('#playBtn'); await pg.waitForTimeout(300);
   // clamp

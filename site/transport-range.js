@@ -106,7 +106,9 @@ function installLoop(s) {
   if (s.__scLoop || !('num_ticks_since_cps_change' in s)) return; s.__scLoop = true;
   let raw = s.lastEnd;
   Object.defineProperty(s, 'lastEnd', { configurable: true, get: () => raw, set: (x) => {
-    if (st.loop && !st.fading && playing() && x >= st.end && st.end > st.start) { raw = st.start + Math.min(x - st.end, st.end - st.start); s.num_ticks_since_cps_change = 0; }
+    const len = st.end - st.start, ov = x - st.end;
+    /* inside the loop: wrap and carry the sub-tick overshoot; entering from outside (loop just enabled or points moved): jump to Start */
+    if (st.loop && !st.fading && playing() && len > 0 && (ov >= 0 || x < st.start)) { raw = st.start + (ov >= 0 && ov < 0.1 ? ov : 0); s.num_ticks_since_cps_change = 0; }
     else raw = x;
   } });
 }

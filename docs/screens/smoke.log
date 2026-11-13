@@ -1,0 +1,91 @@
+PASS  catalog renders every recipe in the browser  -- 46/46
+PASS  key 2 -> stack view  -- stack
+PASS  key 3 -> ref view  -- ref
+PASS  key 4 -> practice view  -- practice
+PASS  key 1 -> rack view  -- rack
+PASS  reference view renders tables
+PASS  practice view renders sections
+PASS  ? opens cheat sheet
+PASS  cheat sheet lists >= 12 shortcuts
+PASS  Esc closes cheat sheet
+PASS  ArrowDown moves selection  -- 0 -> 2
+PASS  ArrowUp moves selection
+PASS  / focuses search
+PASS  search filters list  -- 6 match "pad"
+PASS  Esc clears search
+PASS  ] raises tempo
+PASS  Ctrl+Z undoes tempo change
+PASS  - lowers master
+PASS  dragging tempo knob up raises tempo  -- 120 -> 164
+PASS  knob exposes role=slider with valuetext
+PASS  Space starts playback  -- Playing Reese-style detuned bass
+PASS  pattern lanes have haps to draw  -- 8 haps in cycle 0
+PASS  master meter shows signal  -- -17.7 dB
+PASS  frame time during playback measured (1440)  -- {"n":360,"mean_ms":16.67,"p95_ms":16.8,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":0.49,"p95_ms":0.7,"max_ms":2.7}}
+PASS  Space stops playback
+PASS  A adds selected recipes to the stack
+PASS  stack view plays the stacked program  -- Playing Stack · 3 layers
+PASS  Ctrl+Z undoes stack add
+  ok  four-on-the-floor                        peak -13.2 dB  haps 16
+  ok  offbeat-hat                              peak -18.3 dB  haps 16
+  ok  euclid-groove                            peak -8.0 dB   haps 40
+  ok  reese-style-detuned-bass                 peak -12.2 dB  haps 32
+  ok  sub-bass                                 peak -20.4 dB  haps 16
+  ok  pad-swell                                peak -19.6 dB  haps 12
+  ok  filter-sweep-build                       peak -16.5 dB  haps 16
+  ok  riser                                    peak -29.4 dB  haps 4
+  ok  breakdown-drop-arrangement-over-bars     peak -4.1 dB   haps 48
+  ok  half-time                                peak -17.9 dB  haps 40
+  ok  call-and-response                        peak -18.3 dB  haps 16
+  ok  minor-motif                              peak -19.8 dB  haps 8
+  ok  chord-stabs                              peak -11.8 dB  haps 38
+  ok  sidechain-pump                           peak -11.7 dB  haps 24
+  ok  fade-out                                 peak -18.6 dB  haps 12
+  ok  synth-kick                               peak -21.5 dB  haps 16
+  ok  synth-hat-offbeat                        peak -27.3 dB  haps 16
+  ok  synth-backbeat                           peak -31.1 dB  haps 4
+  ok  synth-euclid                             peak -24.6 dB  haps 12
+  ok  syncopated-bass                          peak -23.3 dB  haps 20
+  ok  supersaw-pad                             peak -17.5 dB  haps 12
+  ok  pluck                                    peak -17.1 dB  haps 16
+  ok  minor-arp                                peak -22.0 dB  haps 48
+  ok  chord-progression                        peak -7.4 dB   haps 19
+  ok  root-bass                                peak -21.5 dB  haps 8
+  ok  delay-echo                               peak -28.5 dB  haps 8
+  ok  stereo-jux                               peak -20.9 dB  haps 32
+  ok  big-reverb                               peak -27.6 dB  haps 4
+  ok  dry-tight                                peak -22.6 dB  haps 16
+  ok  phaser-sweep                             peak -31.5 dB  haps 4
+  ok  tremolo-pad                              peak -23.7 dB  haps 12
+  ok  vowel-voice                              peak -30.2 dB  haps 16
+  ok  fm-bell                                  peak -17.0 dB  haps 16
+  ok  lofi-crunch                              peak -20.7 dB  haps 16
+  ok  perlin-drift                             peak -19.3 dB  haps 32
+  ok  crescendo                                peak -34.0 dB  haps 16
+  ok  accents                                  peak -26.1 dB  haps 32
+  ok  sidechain-synth                          peak -22.6 dB  haps 20
+  ok  build-drop                               peak -12.5 dB  haps 28
+  ok  layers-in                                peak -11.7 dB  haps 20
+  ok  filter-open-intro                        peak -22.9 dB  haps 16
+  ok  random-thin                              peak -31.7 dB  haps 35
+  ok  polymeter                                peak -21.5 dB  haps 32
+  ok  dark-drone                               peak -24.2 dB  haps 4
+  ok  sparse-line                              peak -27.4 dB  haps 8
+  ok  tense-riser                              peak -27.6 dB  haps 4
+PASS  every catalog recipe plays from the UI (46)
+PASS  no horizontal scroll at 390px  -- scrollWidth 390
+PASS  touch targets >= 44px (except filter chips)  -- 0 smaller
+PASS  tap Play works on phone
+PASS  frame time during playback measured (390, and 4x CPU throttle)  -- {"normal":{"n":360,"mean_ms":16.67,"p95_ms":16.7,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":0.49,"p95_ms":0.7,"max_ms":3.5}},"cpu4x":{"n":360,"mean_ms":16.67,"p95_ms":16.7,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":1.94,"p95_ms":3,"max_ms":6.4}}}
+PASS  reduced motion: transitions are 0s  -- 0s
+PASS  T toggles light theme
+PASS  reduced motion: visualiser throttled to <= 10 fps  -- {"n":30,"mean_ms":100,"p95_ms":100.1,"max_ms":100.1}
+PASS  works offline after first load (service worker)
+PASS  compose.html redirects into the app (stack)  -- http://127.0.0.1:45619/index.html#stack
+PASS  plugins.html redirects into the app (ref)  -- http://127.0.0.1:45619/index.html#ref
+PASS  practices.html redirects into the app (practice)  -- http://127.0.0.1:45619/index.html#practice
+PASS  deep link #r/<id> selects that recipe
+PASS  zero console errors / page errors
+
+42/42 checks passed; 0 console errors; frame {"desktop_1440":{"n":360,"mean_ms":16.67,"p95_ms":16.8,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":0.49,"p95_ms":0.7,"max_ms":2.7}},"phone_390":{"n":360,"mean_ms":16.67,"p95_ms":16.7,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":0.49,"p95_ms":0.7,"max_ms":3.5}},"phone_390_cpu4x":{"n":360,"mean_ms":16.67,"p95_ms":16.7,"max_ms":16.8,"viz_draw":{"n":361,"mean_ms":1.94,"p95_ms":3,"max_ms":6.4}},"reduced_motion_viz":{"n":30,"mean_ms":100,"p95_ms":100.1,"max_ms":100.1}}
+EXIT 0

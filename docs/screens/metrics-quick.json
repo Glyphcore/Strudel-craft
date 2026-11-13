@@ -1,0 +1,308 @@
+{
+ "date": "2026-11-13T04:45:27.062Z",
+ "chromium": "153.0.8010.12",
+ "recipes": [
+  {
+   "id": "four-on-the-floor",
+   "playing": true,
+   "started": true,
+   "evalError": null,
+   "schedulerError": null,
+   "status": "Playing Four-on-the-floor",
+   "peak": "-13.4 dB",
+   "haps_next4cycles": 16,
+   "ok": true
+  },
+  {
+   "id": "offbeat-hat",
+   "playing": true,
+   "started": true,
+   "evalError": null,
+   "schedulerError": null,
+   "status": "Playing Offbeat hat",
+   "peak": "-20.8 dB",
+   "haps_next4cycles": 16,
+   "ok": true
+  },
+  {
+   "id": "euclid-groove",
+   "playing": true,
+   "started": true,
+   "evalError": null,
+   "schedulerError": null,
+   "status": "Playing Euclid groove",
+   "peak": "-8.5 dB",
+   "haps_next4cycles": 40,
+   "ok": true
+  },
+  {
+   "id": "reese-style-detuned-bass",
+   "playing": true,
+   "started": true,
+   "evalError": null,
+   "schedulerError": null,
+   "status": "Playing Reese-style detuned bass",
+   "peak": "-12.4 dB",
+   "haps_next4cycles": 32,
+   "ok": true
+  }
+ ],
+ "frame": {
+  "desktop_1440": {
+   "n": 360,
+   "mean_ms": 16.67,
+   "p95_ms": 16.7,
+   "max_ms": 16.8,
+   "viz_draw": {
+    "n": 361,
+    "mean_ms": 0.48,
+    "p95_ms": 0.7,
+    "max_ms": 3.2
+   }
+  },
+  "phone_390": {
+   "n": 361,
+   "mean_ms": 16.67,
+   "p95_ms": 16.7,
+   "max_ms": 16.8,
+   "viz_draw": {
+    "n": 362,
+    "mean_ms": 0.47,
+    "p95_ms": 0.7,
+    "max_ms": 1.6
+   }
+  },
+  "phone_390_cpu4x": {
+   "n": 360,
+   "mean_ms": 16.67,
+   "p95_ms": 16.7,
+   "max_ms": 16.8,
+   "viz_draw": {
+    "n": 361,
+    "mean_ms": 1.92,
+    "p95_ms": 3,
+    "max_ms": 8.5
+   }
+  },
+  "reduced_motion_viz": {
+   "n": 30,
+   "mean_ms": 100,
+   "p95_ms": 100.1,
+   "max_ms": 100.1
+  }
+ },
+ "recipes_audible": 4,
+ "console_errors": [],
+ "checks": [
+  {
+   "name": "catalog renders every recipe in the browser",
+   "ok": true,
+   "detail": "46/46"
+  },
+  {
+   "name": "key 2 -> stack view",
+   "ok": true,
+   "detail": "stack"
+  },
+  {
+   "name": "key 3 -> ref view",
+   "ok": true,
+   "detail": "ref"
+  },
+  {
+   "name": "key 4 -> practice view",
+   "ok": true,
+   "detail": "practice"
+  },
+  {
+   "name": "key 1 -> rack view",
+   "ok": true,
+   "detail": "rack"
+  },
+  {
+   "name": "reference view renders tables",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "practice view renders sections",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "? opens cheat sheet",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "cheat sheet lists >= 12 shortcuts",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Esc closes cheat sheet",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "ArrowDown moves selection",
+   "ok": true,
+   "detail": "0 -> 2"
+  },
+  {
+   "name": "ArrowUp moves selection",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "/ focuses search",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "search filters list",
+   "ok": true,
+   "detail": "6 match \"pad\""
+  },
+  {
+   "name": "Esc clears search",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "] raises tempo",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Ctrl+Z undoes tempo change",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "- lowers master",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "dragging tempo knob up raises tempo",
+   "ok": true,
+   "detail": "120 -> 164"
+  },
+  {
+   "name": "knob exposes role=slider with valuetext",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Space starts playback",
+   "ok": true,
+   "detail": "Playing Reese-style detuned bass"
+  },
+  {
+   "name": "pattern lanes have haps to draw",
+   "ok": true,
+   "detail": "8 haps in cycle 0"
+  },
+  {
+   "name": "master meter shows signal",
+   "ok": true,
+   "detail": "-17.7 dB"
+  },
+  {
+   "name": "frame time during playback measured (1440)",
+   "ok": true,
+   "detail": "{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.7,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":0.48,\"p95_ms\":0.7,\"max_ms\":3.2}}"
+  },
+  {
+   "name": "Space stops playback",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "A adds selected recipes to the stack",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "stack view plays the stacked program",
+   "ok": true,
+   "detail": "Playing Stack · 3 layers"
+  },
+  {
+   "name": "Ctrl+Z undoes stack add",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "every catalog recipe plays from the UI (4)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "no horizontal scroll at 390px",
+   "ok": true,
+   "detail": "scrollWidth 390"
+  },
+  {
+   "name": "touch targets >= 44px (except filter chips)",
+   "ok": true,
+   "detail": "0 smaller"
+  },
+  {
+   "name": "tap Play works on phone",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "frame time during playback measured (390, and 4x CPU throttle)",
+   "ok": true,
+   "detail": "{\"normal\":{\"n\":361,\"mean_ms\":16.67,\"p95_ms\":16.7,\"max_ms\":16.8,\"viz_draw\":{\"n\":362,\"mean_ms\":0.47,\"p95_ms\":0.7,\"max_ms\":1.6}},\"cpu4x\":{\"n\":360,\"mean_ms\":16.67,\"p95_ms\":16.7,\"max_ms\":16.8,\"viz_draw\":{\"n\":361,\"mean_ms\":1.92,\"p95_ms\":3,\"max_ms\":8.5}}}"
+  },
+  {
+   "name": "reduced motion: transitions are 0s",
+   "ok": true,
+   "detail": "0s"
+  },
+  {
+   "name": "T toggles light theme",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "reduced motion: visualiser throttled to <= 10 fps",
+   "ok": true,
+   "detail": "{\"n\":30,\"mean_ms\":100,\"p95_ms\":100.1,\"max_ms\":100.1}"
+  },
+  {
+   "name": "works offline after first load (service worker)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "compose.html redirects into the app (stack)",
+   "ok": true,
+   "detail": "http://127.0.0.1:35695/index.html#stack"
+  },
+  {
+   "name": "plugins.html redirects into the app (ref)",
+   "ok": true,
+   "detail": "http://127.0.0.1:35695/index.html#ref"
+  },
+  {
+   "name": "practices.html redirects into the app (practice)",
+   "ok": true,
+   "detail": "http://127.0.0.1:35695/index.html#practice"
+  },
+  {
+   "name": "deep link #r/<id> selects that recipe",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "zero console errors / page errors",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

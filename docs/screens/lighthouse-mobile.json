@@ -1,0 +1,20 @@
+{
+ "date": "2026-11-13T04:48:49.353Z",
+ "lighthouse": "12.8.2",
+ "formFactor": "mobile",
+ "throttling": "simulate",
+ "url": "site/ served locally",
+ "scores": {
+  "performance": 99,
+  "accessibility": 100,
+  "best-practices": 96
+ },
+ "metrics_ms": {
+  "FCP": 1359,
+  "LCP": 1820,
+  "TBT": 32,
+  "SI": 1359
+ },
+ "CLS": 0,
+ "a11y_failing_audits": []
+}

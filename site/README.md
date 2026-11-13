@@ -17,6 +17,26 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
 - "Open in strudel.cc" builds `https://strudel.cc/#` + `encodeURIComponent(btoa(UTF-8 code))`, the format the strudel.cc REPL writes.
 - Fonts: Chakra Petch and JetBrains Mono, self-hosted woff2 (latin subset), SIL OFL 1.1; licences in `fonts/`.
 - `sw.js` precaches the shell (every script, stylesheet, lazy view, font, icon and the manifest), data and the pinned Strudel bundle, so the page loads offline after the first visit. Sample maps and their audio (raw.githubusercontent.com) are lazy: cached on first use in `sc-banks-1` (kept across deploys, last 1500 files); an uncached bank while offline shows an "Offline: this sample bank is not cached yet" toast (vocal pack banks: "vocal bank").
+- Audio status: the dot next to the master meter (`#audioSt`) shows the AudioContext state: grey = off until the first Play, green = ready,
+  glowing = playing, amber pulsing = blocked/suspended, red = the engine (unpkg) or the sample banks failed to load. Tap it to resume the
+  context or retry the failed load; the status line then prints context state, sample rate, master level, engine and sample self-checks.
+- Sample maps load whenever the program names a sound that is not a built-in synth (`s()`/`sound()` names, `.bank()`), in edited Rack
+  code and typed Stack programs too; a failed map is reported (synths keep playing) and retried on the next Play.
+
+## Troubleshooting: no sound or no waveforms
+1. Look at the audio dot. Amber: the browser blocked audio; tap the "Audio blocked by the browser. Tap here to enable audio" toast or the dot
+   (phones suspend audio in the background; coming back resumes it, or offers that button). Red: tap it to retry the engine or the sample banks
+   (needs unpkg.com and raw.githubusercontent.com).
+2. A "Playing, but no signal reaches the output" toast after ~3 s names the likely cause: master at -inf, the engine never reached the master
+   bus, banks missing, or a silent program (gain 0, muted layers).
+3. Stack view: a program typed into an empty Stack plays as typed (it used to say "Stack is empty"); a tempo or level change no longer
+   replaces a typed program while the Stack has no layers.
+4. Just after a deploy: the service worker revalidates every shell file with the server (`cache: 'no-cache'`, ETag) and precaches with
+   `cache: 'reload'`, so an old build cached for 10 min (GitHub Pages `max-age=600`) is never mixed with new files. If the page still looks
+   old, take the "New version, tap to reload" toast.
+5. Check: `node tests/site/audio.mjs` (S22 profile, real taps, fresh profile and a stale service worker from an older build): peak on the
+   master AnalyserNode > 0.01, context running, non-blank scope and `_scope`/`_pianoroll` widgets, Rack default, Rack and Stack with a
+   typed program; `--live URL` runs the fresh case against a deployed site.
 
 ## Install on Android
 Strudel Craft is an installable app (PWA, #73). In Chrome on Android open https://glyphcore.github.io/Strudel-craft/, then tap
@@ -61,6 +81,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/site/vox.mjs            # vocal banks and voxBank()
     STRUDEL_MODULES=... node tests/vocals/formant_helper.mjs  # word().formant(true) on a synthetic bank (#57)
     node tests/site/record.mjs         # Record panel + recipes at 360px: record, download, clean-profile Remake hash match, tamper refused (#72)
+    node tests/site/audio.mjs          # sound + visuals after Play at 360px DPR 3 touch: fresh profile and stale service worker (master peak, scope pixels, widgets, Stack typed program)
     node tests/site/pwa.mjs            # installable PWA at /Strudel-craft/: installability errors (CDP), icons, precache, offline reload, offline bank toast, update toast, standalone (#73)
 
 Outputs go to `docs/screens/` (`metrics.json`, `lighthouse-mobile.json`, PNG screenshots at 390px and 1440px).

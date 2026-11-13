@@ -5,8 +5,8 @@ const SHELL = ['./', 'index.html', 'style.css', 'ui.js', 'app.js', 'build.json',
   'manifest.webmanifest', 'pwa.js', 'pwa.css', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-192.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png',
   'fonts/ChakraPetch-500.woff2', 'fonts/ChakraPetch-700.woff2', 'fonts/JetBrainsMono.woff2'];
 /* The shim pack's content files are named by its manifest, not listed here (data-driven: they move with the packs in P4). */
-const shimFiles = () => fetch('craftpack.json').then((r) => r.json()).then((m) => [...new Set(m.ingredients.map((i) => i.path))]).catch(() => []);
-self.addEventListener('install', (e) => { e.waitUntil(Promise.all([caches.open(VERSION), shimFiles()]).then(([c, files]) => c.addAll([...SHELL, ...files]))); });
+const shimFiles = () => fetch('craftpack.json', { cache: 'reload' }).then((r) => r.json()).then((m) => [...new Set(m.ingredients.map((i) => i.path))]).catch(() => []);
+self.addEventListener('install', (e) => { e.waitUntil(Promise.all([caches.open(VERSION), shimFiles()]).then(([c, files]) => c.addAll([...SHELL, ...files].map((u) => new Request(u, { cache: 'reload' }))))); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== VERSION && !k.startsWith('sc-packs-') && !k.startsWith('sc-banks-')).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
 /* ---- packs (docs/PACK_SPEC.md 9.5): cache `sc-packs-1` survives deploys. The page registers pack roots here; a request under a root is served
    cache-first, never copied into the shell cache, and asset files (audio) are hash-checked against the verified asset index before they are cached. ---- */
@@ -49,7 +49,10 @@ function shellFetch(req, url) { /* Promise<Response>, or null = leave the reques
   if (bank) return bankFetch(req);
   if (pinned || cdnModule) return caches.open(VERSION).then(async (c) => { const hit = await c.match(req); if (hit) return hit; const res = await fetch(req); if (res.ok) c.put(req, res.clone()); return res; });
   if (url.origin !== self.location.origin) return null;
-  return fetch(req).then((res) => { if (res.ok) caches.open(VERSION).then((c) => c.put(req, res.clone())); return res; }).catch(() => caches.match(req, { ignoreSearch: true }).then((r) => r || (req.mode === 'navigate' ? caches.match('index.html') : Response.error())));
+  /* revalidate with the server (ETag, cheap 304) instead of trusting the 10-minute HTTP cache (GitHub Pages max-age=600): after a deploy, a mix of
+     old cached modules and new ones broke the page (old shell + new files). Offline the shell cache still answers. */
+  const fresh = req.mode === 'navigate' ? req : new Request(req, { cache: 'no-cache' }); /* navigations keep the browser's redirect handling */
+  return fetch(fresh).then((res) => { if (res.ok) caches.open(VERSION).then((c) => c.put(req, res.clone())); return res; }).catch(() => caches.match(req, { ignoreSearch: true }).then((r) => r || (req.mode === 'navigate' ? caches.match('index.html') : Response.error())));
 }
 self.addEventListener('fetch', (e) => {
   const req = e.request; if (req.method !== 'GET') return;

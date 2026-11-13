@@ -45,7 +45,7 @@ export function install(S, opts = {}) {
   const proto = Pattern.prototype;
   for (const m of METHODS) if (proto[m] && !proto[m].__hooks) throw code('E_NAME_COLLISION', `Pattern.prototype.${m} already exists in the loaded Strudel`);
   const useGlobal = opts.global !== false;
-  if (useGlobal) for (const g of ['hooks', 'tap']) if (g in globalThis && !globalThis[g]?.__hooks) throw code('E_NAME_COLLISION', `global ${g} already exists`);
+  if (useGlobal) for (const g of ['hooks', 'tap']) if (g in globalThis && !globalThis[g]?.__hooks && !(typeof Element !== 'undefined' && globalThis[g] instanceof Element)) throw code('E_NAME_COLLISION', `global ${g} already exists`);
 
   const isFr = (x) => x !== null && typeof x === 'object' && typeof x.compare === 'function' && 'd' in x; // Strudel's Fraction is a factory: Fraction(n)
   const F = (x) => (isFr(x) ? x : Fraction(x));

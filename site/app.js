@@ -40,7 +40,7 @@ const Bus = { ctx: null, gain: null, an: null, anL: null, anR: null, own: new We
 const nativeConnect = AudioNode.prototype.connect;
 function ensureBus(ctx) {
   if (Bus.ctx === ctx) return;
-  Bus.ctx = ctx;
+  Bus.ctx = ctx; try { ctx.addEventListener('statechange', () => syncAudioState()); } catch (e) { /* old engines */ }
   const g = new GainNode(ctx, { gain: dbToGain(Bus.db) });
   const an = new AnalyserNode(ctx, { fftSize: 2048, smoothingTimeConstant: 0.78, minDecibels: SPEC.min, maxDecibels: SPEC.max });
   const sp = new ChannelSplitterNode(ctx, { numberOfOutputs: 2 });
@@ -56,6 +56,54 @@ AudioNode.prototype.connect = function (dest, ...rest) {
   }
   return nativeConnect.call(this, dest, ...rest);
 };
+/* ---------- audio status (#56 "Fix: no audio or waveforms") ----------
+   One place that knows whether sound can come out: the context state (dot in the transport, tap to resume), a blocked notice with an
+   "Enable audio" button that resumes the context inside the tap, and a silence watchdog that says so when Play runs but no signal reaches the master. */
+const AudioSt = { notices: new Set(), lastPeak: 0, watch: 0 };
+function audioCtx() { try { return Bus.ctx || (window.getAudioContext && window.getAudioContext()) || null; } catch (e) { return null; } }
+async function resumeAudio() {
+  const c = audioCtx(); if (!c) return 'none';
+  if (c.state !== 'running') { try { await Promise.race([c.resume(), new Promise((r) => setTimeout(r, 1500))]); } catch (e) { /* stays suspended: blocked */ } }
+  syncAudioState(); return c.state;
+}
+function audioNotice(msg, kind = 'info', o = {}) {
+  const key = o.key || msg; if (AudioSt.notices.has(key)) return; AudioSt.notices.add(key);
+  const ui = window.strudelCraft && window.strudelCraft.ui; if (ui) ui.toast(msg, { kind, sticky: !!o.onClick || kind === 'error', onClick: o.onClick || null });
+  if (!o.onClick) setTimeout(() => AudioSt.notices.delete(key), 8000);
+}
+function blockedNotice() {
+  audioNotice('Audio blocked by the browser. Tap here to enable audio', 'error', { key: 'blocked', onClick: async () => { AudioSt.notices.delete('blocked'); const st = await resumeAudio(); if (st === 'running') { say(S.playing ? 'Audio enabled' : 'Audio enabled. Press Play.'); if (!S.playing) play(); } else blockedNotice(); } });
+}
+function syncAudioState() {
+  const b = document.getElementById('audioSt'); if (!b) return; const c = audioCtx();
+  const st = !c ? 'off' : c.state === 'running' ? (S.playing ? 'on' : 'ready') : c.state === 'closed' ? 'off' : 'blocked';
+  const ck = Engine.selfCheck; const fail = ck.engine === 'failed' ? 'engine' : ck.samples === 'failed' ? 'samples' : '';
+  b.dataset.state = fail ? 'fail' : st;
+  const label = fail === 'engine' ? 'Engine failed to load: tap to retry' : fail === 'samples' ? 'Sample banks failed to load: tap to retry' : st === 'blocked' ? 'Audio blocked: tap to enable' : st === 'on' ? 'Audio on' : st === 'ready' ? 'Audio ready' : 'Audio off until Play';
+  b.title = label; b.setAttribute('aria-label', label + (c ? ` (context ${c.state}, ${c.sampleRate} Hz)` : ''));
+}
+async function onAudioSt() {
+  const ck = Engine.selfCheck;
+  if (ck.engine === 'failed') { try { await Engine.load(); audioNotice('Engine loaded', 'ok'); } catch (e) { audioNotice(e.message, 'error'); } }
+  if (ck.samples === 'failed') await loadSampleMaps((m) => audioNotice(m, 'error'));
+  const st = await resumeAudio(); syncAudioState();
+  const c = audioCtx(); say(c ? `Audio ${st}: ${c.sampleRate} Hz, master ${S.master <= MASTER.min ? 'muted' : S.master.toFixed(1) + ' dB'}, engine ${ck.engine}, samples ${ck.samples}` : 'Audio starts on the first Play');
+}
+/* silence watchdog: playing with a running context but no level on the master for ~3 s says so (once per Play), with the likely causes */
+function startWatchdog() {
+  clearInterval(AudioSt.watch); let quiet = 0; const t0 = performance.now(); AudioSt.lastPeak = 0;
+  AudioSt.watch = setInterval(() => {
+    if (!S.playing) { clearInterval(AudioSt.watch); return; }
+    const c = audioCtx(); syncAudioState();
+    if (c && c.state !== 'running') { blockedNotice(); return; }
+    if (!Bus.an) { quiet++; } else { const t = Bus.tbuf || new Float32Array(Bus.an.fftSize); Bus.an.getFloatTimeDomainData(t); let m = 0; for (let i = 0; i < t.length; i++) { const v = Math.abs(t[i]); if (v > m) m = v; } AudioSt.lastPeak = Math.max(AudioSt.lastPeak, m); quiet = m > 1e-4 ? -1e9 : quiet + 1; }
+    if (quiet >= 6 && performance.now() - t0 > 3000) {
+      clearInterval(AudioSt.watch);
+      const why = S.master <= MASTER.min ? 'the master level is at -inf (turn it up)' : !Bus.an ? 'the engine never connected to the master bus' : Engine.selfCheck.samples === 'failed' ? 'the sample banks did not load' : 'the program may be silent (gain 0, muted layers) or its sounds are still loading';
+      audioNotice('Playing, but no signal reaches the output: ' + why + '.', 'info', { key: 'silent' });
+    }
+  }, 500);
+}
 function dbToGain(db) { return db <= MASTER.min ? 0 : Math.pow(10, db / 20); }
 function setMaster(db) { Bus.db = db; if (Bus.gain && !Bus.muted) Bus.gain.gain.setTargetAtTime(dbToGain(db), Bus.ctx.currentTime, 0.015); }
 /* Stop: ramp master to 0 in ~15 ms so voice/reverb tails are cut (Strudel's stop only halts scheduling). */
@@ -80,16 +128,37 @@ function protectCode(code) {
 }
 /* user-space preludes (plain JS, Strudel unmodified) loaded into the eval context once Strudel's globals exist */
 const PRELUDES = ['prelude/word.js'];
+/* Sample maps are needed whenever the program names a sound that is not a built-in synth (edited Rack code and typed Stack code too, not only
+   recipes flagged needs_samples): missing maps meant a silent Play. Loading them is cheap (JSON only; audio files are fetched lazily). */
+const SYNTHS = new Set(['sine', 'sin', 'sawtooth', 'saw', 'square', 'sqr', 'triangle', 'tri', 'supersaw', 'pulse', 'white', 'pink', 'brown', 'noise', 'crackle', 'user', 'bytebeat', '~', '-', '_']);
+function needsSamplesFor(code) {
+  if (/\.bank\s*\(/.test(code || '')) return true;
+  const re = /(?:^|[^\w$])(?:s|sound)\s*\(\s*(["'`])([\s\S]*?)\1/g; let m;
+  while ((m = re.exec(code || ''))) for (const w of m[2].split(/[^\w#.]+/)) { const n = w.split(/[:.]/)[0]; if (n && !/^\d/.test(n) && !SYNTHS.has(n) && !/^z_|^gm_|^vox/.test(n)) return true; }
+  return false;
+}
+/* each map loads on its own: a failed map is reported once (synths and the other maps still play) and retried on the next Play */
+async function loadSampleMaps(say) {
+  const failed = [];
+  for (const m of SAMPLE_MAPS) { if (Engine.mapsLoaded.has(m)) continue; try { await window.samples(m); Engine.mapsLoaded.add(m); } catch (e) { failed.push(m.replace(/^.*\//, '') + ': ' + (e && e.message ? e.message : e)); } }
+  Engine.samplesLoaded = Engine.mapsLoaded.size === SAMPLE_MAPS.length;
+  if (failed.length) { Engine.selfCheck.samples = 'failed'; const msg = 'Sample banks failed to load (' + failed.join('; ') + '). Synths still play; sampled sounds stay silent until the banks load.'; console.warn(msg); if (say) say(msg, true); }
+  else Engine.selfCheck.samples = 'ok';
+  return !failed.length;
+}
 function loadPreludes() { return Promise.all(PRELUDES.map((src) => new Promise((ok) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => { console.warn('prelude failed: ' + src); ok(); }; document.head.append(s); }))); }
 const Engine = {
-  ready: null, repl: null, samplesLoaded: false, state: {},
+  ready: null, repl: null, samplesLoaded: false, mapsLoaded: new Set(), state: {}, selfCheck: { engine: 'idle', samples: 'idle' },
   load() {
     if (!this.ready) this.ready = new Promise((res, rej) => {
+      this.selfCheck.engine = 'loading'; const slow = setTimeout(() => { if (this.selfCheck.engine === 'loading') audioNotice('The Strudel engine is still loading from unpkg.com (slow network?). Play starts once it arrives.', 'info'); }, 15000);
+      const done = (ok, e) => { clearTimeout(slow); this.selfCheck.engine = ok ? 'ok' : 'failed'; if (!ok) { this.ready = null; console.warn('engine self-check: ' + (e && e.message)); } };
+      const res0 = res, rej0 = rej; res = (v) => { done(true); res0(v); }; rej = (e) => { done(false, e); rej0(e); };
       const s = document.createElement('script'); s.src = STRUDEL_WEB; s.crossOrigin = 'anonymous';
       s.onload = () => {
         try { window.initStrudel({ onUpdateState: (st) => { this.state = st; try { window.dispatchEvent(new CustomEvent('strudel:state', { detail: st })); } catch (e) { /* ignore */ } } }).then((r) => { this.repl = r; loadPreludes().then(() => res(r), () => res(r)); try { window.dispatchEvent(new CustomEvent('strudel:ready')); } catch (e2) { /* ignore */ } }, rej); } catch (e) { rej(e); }
       };
-      s.onerror = () => { this.ready = null; rej(new Error('Could not load the Strudel engine from unpkg (offline?)')); };
+      s.onerror = () => { this.ready = null; this.selfCheck.engine = 'failed'; rej(new Error('Could not load the Strudel engine from unpkg (offline or blocked?). Check the connection and press Play again.')); };
       document.head.append(s);
     });
     return this.ready;
@@ -99,14 +168,14 @@ const Engine = {
     say('Loading engine'); await this.load();
     try { if (!window.strudelCraft.hooks && window.strudelCraft.installHooks) window.strudelCraft.installHooks(); await applyRanges(); } catch (e) { /* hooks optional */ }
     try { await loadPerform(); window.strudelCraft.perform && window.strudelCraft.perform.glue(); } catch (e) { /* perform tools optional: ctl()/hooks.map() need them */ }
-    if (needsSamples && !this.samplesLoaded) { say('Loading sample banks'); for (const m of SAMPLE_MAPS) await window.samples(m); this.samplesLoaded = true; }
-    try { const c = window.getAudioContext && window.getAudioContext(); if (c && c.state !== 'running') await c.resume(); } catch (e) { /* resumed on gesture below */ }
+    if ((needsSamples || needsSamplesFor(code)) && !this.samplesLoaded) { say('Loading sample banks'); await loadSampleMaps((m, err) => audioNotice(m, err ? 'error' : 'info')); }
+    await resumeAudio();
     this.state.evalError = undefined;
     unmuteBus();
     await window.evaluate(protectCode(code));
     if (this.state.evalError) throw this.state.evalError;
     const ctx = window.getAudioContext && window.getAudioContext();
-    if (ctx && ctx.state !== 'running') throw new Error('Audio is blocked by the browser. Tap Play again to allow sound.');
+    if (ctx && ctx.state !== 'running') { blockedNotice(); throw new Error('Audio is blocked by the browser. Tap "Enable audio" or Play again to allow sound.'); }
   },
   /* idle compile (CONTROL_BINDING section 6): evaluate without autostart, so controls and visuals exist before Play; never starts audio */
   async idle(code, alive = () => true, view = 'rack') {
@@ -327,14 +396,14 @@ function stackProgram() {
 const EDIT_VIEWS = ['rack', 'stack'];
 function playView() { if (S.playing && !S.follow) return S.srcView || 'rack'; return EDIT_VIEWS.includes(S.view) ? S.view : (S.srcView || 'rack'); }
 function currentSource(view = playView()) {
-  if (view === 'stack') { const ls = stackLayers(); return { kind: 'stack', id: 'stack', title: ls.length ? `Stack · ${ls.length} layer${ls.length > 1 ? 's' : ''}` : 'Stack (empty)', code: stackText(), samples: ls.some((l) => l.r.needs_samples), empty: !ls.length }; }
+  if (view === 'stack') { const ls = stackLayers(); return { kind: 'stack', id: 'stack', title: ls.length ? `Stack · ${ls.length} layer${ls.length > 1 ? 's' : ''}` : S.stackEdit != null && S.stackEdit.trim() ? 'Stack program' : 'Stack (empty)', code: stackText(), samples: ls.some((l) => l.r.needs_samples), empty: !ls.length && !(S.stackEdit || '').replace(/\/\/.*$/gm, '').trim() }; }
   const r = cur(); if (!r) return null;
   return { kind: 'solo', id: r.id, title: r.title, code: withTempo(recipeCode(r)), samples: r.needs_samples || /\.bank\(|\bs\("(?:bd|hh|sd|cp|oh)/.test(recipeCode(r)) };
 }
 Engine.evalCount = 0;
 async function play(src = currentSource()) {
   if (!src) return;
-  if (src.empty) { say('Stack is empty. Add layers with + or A.', true); return; }
+  if (src.empty) { say('Stack is empty. Add layers with + or A, or type a program.', true); return; }
   const btn = $('#playBtn'); btn.classList.add('busy'); S.busy = true;
   const pv = playView(); const prep = bindPrep(src.kind === 'stack' ? 'stack' : pv, src.code);
   try {
@@ -342,13 +411,13 @@ async function play(src = currentSource()) {
     if (prep.ok) bindApply(src.kind === 'stack' ? 'stack' : pv, prep);
     Engine.evalCount++;
     S.playing = true; S.playingId = src.id; S.playingSource = src.kind; S.srcView = src.kind === 'stack' ? 'stack' : pv;
-    say('Playing ' + src.title); Viz.start(); setLiveChip(S.live ? 'live' : 'off'); window.dispatchEvent(new CustomEvent('live:ok', { detail: { view: S.view } }));
+    say('Playing ' + src.title); Viz.start(); startWatchdog(); syncAudioState(); setLiveChip(S.live ? 'live' : 'off'); window.dispatchEvent(new CustomEvent('live:ok', { detail: { view: S.view } }));
   } catch (e) {
     say('Error: ' + (e && e.message ? e.message : e), true);
     if (!Engine.started) S.playing = false;
   } finally { btn.classList.remove('busy'); S.busy = false; syncTransport(); }
 }
-function stop() { Engine.stop(); S.playing = false; S.playingId = null; say('Stopped'); Viz.stopSoon(); syncTransport(); }
+function stop() { Engine.stop(); S.playing = false; S.playingId = null; clearInterval(AudioSt.watch); say('Stopped'); Viz.stopSoon(); syncTransport(); syncAudioState(); }
 function toggle() { if (S.playing) stop(); else play(); }
 function syncTransport() {
   if ($('#liveChip')) syncLiveChip();
@@ -558,7 +627,9 @@ function renderStack() {
   updateStackCode();
 }
 function stackText() { return S.stackEdit != null ? S.stackEdit : stackProgram(); }
-function updateStackCode() { const ta = $('#stackCode'); if (document.activeElement !== ta) S.stackEdit = null; const code = stackText(); if (document.activeElement !== ta) ta.value = code; $('#stackOpen').href = strudelUrl(code); syncTransport(); liveCode('stack'); }
+/* the typed Stack program survives while the user types (CodeMirror focus counts, not only the bare textarea) and whenever there are no layers to regenerate it from:
+   a tempo or level change used to replace a typed program with the empty-stack comment, so Play then had nothing to play */
+function updateStackCode() { const ta = $('#stackCode'); const typing = document.activeElement === ta || !!(ta.cmView && ta.cmView.hasFocus); const keep = typing || (S.stackEdit != null && !stackLayers().length); if (!keep) S.stackEdit = null; const code = stackText(); if (!keep) ta.value = code; $('#stackOpen').href = strudelUrl(code); syncTransport(); liveCode('stack'); }
 
 /* ---------- docs views ---------- */
 async function loadDoc(name, root, toc, q) {
@@ -710,7 +781,9 @@ async function boot() {
   document.addEventListener('keyup', (e) => { if (e.key === ' ' && !isField(e.target) && !$('#help').open) e.preventDefault(); });
   window.addEventListener('hashchange', route);
   const onScheme = () => { Viz.readColors(); Viz.drawAll(performance.now()); }; reducedMotion.addEventListener('change', onScheme);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden && Bus.ctx && Bus.ctx.state === 'suspended' && S.playing) say('Audio paused by the browser. Press Play to resume.', true); });
+  /* back from the background (phones suspend audio): resume the context; if the browser refuses without a gesture, offer the Enable audio button */
+  document.addEventListener('visibilitychange', async () => { if (document.hidden || !Bus.ctx || Bus.ctx.state === 'running' || !S.playing) return; if ((await resumeAudio()) !== 'running') blockedNotice(); });
+  $('#audioSt').addEventListener('click', onAudioSt); syncAudioState();
 
   // data
   try {
@@ -745,7 +818,7 @@ window.strudelCraft.transport = { play: () => play(), stop: () => stop(), toggle
     const src = S.playing ? currentSource(S.srcView || 'rack') : currentSource(); if (!src || src.empty) throw new Error('Nothing to render: pick a recipe or add Stack layers');
     if (!S.playing && !Engine.started) await Engine.idle(src.code, () => true, playView());
     else await Engine.load();
-    if (src.samples && !Engine.samplesLoaded) { for (const m of SAMPLE_MAPS) await window.samples(m); Engine.samplesLoaded = true; }
+    if ((src.samples || needsSamplesFor(src.code)) && !Engine.samplesLoaded) await loadSampleMaps();
     const sch = Engine.scheduler; return { pattern: sch && sch.pattern, cps: (sch && sch.cps) || S.tempo / 240, code: src.code, title: src.title, kind: src.kind };
   },
   /* Remake (capture.js): compile a recipe's program without touching the editors; stops the transport first */
@@ -756,5 +829,5 @@ window.strudelCraft.transport = { play: () => play(), stop: () => stop(), toggle
   },
   async loadSampleMap(map) { await Engine.load(); await window.samples(map); } };
 window.strudelCraft.engineState = () => ({ ...Engine.state, scheduler: Engine.scheduler, playing: S.playing, srcView: S.srcView || 'rack' });
-window.__sc = { S, Engine, Bus, play, stop, select, setView, History, toggleStack };
+window.__sc = { S, Engine, Bus, play, stop, select, setView, History, toggleStack, audio: { resume: resumeAudio, get state() { const c = audioCtx(); return c ? c.state : 'none'; }, get peak() { return AudioSt.lastPeak; }, needsSamplesFor } };
 document.addEventListener('DOMContentLoaded', boot);

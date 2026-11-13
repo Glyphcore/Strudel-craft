@@ -165,6 +165,9 @@ export function compile(src) {
 export const graphJSON = (src) => JSON.stringify(compile(src).graph, null, 1);
 
 // ---------------- runtime ----------------
+// window.<id> named access: the site's <canvas id="lanes"> made `lanes` look taken, so lanes never installed (E_NAME_COLLISION on every load).
+// An element reached only through named access is not a binding anyone owns; the global assignment below shadows it (the page reads it by id).
+const isNamedElement = (v) => typeof Element !== 'undefined' && v instanceof Element;
 let ACTIVE = null; // the installed instance; process-wide wrappers read it, so a second install (tests, hot reload) takes over cleanly
 export function install(S, hooks, opts = {}) {
   const { Pattern } = S;
@@ -172,7 +175,7 @@ export function install(S, hooks, opts = {}) {
   if (hooks.__lanesInstance) { ACTIVE = hooks.__lanesInstance; return hooks.__lanesInstance; }
   const proto = Pattern.prototype; const useGlobal = opts.global !== false;
   if (proto.tags && !proto.tags.__lanes) throw code('E_NAME_COLLISION', 'Pattern.prototype.tags already exists in the loaded Strudel');
-  if (useGlobal) for (const n of ['tagged', 'lanes']) if (n in globalThis && !globalThis[n]?.__lanes) throw code('E_NAME_COLLISION', `global ${n} already exists`);
+  if (useGlobal) for (const n of ['tagged', 'lanes']) if (n in globalThis && !globalThis[n]?.__lanes && !isNamedElement(globalThis[n])) throw code('E_NAME_COLLISION', `global ${n} already exists`);
   const mark = (f) => { f.__lanes = true; return f; };
   const plain = (x) => (x && typeof x === 'object' && typeof x.__pure === 'string' && typeof x.query === 'function' ? x.__pure : x);
   const cyc = (c) => { const [n, d] = String(c).split('/'); return +n / (d ? +d : 1); };

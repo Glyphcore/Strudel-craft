@@ -45,9 +45,23 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | per-layer-stem-rerender-cache | offline-bounce-resample-loop | issued | #39 |
 | section-automation-lanes | mixdown-region-fx, arrangement-scene-timeline | issued | #40 |
 | info-arrange-length-check | arrangement-scene-timeline | issued | #41 |
+| hooks-core (named slots `.use`, time-gated bindings, journal, config JSON; docs/HOOKS_SYNTAX.md) | arrangement-scene-timeline, behavioral-smoke-tests | issued | #47 |
+| taps-vars-decorators (`.tap`/`tap()`/`.wire`, modules, `hooks.let`, decorator hook expressions) | hooks-core, mod-matrix | issued | #48 |
+| model-schema-roundtrip (one JSON model; code <-> model <-> graph; docs/BLUEPRINT.md) | hooks-core, taps-vars-decorators | issued | #49 |
+| component-library (versioned components, instances, history adapter) | model-schema-roundtrip | issued | #50 |
+| hooks-intellisense (providers `hooks`, `model`) | hooks-core, intellisense-provider-registry | issued | #51 |
+| graph-editor-ui (blueprint node editor; ui-designer) | model-schema-roundtrip, component-library | issued | #52 |
+| pad-engine (beatpad banks, launch modes, scenes, looper, input-provider registry) | taps-vars-decorators, component-library | issued | #53 |
+| controls-engine (control type registry, `ctl`, slider shim, mapping, automation lanes) | taps-vars-decorators, pad-engine | issued | #54 |
+| perform-ui (pad banks + control boards, inline controls; ui-designer) | pad-engine, controls-engine | issued | #55 |
+| intellisense-provider-registry (`window.strudelCraft.intellisense.register`, site) | behavioral-smoke-tests | scouted (in progress elsewhere, not on main) | - |
+| history-store (`window.strudelCraft.history`) | behavioral-smoke-tests | scouted (not on main; interface needed is in docs/BLUEPRINT.md section 6) | - |
+| webmidi-gamepad-input-providers | pad-engine | unexplored | - |
 
 ## Waiting nodes
 - live-mic-input: Strudel has no live input; needs browser/Node audio capture and an AGPL licence-decision issue before touching Strudel code (do not copy PR #1414). Size L. Waits for #14 and that decision.
 - resynthesis: own design (STFT partial tracking + additive render -> WAV -> sample map), size L; waits for #16 to settle the shared STFT/mask helpers. No Harmor copying.
 - vocal-chop-slicer (user stems -> slice map): slicer #4 accepted; next after #39. Size M.
+- word-mapped-vocals (needs vocal-chop-slicer #4): issued #42 (P1 word bank), #43 (word()/note), #44 (intellisense provider), #45 (formant pyworld/rubberband ext), #46 (Shabda TTS). State: issued.
 - stem-export-presets: low value now that #36/#40 cover mixdown; scouted only.
+- hooks toolkit (#47-#55): build order #47 -> #48 -> #49, then #50 / #51 / #53 on disjoint files, then #54, then UI #52 and #55 via ui-designer. Design: docs/HOOKS_SYNTAX.md, docs/BLUEPRINT.md. The CLI parts live in the engine/strudel-cli that tests/smoke.sh calls, outside this repo.

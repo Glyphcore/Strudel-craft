@@ -12,7 +12,7 @@ const sc = (window.strudelCraft = window.strudelCraft || {});
 const ui = () => sc.ui;
 const KEY = 'sc.graph', POSKEY = 'sc.graph.pos';
 const COLW = 330, W = 220, HEAD = 52, ROW = 52, STEP = 30, GAP = 28, PILL = 52, CODEH = 64;
-const FAR = 0.85, NEAR = 1.5, ZMIN = 0.25, ZMAX = 2;
+const FAR = 0.85, NEAR = 1.5, GLYPH = 0.4, ZMIN = 0.25, ZMAX = 2; // ZMIN is a floor only for small graphs: zmin() always lets the whole graph fit
 const REG = new Set(['marker', 'hook', 'module', 'decorator', 'var', 'control']); // definitions sit in the first column
 const NONPARAM = new Set(['tap', 'use', 'wrap', 'wire', 'ns']);
 const FACETS = ['onset', 'gate', 'env'];
@@ -252,7 +252,7 @@ function mount(host) {
         ...['graph', 'code', 'outline'].map((p) => h('button', { type: 'button', role: 'tab', class: 'gx-tab', 'data-pane': p, id: 'gxTab-' + p, 'aria-selected': String(p === 'graph'), 'aria-controls': 'gxPane-' + p }, p[0].toUpperCase() + p.slice(1)))),
       h('div', { class: 'gx-tools' },
         tool('gxAdd', 'Add step from palette', '+'), tool('gxUndo', 'Undo graph or code edit', '↶'), tool('gxRedo', 'Redo', '↷'),
-        tool('gxFit', 'Fit graph to view', 'Fit'), tool('gxMulti', 'Multi-select', 'Select', { 'aria-pressed': 'false' }),
+        tool('gxFit', 'Fit graph to view', 'Fit'), tool('gxReset', 'Reset zoom to 100%', '1:1'), tool('gxMulti', 'Multi-select', 'Select', { 'aria-pressed': 'false' }),
         tool('gxPlanBtn', 'Show plan strip', 'Plan', { 'aria-pressed': 'false', 'aria-controls': 'gxPlan' }), tool('gxImport', 'Load the Rack editor code into the graph', 'Rack')),
     ),
     planEl = h('div', { class: 'gx-plan', id: 'gxPlan', hidden: true, role: 'img', 'aria-label': 'Plan: open windows per slot and variable against bars' }),
@@ -523,17 +523,26 @@ function applyView() {
   world.style.transform = `translate(${V.x}px,${V.y}px) scale(${V.s})`;
   const lv = V.s < FAR ? 'far' : V.s >= NEAR ? 'near' : 'mid';
   if (lv !== G.level) { G.level = lv; root.dataset.zoom = lv; if (G.view) drawWires(); }
+  const gl = V.s < GLYPH; if (gl !== root.classList.contains('gx-glyph')) root.classList.toggle('gx-glyph', gl); // level of detail: glyphs, never hidden
+  if (gl) root.style.setProperty('--zinv', (1 / V.s).toFixed(3));
   // during a gesture only the world transform changes (compositor work); the zoom readout and the crisp re-raster follow when it settles
   if (!applyView.on) { world.classList.add('moving'); applyView.on = true; }
   clearTimeout(applyView.t); applyView.t = setTimeout(() => { applyView.on = false; world.classList.remove('moving'); zoomEl.textContent = Math.round(V.s * 100) + '%'; }, 160);
 }
-function zoomAt(s, cx, cy) { s = Math.min(ZMAX, Math.max(ZMIN, s)); const k = s / V.s; V.x = cx - (cx - V.x) * k; V.y = cy - (cy - V.y) * k; V.s = s; applyView(); }
-function fit() {
-  const ns = G.view.nodes; if (!ns.length) return; const r = vp.getBoundingClientRect(); if (!r.width) return;
-  const x0 = Math.min(...ns.map((n) => n.x)), y0 = Math.min(...ns.map((n) => n.y)), x1 = Math.max(...ns.map((n) => n.x + W)), y1 = Math.max(...ns.map((n) => n.y + n.h));
-  const s = Math.min(ZMAX, Math.max(ZMIN, Math.min((r.width - 32) / (x1 - x0), (r.height - 32) / (y1 - y0), 1.2)));
-  V.s = s; V.x = (r.width - (x1 - x0) * s) / 2 - x0 * s; V.y = (r.height - (y1 - y0) * s) / 2 - y0 * s; applyView();
+function zoomAt(s, cx, cy) { s = Math.min(ZMAX, Math.max(zmin(), s)); const k = s / V.s; V.x = cx - (cx - V.x) * k; V.y = cy - (cy - V.y) * k; V.s = s; applyView(); }
+function bounds() {
+  const ns = G.view ? G.view.nodes : []; if (!ns.length) return null;
+  return { x0: Math.min(...ns.map((n) => n.x)), y0: Math.min(...ns.map((n) => n.y)), x1: Math.max(...ns.map((n) => n.x + W)), y1: Math.max(...ns.map((n) => n.y + n.h)) };
 }
+function fitScale() { const b = bounds(), r = vp && vp.getBoundingClientRect(); if (!b || !r || !r.width) return 1; return Math.min((r.width - 32) / (b.x1 - b.x0), (r.height - 32) / (b.y1 - b.y0)); }
+// min zoom follows the content: at least 15% below the fit scale, so zooming all the way out always shows every node
+function zmin() { return Math.max(0.01, Math.min(ZMIN, fitScale() * 0.85)); }
+function fit() {
+  const b = bounds(); if (!b) return; const r = vp.getBoundingClientRect(); if (!r.width) return;
+  const s = Math.min(ZMAX, Math.max(zmin(), Math.min(fitScale(), 1.2)));
+  V.s = s; V.x = (r.width - (b.x1 - b.x0) * s) / 2 - b.x0 * s; V.y = (r.height - (b.y1 - b.y0) * s) / 2 - b.y0 * s; applyView();
+}
+function resetView() { const r = vp.getBoundingClientRect(), b = bounds(); V.s = 1; V.x = 24 - (b ? b.x0 : 0); V.y = 24 - (b ? b.y0 : 0); if (!r.width) return; applyView(); }
 function moveNode(id, x, y) {
   const n = G.view.nmap.get(id); n.x = x; n.y = y;
   if (!G.fixture) { const k = scopeKey(); (G.pos[k] ||= {})[id] = { x: Math.round(x), y: Math.round(y) }; store.set(POSKEY, G.pos); }
@@ -642,6 +651,7 @@ async function onClick(e) {
     case 'gxUndo': return undo();
     case 'gxRedo': return redo();
     case 'gxFit': return fit();
+    case 'gxReset': return resetView();
     case 'gxMulti': return setMulti(!G.multi);
     case 'gxPlanBtn': planEl.hidden = !planEl.hidden; b.setAttribute('aria-pressed', String(!planEl.hidden)); return renderPlan();
     case 'gxImport': {
@@ -700,6 +710,7 @@ function pointer() {
   const toWorld = (p) => ({ x: (p.x - V.x) / V.s, y: (p.y - V.y) / V.s });
   vp.addEventListener('wheel', (e) => { e.preventDefault(); const p = local(e); if (e.ctrlKey || e.metaKey) zoomAt(V.s * Math.exp(-e.deltaY * 0.01), p.x, p.y); else { V.x -= e.deltaX; V.y -= e.deltaY; applyView(); } }, { passive: false });
   vp.addEventListener('pointerdown', (e) => {
+    cancelAnimationFrame(glide.raf);
     if (e.target.closest('input, select, textarea')) return;
     pts.set(e.pointerId, local(e));
     if (pts.size === 2) { if (g) clearTimeout(g.lp); const [a, b] = [...pts.values()]; g = { kind: 'pinch', d0: Math.hypot(a.x - b.x, a.y - b.y) || 1, s0: V.s, m: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, x0: V.x, y0: V.y }; return; }
@@ -713,11 +724,11 @@ function pointer() {
   });
   vp.addEventListener('pointermove', (e) => {
     if (!pts.has(e.pointerId) || !g) return; pts.set(e.pointerId, local(e));
-    if (g.kind === 'pinch') { if (pts.size < 2) return; const [a, b] = [...pts.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y); const s = Math.min(ZMAX, Math.max(ZMIN, g.s0 * d / g.d0)); const m = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; const k = s / g.s0; V.s = s; V.x = m.x - (g.m.x - g.x0) * k; V.y = m.y - (g.m.y - g.y0) * k; applyView(); return; }
+    if (g.kind === 'pinch') { if (pts.size < 2) return; const [a, b] = [...pts.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y); const s = Math.min(ZMAX, Math.max(zmin(), g.s0 * d / g.d0)); const m = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; const k = s / g.s0; V.s = s; V.x = m.x - (g.m.x - g.x0) * k; V.y = m.y - (g.m.y - g.y0) * k; applyView(); return; }
     const p = local(e), dx = p.x - g.p0.x, dy = p.y - g.p0.y;
     if (!g.moved && Math.hypot(dx, dy) < 8) return;
     if (!g.moved) { g.moved = true; clearTimeout(g.lp); }
-    if (g.kind === 'pan' || g.kind === 'badge') { V.x = g.x0 + dx; V.y = g.y0 + dy; applyView(); }
+    if (g.kind === 'pan' || g.kind === 'badge') { const t = performance.now(); if (g.lt) { const k = Math.max(1, t - g.lt); g.vx = 0.7 * (g.vx || 0) + 0.3 * (g.x0 + dx - V.x) / k; g.vy = 0.7 * (g.vy || 0) + 0.3 * (g.y0 + dy - V.y) / k; } g.lt = t; V.x = g.x0 + dx; V.y = g.y0 + dy; applyView(); }
     else if (g.kind === 'node') moveNode(g.id, g.n0.x + dx / V.s, g.n0.y + dy / V.s);
     else if (g.kind === 'port') {
       if (!g.from) { g.from = portOf(g.el); G.armed = g.from; renderArmed(); }
@@ -734,6 +745,7 @@ function pointer() {
     clearTimeout(gg.lp);
     if (gg.kind === 'pinch') return;
     if (gg.kind === 'port' && gg.moved) { const tmp = svg.querySelector('.gw-drag'); if (tmp) tmp.remove(); G.armed = null; renderArmed(); if (gg.snap) connect(gg.from, gg.snap.port); else say('Wire dropped on empty canvas: cancelled'); return; }
+    if (gg.moved && (gg.kind === 'pan' || gg.kind === 'badge')) return glide(gg);
     if (gg.moved || e.type === 'pointercancel') return;
     if (gg.kind === 'port') return tapPort(portOf(gg.el));
     if (gg.kind === 'badge') return selectWire(gg.el.dataset.wire);
@@ -749,6 +761,13 @@ function pointer() {
     if (gg.kind === 'pan') { if (G.armed) { G.armed = null; renderArmed(); say('Cancelled'); } else if (G.sel.size || G.wire) clearSel(); }
   };
   vp.addEventListener('pointerup', end); vp.addEventListener('pointercancel', end);
+}
+// momentum pan: px/ms velocity decays with a fixed time constant; off with reduced motion or a stale release
+function glide(gg) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || performance.now() - (gg.lt || 0) > 80) return;
+  let vx = gg.vx || 0, vy = gg.vy || 0, t0 = performance.now(); if (Math.hypot(vx, vy) < 0.15) return;
+  const step = (t) => { const dt = Math.min(48, t - t0); t0 = t; const f = Math.exp(-dt / 325); V.x += vx * dt; V.y += vy * dt; vx *= f; vy *= f; applyView(); if (Math.hypot(vx, vy) > 0.02) glide.raf = requestAnimationFrame(step); };
+  glide.raf = requestAnimationFrame(step);
 }
 function nearestPort(pt, from) {
   let best = null, bd = 24; // snap radius in screen px, measured to the port's whole button

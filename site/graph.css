@@ -78,6 +78,11 @@
 .gx[data-zoom="far"] .gn{height:52px!important;border-radius:26px}
 .gx[data-zoom="far"] .gn-head{height:50px;border-radius:26px;border:0;padding:0 18px}
 .gx[data-zoom="far"] .gp,.gx[data-zoom="far"] .gn-steps,.gx[data-zoom="far"] .gn-src{display:none}
+/* glyph zoom (< 40%): nodes collapse to solid kind-coloured blocks with one short label sized in screen px; never culled */
+.gx.gx-glyph .gn-k{display:none}
+.gx.gx-glyph .gn-head{padding:0 8px;justify-content:center;background:color-mix(in oklab,var(--panel) 55%,currentColor)}
+.gx.gx-glyph .gn-head b{font-size:min(calc(11px * var(--zinv,1)),46px);line-height:1;overflow:hidden;text-overflow:clip;white-space:nowrap;max-width:100%}
+.gx.gx-glyph .gn{outline:max(2px,calc(1.5px * var(--zinv,1))) solid color-mix(in oklab,var(--line-2) 60%,transparent);outline-offset:0}
 
 /* wires: pattern = thick solid, signal = thin solid + "~", param = dotted, gate = dashed + window, hook = double line */
 .gw,.gw-hook-in,.gw-pulse,.gw-drag{fill:none}

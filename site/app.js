@@ -55,7 +55,18 @@ AudioNode.prototype.connect = function (dest, ...rest) {
   return nativeConnect.call(this, dest, ...rest);
 };
 function dbToGain(db) { return db <= MASTER.min ? 0 : Math.pow(10, db / 20); }
-function setMaster(db) { Bus.db = db; if (Bus.gain) Bus.gain.gain.setTargetAtTime(dbToGain(db), Bus.ctx.currentTime, 0.015); }
+function setMaster(db) { Bus.db = db; if (Bus.gain && !Bus.muted) Bus.gain.gain.setTargetAtTime(dbToGain(db), Bus.ctx.currentTime, 0.015); }
+/* Stop: ramp master to 0 in ~15 ms so voice/reverb tails are cut (Strudel's stop only halts scheduling). */
+function muteBus() {
+  Bus.muted = true; if (!Bus.gain) return;
+  const p = Bus.gain.gain, t = Bus.ctx.currentTime;
+  p.cancelScheduledValues(t); p.setValueAtTime(p.value, t); p.linearRampToValueAtTime(0, t + 0.015);
+}
+function unmuteBus() {
+  Bus.muted = false; if (!Bus.gain) return;
+  const p = Bus.gain.gain, t = Bus.ctx.currentTime;
+  p.cancelScheduledValues(t); p.setValueAtTime(p.value, t); p.linearRampToValueAtTime(dbToGain(Bus.db), t + 0.01);
+}
 
 /* ---------- engine ---------- */
 const Engine = {
@@ -77,12 +88,13 @@ const Engine = {
     if (needsSamples && !this.samplesLoaded) { say('Loading sample banks'); for (const m of SAMPLE_MAPS) await window.samples(m); this.samplesLoaded = true; }
     try { const c = window.getAudioContext && window.getAudioContext(); if (c && c.state !== 'running') await c.resume(); } catch (e) { /* resumed on gesture below */ }
     this.state.evalError = undefined;
+    unmuteBus();
     await window.evaluate(code);
     if (this.state.evalError) throw this.state.evalError;
     const ctx = window.getAudioContext && window.getAudioContext();
     if (ctx && ctx.state !== 'running') throw new Error('Audio is blocked by the browser. Tap Play again to allow sound.');
   },
-  stop() { try { if (this.repl) this.repl.stop(); else if (window.hush) window.hush(); } catch (e) { /* not started */ } },
+  stop() { muteBus(); try { if (this.repl) this.repl.stop(); else if (window.hush) window.hush(); } catch (e) { /* not started */ } },
   get started() { return !!(this.scheduler && this.scheduler.started); },
 };
 

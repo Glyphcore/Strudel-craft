@@ -48,3 +48,30 @@
   }
   sc.ui = { ask: (o) => modal({ ...o, input: true }), askYesNo: (o) => modal({ ...o, input: false }), toast };
 })();
+/* Phone chrome: overflow tools sheet and header that hides on scroll down, returns on scroll up. */
+(() => {
+  const ready = () => {
+    const more = document.getElementById('moreBtn'), tools = document.getElementById('tools'), top = document.querySelector('.top');
+    if (!more || !tools || !top) return;
+    const mq = matchMedia('(max-width:760px),(max-height:500px) and (orientation:landscape)');
+    const follow = document.querySelector('.tp-src'), home = follow && follow.parentNode;
+    const place = () => { if (!follow) return; if (mq.matches) tools.append(follow); else if (follow.parentNode !== home) home.prepend(follow); };
+    place(); mq.addEventListener('change', place);
+    const set = (o) => { tools.classList.toggle('open', o); more.setAttribute('aria-expanded', String(o)); };
+    more.addEventListener('click', (e) => { e.stopPropagation(); set(!tools.classList.contains('open')); });
+    document.addEventListener('click', (e) => { if (!tools.contains(e.target)) set(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && tools.classList.contains('open')) { set(false); more.focus(); } });
+    const nav = document.querySelector('.views');
+    const showTab = () => requestAnimationFrame(() => { const a = nav && nav.querySelector('[aria-current="page"]'); if (a && mq.matches) nav.scrollTo({ left: a.offsetLeft - (nav.clientWidth - a.offsetWidth) / 2, behavior: 'auto' }); });
+    showTab(); addEventListener('hashchange', showTab); setTimeout(showTab, 400);
+    let last = scrollY, acc = 0;
+    addEventListener('scroll', () => {
+      const y = scrollY, d = y - last; last = y;
+      if (!mq.matches || y < 60) { top.classList.remove('hide'); acc = 0; return; }
+      acc = (Math.sign(d) === Math.sign(acc)) ? acc + d : d;
+      if (acc > 24 && !tools.classList.contains('open')) top.classList.add('hide'); else if (acc < -12) top.classList.remove('hide');
+    }, { passive: true });
+    top.addEventListener('focusin', () => top.classList.remove('hide'));
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready); else ready();
+})();

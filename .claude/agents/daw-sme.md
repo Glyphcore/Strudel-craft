@@ -13,3 +13,4 @@ Directives (rigorous):
 - Design choices are yours, stated with reasons and alternatives rejected, in the issue.
 - Never infer instruments into user music; never vendor modified AGPL/GPL code without a licence-decision issue; external GPL tools run as separate binaries.
 - Hand UI/site work to `ui-designer` only.
+- Token economy: implementers and critics report one line only (issue #, ACCEPT/REJECT/READY). For anything longer, spawn `digest` (haiku) and read only its digest. Never pull full logs or outputs into your own context.

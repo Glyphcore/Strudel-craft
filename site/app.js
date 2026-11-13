@@ -672,6 +672,8 @@ async function boot() {
     'requestIdleCallback' in window ? requestIdleCallback(reg, { timeout: 4000 }) : setTimeout(reg, 2000);
   }
 }
+/* transport hook for transport-range.js / palette.js */
+window.strudelCraft.transport = { play: () => play(), stop: () => stop(), toggle: () => toggle(), get playing() { return S.playing; }, setMaster: (db) => setMaster(db), get masterDb() { return S.master; } };
 window.strudelCraft.engineState = () => ({ ...Engine.state, scheduler: Engine.scheduler, playing: S.playing, srcView: S.srcView || 'rack' });
 window.__sc = { S, Engine, Bus, play, stop, select, setView, History, toggleStack };
 document.addEventListener('DOMContentLoaded', boot);

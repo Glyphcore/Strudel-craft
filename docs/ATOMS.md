@@ -1,6 +1,7 @@
 # Atoms: typed, parameterised definitions in place of magic strings
 
-Status: **issued** (design note only, nothing built; phases and issues in section 14). Extends `docs/HOOKS_SYNTAX.md`, `docs/BLUEPRINT.md` and the AST-bound control
+Status: **A1 built** (core: `site/engine/atoms.js`, `site/data/atoms/types.json`, the `atoms` schema, `tests/atoms/a1.mjs`; #61).
+A2-A4 and the `strudel atoms` CLI subcommands of section 12 are still design only; phases and issues in section 14. Extends `docs/HOOKS_SYNTAX.md`, `docs/BLUEPRINT.md` and the AST-bound control
 work (control binding: structural ids, literal sites, typed param shapes). Owner: `daw-sme`. UI parts are direction for `ui-designer`.
 
 ## 1. The problem and the idea
@@ -362,7 +363,7 @@ $: chord(atoms.turn).voicing()
 
 | phase | issue | deliverable | depends on | owner |
 |---|---|---|---|---|
-| A1 | #61 | atoms core: type registry, schema, `compile` with source map, runtime fallback, params / partial application / composition, ids, hashes, CLI `atoms list / show / refs / compile / check` | model schema (#49), control-binding parser | daw-implementer |
+| A1 | #61 | atoms core **built** (type registry, schema, `compile` with source map, runtime fallback, params / partial application / composition, ids, hashes); the `strudel atoms` CLI subcommands are **coming** (the CLI lives in another repo) | model schema (#49), control-binding parser | daw-implementer |
 | A2 | #62 | migration: `extract`, `parse`, `inline`, catalog atoms, strudel.cc export inlines | A1 | daw-implementer |
 | A3 | #63 | consumers: intellisense provider, atom args in literal editors, `$atom` in hooks / model / pads / maps, pack ingredient record | A1 (pack record waits for the pack spec) | daw-implementer |
 | A4 | #64 | UI: lazy reference-counted atom cards in the graph, atom browser / palette, reference popover | A1, A3 | ui-designer |

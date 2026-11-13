@@ -25,6 +25,7 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
     node tests/site/smoke.mjs          # Playwright Chromium: keyboard, views, every recipe plays, frame time, screenshots
     node tests/site/smoke.mjs --quick  # first 4 recipes only
     node tests/site/lighthouse.mjs     # needs `npm i -g lighthouse@12`; mobile perf / a11y scores
+    node tests/atoms/a1.mjs            # atoms core (#61); STRUDEL_MODULES=<dir with @strudel/> for the rendered checks
 
 Outputs go to `docs/screens/` (`metrics.json`, `lighthouse-mobile.json`, PNG screenshots at 390px and 1440px).
 
@@ -168,6 +169,27 @@ Standalone ES module: `parse(text)`, `generate(model)`, `applyOp(model, op)`, `g
 - Code carries `header, markers, scopes, slots, defs, vars, bindings, instances, tracks` and `layout` (as a final `// @model-layout {...}` comment). `meta`, `settings`, `wires`, `journal`, pads, controls, components live only in the JSON model file.
 - Quotes: double-quoted args of ordinary methods are mini-notation (`{"$mini"}`); reference methods (`tap use wrap ns wire`) and object/array members are plain strings. The generator never changes the quote of text it keeps; new text uses double quotes for mini and references, single quotes for other plain strings.
 - Test: `node tests/hooks/p3.mjs`. The `strudel model`, `--model` CLI commands and the "Same sound" `strudel events` check need the `strudel` CLI (other repo) and print SKIP.
+
+## Atoms (`engine/atoms.js`, `data/atoms/types.json`, `data/atoms/positions.json`)
+Typed, parameterised definitions for magic strings (design: `docs/ATOMS.md`; core phase A1, #61). Standalone ES module, no DOM, the
+same file on the site and in the CLI; it imports acorn from `vendor/` and never imports Strudel — the host hands in Strudel's own
+`mini()` and the hooks runtime's `hooks.parsers` (gate / point / tap-ref / hook-expr) through `atoms.configure({ mini, parsers, positions })`.
+- `atom("kick4", { type: "mini", params: { n: { shape: "number", min: 1, max: 16, default: 4 } }, body: "bd*${n}" })` declares;
+  `atoms.kick4`, `atoms.kick4({ n: 8 })` reference. `compile(code, env) -> { code, map, refs, warnings }` replaces every static
+  reference with its literal (pattern types double-quoted, name types single-quoted) and removes the declarations; it returns the
+  code unchanged when the program has no atoms. Pipeline order: atoms compile -> control-site rewrite -> Strudel's transpiler.
+- API: `registerType`, `types`, `loadTypes`, `configure`, `buildEnv`, `compile`, `buildAndCompile`, `check`, `render`, `apply`
+  (partial application -> derived atom), `derive`, `runtimeAtoms` (frozen fallback for dynamic `atoms[x]`, which warns
+  `W_ATOM_DYNAMIC`), `reconcile` (ids `a` + 6 base-36 FNV-1a chars, kept across renames; `rev` / `parent` by content hash),
+  `atomHash`, `checkModel`, `locate` / `errorSpan` (an error inside a compiled literal maps back to the reference span).
+- 15 types in `data/atoms/types.json` (mini, sound, bank, note, chord, scale, voicing, progression, gate, point, tapref, slot, hook,
+  name, text) with `compiles / quote / shape / validator / editor / ops`; `data/atoms/positions.json` says which type fits which
+  argument position (`s(` takes `sound | mini`, `hooks.bind` takes `slot, hook, gate`, ...) -> `E_ATOM_TYPE`.
+- Schema: `atoms` map plus `$defs.atom / atomParam / atomRef` in `data/schema/model.v1.json`; `{ "$atom": id }` is accepted in step
+  args, `bindings` slot/hook/gate/else, `wires[].tap`, `markers`, `maps[].dest` and pad `target.ref`.
+- Test: `node tests/atoms/a1.mjs` (rendered checks need `STRUDEL_MODULES=<dir with @strudel/>`). Not built yet: the editor,
+  intellisense and hooks consumers (#63), `extract` / `inline` (#62), graph cards (#64) and the `strudel atoms` CLI subcommands
+  (`list | show | refs | compile | check`, CLI in another repo) — those print SKIP / are marked "coming" in the Syntax view.
 
 ## Hooks wiring
 `app.js` runs every program through `strudelCraft.hooksLib.protect(code)` before `evaluate` (play and live swap), so gate strings such

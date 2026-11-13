@@ -628,6 +628,22 @@
    "detail": "load(name)",
    "info": "Load a workspace layout: Code, Perform, Visual, Full studio or a saved one.",
    "category": "site api"
+  },
+  {
+   "label": "atom",
+   "method": false,
+   "detail": "atom(name, { type, params?, body | from, doc? })",
+   "info": "Declare an atom: one typed, parameterised definition for a magic string (docs/ATOMS.md). Types: mini, sound, bank, note, chord, scale, voicing, progression, gate, point, tapref, slot, hook, name, text. Header statement; it is removed when the program is compiled. Compile pass built (#61); editor and intellisense wiring coming (#63).",
+   "category": "atoms",
+   "coming": true
+  },
+  {
+   "label": "atoms",
+   "method": false,
+   "detail": "atoms.<name> / atoms.<name>({ param: value })",
+   "info": "Reference an atom anywhere its string would go. Pattern types compile to a double-quoted string, name types to a single-quoted one. Ops: .seq() .stack() .alt() .rep() .slow() .euclid() (mini), .union() .shift() (gate), .after() .before() .to() (point), .facet() .in() (tapref/name), .pipe() .wrap() (hook). Compile pass built (#61); editor and intellisense wiring coming (#63).",
+   "category": "atoms",
+   "coming": true
   }
  ],
  "params": {
@@ -1341,6 +1357,12 @@
     "name": "on",
     "shape": "bool"
    }
+  ],
+  "atom": [
+   {
+    "name": "name",
+    "shape": "name"
+   }
   ]
  },
  "shapes": [
@@ -1351,7 +1373,19 @@
   "enum",
   "bool",
   "pattern",
-  "control"
+  "control",
+  "gate",
+  "point",
+  "tapref",
+  "slot",
+  "hook",
+  "name",
+  "scale",
+  "chord",
+  "voicing",
+  "progression",
+  "bank",
+  "atom:<type>"
  ],
  "editors": {
   "_doc": "Smart parameter spec (docs/CONTROL_BINDING.md section 7): literal kind/shape -> inline editor. Providers extend via strudelCraft.literals.registerEditor.",

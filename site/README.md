@@ -233,7 +233,9 @@ states), `closers` (open brackets/quotes). Register more:
 - Banks live in `data/vox/<bank>/` (`ogg/`, `pitched/strudel.json` with the sung base note, `words.json`, a `README.md` with the
   licence): `demo` (espeak-ng speech, auto-loaded on the first `word()`), `call-me-baby` (the owner's vocal bank), `ljspeech`
   (~500 words from LJSpeech, public domain, 1-3 takes, clips fetched lazily per word) and `vocalset` (sustained sung vowels from
-  VocalSet, CC BY 4.0, keys `vs_<vowel>_<technique>`). `voxBank('ljspeech')` switches bank (keys it lacks fall back to demo),
+  VocalSet, CC BY 4.0, keys `vs_<vowel>_<technique>`) and `sung` (200 English words sung at d#3 a3 d#4 a4 d#5, an offline
+  SoulX-Singer render, Apache-2.0, with a VocalSet timbre prompt; `word()` works and `note()` plays the nearest sung pitch).
+  `voxBank('ljspeech')` switches bank (keys it lacks fall back to demo),
   `voxBank(url)` loads a `strudel.json` (or a folder URL ending in `/`), `voxBank()` opens a folder picker (files stay in the
   browser), `voxBank.list()` -> `[{name, url, words, active}]`. Failures toast, they do not throw.
 - `.note()` on a pitched map retunes by speed, so formants move with the pitch. Formant-preserving takes are pre-rendered by the

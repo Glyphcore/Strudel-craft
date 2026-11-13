@@ -787,7 +787,7 @@
    "label": "voxBank",
    "method": false,
    "detail": "voxBank(name | url)",
-   "info": "Load a vocal word bank for word()/syl(): voxBank('call-me-baby'), voxBank('https://host/strudel.json'), voxBank() picks a local folder, voxBank.list() lists banks. The demo bank loads on the first word(). Prelude #43.",
+   "info": "Load a vocal word bank for word()/syl(): voxBank('call-me-baby'), voxBank('ljspeech'), voxBank('vocalset'), voxBank('sung') (200 sung words, d#3 to d#5), voxBank('https://host/strudel.json'), voxBank() picks a local folder, voxBank.list() lists banks. The demo bank loads on the first word(). Prelude #43.",
    "category": "vocals"
   }
  ],

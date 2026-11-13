@@ -1,0 +1,602 @@
+{
+"vox_love": [
+"ogg/love_ds4.ogg"
+],
+"vox_heart": [
+"ogg/heart_ds4.ogg"
+],
+"vox_baby": [
+"ogg/baby_ds4.ogg"
+],
+"vox_night": [
+"ogg/night_ds4.ogg"
+],
+"vox_light": [
+"ogg/light_ds4.ogg"
+],
+"vox_fire": [
+"ogg/fire_ds4.ogg"
+],
+"vox_time": [
+"ogg/time_ds4.ogg"
+],
+"vox_day": [
+"ogg/day_ds4.ogg"
+],
+"vox_way": [
+"ogg/way_ds4.ogg"
+],
+"vox_world": [
+"ogg/world_ds4.ogg"
+],
+"vox_life": [
+"ogg/life_ds4.ogg"
+],
+"vox_dream": [
+"ogg/dream_ds4.ogg"
+],
+"vox_soul": [
+"ogg/soul_ds4.ogg"
+],
+"vox_mind": [
+"ogg/mind_ds4.ogg"
+],
+"vox_eyes": [
+"ogg/eyes_ds4.ogg"
+],
+"vox_hand": [
+"ogg/hand_ds4.ogg"
+],
+"vox_face": [
+"ogg/face_ds4.ogg"
+],
+"vox_name": [
+"ogg/name_ds4.ogg"
+],
+"vox_home": [
+"ogg/home_ds4.ogg"
+],
+"vox_road": [
+"ogg/road_ds4.ogg"
+],
+"vox_sky": [
+"ogg/sky_ds4.ogg"
+],
+"vox_sun": [
+"ogg/sun_ds4.ogg"
+],
+"vox_moon": [
+"ogg/moon_ds4.ogg"
+],
+"vox_star": [
+"ogg/star_ds4.ogg"
+],
+"vox_rain": [
+"ogg/rain_ds4.ogg"
+],
+"vox_wind": [
+"ogg/wind_ds4.ogg"
+],
+"vox_sea": [
+"ogg/sea_ds4.ogg"
+],
+"vox_river": [
+"ogg/river_ds4.ogg"
+],
+"vox_water": [
+"ogg/water_ds4.ogg"
+],
+"vox_stone": [
+"ogg/stone_ds4.ogg"
+],
+"vox_gold": [
+"ogg/gold_ds4.ogg"
+],
+"vox_blood": [
+"ogg/blood_ds4.ogg"
+],
+"vox_bone": [
+"ogg/bone_ds4.ogg"
+],
+"vox_skin": [
+"ogg/skin_ds4.ogg"
+],
+"vox_breath": [
+"ogg/breath_ds4.ogg"
+],
+"vox_voice": [
+"ogg/voice_ds4.ogg"
+],
+"vox_song": [
+"ogg/song_ds4.ogg"
+],
+"vox_dance": [
+"ogg/dance_ds4.ogg"
+],
+"vox_beat": [
+"ogg/beat_ds4.ogg"
+],
+"vox_sound": [
+"ogg/sound_ds4.ogg"
+],
+"vox_bass": [
+"ogg/bass_ds4.ogg"
+],
+"vox_drum": [
+"ogg/drum_ds4.ogg"
+],
+"vox_line": [
+"ogg/line_ds4.ogg"
+],
+"vox_word": [
+"ogg/word_ds4.ogg"
+],
+"vox_truth": [
+"ogg/truth_ds4.ogg"
+],
+"vox_lie": [
+"ogg/lie_ds4.ogg"
+],
+"vox_hope": [
+"ogg/hope_ds4.ogg"
+],
+"vox_fear": [
+"ogg/fear_ds4.ogg"
+],
+"vox_pain": [
+"ogg/pain_ds4.ogg"
+],
+"vox_joy": [
+"ogg/joy_ds4.ogg"
+],
+"vox_tears": [
+"ogg/tears_ds4.ogg"
+],
+"vox_smile": [
+"ogg/smile_ds4.ogg"
+],
+"vox_kiss": [
+"ogg/kiss_ds4.ogg"
+],
+"vox_touch": [
+"ogg/touch_ds4.ogg"
+],
+"vox_hold": [
+"ogg/hold_ds4.ogg"
+],
+"vox_run": [
+"ogg/run_ds4.ogg"
+],
+"vox_fall": [
+"ogg/fall_ds4.ogg"
+],
+"vox_rise": [
+"ogg/rise_ds4.ogg"
+],
+"vox_fly": [
+"ogg/fly_ds4.ogg"
+],
+"vox_burn": [
+"ogg/burn_ds4.ogg"
+],
+"vox_break": [
+"ogg/break_ds4.ogg"
+],
+"vox_shine": [
+"ogg/shine_ds4.ogg"
+],
+"vox_glow": [
+"ogg/glow_ds4.ogg"
+],
+"vox_fade": [
+"ogg/fade_ds4.ogg"
+],
+"vox_stay": [
+"ogg/stay_ds4.ogg"
+],
+"vox_go": [
+"ogg/go_ds4.ogg"
+],
+"vox_come": [
+"ogg/come_ds4.ogg"
+],
+"vox_leave": [
+"ogg/leave_ds4.ogg"
+],
+"vox_take": [
+"ogg/take_ds4.ogg"
+],
+"vox_give": [
+"ogg/give_ds4.ogg"
+],
+"vox_make": [
+"ogg/make_ds4.ogg"
+],
+"vox_feel": [
+"ogg/feel_ds4.ogg"
+],
+"vox_know": [
+"ogg/know_ds4.ogg"
+],
+"vox_want": [
+"ogg/want_ds4.ogg"
+],
+"vox_need": [
+"ogg/need_ds4.ogg"
+],
+"vox_see": [
+"ogg/see_ds4.ogg"
+],
+"vox_hear": [
+"ogg/hear_ds4.ogg"
+],
+"vox_say": [
+"ogg/say_ds4.ogg"
+],
+"vox_tell": [
+"ogg/tell_ds4.ogg"
+],
+"vox_call": [
+"ogg/call_ds4.ogg"
+],
+"vox_cry": [
+"ogg/cry_ds4.ogg"
+],
+"vox_sing": [
+"ogg/sing_ds4.ogg"
+],
+"vox_play": [
+"ogg/play_ds4.ogg"
+],
+"vox_move": [
+"ogg/move_ds4.ogg"
+],
+"vox_turn": [
+"ogg/turn_ds4.ogg"
+],
+"vox_walk": [
+"ogg/walk_ds4.ogg"
+],
+"vox_wait": [
+"ogg/wait_ds4.ogg"
+],
+"vox_watch": [
+"ogg/watch_ds4.ogg"
+],
+"vox_dark": [
+"ogg/dark_ds4.ogg"
+],
+"vox_bright": [
+"ogg/bright_ds4.ogg"
+],
+"vox_cold": [
+"ogg/cold_ds4.ogg"
+],
+"vox_warm": [
+"ogg/warm_ds4.ogg"
+],
+"vox_high": [
+"ogg/high_ds4.ogg"
+],
+"vox_low": [
+"ogg/low_ds4.ogg"
+],
+"vox_deep": [
+"ogg/deep_ds4.ogg"
+],
+"vox_slow": [
+"ogg/slow_ds4.ogg"
+],
+"vox_wild": [
+"ogg/wild_ds4.ogg"
+],
+"vox_free": [
+"ogg/free_ds4.ogg"
+],
+"vox_young": [
+"ogg/young_ds4.ogg"
+],
+"vox_old": [
+"ogg/old_ds4.ogg"
+],
+"vox_new": [
+"ogg/new_ds4.ogg"
+],
+"vox_last": [
+"ogg/last_ds4.ogg"
+],
+"vox_first": [
+"ogg/first_ds4.ogg"
+],
+"vox_one": [
+"ogg/one_ds4.ogg"
+],
+"vox_two": [
+"ogg/two_ds4.ogg"
+],
+"vox_three": [
+"ogg/three_ds4.ogg"
+],
+"vox_four": [
+"ogg/four_ds4.ogg"
+],
+"vox_five": [
+"ogg/five_ds4.ogg"
+],
+"vox_six": [
+"ogg/six_ds4.ogg"
+],
+"vox_seven": [
+"ogg/seven_ds4.ogg"
+],
+"vox_eight": [
+"ogg/eight_ds4.ogg"
+],
+"vox_nine": [
+"ogg/nine_ds4.ogg"
+],
+"vox_ten": [
+"ogg/ten_ds4.ogg"
+],
+"vox_all": [
+"ogg/all_ds4.ogg"
+],
+"vox_none": [
+"ogg/none_ds4.ogg"
+],
+"vox_more": [
+"ogg/more_ds4.ogg"
+],
+"vox_less": [
+"ogg/less_ds4.ogg"
+],
+"vox_never": [
+"ogg/never_ds4.ogg"
+],
+"vox_always": [
+"ogg/always_ds4.ogg"
+],
+"vox_forever": [
+"ogg/forever_ds4.ogg"
+],
+"vox_again": [
+"ogg/again_ds4.ogg"
+],
+"vox_tonight": [
+"ogg/tonight_ds4.ogg"
+],
+"vox_today": [
+"ogg/today_ds4.ogg"
+],
+"vox_tomorrow": [
+"ogg/tomorrow_ds4.ogg"
+],
+"vox_now": [
+"ogg/now_ds4.ogg"
+],
+"vox_then": [
+"ogg/then_ds4.ogg"
+],
+"vox_here": [
+"ogg/here_ds4.ogg"
+],
+"vox_there": [
+"ogg/there_ds4.ogg"
+],
+"vox_where": [
+"ogg/where_ds4.ogg"
+],
+"vox_when": [
+"ogg/when_ds4.ogg"
+],
+"vox_why": [
+"ogg/why_ds4.ogg"
+],
+"vox_how": [
+"ogg/how_ds4.ogg"
+],
+"vox_who": [
+"ogg/who_ds4.ogg"
+],
+"vox_what": [
+"ogg/what_ds4.ogg"
+],
+"vox_yes": [
+"ogg/yes_ds4.ogg"
+],
+"vox_no": [
+"ogg/no_ds4.ogg"
+],
+"vox_oh": [
+"ogg/oh_ds4.ogg"
+],
+"vox_ah": [
+"ogg/ah_ds4.ogg"
+],
+"vox_la": [
+"ogg/la_ds4.ogg"
+],
+"vox_hey": [
+"ogg/hey_ds4.ogg"
+],
+"vox_yeah": [
+"ogg/yeah_ds4.ogg"
+],
+"vox_ooh": [
+"ogg/ooh_ds4.ogg"
+],
+"vox_na": [
+"ogg/na_ds4.ogg"
+],
+"vox_da": [
+"ogg/da_ds4.ogg"
+],
+"vox_me": [
+"ogg/me_ds4.ogg"
+],
+"vox_you": [
+"ogg/you_ds4.ogg"
+],
+"vox_we": [
+"ogg/we_ds4.ogg"
+],
+"vox_they": [
+"ogg/they_ds4.ogg"
+],
+"vox_she": [
+"ogg/she_ds4.ogg"
+],
+"vox_he": [
+"ogg/he_ds4.ogg"
+],
+"vox_it": [
+"ogg/it_ds4.ogg"
+],
+"vox_us": [
+"ogg/us_ds4.ogg"
+],
+"vox_them": [
+"ogg/them_ds4.ogg"
+],
+"vox_my": [
+"ogg/my_ds4.ogg"
+],
+"vox_your": [
+"ogg/your_ds4.ogg"
+],
+"vox_our": [
+"ogg/our_ds4.ogg"
+],
+"vox_i": [
+"ogg/i_ds4.ogg"
+],
+"vox_am": [
+"ogg/am_ds4.ogg"
+],
+"vox_is": [
+"ogg/is_ds4.ogg"
+],
+"vox_are": [
+"ogg/are_ds4.ogg"
+],
+"vox_was": [
+"ogg/was_ds4.ogg"
+],
+"vox_be": [
+"ogg/be_ds4.ogg"
+],
+"vox_been": [
+"ogg/been_ds4.ogg"
+],
+"vox_do": [
+"ogg/do_ds4.ogg"
+],
+"vox_done": [
+"ogg/done_ds4.ogg"
+],
+"vox_can": [
+"ogg/can_ds4.ogg"
+],
+"vox_will": [
+"ogg/will_ds4.ogg"
+],
+"vox_would": [
+"ogg/would_ds4.ogg"
+],
+"vox_should": [
+"ogg/should_ds4.ogg"
+],
+"vox_could": [
+"ogg/could_ds4.ogg"
+],
+"vox_and": [
+"ogg/and_ds4.ogg"
+],
+"vox_but": [
+"ogg/but_ds4.ogg"
+],
+"vox_or": [
+"ogg/or_ds4.ogg"
+],
+"vox_if": [
+"ogg/if_ds4.ogg"
+],
+"vox_so": [
+"ogg/so_ds4.ogg"
+],
+"vox_like": [
+"ogg/like_ds4.ogg"
+],
+"vox_just": [
+"ogg/just_ds4.ogg"
+],
+"vox_only": [
+"ogg/only_ds4.ogg"
+],
+"vox_still": [
+"ogg/still_ds4.ogg"
+],
+"vox_down": [
+"ogg/down_ds4.ogg"
+],
+"vox_up": [
+"ogg/up_ds4.ogg"
+],
+"vox_in": [
+"ogg/in_ds4.ogg"
+],
+"vox_out": [
+"ogg/out_ds4.ogg"
+],
+"vox_on": [
+"ogg/on_ds4.ogg"
+],
+"vox_off": [
+"ogg/off_ds4.ogg"
+],
+"vox_over": [
+"ogg/over_ds4.ogg"
+],
+"vox_under": [
+"ogg/under_ds4.ogg"
+],
+"vox_into": [
+"ogg/into_ds4.ogg"
+],
+"vox_away": [
+"ogg/away_ds4.ogg"
+],
+"vox_back": [
+"ogg/back_ds4.ogg"
+],
+"vox_with": [
+"ogg/with_ds4.ogg"
+],
+"vox_without": [
+"ogg/without_ds4.ogg"
+],
+"vox_for": [
+"ogg/for_ds4.ogg"
+],
+"vox_from": [
+"ogg/from_ds4.ogg"
+],
+"vox_to": [
+"ogg/to_ds4.ogg"
+],
+"vox_of": [
+"ogg/of_ds4.ogg"
+],
+"vox_the": [
+"ogg/the_ds4.ogg"
+],
+"vox_a": [
+"ogg/a_ds4.ogg"
+],
+"vox_this": [
+"ogg/this_ds4.ogg"
+],
+"vox_that": [
+"ogg/that_ds4.ogg"
+]
+}

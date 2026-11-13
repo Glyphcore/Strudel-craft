@@ -26,8 +26,11 @@ console.log('ljspeech', JSON.stringify(lj));
 const vs = await peakOf(`await voxBank('vocalset')
 $: s("<vs_a vs_o>").note("c3").slow(2)`, 5000);
 console.log('vocalset', JSON.stringify(vs));
+const sg = await peakOf(`await voxBank('sung')
+$: word("<love fire night>").note("<a3 d#4 a4>")`, 5000);
+console.log('sung', JSON.stringify(sg));
 console.log('banks', JSON.stringify(await page.evaluate(() => window.voxBank.list().map((b) => [b.name, b.words]))));
 console.log('errors', JSON.stringify(errs), 'failed', JSON.stringify(fails.filter((u) => !/unpkg|cdn|fonts/.test(u))));
 await b.close(); srv.close();
 const bad = errs.filter((e) => /vox/i.test(e) || !/getTrigger/.test(e));
-process.exit(a.peakLin > 0.001 && lj.peakLin > 0.001 && !lj.evalError && vs.peakLin > 0.001 && !vs.evalError && !a.evalError && !bad.length ? 0 : 1);
+process.exit(a.peakLin > 0.001 && lj.peakLin > 0.001 && !lj.evalError && vs.peakLin > 0.001 && !vs.evalError && sg.peakLin > 0.001 && !sg.evalError && sg.active.includes('sung') && !a.evalError && !bad.length ? 0 : 1);

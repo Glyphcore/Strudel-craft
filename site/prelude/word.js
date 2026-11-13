@@ -5,7 +5,8 @@
 // Repitch: use the bank's pitched map (OUT_DIR/pitched/strudel.json, base note = sung MIDI) so .note('c4') retunes by speed shift (formants move).
 // vowel() works unchanged (fixed formant filter).
 // Banks: the demo bank (espeak-ng speech) auto-loads on first word(). voxBank('call-me-baby') switches to the owner's vocal bank (keys it lacks fall back to demo);
-//   voxBank('ljspeech') = ~500 common English/lyric words from LJSpeech (public domain, keys vox_<word>, 1-3 takes; word() works); voxBank('vocalset') = sustained sung vowels (CC BY 4.0, keys vs_<a|e|i|o|u>[_straight|_forte|_pp|_messa|_trill], use s('vs_a').note('c4'), no word()).
+//   voxBank('ljspeech') = ~500 common English/lyric words from LJSpeech (public domain, keys vox_<word>, 1-3 takes; word() works); voxBank('vocalset') = sustained sung vowels (CC BY 4.0, keys vs_<a|e|i|o|u>[_straight|_forte|_pp|_messa|_trill], use s('vs_a').note('c4'), no word());
+//   voxBank('sung') = 200 English words sung at d#3 a3 d#4 a4 d#5 (SoulX-Singer render, Apache-2.0; timbre prompt VocalSet, CC BY 4.0; keys vox_<word>, word() works, note() picks the nearest sung pitch).
 // word(...).note(x).formant(true): picks the pre-rendered formant variant vox_<word>_f<semi> nearest to the requested shift (bank built with --formant-steps), then
 //   fine-tunes the residual (<= 50 cents inside the built range) with speed; no variants in the bank -> plain note() retune + one warning (site toast; stderr in the CLI).
 //   Shift = note - the word's sung base note (from the pitched map); if the base is unknown a numeric note is taken as the semitone shift itself.
@@ -14,7 +15,7 @@
   const here = (typeof document !== 'undefined' && document.currentScript && document.currentScript.src) || (typeof location !== 'undefined' ? location.href : '');
   const root = (() => { try { return new URL('../data/vox/', here).href; } catch (e) { return 'data/vox/'; } })();
   const banks = { demo: { url: root + 'demo/pitched/strudel.json' }, 'call-me-baby': { url: root + 'call-me-baby/pitched/strudel.json' },
-    ljspeech: { url: root + 'ljspeech/pitched/strudel.json' }, vocalset: { url: root + 'vocalset/pitched/strudel.json' } };
+    ljspeech: { url: root + 'ljspeech/pitched/strudel.json' }, vocalset: { url: root + 'vocalset/pitched/strudel.json' }, sung: { url: root + 'sung/pitched/strudel.json' } };
   let active = null, boot = null, fvars = {}, fbase = {}, fwarned = false;
   const toast = (m, kind) => { const u = globalThis.window && window.strudelCraft && window.strudelCraft.ui; if (u && u.toast) u.toast(m, { kind: kind || 'info', ms: 6000 }); else console.warn('[vox] ' + m); };
   const register = async (name, jsonUrl, map) => {

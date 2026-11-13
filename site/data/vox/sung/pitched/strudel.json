@@ -1,0 +1,3396 @@
+{
+"vox_love": {
+"d#3": [
+"../ogg/love_ds3.ogg"
+],
+"a3": [
+"../ogg/love_a3.ogg"
+],
+"d#4": [
+"../ogg/love_ds4.ogg"
+],
+"a4": [
+"../ogg/love_a4.ogg"
+],
+"d#5": [
+"../ogg/love_ds5.ogg"
+]
+},
+"vox_heart": {
+"d#3": [
+"../ogg/heart_ds3.ogg"
+],
+"a3": [
+"../ogg/heart_a3.ogg"
+],
+"d#4": [
+"../ogg/heart_ds4.ogg"
+],
+"a4": [
+"../ogg/heart_a4.ogg"
+],
+"d#5": [
+"../ogg/heart_ds5.ogg"
+]
+},
+"vox_baby": {
+"d#3": [
+"../ogg/baby_ds3.ogg"
+],
+"a3": [
+"../ogg/baby_a3.ogg"
+],
+"d#4": [
+"../ogg/baby_ds4.ogg"
+],
+"a4": [
+"../ogg/baby_a4.ogg"
+],
+"d#5": [
+"../ogg/baby_ds5.ogg"
+]
+},
+"vox_night": {
+"d#3": [
+"../ogg/night_ds3.ogg"
+],
+"a3": [
+"../ogg/night_a3.ogg"
+],
+"d#4": [
+"../ogg/night_ds4.ogg"
+],
+"a4": [
+"../ogg/night_a4.ogg"
+],
+"d#5": [
+"../ogg/night_ds5.ogg"
+]
+},
+"vox_light": {
+"d#3": [
+"../ogg/light_ds3.ogg"
+],
+"a3": [
+"../ogg/light_a3.ogg"
+],
+"d#4": [
+"../ogg/light_ds4.ogg"
+],
+"a4": [
+"../ogg/light_a4.ogg"
+],
+"d#5": [
+"../ogg/light_ds5.ogg"
+]
+},
+"vox_fire": {
+"d#3": [
+"../ogg/fire_ds3.ogg"
+],
+"a3": [
+"../ogg/fire_a3.ogg"
+],
+"d#4": [
+"../ogg/fire_ds4.ogg"
+],
+"a4": [
+"../ogg/fire_a4.ogg"
+],
+"d#5": [
+"../ogg/fire_ds5.ogg"
+]
+},
+"vox_time": {
+"d#3": [
+"../ogg/time_ds3.ogg"
+],
+"a3": [
+"../ogg/time_a3.ogg"
+],
+"d#4": [
+"../ogg/time_ds4.ogg"
+],
+"a4": [
+"../ogg/time_a4.ogg"
+],
+"d#5": [
+"../ogg/time_ds5.ogg"
+]
+},
+"vox_day": {
+"d#3": [
+"../ogg/day_ds3.ogg"
+],
+"a3": [
+"../ogg/day_a3.ogg"
+],
+"d#4": [
+"../ogg/day_ds4.ogg"
+],
+"a4": [
+"../ogg/day_a4.ogg"
+],
+"d#5": [
+"../ogg/day_ds5.ogg"
+]
+},
+"vox_way": {
+"d#3": [
+"../ogg/way_ds3.ogg"
+],
+"a3": [
+"../ogg/way_a3.ogg"
+],
+"d#4": [
+"../ogg/way_ds4.ogg"
+],
+"a4": [
+"../ogg/way_a4.ogg"
+],
+"d#5": [
+"../ogg/way_ds5.ogg"
+]
+},
+"vox_world": {
+"d#3": [
+"../ogg/world_ds3.ogg"
+],
+"a3": [
+"../ogg/world_a3.ogg"
+],
+"d#4": [
+"../ogg/world_ds4.ogg"
+],
+"a4": [
+"../ogg/world_a4.ogg"
+],
+"d#5": [
+"../ogg/world_ds5.ogg"
+]
+},
+"vox_life": {
+"d#3": [
+"../ogg/life_ds3.ogg"
+],
+"a3": [
+"../ogg/life_a3.ogg"
+],
+"d#4": [
+"../ogg/life_ds4.ogg"
+],
+"a4": [
+"../ogg/life_a4.ogg"
+],
+"d#5": [
+"../ogg/life_ds5.ogg"
+]
+},
+"vox_dream": {
+"d#3": [
+"../ogg/dream_ds3.ogg"
+],
+"a3": [
+"../ogg/dream_a3.ogg"
+],
+"d#4": [
+"../ogg/dream_ds4.ogg"
+],
+"a4": [
+"../ogg/dream_a4.ogg"
+],
+"d#5": [
+"../ogg/dream_ds5.ogg"
+]
+},
+"vox_soul": {
+"d#3": [
+"../ogg/soul_ds3.ogg"
+],
+"a3": [
+"../ogg/soul_a3.ogg"
+],
+"d#4": [
+"../ogg/soul_ds4.ogg"
+],
+"a4": [
+"../ogg/soul_a4.ogg"
+],
+"d#5": [
+"../ogg/soul_ds5.ogg"
+]
+},
+"vox_mind": {
+"d#3": [
+"../ogg/mind_ds3.ogg"
+],
+"a3": [
+"../ogg/mind_a3.ogg"
+],
+"d#4": [
+"../ogg/mind_ds4.ogg"
+],
+"a4": [
+"../ogg/mind_a4.ogg"
+],
+"d#5": [
+"../ogg/mind_ds5.ogg"
+]
+},
+"vox_eyes": {
+"d#3": [
+"../ogg/eyes_ds3.ogg"
+],
+"a3": [
+"../ogg/eyes_a3.ogg"
+],
+"d#4": [
+"../ogg/eyes_ds4.ogg"
+],
+"a4": [
+"../ogg/eyes_a4.ogg"
+],
+"d#5": [
+"../ogg/eyes_ds5.ogg"
+]
+},
+"vox_hand": {
+"d#3": [
+"../ogg/hand_ds3.ogg"
+],
+"a3": [
+"../ogg/hand_a3.ogg"
+],
+"d#4": [
+"../ogg/hand_ds4.ogg"
+],
+"a4": [
+"../ogg/hand_a4.ogg"
+],
+"d#5": [
+"../ogg/hand_ds5.ogg"
+]
+},
+"vox_face": {
+"d#3": [
+"../ogg/face_ds3.ogg"
+],
+"a3": [
+"../ogg/face_a3.ogg"
+],
+"d#4": [
+"../ogg/face_ds4.ogg"
+],
+"a4": [
+"../ogg/face_a4.ogg"
+],
+"d#5": [
+"../ogg/face_ds5.ogg"
+]
+},
+"vox_name": {
+"d#3": [
+"../ogg/name_ds3.ogg"
+],
+"a3": [
+"../ogg/name_a3.ogg"
+],
+"d#4": [
+"../ogg/name_ds4.ogg"
+],
+"a4": [
+"../ogg/name_a4.ogg"
+],
+"d#5": [
+"../ogg/name_ds5.ogg"
+]
+},
+"vox_home": {
+"d#3": [
+"../ogg/home_ds3.ogg"
+],
+"a3": [
+"../ogg/home_a3.ogg"
+],
+"d#4": [
+"../ogg/home_ds4.ogg"
+],
+"a4": [
+"../ogg/home_a4.ogg"
+],
+"d#5": [
+"../ogg/home_ds5.ogg"
+]
+},
+"vox_road": {
+"d#3": [
+"../ogg/road_ds3.ogg"
+],
+"a3": [
+"../ogg/road_a3.ogg"
+],
+"d#4": [
+"../ogg/road_ds4.ogg"
+],
+"a4": [
+"../ogg/road_a4.ogg"
+],
+"d#5": [
+"../ogg/road_ds5.ogg"
+]
+},
+"vox_sky": {
+"d#3": [
+"../ogg/sky_ds3.ogg"
+],
+"a3": [
+"../ogg/sky_a3.ogg"
+],
+"d#4": [
+"../ogg/sky_ds4.ogg"
+],
+"a4": [
+"../ogg/sky_a4.ogg"
+],
+"d#5": [
+"../ogg/sky_ds5.ogg"
+]
+},
+"vox_sun": {
+"d#3": [
+"../ogg/sun_ds3.ogg"
+],
+"a3": [
+"../ogg/sun_a3.ogg"
+],
+"d#4": [
+"../ogg/sun_ds4.ogg"
+],
+"a4": [
+"../ogg/sun_a4.ogg"
+],
+"d#5": [
+"../ogg/sun_ds5.ogg"
+]
+},
+"vox_moon": {
+"d#3": [
+"../ogg/moon_ds3.ogg"
+],
+"a3": [
+"../ogg/moon_a3.ogg"
+],
+"d#4": [
+"../ogg/moon_ds4.ogg"
+],
+"a4": [
+"../ogg/moon_a4.ogg"
+],
+"d#5": [
+"../ogg/moon_ds5.ogg"
+]
+},
+"vox_star": {
+"d#3": [
+"../ogg/star_ds3.ogg"
+],
+"a3": [
+"../ogg/star_a3.ogg"
+],
+"d#4": [
+"../ogg/star_ds4.ogg"
+],
+"a4": [
+"../ogg/star_a4.ogg"
+],
+"d#5": [
+"../ogg/star_ds5.ogg"
+]
+},
+"vox_rain": {
+"d#3": [
+"../ogg/rain_ds3.ogg"
+],
+"a3": [
+"../ogg/rain_a3.ogg"
+],
+"d#4": [
+"../ogg/rain_ds4.ogg"
+],
+"a4": [
+"../ogg/rain_a4.ogg"
+],
+"d#5": [
+"../ogg/rain_ds5.ogg"
+]
+},
+"vox_wind": {
+"d#3": [
+"../ogg/wind_ds3.ogg"
+],
+"a3": [
+"../ogg/wind_a3.ogg"
+],
+"d#4": [
+"../ogg/wind_ds4.ogg"
+],
+"a4": [
+"../ogg/wind_a4.ogg"
+],
+"d#5": [
+"../ogg/wind_ds5.ogg"
+]
+},
+"vox_sea": {
+"d#3": [
+"../ogg/sea_ds3.ogg"
+],
+"a3": [
+"../ogg/sea_a3.ogg"
+],
+"d#4": [
+"../ogg/sea_ds4.ogg"
+],
+"a4": [
+"../ogg/sea_a4.ogg"
+],
+"d#5": [
+"../ogg/sea_ds5.ogg"
+]
+},
+"vox_river": {
+"d#3": [
+"../ogg/river_ds3.ogg"
+],
+"a3": [
+"../ogg/river_a3.ogg"
+],
+"d#4": [
+"../ogg/river_ds4.ogg"
+],
+"a4": [
+"../ogg/river_a4.ogg"
+],
+"d#5": [
+"../ogg/river_ds5.ogg"
+]
+},
+"vox_water": {
+"d#3": [
+"../ogg/water_ds3.ogg"
+],
+"a3": [
+"../ogg/water_a3.ogg"
+],
+"d#4": [
+"../ogg/water_ds4.ogg"
+],
+"a4": [
+"../ogg/water_a4.ogg"
+],
+"d#5": [
+"../ogg/water_ds5.ogg"
+]
+},
+"vox_stone": {
+"d#3": [
+"../ogg/stone_ds3.ogg"
+],
+"a3": [
+"../ogg/stone_a3.ogg"
+],
+"d#4": [
+"../ogg/stone_ds4.ogg"
+],
+"a4": [
+"../ogg/stone_a4.ogg"
+],
+"d#5": [
+"../ogg/stone_ds5.ogg"
+]
+},
+"vox_gold": {
+"d#3": [
+"../ogg/gold_ds3.ogg"
+],
+"a3": [
+"../ogg/gold_a3.ogg"
+],
+"d#4": [
+"../ogg/gold_ds4.ogg"
+],
+"a4": [
+"../ogg/gold_a4.ogg"
+],
+"d#5": [
+"../ogg/gold_ds5.ogg"
+]
+},
+"vox_blood": {
+"d#3": [
+"../ogg/blood_ds3.ogg"
+],
+"a3": [
+"../ogg/blood_a3.ogg"
+],
+"d#4": [
+"../ogg/blood_ds4.ogg"
+],
+"a4": [
+"../ogg/blood_a4.ogg"
+],
+"d#5": [
+"../ogg/blood_ds5.ogg"
+]
+},
+"vox_bone": {
+"d#3": [
+"../ogg/bone_ds3.ogg"
+],
+"a3": [
+"../ogg/bone_a3.ogg"
+],
+"d#4": [
+"../ogg/bone_ds4.ogg"
+],
+"a4": [
+"../ogg/bone_a4.ogg"
+],
+"d#5": [
+"../ogg/bone_ds5.ogg"
+]
+},
+"vox_skin": {
+"d#3": [
+"../ogg/skin_ds3.ogg"
+],
+"a3": [
+"../ogg/skin_a3.ogg"
+],
+"d#4": [
+"../ogg/skin_ds4.ogg"
+],
+"a4": [
+"../ogg/skin_a4.ogg"
+],
+"d#5": [
+"../ogg/skin_ds5.ogg"
+]
+},
+"vox_breath": {
+"d#3": [
+"../ogg/breath_ds3.ogg"
+],
+"a3": [
+"../ogg/breath_a3.ogg"
+],
+"d#4": [
+"../ogg/breath_ds4.ogg"
+],
+"a4": [
+"../ogg/breath_a4.ogg"
+],
+"d#5": [
+"../ogg/breath_ds5.ogg"
+]
+},
+"vox_voice": {
+"d#3": [
+"../ogg/voice_ds3.ogg"
+],
+"a3": [
+"../ogg/voice_a3.ogg"
+],
+"d#4": [
+"../ogg/voice_ds4.ogg"
+],
+"a4": [
+"../ogg/voice_a4.ogg"
+],
+"d#5": [
+"../ogg/voice_ds5.ogg"
+]
+},
+"vox_song": {
+"d#3": [
+"../ogg/song_ds3.ogg"
+],
+"a3": [
+"../ogg/song_a3.ogg"
+],
+"d#4": [
+"../ogg/song_ds4.ogg"
+],
+"a4": [
+"../ogg/song_a4.ogg"
+],
+"d#5": [
+"../ogg/song_ds5.ogg"
+]
+},
+"vox_dance": {
+"d#3": [
+"../ogg/dance_ds3.ogg"
+],
+"a3": [
+"../ogg/dance_a3.ogg"
+],
+"d#4": [
+"../ogg/dance_ds4.ogg"
+],
+"a4": [
+"../ogg/dance_a4.ogg"
+],
+"d#5": [
+"../ogg/dance_ds5.ogg"
+]
+},
+"vox_beat": {
+"d#3": [
+"../ogg/beat_ds3.ogg"
+],
+"a3": [
+"../ogg/beat_a3.ogg"
+],
+"d#4": [
+"../ogg/beat_ds4.ogg"
+],
+"a4": [
+"../ogg/beat_a4.ogg"
+],
+"d#5": [
+"../ogg/beat_ds5.ogg"
+]
+},
+"vox_sound": {
+"d#3": [
+"../ogg/sound_ds3.ogg"
+],
+"a3": [
+"../ogg/sound_a3.ogg"
+],
+"d#4": [
+"../ogg/sound_ds4.ogg"
+],
+"a4": [
+"../ogg/sound_a4.ogg"
+],
+"d#5": [
+"../ogg/sound_ds5.ogg"
+]
+},
+"vox_bass": {
+"d#3": [
+"../ogg/bass_ds3.ogg"
+],
+"a3": [
+"../ogg/bass_a3.ogg"
+],
+"d#4": [
+"../ogg/bass_ds4.ogg"
+],
+"a4": [
+"../ogg/bass_a4.ogg"
+],
+"d#5": [
+"../ogg/bass_ds5.ogg"
+]
+},
+"vox_drum": {
+"d#3": [
+"../ogg/drum_ds3.ogg"
+],
+"a3": [
+"../ogg/drum_a3.ogg"
+],
+"d#4": [
+"../ogg/drum_ds4.ogg"
+],
+"a4": [
+"../ogg/drum_a4.ogg"
+],
+"d#5": [
+"../ogg/drum_ds5.ogg"
+]
+},
+"vox_line": {
+"d#3": [
+"../ogg/line_ds3.ogg"
+],
+"a3": [
+"../ogg/line_a3.ogg"
+],
+"d#4": [
+"../ogg/line_ds4.ogg"
+],
+"a4": [
+"../ogg/line_a4.ogg"
+],
+"d#5": [
+"../ogg/line_ds5.ogg"
+]
+},
+"vox_word": {
+"d#3": [
+"../ogg/word_ds3.ogg"
+],
+"a3": [
+"../ogg/word_a3.ogg"
+],
+"d#4": [
+"../ogg/word_ds4.ogg"
+],
+"a4": [
+"../ogg/word_a4.ogg"
+],
+"d#5": [
+"../ogg/word_ds5.ogg"
+]
+},
+"vox_truth": {
+"d#3": [
+"../ogg/truth_ds3.ogg"
+],
+"a3": [
+"../ogg/truth_a3.ogg"
+],
+"d#4": [
+"../ogg/truth_ds4.ogg"
+],
+"a4": [
+"../ogg/truth_a4.ogg"
+],
+"d#5": [
+"../ogg/truth_ds5.ogg"
+]
+},
+"vox_lie": {
+"d#3": [
+"../ogg/lie_ds3.ogg"
+],
+"a3": [
+"../ogg/lie_a3.ogg"
+],
+"d#4": [
+"../ogg/lie_ds4.ogg"
+],
+"a4": [
+"../ogg/lie_a4.ogg"
+],
+"d#5": [
+"../ogg/lie_ds5.ogg"
+]
+},
+"vox_hope": {
+"d#3": [
+"../ogg/hope_ds3.ogg"
+],
+"a3": [
+"../ogg/hope_a3.ogg"
+],
+"d#4": [
+"../ogg/hope_ds4.ogg"
+],
+"a4": [
+"../ogg/hope_a4.ogg"
+],
+"d#5": [
+"../ogg/hope_ds5.ogg"
+]
+},
+"vox_fear": {
+"d#3": [
+"../ogg/fear_ds3.ogg"
+],
+"a3": [
+"../ogg/fear_a3.ogg"
+],
+"d#4": [
+"../ogg/fear_ds4.ogg"
+],
+"a4": [
+"../ogg/fear_a4.ogg"
+],
+"d#5": [
+"../ogg/fear_ds5.ogg"
+]
+},
+"vox_pain": {
+"d#3": [
+"../ogg/pain_ds3.ogg"
+],
+"a3": [
+"../ogg/pain_a3.ogg"
+],
+"d#4": [
+"../ogg/pain_ds4.ogg"
+],
+"a4": [
+"../ogg/pain_a4.ogg"
+],
+"d#5": [
+"../ogg/pain_ds5.ogg"
+]
+},
+"vox_joy": {
+"d#3": [
+"../ogg/joy_ds3.ogg"
+],
+"a3": [
+"../ogg/joy_a3.ogg"
+],
+"d#4": [
+"../ogg/joy_ds4.ogg"
+],
+"a4": [
+"../ogg/joy_a4.ogg"
+],
+"d#5": [
+"../ogg/joy_ds5.ogg"
+]
+},
+"vox_tears": {
+"d#3": [
+"../ogg/tears_ds3.ogg"
+],
+"a3": [
+"../ogg/tears_a3.ogg"
+],
+"d#4": [
+"../ogg/tears_ds4.ogg"
+],
+"a4": [
+"../ogg/tears_a4.ogg"
+],
+"d#5": [
+"../ogg/tears_ds5.ogg"
+]
+},
+"vox_smile": {
+"d#3": [
+"../ogg/smile_ds3.ogg"
+],
+"a3": [
+"../ogg/smile_a3.ogg"
+],
+"d#4": [
+"../ogg/smile_ds4.ogg"
+],
+"a4": [
+"../ogg/smile_a4.ogg"
+],
+"d#5": [
+"../ogg/smile_ds5.ogg"
+]
+},
+"vox_kiss": {
+"d#3": [
+"../ogg/kiss_ds3.ogg"
+],
+"a3": [
+"../ogg/kiss_a3.ogg"
+],
+"d#4": [
+"../ogg/kiss_ds4.ogg"
+],
+"a4": [
+"../ogg/kiss_a4.ogg"
+],
+"d#5": [
+"../ogg/kiss_ds5.ogg"
+]
+},
+"vox_touch": {
+"d#3": [
+"../ogg/touch_ds3.ogg"
+],
+"a3": [
+"../ogg/touch_a3.ogg"
+],
+"d#4": [
+"../ogg/touch_ds4.ogg"
+],
+"a4": [
+"../ogg/touch_a4.ogg"
+],
+"d#5": [
+"../ogg/touch_ds5.ogg"
+]
+},
+"vox_hold": {
+"d#3": [
+"../ogg/hold_ds3.ogg"
+],
+"a3": [
+"../ogg/hold_a3.ogg"
+],
+"d#4": [
+"../ogg/hold_ds4.ogg"
+],
+"a4": [
+"../ogg/hold_a4.ogg"
+],
+"d#5": [
+"../ogg/hold_ds5.ogg"
+]
+},
+"vox_run": {
+"d#3": [
+"../ogg/run_ds3.ogg"
+],
+"a3": [
+"../ogg/run_a3.ogg"
+],
+"d#4": [
+"../ogg/run_ds4.ogg"
+],
+"a4": [
+"../ogg/run_a4.ogg"
+],
+"d#5": [
+"../ogg/run_ds5.ogg"
+]
+},
+"vox_fall": {
+"d#3": [
+"../ogg/fall_ds3.ogg"
+],
+"a3": [
+"../ogg/fall_a3.ogg"
+],
+"d#4": [
+"../ogg/fall_ds4.ogg"
+],
+"a4": [
+"../ogg/fall_a4.ogg"
+],
+"d#5": [
+"../ogg/fall_ds5.ogg"
+]
+},
+"vox_rise": {
+"d#3": [
+"../ogg/rise_ds3.ogg"
+],
+"a3": [
+"../ogg/rise_a3.ogg"
+],
+"d#4": [
+"../ogg/rise_ds4.ogg"
+],
+"a4": [
+"../ogg/rise_a4.ogg"
+],
+"d#5": [
+"../ogg/rise_ds5.ogg"
+]
+},
+"vox_fly": {
+"d#3": [
+"../ogg/fly_ds3.ogg"
+],
+"a3": [
+"../ogg/fly_a3.ogg"
+],
+"d#4": [
+"../ogg/fly_ds4.ogg"
+],
+"a4": [
+"../ogg/fly_a4.ogg"
+],
+"d#5": [
+"../ogg/fly_ds5.ogg"
+]
+},
+"vox_burn": {
+"d#3": [
+"../ogg/burn_ds3.ogg"
+],
+"a3": [
+"../ogg/burn_a3.ogg"
+],
+"d#4": [
+"../ogg/burn_ds4.ogg"
+],
+"a4": [
+"../ogg/burn_a4.ogg"
+],
+"d#5": [
+"../ogg/burn_ds5.ogg"
+]
+},
+"vox_break": {
+"d#3": [
+"../ogg/break_ds3.ogg"
+],
+"a3": [
+"../ogg/break_a3.ogg"
+],
+"d#4": [
+"../ogg/break_ds4.ogg"
+],
+"a4": [
+"../ogg/break_a4.ogg"
+],
+"d#5": [
+"../ogg/break_ds5.ogg"
+]
+},
+"vox_shine": {
+"d#3": [
+"../ogg/shine_ds3.ogg"
+],
+"a3": [
+"../ogg/shine_a3.ogg"
+],
+"d#4": [
+"../ogg/shine_ds4.ogg"
+],
+"a4": [
+"../ogg/shine_a4.ogg"
+],
+"d#5": [
+"../ogg/shine_ds5.ogg"
+]
+},
+"vox_glow": {
+"d#3": [
+"../ogg/glow_ds3.ogg"
+],
+"a3": [
+"../ogg/glow_a3.ogg"
+],
+"d#4": [
+"../ogg/glow_ds4.ogg"
+],
+"a4": [
+"../ogg/glow_a4.ogg"
+],
+"d#5": [
+"../ogg/glow_ds5.ogg"
+]
+},
+"vox_fade": {
+"d#3": [
+"../ogg/fade_ds3.ogg"
+],
+"a3": [
+"../ogg/fade_a3.ogg"
+],
+"d#4": [
+"../ogg/fade_ds4.ogg"
+],
+"a4": [
+"../ogg/fade_a4.ogg"
+],
+"d#5": [
+"../ogg/fade_ds5.ogg"
+]
+},
+"vox_stay": {
+"d#3": [
+"../ogg/stay_ds3.ogg"
+],
+"a3": [
+"../ogg/stay_a3.ogg"
+],
+"d#4": [
+"../ogg/stay_ds4.ogg"
+],
+"a4": [
+"../ogg/stay_a4.ogg"
+],
+"d#5": [
+"../ogg/stay_ds5.ogg"
+]
+},
+"vox_go": {
+"d#3": [
+"../ogg/go_ds3.ogg"
+],
+"a3": [
+"../ogg/go_a3.ogg"
+],
+"d#4": [
+"../ogg/go_ds4.ogg"
+],
+"a4": [
+"../ogg/go_a4.ogg"
+],
+"d#5": [
+"../ogg/go_ds5.ogg"
+]
+},
+"vox_come": {
+"d#3": [
+"../ogg/come_ds3.ogg"
+],
+"a3": [
+"../ogg/come_a3.ogg"
+],
+"d#4": [
+"../ogg/come_ds4.ogg"
+],
+"a4": [
+"../ogg/come_a4.ogg"
+],
+"d#5": [
+"../ogg/come_ds5.ogg"
+]
+},
+"vox_leave": {
+"d#3": [
+"../ogg/leave_ds3.ogg"
+],
+"a3": [
+"../ogg/leave_a3.ogg"
+],
+"d#4": [
+"../ogg/leave_ds4.ogg"
+],
+"a4": [
+"../ogg/leave_a4.ogg"
+],
+"d#5": [
+"../ogg/leave_ds5.ogg"
+]
+},
+"vox_take": {
+"d#3": [
+"../ogg/take_ds3.ogg"
+],
+"a3": [
+"../ogg/take_a3.ogg"
+],
+"d#4": [
+"../ogg/take_ds4.ogg"
+],
+"a4": [
+"../ogg/take_a4.ogg"
+],
+"d#5": [
+"../ogg/take_ds5.ogg"
+]
+},
+"vox_give": {
+"d#3": [
+"../ogg/give_ds3.ogg"
+],
+"a3": [
+"../ogg/give_a3.ogg"
+],
+"d#4": [
+"../ogg/give_ds4.ogg"
+],
+"a4": [
+"../ogg/give_a4.ogg"
+],
+"d#5": [
+"../ogg/give_ds5.ogg"
+]
+},
+"vox_make": {
+"d#3": [
+"../ogg/make_ds3.ogg"
+],
+"a3": [
+"../ogg/make_a3.ogg"
+],
+"d#4": [
+"../ogg/make_ds4.ogg"
+],
+"a4": [
+"../ogg/make_a4.ogg"
+],
+"d#5": [
+"../ogg/make_ds5.ogg"
+]
+},
+"vox_feel": {
+"d#3": [
+"../ogg/feel_ds3.ogg"
+],
+"a3": [
+"../ogg/feel_a3.ogg"
+],
+"d#4": [
+"../ogg/feel_ds4.ogg"
+],
+"a4": [
+"../ogg/feel_a4.ogg"
+],
+"d#5": [
+"../ogg/feel_ds5.ogg"
+]
+},
+"vox_know": {
+"d#3": [
+"../ogg/know_ds3.ogg"
+],
+"a3": [
+"../ogg/know_a3.ogg"
+],
+"d#4": [
+"../ogg/know_ds4.ogg"
+],
+"a4": [
+"../ogg/know_a4.ogg"
+],
+"d#5": [
+"../ogg/know_ds5.ogg"
+]
+},
+"vox_want": {
+"d#3": [
+"../ogg/want_ds3.ogg"
+],
+"a3": [
+"../ogg/want_a3.ogg"
+],
+"d#4": [
+"../ogg/want_ds4.ogg"
+],
+"a4": [
+"../ogg/want_a4.ogg"
+],
+"d#5": [
+"../ogg/want_ds5.ogg"
+]
+},
+"vox_need": {
+"d#3": [
+"../ogg/need_ds3.ogg"
+],
+"a3": [
+"../ogg/need_a3.ogg"
+],
+"d#4": [
+"../ogg/need_ds4.ogg"
+],
+"a4": [
+"../ogg/need_a4.ogg"
+],
+"d#5": [
+"../ogg/need_ds5.ogg"
+]
+},
+"vox_see": {
+"d#3": [
+"../ogg/see_ds3.ogg"
+],
+"a3": [
+"../ogg/see_a3.ogg"
+],
+"d#4": [
+"../ogg/see_ds4.ogg"
+],
+"a4": [
+"../ogg/see_a4.ogg"
+],
+"d#5": [
+"../ogg/see_ds5.ogg"
+]
+},
+"vox_hear": {
+"d#3": [
+"../ogg/hear_ds3.ogg"
+],
+"a3": [
+"../ogg/hear_a3.ogg"
+],
+"d#4": [
+"../ogg/hear_ds4.ogg"
+],
+"a4": [
+"../ogg/hear_a4.ogg"
+],
+"d#5": [
+"../ogg/hear_ds5.ogg"
+]
+},
+"vox_say": {
+"d#3": [
+"../ogg/say_ds3.ogg"
+],
+"a3": [
+"../ogg/say_a3.ogg"
+],
+"d#4": [
+"../ogg/say_ds4.ogg"
+],
+"a4": [
+"../ogg/say_a4.ogg"
+],
+"d#5": [
+"../ogg/say_ds5.ogg"
+]
+},
+"vox_tell": {
+"d#3": [
+"../ogg/tell_ds3.ogg"
+],
+"a3": [
+"../ogg/tell_a3.ogg"
+],
+"d#4": [
+"../ogg/tell_ds4.ogg"
+],
+"a4": [
+"../ogg/tell_a4.ogg"
+],
+"d#5": [
+"../ogg/tell_ds5.ogg"
+]
+},
+"vox_call": {
+"d#3": [
+"../ogg/call_ds3.ogg"
+],
+"a3": [
+"../ogg/call_a3.ogg"
+],
+"d#4": [
+"../ogg/call_ds4.ogg"
+],
+"a4": [
+"../ogg/call_a4.ogg"
+],
+"d#5": [
+"../ogg/call_ds5.ogg"
+]
+},
+"vox_cry": {
+"d#3": [
+"../ogg/cry_ds3.ogg"
+],
+"a3": [
+"../ogg/cry_a3.ogg"
+],
+"d#4": [
+"../ogg/cry_ds4.ogg"
+],
+"a4": [
+"../ogg/cry_a4.ogg"
+],
+"d#5": [
+"../ogg/cry_ds5.ogg"
+]
+},
+"vox_sing": {
+"d#3": [
+"../ogg/sing_ds3.ogg"
+],
+"a3": [
+"../ogg/sing_a3.ogg"
+],
+"d#4": [
+"../ogg/sing_ds4.ogg"
+],
+"a4": [
+"../ogg/sing_a4.ogg"
+],
+"d#5": [
+"../ogg/sing_ds5.ogg"
+]
+},
+"vox_play": {
+"d#3": [
+"../ogg/play_ds3.ogg"
+],
+"a3": [
+"../ogg/play_a3.ogg"
+],
+"d#4": [
+"../ogg/play_ds4.ogg"
+],
+"a4": [
+"../ogg/play_a4.ogg"
+],
+"d#5": [
+"../ogg/play_ds5.ogg"
+]
+},
+"vox_move": {
+"d#3": [
+"../ogg/move_ds3.ogg"
+],
+"a3": [
+"../ogg/move_a3.ogg"
+],
+"d#4": [
+"../ogg/move_ds4.ogg"
+],
+"a4": [
+"../ogg/move_a4.ogg"
+],
+"d#5": [
+"../ogg/move_ds5.ogg"
+]
+},
+"vox_turn": {
+"d#3": [
+"../ogg/turn_ds3.ogg"
+],
+"a3": [
+"../ogg/turn_a3.ogg"
+],
+"d#4": [
+"../ogg/turn_ds4.ogg"
+],
+"a4": [
+"../ogg/turn_a4.ogg"
+],
+"d#5": [
+"../ogg/turn_ds5.ogg"
+]
+},
+"vox_walk": {
+"d#3": [
+"../ogg/walk_ds3.ogg"
+],
+"a3": [
+"../ogg/walk_a3.ogg"
+],
+"d#4": [
+"../ogg/walk_ds4.ogg"
+],
+"a4": [
+"../ogg/walk_a4.ogg"
+],
+"d#5": [
+"../ogg/walk_ds5.ogg"
+]
+},
+"vox_wait": {
+"d#3": [
+"../ogg/wait_ds3.ogg"
+],
+"a3": [
+"../ogg/wait_a3.ogg"
+],
+"d#4": [
+"../ogg/wait_ds4.ogg"
+],
+"a4": [
+"../ogg/wait_a4.ogg"
+],
+"d#5": [
+"../ogg/wait_ds5.ogg"
+]
+},
+"vox_watch": {
+"d#3": [
+"../ogg/watch_ds3.ogg"
+],
+"a3": [
+"../ogg/watch_a3.ogg"
+],
+"d#4": [
+"../ogg/watch_ds4.ogg"
+],
+"a4": [
+"../ogg/watch_a4.ogg"
+]
+},
+"vox_dark": {
+"d#3": [
+"../ogg/dark_ds3.ogg"
+],
+"a3": [
+"../ogg/dark_a3.ogg"
+],
+"d#4": [
+"../ogg/dark_ds4.ogg"
+],
+"a4": [
+"../ogg/dark_a4.ogg"
+],
+"d#5": [
+"../ogg/dark_ds5.ogg"
+]
+},
+"vox_bright": {
+"d#3": [
+"../ogg/bright_ds3.ogg"
+],
+"a3": [
+"../ogg/bright_a3.ogg"
+],
+"d#4": [
+"../ogg/bright_ds4.ogg"
+],
+"a4": [
+"../ogg/bright_a4.ogg"
+],
+"d#5": [
+"../ogg/bright_ds5.ogg"
+]
+},
+"vox_cold": {
+"d#3": [
+"../ogg/cold_ds3.ogg"
+],
+"a3": [
+"../ogg/cold_a3.ogg"
+],
+"d#4": [
+"../ogg/cold_ds4.ogg"
+],
+"a4": [
+"../ogg/cold_a4.ogg"
+],
+"d#5": [
+"../ogg/cold_ds5.ogg"
+]
+},
+"vox_warm": {
+"d#3": [
+"../ogg/warm_ds3.ogg"
+],
+"a3": [
+"../ogg/warm_a3.ogg"
+],
+"d#4": [
+"../ogg/warm_ds4.ogg"
+],
+"a4": [
+"../ogg/warm_a4.ogg"
+],
+"d#5": [
+"../ogg/warm_ds5.ogg"
+]
+},
+"vox_high": {
+"d#3": [
+"../ogg/high_ds3.ogg"
+],
+"a3": [
+"../ogg/high_a3.ogg"
+],
+"d#4": [
+"../ogg/high_ds4.ogg"
+],
+"a4": [
+"../ogg/high_a4.ogg"
+],
+"d#5": [
+"../ogg/high_ds5.ogg"
+]
+},
+"vox_low": {
+"d#3": [
+"../ogg/low_ds3.ogg"
+],
+"a3": [
+"../ogg/low_a3.ogg"
+],
+"d#4": [
+"../ogg/low_ds4.ogg"
+],
+"a4": [
+"../ogg/low_a4.ogg"
+],
+"d#5": [
+"../ogg/low_ds5.ogg"
+]
+},
+"vox_deep": {
+"d#3": [
+"../ogg/deep_ds3.ogg"
+],
+"a3": [
+"../ogg/deep_a3.ogg"
+],
+"d#4": [
+"../ogg/deep_ds4.ogg"
+],
+"a4": [
+"../ogg/deep_a4.ogg"
+],
+"d#5": [
+"../ogg/deep_ds5.ogg"
+]
+},
+"vox_slow": {
+"d#3": [
+"../ogg/slow_ds3.ogg"
+],
+"a3": [
+"../ogg/slow_a3.ogg"
+],
+"d#4": [
+"../ogg/slow_ds4.ogg"
+],
+"a4": [
+"../ogg/slow_a4.ogg"
+],
+"d#5": [
+"../ogg/slow_ds5.ogg"
+]
+},
+"vox_wild": {
+"d#3": [
+"../ogg/wild_ds3.ogg"
+],
+"a3": [
+"../ogg/wild_a3.ogg"
+],
+"d#4": [
+"../ogg/wild_ds4.ogg"
+],
+"a4": [
+"../ogg/wild_a4.ogg"
+],
+"d#5": [
+"../ogg/wild_ds5.ogg"
+]
+},
+"vox_free": {
+"d#3": [
+"../ogg/free_ds3.ogg"
+],
+"a3": [
+"../ogg/free_a3.ogg"
+],
+"d#4": [
+"../ogg/free_ds4.ogg"
+],
+"a4": [
+"../ogg/free_a4.ogg"
+],
+"d#5": [
+"../ogg/free_ds5.ogg"
+]
+},
+"vox_young": {
+"d#3": [
+"../ogg/young_ds3.ogg"
+],
+"a3": [
+"../ogg/young_a3.ogg"
+],
+"d#4": [
+"../ogg/young_ds4.ogg"
+],
+"a4": [
+"../ogg/young_a4.ogg"
+],
+"d#5": [
+"../ogg/young_ds5.ogg"
+]
+},
+"vox_old": {
+"d#3": [
+"../ogg/old_ds3.ogg"
+],
+"a3": [
+"../ogg/old_a3.ogg"
+],
+"d#4": [
+"../ogg/old_ds4.ogg"
+],
+"a4": [
+"../ogg/old_a4.ogg"
+],
+"d#5": [
+"../ogg/old_ds5.ogg"
+]
+},
+"vox_new": {
+"d#3": [
+"../ogg/new_ds3.ogg"
+],
+"a3": [
+"../ogg/new_a3.ogg"
+],
+"d#4": [
+"../ogg/new_ds4.ogg"
+],
+"a4": [
+"../ogg/new_a4.ogg"
+],
+"d#5": [
+"../ogg/new_ds5.ogg"
+]
+},
+"vox_last": {
+"d#3": [
+"../ogg/last_ds3.ogg"
+],
+"a3": [
+"../ogg/last_a3.ogg"
+],
+"d#4": [
+"../ogg/last_ds4.ogg"
+],
+"a4": [
+"../ogg/last_a4.ogg"
+],
+"d#5": [
+"../ogg/last_ds5.ogg"
+]
+},
+"vox_first": {
+"d#3": [
+"../ogg/first_ds3.ogg"
+],
+"a3": [
+"../ogg/first_a3.ogg"
+],
+"d#4": [
+"../ogg/first_ds4.ogg"
+],
+"a4": [
+"../ogg/first_a4.ogg"
+],
+"d#5": [
+"../ogg/first_ds5.ogg"
+]
+},
+"vox_one": {
+"d#3": [
+"../ogg/one_ds3.ogg"
+],
+"a3": [
+"../ogg/one_a3.ogg"
+],
+"d#4": [
+"../ogg/one_ds4.ogg"
+],
+"a4": [
+"../ogg/one_a4.ogg"
+],
+"d#5": [
+"../ogg/one_ds5.ogg"
+]
+},
+"vox_two": {
+"d#3": [
+"../ogg/two_ds3.ogg"
+],
+"a3": [
+"../ogg/two_a3.ogg"
+],
+"d#4": [
+"../ogg/two_ds4.ogg"
+],
+"a4": [
+"../ogg/two_a4.ogg"
+],
+"d#5": [
+"../ogg/two_ds5.ogg"
+]
+},
+"vox_three": {
+"d#3": [
+"../ogg/three_ds3.ogg"
+],
+"a3": [
+"../ogg/three_a3.ogg"
+],
+"d#4": [
+"../ogg/three_ds4.ogg"
+],
+"a4": [
+"../ogg/three_a4.ogg"
+],
+"d#5": [
+"../ogg/three_ds5.ogg"
+]
+},
+"vox_four": {
+"d#3": [
+"../ogg/four_ds3.ogg"
+],
+"a3": [
+"../ogg/four_a3.ogg"
+],
+"d#4": [
+"../ogg/four_ds4.ogg"
+],
+"a4": [
+"../ogg/four_a4.ogg"
+],
+"d#5": [
+"../ogg/four_ds5.ogg"
+]
+},
+"vox_five": {
+"d#3": [
+"../ogg/five_ds3.ogg"
+],
+"a3": [
+"../ogg/five_a3.ogg"
+],
+"d#4": [
+"../ogg/five_ds4.ogg"
+],
+"a4": [
+"../ogg/five_a4.ogg"
+],
+"d#5": [
+"../ogg/five_ds5.ogg"
+]
+},
+"vox_six": {
+"d#3": [
+"../ogg/six_ds3.ogg"
+],
+"a3": [
+"../ogg/six_a3.ogg"
+],
+"d#4": [
+"../ogg/six_ds4.ogg"
+],
+"a4": [
+"../ogg/six_a4.ogg"
+],
+"d#5": [
+"../ogg/six_ds5.ogg"
+]
+},
+"vox_seven": {
+"d#3": [
+"../ogg/seven_ds3.ogg"
+],
+"a3": [
+"../ogg/seven_a3.ogg"
+],
+"d#4": [
+"../ogg/seven_ds4.ogg"
+],
+"a4": [
+"../ogg/seven_a4.ogg"
+],
+"d#5": [
+"../ogg/seven_ds5.ogg"
+]
+},
+"vox_eight": {
+"d#3": [
+"../ogg/eight_ds3.ogg"
+],
+"a3": [
+"../ogg/eight_a3.ogg"
+],
+"d#4": [
+"../ogg/eight_ds4.ogg"
+],
+"a4": [
+"../ogg/eight_a4.ogg"
+],
+"d#5": [
+"../ogg/eight_ds5.ogg"
+]
+},
+"vox_nine": {
+"d#3": [
+"../ogg/nine_ds3.ogg"
+],
+"a3": [
+"../ogg/nine_a3.ogg"
+],
+"d#4": [
+"../ogg/nine_ds4.ogg"
+],
+"a4": [
+"../ogg/nine_a4.ogg"
+],
+"d#5": [
+"../ogg/nine_ds5.ogg"
+]
+},
+"vox_ten": {
+"d#3": [
+"../ogg/ten_ds3.ogg"
+],
+"a3": [
+"../ogg/ten_a3.ogg"
+],
+"d#4": [
+"../ogg/ten_ds4.ogg"
+],
+"a4": [
+"../ogg/ten_a4.ogg"
+],
+"d#5": [
+"../ogg/ten_ds5.ogg"
+]
+},
+"vox_all": {
+"d#3": [
+"../ogg/all_ds3.ogg"
+],
+"a3": [
+"../ogg/all_a3.ogg"
+],
+"d#4": [
+"../ogg/all_ds4.ogg"
+],
+"a4": [
+"../ogg/all_a4.ogg"
+],
+"d#5": [
+"../ogg/all_ds5.ogg"
+]
+},
+"vox_none": {
+"d#3": [
+"../ogg/none_ds3.ogg"
+],
+"a3": [
+"../ogg/none_a3.ogg"
+],
+"d#4": [
+"../ogg/none_ds4.ogg"
+],
+"a4": [
+"../ogg/none_a4.ogg"
+],
+"d#5": [
+"../ogg/none_ds5.ogg"
+]
+},
+"vox_more": {
+"d#3": [
+"../ogg/more_ds3.ogg"
+],
+"a3": [
+"../ogg/more_a3.ogg"
+],
+"d#4": [
+"../ogg/more_ds4.ogg"
+],
+"a4": [
+"../ogg/more_a4.ogg"
+],
+"d#5": [
+"../ogg/more_ds5.ogg"
+]
+},
+"vox_less": {
+"d#3": [
+"../ogg/less_ds3.ogg"
+],
+"a3": [
+"../ogg/less_a3.ogg"
+],
+"d#4": [
+"../ogg/less_ds4.ogg"
+],
+"a4": [
+"../ogg/less_a4.ogg"
+],
+"d#5": [
+"../ogg/less_ds5.ogg"
+]
+},
+"vox_never": {
+"d#3": [
+"../ogg/never_ds3.ogg"
+],
+"a3": [
+"../ogg/never_a3.ogg"
+],
+"d#4": [
+"../ogg/never_ds4.ogg"
+],
+"a4": [
+"../ogg/never_a4.ogg"
+],
+"d#5": [
+"../ogg/never_ds5.ogg"
+]
+},
+"vox_always": {
+"d#3": [
+"../ogg/always_ds3.ogg"
+],
+"a3": [
+"../ogg/always_a3.ogg"
+],
+"d#4": [
+"../ogg/always_ds4.ogg"
+],
+"a4": [
+"../ogg/always_a4.ogg"
+],
+"d#5": [
+"../ogg/always_ds5.ogg"
+]
+},
+"vox_forever": {
+"d#3": [
+"../ogg/forever_ds3.ogg"
+],
+"a3": [
+"../ogg/forever_a3.ogg"
+],
+"d#4": [
+"../ogg/forever_ds4.ogg"
+],
+"a4": [
+"../ogg/forever_a4.ogg"
+],
+"d#5": [
+"../ogg/forever_ds5.ogg"
+]
+},
+"vox_again": {
+"d#3": [
+"../ogg/again_ds3.ogg"
+],
+"a3": [
+"../ogg/again_a3.ogg"
+],
+"d#4": [
+"../ogg/again_ds4.ogg"
+],
+"a4": [
+"../ogg/again_a4.ogg"
+],
+"d#5": [
+"../ogg/again_ds5.ogg"
+]
+},
+"vox_tonight": {
+"d#3": [
+"../ogg/tonight_ds3.ogg"
+],
+"a3": [
+"../ogg/tonight_a3.ogg"
+],
+"d#4": [
+"../ogg/tonight_ds4.ogg"
+],
+"a4": [
+"../ogg/tonight_a4.ogg"
+],
+"d#5": [
+"../ogg/tonight_ds5.ogg"
+]
+},
+"vox_today": {
+"d#3": [
+"../ogg/today_ds3.ogg"
+],
+"a3": [
+"../ogg/today_a3.ogg"
+],
+"d#4": [
+"../ogg/today_ds4.ogg"
+],
+"a4": [
+"../ogg/today_a4.ogg"
+],
+"d#5": [
+"../ogg/today_ds5.ogg"
+]
+},
+"vox_tomorrow": {
+"d#3": [
+"../ogg/tomorrow_ds3.ogg"
+],
+"a3": [
+"../ogg/tomorrow_a3.ogg"
+],
+"d#4": [
+"../ogg/tomorrow_ds4.ogg"
+],
+"a4": [
+"../ogg/tomorrow_a4.ogg"
+],
+"d#5": [
+"../ogg/tomorrow_ds5.ogg"
+]
+},
+"vox_now": {
+"d#3": [
+"../ogg/now_ds3.ogg"
+],
+"a3": [
+"../ogg/now_a3.ogg"
+],
+"d#4": [
+"../ogg/now_ds4.ogg"
+],
+"a4": [
+"../ogg/now_a4.ogg"
+],
+"d#5": [
+"../ogg/now_ds5.ogg"
+]
+},
+"vox_then": {
+"d#3": [
+"../ogg/then_ds3.ogg"
+],
+"a3": [
+"../ogg/then_a3.ogg"
+],
+"d#4": [
+"../ogg/then_ds4.ogg"
+],
+"a4": [
+"../ogg/then_a4.ogg"
+],
+"d#5": [
+"../ogg/then_ds5.ogg"
+]
+},
+"vox_here": {
+"d#3": [
+"../ogg/here_ds3.ogg"
+],
+"a3": [
+"../ogg/here_a3.ogg"
+],
+"d#4": [
+"../ogg/here_ds4.ogg"
+],
+"a4": [
+"../ogg/here_a4.ogg"
+],
+"d#5": [
+"../ogg/here_ds5.ogg"
+]
+},
+"vox_there": {
+"d#3": [
+"../ogg/there_ds3.ogg"
+],
+"a3": [
+"../ogg/there_a3.ogg"
+],
+"d#4": [
+"../ogg/there_ds4.ogg"
+],
+"a4": [
+"../ogg/there_a4.ogg"
+],
+"d#5": [
+"../ogg/there_ds5.ogg"
+]
+},
+"vox_where": {
+"d#3": [
+"../ogg/where_ds3.ogg"
+],
+"a3": [
+"../ogg/where_a3.ogg"
+],
+"d#4": [
+"../ogg/where_ds4.ogg"
+],
+"a4": [
+"../ogg/where_a4.ogg"
+],
+"d#5": [
+"../ogg/where_ds5.ogg"
+]
+},
+"vox_when": {
+"d#3": [
+"../ogg/when_ds3.ogg"
+],
+"a3": [
+"../ogg/when_a3.ogg"
+],
+"d#4": [
+"../ogg/when_ds4.ogg"
+],
+"a4": [
+"../ogg/when_a4.ogg"
+],
+"d#5": [
+"../ogg/when_ds5.ogg"
+]
+},
+"vox_why": {
+"d#3": [
+"../ogg/why_ds3.ogg"
+],
+"a3": [
+"../ogg/why_a3.ogg"
+],
+"d#4": [
+"../ogg/why_ds4.ogg"
+],
+"a4": [
+"../ogg/why_a4.ogg"
+],
+"d#5": [
+"../ogg/why_ds5.ogg"
+]
+},
+"vox_how": {
+"d#3": [
+"../ogg/how_ds3.ogg"
+],
+"a3": [
+"../ogg/how_a3.ogg"
+],
+"d#4": [
+"../ogg/how_ds4.ogg"
+],
+"a4": [
+"../ogg/how_a4.ogg"
+],
+"d#5": [
+"../ogg/how_ds5.ogg"
+]
+},
+"vox_who": {
+"d#3": [
+"../ogg/who_ds3.ogg"
+],
+"a3": [
+"../ogg/who_a3.ogg"
+],
+"d#4": [
+"../ogg/who_ds4.ogg"
+],
+"a4": [
+"../ogg/who_a4.ogg"
+],
+"d#5": [
+"../ogg/who_ds5.ogg"
+]
+},
+"vox_what": {
+"d#3": [
+"../ogg/what_ds3.ogg"
+],
+"a3": [
+"../ogg/what_a3.ogg"
+],
+"d#4": [
+"../ogg/what_ds4.ogg"
+],
+"a4": [
+"../ogg/what_a4.ogg"
+],
+"d#5": [
+"../ogg/what_ds5.ogg"
+]
+},
+"vox_yes": {
+"d#3": [
+"../ogg/yes_ds3.ogg"
+],
+"a3": [
+"../ogg/yes_a3.ogg"
+],
+"d#4": [
+"../ogg/yes_ds4.ogg"
+],
+"a4": [
+"../ogg/yes_a4.ogg"
+],
+"d#5": [
+"../ogg/yes_ds5.ogg"
+]
+},
+"vox_no": {
+"d#3": [
+"../ogg/no_ds3.ogg"
+],
+"a3": [
+"../ogg/no_a3.ogg"
+],
+"d#4": [
+"../ogg/no_ds4.ogg"
+],
+"a4": [
+"../ogg/no_a4.ogg"
+],
+"d#5": [
+"../ogg/no_ds5.ogg"
+]
+},
+"vox_oh": {
+"d#3": [
+"../ogg/oh_ds3.ogg"
+],
+"a3": [
+"../ogg/oh_a3.ogg"
+],
+"d#4": [
+"../ogg/oh_ds4.ogg"
+],
+"a4": [
+"../ogg/oh_a4.ogg"
+],
+"d#5": [
+"../ogg/oh_ds5.ogg"
+]
+},
+"vox_ah": {
+"d#3": [
+"../ogg/ah_ds3.ogg"
+],
+"a3": [
+"../ogg/ah_a3.ogg"
+],
+"d#4": [
+"../ogg/ah_ds4.ogg"
+],
+"a4": [
+"../ogg/ah_a4.ogg"
+],
+"d#5": [
+"../ogg/ah_ds5.ogg"
+]
+},
+"vox_la": {
+"d#3": [
+"../ogg/la_ds3.ogg"
+],
+"a3": [
+"../ogg/la_a3.ogg"
+],
+"d#4": [
+"../ogg/la_ds4.ogg"
+],
+"a4": [
+"../ogg/la_a4.ogg"
+],
+"d#5": [
+"../ogg/la_ds5.ogg"
+]
+},
+"vox_hey": {
+"d#3": [
+"../ogg/hey_ds3.ogg"
+],
+"a3": [
+"../ogg/hey_a3.ogg"
+],
+"d#4": [
+"../ogg/hey_ds4.ogg"
+],
+"a4": [
+"../ogg/hey_a4.ogg"
+],
+"d#5": [
+"../ogg/hey_ds5.ogg"
+]
+},
+"vox_yeah": {
+"d#3": [
+"../ogg/yeah_ds3.ogg"
+],
+"a3": [
+"../ogg/yeah_a3.ogg"
+],
+"d#4": [
+"../ogg/yeah_ds4.ogg"
+],
+"a4": [
+"../ogg/yeah_a4.ogg"
+],
+"d#5": [
+"../ogg/yeah_ds5.ogg"
+]
+},
+"vox_ooh": {
+"d#3": [
+"../ogg/ooh_ds3.ogg"
+],
+"a3": [
+"../ogg/ooh_a3.ogg"
+],
+"d#4": [
+"../ogg/ooh_ds4.ogg"
+],
+"a4": [
+"../ogg/ooh_a4.ogg"
+],
+"d#5": [
+"../ogg/ooh_ds5.ogg"
+]
+},
+"vox_na": {
+"d#3": [
+"../ogg/na_ds3.ogg"
+],
+"a3": [
+"../ogg/na_a3.ogg"
+],
+"d#4": [
+"../ogg/na_ds4.ogg"
+],
+"a4": [
+"../ogg/na_a4.ogg"
+],
+"d#5": [
+"../ogg/na_ds5.ogg"
+]
+},
+"vox_da": {
+"d#3": [
+"../ogg/da_ds3.ogg"
+],
+"a3": [
+"../ogg/da_a3.ogg"
+],
+"d#4": [
+"../ogg/da_ds4.ogg"
+],
+"a4": [
+"../ogg/da_a4.ogg"
+],
+"d#5": [
+"../ogg/da_ds5.ogg"
+]
+},
+"vox_me": {
+"d#3": [
+"../ogg/me_ds3.ogg"
+],
+"a3": [
+"../ogg/me_a3.ogg"
+],
+"d#4": [
+"../ogg/me_ds4.ogg"
+],
+"a4": [
+"../ogg/me_a4.ogg"
+],
+"d#5": [
+"../ogg/me_ds5.ogg"
+]
+},
+"vox_you": {
+"d#3": [
+"../ogg/you_ds3.ogg"
+],
+"a3": [
+"../ogg/you_a3.ogg"
+],
+"d#4": [
+"../ogg/you_ds4.ogg"
+],
+"a4": [
+"../ogg/you_a4.ogg"
+],
+"d#5": [
+"../ogg/you_ds5.ogg"
+]
+},
+"vox_we": {
+"d#3": [
+"../ogg/we_ds3.ogg"
+],
+"a3": [
+"../ogg/we_a3.ogg"
+],
+"d#4": [
+"../ogg/we_ds4.ogg"
+],
+"a4": [
+"../ogg/we_a4.ogg"
+],
+"d#5": [
+"../ogg/we_ds5.ogg"
+]
+},
+"vox_they": {
+"d#3": [
+"../ogg/they_ds3.ogg"
+],
+"a3": [
+"../ogg/they_a3.ogg"
+],
+"d#4": [
+"../ogg/they_ds4.ogg"
+],
+"a4": [
+"../ogg/they_a4.ogg"
+],
+"d#5": [
+"../ogg/they_ds5.ogg"
+]
+},
+"vox_she": {
+"d#3": [
+"../ogg/she_ds3.ogg"
+],
+"a3": [
+"../ogg/she_a3.ogg"
+],
+"d#4": [
+"../ogg/she_ds4.ogg"
+],
+"a4": [
+"../ogg/she_a4.ogg"
+],
+"d#5": [
+"../ogg/she_ds5.ogg"
+]
+},
+"vox_he": {
+"d#3": [
+"../ogg/he_ds3.ogg"
+],
+"a3": [
+"../ogg/he_a3.ogg"
+],
+"d#4": [
+"../ogg/he_ds4.ogg"
+],
+"a4": [
+"../ogg/he_a4.ogg"
+],
+"d#5": [
+"../ogg/he_ds5.ogg"
+]
+},
+"vox_it": {
+"d#3": [
+"../ogg/it_ds3.ogg"
+],
+"a3": [
+"../ogg/it_a3.ogg"
+],
+"d#4": [
+"../ogg/it_ds4.ogg"
+],
+"a4": [
+"../ogg/it_a4.ogg"
+],
+"d#5": [
+"../ogg/it_ds5.ogg"
+]
+},
+"vox_us": {
+"d#3": [
+"../ogg/us_ds3.ogg"
+],
+"a3": [
+"../ogg/us_a3.ogg"
+],
+"d#4": [
+"../ogg/us_ds4.ogg"
+],
+"a4": [
+"../ogg/us_a4.ogg"
+],
+"d#5": [
+"../ogg/us_ds5.ogg"
+]
+},
+"vox_them": {
+"d#3": [
+"../ogg/them_ds3.ogg"
+],
+"a3": [
+"../ogg/them_a3.ogg"
+],
+"d#4": [
+"../ogg/them_ds4.ogg"
+],
+"a4": [
+"../ogg/them_a4.ogg"
+],
+"d#5": [
+"../ogg/them_ds5.ogg"
+]
+},
+"vox_my": {
+"d#3": [
+"../ogg/my_ds3.ogg"
+],
+"a3": [
+"../ogg/my_a3.ogg"
+],
+"d#4": [
+"../ogg/my_ds4.ogg"
+],
+"a4": [
+"../ogg/my_a4.ogg"
+],
+"d#5": [
+"../ogg/my_ds5.ogg"
+]
+},
+"vox_your": {
+"d#3": [
+"../ogg/your_ds3.ogg"
+],
+"a3": [
+"../ogg/your_a3.ogg"
+],
+"d#4": [
+"../ogg/your_ds4.ogg"
+],
+"a4": [
+"../ogg/your_a4.ogg"
+],
+"d#5": [
+"../ogg/your_ds5.ogg"
+]
+},
+"vox_our": {
+"d#3": [
+"../ogg/our_ds3.ogg"
+],
+"a3": [
+"../ogg/our_a3.ogg"
+],
+"d#4": [
+"../ogg/our_ds4.ogg"
+],
+"a4": [
+"../ogg/our_a4.ogg"
+],
+"d#5": [
+"../ogg/our_ds5.ogg"
+]
+},
+"vox_i": {
+"d#3": [
+"../ogg/i_ds3.ogg"
+],
+"a3": [
+"../ogg/i_a3.ogg"
+],
+"d#4": [
+"../ogg/i_ds4.ogg"
+],
+"a4": [
+"../ogg/i_a4.ogg"
+],
+"d#5": [
+"../ogg/i_ds5.ogg"
+]
+},
+"vox_am": {
+"d#3": [
+"../ogg/am_ds3.ogg"
+],
+"a3": [
+"../ogg/am_a3.ogg"
+],
+"d#4": [
+"../ogg/am_ds4.ogg"
+],
+"a4": [
+"../ogg/am_a4.ogg"
+],
+"d#5": [
+"../ogg/am_ds5.ogg"
+]
+},
+"vox_is": {
+"d#3": [
+"../ogg/is_ds3.ogg"
+],
+"a3": [
+"../ogg/is_a3.ogg"
+],
+"d#4": [
+"../ogg/is_ds4.ogg"
+],
+"a4": [
+"../ogg/is_a4.ogg"
+],
+"d#5": [
+"../ogg/is_ds5.ogg"
+]
+},
+"vox_are": {
+"d#3": [
+"../ogg/are_ds3.ogg"
+],
+"a3": [
+"../ogg/are_a3.ogg"
+],
+"d#4": [
+"../ogg/are_ds4.ogg"
+],
+"a4": [
+"../ogg/are_a4.ogg"
+],
+"d#5": [
+"../ogg/are_ds5.ogg"
+]
+},
+"vox_was": {
+"d#3": [
+"../ogg/was_ds3.ogg"
+],
+"a3": [
+"../ogg/was_a3.ogg"
+],
+"d#4": [
+"../ogg/was_ds4.ogg"
+],
+"a4": [
+"../ogg/was_a4.ogg"
+],
+"d#5": [
+"../ogg/was_ds5.ogg"
+]
+},
+"vox_be": {
+"d#3": [
+"../ogg/be_ds3.ogg"
+],
+"a3": [
+"../ogg/be_a3.ogg"
+],
+"d#4": [
+"../ogg/be_ds4.ogg"
+],
+"a4": [
+"../ogg/be_a4.ogg"
+],
+"d#5": [
+"../ogg/be_ds5.ogg"
+]
+},
+"vox_been": {
+"d#3": [
+"../ogg/been_ds3.ogg"
+],
+"a3": [
+"../ogg/been_a3.ogg"
+],
+"d#4": [
+"../ogg/been_ds4.ogg"
+],
+"a4": [
+"../ogg/been_a4.ogg"
+],
+"d#5": [
+"../ogg/been_ds5.ogg"
+]
+},
+"vox_do": {
+"d#3": [
+"../ogg/do_ds3.ogg"
+],
+"a3": [
+"../ogg/do_a3.ogg"
+],
+"d#4": [
+"../ogg/do_ds4.ogg"
+],
+"a4": [
+"../ogg/do_a4.ogg"
+],
+"d#5": [
+"../ogg/do_ds5.ogg"
+]
+},
+"vox_done": {
+"d#3": [
+"../ogg/done_ds3.ogg"
+],
+"a3": [
+"../ogg/done_a3.ogg"
+],
+"d#4": [
+"../ogg/done_ds4.ogg"
+],
+"a4": [
+"../ogg/done_a4.ogg"
+],
+"d#5": [
+"../ogg/done_ds5.ogg"
+]
+},
+"vox_can": {
+"d#3": [
+"../ogg/can_ds3.ogg"
+],
+"a3": [
+"../ogg/can_a3.ogg"
+],
+"d#4": [
+"../ogg/can_ds4.ogg"
+],
+"a4": [
+"../ogg/can_a4.ogg"
+],
+"d#5": [
+"../ogg/can_ds5.ogg"
+]
+},
+"vox_will": {
+"d#3": [
+"../ogg/will_ds3.ogg"
+],
+"a3": [
+"../ogg/will_a3.ogg"
+],
+"d#4": [
+"../ogg/will_ds4.ogg"
+],
+"a4": [
+"../ogg/will_a4.ogg"
+],
+"d#5": [
+"../ogg/will_ds5.ogg"
+]
+},
+"vox_would": {
+"d#3": [
+"../ogg/would_ds3.ogg"
+],
+"a3": [
+"../ogg/would_a3.ogg"
+],
+"d#4": [
+"../ogg/would_ds4.ogg"
+],
+"a4": [
+"../ogg/would_a4.ogg"
+],
+"d#5": [
+"../ogg/would_ds5.ogg"
+]
+},
+"vox_should": {
+"d#3": [
+"../ogg/should_ds3.ogg"
+],
+"a3": [
+"../ogg/should_a3.ogg"
+],
+"d#4": [
+"../ogg/should_ds4.ogg"
+],
+"a4": [
+"../ogg/should_a4.ogg"
+],
+"d#5": [
+"../ogg/should_ds5.ogg"
+]
+},
+"vox_could": {
+"d#3": [
+"../ogg/could_ds3.ogg"
+],
+"a3": [
+"../ogg/could_a3.ogg"
+],
+"d#4": [
+"../ogg/could_ds4.ogg"
+],
+"a4": [
+"../ogg/could_a4.ogg"
+],
+"d#5": [
+"../ogg/could_ds5.ogg"
+]
+},
+"vox_and": {
+"d#3": [
+"../ogg/and_ds3.ogg"
+],
+"a3": [
+"../ogg/and_a3.ogg"
+],
+"d#4": [
+"../ogg/and_ds4.ogg"
+],
+"a4": [
+"../ogg/and_a4.ogg"
+],
+"d#5": [
+"../ogg/and_ds5.ogg"
+]
+},
+"vox_but": {
+"d#3": [
+"../ogg/but_ds3.ogg"
+],
+"a3": [
+"../ogg/but_a3.ogg"
+],
+"d#4": [
+"../ogg/but_ds4.ogg"
+],
+"a4": [
+"../ogg/but_a4.ogg"
+],
+"d#5": [
+"../ogg/but_ds5.ogg"
+]
+},
+"vox_or": {
+"d#3": [
+"../ogg/or_ds3.ogg"
+],
+"a3": [
+"../ogg/or_a3.ogg"
+],
+"d#4": [
+"../ogg/or_ds4.ogg"
+],
+"a4": [
+"../ogg/or_a4.ogg"
+],
+"d#5": [
+"../ogg/or_ds5.ogg"
+]
+},
+"vox_if": {
+"d#3": [
+"../ogg/if_ds3.ogg"
+],
+"a3": [
+"../ogg/if_a3.ogg"
+],
+"d#4": [
+"../ogg/if_ds4.ogg"
+],
+"a4": [
+"../ogg/if_a4.ogg"
+],
+"d#5": [
+"../ogg/if_ds5.ogg"
+]
+},
+"vox_so": {
+"d#3": [
+"../ogg/so_ds3.ogg"
+],
+"a3": [
+"../ogg/so_a3.ogg"
+],
+"d#4": [
+"../ogg/so_ds4.ogg"
+],
+"a4": [
+"../ogg/so_a4.ogg"
+],
+"d#5": [
+"../ogg/so_ds5.ogg"
+]
+},
+"vox_like": {
+"d#3": [
+"../ogg/like_ds3.ogg"
+],
+"a3": [
+"../ogg/like_a3.ogg"
+],
+"d#4": [
+"../ogg/like_ds4.ogg"
+],
+"a4": [
+"../ogg/like_a4.ogg"
+],
+"d#5": [
+"../ogg/like_ds5.ogg"
+]
+},
+"vox_just": {
+"d#3": [
+"../ogg/just_ds3.ogg"
+],
+"a3": [
+"../ogg/just_a3.ogg"
+],
+"d#4": [
+"../ogg/just_ds4.ogg"
+],
+"a4": [
+"../ogg/just_a4.ogg"
+]
+},
+"vox_only": {
+"d#3": [
+"../ogg/only_ds3.ogg"
+],
+"a3": [
+"../ogg/only_a3.ogg"
+],
+"d#4": [
+"../ogg/only_ds4.ogg"
+],
+"a4": [
+"../ogg/only_a4.ogg"
+],
+"d#5": [
+"../ogg/only_ds5.ogg"
+]
+},
+"vox_still": {
+"d#3": [
+"../ogg/still_ds3.ogg"
+],
+"a3": [
+"../ogg/still_a3.ogg"
+],
+"d#4": [
+"../ogg/still_ds4.ogg"
+],
+"a4": [
+"../ogg/still_a4.ogg"
+],
+"d#5": [
+"../ogg/still_ds5.ogg"
+]
+},
+"vox_down": {
+"d#3": [
+"../ogg/down_ds3.ogg"
+],
+"a3": [
+"../ogg/down_a3.ogg"
+],
+"d#4": [
+"../ogg/down_ds4.ogg"
+],
+"a4": [
+"../ogg/down_a4.ogg"
+],
+"d#5": [
+"../ogg/down_ds5.ogg"
+]
+},
+"vox_up": {
+"d#3": [
+"../ogg/up_ds3.ogg"
+],
+"a3": [
+"../ogg/up_a3.ogg"
+],
+"d#4": [
+"../ogg/up_ds4.ogg"
+],
+"a4": [
+"../ogg/up_a4.ogg"
+],
+"d#5": [
+"../ogg/up_ds5.ogg"
+]
+},
+"vox_in": {
+"d#3": [
+"../ogg/in_ds3.ogg"
+],
+"a3": [
+"../ogg/in_a3.ogg"
+],
+"d#4": [
+"../ogg/in_ds4.ogg"
+],
+"a4": [
+"../ogg/in_a4.ogg"
+],
+"d#5": [
+"../ogg/in_ds5.ogg"
+]
+},
+"vox_out": {
+"d#3": [
+"../ogg/out_ds3.ogg"
+],
+"a3": [
+"../ogg/out_a3.ogg"
+],
+"d#4": [
+"../ogg/out_ds4.ogg"
+],
+"a4": [
+"../ogg/out_a4.ogg"
+],
+"d#5": [
+"../ogg/out_ds5.ogg"
+]
+},
+"vox_on": {
+"d#3": [
+"../ogg/on_ds3.ogg"
+],
+"a3": [
+"../ogg/on_a3.ogg"
+],
+"d#4": [
+"../ogg/on_ds4.ogg"
+],
+"a4": [
+"../ogg/on_a4.ogg"
+],
+"d#5": [
+"../ogg/on_ds5.ogg"
+]
+},
+"vox_off": {
+"d#3": [
+"../ogg/off_ds3.ogg"
+],
+"a3": [
+"../ogg/off_a3.ogg"
+],
+"d#4": [
+"../ogg/off_ds4.ogg"
+],
+"a4": [
+"../ogg/off_a4.ogg"
+],
+"d#5": [
+"../ogg/off_ds5.ogg"
+]
+},
+"vox_over": {
+"d#3": [
+"../ogg/over_ds3.ogg"
+],
+"a3": [
+"../ogg/over_a3.ogg"
+],
+"d#4": [
+"../ogg/over_ds4.ogg"
+],
+"a4": [
+"../ogg/over_a4.ogg"
+],
+"d#5": [
+"../ogg/over_ds5.ogg"
+]
+},
+"vox_under": {
+"d#3": [
+"../ogg/under_ds3.ogg"
+],
+"a3": [
+"../ogg/under_a3.ogg"
+],
+"d#4": [
+"../ogg/under_ds4.ogg"
+],
+"a4": [
+"../ogg/under_a4.ogg"
+],
+"d#5": [
+"../ogg/under_ds5.ogg"
+]
+},
+"vox_into": {
+"d#3": [
+"../ogg/into_ds3.ogg"
+],
+"a3": [
+"../ogg/into_a3.ogg"
+],
+"d#4": [
+"../ogg/into_ds4.ogg"
+],
+"a4": [
+"../ogg/into_a4.ogg"
+],
+"d#5": [
+"../ogg/into_ds5.ogg"
+]
+},
+"vox_away": {
+"d#3": [
+"../ogg/away_ds3.ogg"
+],
+"a3": [
+"../ogg/away_a3.ogg"
+],
+"d#4": [
+"../ogg/away_ds4.ogg"
+],
+"a4": [
+"../ogg/away_a4.ogg"
+],
+"d#5": [
+"../ogg/away_ds5.ogg"
+]
+},
+"vox_back": {
+"d#3": [
+"../ogg/back_ds3.ogg"
+],
+"a3": [
+"../ogg/back_a3.ogg"
+],
+"d#4": [
+"../ogg/back_ds4.ogg"
+],
+"a4": [
+"../ogg/back_a4.ogg"
+],
+"d#5": [
+"../ogg/back_ds5.ogg"
+]
+},
+"vox_with": {
+"d#3": [
+"../ogg/with_ds3.ogg"
+],
+"a3": [
+"../ogg/with_a3.ogg"
+],
+"d#4": [
+"../ogg/with_ds4.ogg"
+],
+"a4": [
+"../ogg/with_a4.ogg"
+],
+"d#5": [
+"../ogg/with_ds5.ogg"
+]
+},
+"vox_without": {
+"d#3": [
+"../ogg/without_ds3.ogg"
+],
+"a3": [
+"../ogg/without_a3.ogg"
+],
+"d#4": [
+"../ogg/without_ds4.ogg"
+],
+"a4": [
+"../ogg/without_a4.ogg"
+],
+"d#5": [
+"../ogg/without_ds5.ogg"
+]
+},
+"vox_for": {
+"d#3": [
+"../ogg/for_ds3.ogg"
+],
+"a3": [
+"../ogg/for_a3.ogg"
+],
+"d#4": [
+"../ogg/for_ds4.ogg"
+],
+"a4": [
+"../ogg/for_a4.ogg"
+],
+"d#5": [
+"../ogg/for_ds5.ogg"
+]
+},
+"vox_from": {
+"d#3": [
+"../ogg/from_ds3.ogg"
+],
+"a3": [
+"../ogg/from_a3.ogg"
+],
+"d#4": [
+"../ogg/from_ds4.ogg"
+],
+"a4": [
+"../ogg/from_a4.ogg"
+],
+"d#5": [
+"../ogg/from_ds5.ogg"
+]
+},
+"vox_to": {
+"d#3": [
+"../ogg/to_ds3.ogg"
+],
+"a3": [
+"../ogg/to_a3.ogg"
+],
+"d#4": [
+"../ogg/to_ds4.ogg"
+],
+"a4": [
+"../ogg/to_a4.ogg"
+],
+"d#5": [
+"../ogg/to_ds5.ogg"
+]
+},
+"vox_of": {
+"d#3": [
+"../ogg/of_ds3.ogg"
+],
+"a3": [
+"../ogg/of_a3.ogg"
+],
+"d#4": [
+"../ogg/of_ds4.ogg"
+],
+"a4": [
+"../ogg/of_a4.ogg"
+],
+"d#5": [
+"../ogg/of_ds5.ogg"
+]
+},
+"vox_the": {
+"d#3": [
+"../ogg/the_ds3.ogg"
+],
+"a3": [
+"../ogg/the_a3.ogg"
+],
+"d#4": [
+"../ogg/the_ds4.ogg"
+],
+"a4": [
+"../ogg/the_a4.ogg"
+],
+"d#5": [
+"../ogg/the_ds5.ogg"
+]
+},
+"vox_a": {
+"d#3": [
+"../ogg/a_ds3.ogg"
+],
+"a3": [
+"../ogg/a_a3.ogg"
+],
+"d#4": [
+"../ogg/a_ds4.ogg"
+],
+"a4": [
+"../ogg/a_a4.ogg"
+],
+"d#5": [
+"../ogg/a_ds5.ogg"
+]
+},
+"vox_this": {
+"d#3": [
+"../ogg/this_ds3.ogg"
+],
+"a3": [
+"../ogg/this_a3.ogg"
+],
+"d#4": [
+"../ogg/this_ds4.ogg"
+],
+"a4": [
+"../ogg/this_a4.ogg"
+],
+"d#5": [
+"../ogg/this_ds5.ogg"
+]
+},
+"vox_that": {
+"d#3": [
+"../ogg/that_ds3.ogg"
+],
+"a3": [
+"../ogg/that_a3.ogg"
+],
+"d#4": [
+"../ogg/that_ds4.ogg"
+],
+"a4": [
+"../ogg/that_a4.ogg"
+],
+"d#5": [
+"../ogg/that_ds5.ogg"
+]
+}
+}

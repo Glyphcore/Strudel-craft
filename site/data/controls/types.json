@@ -1,0 +1,286 @@
+{
+ "version": 1,
+ "types": [
+  {
+   "id": "slider",
+   "value": "number",
+   "keys": [
+    "min",
+    "max",
+    "default",
+    "step",
+    "curve",
+    "unit",
+    "smooth",
+    "orientation"
+   ],
+   "render": {},
+   "drawn": true,
+   "input": [
+    "value",
+    "delta"
+   ]
+  },
+  {
+   "id": "fader",
+   "value": "number",
+   "keys": [
+    "min",
+    "max",
+    "default",
+    "step",
+    "curve",
+    "unit",
+    "smooth",
+    "orientation"
+   ],
+   "render": {
+    "fallback": "slider"
+   },
+   "drawn": true,
+   "input": [
+    "value",
+    "delta"
+   ]
+  },
+  {
+   "id": "knob",
+   "value": "number",
+   "keys": [
+    "min",
+    "max",
+    "default",
+    "step",
+    "curve",
+    "unit",
+    "smooth",
+    "detent"
+   ],
+   "render": {
+    "fallback": "slider"
+   },
+   "drawn": true,
+   "input": [
+    "value",
+    "delta"
+   ]
+  },
+  {
+   "id": "number",
+   "value": "number",
+   "keys": [
+    "min",
+    "max",
+    "default",
+    "step",
+    "unit"
+   ],
+   "render": {},
+   "drawn": true,
+   "input": [
+    "value",
+    "delta"
+   ]
+  },
+  {
+   "id": "toggle",
+   "value": "bool",
+   "keys": [
+    "default"
+   ],
+   "render": {},
+   "drawn": true,
+   "input": [
+    "value",
+    "delta"
+   ]
+  },
+  {
+   "id": "button",
+   "value": "bool",
+   "keys": [
+    "default"
+   ],
+   "render": {
+    "fallback": "toggle"
+   },
+   "drawn": true,
+   "input": [
+    "on",
+    "off"
+   ]
+  },
+  {
+   "id": "select",
+   "value": "enum",
+   "keys": [
+    "options",
+    "default"
+   ],
+   "render": {},
+   "drawn": true,
+   "input": [
+    "value",
+    "delta"
+   ]
+  },
+  {
+   "id": "xy",
+   "value": "vec2",
+   "keys": [
+    "axes",
+    "spring"
+   ],
+   "render": {
+    "fallback": "slider",
+    "note": "two sliders"
+   },
+   "drawn": true,
+   "input": [
+    "value",
+    "delta"
+   ]
+  },
+  {
+   "id": "steps",
+   "value": "array",
+   "keys": [
+    "count",
+    "per",
+    "values",
+    "min",
+    "max"
+   ],
+   "render": {
+    "fallback": "number",
+    "note": "mini-notation text field"
+   },
+   "drawn": true,
+   "input": [
+    "value",
+    "delta"
+   ]
+  },
+  {
+   "id": "encoder",
+   "value": "number",
+   "keys": [
+    "min",
+    "max",
+    "default",
+    "sensitivity"
+   ],
+   "render": {
+    "fallback": "knob"
+   },
+   "drawn": false,
+   "input": [
+    "value",
+    "delta"
+   ]
+  },
+  {
+   "id": "ribbon",
+   "value": "number",
+   "keys": [
+    "min",
+    "max",
+    "default",
+    "step",
+    "curve",
+    "unit",
+    "smooth",
+    "spring"
+   ],
+   "render": {
+    "fallback": "slider"
+   },
+   "drawn": false,
+   "input": [
+    "value",
+    "delta"
+   ]
+  },
+  {
+   "id": "xyz",
+   "value": "vec3",
+   "keys": [
+    "axes"
+   ],
+   "render": {
+    "fallback": "slider"
+   },
+   "drawn": false,
+   "input": [
+    "value",
+    "delta"
+   ]
+  },
+  {
+   "id": "keys",
+   "value": "notes",
+   "keys": [
+    "low",
+    "high"
+   ],
+   "render": {
+    "fallback": "select"
+   },
+   "drawn": false,
+   "input": [
+    "value",
+    "delta"
+   ]
+  },
+  {
+   "id": "envelope",
+   "value": "vec4",
+   "keys": [
+    "min",
+    "max"
+   ],
+   "render": {
+    "fallback": "slider"
+   },
+   "drawn": false,
+   "input": [
+    "value",
+    "delta"
+   ]
+  },
+  {
+   "id": "curve",
+   "value": "breakpoints",
+   "keys": [
+    "length",
+    "min",
+    "max"
+   ],
+   "render": {
+    "fallback": "steps",
+    "note": "text field"
+   },
+   "drawn": false,
+   "input": [
+    "value",
+    "delta"
+   ]
+  },
+  {
+   "id": "meter",
+   "value": "readonly",
+   "keys": [
+    "source",
+    "min",
+    "max"
+   ],
+   "render": {
+    "fallback": "number"
+   },
+   "drawn": false,
+   "input": [
+    "value"
+   ]
+  }
+ ]
+}

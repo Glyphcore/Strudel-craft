@@ -2,7 +2,7 @@ name: Deploy site to GitHub Pages
 on:
   push:
     branches: [main]
-    paths: ['site/**', 'schemas/**', '.github/workflows/pages.yml']
+    paths: ['site/**', 'schemas/**', 'tools/packs/**', '.github/workflows/pages.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -25,6 +25,10 @@ jobs:
           sed -i "s/const VERSION = 'sc-dev';/const VERSION = 'sc-$SHA';/" site/sw.js
           grep -q "sc-$SHA" site/sw.js
           printf '{"sha": "%s", "date": "%s"}\n' "$SHA" "$DATE" > site/build.json
+      - name: Pin the shipped shim pack to the files being deployed (stale pins made the pack loader refuse data/syntax.json -> empty Syntax view)
+        run: |
+          python3 tools/packs/shim.py
+          python3 tools/packs/shim.py --check
       - name: Publish craftpack schemas under the site (docs/PACK_SPEC.md 14.2, so the $id URLs resolve)
         run: |
           mkdir -p site/schemas

@@ -34,11 +34,15 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
 4. Just after a deploy: the service worker revalidates every shell file with the server (`cache: 'no-cache'`, ETag) and precaches with
    `cache: 'reload'`, so an old build cached for 10 min (GitHub Pages `max-age=600`) is never mixed with new files. If the page still looks
    old, take the "New version, tap to reload" toast.
-5. Phone layout: the page never scrolls sideways (`overflow-x: clip` on html/body; editor header actions wrap onto a second row with 44px
+5. Installed app (Android Chrome PWA): an empty Syntax pane with an `E_PACK_HASH` error means the deployed data and its pins drifted
+   (deploys now regenerate the pins); tap Retry. An installed app idle at a new deploy reloads itself into the new build; while you play
+   or type, take the "New version, tap to reload" toast. Check: `node tests/site/standalone.mjs` (installed mode, service worker in
+   control, upgrades from two older builds, Range pass-through, Syntax error state and Retry).
+6. Phone layout: the page never scrolls sideways (`overflow-x: clip` on html/body; editor header actions wrap onto a second row with 44px
    targets, #81). An edited Rack header used to be 386px wide on a 360px phone, which made mobile Chrome rescale the page: it shifted sideways
    and the fixed transport slid partly off screen, so taps near Play landed on list rows. The viewport meta has
    `interactive-widget=resizes-content`, so the on-screen keyboard shrinks the layout and the transport (Play) stays above it.
-6. Check: `node tests/site/audio.mjs` (S22 profile, real taps, fresh profile and a stale service worker from an older build): peak on the
+7. Check: `node tests/site/audio.mjs` (S22 profile, real taps, fresh profile and a stale service worker from an older build): peak on the
    master AnalyserNode > 0.01, context running, non-blank scope and `_scope`/`_pianoroll` widgets, Rack default, Rack and Stack with a
    typed program; layout at 360px in every view, after typing and with the keyboard open (no sideways scroll, `elementFromPoint` at Play's
    centre is Play, every Play press a real tap, Revert visible with a 44px target); `--live URL` runs the fresh case against a deployed site.
@@ -89,6 +93,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     STRUDEL_MODULES=... node tests/vocals/formant_helper.mjs  # word().formant(true) on a synthetic bank (#57)
     node tests/site/record.mjs         # Record panel + recipes at 360px: record, download, clean-profile Remake hash match, tamper refused (#72)
     node tests/site/audio.mjs          # sound + visuals after Play at 360px DPR 3 touch: fresh profile and stale service worker (master peak, scope pixels, widgets, Stack typed program)
+    node tests/site/standalone.mjs     # installed app (standalone, SW in control): sound peak, scope pixels, Syntax examples; upgrade from older builds; Range pass-through; Syntax error state + Retry
     node tests/site/pwa.mjs            # installable PWA at /Strudel-craft/: installability errors (CDP), icons, precache, offline reload, offline bank toast, update toast, standalone (#73)
 
 Outputs go to `docs/screens/` (`metrics.json`, `lighthouse-mobile.json`, PNG screenshots at 390px and 1440px).
@@ -209,8 +214,15 @@ tab becomes the source. Every swap (edit, tab switch, knob/stack update) is comm
 ## Build badge and updates
 `.github/workflows/pages.yml` stamps every deploy: `sw.js` `VERSION` becomes `sc-<short sha>` (new cache on every deploy) and
 `build.json` gets `{sha, date}`; the transport shows it as a small badge (`dev` locally). A new service worker waits instead
-of taking over; the page shows a sticky toast "New version, tap to reload" which posts `SKIP_WAITING` and reloads on
-`controllerchange`. The app also checks for updates whenever the tab becomes visible again.
+of taking over. While the app is idle (nothing playing, no editor focused) the page posts `SKIP_WAITING` at once and reloads on
+`controllerchange`, so an installed app never keeps an old shell next to new files; while playing or typing it shows the sticky toast
+"New version, tap to reload" instead. The app also checks for updates whenever the tab becomes visible again. Old shell caches are deleted
+on activate (the install precache is one atomic `addAll` per `VERSION`, fetched with `cache: 'reload'`).
+- Service worker request rules: Range requests (audio elements, partial reads) and anything it cannot serve go straight to the network;
+  only complete readable 200 responses are cached (never 206 or opaque), cache writes never delay or fail a response, and any failure
+  inside the handler (storage quota, eviction, a bad entry) falls back to a plain network fetch.
+- `pages.yml` regenerates the shim pack pins (`python3 tools/packs/shim.py`, then `--check`) at every deploy, so the pinned hashes in
+  `craftpack.json` / `packs.lock.json` always match the deployed `data/` files.
 - History states also hold `ui:rack-editor` and `ui:stack-editor` (the full CodeMirror docs, not the virtualised DOM) and
   `ui:panel` (visible title, inspector, status and error text). Any editor content change from any source (typing, preset load,
   paste, tab switch, swap, restore) is detected and committed; search scans these too and reports the field (e.g. `Rack editor:4`).
@@ -527,6 +539,9 @@ only (for examples that need state first, such as a component saved in your libr
 A paradigm whose engine is not present is marked "coming" (detected at runtime), and a single example can carry `"coming": true` when
 the syntax around it is built but that call is not (no example is marked so at present). Every other example is expected to evaluate on the
 site as built: check with `node tests/site/smoke.mjs` plus a load of each example into Rack. Examples are intellisense snippets (provider `syntax`).
+If the syntax data cannot load (a pin mismatch `E_PACK_HASH`, offline with nothing cached), the view shows an error state naming the code,
+a Retry button (`strudelCraft.packs.retry('syntax')`, which re-reads failed ingredients of a kind; `packs.failure(kind)` says why one failed)
+and four bundled core examples instead of an empty pane.
 
 ## Typed params, AST-bound controls, inert validation
 Design: `docs/CONTROL_BINDING.md`. `data/intellisense/strudel.json` `params` gives each function's args a shape (number with

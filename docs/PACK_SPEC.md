@@ -295,7 +295,9 @@ Array order is load order and tie-break order. Three lock layers exist at run ti
 - Cache `sc-packs-1`, separate from the per-deploy shell cache, and **not** deleted on activate (today `sw.js` deletes every cache except
   `VERSION`; it must keep `sc-packs-*`). Keys are the fetch URLs; every pack URL contains a commit or manifest-hash segment, so entries are
   immutable and served cache-first with no revalidation.
-- The lock itself is shell (network-first, cached copy offline).
+- The lock itself is shell (network-first, cached copy offline). The site's deploy (`pages.yml`) regenerates the shim pins from the files it
+  deploys, so a first-party data edit can never ship with a stale pin (a stale pin made the loader refuse `data/syntax.json`, `E_PACK_HASH`).
+- A failed or unavailable ingredient can be read again with `packs.retry(kind)`; `packs.failure(kind)` returns `{ingredient, state, code, message}`.
 - Install step precaches, for the shipped lock: every manifest and every `eager` entry file and granted module. Bundled packs are
   same-origin (`./packs/<id>/<hash12>/`), so a first visit needs no other host.
 - Eviction: entries of packs that are in no lock layer are removed when a lock changes. Assets are LRU-capped (default 200 MB, measured

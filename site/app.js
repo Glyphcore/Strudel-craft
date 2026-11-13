@@ -799,7 +799,10 @@ async function boot() {
 
   fetch('build.json', { cache: 'no-store' }).then((r) => r.json()).then((b) => { const e = $('#buildBadge'); if (e) { e.textContent = b.sha === 'dev' ? 'dev' : b.sha + (b.date ? ' ' + b.date : ''); e.title = 'Build ' + b.sha + (b.date ? ', ' + b.date : ''); } }).catch(() => {});
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    const offer = (w) => { if (!w || offer.shown) return; offer.shown = true; window.strudelCraft.ui.toast('New version, tap to reload', { kind: 'info', sticky: true, onClick: () => w.postMessage('SKIP_WAITING') }); };
+    /* a new build is applied at once while idle (nothing playing, no editor focused): the waiting worker takes over and the page reloads, so an
+       installed app never keeps running an old shell next to new files. While playing or typing, the toast lets the user pick the moment. */
+    const busy = () => S.playing || S.busy || !!(document.activeElement && document.activeElement.closest && document.activeElement.closest('.cm-editor, textarea, input'));
+    const offer = (w) => { if (!w || offer.shown) return; offer.shown = true; if (!busy()) { w.postMessage('SKIP_WAITING'); return; } window.strudelCraft.ui.toast('New version, tap to reload', { kind: 'info', sticky: true, onClick: () => w.postMessage('SKIP_WAITING') }); };
     let reloading = false; navigator.serviceWorker.addEventListener('controllerchange', () => { if (!reloading && offer.shown) { reloading = true; location.reload(); } });
     const reg = () => navigator.serviceWorker.register('sw.js').then((r) => {
       if (r.waiting && navigator.serviceWorker.controller) offer(r.waiting);

@@ -91,12 +91,14 @@ async function typeCode(page, view, code) {
 /* peak over 2.5 s on the master analyser, context state, status dot, non-blank pixels on the scope and the inline widgets */
 const measure = (page) => page.evaluate(() => new Promise((ok) => {
   const B = window.__sc.Bus; let m = 0; const t = new Float32Array(2048);
-  const iv = setInterval(() => { if (!B.an) return; B.an.getFloatTimeDomainData(t); for (const x of t) m = Math.max(m, Math.abs(x)); }, 20);
+  /* every pixel: the pianoroll draws thin bars and a 1px playhead that a strided sample can miss entirely, depending on canvas width and DPR */
+  const ink = (c) => { try { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i]) n++; return n; } catch (e) { return -1; } };
+  const wmax = new Map(); let k = 0; /* widgets: visible ones only, max over the window (a single frame can be between notes) */
+  const iv = setInterval(() => { if (B.an) { B.an.getFloatTimeDomainData(t); for (const x of t) m = Math.max(m, Math.abs(x)); } if (++k % 10 === 0) document.querySelectorAll('canvas.sc-widget').forEach((c) => { if (c.offsetParent) wmax.set(c, Math.max(wmax.get(c) || 0, ink(c))); }); }, 20);
   setTimeout(() => {
     clearInterval(iv);
-    const ink = (c) => { try { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 16) if (d[i]) n++; return n; } catch (e) { return -1; } };
     const v = document.querySelector('#viz');
-    ok({ peak: +m.toFixed(4), state: B.ctx ? B.ctx.state : 'none', dot: document.querySelector('#audioSt')?.dataset.state, scope: v ? ink(v) : -1, widgets: [...document.querySelectorAll('canvas.sc-widget')].map(ink), playing: window.__sc.S.playing, status: document.querySelector('#status').textContent, active: (window.__sc.Engine.state.activeCode || '').replace(/\s+/g, ' ').slice(0, 60) });
+    ok({ peak: +m.toFixed(4), state: B.ctx ? B.ctx.state : 'none', dot: document.querySelector('#audioSt')?.dataset.state, scope: v ? ink(v) : -1, widgets: [...wmax.values()], playing: window.__sc.S.playing, status: document.querySelector('#status').textContent, active: (window.__sc.Engine.state.activeCode || '').replace(/\s+/g, ' ').slice(0, 60) });
   }, 2500);
 }));
 const waitPlaying = (page) => page.waitForFunction(() => { const s = window.__sc.S; return (!s.busy && s.playing && window.__sc.Engine.started) || document.querySelector('#status').classList.contains('err'); }, null, { timeout: 60000 }).catch(() => {});

@@ -343,6 +343,9 @@ export function createPacks(opts = {}) {
     api: API, ready, verify, list, credits, describe, resolve: resolveRef, items, report, get, ...view, sanitize,
     load: async (ref) => { await ready; const i = findIng(ref); if (!i) return 'unknown'; return loadIng(i); },
     loadAll: async () => { await ready; await Promise.all(allIngs().map(loadIng)); return report(); },
+    // a view's own retry (Syntax Retry button): failed or unavailable ingredients of `kind` are read again; failure(kind) names why they failed
+    retry: async (kind) => { await ready; for (const i of allIngs()) if (i.kind === kind && ['failed', 'unavailable'].includes(i.state)) { i.promise = null; i.data = null; setState(i, 'listed'); } return get(kind); },
+    failure: (kind) => { const i = allIngs().find((x) => x.kind === kind && ['failed', 'unavailable', 'blocked'].includes(x.state)); return i ? { ingredient: ingQ(i.pack, i), state: i.state, ...(i.reason || {}) } : null; },
     ensure: async (kind) => { await ready; await Promise.all(allIngs().filter((i) => i.kind === kind).map(loadIng)); return items(kind); },
     add, remove, prefer, grant, offline, propose, accept, proposals: () => proposalList.map((p) => ({ ...p })), peek: async (source) => { const p = proposalList.find((x) => x.source === source && x.state === 'new'); if (!p) return null; proposalList.splice(proposalList.indexOf(p), 1); return propose(source); },
     on: (type, fn) => { (listeners[type] ||= []).push(fn); return () => { listeners[type] = listeners[type].filter((f) => f !== fn); }; },

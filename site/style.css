@@ -430,3 +430,7 @@ dialog.scm{width:min(420px,calc(100vw - 24px))}
 .audio-st[data-state=fail] i{background:var(--bad);box-shadow:0 0 8px var(--bad)}
 .audio-st:focus-visible{outline:2px solid var(--sig-2);outline-offset:1px}
 @media (prefers-reduced-motion:reduce){.audio-st i{animation:none!important}}
+/* Syntax load failure: error state with Retry above the bundled core examples */
+.sx-error{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:10px 14px;padding:10px 12px;border:1px solid var(--bad);border-left-width:3px;border-radius:var(--r2);background:color-mix(in srgb,var(--bad) 8%,transparent)}
+.sx-error p{flex:1 1 220px;margin:0;font-size:.82rem}
+.sx-retry{min-height:44px;min-width:88px}

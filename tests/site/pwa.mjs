@@ -87,11 +87,13 @@ check('uncached sample bank offline -> "Offline" toast', offToast);
 await page.screenshot({ path: path.join(ROOT, 'docs/screens/pwa-offline-390.png') });
 await ctx.setOffline(false);
 
-/* 6. "New version, tap to reload" still offered after a deploy */
+/* 6. "New version, tap to reload" still offered after a deploy while the user is busy (editor focused); idle, the update applies itself
+   (tests/site/standalone.mjs upgrade cases) */
 swVersion = 'sc-test-2';
+await page.evaluate(() => { const c = [...document.querySelectorAll('.cm-content')].find((e) => e.offsetParent); if (c) c.focus(); });
 await page.evaluate(() => navigator.serviceWorker.getRegistration().then((r) => r.update()));
 const upd = await page.waitForFunction(() => [...document.querySelectorAll('.toast')].some((t) => /New version, tap to reload/.test(t.textContent)), null, { timeout: 15000 }).then(() => true).catch(() => false);
-check('"New version, tap to reload" toast after a new sw.js', upd);
+check('"New version, tap to reload" toast after a new sw.js while typing', upd);
 if (upd) { const nav = page.waitForEvent('framenavigated', { timeout: 10000 }).then(() => true).catch(() => false); await page.click('.toast-act'); check('tapping it reloads into the new version', await nav); }
 
 /* 7. standalone (installed): offers hidden, standalone class set */

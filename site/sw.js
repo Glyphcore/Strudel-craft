@@ -36,10 +36,14 @@ self.addEventListener('message', (e) => {
 });
 let rootsMem = null; const rootsReady = packRoots().then((r) => { rootsMem = r; });
 const BANKS = 'sc-banks-1', BANK_MAX = 1500;
+/* Range requests (audio elements, partial reads) go straight to the network: a cached full file must never answer them, and a 206 is never
+   cached. Only complete, readable (non-opaque) 200 responses are stored, and storing never delays or fails the response (quota, eviction). */
+const cacheable = (res) => res && res.status === 200 && res.type !== 'opaque' && res.type !== 'opaqueredirect';
 async function bankFetch(req) {
-  const c = await caches.open(BANKS), hit = await c.match(req); if (hit) return hit;
+  if (req.headers.has('range')) return fetch(req);
+  let c = null; try { c = await caches.open(BANKS); const hit = await c.match(req); if (hit) return hit; } catch (e) { c = null; /* storage unavailable: network only */ }
   let res; try { res = await fetch(req); } catch (e) { tellOffline('bank', req.url); return Response.error(); }
-  if (res.ok) { await c.put(req, res.clone()); c.keys().then((ks) => Promise.all(ks.slice(0, Math.max(0, ks.length - BANK_MAX)).map((k) => c.delete(k)))).catch(() => {}); }
+  if (c && cacheable(res)) c.put(req, res.clone()).then(() => c.keys()).then((ks) => Promise.all(ks.slice(0, Math.max(0, ks.length - BANK_MAX)).map((k) => c.delete(k)))).catch(() => {});
   return res;
 }
 function shellFetch(req, url) { /* Promise<Response>, or null = leave the request to the browser */
@@ -47,17 +51,20 @@ function shellFetch(req, url) { /* Promise<Response>, or null = leave the reques
   const cdnModule = url.hostname === 'esm.sh'; /* pinned CodeMirror / jsdiff modules: cache-first so the editor works offline */
   const bank = url.hostname === 'raw.githubusercontent.com'; /* sample maps (.json) and their audio files: lazy, runtime cache that survives deploys */
   if (bank) return bankFetch(req);
-  if (pinned || cdnModule) return caches.open(VERSION).then(async (c) => { const hit = await c.match(req); if (hit) return hit; const res = await fetch(req); if (res.ok) c.put(req, res.clone()); return res; });
+  if (req.headers.has('range')) return url.origin === self.location.origin ? fetch(req) : null;
+  if (pinned || cdnModule) return caches.open(VERSION).then(async (c) => { const hit = await c.match(req); if (hit) return hit; const res = await fetch(req); if (cacheable(res)) c.put(req, res.clone()).catch(() => {}); return res; });
   if (url.origin !== self.location.origin) return null;
   /* revalidate with the server (ETag, cheap 304) instead of trusting the 10-minute HTTP cache (GitHub Pages max-age=600): after a deploy, a mix of
      old cached modules and new ones broke the page (old shell + new files). Offline the shell cache still answers. */
   const fresh = req.mode === 'navigate' ? req : new Request(req, { cache: 'no-cache' }); /* navigations keep the browser's redirect handling */
-  return fetch(fresh).then((res) => { if (res.ok) caches.open(VERSION).then((c) => c.put(req, res.clone())); return res; }).catch(() => caches.match(req, { ignoreSearch: true }).then((r) => r || (req.mode === 'navigate' ? caches.match('index.html') : Response.error())));
+  return fetch(fresh).then((res) => { if (cacheable(res)) { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)).catch(() => {}); } return res; }).catch(() => caches.match(req, { ignoreSearch: true }).then((r) => r || (req.mode === 'navigate' ? caches.match('index.html') : Response.error())));
 }
 self.addEventListener('fetch', (e) => {
   const req = e.request; if (req.method !== 'GET') return;
   const url = new URL(req.url);
   const go = () => { const root = (rootsMem || []).find((r) => req.url.startsWith(r.base)); return root ? packFetch(req, root) : shellFetch(req, url); };
-  if (rootsMem === null) { e.respondWith(rootsReady.then(() => go() || fetch(req))); return; } /* service worker just woke up: roots are still loading */
-  const p = go(); if (p) e.respondWith(p);
+  /* never break a request the worker cannot serve: any failure inside the handler (cache storage, a bad entry) falls back to the network */
+  const safe = (p) => p.then((r) => r || fetch(req)).catch(() => fetch(req));
+  if (rootsMem === null) { if (req.headers.has('range') && url.origin !== self.location.origin) return; e.respondWith(safe(rootsReady.then(() => go()))); return; } /* service worker just woke up: roots are still loading */
+  const p = go(); if (p) e.respondWith(safe(p));
 });

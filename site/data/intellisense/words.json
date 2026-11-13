@@ -1,0 +1,431 @@
+{
+ "bank": "vox",
+ "items": [
+  {
+   "name": "about",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "all",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 8
+  },
+  {
+   "name": "ay",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 4
+  },
+  {
+   "name": "ayy",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 2
+  },
+  {
+   "name": "baby",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 12
+  },
+  {
+   "name": "bay_bee",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "be",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 2
+  },
+  {
+   "name": "boo",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 3
+  },
+  {
+   "name": "by",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 3
+  },
+  {
+   "name": "call",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 12
+  },
+  {
+   "name": "chance",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "come",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "crazy",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "cry",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 2
+  },
+  {
+   "name": "day",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 3
+  },
+  {
+   "name": "die",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "do",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 2
+  },
+  {
+   "name": "don_t",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "dont",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 6
+  },
+  {
+   "name": "dreams",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "drive",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "ee",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 6
+  },
+  {
+   "name": "eye",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 3
+  },
+  {
+   "name": "goodbye",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "hey",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 8
+  },
+  {
+   "name": "honey",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 4
+  },
+  {
+   "name": "honey_unny",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 2
+  },
+  {
+   "name": "i",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 10
+  },
+  {
+   "name": "i_d",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 2
+  },
+  {
+   "name": "i_ll",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "ide",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "in",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 2
+  },
+  {
+   "name": "is",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "it_s",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "just",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 5
+  },
+  {
+   "name": "know",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 2
+  },
+  {
+   "name": "la_la",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 10
+  },
+  {
+   "name": "la_la_la_la",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 10
+  },
+  {
+   "name": "leave",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "let",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "life",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "love",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "make",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "me",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 21
+  },
+  {
+   "name": "miss",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 5
+  },
+  {
+   "name": "my",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 5
+  },
+  {
+   "name": "never",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "night",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 3
+  },
+  {
+   "name": "no",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 2
+  },
+  {
+   "name": "ooh",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 2
+  },
+  {
+   "name": "please",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "quit",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 2
+  },
+  {
+   "name": "say",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 2
+  },
+  {
+   "name": "side",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 3
+  },
+  {
+   "name": "stay",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 2
+  },
+  {
+   "name": "swear",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "take",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "the",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "think",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "this",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 2
+  },
+  {
+   "name": "time",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "to",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 7
+  },
+  {
+   "name": "true",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "us",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "wanna",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "want",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 4
+  },
+  {
+   "name": "when",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "why",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "with",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "would",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 1
+  },
+  {
+   "name": "you",
+   "kind": "word",
+   "detail": "vox word",
+   "n": 15
+  }
+ ]
+}

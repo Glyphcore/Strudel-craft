@@ -100,3 +100,11 @@
 /* "on" keeps light text on a dark pad-tinted fill (>= 7:1 for any pad colour); the pad colour carries as a ring and glow */
 .pp-pad[data-state=on]{background:color-mix(in srgb,var(--pc) 25%,var(--panel-2));color:var(--text);border-color:var(--pc);box-shadow:inset 0 0 0 3px var(--pc),0 0 18px color-mix(in srgb,var(--pc) 55%,transparent)}
 :root[data-theme=light] .pp-pad[data-state=on]{background:color-mix(in srgb,var(--pc) 22%,#fff)}
+
+/* range spec (CONTROL_BINDING section 9) */
+.pc-range{margin:2px 0 0;font-family:var(--mono);font-size:.62rem;color:var(--dim);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-range-hint{margin:4px 0 0;font-family:var(--mono);font-size:.72rem;color:var(--dim)}
+.pc-range-form{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}
+.pc-range-form .scm-acts{grid-column:1/-1}
+.pc-rf{display:flex;flex-direction:column;gap:2px}
+.pc-val{cursor:text}

@@ -692,7 +692,8 @@
     "unit": "Hz",
     "curve": "exp",
     "default": 440,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "bank": [
@@ -720,7 +721,8 @@
      0.5,
      0.8,
      1
-    ]
+    ],
+    "clamp": "soft"
    }
   ],
   "postgain": [
@@ -729,7 +731,8 @@
     "shape": "number",
     "range": "postgain",
     "default": 1,
-    "control": "fader"
+    "control": "fader",
+    "clamp": "soft"
    }
   ],
   "velocity": [
@@ -738,7 +741,8 @@
     "shape": "number",
     "range": "velocity",
     "default": 0.8,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "lpf": [
@@ -756,7 +760,8 @@
      800,
      2000,
      5000
-    ]
+    ],
+    "clamp": "soft"
    },
    {
     "name": "q",
@@ -764,7 +769,8 @@
     "min": 0,
     "max": 50,
     "default": 1,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "cutoff": [
@@ -782,7 +788,8 @@
      800,
      2000,
      5000
-    ]
+    ],
+    "clamp": "soft"
    }
   ],
   "hpf": [
@@ -800,7 +807,8 @@
      800,
      2000,
      5000
-    ]
+    ],
+    "clamp": "soft"
    }
   ],
   "bpf": [
@@ -818,7 +826,8 @@
      800,
      2000,
      5000
-    ]
+    ],
+    "clamp": "soft"
    }
   ],
   "lpq": [
@@ -833,7 +842,8 @@
      4,
      8,
      16
-    ]
+    ],
+    "clamp": "soft"
    }
   ],
   "vowel": [
@@ -866,7 +876,8 @@
     "min": 0,
     "max": 1,
     "default": 0.4,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "size": [
@@ -875,7 +886,8 @@
     "shape": "number",
     "range": "roomsize",
     "default": 4,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "delay": [
@@ -885,7 +897,8 @@
     "min": 0,
     "max": 1,
     "default": 0.3,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "delaytime": [
@@ -902,7 +915,8 @@
      0.25,
      0.375,
      0.5
-    ]
+    ],
+    "clamp": "soft"
    }
   ],
   "delayfeedback": [
@@ -912,7 +926,8 @@
     "min": 0,
     "max": 0.95,
     "default": 0.4,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "hard"
    }
   ],
   "distort": [
@@ -922,7 +937,8 @@
     "min": 0,
     "max": 10,
     "default": 0.5,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "crush": [
@@ -939,7 +955,8 @@
      6,
      8,
      12
-    ]
+    ],
+    "clamp": "hard"
    }
   ],
   "shape": [
@@ -949,7 +966,8 @@
     "min": 0,
     "max": 1,
     "default": 0.4,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "pan": [
@@ -959,7 +977,8 @@
     "range": "pan",
     "default": 0.5,
     "curve": "bipolar",
-    "control": "knob"
+    "control": "knob",
+    "clamp": "hard"
    }
   ],
   "attack": [
@@ -977,7 +996,8 @@
      0.01,
      0.1,
      0.5
-    ]
+    ],
+    "clamp": "soft"
    }
   ],
   "decay": [
@@ -989,7 +1009,8 @@
     "unit": "s",
     "curve": "exp",
     "default": 0.2,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "sustain": [
@@ -999,7 +1020,8 @@
     "min": 0,
     "max": 1,
     "default": 0.5,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "release": [
@@ -1011,7 +1033,8 @@
     "unit": "s",
     "curve": "exp",
     "default": 0.3,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "fast": [
@@ -1027,7 +1050,8 @@
      2,
      3,
      4
-    ]
+    ],
+    "clamp": "soft"
    }
   ],
   "slow": [
@@ -1042,7 +1066,8 @@
      2,
      4,
      8
-    ]
+    ],
+    "clamp": "soft"
    }
   ],
   "early": [
@@ -1052,7 +1077,8 @@
     "min": 0,
     "max": 1,
     "default": 0.25,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "late": [
@@ -1062,7 +1088,8 @@
     "min": 0,
     "max": 1,
     "default": 0.25,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "every": [
@@ -1078,7 +1105,8 @@
      2,
      4,
      8
-    ]
+    ],
+    "clamp": "soft"
    },
    {
     "name": "pattern",
@@ -1123,7 +1151,8 @@
     "presets": [
      0.125,
      0.25
-    ]
+    ],
+    "clamp": "soft"
    },
    {
     "name": "pattern",
@@ -1142,7 +1171,8 @@
     "min": 0,
     "max": 1,
     "default": 0.3,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "struct": [
@@ -1165,7 +1195,8 @@
     "max": 16,
     "step": 1,
     "default": 3,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "hard"
    },
    {
     "name": "steps",
@@ -1174,7 +1205,8 @@
     "max": 16,
     "step": 1,
     "default": 8,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "hard"
    }
   ],
   "scale": [
@@ -1203,7 +1235,8 @@
     "step": 1,
     "unit": "st",
     "default": 12,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "add": [
@@ -1224,7 +1257,8 @@
     "max": 64,
     "step": 1,
     "default": 8,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "speed": [
@@ -1240,7 +1274,8 @@
      1,
      2,
      -1
-    ]
+    ],
+    "clamp": "soft"
    }
   ],
   "clip": [
@@ -1250,7 +1285,8 @@
     "min": 0,
     "max": 1,
     "default": 0.5,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "orbit": [
@@ -1261,7 +1297,8 @@
     "max": 11,
     "step": 1,
     "default": 1,
-    "control": "number"
+    "control": "number",
+    "clamp": "hard"
    }
   ],
   "range": [
@@ -1269,13 +1306,15 @@
     "name": "min",
     "shape": "number",
     "default": 0,
-    "control": "number"
+    "control": "number",
+    "clamp": "soft"
    },
    {
     "name": "max",
     "shape": "number",
     "default": 1,
-    "control": "number"
+    "control": "number",
+    "clamp": "soft"
    }
   ],
   "segment": [
@@ -1286,7 +1325,8 @@
     "max": 64,
     "step": 1,
     "default": 16,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "setcpm": [
@@ -1301,7 +1341,8 @@
      "120/4",
      "90/4",
      "140/4"
-    ]
+    ],
+    "clamp": "soft"
    }
   ],
   "setcps": [
@@ -1311,7 +1352,8 @@
     "min": 0.1,
     "max": 2,
     "default": 0.5,
-    "control": "knob"
+    "control": "knob",
+    "clamp": "soft"
    }
   ],
   "slider": [
@@ -1319,19 +1361,22 @@
     "name": "value",
     "shape": "number",
     "default": 0.5,
-    "control": "slider"
+    "control": "slider",
+    "clamp": "soft"
    },
    {
     "name": "min",
     "shape": "number",
     "default": 0,
-    "control": "number"
+    "control": "number",
+    "clamp": "soft"
    },
    {
     "name": "max",
     "shape": "number",
     "default": 1,
-    "control": "number"
+    "control": "number",
+    "clamp": "soft"
    }
   ],
   "ctl": [
@@ -1468,7 +1513,8 @@
    "number": {
     "min": 0,
     "max": 1,
-    "curve": "lin"
+    "curve": "lin",
+    "clamp": "soft"
    }
   },
   "pools": {
@@ -1486,6 +1532,22 @@
     "bb",
     "b"
    ]
+  }
+ },
+ "rangeSpec": {
+  "_doc": "Every numeric control / atom param: min, max, step, unit, curve (lin|log|exp, 'linear' accepted), clamp (hard|soft|none). Precedence: user override per AST id (perform model ranges) > code literal or ctl spec > this param shape > 0..1. Values are typed unit-aware: 1.5k, -6 dB, 2:30, 250ms, 50%.",
+  "keys": [
+   "min",
+   "max",
+   "step",
+   "unit",
+   "curve",
+   "clamp"
+  ],
+  "clamps": {
+   "hard": "values outside are clamped (typed entry offers Extend range to fit)",
+   "soft": "slider travel stays in range, typed values may go beyond",
+   "none": "no bounds"
   }
  }
 }

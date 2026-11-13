@@ -1,6 +1,24 @@
 /* Ghost-text inline suggestions (Copilot-style) for the CodeMirror editors. Local providers only: no network, no LLM.
    Registry: strudelCraft.intellisense.registerInline({ id, priority?, suggest(ctx) -> string[] | Promise<string[]> })
    ctx = { before, after, line, doc, pos }. First non-empty suggestions (by priority, high first) are shown; Ctrl/Alt+] cycles. */
+/* Node-aware accept (docs/CONTROL_BINDING.md section 10): one change that replaces the node under the caret and merges with what
+   is already there. doc/pos: document and caret; text: suggestion; opts.from: start of the typed prefix (popup) or null (ghost text:
+   text continues the node). Returns { from, to, insert, caret, noop }. */
+const ID = /[\w$]/, TOKQ = /[^\s"'`\[\]<>{},()|*!@%?:~]/;
+function inQuote(doc, pos) { const ls = doc.lastIndexOf('\n', pos - 1) + 1; let q = null; for (let i = ls; i < pos; i++) { const c = doc[i]; if (q) { if (c === '\\') i++; else if (c === q) q = null; } else if (c === '"' || c === "'" || c === '`') q = c; } return q; }
+export function mergeAccept(doc, pos, text, { from = null } = {}) {
+  const q = inQuote(doc, pos); const cls = q ? TOKQ : ID; const ghost = from == null;
+  let a = ghost ? pos : from; let b = pos; if (!ghost) while (b < doc.length && cls.test(doc[b])) b++; /* popup: the whole node under the caret is replaced */
+  const le = doc.indexOf('\n', b); const rest = doc.slice(b, le < 0 ? doc.length : le);
+  /* chain calls already present later in the statement are not re-inserted */
+  let full = text.replace(/\.([A-Za-z_$][\w$]*)\(([^()]*)\)/g, (m, name) => (rest.startsWith(m) || !new RegExp('\\.' + name + '\\(').test(rest) ? m : ''));
+  let h = 0; if (!ghost) while (h < full.length && cls.test(full[h])) h++;
+  const head = full.slice(0, h), tail = full.slice(h);
+  let j = b; for (const ch of tail) if (j < doc.length && doc[j] === ch && doc[j] !== '\n') j++; /* existing parens, closers, args are consumed, not duplicated */
+  const insert = head + tail; const to = j; const cur = doc.slice(a, to);
+  return { from: a, to, insert, caret: a + insert.length, noop: cur === insert };
+}
+
 export function setupInline(api, cm) {
   const { EditorView, Decoration, WidgetType, StateField, StateEffect, Prec, keymap, ac, indentMore } = cm;
   const inline = new Map();
@@ -90,7 +108,10 @@ export function setupInline(api, cm) {
     update(v, tr) { for (const e of tr.effects) if (e.is(setGhost)) return e.value; if (tr.docChanged || tr.selection) return null; return v; },
     provide: (f) => EditorView.decorations.from(f, (v) => (v ? Decoration.set([Decoration.widget({ widget: new Ghost(v.alts[v.i], v.alts.length, v.i), side: 1 }).range(v.pos)]) : Decoration.none)),
   });
-  function accept(view) { const g = view.state.field(field); if (!g) return false; const t = g.alts[g.i]; view.dispatch({ changes: { from: g.pos, insert: t }, selection: { anchor: g.pos + t.length }, userEvent: 'input.complete' }); return true; }
+  function accept(view) { /* one transaction, node-aware merge; ghost recomputed afterwards against the new doc */
+    const g = view.state.field(field); if (!g) return false; const t = g.alts[g.i]; const r = mergeAccept(view.state.doc.toString(), g.pos, t);
+    if (r.noop) view.dispatch({ selection: { anchor: r.caret }, effects: setGhost.of(null) }); else view.dispatch({ changes: { from: r.from, to: r.to, insert: r.insert }, selection: { anchor: r.caret }, userEvent: 'input.complete' });
+    return true; }
   function dismiss(view) { if (!view.state.field(field)) return false; view.dispatch({ effects: setGhost.of(null) }); return true; }
   function cycle(view, d) { const g = view.state.field(field); if (!g || g.alts.length < 2) return !!g; view.dispatch({ effects: setGhost.of({ ...g, i: (g.i + d + g.alts.length) % g.alts.length }) }); return true; }
   let seq = 0;
@@ -117,5 +138,5 @@ export function setupInline(api, cm) {
     { key: 'Ctrl-[', run: (v) => cycle(v, -1) }, { key: 'Alt-[', run: (v) => cycle(v, -1) },
   ]));
   const theme = EditorView.theme({ '.cm-ghost': { opacity: '.45', fontStyle: 'italic' }, '.cm-ghost-tab': { marginLeft: '6px', padding: '0 8px', minHeight: '28px', minWidth: '44px', fontSize: '.68rem', letterSpacing: '.08em', textTransform: 'uppercase', border: '1px solid var(--sig-2)', borderRadius: 'var(--r1)', background: 'transparent', color: 'var(--sig-2)', verticalAlign: 'middle', cursor: 'pointer' } });
-  return { extension: [field, trigger, keys, theme], accept, dismiss, ghost: (view) => view.state.field(field) };
+  return { extension: [field, trigger, keys, theme], accept, dismiss, ghost: (view) => view.state.field(field), show: (view, alts, pos = view.state.selection.main.head) => view.dispatch({ effects: setGhost.of({ pos, alts: [].concat(alts), i: 0 }) }), mergeAccept };
 }

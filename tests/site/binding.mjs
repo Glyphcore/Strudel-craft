@@ -78,7 +78,61 @@ const docText = () => page.evaluate(() => document.getElementById('code').cmView
   await page.click('.lit-pop .lit-chip[data-v="b3"]').catch(() => {}); await settle(); const t = await docText();
   check('chord token opens a multiselect; adding b3 rewrites the chord group', ed === 'chips' && t.includes('[c3,e3,g3,b3]') && t.includes('[a2,c3]'), JSON.stringify({ ed, t: t.slice(0, 60), box0 })); await page.keyboard.press('Escape'); }
 await page.evaluate(() => window.strudelCraft.literals.close());
+// note editor applies live: octave change rewrites the literal at once, keeping pitch class and accidental
+{ await setDoc(`$: note("eb3 g3").s("sawtooth")\n`); await settle(); const c0 = await stats();
+  const pn = await at('eb3', 1); await tap(pn); await page.waitForSelector('.lit-pop[data-editor="piano"]', { timeout: 3000 }).catch(() => {});
+  await page.click('#litOctUp').catch(() => {}); await page.waitForTimeout(100); const t1 = await docText(); const shown = await page.textContent('.lit-pop .lit-val').catch(() => '');
+  await page.click('#litOctUp').catch(() => {}); await settle(); const t2 = await docText(); const c1 = await stats(); const open = await page.$('.lit-pop[data-editor="piano"]');
+  check('note editor: octave + applies to the source at once (eb3 -> eb4 -> eb5), no confirm tap; one compile after settle', t1.includes('note("eb4 g3")') && shown === 'eb4' && t2.includes('note("eb5 g3")') && !!open && c1.compiles - c0.compiles === 1, JSON.stringify({ t1: t1.slice(0, 22), shown, t2: t2.slice(0, 22), compiles: c1.compiles - c0.compiles })); }
+await page.evaluate(() => window.strudelCraft.literals.close());
 await setDoc(CODE); await settle();
+
+// 8. node-aware accept (CONTROL_BINDING section 10): ghost Tab and popup accept replace/merge the node, never duplicate; one undo step
+{ const caseG = async (doc, caret, ghost) => { await setDoc(doc); await page.evaluate(([c, g]) => { const v = document.getElementById('code').cmView; v.focus(); v.dispatch({ selection: { anchor: c } }); window.strudelCraft.intellisense.ghost.show(v, g); }, [caret, ghost]); await page.keyboard.press('Tab'); await page.waitForTimeout(80); return docText(); };
+  const R = {};
+  R.prefix = await caseG('$: n("0").lp\n', 12, 'f(800)');
+  R.complete = await caseG('$: n("0").lpf(800)\n', 13, '(800)');
+  R.parens = await caseG('$: n("0").lpf()\n', 13, '(800)');
+  await page.keyboard.press('Control+z'); await page.waitForTimeout(80); R.undo = await docText();
+  R.chain = await caseG('$: n("0").lpf(800).decay(0.1)\n', 18, '.decay(0.1)');
+  // popup: caret mid-token "lp|f" picks lpf; caret in an arg value swaps it
+  const caseP = async (doc, caret, pick) => { await setDoc(doc); await page.evaluate((c) => { const v = document.getElementById('code').cmView; v.focus(); v.dispatch({ selection: { anchor: c } }); window.strudelCraft.intellisense.startCompletion(v); }, caret); await page.waitForSelector('.cm-tooltip-autocomplete li', { timeout: 3000 }).catch(() => {});
+    const ok = await page.evaluate((p) => { const li = [...document.querySelectorAll('.cm-tooltip-autocomplete li')].find((l) => l.textContent.startsWith(p)); if (li) { li.dispatchEvent(new MouseEvent('mousedown', { bubbles: true })); li.click(); } return !!li; }, pick); await page.waitForTimeout(120); return ok ? docText() : 'no option ' + pick; };
+  R.mid = await caseP('$: n("0").lpf(800)\n', 12, 'lpf');
+  R.swap = await caseP('$: n("0").lpf(800)\n', 15, '2000');
+  check('accept: prefix partial lp + f(800) -> lpf(800)', R.prefix.startsWith('$: n("0").lpf(800)\n'), R.prefix);
+  check('accept: already-complete token is a no-op (no duplicate)', R.complete.startsWith('$: n("0").lpf(800)\n'), R.complete);
+  check('accept: existing parens merge (lpf() + (800) -> lpf(800))', R.parens.startsWith('$: n("0").lpf(800)\n'), R.parens);
+  check('accept: chained call already present is not re-inserted', R.chain.startsWith('$: n("0").lpf(800).decay(0.1)\n'), R.chain);
+  check('accept: one undo step restores the pre-accept text', R.undo.startsWith('$: n("0").lpf()\n'), R.undo.slice(0, 40));
+  check('accept: caret mid-token (lp|f) picks lpf without duplicating', R.mid.startsWith('$: n("0").lpf(800)\n'), R.mid);
+  check('accept: caret in an arg value swaps the value (800 -> 2000)', R.swap.startsWith('$: n("0").lpf(2000)\n'), R.swap);
+  await setDoc(CODE); await settle(); }
+
+// 7. range spec (CONTROL_BINDING section 9): type 5000 into a 0..1 slider, "Extend range to fit" widens it and persists per id
+{ await setDoc(`$: note("c3").s("sawtooth").gain(slider(0.5, 0, 1))\n`); await settle();
+  await page.evaluate(() => document.querySelector('.pc-inline').scrollIntoView({ block: 'center' })); await page.waitForTimeout(600);
+  const v = await page.evaluate(() => { const e = document.querySelector('.pc-inline .pc-cell .pc-val'); const r = e.getBoundingClientRect(); const vv = window.visualViewport; return { x: r.left + r.width / 2 - vv.offsetLeft, y: r.top + r.height / 2 - vv.offsetTop, id: e.closest('.pc-cell').dataset.site }; });
+  await tap(v); await page.waitForSelector('#pfNum', { timeout: 3000 }).catch(() => {});
+  await page.fill('#pfNum', '5000').catch(() => {}); const hint = await page.textContent('#pfNumHint').catch(() => ''); await page.click('#pfExtend').catch(() => {}); await page.waitForTimeout(300);
+  const r = await page.evaluate((id) => { const C = window.strudelCraft.perform.controls; const s = C.declare(id); return { min: s.min, max: s.max, v: C.get(id), saved: (window.strudelCraft.perform.model().ranges || {})[id], hint: document.querySelector(`.pc-inline .pc-cell[data-site="${id}"] .pc-range`)?.textContent }; }, v.id);
+  check('typing 5000 into a 0..1 slider offers and applies "Extend range to fit" (persisted per id)', r.min === 0 && r.max >= 5000 && r.v === 5000 && r.saved && r.saved.max >= 5000 && /5000/.test(r.hint || '') && /outside|clamps/.test(hint || ''), JSON.stringify({ ...r, hint2: hint }));
+  const pv = await page.evaluate(() => { const p = window.strudelCraft.perform.controls.parseValue; return [p('1.5k', { unit: 'Hz' }), p('-6 dB', { unit: 'dB' }), p('2:30'), p('250ms', { unit: 's' })]; });
+  check('unit-aware parsing: 1.5k Hz, -6 dB, 2:30, 250ms', JSON.stringify(pv) === '[1500,-6,150,0.25]', JSON.stringify(pv));
+  await setDoc(CODE); await settle(); }
+
+// 6. reference inspector (CONTROL_BINDING section 8): long-press a knob -> tooltip id + path, source span marked; tap a literal -> its control glows
+{ await page.evaluate(() => document.querySelector('.pc-inline').scrollIntoView({ block: 'center' })); await page.waitForTimeout(600);
+  const k = await page.evaluate(() => { const e = document.querySelector('.pc-inline .pc-cell [role=slider]'); const r = e.getBoundingClientRect(); const vv = window.visualViewport; return { x: r.left + r.width / 2 - vv.offsetLeft, y: r.top + r.height / 2 - vv.offsetTop, id: e.closest('.pc-cell').dataset.site }; });
+  await touch('touchStart', k.x, k.y); await page.waitForTimeout(700); await touch('touchEnd'); await page.waitForTimeout(150);
+  const t = await page.evaluate(() => { const tip = document.getElementById('scRefTip'); const dd = (n) => tip && tip.querySelector(`dd[data-k="${n}"]`)?.textContent; const pm = document.querySelector('.cm-ref-primary');
+    return { shown: !!tip && !tip.hidden, id: dd('id'), path: dd('path'), described: !!document.querySelector('[aria-describedby="scRefTip"]'), span: pm ? [...document.querySelectorAll('.cm-ref-primary')].map((x) => x.textContent).join('') : '', gutter: !!document.querySelector('.cm-ref-gutter') }; });
+  check('long-press a knob: tooltip shows id + path, source span highlighted with gutter mark', t.shown && t.id === k.id && /^L\d+\//.test(t.path || '') && t.described && /^slider\(800/.test(t.span) && t.gutter, JSON.stringify(t));
+  await page.keyboard.press('Escape'); await page.evaluate(() => window.strudelCraft.refs.clear());
+  const p3 = await at('slider(800', 8); await tap(p3); await page.waitForTimeout(250);
+  const g = await page.evaluate(() => [...document.querySelectorAll('.pc-inline .pc-cell.ref-glow, .pc-inline .ref-glow')].map((e) => e.closest('.pc-cell')?.dataset.site));
+  check('tap a literal in the code: its control glows', g.includes(k.id), JSON.stringify(g));
+  await page.evaluate(() => { window.strudelCraft.literals.close(); window.strudelCraft.refs.clear(); window.strudelCraft.refs.hideTip(); }); }
 
 // play for the inert and settle checks
 await page.evaluate(() => window.__sc.play()); await page.waitForFunction(() => window.__sc.S.playing && window.__sc.Engine.started, null, { timeout: 60000 });

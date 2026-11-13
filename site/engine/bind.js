@@ -28,15 +28,16 @@ export function sites(code) {
   const walk = (node, anc, layer) => {
     if (!node || typeof node.type !== 'string') return;
     if (node.type === 'CallExpression' && node.callee.type === 'Identifier' && (node.callee.name === 'slider' || node.callee.name === 'ctl')) {
-      const segs = []; let param = null, arg = -1, slot = null;
+      const segs = []; let param = null, arg = -1, slot = null, pcall = null;
       for (let i = 0; i < anc.length; i++) {
         const a = anc[i], child = anc[i + 1] || node;
-        if (a.type === 'CallExpression') { const ai = a.arguments.indexOf(child); if (ai >= 0) { segs.push(chainOf(a) + '#' + ai); param = calleeName(a.callee); arg = ai; } }
+        if (a.type === 'CallExpression') { const ai = a.arguments.indexOf(child); if (ai >= 0) { segs.push(chainOf(a) + '#' + ai); param = calleeName(a.callee); arg = ai; pcall = a; } }
       }
       for (let i = anc.length - 1; i >= 0; i--) { const a = anc[i]; if (a.type !== 'CallExpression') continue; const nm = calleeName(a.callee); const s0 = lit(a.arguments[0]);
         if (['use', 'wrap', 'tap', 'bind'].includes(nm) && typeof s0 === 'string') { slot = s0; break; } }
       const kind = node.callee.name, a0 = node.arguments;
       const site = { kind, layer, path: `L${layer}/${segs.join('>') || 'top'}`, param, arg, start: node.start, end: node.end, calleeEnd: node.callee.end, nargs: a0.length, slot };
+      if (pcall) { const pc = pcall.callee.type === 'MemberExpression' ? pcall.callee.property : pcall.callee; site.pStart = pc.start; site.pEnd = pc.end; site.callStart = pc.start; site.callEnd = pcall.end; }
       if (kind === 'slider') { site.value = lit(a0[0]); site.min = lit(a0[1]) ?? 0; site.max = lit(a0[2]) ?? 1; site.label = null; }
       else { const l = lit(a0[0]); site.label = typeof l === 'string' ? l : null; site.spec = objLit(a0[1]) || {}; }
       out.push(site);
@@ -86,11 +87,12 @@ export function toOriginal(edits, pos) {
 
 // per-view state: last good sites; prepare() reconciles without committing; rewritten texts remember their edits (visual offsets)
 export function createBinder() {
-  const good = new Map(); const maps = new Map();
+  const good = new Map(); const maps = new Map(); const srcs = new Map();
   return {
     prepare(view, code) { const r = sites(code); if (!r.ok) return { ok: false, error: r.error }; reconcile(good.get(view) || [], r.sites); const w = rewriteMap(code, r.sites);
-      maps.set(w.code, { orig: code, edits: w.edits }); if (maps.size > 16) maps.delete(maps.keys().next().value); return { ok: true, sites: r.sites, code: w.code }; },
-    commit(view, list) { good.set(view, list.map((s) => ({ ...s }))); },
+      maps.set(w.code, { orig: code, edits: w.edits }); if (maps.size > 16) maps.delete(maps.keys().next().value); return { ok: true, sites: r.sites, code: w.code, orig: code }; },
+    commit(view, list, code) { good.set(view, list.map((s) => ({ ...s }))); if (code != null) srcs.set(view, code); },
+    source: (view) => srcs.get(view) ?? null,
     sites: (view) => good.get(view) || [],
     original: (rew) => { const m = maps.get(rew); return m ? m.orig : rew; },
     toOriginal: (rew, pos) => { const m = maps.get(rew); return m ? toOriginal(m.edits, pos) : pos; },

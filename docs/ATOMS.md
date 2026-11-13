@@ -123,6 +123,11 @@ Model key `atoms` (added to `strudelcraft.model/1`), keyed by id:
 
 - `atomParam` is the same shape schema the typed-param table and the literal editors use, plus `atom:<type>` (a param that takes
   another atom). One schema for function params, hook params, control specs and atom params.
+- Numeric `atomParam` range fields (same as controls, docs/CONTROL_BINDING.md section 9): `min`, `max`, `step`, `unit`,
+  `curve` (`lin` | `log` | `exp`; `linear` accepted), `clamp` (`hard` clamps, `soft` keeps slider travel in range but accepts typed values
+  beyond it, `none` has no bounds; default `soft`). Never assume 0..1: an absent range falls back to the param shape, then to 0..1.
+  A user range override is stored per AST id (atom param literal id) in the model and wins over the shape default. Typed values
+  are unit-aware (`1.5k`, `-6 dB`, `2:30`, `250ms`, `50%`).
 - `atomRef` joins the model `arg` forms (`$mini`, `$tap`, `$param`, ...). It is accepted wherever the model holds a magic string today:
   step args, `bindings[].slot / hook / gate / else`, `wires[].tap`, `markers`, `vars`, `maps[].dest`, pad `target.ref`, `scopes`.
 - A model with `$atom` refs and no matching `atoms` entry (and no import providing it) fails validation: `E_ATOM_UNKNOWN`.

@@ -49,8 +49,38 @@ Limits:
 - Compressed: the first format `MediaRecorder` supports out of `audio/webm;codecs=opus`, `audio/ogg;codecs=opus`, `audio/mp4`. The take plays once in real time through a private, silent AudioContext into MediaRecorder at 160 kb/s. No MP3 library is bundled.
 - JSON sidecar `strudel-craft/capture@1`: every meta field except the peaks, plus the WAV file name.
 
+## Perform motion takes (lane and pad takes)
+- When a Perform lane recording (Rec lane: control automation) or a looper pad take stops, `perform.js` dispatches `perform:take`. `capture.js` saves it into the same IndexedDB list as a motion record `{meta: {kind: 'motion', type: 'lane'|'pads', ...}, model}`, which holds no audio. A toast "Take saved: <name>. Download" downloads the JSON.
+- Each row has a type badge (`audio`, `lane`, `pads`), a curve or tick preview, and these buttons: Load (back into Perform), Rename, Download, Delete, then JSON, Export audio and Copy code.
+- Download JSON, format `strudel-craft/motion@1`, contains:
+  - `type`, `name`, `cps`, `length` (cycles), `seconds`, `origin`;
+  - `events`: lane points as `{cycle, time, control, value, shape}`, pad events as `{cycle, t, time, layer, pad, type, velocity, target}`;
+  - `refs`: the control id, or the bank and the pad targets;
+  - `model`: the stored lane, or `{performance, bank, pads}`;
+  - `code`: the `laneCode()` / `bounceCode()` output;
+  - `source`: kind, title, and the program code.
+
+  File name: `<name>_<type>_<cycles>c_<cps>cps.json`.
+- Copy code writes the same `laneCode` / `bounceCode` text to the clipboard. Without clipboard access it opens a site modal that holds the text.
+- Import JSON (button above the takes) stores the file as a take and loads it into Perform. A lane goes onto its control (one undo step). A pad take goes into the looper.
+- Export audio is a real-time re-record pass through the capture path:
+  1. It loads the take and starts the transport if needed.
+  2. For a pad take, it starts the looper replay. Lanes are periodic from cycle 0.
+  3. It records `ceil(length)` cycles from the take's next loop start: `record({}, {mode: 'cycles', at, step: length})`.
+  4. It saves the result as an audio take, `<name>-audio` with `meta.from` = the motion take id, and downloads it as a WAV.
+- API: `strudelCraft.perform.applyLane(name, lane)`, `strudelCraft.perform.applyTake(performance, bank, {play})` returns the replay base cycle. `strudelCraft.capture.{saveMotion, motionJson, parseMotion, importMotion, applyMotion, exportMotionAudio, motionCode}`.
+- Test: `node tests/site/motion.mjs` runs at 360px:
+  - record a lane: the take and the toast appear;
+  - row buttons are 44px;
+  - the Download blob parses with the lane events;
+  - Copy code produces `signal(`;
+  - Export audio gives a non-silent WAV of the lane length;
+  - Import JSON loads the lane back;
+  - a looper take lands as `pads`;
+  - no console errors.
+
 ## API
-`strudelCraft.capture = { open, close, toggle, configure(opts), record(opts), stop, toggleRec, renderExact(n), list, get(id), remove(id), rename(id, name), download(id, 'wav16'|'wav24'|'comp'|'json'), encodeWav(take, bits), sidecar(take), fileName(take, ext), opts, state }`.
+`strudelCraft.capture = { saveMotion, motionJson, importMotion, exportMotionAudio, open, close, toggle, configure(opts), record(opts), stop, toggleRec, renderExact(n), list, get(id), remove(id), rename(id, name), download(id, 'wav16'|'wav24'|'comp'|'json'), encodeWav(take, bits), sidecar(take), fileName(take, ext), opts, state }`.
 
 ## Test
 `node tests/site/capture.mjs` runs at 360x740:

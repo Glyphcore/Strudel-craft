@@ -77,3 +77,9 @@ body.cap-open .pal-fab{display:none}
   .tp-main{gap:2px}
   .tp-meter .meter{width:30px}
 }
+/* take type badge: audio takes vs Perform motion takes (lane = control automation, pads = pad take) */
+.cap-badge{display:inline-block;font-style:normal;font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:1px 5px;margin-right:6px;border-radius:var(--r1);border:1px solid var(--sig-2);color:var(--sig-2);vertical-align:1px}
+.cap-badge[data-type="lane"]{border-color:var(--sig);color:var(--sig)}
+.cap-tk[data-type="lane"] .cap-wave,.cap-tk[data-type="pads"] .cap-wave{background:var(--panel-3)}
+.cap-tk-acts [data-act="load"]{padding:0 10px}
+.cap-imp{display:flex;justify-content:flex-end;padding:8px 10px 0}

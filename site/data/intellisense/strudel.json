@@ -686,6 +686,41 @@
    "category": "site api"
   },
   {
+   "label": "strudelCraft.capture.exportMotionAudio",
+   "method": false,
+   "detail": "exportMotionAudio(id) -> Promise<take>",
+   "info": "Re-record a lane / pad take through capture: loads it, records its length from its next loop start, saves an audio take and downloads the WAV.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.capture.motionJson",
+   "method": false,
+   "detail": "motionJson(record) -> object",
+   "info": "strudel-craft/motion@1 export of a lane / pad take: events (cycle, time, control or pad, value, velocity, target), cps, length, refs, model, code (laneCode / bounceCode), source.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.capture.importMotion",
+   "method": false,
+   "detail": "importMotion(file) -> Promise<record>",
+   "info": "Import a motion JSON file as a take and load it back into Perform (lane onto its control, pad take into the looper).",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.perform.applyLane",
+   "method": false,
+   "detail": "applyLane(name, lane)",
+   "info": "Install a stored automation lane on a control (one undo step).",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.perform.applyTake",
+   "method": false,
+   "detail": "applyTake(performance, bank, {play}) -> baseCycle",
+   "info": "Load a stored pad performance into the looper; with play, replay starts at the returned cycle.",
+   "category": "site api"
+  },
+  {
    "label": "atom",
    "method": false,
    "detail": "atom(name, { type, params?, body | from, doc? })",

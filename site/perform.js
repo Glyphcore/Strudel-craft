@@ -286,6 +286,7 @@ function recFinish() {
   const lane = sc.controls.lib.recordLane({ moves, range: [s.min ?? 0, s.max ?? 1], mode: 'curve', length: L, period: L, control: r.name });
   A.undo.push({ id, prev: r.prev || null }); controls.addLane(id, lane); persistControls(); render(); renderInline();
   ui().toast(`Lane ${r.overdub ? 'overdubbed' : 'recorded'} on ${r.name}: ${lane.points.length} points, ${L} bar`, { kind: 'ok' });
+  takeOut({ type: 'lane', control: r.name, lane });
 }
 function recUndo() { const u = A.undo.pop(); if (!u) { ui().toast('Nothing to undo', { kind: 'info' }); return; } if (u.prev) controls.addLane(u.id, u.prev); else controls.lanes().delete(u.id); persistControls(); render(); renderInline(); ui().toast('Lane change undone', { kind: 'ok' }); }
 
@@ -377,6 +378,16 @@ function takeStop() {
     Tk.looper.overdub(shifted); }
   else { Tk.looper = sc.pads.looper({ length: Tk.bars, origin: r.from }); Tk.bank = bank; Tk.looper.record(j); }
   render(); ui().toast(`Take: ${Tk.looper.eventCount()} events in ${frac(Tk.looper.performance.length)} bar`, { kind: 'ok' });
+  if (Tk.looper.eventCount()) takeOut({ type: 'pads', performance: Tk.looper.performance, bank, pads: takeTargets() });
+}
+/* capture.js keeps every finished lane / pad take in its take list (download JSON, export audio, copy code) */
+function takeOut(d) { try { window.dispatchEvent(new CustomEvent('perform:take', { detail: JSON.parse(JSON.stringify(d)) })); } catch (e) { /* capture optional */ } }
+function takeTargets() { const ps = new Set(Tk.looper.periodic().entries.map((e) => e.pad)); return Object.fromEntries([...ps].map((a) => { const [b, pos] = a.split('/'); const p = (M.banks[b]?.pads || []).find((x) => x.pos === pos); return [a, p ? p.target : null]; })); }
+/* load a stored lane / pad take back (capture.js Load, Import JSON, Export audio); applyTake returns the replay base cycle when play */
+function applyLane(name, lane) { const id = 'lane:' + name; A.undo.push({ id, prev: controls.lanes().get(id) || null }); controls.addLane(id, JSON.parse(JSON.stringify(lane))); persistControls(); render(); renderInline(); }
+function applyTake(perf, bank, { play = false } = {}) {
+  const lp = sc.pads.looper({ length: frac(perf.length), origin: frac(perf.origin || 0) }); lp.performance.layers = JSON.parse(JSON.stringify(perf.layers));
+  Tk.looper = lp; Tk.bank = bank || curTab().id; Tk.play = null; if (play && playing()) { Tk.play = { base: Math.ceil(nowCycle() + 0.25), k: 0 }; takeSchedule(); } render(); return Tk.play ? Tk.play.base : null;
 }
 function takeUndo() { if (!Tk.looper) return; Tk.looper.undo(); render(); }
 function takePlay() {
@@ -588,7 +599,7 @@ setInterval(() => {
 
 /* ---------------- boot ---------------- */
 rebuildPads();
-sc.perform = { model: () => M, render, renderInline, controls, sites: (v) => SITES[v] || [], pads: () => pads, journal: [], latency: lat, work, glue: bindStrudel, looper: () => Tk.looper, take: Tk, lanes: A,
+sc.perform = { model: () => M, render, renderInline, controls, sites: (v) => SITES[v] || [], pads: () => pads, journal: [], latency: lat, work, glue: bindStrudel, looper: () => Tk.looper, take: Tk, lanes: A, applyLane, applyTake,
   capturing: (e) => isPerformView() && !e.ctrlKey && !e.metaKey && !e.altKey && /^(Digit[1-4]|Key[QWERASDFZXCV]|Bracket(Left|Right))$/.test(e.code) && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) && !e.target.isContentEditable };
 bindStrudel(); window.addEventListener('strudel:ready', bindStrudel); wireInput();
 if (sc.binder) { for (const v of ['rack', 'stack']) { SITES[v] = sc.binder.sites(v); SITES[v].forEach(ensureSite); } }

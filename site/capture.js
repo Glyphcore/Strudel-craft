@@ -89,11 +89,15 @@ async function waitTicking(ms = 4000) {
 }
 
 /* ---------- record ---------- */
-async function record(o = {}) {
-  if (st.phase !== 'idle') return; /* busy: use stop() or toggleRec() */
+/* run: one-off overrides that are not persisted ({mode, n, countIn, name, at: absolute start cycle, from: motion take id});
+   resolves with the saved take (or null) */
+async function record(o = {}, run = {}) {
+  if (st.phase !== 'idle') return null; /* busy: use stop() or toggleRec() */
   if (o && Object.keys(o).length) configure(o);
-  if (st.rendering) { toast('Rendering, wait a moment', { kind: 'info' }); return; }
-  const T = sc.transport; if (!T) return;
+  const ru = st.run = { mode: run.mode || opts.mode, n: Math.max(1, (run.n || opts.n) | 0), countIn: run.countIn != null ? run.countIn : opts.countIn, preRoll: run.mode ? 0 : opts.preRoll, name: run.name || opts.name, at: run.at, step: run.step, from: run.from };
+  const done = st.done = new Promise((r) => { st.resolve = r; });
+  if (st.rendering) { toast('Rendering, wait a moment', { kind: 'info' }); st.resolve(null); return null; }
+  const T = sc.transport; if (!T) { st.resolve(null); return null; }
   st.phase = 'arming'; sync();
   try {
     if (!T.playing) { await T.play(); if (!T.playing) throw new Error('Press Play first (audio is blocked or nothing to play)'); if (!(await waitTicking())) throw new Error('The transport did not start'); }
@@ -102,19 +106,21 @@ async function record(o = {}) {
     if (st.tap.port) st.tap.port.postMessage({ on: true });
     const ck = clock(); if (!ck) throw new Error('The transport is not running');
     const now = st.tapCtx.currentTime + 0.02, rate = sr(), c = ck.cycleAt(now);
-    const k = Math.max(0, opts.countIn | 0);
+    const k = Math.max(0, ru.countIn | 0);
     let startT, startCycle = null;
-    if (opts.mode === 'cycles' || k > 0) { startCycle = Math.ceil(c - 1e-6) + k; startT = ck.timeOf(startCycle); } else startT = now;
+    if (ru.at != null) { startCycle = ru.at; while (ck.timeOf(startCycle) < now) startCycle += ru.step || ru.n; startT = ck.timeOf(startCycle); }
+    else if (ru.mode === 'cycles' || k > 0) { startCycle = Math.ceil(c - 1e-6) + k; startT = ck.timeOf(startCycle); } else startT = now;
     st.startCycle = startCycle; st.cps = ck.cps;
-    const pre = opts.mode === 'cycles' ? 0 : Math.max(0, +opts.preRoll || 0);
+    const pre = ru.mode === 'cycles' ? 0 : Math.max(0, +ru.preRoll || 0);
     const first = st.chunks.length ? st.chunks[0].f0 : Math.round(now * rate);
     st.startFrame = Math.max(first, Math.round((startT - pre) * rate)); st.recFrame = Math.round(startT * rate);
-    if (opts.mode === 'cycles') st.endFrame = st.recFrame + Math.round(Math.max(1, opts.n) / ck.cps * rate);
-    else if (opts.mode === 'until') { const r = sc.range && sc.range.state; const capS = r ? Math.max(1, r.maxMin * 60 + (r.extra || 0) - (r.elapsed || 0)) : 600; st.endFrame = st.recFrame + Math.round(capS * rate); }
+    if (ru.mode === 'cycles') st.endFrame = st.recFrame + Math.round(ru.n / ck.cps * rate);
+    else if (ru.mode === 'until') { const r = sc.range && sc.range.state; const capS = r ? Math.max(1, r.maxMin * 60 + (r.extra || 0) - (r.elapsed || 0)) : 600; st.endFrame = st.recFrame + Math.round(capS * rate); }
     else st.endFrame = 0;
     st.src = T.source(); st.hold = 0; st.phase = 'waiting'; st.t0 = performance.now();
     sync(); loop();
-  } catch (e) { st.phase = 'idle'; sync(); toast('Record: ' + (e.message || e), { kind: 'error' }); }
+  } catch (e) { st.phase = 'idle'; sync(); toast('Record: ' + (e.message || e), { kind: 'error' }); st.resolve(null); }
+  return done;
 }
 function toggleRec() { return st.phase === 'idle' ? record() : stop(); }
 /* set capture options from code or the palette; persisted (sc.capture.*) and reflected in the sheet */
@@ -125,8 +131,8 @@ function configure(o = {}) {
   sync(); return { ...opts };
 }
 function stop() {
-  if (st.phase === 'waiting' && (!st.tapCtx || st.tapCtx.currentTime * sr() < st.recFrame)) { st.phase = 'idle'; sync(); toast('Record cancelled', { kind: 'info' }); return; }
-  if (st.phase === 'recording' || st.phase === 'waiting') finish(opts.mode === 'cycles' ? 'early' : 'done');
+  if (st.phase === 'waiting' && (!st.tapCtx || st.tapCtx.currentTime * sr() < st.recFrame)) { st.phase = 'idle'; sync(); toast('Record cancelled', { kind: 'info' }); st.resolve(null); return; }
+  if (st.phase === 'recording' || st.phase === 'waiting') finish(st.run.mode === 'cycles' ? 'early' : 'done');
 }
 let rafOn = false;
 function loop() {
@@ -151,14 +157,15 @@ async function finish(why) {
   if (!end || why !== 'done' || end > have) end = Math.min(end || have, have);
   st.phase = 'saving'; sync();
   const { L, R } = slice(st.startFrame, end);
-  if (L.length < rate * 0.05) { st.phase = 'idle'; sync(); toast('Nothing captured', { kind: 'error' }); return; }
+  if (L.length < rate * 0.05) { st.phase = 'idle'; sync(); toast('Nothing captured', { kind: 'error' }); st.resolve(null); return; }
   const recLen = end - st.recFrame; const cycles = recLen / rate * st.cps;
-  const exact = opts.mode === 'cycles' && why === 'done';
+  const ru = st.run, exact = ru.mode === 'cycles' && why === 'done'; let take = null;
   try {
-    const take = await save({ L, R, sr: rate, cycles: exact ? opts.n : +cycles.toFixed(3), cps: st.cps, mode: opts.mode, exact, loop: exact, how: 'realtime',
+    take = await save({ L, R, sr: rate, cycles: exact ? ru.n : +cycles.toFixed(3), cps: st.cps, mode: ru.mode, exact, loop: exact, how: 'realtime', name: ru.name, from: ru.from,
       preRoll: (st.recFrame - st.startFrame) / rate, startCycle: st.startCycle, why });
     toast(`Saved ${take.meta.name} (${fmtT(L.length / rate)})`, { kind: 'ok' });
   } catch (e) { toast('Could not save take: ' + e.message, { kind: 'error' }); }
+  st.resolve(take);
   st.phase = 'idle'; if (!(opts.preRoll > 0)) st.chunks = []; sync(); renderTakes();
 }
 
@@ -222,12 +229,12 @@ function peaks(L, R, cols = 160) {
 }
 async function save(t) {
   const src = t.src || st.src || (sc.transport && sc.transport.source()) || {};
-  const list = await listMeta(); const base = safe(opts.name); let name = base, i = 2; const names = new Set(list.map((m) => m.name));
+  const list = await listMeta(); const base = safe(t.name || opts.name); let name = base, i = 2; const names = new Set(list.map((m) => m.name));
   while (names.has(name)) name = base + '-' + i++;
   let pk = 0; for (let k = 0; k < t.L.length; k++) { const a = Math.abs(t.L[k]); if (a > pk) pk = a; }
   const meta = { id: 'tk' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind: 'take', name, created: new Date().toISOString(),
     sr: t.sr, frames: t.L.length, seconds: t.L.length / t.sr, cycles: t.cycles, cps: +(+t.cps).toFixed(6), mode: t.mode, exact: !!t.exact, loop: !!t.loop, how: t.how,
-    preRoll: t.preRoll || 0, fold: !!t.fold, haps: t.haps, fails: t.fails || 0, startCycle: t.startCycle, peak: pk, peaks: Array.from(peaks(t.L, t.R)),
+    type: 'audio', from: t.from || null, preRoll: t.preRoll || 0, fold: !!t.fold, haps: t.haps, fails: t.fails || 0, startCycle: t.startCycle, peak: pk, peaks: Array.from(peaks(t.L, t.R)),
     source: { kind: src.kind || null, title: src.title || null, code: src.code || '' }, bytes: t.L.length * 8 };
   const rec = { meta, audio: { L: t.L, R: t.R } };
   if (await DB) await tx('readwrite', (s) => s.put(rec)); else mem.set(meta.id, rec);
@@ -247,6 +254,87 @@ async function quota() {
     if (quotaMsg && !quota.warned) { quota.warned = true; toast(quotaMsg, { kind: 'error' }); }
     if (navigator.storage.persist && !quota.asked) { quota.asked = true; navigator.storage.persist().catch(() => {}); }
   } catch (e) { /* estimate unsupported */ }
+}
+
+/* ---------- motion takes: Perform lane (control automation) and pad takes, kept in the same list (no audio) ---------- */
+const fr = (x) => { if (typeof x === 'number') return x; const m = /^(-?\d+)(?:\/(\d+))?$/.exec(String(x)); return m ? +m[1] / +(m[2] || 1) : +x; };
+const MOTION = 'strudel-craft/motion@1';
+function motionPreview(type, model, len) {
+  const out = new Array(160).fill(0);
+  if (type === 'lane') { const lib = sc.controls && sc.controls.lib; const pts = model.lane.points; if (!pts.length) return out;
+    const vs = pts.map((p) => p[1]); const lo = Math.min(...vs), hi = Math.max(...vs);
+    for (let i = 0; i < 160; i++) { const v = lib ? lib.sampleLane(model.lane, i / 160 * len) : vs[0]; out[i] = hi > lo ? (v - lo) / (hi - lo) : 0.5; } }
+  else for (const l of model.performance.layers) for (const e of l.events) { const i = Math.min(159, Math.floor(fr(e.t) / len * 160)); out[i] = Math.max(out[i], e.type === 'on' ? (e.velocity != null ? e.velocity : 1) : 0.35); }
+  return out;
+}
+function motionEvents(type, model, cps) {
+  if (type === 'lane') return model.lane.points.map(([t, v, sh]) => ({ cycle: fr(t), time: +(fr(t) / cps).toFixed(6), control: model.control, value: v, shape: sh || 'lin' }));
+  const o = fr(model.performance.origin || 0), tg = model.pads || {};
+  return model.performance.layers.flatMap((l, li) => l.events.map((e) => ({ cycle: o + fr(e.t), t: fr(e.t), time: +(fr(e.t) / cps).toFixed(6), layer: li, pad: e.pad, type: e.type, ...(e.velocity != null ? { velocity: e.velocity } : {}), ...(tg[e.pad] ? { target: tg[e.pad] } : {}) })))
+    .sort((a, b) => a.cycle - b.cycle);
+}
+function motionCode(rec) {
+  const m = rec.model, n = (rec.meta.name || 'take').replace(/[^\w]/g, '_').replace(/^(\d)/, '_$1');
+  if (rec.meta.type === 'lane') return sc.controls && sc.controls.lib ? sc.controls.lib.laneCode(m.lane, n) : '';
+  return sc.pads && sc.pads.lib ? sc.pads.lib.bounceCode(m.performance, { pads: m.pads || {}, name: rec.meta.name }) : '';
+}
+/* save a motion take: {type: 'lane', control, lane} or {type: 'pads', performance, bank, pads}; returns the record */
+async function saveMotion(d, { silent = false } = {}) {
+  const type = d.type === 'pads' ? 'pads' : 'lane';
+  const model = type === 'lane' ? { control: d.control, lane: JSON.parse(JSON.stringify(d.lane)) } : { performance: JSON.parse(JSON.stringify(d.performance)), bank: d.bank || null, pads: JSON.parse(JSON.stringify(d.pads || {})) };
+  const len = type === 'lane' ? fr(model.lane.period || model.lane.length || 1) : fr(model.performance.length || 1);
+  const sch = sc.transport && sc.transport.scheduler; const cps = d.cps || (sch && sch.cps) || 0.5;
+  const src = d.source || (sc.transport && sc.transport.source()) || {};
+  const list = await listMeta(); const base = safe(d.name || (type === 'lane' ? 'lane-' + d.control : 'pads-' + (d.bank || 'take'))); let name = base, i = 2; const names = new Set(list.map((x) => x.name)); while (names.has(name)) name = base + '-' + i++;
+  const events = motionEvents(type, model, cps);
+  const meta = { id: 'mt' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind: 'motion', type, name, created: new Date().toISOString(), cycles: len, cps: +(+cps).toFixed(6), seconds: len / cps,
+    events: events.length, control: model.control || null, bank: model.bank || null, peaks: motionPreview(type, model, len), source: { kind: src.kind || null, title: src.title || null, code: src.code || '' } };
+  const rec = { meta, model };
+  if (await DB) await tx('readwrite', (s) => s.put(rec)); else mem.set(meta.id, rec);
+  if (!silent) toast(`Take saved: ${name}. Download`, { kind: 'ok', ms: 6000, onClick: () => download(meta.id, 'json') });
+  renderTakes(); return rec;
+}
+function motionJson(rec) {
+  const m = rec.meta; let code = ''; try { code = motionCode(rec); } catch (e) { code = ''; }
+  return { format: MOTION, type: m.type, name: m.name, created: m.created, cps: m.cps, length: m.cycles, seconds: m.seconds,
+    origin: m.type === 'pads' ? fr(rec.model.performance.origin || 0) : 0, refs: m.type === 'lane' ? { control: m.control } : { bank: m.bank, pads: rec.model.pads || {} },
+    events: motionEvents(m.type, rec.model, m.cps), model: rec.model, code, source: m.source };
+}
+function parseMotion(text) {
+  const j = typeof text === 'string' ? JSON.parse(text) : text;
+  if (!j || j.format !== MOTION || !j.model || !/^(lane|pads)$/.test(j.type)) throw new Error('Not a Strudel Craft motion take (format ' + MOTION + ')');
+  if (j.type === 'lane' && !(j.model.control && j.model.lane && Array.isArray(j.model.lane.points))) throw new Error('Lane take needs model.control and model.lane.points');
+  if (j.type === 'pads' && !(j.model.performance && Array.isArray(j.model.performance.layers))) throw new Error('Pad take needs model.performance.layers');
+  return j;
+}
+/* load a motion take back into Perform: a lane goes onto its control, a pad take into the looper (optionally replaying) */
+async function applyMotion(rec, { play = false } = {}) {
+  const P = sc.perform; if (!P || !P.applyLane) throw new Error('Perform tools load on the first Play: press Play once');
+  if (rec.meta.type === 'lane') { P.applyLane(rec.model.control, rec.model.lane); return null; }
+  return P.applyTake(rec.model.performance, rec.model.bank, { play });
+}
+async function importMotion(file) {
+  const text = await file.text(); const j = parseMotion(text);
+  const rec = await saveMotion({ ...(j.type === 'lane' ? { control: j.model.control, lane: j.model.lane } : j.model), type: j.type, name: j.name, cps: j.cps, source: j.source }, { silent: true });
+  try { await applyMotion(rec); toast(`Imported ${rec.meta.name} and loaded it into Perform`, { kind: 'ok' }); } catch (e) { toast(`Imported ${rec.meta.name}. ${e.message}`, { kind: 'info' }); }
+  return rec;
+}
+/* audio of a motion take: load it, play the program, record the take's length on its loop boundary through the capture path, save + download WAV */
+async function exportMotionAudio(id, { download: dl = true } = {}) {
+  const rec = await getTake(id); if (!rec) return null; const T = sc.transport;
+  if (st.phase !== 'idle' || st.rendering) { toast('Capture is busy', { kind: 'info' }); return null; }
+  if (!T.playing) { await T.play(); if (!T.playing || !(await waitTicking())) { toast('Press Play first', { kind: 'error' }); return null; } }
+  const len = rec.meta.cycles; let at;
+  if (rec.meta.type === 'lane') { await applyMotion(rec); at = 0; } /* lanes are periodic from cycle 0: record() steps to the next loop start */
+  else at = await applyMotion(rec, { play: true });
+  const take = await record({}, { mode: 'cycles', n: Math.max(1, Math.ceil(len - 1e-9)), countIn: 0, at, step: len, name: rec.meta.name + '-audio', from: id });
+  if (take && dl) saveBlob(encodeWav(take, opts.bits), fileName(take, 'wav'));
+  return take;
+}
+async function copyCode(id) {
+  const rec = await getTake(id); const code = motionCode(rec); if (!code) { toast('No code for this take', { kind: 'error' }); return; }
+  try { await navigator.clipboard.writeText(code); toast('Strudel code copied', { kind: 'ok' }); }
+  catch (e) { await sc.ui.ask({ title: 'Strudel code', label: 'Copy this code', value: code.replace(/\n/g, ' '), okText: 'Done' }); }
 }
 
 /* ---------- encode ---------- */
@@ -301,6 +389,7 @@ function saveBlob(blob, name) {
 }
 async function download(id, fmt = 'wav16') {
   const t = await getTake(id); if (!t) return;
+  if (t.meta.kind === 'motion') { if (fmt === 'audio') return exportMotionAudio(id); return saveBlob(new Blob([JSON.stringify(motionJson(t), null, 2)], { type: 'application/json' }), `${safe(t.meta.name)}_${t.meta.type}_${numStr(t.meta.cycles)}c_${numStr(t.meta.cps)}cps.json`); }
   if (fmt === 'json') return saveBlob(sidecar(t), fileName(t, 'json'));
   if (fmt === 'wav16' || fmt === 'wav24') return saveBlob(encodeWav(t, fmt === 'wav24' ? 24 : 16), fileName(t, 'wav'));
   const note = $(`#capTakes [data-id="${id}"] .cap-tk-sub`); const was = note && note.textContent;
@@ -337,6 +426,7 @@ function build() {
   </div>
   <div class="cap-exact"><button type="button" id="capExact" class="ghost">Render exact <b id="capExactN">${opts.n}</b> cycles</button><label class="switch"><input id="capFold" type="checkbox"${opts.fold ? ' checked' : ''}><span>Fold tail (seamless)</span></label></div>
   <p class="cap-hint" id="capHint"></p>
+  <div class="cap-imp"><button type="button" id="capImport" class="ghost">Import JSON</button><input type="file" id="capFile" accept="application/json,.json" hidden></div>
   <ol class="cap-takes" id="capTakes" aria-label="Takes"></ol>
   <p class="cap-quota" id="capQuota"></p>`;
   document.body.append(w);
@@ -344,6 +434,8 @@ function build() {
   $('#capClose').addEventListener('click', () => close());
   el.rec.addEventListener('click', () => toggleRec());
   el.exact.addEventListener('click', () => renderExact());
+  $('#capImport').addEventListener('click', () => $('#capFile').click());
+  $('#capFile').addEventListener('change', async (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return; try { await importMotion(f); } catch (err) { toast('Import: ' + err.message, { kind: 'error' }); } });
   w.addEventListener('change', (e) => {
     const t = e.target;
     if (t.name === 'cap-mode') { opts.mode = t.value; set('mode', opts.mode); }
@@ -380,7 +472,7 @@ function draw() {
   if (st.phase === 'waiting') { const ck = clock(); const left = (st.recFrame - now) / rate; el.time.textContent = '-' + fmtT(left); el.state.textContent = ck && st.startCycle != null ? `Count-in: ${Math.max(0, Math.ceil(left * ck.cps))}` : 'Starting'; }
   else if (st.phase === 'recording') {
     const t = (now - st.recFrame) / rate; el.time.textContent = fmtT(t);
-    el.state.textContent = opts.mode === 'cycles' ? `Cycle ${Math.min(opts.n, t * st.cps).toFixed(1)} / ${opts.n}` : opts.mode === 'until' ? `Cap ${fmtT((st.endFrame - st.recFrame) / rate)}` : 'Recording';
+    el.state.textContent = st.run.mode === 'cycles' ? `Cycle ${Math.min(st.run.n, t * st.cps).toFixed(1)} / ${st.run.n}` : st.run.mode === 'until' ? `Cap ${fmtT((st.endFrame - st.recFrame) / rate)}` : 'Recording';
   }
   const c = el.meter, dpr = Math.min(2, window.devicePixelRatio || 1), W = Math.round(c.clientWidth * dpr), H = Math.round(c.clientHeight * dpr);
   if (!W || !H) return; if (c.width !== W) c.width = W; if (c.height !== H) c.height = H;
@@ -393,9 +485,9 @@ function draw() {
 async function renderTakes() {
   if (!el.takes) return;
   const list = await listMeta();
-  el.takes.innerHTML = list.length ? list.map((m) => `<li data-id="${m.id}" class="cap-tk">
+  el.takes.innerHTML = list.length ? list.map((m) => m.kind === 'motion' ? motionRow(m) : `<li data-id="${m.id}" class="cap-tk" data-type="audio">
     <canvas class="cap-wave" aria-hidden="true"></canvas>
-    <div class="cap-tk-info"><b class="cap-tk-name">${esc(m.name)}</b><span class="cap-tk-sub">${numStr(m.cycles)}c · ${numStr(m.cps)} cps · ${fmtT(m.seconds)}${m.exact ? ' · loop' : ''}${m.how === 'offline' ? ' · exact' : ''}</span></div>
+    <div class="cap-tk-info"><b class="cap-tk-name"><i class="cap-badge" data-type="audio">audio</i>${esc(m.name)}</b><span class="cap-tk-sub">${numStr(m.cycles)}c · ${numStr(m.cps)} cps · ${fmtT(m.seconds)}${m.exact ? ' · loop' : ''}${m.how === 'offline' ? ' · exact' : ''}</span></div>
     <div class="cap-tk-acts">
       <button type="button" class="ghost icon" data-act="play" aria-label="Play ${esc(m.name)}" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" class="fill"/></svg></button>
       <button type="button" class="ghost icon" data-act="rename" aria-label="Rename ${esc(m.name)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg></button>
@@ -404,7 +496,7 @@ async function renderTakes() {
     </div>
     <div class="cap-dl" hidden><button type="button" data-act="wav16">WAV 16</button><button type="button" data-act="wav24">WAV 24</button>${compressedType() ? `<button type="button" data-act="comp">${compressedType().ext.toUpperCase()}</button>` : ''}<button type="button" data-act="json">JSON</button></div>
   </li>`).join('') : '<li class="cap-empty">No takes yet. Record or render one; takes stay on this device.</li>';
-  for (const li of el.takes.querySelectorAll('li[data-id]')) { const m = list.find((x) => x.id === li.dataset.id); wave(li.querySelector('canvas'), m.peaks); }
+  for (const li of el.takes.querySelectorAll('li[data-id]')) { const m = list.find((x) => x.id === li.dataset.id); if (m.kind === 'motion') motionWave(li.querySelector('canvas'), m.peaks, m.type); else wave(li.querySelector('canvas'), m.peaks); }
   quota();
 }
 function wave(c, pk) {
@@ -413,6 +505,31 @@ function wave(c, pk) {
   let mx = 1e-6; for (const v of pk) mx = Math.max(mx, Math.abs(v)); const k = (H / 2 - dpr) / Math.max(mx, 0.05);
   g.fillStyle = cs.getPropertyValue('--sig-2').trim() || '#2fd6c3';
   for (let i = 0; i < cols; i++) { const x = Math.floor(i * W / cols), w = Math.max(1, Math.floor(W / cols) - (W / cols > 2 ? 1 : 0)); const y0 = H / 2 - pk[i * 2 + 1] * k, y1 = H / 2 - pk[i * 2] * k; g.fillRect(x, y0, w, Math.max(dpr, y1 - y0)); }
+}
+const ICON = {
+  dl: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>',
+  ren: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>',
+  del: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg>',
+};
+function motionRow(m) {
+  const what = m.type === 'lane' ? `lane · ${esc(m.control || '')}` : `pads · ${esc(m.bank || '')}`;
+  return `<li data-id="${m.id}" class="cap-tk" data-type="${m.type}">
+    <canvas class="cap-wave" aria-hidden="true"></canvas>
+    <div class="cap-tk-info"><b class="cap-tk-name"><i class="cap-badge" data-type="lane">${m.type === 'lane' ? 'lane' : 'pads'}</i>${esc(m.name)}</b><span class="cap-tk-sub">${what} · ${m.events} ev · ${numStr(m.cycles)}c · ${numStr(m.cps)} cps</span></div>
+    <div class="cap-tk-acts">
+      <button type="button" class="ghost" data-act="load" aria-label="Load ${esc(m.name)} into Perform">Load</button>
+      <button type="button" class="ghost icon" data-act="rename" aria-label="Rename ${esc(m.name)}">${ICON.ren}</button>
+      <button type="button" class="ghost icon" data-act="mjson" aria-label="Download ${esc(m.name)} as JSON">${ICON.dl}</button>
+      <button type="button" class="ghost icon" data-act="del" aria-label="Delete ${esc(m.name)}">${ICON.del}</button>
+    </div>
+    <div class="cap-dl"><button type="button" data-act="mjson">JSON</button><button type="button" data-act="maudio">Export audio</button><button type="button" data-act="mcode">Copy code</button></div>
+  </li>`;
+}
+function motionWave(c, pk, type) {
+  const dpr = Math.min(2, window.devicePixelRatio || 1), W = Math.round((c.clientWidth || 96) * dpr), H = Math.round((c.clientHeight || 40) * dpr); c.width = W; c.height = H;
+  const g = c.getContext('2d'), cs = getComputedStyle(c), n = pk.length; g.strokeStyle = g.fillStyle = cs.getPropertyValue('--sig').trim() || '#ff6a1a'; g.lineWidth = 1.5 * dpr;
+  if (type === 'lane') { g.beginPath(); for (let i = 0; i < n; i++) { const x = i / (n - 1) * W, y = H - dpr * 3 - pk[i] * (H - dpr * 6); i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); }
+  else for (let i = 0; i < n; i++) if (pk[i] > 0) { const h = Math.max(3 * dpr, pk[i] * (H - 4 * dpr)); g.fillRect(Math.floor(i / n * W), H - 2 * dpr - h, Math.max(dpr * 1.5, W / n), h); }
 }
 let player = null, playerId = null;
 async function takeAct(act, id, btn) {
@@ -426,15 +543,19 @@ async function takeAct(act, id, btn) {
     a.onpause = () => { pb.setAttribute('aria-pressed', 'false'); URL.revokeObjectURL(a.src); if (player === a) { player = null; playerId = null; } };
     a.play().catch((e) => toast('Preview: ' + e.message, { kind: 'error' }));
   } else if (act === 'rename') {
-    const cur = li.querySelector('.cap-tk-name').textContent;
+    const cur = li.querySelector('.cap-tk-name').lastChild.textContent;
     const v = await sc.ui.ask({ title: 'Rename take', label: 'Name (letters, digits, - _ .)', value: cur, okText: 'Rename' });
     if (v && v.trim()) { const n = await rename(id, v); toast('Renamed to ' + n, { kind: 'ok' }); renderTakes(); }
   } else if (act === 'del') {
-    const cur = li.querySelector('.cap-tk-name').textContent;
+    const cur = li.querySelector('.cap-tk-name').lastChild.textContent;
     if (await sc.ui.askYesNo({ title: 'Delete take', message: `Delete "${cur}" from this device? Download it first to keep it.`, okText: 'Delete', danger: true })) { if (playerId === id && player) player.pause(); await remove(id); toast('Deleted ' + cur, { kind: 'info' }); renderTakes(); }
   } else if (act === 'dl') {
     const d = li.querySelector('.cap-dl'); d.hidden = !d.hidden; btn.setAttribute('aria-expanded', String(!d.hidden));
-  } else if (act === 'wav16' || act === 'wav24' || act === 'json' || act === 'comp') download(id, act === 'comp' ? 'comp' : act);
+  } else if (act === 'load') { const r = await getTake(id); try { await applyMotion(r); toast(`Loaded ${r.meta.name} into Perform`, { kind: 'ok' }); } catch (e) { toast(e.message, { kind: 'error' }); }
+  } else if (act === 'mjson') download(id, 'json');
+  else if (act === 'maudio') { btn.disabled = true; try { await exportMotionAudio(id); } finally { btn.disabled = false; } }
+  else if (act === 'mcode') copyCode(id);
+  else if (act === 'wav16' || act === 'wav24' || act === 'json' || act === 'comp') download(id, act === 'comp' ? 'comp' : act);
 }
 function dock() { const tp = $('.transport'); if (tp && el.w) el.w.style.setProperty('--cap-bottom', Math.round(tp.getBoundingClientRect().height) + 'px'); }
 addEventListener('resize', () => st.open && dock());
@@ -451,5 +572,7 @@ function init() {
     P.register({ id: 'capture.exact', group: 'Capture', title: 'Render exact N cycles (offline)', run: () => { open(); renderExact(); } });
   }
 }
-sc.capture = { open, close, toggle: toggleSheet, record, stop, toggleRec, configure, renderExact, list: listMeta, get: getTake, remove, rename, encodeWav, sidecar, fileName, download, opts, state: st };
+/* Perform recorders announce finished takes (perform.js dispatches perform:take) */
+addEventListener('perform:take', (e) => { const d = e.detail || {}; saveMotion(d).catch((err) => toast('Could not keep the take: ' + err.message, { kind: 'error' })); });
+sc.capture = { saveMotion, motionJson, parseMotion, importMotion, applyMotion, exportMotionAudio, motionCode, open, close, toggle: toggleSheet, record, stop, toggleRec, configure, renderExact, list: listMeta, get: getTake, remove, rename, encodeWav, sidecar, fileName, download, opts, state: st };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

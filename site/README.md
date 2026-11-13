@@ -36,6 +36,7 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
     node tests/site/perform.mjs        # Perform view, learn/map, lanes, looper (#55)
     node tests/site/word_intellisense.mjs  # word() completions from data/intellisense/words.json (#44)
     node tests/site/vox.mjs            # vocal banks and voxBank()
+    node tests/site/motion.mjs         # Perform lane / pad takes: JSON download, export audio, copy code, import (#72)
     node tests/site/capture.mjs        # audio capture at 360px: 2-cycle take, waveform, WAV header/length, exact render (#72)
 
 Outputs go to `docs/screens/` (`metrics.json`, `lighthouse-mobile.json`, PNG screenshots at 390px and 1440px).
@@ -373,5 +374,6 @@ on another literal switches, the same literal toggles (section 7).
 - **Arm**: Free, Cycles (start and end on cycle boundaries, length `round(N / cps * sr)` frames, loops cleanly) or Until stop (play-time limit is the cap); count-in (cycles) and pre-roll (seconds, Free / Until stop). Takes keep running across Rack/Stack tab switches and a hidden browser tab.
 - **Render exact N cycles**: offline through an OfflineAudioContext (superdough swapped in and restored), sample-exact and faster than real time; Fold tail adds the release back onto the start. Hooks, pads and live seek are not in offline renders (limits in docs/CAPTURE.md).
 - **Takes**: IndexedDB `sc-capture` (`{meta, audio}`), settings `sc.capture.*`; each take has a waveform, play (looping preview, never recorded), rename and delete (site modals), download: WAV 16 / 24 bit, the browser's compressed format (WEBM/Opus on Chrome), JSON sidecar with source and cps. File names `<name>_<cycles>c_<cps>cps.wav`. Storage usage line turns into a warning near the quota.
+- **Perform motion takes**: a finished Rec lane (control automation) or looper pad take lands in the same take list with a `lane` / `pads` badge and a "Take saved, Download" toast. Per take: Download JSON (`strudel-craft/motion@1`: events with cycle and time, control / pad ids, values, cps, refs, model, code, source), Export audio (re-record pass through capture, saved and downloaded as WAV), Copy code (`laneCode` / `bounceCode`), Load; Import JSON loads a take back. Test `node tests/site/motion.mjs`.
 - API `strudelCraft.capture = { open, configure, record, stop, renderExact, list, get, remove, rename, download, encodeWav, sidecar, fileName }`.
 Caret placement works in every state: highlight and widget decorations never dispatch while a pointer is down in an editor and only when they change (CONTROL_BINDING section 5).

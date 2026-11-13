@@ -641,8 +641,15 @@ async function boot() {
     say(`${S.recipes.length} recipes loaded. Press Play or Space.`);
   } catch (e) { say('Failed to load recipes: ' + e.message, true); $('#nowTitle').textContent = 'Offline'; }
 
+  fetch('build.json', { cache: 'no-store' }).then((r) => r.json()).then((b) => { const e = $('#buildBadge'); if (e) { e.textContent = b.sha === 'dev' ? 'dev' : b.sha + (b.date ? ' ' + b.date : ''); e.title = 'Build ' + b.sha + (b.date ? ', ' + b.date : ''); } }).catch(() => {});
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    const reg = () => navigator.serviceWorker.register('sw.js').catch(() => { /* optional */ });
+    const offer = (w) => { if (!w || offer.shown) return; offer.shown = true; window.strudelCraft.ui.toast('New version, tap to reload', { kind: 'info', sticky: true, onClick: () => w.postMessage('SKIP_WAITING') }); };
+    let reloading = false; navigator.serviceWorker.addEventListener('controllerchange', () => { if (!reloading && offer.shown) { reloading = true; location.reload(); } });
+    const reg = () => navigator.serviceWorker.register('sw.js').then((r) => {
+      if (r.waiting && navigator.serviceWorker.controller) offer(r.waiting);
+      r.addEventListener('updatefound', () => { const w = r.installing; if (w) w.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller) offer(w); }); });
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') r.update().catch(() => {}); });
+    }).catch(() => { /* optional */ });
     'requestIdleCallback' in window ? requestIdleCallback(reg, { timeout: 4000 }) : setTimeout(reg, 2000);
   }
 }

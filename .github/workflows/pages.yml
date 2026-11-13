@@ -19,6 +19,12 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Stamp build (service worker cache version + badge)
+        run: |
+          SHA=${GITHUB_SHA::7}; DATE=$(date -u +%Y-%m-%d)
+          sed -i "s/const VERSION = 'sc-dev';/const VERSION = 'sc-$SHA';/" site/sw.js
+          grep -q "sc-$SHA" site/sw.js
+          printf '{"sha": "%s", "date": "%s"}\n' "$SHA" "$DATE" > site/build.json
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

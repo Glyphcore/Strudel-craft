@@ -82,3 +82,9 @@ coding, `swapTo()` -> `Engine.swap`), with no stop or restart. **Follow tab** (t
 when off, the transport stays locked to the tab it started on; a badge next to it shows the source tab (amber when locked).
 Edits in a tab that is not the source are syntax-checked only (message under that editor and line marker) and swap in when the
 tab becomes the source. Every swap (edit, tab switch, knob/stack update) is committed to history (`live swap: <id> (<why>)`).
+
+## Build badge and updates
+`.github/workflows/pages.yml` stamps every deploy: `sw.js` `VERSION` becomes `sc-<short sha>` (new cache on every deploy) and
+`build.json` gets `{sha, date}`; the transport shows it as a small badge (`dev` locally). A new service worker waits instead
+of taking over; the page shows a sticky toast "New version, tap to reload" which posts `SKIP_WAITING` and reloads on
+`controllerchange`. The app also checks for updates whenever the tab becomes visible again.

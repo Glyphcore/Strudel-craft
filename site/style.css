@@ -301,3 +301,5 @@ dialog.scm{width:min(420px,calc(100vw - 24px))}
 .tp-follow[aria-pressed=true]{color:var(--sig-2);border-color:var(--sig-2)}
 .src-badge{font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;padding:2px 6px;border-radius:var(--r1);background:var(--panel-3);color:var(--dim)}
 .src-badge[data-locked=true]{color:var(--warn);outline:1px solid var(--warn)}
+.toast-act{flex:1;text-align:left;min-height:44px;border:0;background:transparent;color:var(--sig-2);font-weight:600}
+.build{font-family:var(--mono);font-size:.62rem;color:var(--faint);white-space:nowrap}

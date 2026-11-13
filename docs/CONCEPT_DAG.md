@@ -11,4 +11,4 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | envelope-follower-ducking | issues-protocol | accepted | #6 |
 | granulator | local-samples-ir-bounce | accepted | #7 |
 | vocoder | issues-protocol | accepted | #8 |
-| external-renderers-sf2-ks | local-samples-ir-bounce | issued | #9 |
+| external-renderers-sf2-ks | local-samples-ir-bounce | accepted | #9 |

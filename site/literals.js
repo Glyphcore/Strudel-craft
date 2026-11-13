@@ -44,7 +44,7 @@ function nudge(litId, steps, viewId) { const v = viewOf(viewId); const l = v && 
 /* ---- popover ---- */
 let pop = null;
 function close() { if (pop) { pop.remove(); pop = null; document.removeEventListener('pointerdown', outside, true); } }
-function outside(e) { if (pop && !pop.contains(e.target)) close(); }
+function outside(e) { if (pop && !pop.contains(e.target) && !(e.target.closest && e.target.closest('.cm-scroller'))) close(); } /* taps in the code: the gesture switches or toggles */
 function place(view, l, el) {
   const c = view.coordsAtPos(l.from) || { left: 8, bottom: 80, top: 60 }; document.body.append(el);
   const w = el.offsetWidth, ht = el.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
@@ -55,7 +55,7 @@ function open(view, l, { focus = true } = {}) {
   close(); const p = shapeFor(l); const ed = editorFor(l, p); if (!ed) return false;
   const body = h('div', { class: 'lit-body' });
   pop = h('div', { class: 'lit-pop', role: 'dialog', 'aria-label': `Edit ${l.param || 'value'}${p && p.name ? ' ' + p.name : ''}`, 'data-lit': l.id, 'data-editor': ed },
-    h('div', { class: 'lit-head' }, h('b', {}, `${l.param || 'literal'}${p && p.name ? ' · ' + p.name : ''}`), h('span', { class: 'lit-id', title: l.path }, l.id)), body);
+    h('div', { class: 'lit-head' }, h('b', {}, `${l.param || 'literal'}${p && p.name ? ' · ' + p.name : ''}`), h('span', { class: 'lit-id', title: l.path }, l.id), h('button', { type: 'button', class: 'lit-x', 'aria-label': 'Close', onclick: () => { close(); } }, '×')), body);
   pop.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); view.focus(); } });
   const ctx = { view, lit: l, param: p, set: (text) => setLit(l.id, text, view.__scId), close, items: sc.intellisense ? sc.intellisense.all() : Promise.resolve([]) };
   (custom.get(ed) || EDITORS[ed] || EDITORS.steps)(body, ctx);
@@ -124,9 +124,9 @@ function attachGestures(view) {
     if (e.button > 0) return; pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (g && pts.size === 2 && g.lit.kind === 'number') { const [a, b] = [...pts.values()]; g.pinch0 = Math.hypot(a.x - b.x, a.y - b.y) || 1; g.moved = true; e.preventDefault(); return; }
     const pos = view.posAtCoords({ x: e.clientX, y: e.clientY }); if (pos == null) return;
-    const l = literalAt(view.state.doc.toString(), pos); if (!l) return;
-    g = { id: e.pointerId, x: e.clientX, y: e.clientY, lit: l, pos, moved: false, p: shapeFor(l), t0: 0, v: l.value };
-    if (l.kind === 'number') { g.t0 = toTravel(g.p, l.value); e.preventDefault(); el.setPointerCapture(e.pointerId); view.focus(); }
+    const l = literalAt(view.state.doc.toString(), pos); if (!l) { if (pop) close(); return; }
+    g = { id: e.pointerId, x: e.clientX, y: e.clientY, lit: l, pos, moved: false, p: shapeFor(l), t0: 0, v: l.value, wasOpen: !!(pop && pop.dataset.lit === l.id) };
+    if (l.kind === 'number') { g.t0 = toTravel(g.p, l.value); e.preventDefault(); el.setPointerCapture(e.pointerId); } /* no focus(): never forces the soft keyboard */
     g.lp = setTimeout(() => { if (g && !g.moved) { g.done = true; open(view, l); } }, G.longPressMs || 450);
   }, true);
   el.addEventListener('pointermove', (e) => {
@@ -142,8 +142,10 @@ function attachGestures(view) {
     pts.delete(e.pointerId); if (!g || (e.pointerId !== g.id && pts.size)) return; const d = g; g = null; clearTimeout(d.lp); hideBadge();
     if (d.lit.kind === 'number' && d.moved) { const f = find(view, d.lit.id); if (f) replace(view, f.from, f.to, fmt(d.v, d.p)); return; } /* one edit when the gesture settles */
     if (d.done || d.moved) return;
+    if (d.wasOpen) { close(); return; } /* tap the same literal: toggle */
     if (d.lit.kind === 'number') view.dispatch({ selection: { anchor: d.pos } });
-    open(view, d.lit, { focus: false }); /* tap: caret stays in the code, the popover is pointer-operable */
+    const fresh = literalAt(view.state.doc.toString(), d.pos) || d.lit; /* re-resolve from the tap position (works after swaps / re-derivation, caret already inside, focused editor) */
+    open(view, fresh, { focus: false }); /* opened from the pointer event itself; caret stays, no keyboard */
   };
   el.addEventListener('pointerup', end, true); el.addEventListener('pointercancel', (e) => { pts.delete(e.pointerId); if (g) { clearTimeout(g.lp); g = null; hideBadge(); } }, true);
   el.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pop) { close(); return; } if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) { const pos = view.state.selection.main.head; const l = literalAt(view.state.doc.toString(), pos); if (l && l.kind === 'number') { e.preventDefault(); nudge(l.id, (e.key === 'ArrowUp' ? 1 : -1) * (e.shiftKey ? 10 : 1), view.__scId); } } });

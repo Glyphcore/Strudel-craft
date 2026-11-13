@@ -87,6 +87,36 @@ await page.evaluate(() => window.strudelCraft.literals.close());
 await page.evaluate(() => window.strudelCraft.literals.close());
 await setDoc(CODE); await settle();
 
+// 9. tap opens the smart menu even when the editor is focused with the caret inside the node; another literal switches; same toggles
+{ await setDoc(LIT); await settle();
+  await page.evaluate(() => { const v = document.getElementById('code').cmView; v.focus(); const i = v.state.doc.toString().indexOf('vowel("a') + 7; v.dispatch({ selection: { anchor: i } }); });
+  const pa = await at('vowel("a', 7); await tap(pa); await page.waitForTimeout(150);
+  const m1 = await page.evaluate(() => ({ ed: document.querySelector('.lit-pop')?.dataset.editor, lit: document.querySelector('.lit-pop')?.dataset.lit, focused: document.activeElement && !!document.activeElement.closest('.cm-editor') }));
+  const pb = await at('800', 1); await tap(pb); await page.waitForTimeout(150);
+  const m2 = await page.evaluate(() => ({ ed: document.querySelector('.lit-pop')?.dataset.editor, lit: document.querySelector('.lit-pop')?.dataset.lit, n: document.querySelectorAll('.lit-pop').length }));
+  await tap(pb); await page.waitForTimeout(150); const m3 = await page.evaluate(() => document.querySelectorAll('.lit-pop').length);
+  check('focused editor, caret inside the literal: tap opens its menu (no blur)', m1.ed === 'combobox' && m1.focused, JSON.stringify(m1));
+  check('tap another literal switches the menu; tap the same one toggles it closed', m2.ed === 'scrub' && m2.n === 1 && m2.lit !== m1.lit && m3 === 0, JSON.stringify({ m2, m3 }));
+  await page.evaluate(() => window.strudelCraft.literals.close()); await setDoc(CODE); await settle(); }
+
+// 10. suggestions are inert until accepted; they auto-dismiss on a tap elsewhere and come back on typing
+{ await setDoc('$: s("sawtooth")\n'); await settle();
+  const snap = () => page.evaluate(async () => ({ doc: document.getElementById('code').cmView.state.doc.toString(), hist: (await window.strudelCraft.history.log()).length, compiles: window.strudelCraft.settle.stats.compiles, pokes: window.strudelCraft.settle.stats.pokes, evals: window.__sc.Engine.evalCount, dot: document.querySelector('#liveChip').dataset.v, learned: localStorage.getItem('sc.intellisense.user') }));
+  const show = () => page.evaluate(() => { const v = document.getElementById('code').cmView; v.focus(); v.dispatch({ selection: { anchor: v.state.doc.line(1).to } }); window.strudelCraft.intellisense.ghost.show(v, ['.gain(0.8)', '.lpf(800)']); });
+  const s0 = await snap(); await show(); await page.keyboard.press('Control+]'); await page.keyboard.press('Control+]'); await page.waitForTimeout(900);
+  const shown = await page.evaluate(() => !!document.querySelector('.cm-ghost')); const s1 = await snap();
+  check('shown + cycled suggestion changes nothing (doc, history, compiles, pokes, evals, dot, learned list)', shown && JSON.stringify(s0) === JSON.stringify(s1), JSON.stringify({ shown, s0, s1 }));
+  await page.keyboard.press('Tab'); await settle(); const s2 = await snap();
+  check('Tab accept: exactly one change, one history commit, one compile', s2.doc === '$: s("sawtooth").gain(0.8)\n' && s2.hist - s1.hist === 1 && s2.compiles - s1.compiles === 1, JSON.stringify({ doc: s2.doc, hist: s2.hist - s1.hist, compiles: s2.compiles - s1.compiles }));
+  await show(); await page.waitForTimeout(100); const b0 = await snap(); const had = await page.evaluate(() => !!document.querySelector('.cm-ghost'));
+  const t = await page.evaluate(() => { const r = document.querySelector('#nowTitle').getBoundingClientRect(); const vv = window.visualViewport; return { x: r.left + 4 - vv.offsetLeft, y: r.top + r.height / 2 - vv.offsetTop }; }); await tap(t); await page.waitForTimeout(300);
+  const gone = await page.evaluate(() => !document.querySelector('.cm-ghost') && !document.querySelector('.cm-ghost-tab')); const b1 = await snap();
+  check('tap elsewhere dismisses the suggestion and its Tab chip; doc and history unchanged', had && gone && b0.doc === b1.doc && b0.hist === b1.hist, JSON.stringify({ had, gone }));
+  await page.evaluate(() => { const v = document.getElementById('code').cmView; v.focus(); v.dispatch({ selection: { anchor: v.state.doc.line(1).to } }); }); await page.keyboard.type('.lpf(', { delay: 40 }); await page.waitForTimeout(600);
+  const back = await page.evaluate(() => !!document.querySelector('.cm-ghost, .cm-tooltip-autocomplete'));
+  check('typing again brings a suggestion back', back, String(back));
+  await page.keyboard.press('Escape'); await setDoc(CODE); await settle(); }
+
 // 8. node-aware accept (CONTROL_BINDING section 10): ghost Tab and popup accept replace/merge the node, never duplicate; one undo step
 { const caseG = async (doc, caret, ghost) => { await setDoc(doc); await page.evaluate(([c, g]) => { const v = document.getElementById('code').cmView; v.focus(); v.dispatch({ selection: { anchor: c } }); window.strudelCraft.intellisense.ghost.show(v, g); }, [caret, ghost]); await page.keyboard.press('Tab'); await page.waitForTimeout(80); return docText(); };
   const R = {};

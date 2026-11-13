@@ -59,7 +59,7 @@
     },
     {
       "id": "ghost", "title": "Ghost text and Tab", "needs": "ghost",
-      "explain": "Type in the editor: a dimmed continuation appears at the cursor. Tab (or the Tab chip on phones) accepts it, Esc dismisses it, Ctrl/Alt+] cycles alternatives. Tab also accepts the selected popup item, and indents when nothing is suggested. Accepting replaces the word or value under the cursor instead of adding to it: existing brackets, arguments and later chain calls are kept, an accept that is already there just moves the cursor, and one Ctrl+Z undoes it.",
+      "explain": "Type in the editor: a dimmed continuation appears at the cursor. Tab (or the Tab chip on phones) accepts it, Esc dismisses it, Ctrl/Alt+] cycles alternatives. Tab also accepts the selected popup item, and indents when nothing is suggested. Accepting replaces the word or value under the cursor instead of adding to it: existing brackets, arguments and later chain calls are kept, an accept that is already there just moves the cursor, and one Ctrl+Z undoes it. Until you accept, a suggestion changes nothing (no edit, no history, no re-run); it disappears when you tap elsewhere, scroll, switch view, press Esc or wait 5 seconds, and comes back when you type or press Ctrl+Space.",
       "examples": [
         { "title": "Try: type .lpf( then Tab", "code": "$: note(\"c2 eb2\").s(\"sawtooth\")", "noplay": true }
       ]

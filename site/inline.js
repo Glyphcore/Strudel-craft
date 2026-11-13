@@ -138,5 +138,16 @@ export function setupInline(api, cm) {
     { key: 'Ctrl-[', run: (v) => cycle(v, -1) }, { key: 'Alt-[', run: (v) => cycle(v, -1) },
   ]));
   const theme = EditorView.theme({ '.cm-ghost': { opacity: '.45', fontStyle: 'italic' }, '.cm-ghost-tab': { marginLeft: '6px', padding: '0 8px', minHeight: '28px', minWidth: '44px', fontSize: '.68rem', letterSpacing: '.08em', textTransform: 'uppercase', border: '1px solid var(--sig-2)', borderRadius: 'var(--r1)', background: 'transparent', color: 'var(--sig-2)', verticalAlign: 'middle', cursor: 'pointer' } });
-  return { extension: [field, trigger, keys, theme], accept, dismiss, ghost: (view) => view.state.field(field), show: (view, alts, pos = view.state.selection.main.head) => view.dispatch({ effects: setGhost.of({ pos, alts: [].concat(alts), i: 0 }) }), mergeAccept };
+  /* auto-dismiss (CONTROL_BINDING section 11): blur, scroll, tap elsewhere, idle 5 s, view/modal switch; always inert (decoration only) */
+  const live = new Set(); let idleT = 0, scroll0 = 0;
+  const dismissAll = () => { for (const v of live) { try { if (v.state.field(field)) v.dispatch({ effects: setGhost.of(null) }); if (ac.completionStatus(v.state)) ac.closeCompletion(v); } catch (e) { /* view gone */ } } live.clear(); clearTimeout(idleT); };
+  const watch = EditorView.updateListener.of((u) => { const g = u.state.field(field); if (g && !u.startState.field(field)) { live.add(u.view); scroll0 = window.scrollY + u.view.scrollDOM.scrollTop; clearTimeout(idleT); idleT = setTimeout(dismissAll, 5000); } if (ac.completionStatus(u.state) === 'active') live.add(u.view); });
+  const domH = EditorView.domEventHandlers({ blur: () => { setTimeout(dismissAll, 0); }, scroll: (e, v) => { if (Math.abs(v.scrollDOM.scrollTop + window.scrollY - scroll0) > 24) dismissAll(); } });
+  if (!api.__ghostDocWired) { api.__ghostDocWired = true;
+    document.addEventListener('pointerdown', (e) => { if (!live.size || (e.target.closest && (e.target.closest('.cm-ghost-tab') || e.target.closest('.cm-tooltip-autocomplete')))) return; dismissAll(); }, true);
+    window.addEventListener('scroll', () => { if (live.size && Math.abs(window.scrollY - scroll0) > 24) dismissAll(); }, { passive: true });
+    window.addEventListener('hashchange', dismissAll); document.addEventListener('toggle', dismissAll, true);
+    new MutationObserver(() => { if (live.size && document.querySelector('dialog[open]')) dismissAll(); }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['open'], childList: true }); }
+  api.dismissSuggestions = dismissAll;
+  return { extension: [field, trigger, keys, theme, watch, domH], accept, dismiss, ghost: (view) => view.state.field(field), show: (view, alts, pos = view.state.selection.main.head) => view.dispatch({ effects: setGhost.of({ pos, alts: [].concat(alts), i: 0 }) }), mergeAccept };
 }

@@ -135,6 +135,12 @@ Editor choice order: registered providers -> number `scrub` / boolean `toggle` -
   on release. Alt+Up/Down nudges the number under the caret (Shift = x10).
 - Without the caret: `strudelCraft.literals.set(id, text)`, `.nudge(id, steps)`, `.open(id)`, `.list(viewId)`; control surfaces and
   key maps bind to literal ids the same way controls bind to site ids.
+- **Opening**: the menu opens from the pointer event itself (pointerup of a tap, or a long-press), resolving the node from the tap
+  coordinates (`posAtCoords` + `literalAt`), never from focus, blur or selection changes. So it works with the editor focused and the
+  caret already inside the node. A tap on another literal switches the menu, a tap on the same literal toggles it, a tap on plain code
+  closes it; the × button and Esc dismiss it. Opening never calls `focus()`, so the soft keyboard is not forced up. The node is
+  re-resolved on every tap and every edit is applied by id, so menus keep working after live swaps and re-derivations. Informational
+  tooltips (signature help) are `pointer-events: none` so they never swallow taps.
 - **Live apply**: every typed editor applies as soon as a value is chosen, with no confirm tap: piano keys and octave -/+ (octave
   keeps the pitch class and accidental: `eb3` -> `eb4`; the shown note name and the source change together; the popover stays open),
   combobox and sound list options, chips, toggle, and each step chip as you type. The number scrub commits on release.
@@ -201,3 +207,18 @@ Precedence (highest first): user override per AST id (`perform` model `ranges[<i
   is recomputed afterwards against the new document, never batched.
 - Test: `node tests/site/binding.mjs` (prefix partial, caret mid-token, already complete, existing parens, arg value swap, chained
   call already present, one-step undo).
+
+## 11. Suggestions are inert until accepted; auto-dismiss
+
+Ghost text, the autocomplete popup, arrow-key highlight in it and Ctrl/Alt+] cycling only render decorations and widgets. Until Tab or
+a tap accepts: the document, undo stack and history are unchanged; nothing is poked to the settle scheduler (no dirty dot, validation,
+compile, live swap or control/AST-id re-derivation); mappings, workspace and the learned suggestion list (`sc.intellisense.user`,
+learned only from document text) are untouched. Accept is the single transaction (section 10).
+
+Auto-dismiss, with no side effects: a tap or click anywhere outside the ghost chip or the popup (in the editor, outside it, another
+control, panel or tab); caret moves (tap, arrows, selection) off the anchor; editor blur; editor or page scroll beyond 24 px; hash/view
+changes, any `<details>` toggle or an opened `<dialog>` (modal, sheet, palette); Esc; 5 s idle. They come back only on new typing or
+an explicit trigger (Ctrl+Space), never on focus alone; the Tab chip lives in the ghost widget so it disappears with it.
+`strudelCraft.intellisense.dismissSuggestions()` dismisses programmatically; `intellisense.ghost.show(view, alts)` shows one (tests,
+providers). Test: `node tests/site/binding.mjs` (show + cycle: doc, history length, compile/poke/eval counters, dot and learned list
+unchanged; Tab: one change, one history commit, one compile; tap elsewhere dismisses; typing brings it back).

@@ -320,3 +320,6 @@ exact unit-aware entry (1.5k, -6 dB, 2:30) with "Extend range to fit"; "Range…
 editors apply live (no confirm tap). Docs: docs/CONTROL_BINDING.md sections 7 to 9.
 Accept (Tab on ghost text, or a popup item) is node-aware (`mergeAccept` in inline.js): it replaces the word or value under the caret,
 keeps existing brackets, arguments and chain calls, does nothing when the text is already there, and is one undo step.
+Suggestions (ghost text, popup, cycling) are inert until accepted and dismiss themselves on a tap elsewhere, blur, scroll, view or
+modal switch, Esc or 5 s idle (CONTROL_BINDING section 11). Literal menus open from the tap itself, even with the editor focused; a tap
+on another literal switches, the same literal toggles (section 7).

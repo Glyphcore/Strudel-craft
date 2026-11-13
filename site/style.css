@@ -387,7 +387,8 @@ dialog.scm{width:min(420px,calc(100vw - 24px))}
 .lit-pop{position:fixed;z-index:60;min-width:200px;max-width:min(320px,calc(100vw - 12px));padding:8px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r2);box-shadow:0 10px 30px rgba(0,0,0,.45);font-family:var(--mono);font-size:.78rem;color:var(--text)}
 .lit-head{display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-size:.68rem}
 .lit-head b{color:var(--text)}
-.lit-id{opacity:.6}
+.lit-id{opacity:.6;margin-left:auto}
+.lit-x{min-width:44px;min-height:32px;margin:-6px -8px -6px 0;background:transparent;border:0;color:var(--dim);font:inherit;font-size:1rem;cursor:pointer}
 .lit-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .lit-val{font-size:1rem;color:var(--sig-2);font-variant-numeric:tabular-nums}
 .lit-rng{color:var(--dim)}

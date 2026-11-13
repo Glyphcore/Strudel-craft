@@ -88,3 +88,7 @@ tab becomes the source. Every swap (edit, tab switch, knob/stack update) is comm
 `build.json` gets `{sha, date}`; the transport shows it as a small badge (`dev` locally). A new service worker waits instead
 of taking over; the page shows a sticky toast "New version, tap to reload" which posts `SKIP_WAITING` and reloads on
 `controllerchange`. The app also checks for updates whenever the tab becomes visible again.
+- History states also hold `ui:rack-editor` and `ui:stack-editor` (the full CodeMirror docs, not the virtualised DOM) and
+  `ui:panel` (visible title, inspector, status and error text). Any editor content change from any source (typing, preset load,
+  paste, tab switch, swap, restore) is detected and committed; search scans these too and reports the field (e.g. `Rack editor:4`).
+  `ui:*` keys are searchable/diffable but are not written back on checkout.

@@ -1,0 +1,988 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "strudelcraft.model/1",
+ "type": "object",
+ "required": [
+  "model"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "model": {
+   "const": 1
+  },
+  "meta": {
+   "type": "object",
+   "properties": {
+    "name": {
+     "type": "string"
+    },
+    "kind": {
+     "enum": [
+      "song",
+      "track",
+      "set",
+      "fragment",
+      "bank",
+      "performance",
+      "board",
+      "automation"
+     ]
+    },
+    "rev": {
+     "type": "integer",
+     "minimum": 1
+    },
+    "hash": {
+     "type": "string"
+    },
+    "parent": {
+     "type": "string"
+    },
+    "tags": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "settings": {
+   "type": "object",
+   "properties": {
+    "cps": {
+     "type": "number",
+     "exclusiveMinimum": 0
+    },
+    "cpb": {
+     "type": "number",
+     "default": 1
+    },
+    "bpb": {
+     "type": "integer",
+     "default": 4
+    }
+   }
+  },
+  "header": {
+   "type": "string",
+   "description": "verbatim non-hook header code (setcpm, samples, helpers)"
+  },
+  "markers": {
+   "type": "object",
+   "additionalProperties": {
+    "$ref": "#/$defs/point"
+   }
+  },
+  "scopes": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "object",
+    "properties": {
+     "stem": {
+      "type": "string"
+     },
+     "bus": {
+      "type": "integer"
+     }
+    }
+   }
+  },
+  "slots": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "object",
+    "properties": {
+     "mode": {
+      "enum": [
+       "chain",
+       "swap",
+       "stack"
+      ]
+     },
+     "else": {
+      "type": "string"
+     },
+     "quant": {
+      "type": "number",
+      "minimum": 0
+     }
+    }
+   }
+  },
+  "defs": {
+   "type": "object",
+   "additionalProperties": {
+    "$ref": "#/$defs/def"
+   }
+  },
+  "vars": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "array",
+    "items": {
+     "$ref": "#/$defs/assign"
+    }
+   }
+  },
+  "bindings": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/binding"
+   }
+  },
+  "wires": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/wire"
+   }
+  },
+  "tracks": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/track"
+   }
+  },
+  "instances": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/instance"
+   }
+  },
+  "components": {
+   "type": "object",
+   "description": "embedded component versions keyed name@rev, so the document is self-contained",
+   "additionalProperties": {
+    "$ref": "#"
+   }
+  },
+  "exports": {
+   "$ref": "#/$defs/exports"
+  },
+  "pads": {
+   "type": "object",
+   "properties": {
+    "banks": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/bank"
+     }
+    },
+    "keymaps": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "string"
+      }
+     }
+    },
+    "settings": {
+     "type": "object",
+     "properties": {
+      "latencyMs": {
+       "type": "number",
+       "default": 0
+      },
+      "takeover": {
+       "enum": [
+        "pickup",
+        "jump"
+       ]
+      },
+      "activeKeymap": {
+       "type": "object"
+      }
+     }
+    }
+   }
+  },
+  "controls": {
+   "type": "object",
+   "additionalProperties": {
+    "$ref": "#/$defs/control"
+   }
+  },
+  "maps": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/map"
+   }
+  },
+  "boards": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/board"
+   }
+  },
+  "automation": {
+   "type": "object",
+   "additionalProperties": {
+    "$ref": "#/$defs/lane"
+   }
+  },
+  "performances": {
+   "type": "object",
+   "additionalProperties": {
+    "$ref": "#/$defs/performance"
+   }
+  },
+  "journal": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "cycle",
+     "op"
+    ],
+    "properties": {
+     "cycle": {
+      "type": "string"
+     },
+     "op": {
+      "type": "string"
+     },
+     "args": {
+      "type": "array"
+     }
+    }
+   }
+  },
+  "layout": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "number"
+     },
+     "y": {
+      "type": "number"
+     },
+     "collapsed": {
+      "type": "boolean"
+     }
+    }
+   }
+  }
+ },
+ "$defs": {
+  "point": {
+   "type": [
+    "string",
+    "number"
+   ],
+   "description": "HOOKS_SYNTAX gate point: 16, \"17b\", \"17.3b\", \"90s\", \"1:30\", \"drop-2b\""
+  },
+  "gate": {
+   "oneOf": [
+    {
+     "type": "string"
+    },
+    {
+     "type": "object",
+     "additionalProperties": false,
+     "properties": {
+      "from": {
+       "$ref": "#/$defs/point"
+      },
+      "until": {
+       "$ref": "#/$defs/point"
+      },
+      "windows": {
+       "type": "array"
+      },
+      "period": {
+       "type": [
+        "string",
+        "number"
+       ]
+      },
+      "when": {},
+      "latch": {
+       "type": "boolean"
+      },
+      "quant": {
+       "type": "number",
+       "minimum": 0
+      },
+      "unreached": {}
+     }
+    }
+   ]
+  },
+  "param": {
+   "type": "object",
+   "properties": {
+    "min": {
+     "type": "number"
+    },
+    "max": {
+     "type": "number"
+    },
+    "default": {},
+    "unit": {
+     "type": "string"
+    }
+   }
+  },
+  "arg": {
+   "description": "JSON literal, or {$param}, {$tap}, {$mini}, {$expr}, {$hook}, {$events}, {$curve}, {$code: 'arrow function text'}"
+  },
+  "step": {
+   "type": "array",
+   "prefixItems": [
+    {
+     "type": "string"
+    }
+   ],
+   "items": {
+    "$ref": "#/$defs/arg"
+   },
+   "minItems": 1
+  },
+  "def": {
+   "type": "object",
+   "properties": {
+    "params": {
+     "type": "object",
+     "additionalProperties": {
+      "$ref": "#/$defs/param"
+     }
+    },
+    "taps": {
+     "type": "object"
+    },
+    "decorator": {
+     "type": "boolean"
+    },
+    "chain": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/step"
+     }
+    },
+    "opaque": {
+     "type": "boolean"
+    },
+    "src": {
+     "type": "string"
+    }
+   }
+  },
+  "assign": {
+   "type": "object",
+   "required": [
+    "value"
+   ],
+   "properties": {
+    "value": {
+     "$ref": "#/$defs/arg"
+    },
+    "gate": {
+     "$ref": "#/$defs/gate"
+    },
+    "priority": {
+     "type": "number"
+    },
+    "min": {
+     "type": "number"
+    },
+    "max": {
+     "type": "number"
+    },
+    "unit": {
+     "type": "string"
+    },
+    "ns": {
+     "type": "string"
+    }
+   }
+  },
+  "binding": {
+   "type": "object",
+   "required": [
+    "slot",
+    "hook"
+   ],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "slot": {
+     "type": "string"
+    },
+    "hook": {
+     "type": "string"
+    },
+    "args": {
+     "type": "object"
+    },
+    "gate": {
+     "$ref": "#/$defs/gate"
+    },
+    "order": {
+     "type": "number"
+    },
+    "priority": {
+     "type": "number"
+    },
+    "else": {
+     "type": "string"
+    },
+    "rebase": {
+     "type": "boolean"
+    }
+   }
+  },
+  "wire": {
+   "type": "object",
+   "required": [
+    "dest",
+    "tap"
+   ],
+   "properties": {
+    "dest": {
+     "type": "string"
+    },
+    "tap": {
+     "type": "string"
+    },
+    "range": {
+     "type": "array"
+    },
+    "curve": {
+     "enum": [
+      "lin",
+      "exp"
+     ]
+    },
+    "op": {
+     "enum": [
+      "set",
+      "add",
+      "mul"
+     ]
+    },
+    "gate": {
+     "$ref": "#/$defs/gate"
+    },
+    "default": {}
+   }
+  },
+  "track": {
+   "type": "object",
+   "required": [
+    "name"
+   ],
+   "properties": {
+    "name": {
+     "type": "string"
+    },
+    "ns": {
+     "type": "string"
+    },
+    "stem": {
+     "type": "string"
+    },
+    "bus": {
+     "type": "integer"
+    },
+    "muted": {
+     "type": "boolean"
+    },
+    "source": {
+     "$ref": "#/$defs/step"
+    },
+    "chain": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/step"
+     }
+    },
+    "src": {
+     "type": "string",
+     "description": "verbatim text; authoritative when chain is absent (opaque code node)"
+    }
+   }
+  },
+  "instance": {
+   "type": "object",
+   "required": [
+    "component",
+    "as"
+   ],
+   "properties": {
+    "component": {
+     "type": "string",
+     "pattern": "^[A-Za-z][\\w-]*@[0-9]+$"
+    },
+    "as": {
+     "type": "string"
+    },
+    "args": {
+     "type": "object"
+    },
+    "gate": {
+     "$ref": "#/$defs/gate"
+    },
+    "remap": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "bank": {
+   "type": "object",
+   "required": [
+    "id",
+    "rows",
+    "cols"
+   ],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "rows": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 8
+    },
+    "cols": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 8
+    },
+    "scenes": {
+     "enum": [
+      "none",
+      "row",
+      "col"
+     ]
+    },
+    "sceneQuant": {},
+    "sceneStopsEmpty": {
+     "type": "boolean"
+    },
+    "pads": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/pad"
+     }
+    }
+   }
+  },
+  "pad": {
+   "type": "object",
+   "required": [
+    "pos",
+    "target"
+   ],
+   "properties": {
+    "pos": {
+     "type": "string",
+     "pattern": "^[0-7],[0-7]$"
+    },
+    "target": {
+     "type": "object",
+     "required": [
+      "kind",
+      "ref"
+     ],
+     "properties": {
+      "kind": {
+       "enum": [
+        "component",
+        "hook",
+        "var",
+        "tap",
+        "scene",
+        "action"
+       ]
+      },
+      "ref": {
+       "type": "string"
+      },
+      "slot": {
+       "type": "string"
+      },
+      "value": {
+       "$ref": "#/$defs/arg"
+      }
+     }
+    },
+    "mode": {
+     "enum": [
+      "oneshot",
+      "gate",
+      "toggle",
+      "retrigger"
+     ]
+    },
+    "quant": {
+     "type": [
+      "string",
+      "number"
+     ]
+    },
+    "offQuant": {
+     "type": [
+      "string",
+      "number"
+     ]
+    },
+    "length": {
+     "type": [
+      "string",
+      "number"
+     ]
+    },
+    "choke": {
+     "type": "integer"
+    },
+    "colour": {
+     "type": "string"
+    },
+    "label": {
+     "type": "string",
+     "maxLength": 12
+    },
+    "args": {
+     "type": "object"
+    },
+    "velocity": {}
+   }
+  },
+  "performance": {
+   "type": "object",
+   "required": [
+    "length",
+    "layers"
+   ],
+   "properties": {
+    "length": {
+     "type": "string"
+    },
+    "origin": {
+     "type": "string"
+    },
+    "until": {
+     "type": "string"
+    },
+    "bank": {
+     "type": "string"
+    },
+    "layers": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "events": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "required": [
+          "t",
+          "pad",
+          "type"
+         ],
+         "properties": {
+          "t": {
+           "type": "string"
+          },
+          "pad": {
+           "type": "string"
+          },
+          "type": {
+           "enum": [
+            "on",
+            "off"
+           ]
+          },
+          "velocity": {
+           "type": "number",
+           "minimum": 0,
+           "maximum": 1
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "control": {
+   "type": "object",
+   "required": [
+    "type"
+   ],
+   "properties": {
+    "type": {
+     "type": "string",
+     "description": "id in the control type registry"
+    },
+    "min": {
+     "type": "number"
+    },
+    "max": {
+     "type": "number"
+    },
+    "default": {},
+    "value": {},
+    "step": {
+     "type": "number",
+     "minimum": 0
+    },
+    "curve": {
+     "enum": [
+      "lin",
+      "exp",
+      "log",
+      "db",
+      "bipolar"
+     ]
+    },
+    "unit": {
+     "type": "string"
+    },
+    "smooth": {
+     "type": "number",
+     "minimum": 0
+    },
+    "axes": {
+     "type": "object",
+     "additionalProperties": {
+      "$ref": "#/$defs/param"
+     }
+    },
+    "options": {
+     "type": "array"
+    },
+    "count": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 64
+    },
+    "per": {
+     "type": [
+      "string",
+      "number"
+     ]
+    },
+    "ns": {
+     "type": "string"
+    },
+    "label": {
+     "type": "string"
+    },
+    "colour": {
+     "type": "string"
+    },
+    "render": {
+     "type": "object"
+    }
+   }
+  },
+  "map": {
+   "type": "object",
+   "required": [
+    "control",
+    "dest"
+   ],
+   "properties": {
+    "control": {
+     "type": "string"
+    },
+    "dest": {
+     "type": "string"
+    },
+    "range": {
+     "type": "array",
+     "minItems": 2,
+     "maxItems": 2
+    },
+    "curve": {
+     "enum": [
+      "lin",
+      "exp",
+      "log",
+      "db",
+      "bipolar"
+     ]
+    },
+    "op": {
+     "enum": [
+      "set",
+      "add",
+      "mul"
+     ]
+    },
+    "gate": {
+     "$ref": "#/$defs/gate"
+    },
+    "priority": {
+     "type": "number"
+    }
+   }
+  },
+  "board": {
+   "type": "object",
+   "required": [
+    "id"
+   ],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "layouts": {
+     "type": "object",
+     "description": "keyed by column count, e.g. \"4\", \"12\"",
+     "additionalProperties": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "required": [
+        "ref",
+        "x",
+        "y"
+       ],
+       "properties": {
+        "ref": {
+         "type": "string",
+         "pattern": "^(ctl|pad|meter):"
+        },
+        "x": {
+         "type": "integer"
+        },
+        "y": {
+         "type": "integer"
+        },
+        "w": {
+         "type": "integer",
+         "minimum": 1
+        },
+        "h": {
+         "type": "integer",
+         "minimum": 1
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "lane": {
+   "type": "object",
+   "required": [
+    "control",
+    "points"
+   ],
+   "properties": {
+    "control": {
+     "type": "string"
+    },
+    "length": {
+     "type": "string"
+    },
+    "period": {
+     "type": [
+      "string",
+      "number"
+     ]
+    },
+    "mode": {
+     "enum": [
+      "curve",
+      "steps"
+     ]
+    },
+    "absolute": {
+     "type": "boolean"
+    },
+    "priority": {
+     "type": "number"
+    },
+    "gate": {
+     "$ref": "#/$defs/gate"
+    },
+    "points": {
+     "type": "array",
+     "items": {
+      "type": "array",
+      "prefixItems": [
+       {
+        "type": "string"
+       },
+       {},
+       {
+        "enum": [
+         "hold",
+         "lin",
+         "exp"
+        ]
+       }
+      ],
+      "minItems": 2
+     }
+    }
+   }
+  },
+  "exports": {
+   "type": "object",
+   "properties": {
+    "params": {
+     "type": "object",
+     "additionalProperties": {
+      "allOf": [
+       {
+        "$ref": "#/$defs/param"
+       }
+      ],
+      "properties": {
+       "target": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "taps": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "slots": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "hooks": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "requires": {
+     "type": "object",
+     "properties": {
+      "taps": {
+       "type": "array"
+      },
+      "markers": {
+       "type": "array"
+      }
+     }
+    }
+   }
+  }
+ }
+}

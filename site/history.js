@@ -32,7 +32,15 @@ const subs = new Set(); const blobCache = new Map(); let commits = null; let hea
 const emit = (type, data) => subs.forEach((f) => { try { f({ type, ...data }); } catch (e) { /* ignore */ } });
 async function load() { if (!commits) { commits = new Map(((await backend.all('commits')) || []).map((c) => [c.id, c])); head = (await backend.get('meta', 'head')) || null; redoStack = (await backend.get('meta', 'redo')) || []; } }
 async function saveMeta() { await backend.put('meta', 'head', head); await backend.put('meta', 'redo', redoStack); }
-function snapshot() { const s = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (OWN(k)) s[k.slice(3)] = localStorage.getItem(k); } return s; }
+const UI_KEYS = { 'ui:rack-editor': 'Rack editor', 'ui:stack-editor': 'Stack editor', 'ui:panel': 'Visible panel' };
+function uiText() {
+  /* full editor docs (textarea mirrors the whole CodeMirror doc; the DOM is virtualised) + visible panel text */
+  const o = {}; const v = (id) => { const t = document.getElementById(id); return t ? (t.cmView ? t.cmView.state.doc.toString() : t.value) : ''; };
+  o['ui:rack-editor'] = v('code'); o['ui:stack-editor'] = v('stackCode');
+  const parts = []; for (const sel of ['#nowTitle', '#srcLabel', '#inspector', '#status', '#liveMsg', '#liveMsgStack']) { const e = document.querySelector(sel); if (e && !e.hidden && e.innerText) parts.push(e.innerText.trim()); }
+  o['ui:panel'] = parts.join('\n'); return o;
+}
+function snapshot() { const s = { ...uiText() }; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (OWN(k)) s[k.slice(3)] = localStorage.getItem(k); } return s; }
 async function blob(h) { if (blobCache.has(h)) return blobCache.get(h); const v = await backend.get('blobs', h); blobCache.set(h, v); return v; }
 async function treeOf(state) { const t = {}; for (const [k, v] of Object.entries(state)) { const h = await hash(v); t[k] = h; if (!blobCache.has(h)) { blobCache.set(h, v); await backend.put('blobs', h, v); } } return t; }
 async function stateOf(id) { const c = commits.get(id); if (!c) return null; const s = {}; for (const [k, h] of Object.entries(c.tree)) s[k] = await blob(h); return s; }
@@ -60,8 +68,8 @@ async function checkout(id, opts = {}) {
     await load(); const s = await stateOf(id); if (!s) throw new Error('no such state ' + id);
     suppress = true;
     try {
-      const cur = snapshot(); for (const k of Object.keys(cur)) if (!(k in s)) nativeRemove.call(localStorage, 'sc.' + k);
-      for (const [k, v] of Object.entries(s)) if (v != null) nativeSet.call(localStorage, 'sc.' + k, v);
+      const cur = snapshot(); for (const k of Object.keys(cur)) if (!k.startsWith('ui:') && !(k in s)) nativeRemove.call(localStorage, 'sc.' + k);
+      for (const [k, v] of Object.entries(s)) if (v != null && !k.startsWith('ui:')) nativeSet.call(localStorage, 'sc.' + k, v);
       try { window.strudelCraft.app && window.strudelCraft.app.reload(); } catch (e) { console.warn('history: app reload failed', e); window.strudelCraft.ui && window.strudelCraft.ui.toast('History restore could not refresh the page state', { kind: 'error' }); }
     } finally { setTimeout(() => { suppress = false; }, 50); }
     if (!opts.fromUndo) redoStack = []; head = id; await saveMeta(); emit('checkout', { id }); return id;
@@ -89,7 +97,7 @@ async function search(q, opts = {}) {
     const hits = [];
     for (const [k, h] of Object.entries(c.tree)) {
       const text = pretty(await blob(h)); const lines = text.split('\n');
-      lines.forEach((ln, i) => { re.lastIndex = 0; if (re.test(ln)) hits.push({ key: k, line: i + 1, context: ln.trim().slice(0, 160) }); });
+      lines.forEach((ln, i) => { re.lastIndex = 0; if (re.test(ln)) hits.push({ key: k, field: UI_KEYS[k] || ('saved ' + k), line: i + 1, context: ln.trim().slice(0, 160) }); });
     }
     if (hits.length) res.push({ id: c.id, time: c.time, label: c.label, hits: hits.slice(0, 8) });
   }
@@ -103,6 +111,9 @@ function schedule(label) { pending = label; clearTimeout(autoT); autoT = setTime
 async function flush() { if (pending) { clearTimeout(autoT); const l = pending; pending = null; await commit(l, { auto: true }); } return busy; }
 Storage.prototype.setItem = function (k, v) { nativeSet.call(this, k, v); if (this === localStorage && !suppress && OWN(String(k))) schedule(({ edits: 'code edit', stack: 'stack change', stackEdit: 'stack code edit', tempo: 'tempo', master: 'master level', live: 'live toggle', theme: 'theme', 'intellisense.user': 'learned names' })[String(k).slice(3)] || 'edit ' + String(k).slice(3)); };
 Storage.prototype.removeItem = function (k) { nativeRemove.call(this, k); if (this === localStorage && !suppress && OWN(String(k))) schedule('remove ' + String(k).slice(3)); };
+/* any editor content change, whatever the source (typing, preset load, paste, tab switch, swap, restore) */
+let lastUi = '';
+setInterval(() => { if (suppress) return; const u = uiText(); const key = u['ui:rack-editor'] + '\u0000' + u['ui:stack-editor']; if (key !== lastUi) { const first = !lastUi; lastUi = key; if (!first) schedule('editor change'); } }, 700);
 window.addEventListener('live:swap', (e) => { clearTimeout(autoT); pending = null; commit('live swap: ' + e.detail.id + (e.detail.why ? ' (' + e.detail.why + ')' : ''), { auto: true, force: true }); });
 
 const api = { commit: (label, o) => commit(label, { ...(o || {}), named: !!label && !(o && o.auto) }), log, diff, checkout, search, subscribe, undo, redo, get, snapshot, flush, head: () => head };
@@ -171,7 +182,7 @@ function ui() {
     const q = $('#histQ').value.trim(); const ol = $('#histHits'); if (!q) { ol.innerHTML = ''; return; }
     let rs; try { const m = /^\/(.+)\/([gimsuy]*)$/.exec(q); rs = m ? await search(m[1], { regex: true, flags: m[2] || 'i' }) : await search(q, { regex: $('#histRe').checked }); } catch (e) { ol.innerHTML = `<li class="hd-none">${esc(e.message)}</li>`; return; }
     if (!list.length) list = (await log()).reverse();
-    ol.innerHTML = rs.length ? rs.map((r) => `<li><div class="hh-top"><b>#${list.findIndex((c) => c.id === r.id) + 1}</b> ${esc(r.label)} <time>${fmtTime(r.time)}</time></div>${r.hits.map((h) => `<div class="hh-ctx"><span>${esc(h.key)}:${h.line}</span> ${esc(h.context)}</div>`).join('')}<div class="hist-row"><button type="button" class="ghost" data-jump="${r.id}">Show</button><button type="button" class="ghost" data-restore="${r.id}">Restore</button></div></li>`).join('') : '<li class="hd-none">No state matches.</li>';
+    ol.innerHTML = rs.length ? rs.map((r) => `<li><div class="hh-top"><b>#${list.findIndex((c) => c.id === r.id) + 1}</b> ${esc(r.label)} <time>${fmtTime(r.time)}</time></div>${r.hits.map((h) => `<div class="hh-ctx"><span>${esc(h.field)}:${h.line}</span> ${esc(h.context)}</div>`).join('')}<div class="hist-row"><button type="button" class="ghost" data-jump="${r.id}">Show</button><button type="button" class="ghost" data-restore="${r.id}">Restore</button></div></li>`).join('') : '<li class="hd-none">No state matches.</li>';
   };
   $('#histQ').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(runQ, 200); }); $('#histRe').addEventListener('change', runQ);
   $('#histHits').addEventListener('click', async (e) => {

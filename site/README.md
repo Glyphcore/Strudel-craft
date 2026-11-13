@@ -74,3 +74,11 @@ SHA-256 of the value, `commits`, `meta`); falls back to `localStorage` `schist.*
   `undo()`, `redo()`, `search(q, {regex, flags}) -> [{id,time,label,hits:[{key,line,context}]}]`,
   `subscribe(fn) -> unsubscribe` (events `{type:'commit',commit}` / `{type:'checkout',id}`), `snapshot()`, `flush()`, `head()`.
 - `window.strudelCraft.app.reload()` re-applies persisted state to the UI after a checkout.
+
+## One transport, one clock
+There is one global Play / Stop / status (bottom transport) shared by Rack and Stack. The program that plays is the visible
+tab's: switching Rack <-> Stack while playing hot-swaps to that tab's program on the next cycle boundary (same path as live
+coding, `swapTo()` -> `Engine.swap`), with no stop or restart. **Follow tab** (transport, default on, persisted `sc.follow`):
+when off, the transport stays locked to the tab it started on; a badge next to it shows the source tab (amber when locked).
+Edits in a tab that is not the source are syntax-checked only (message under that editor and line marker) and swap in when the
+tab becomes the source. Every swap (edit, tab switch, knob/stack update) is committed to history (`live swap: <id> (<why>)`).

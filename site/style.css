@@ -296,3 +296,8 @@ dialog.scm{width:min(420px,calc(100vw - 24px))}
 @keyframes toastIn{from{opacity:0;transform:translateY(8px)}}
 @media (prefers-reduced-motion:reduce){.toast{animation:none}}
 .scm-ok:not(.danger){background:var(--sig-2);color:var(--sig-ink,#000);border-color:var(--sig-2)}
+.tp-src{display:flex;align-items:center;gap:6px}
+.tp-follow{min-height:44px;white-space:nowrap;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase}
+.tp-follow[aria-pressed=true]{color:var(--sig-2);border-color:var(--sig-2)}
+.src-badge{font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;padding:2px 6px;border-radius:var(--r1);background:var(--panel-3);color:var(--dim)}
+.src-badge[data-locked=true]{color:var(--warn);outline:1px solid var(--warn)}

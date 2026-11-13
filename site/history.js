@@ -103,7 +103,7 @@ function schedule(label) { pending = label; clearTimeout(autoT); autoT = setTime
 async function flush() { if (pending) { clearTimeout(autoT); const l = pending; pending = null; await commit(l, { auto: true }); } return busy; }
 Storage.prototype.setItem = function (k, v) { nativeSet.call(this, k, v); if (this === localStorage && !suppress && OWN(String(k))) schedule(({ edits: 'code edit', stack: 'stack change', stackEdit: 'stack code edit', tempo: 'tempo', master: 'master level', live: 'live toggle', theme: 'theme', 'intellisense.user': 'learned names' })[String(k).slice(3)] || 'edit ' + String(k).slice(3)); };
 Storage.prototype.removeItem = function (k) { nativeRemove.call(this, k); if (this === localStorage && !suppress && OWN(String(k))) schedule('remove ' + String(k).slice(3)); };
-window.addEventListener('live:swap', (e) => { clearTimeout(autoT); pending = null; commit('live swap: ' + e.detail.id, { auto: true }); });
+window.addEventListener('live:swap', (e) => { clearTimeout(autoT); pending = null; commit('live swap: ' + e.detail.id + (e.detail.why ? ' (' + e.detail.why + ')' : ''), { auto: true, force: true }); });
 
 const api = { commit: (label, o) => commit(label, { ...(o || {}), named: !!label && !(o && o.auto) }), log, diff, checkout, search, subscribe, undo, redo, get, snapshot, flush, head: () => head };
 window.strudelCraft = window.strudelCraft || {}; window.strudelCraft.history = api;

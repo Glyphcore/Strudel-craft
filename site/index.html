@@ -123,11 +123,13 @@
     <button type="button" class="play" id="playBtn" aria-pressed="false" title="Play / stop (Space)"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-play" d="M7 4.5v15l13-7.5z"/><path class="i-stop" d="M6 6h12v12H6z"/></svg><span id="playLabel">Play</span></button>
     <button type="button" class="tp-btn" id="nextBtn" aria-label="Next recipe" title="Next (Down)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 5v14M5 5l10 7-10 7z"/></svg></button>
   </div>
+  
   <div class="tp-knobs">
     <div id="tempoKnob"></div>
     <div id="masterKnob"></div>
   </div>
   <div class="tp-meter">
+    <div class="tp-src"><button type="button" class="ghost tp-follow" id="followBtn" aria-pressed="true" title="Play the program of the visible tab">Follow tab</button><span class="src-badge" id="srcBadge" hidden>Rack</span></div>
     <canvas id="meter" class="meter" role="img" aria-label="Master peak level meter, left and right"></canvas>
     <output id="peakOut" class="peak" aria-hidden="true">-inf dB</output>
   </div>

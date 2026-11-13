@@ -296,8 +296,11 @@ function stackProgram() {
   const ls = stackLayers(); if (!ls.length) return '// Stack is empty: add recipes with + in the browser';
   return `setcpm(${S.tempo}/4)\n\n` + ls.map((l) => `// ${l.r.title}${l.db ? ` (${l.db > 0 ? '+' : ''}${l.db} dB)` : ''}\n${l.on ? '' : '_'}$: ${l.r.expr.trim()}${l.db ? `\n  .postgain(${(+dbToGain(l.db).toFixed(3))})` : ''}`).join('\n\n') + '\n';
 }
-function currentSource() {
-  if (S.view === 'stack') { const ls = stackLayers(); return { kind: 'stack', id: 'stack', title: ls.length ? `Stack · ${ls.length} layer${ls.length > 1 ? 's' : ''}` : 'Stack (empty)', code: stackText(), samples: ls.some((l) => l.r.needs_samples), empty: !ls.length }; }
+/* one global transport: the playing program comes from the visible tab (Follow tab) or the tab it started on */
+const EDIT_VIEWS = ['rack', 'stack'];
+function playView() { if (S.playing && !S.follow) return S.srcView || 'rack'; return EDIT_VIEWS.includes(S.view) ? S.view : (S.srcView || 'rack'); }
+function currentSource(view = playView()) {
+  if (view === 'stack') { const ls = stackLayers(); return { kind: 'stack', id: 'stack', title: ls.length ? `Stack · ${ls.length} layer${ls.length > 1 ? 's' : ''}` : 'Stack (empty)', code: stackText(), samples: ls.some((l) => l.r.needs_samples), empty: !ls.length }; }
   const r = cur(); if (!r) return null;
   return { kind: 'solo', id: r.id, title: r.title, code: withTempo(recipeCode(r)), samples: r.needs_samples || /\.bank\(|\bs\("(?:bd|hh|sd|cp|oh)/.test(recipeCode(r)) };
 }
@@ -306,10 +309,11 @@ async function play(src = currentSource()) {
   if (!src) return;
   if (src.empty) { say('Stack is empty. Add layers with + or A.', true); return; }
   const btn = $('#playBtn'); btn.classList.add('busy'); S.busy = true;
+  const pv = playView();
   try {
     await Engine.play(src.code, src.samples, (m) => say(m + '…'));
     Engine.evalCount++;
-    S.playing = true; S.playingId = src.id; S.playingSource = src.kind;
+    S.playing = true; S.playingId = src.id; S.playingSource = src.kind; S.srcView = src.kind === 'stack' ? 'stack' : pv;
     say('Playing ' + src.title); Viz.start(); setLiveChip(S.live ? 'live' : 'off'); window.dispatchEvent(new CustomEvent('live:ok', { detail: { view: S.view } }));
   } catch (e) {
     say('Error: ' + (e && e.message ? e.message : e), true);
@@ -324,7 +328,9 @@ function syncTransport() {
   b.setAttribute('aria-label', S.playing ? 'Stop' : 'Play');
   document.body.classList.toggle('playing', S.playing);
   $$('#list li').forEach((li) => li.classList.toggle('playing', S.playing && li.dataset.id === S.playingId));
-  const src = currentSource(); $('#srcLabel').textContent = S.view === 'stack' ? 'Stack' : (S.playing && S.playingSource === 'stack' ? 'Stack playing' : 'Solo');
+  const src = currentSource(); $('#srcLabel').textContent = playView() === 'stack' ? 'Stack' : 'Solo';
+  const bd = $('#srcBadge'); if (bd) { bd.hidden = !S.playing; bd.textContent = (S.srcView || 'rack') === 'stack' ? 'Stack' : 'Rack'; bd.dataset.locked = String(!S.follow); }
+  const fb = $('#followBtn'); if (fb) fb.setAttribute('aria-pressed', String(!!S.follow));
   $('#nowTitle').textContent = src ? src.title : 'No recipe';
 }
 /* state bridge for history.js: re-read persisted state after a checkout */
@@ -343,6 +349,7 @@ window.strudelCraft.app = {
   },
 };
 let liveT = 0, codeT = 0;
+S.follow = store.get('follow', true);
 S.live = (() => { try { return store.get('live', 'on') !== 'off'; } catch (e) { return true; } })();
 function setLiveChip(state, msg) {
   const c = $('#liveChip'); if (!c) return; c.dataset.state = state; $('#liveState').textContent = state; c.title = msg || (state === 'live' ? 'Edits apply on the next cycle' : state === 'off' ? 'Live updates off: tap to turn on' : state === 'error' ? 'Last good pattern still playing' : 'Press Play to go live');
@@ -350,12 +357,35 @@ function setLiveChip(state, msg) {
 }
 function syncLiveChip() { if (!S.live) setLiveChip('off'); else if (!S.playing) setLiveChip('paused'); else if ($('#liveChip').dataset.state !== 'error') setLiveChip('live'); }
 function errLine(e) { const m = /\((\d+):(\d+)\)/.exec(String(e && e.message)); if (e && e.loc && e.loc.line) return e.loc.line; return m ? +m[1] : null; }
-function liveCode() {
-  clearTimeout(codeT);
-  codeT = setTimeout(async () => {
-    if (!S.live || !S.playing || S.busy) return; const src = currentSource(); if (!src || src.id !== S.playingId || src.empty) return;
+function syntaxCheck(view) {
+  const code = view === 'stack' ? stackText() : (cur() ? recipeCode(cur()) : '');
+  try { new Function(code); window.dispatchEvent(new CustomEvent('live:ok', { detail: { view } })); setMsg(view, ''); } catch (e) {
+    const msg = 'Not playing yet: ' + String(e.message).slice(0, 120); const m = /<anonymous>:(\d+)/.exec(e.stack || ''); setMsg(view, msg);
+    window.dispatchEvent(new CustomEvent('live:error', { detail: { view, line: m ? +m[1] - 2 : null, message: msg } }));
+  }
+}
+function setMsg(view, msg) { const m = $(view === 'stack' ? '#liveMsgStack' : '#liveMsg'); if (m) { m.hidden = !msg; m.textContent = msg; } }
+let swapping = Promise.resolve();
+function swapTo(src, why) {
+  return (swapping = swapping.then(async () => {
+    if (!S.playing || !src || src.empty) return false;
     try {
       await Engine.swap(src.code); Engine.evalCount++;
+      S.playingId = src.id; S.playingSource = src.kind; S.srcView = src.kind === 'stack' ? 'stack' : 'rack';
+      setLiveChip(S.live ? 'live' : 'off'); window.dispatchEvent(new CustomEvent('live:ok', { detail: { view: S.srcView } }));
+      window.dispatchEvent(new CustomEvent('live:swap', { detail: { id: src.id, kind: src.kind, code: src.code, why } }));
+      say('Playing ' + src.title); syncTransport(); return true;
+    } catch (e) { say('Swap failed: ' + (e && e.message ? e.message : e), true); return false; }
+  }));
+}
+function onViewChanged() { if (S.playing && S.follow && EDIT_VIEWS.includes(S.view) && S.view !== S.srcView) swapTo(currentSource(), 'tab ' + S.view); }
+function liveCode(view = S.view) {
+  clearTimeout(codeT);
+  codeT = setTimeout(async () => {
+    if (S.playing && EDIT_VIEWS.includes(view) && view !== playView()) { syntaxCheck(view); return; }
+    if (!S.live || !S.playing || S.busy) return; const src = currentSource(); if (!src || src.empty) return;
+    try {
+      await Engine.swap(src.code); Engine.evalCount++; S.playingId = src.id;
       setLiveChip('live'); window.dispatchEvent(new CustomEvent('live:ok', { detail: { view: S.view } }));
       window.dispatchEvent(new CustomEvent('live:swap', { detail: { id: src.id, kind: src.kind, code: src.code } }));
     } catch (e) {
@@ -366,7 +396,7 @@ function liveCode() {
     }
   }, 300);
 }
-function liveUpdate() { clearTimeout(liveT); liveT = setTimeout(() => { if (!S.playing) return; const src = currentSource(); if (src && src.id === S.playingId) play(src); }, 160); }
+function liveUpdate() { clearTimeout(liveT); liveT = setTimeout(() => { if (!S.playing) return; const src = currentSource(); if (src && (src.id === S.playingId || src.kind === 'stack')) swapTo(src, 'update'); }, 160); }
 
 /* ---------- browser ---------- */
 const norm = (s) => s.toLowerCase();
@@ -499,7 +529,7 @@ function setView(v, { push = true } = {}) {
   $$('.views a').forEach((a) => (a.dataset.view === v ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
   if (v === 'ref' || v === 'practice') ensureDoc(v);
   if (push) history.replaceState(null, '', v === 'rack' && cur() ? '#r/' + cur().id : '#' + v);
-  syncTransport(); Viz.drawAll(performance.now());
+  syncTransport(); Viz.drawAll(performance.now()); onViewChanged();
 }
 function route() {
   const h = decodeURIComponent(location.hash.slice(1));
@@ -587,10 +617,11 @@ async function boot() {
   $('#clear').addEventListener('click', clearFilters);
   $('#filters').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (!b) return; const id = b.dataset.label; const on = !S.chips.has(id); on ? S.chips.add(id) : S.chips.delete(id); b.setAttribute('aria-pressed', on); renderList(); });
   const code = $('#code');
-  code.addEventListener('input', () => { commitEdit(code.value); liveCode(); });
+  code.addEventListener('input', () => { commitEdit(code.value); liveCode('rack'); });
+  $('#followBtn').addEventListener('click', () => { S.follow = !S.follow; store.set('follow', S.follow); say(S.follow ? 'Transport follows the visible tab' : 'Transport locked to ' + (S.srcView || 'rack')); syncTransport(); onViewChanged(); });
   $('#liveChip').addEventListener('click', () => { S.live = !S.live; try { store.set('live', S.live ? 'on' : 'off'); } catch (e) { /* ignore */ } $('#liveChip').setAttribute('aria-pressed', S.live); setLiveChip(S.live ? (S.playing ? 'live' : 'paused') : 'off'); if (S.live) liveCode(); });
   $('#liveChip').setAttribute('aria-pressed', S.live);
-  const sc = $('#stackCode'); sc.addEventListener('input', () => { S.stackEdit = sc.value === stackProgram() ? null : sc.value; store.set('stackEdit', S.stackEdit); $('#stackOpen').href = strudelUrl(stackText()); liveCode(); });
+  const sc = $('#stackCode'); sc.addEventListener('input', () => { S.stackEdit = sc.value === stackProgram() ? null : sc.value; store.set('stackEdit', S.stackEdit); $('#stackOpen').href = strudelUrl(stackText()); liveCode('stack'); });
   $('#evalBtn').addEventListener('click', runEditor);
   $('#revertBtn').addEventListener('click', () => { const r = cur(); if (!r) return; delete S.edits[r.id]; store.set('edits', S.edits); code.value = r.code; renderSelection(false); liveUpdate(); });
   $('#stackCopy').addEventListener('click', (e) => copyText(stackText(), e.currentTarget));

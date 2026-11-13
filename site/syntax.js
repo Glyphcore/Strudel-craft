@@ -17,6 +17,7 @@ const HAS = {
   ghost: () => !!(sc.intellisense && sc.intellisense.registerInline),
   workspace: () => !!(sc.palette && sc.workspace && sc.range),
   capture: () => !!sc.capture,
+  copycode: () => !!sc.copycode,
 };
 const data = window.strudelCraft.packs.syntax().catch(() => ({ sections: [] }));
 

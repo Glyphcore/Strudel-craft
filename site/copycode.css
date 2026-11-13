@@ -1,0 +1,25 @@
+/* Copy code widget (copycode.js). The right strip is reserved up front, so the button never covers code and never shifts layout. */
+.editor .cm-editor .cm-content{padding-right:50px}
+.sx-ex{position:relative}
+.sx-ex pre{padding-right:52px;min-height:44px}
+.cc-host{position:relative}
+.cc-btn{position:absolute;top:0;right:0;z-index:5;width:44px;height:44px;min-height:44px;padding:0;margin:0;display:grid;place-items:center;
+  background:transparent;border:0;border-radius:0 var(--r2) 0 var(--r2);color:var(--dim);cursor:pointer;touch-action:manipulation;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;user-select:none;
+  transition:color var(--t1) var(--ease)}
+.cc-btn::before{content:"";position:absolute;inset:7px;border:1px solid var(--line-2);border-radius:var(--r2);background:var(--panel-3);transition:border-color var(--t1) var(--ease),box-shadow var(--t1) var(--ease)}
+.cc-btn svg{position:relative;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cc-btn .cc-ok{display:none}
+.cc-btn:hover,.cc-btn:focus-visible{color:var(--text)}
+.cc-btn:hover::before{border-color:var(--sig-2)}
+.cc-btn:focus-visible{outline:none}.cc-btn:focus-visible::before{border-color:var(--sig-2);box-shadow:0 0 0 2px var(--sig-2-soft)}
+.cc-btn[aria-expanded="true"]::before{border-color:var(--sig-2)}
+.cc-btn[data-done] {color:var(--ok)}.cc-btn[data-done]::before{border-color:var(--ok);box-shadow:0 0 10px color-mix(in srgb,var(--ok) 30%,transparent)}
+.cc-btn[data-done] .cc-i{display:none}.cc-btn[data-done] .cc-ok{display:block}
+.cc-menu{position:fixed;z-index:70;min-width:220px;max-width:calc(100vw - 16px);display:grid;padding:4px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r2);box-shadow:0 10px 28px rgba(0,0,0,.45);animation:ccIn var(--t1) var(--ease)}
+.cc-menu[hidden]{display:none}
+.cc-menu button{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;padding:0 12px;text-align:left;background:transparent;border:0;border-radius:var(--r1);color:var(--text);font:inherit;font-size:.86rem;cursor:pointer}
+.cc-menu button i{font-style:normal;color:var(--dim);font-size:.74rem;font-family:var(--mono)}
+.cc-menu button:hover:not([disabled]),.cc-menu button:focus-visible{background:var(--sig-2-soft);outline:none}
+.cc-menu button[disabled]{color:var(--faint);cursor:default}
+@keyframes ccIn{from{opacity:0;transform:translateY(-4px)}}
+@media (prefers-reduced-motion:reduce){.cc-menu{animation:none}.cc-btn,.cc-btn::before{transition:none}}

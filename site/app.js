@@ -683,6 +683,7 @@ function setView(v, { push = true } = {}) {
 function route() {
   const h = decodeURIComponent(location.hash.slice(1));
   if (VIEWS.includes(h)) return setView(h, { push: false });
+  if (h.startsWith('code/') && window.strudelCraft.copycode) { setView('rack', { push: false }); window.strudelCraft.copycode.loadHash('#' + h); return; } /* shared code link (copycode.js) */
   const id = h.startsWith('r/') ? h.slice(2) : h;
   const i = S.filtered.findIndex((r) => r.id === id);
   setView('rack', { push: false }); if (i >= 0) select(i, { audition: false });

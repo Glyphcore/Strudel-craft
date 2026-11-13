@@ -609,6 +609,34 @@
    "category": "site api"
   },
   {
+   "label": "strudelCraft.copycode.copy",
+   "method": false,
+   "detail": "copy(target?, mode?) -> Promise<boolean>",
+   "info": "Copy a code field: target 'rack' | 'stack' | a Syntax .sx-ex figure (default the visible editor); mode 'code' (whole CodeMirror doc) | 'selection' | 'link' | 'recipe'. Shows the Copied toast. Same as the copy button at each editor's top-right and Ctrl+K > Copy.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.copycode.link",
+   "method": false,
+   "detail": "link(code) -> Promise<url>",
+   "info": "A shareable URL with the code in its #code/ hash (deflate-raw + base64url, 'z' prefix; plain 'p' where CompressionStream is missing). Opening it loads the code into Rack.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.copycode.loadHash",
+   "method": false,
+   "detail": "loadHash(hash?) -> Promise<boolean>",
+   "info": "Decode a #code/ link hash and load the code into the Rack editor (runs on page load and hash change).",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.copycode.recipe",
+   "method": false,
+   "detail": "recipe(target?) -> Promise<json>",
+   "info": "A recipe v1 JSON string (includes.code only) with the code, controls model, bound sites, Perform model and settings: the 'Copy with controls and state' payload.",
+   "category": "site api"
+  },
+  {
    "label": "strudelCraft.pwa.install",
    "method": false,
    "detail": "install()",

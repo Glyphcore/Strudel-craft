@@ -51,5 +51,5 @@ Key limit: all time-fitting (`loopAt`, `fit`, `splice`) works by resampling, so 
 
 - superdough is a sampler plus synth (`registerSound`, `registerSynthSounds`); the README documents no custom worklet API, no mic and no soundfonts (README read: gaps stated).
 - Fixed effect chain per voice, then per-orbit delay/reverb; `duckorbit` is the only cross-bus modulation. No envelope follower, no external sidechain input.
-- Our CLI renders offline on node-web-audio-api with superdough's own worklets (supersaw, pulse, distort, crush, coarse, shape, ladder, LFOs); worklet voices are slow; samples must be a URL map; no local folder; nothing preloaded.
+- Our CLI renders offline on node-web-audio-api with superdough's own worklets (supersaw, pulse, distort, crush, coarse, shape, ladder, LFOs); worklet voices are slow; samples: URL map or `--samples-dir DIR` (local folders, also as `ir`; `strudel bounce` re-uses a stem as a sample, Glyphcore/Strudel-craft#2); nothing preloaded.
 - Licence: Strudel and superdough are AGPL-3.0-or-later; load unmodified. Sample packs vary (CC0 / CC-BY / CC-BY-SA); keep attribution. Shabda/freesound clips carry their own licences.

@@ -34,6 +34,8 @@ const check = (name, ok, detail = '') => { checks.push({ name, ok: !!ok, detail 
   check('no native alert/prompt/confirm in site/', hits.length === 0, hits.join(', '));
 }
 const watch = (page, tag) => {
+  /* the live tracker polls api.github.com; stub it so rate limits never fail the smoke run */
+  page.route(/api\.github\.com/, (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*', etag: '"smoke"' }, body: r.request().url().includes('/issues/') ? JSON.stringify({ title: 'Live tracker', html_url: 'https://github.com/Glyphcore/Strudel-craft/issues/56', body: '## Site\n- [x] done item\n- [ ] (~) wip item\n- [ ] open item' }) : '[]' }));
   page.on('console', (m) => { if (m.type() === 'error') errors.push(`[${tag}] console.error: ${m.text()}`); });
   page.on('pageerror', (e) => errors.push(`[${tag}] pageerror: ${e.message}`));
 };

@@ -53,6 +53,7 @@ const silenceAfter = (page, t0, thr) => page.evaluate(([t0, thr]) => {
 }, [t0, thr]);
 
 async function playAndMeasure(page, name) {
+  await page.evaluate(() => window.__sc.Engine.load()); // wait for Strudel to finish loading so CDN time is not counted
   await page.evaluate(() => { window.__rms.length = 0; });
   const t0 = await page.evaluate(() => performance.now());
   await page.click('#playBtn');

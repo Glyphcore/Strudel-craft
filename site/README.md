@@ -120,3 +120,31 @@ The `?` dialog shows the checklist of issue #56 (public GitHub API, unauthentica
 since the last poll; open issues labelled `status:*` are listed below. Polls every 60 s while the dialog is open, 5 min while
 closed, with `If-None-Match` (ETag) so 304s don't count against the rate limit. On failure or rate limit it shows the cached copy
 (`localStorage` `sctrack.cache`) with a toast. Toasts now use the Popover API so they show above open dialogs.
+
+## Hooks runtime (`engine/hooks.js`)
+Standalone ES module, no imports: `const { hooks, tap } = install({ Pattern, stack, silence, reify, signal, Fraction })` from the
+page's Strudel globals (after `strudel:ready`); it adds `Pattern.prototype.use / wrap / ns / tap / wire` and the `hooks` object, and
+refuses to install over an existing method (`E_NAME_COLLISION`). Slots (`.use("fx")`) resolve at query time against time-gated
+bindings (`hooks.bind("fx", [["gain", 0.5]], "@3b")`: bars are 1-based with `b`, bare numbers are cycles); taps, variables
+(`hooks.let`), module params and decorators (`every(4)[h]`) are in the same file. Set `hooks.live = true` on the site (queries then
+never throw) and `hooks.position` to the scheduler cycle; headless hosts keep `live = false`. Strudel turns every double-quoted
+literal into mini-notation, so write gate and hook strings with single quotes or run program text through `protect(code)` first (the CLI
+does; `hooks.bind("fx", "x", "@3b")` is rewritten to single quotes). Design: `docs/HOOKS_SYNTAX.md`; tests: `node tests/hooks/p1.mjs`,
+`p2.mjs`. The CLI (`engine/strudel-cli` in suno-track-lab) imports this file from `$STRUDEL_CRAFT/site/engine/hooks.js`.
+
+## Perform (`perform.js`, view 5, #55 first pass)
+Loaded on first open of Perform or on first Play (not part of the shell). One tab strip (`role=tablist`, arrows, Home/End,
+Alt+arrows reorder) of pad banks and control boards; "Tabs ⋯" adds, renames, duplicates, moves and deletes (site modal).
+- Pads: 4x4 grid, multi-touch pointer events and the keyboard through `strudelCraft.input` (`keyboardProvider`, keys 1-4/Q-R/A-F/Z-V,
+  only in Perform mode and never from text fields; the app's own shortcuts yield then). Perform vs Edit mode; Edit (or an empty pad)
+  opens the pad sheet: target kind, reference (picker fed by the intellisense registry), mode, quantise, choke, label, colour.
+  States empty / loaded / queued / on, each with a glyph mark as well as colour; queued shows beats remaining as text.
+  Presses go to `strudelCraft.pads` (`press/release/resolve`); the resolved journal is `strudelCraft.perform.journal` and the
+  `pads:journal` event. Pads only journal until the hooks engine (#47/#48) consumes it.
+- Board: renderers for slider, fader, knob, number, toggle, button, select, xy, steps registered with `controls.registerRenderer`;
+  declared-only types render through `fallbackChain` with a "basic view" note; 4 columns on phones. Each control shows its mapped
+  destination and "Map…" remaps it (`controls.map`).
+- Code: `ctl("name", {type, min, max, ...})` and Strudel's `slider(v, min, max)` (via `sliderWithID`) read the controls engine as a
+  continuous `signal`; controls found in the playing program appear in a strip under that editor in source order, same components.
+- Model persisted in `localStorage` `sc.perform` (so it is in history). Not yet built: learn mode, send to pad/board, automation
+  record/overdub, looper strip, scenes UI, library save, the smoke-test additions and Lighthouse/metrics acceptance items.

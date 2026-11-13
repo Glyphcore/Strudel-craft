@@ -525,12 +525,15 @@ function ensureDoc(view) {
 async function loadJSON(name) { const r = await fetch('data/' + name + '.json'); if (!r.ok) throw new Error(name + ': HTTP ' + r.status); return r.json(); }
 
 /* ---------- views + routing ---------- */
-const VIEWS = ['rack', 'stack', 'ref', 'practice'];
+const VIEWS = ['rack', 'stack', 'ref', 'practice', 'perform'];
+let performLoad = null; function loadPerform() { if (!performLoad) performLoad = import('./perform.js').catch((e) => { performLoad = null; say('Perform tools failed to load: ' + e.message, true); }); return performLoad; }
+window.addEventListener('strudel:ready', () => loadPerform());
 function setView(v, { push = true } = {}) {
   if (!VIEWS.includes(v)) v = 'rack';
   S.view = v; $('#main').dataset.view = v;
   $$('.views a').forEach((a) => (a.dataset.view === v ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
   if (v === 'ref' || v === 'practice') ensureDoc(v);
+  if (v === 'perform') loadPerform();
   if (push) history.replaceState(null, '', v === 'rack' && cur() ? '#r/' + cur().id : '#' + v);
   syncTransport(); Viz.drawAll(performance.now()); onViewChanged();
 }
@@ -546,12 +549,13 @@ function route() {
 const KEYS = [
   ['Space', 'Play / stop'], ['↑ ↓  or  K J', 'Previous / next recipe (auditions while playing)'], ['Enter', 'Play the selected recipe'],
   ['[  ]', 'Tempo −1 / +1 BPM (Shift: ±10)'], ['−  =', 'Master −1 / +1 dB'], ['A', 'Add / remove selected recipe in the stack'],
-  ['1 2 3 4', 'Rack / Stack / Ref / Practice'], ['/', 'Search recipes'], ['Esc', 'Clear search, close dialog, leave a field'],
+  ['1 2 3 4 5', 'Rack / Stack / Ref / Practice / Perform'], ['/', 'Search recipes'], ['Esc', 'Clear search, close dialog, leave a field'],
   ['Ctrl/⌘ + Enter', 'Run the code in the editor'], ['Ctrl/⌘ + Z', 'Undo knob or stack change (Shift: redo)'],
   ['C', 'Copy code'], ['O', 'Open in strudel.cc'], ['T', 'Toggle theme'], ['H', 'Version history (undo, timeline, diff, search)'], ['?', 'This cheat sheet'],
 ];
 function isField(t) { return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable); }
 function onKey(e) {
+  if (window.strudelCraft.perform && window.strudelCraft.perform.capturing(e)) return;
   const t = e.target, mod = e.ctrlKey || e.metaKey;
   if (mod && e.key === 'Enter') { e.preventDefault(); runEditor(); return; }
   if (isField(t)) {
@@ -570,7 +574,7 @@ function onKey(e) {
     '[': () => tempoK.nudge(e.shiftKey ? -10 : -1), ']': () => tempoK.nudge(e.shiftKey ? 10 : 1), '{': () => tempoK.nudge(-10), '}': () => tempoK.nudge(10),
     '-': () => masterK.nudge(-1), '=': () => masterK.nudge(1), '+': () => masterK.nudge(1), _: () => masterK.nudge(-1),
     a: () => cur() && toggleStack(cur().id), A: () => cur() && toggleStack(cur().id),
-    1: () => setView('rack'), 2: () => setView('stack'), 3: () => setView('ref'), 4: () => setView('practice'),
+    1: () => setView('rack'), 2: () => setView('stack'), 3: () => setView('ref'), 4: () => setView('practice'), 5: () => setView('perform'),
     '/': () => { const q = $('#q'); if (S.view === 'ref') $('#refQ').focus(); else if (S.view === 'practice') $('#pracQ').focus(); else { q.focus(); q.select(); } },
     Escape: () => { if (S.q || S.chips.size || S.vonly) clearFilters(); },
     c: () => { const s = currentSource(); if (s) copyText(S.view === 'stack' ? stackText() : recipeCode(cur())); },

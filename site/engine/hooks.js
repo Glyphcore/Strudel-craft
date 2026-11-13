@@ -13,24 +13,51 @@ const NUMRE = '\\d+(?:\\.\\d+)?(?:/\\d+)?';
 const TAPREF = /^(?:((?:[\w-]+:)?[\w*-]+)\/)?([A-Za-z][\w-]*)(?::([A-Za-z]\w*))?$/;
 const METHODS = ['use', 'wrap', 'ns', 'tap', 'wire'];
 
+// Rewrite double-quoted string literals that sit directly in the argument list of hooks.*(...), .use/.wrap/.ns/.tap/.wire(...) and
+// tap(...) into single-quoted ones, so Strudel's transpiler does not turn gates ("@3b"), hook expressions ("a | b") or slot names
+// into mini-notation. Strings inside nested calls (s("bd*4") inside a wrap callback) are left alone.
+export function protect(src) {
+  const re = /(?:\bhooks\s*\.\s*[A-Za-z]+|\.\s*(?:use|wrap|ns|tap|wire)|\btap)\s*\(/g; const edits = new Map(); let m;
+  while ((m = re.exec(src))) {
+    let i = m.index + m[0].length; let depth = 1;
+    while (i < src.length && depth > 0) {
+      const ch = src[i];
+      if (ch === '/' && src[i + 1] === '/') { while (i < src.length && src[i] !== '\n') i++; continue; }
+      if (ch === '/' && src[i + 1] === '*') { const e = src.indexOf('*/', i + 2); i = e < 0 ? src.length : e + 2; continue; }
+      if (ch === '"' || ch === "'" || ch === '`') {
+        const st = i; i++; while (i < src.length && src[i] !== ch) { if (src[i] === '\\') i++; i++; }
+        if (ch === '"' && depth === 1) edits.set(st, i);
+        i++; continue;
+      }
+      if (ch === '(') depth++; else if (ch === ')') depth--;
+      i++;
+    }
+  }
+  let out = src;
+  for (const [st, en] of [...edits].sort((a, b) => b[0] - a[0])) { const body = out.slice(st + 1, en).replace(/\\"/g, '"').replace(/'/g, "\\'"); out = out.slice(0, st) + "'" + body + "'" + out.slice(en + 1); }
+  return out;
+}
+
 export function install(S, opts = {}) {
   const { Pattern, stack, silence, reify, signal, Fraction } = S;
+  const miniP = (str) => { const m = S.mini || globalThis.mini; return m ? m(str) : reify(str); }; // plain strings are not mini-notation in Strudel until parsed
   if (!Pattern || !signal || !reify || !stack || !Fraction) throw code('E_BAD_ARG', 'install needs { Pattern, stack, silence, reify, signal, Fraction }');
   const proto = Pattern.prototype;
   for (const m of METHODS) if (proto[m] && !proto[m].__hooks) throw code('E_NAME_COLLISION', `Pattern.prototype.${m} already exists in the loaded Strudel`);
   const useGlobal = opts.global !== false;
   if (useGlobal) for (const g of ['hooks', 'tap']) if (g in globalThis && !globalThis[g]?.__hooks) throw code('E_NAME_COLLISION', `global ${g} already exists`);
 
-  const F = (x) => (x instanceof Fraction ? x : new Fraction(x));
+  const isFr = (x) => x !== null && typeof x === 'object' && typeof x.compare === 'function' && 'd' in x; // Strudel's Fraction is a factory: Fraction(n)
+  const F = (x) => (isFr(x) ? x : Fraction(x));
   const F0 = F(0);
-  const frStr = (f) => F(f).toFraction();
+  const frStr = (f) => { const g = F(f); const n = g.s * g.n; return String(g.d) === '1' ? String(n) : `${n}/${g.d}`; };
   const hooks = { cpb: 1, bpb: 4, cps: undefined, horizon: undefined, live: false, position: undefined, scanLimit: 256, ranges: opts.ranges, canon: opts.canon, journal: [], __hooks: true, version: 1 };
 
   // ---------------- registry state ----------------
   const R = {};
   const diag = []; const seen = new Set();
   const memo = new Map(); const built = new WeakMap(); const astCache = new Map();
-  let version = 0; let effCache = null; let bid = 0; let seq = 0; let sid = 0; const active = new Set();
+  let frozen = false; let version = 0; let effCache = null; let bid = 0; let seq = 0; let sid = 0; const active = new Set();
   function clear() { R.markers = new Map(); R.scopes = new Map(); R.slots = new Map(); R.declared = new Set(); R.defs = new Map(); R.bindings = []; R.vars = new Map(); R.sets = []; R.wires = []; R.taps = new Map(); R.reads = new Set(); }
   clear();
   const touch = () => { version++; memo.clear(); effCache = null; };
@@ -48,7 +75,7 @@ export function install(S, opts = {}) {
   // -> Fraction (cycles) or null when a marker is unresolved
   function parsePoint(raw, c, d = 0) {
     if (typeof raw === 'number') { if (raw < 0) throw bad(raw); return F(raw); }
-    if (raw instanceof Fraction) return raw;
+    if (isFr(raw)) return raw;
     const s = String(raw).trim(); if (!s || d > 8) throw bad(s);
     if (c.markers.has(s)) return parsePoint(c.markers.get(s), c, d + 1);
     let m; let base; let rest = '';
@@ -103,7 +130,7 @@ export function install(S, opts = {}) {
   const whenCache = new WeakMap();
   function whenPattern(w) {
     if (w && typeof w.query === 'function') return w;
-    if (typeof w === 'string') { const m = TAPREF.exec(w); if (m && (m[3] || R.vars.has(m[2]) || R.taps.has(m[2]))) return makeTap(w); return reify(w); }
+    if (typeof w === 'string') { const m = TAPREF.exec(w); if (m && (m[3] || R.vars.has(m[2]) || R.taps.has(m[2]))) return makeTap(w); return miniP(w); }
     return reify(w);
   }
   function condAt(when, t, cx) {
@@ -152,9 +179,9 @@ export function install(S, opts = {}) {
     if (!reach) {
       const policy = g.unreached ?? 'else'; const label = entry.label || entry.id || 'gate';
       if (!cx.H) c.never = true;
-      else if (policy === 'error') { c.never = true; fail('E_GATE_UNREACHED', `${label} never opens inside the ${cx.H.toFraction()}-cycle horizon`); }
+      else if (policy === 'error') { c.never = true; fail('E_GATE_UNREACHED', `${label} never opens inside the ${frStr(cx.H)}-cycle horizon`); }
       else if (policy === 'open') { c.wins = clip([[F0, null]]); c.when = null; c.latch = false; c.period = null; if (!c.wins.length) c.never = true; }
-      else if (policy === 'else') { c.never = true; note('warn', 'W_GATE_UNREACHED', `${label} never opens inside the ${cx.H.toFraction()}-cycle horizon (closed behaviour kept)`); }
+      else if (policy === 'else') { c.never = true; note('warn', 'W_GATE_UNREACHED', `${label} never opens inside the ${frStr(cx.H)}-cycle horizon (closed behaviour kept)`); }
       else { c.wins = clip([[qz(P(policy)), g.until == null ? null : qz(P(g.until))]]); c.when = null; c.latch = false; c.period = null; if (!c.wins.length) c.never = true; }
     }
     c.open = (t) => {
@@ -186,7 +213,7 @@ export function install(S, opts = {}) {
     return c;
   }
   function cutSpan(span, cuts) {
-    const seenC = new Map(); for (const x of cuts) if (x.compare(span.begin) > 0 && x.compare(span.end) < 0) seenC.set(x.toFraction(), x);
+    const seenC = new Map(); for (const x of cuts) if (x.compare(span.begin) > 0 && x.compare(span.end) < 0) seenC.set(frStr(x), x);
     const pts = [span.begin, ...[...seenC.values()].sort((a, b) => a.compare(b)), span.end]; const T = span.constructor; const out = [];
     for (let i = 0; i + 1 < pts.length; i++) out.push(new T(pts[i], pts[i + 1]));
     return out;
@@ -253,7 +280,7 @@ export function install(S, opts = {}) {
     if (isObj(x)) {
       if ('$param' in x) { if (!(x.$param in vals)) throw code('E_BAD_ARG', `unknown param ${x.$param}`); return vals[x.$param]; }
       if ('$tap' in x) return makeTap(x.$tap);
-      if ('$mini' in x) return reify(x.$mini);
+      if ('$mini' in x) return miniP(x.$mini);
       if ('$expr' in x) return evalExpr(x.$expr, vals);
       if ('$hook' in x) { if (x.$hook !== 'inner') throw code('E_BAD_ARG', `$hook "${x.$hook}" (only "inner")`); return inner || ident; }
       return Object.fromEntries(Object.entries(x).map(([k, v]) => [k, sub(v, vals, inner)]));
@@ -284,8 +311,8 @@ export function install(S, opts = {}) {
   }
   function valuePattern(v) {
     if (v && typeof v.query === 'function') return v;
-    if (isObj(v)) { if ('$tap' in v) return makeTap(v.$tap); if ('$mini' in v) return reify(v.$mini); }
-    return reify(v);
+    if (isObj(v)) { if ('$tap' in v) return makeTap(v.$tap); if ('$mini' in v) return miniP(v.$mini); }
+    return typeof v === 'string' ? miniP(v) : reify(v);
   }
   const wrapFn = (def, vals, ctx, innerFn) => (pat) => {
     if (def.apply) {
@@ -440,7 +467,7 @@ export function install(S, opts = {}) {
       else for (const x of [...gs].sort(ord)) { if (open.includes(x)) items.push({ b: x.b, kind: 'hook', from: x.g.startAt(p0) }); else if (x.b.else != null) items.push({ b: x.b, kind: 'else' }); }
       if (!items.some((i) => i.kind === 'hook' || (cfg.mode === 'chain' && i.kind === 'else'))) items.push({ kind: 'slot-else' });
       const sig = relSets.filter((s) => compileGate({ id: 'set:' + s.seq, gate: s.gate, quant: 1 }, cx).open(p0)).map((s) => s.seq).join('.');
-      return { span: sp, items, cfg, p0, cx, key: `${version}|${cfg.mode}|${items.map((i) => `${i.b?.id || 'se'}${i.kind[0]}${i.from ? '@' + i.from.toFraction() : ''}`).join(',')}|${sig}` };
+      return { span: sp, items, cfg, p0, cx, key: `${version}|${cfg.mode}|${items.map((i) => `${i.b?.id || 'se'}${i.kind[0]}${i.from ? '@' + frStr(i.from) : ''}`).join(',')}|${sig}` };
     });
   }
   function itemFn(it, piece, slot, scope, wrapInner) {
@@ -474,7 +501,7 @@ export function install(S, opts = {}) {
 
   // ---------------- taps ----------------
   const guard = (key, run, dflt) => {
-    if (active.has(key)) { note('error', 'E_TAP_CYCLE', `tap reads form a loop at "${key}"`); return dflt(); }
+    if (active.has(key)) { const path = [...active]; const loop = path.slice(path.indexOf(key)).sort().join(' <-> '); note('error', 'E_TAP_CYCLE', `tap reads form a loop: ${loop}`); return dflt(); }
     active.add(key); try { return run(); } finally { active.delete(key); }
   };
   const tapKey = (sel, name) => (sel ? `${normSlot(sel)}/${name}` : name);
@@ -659,7 +686,7 @@ export function install(S, opts = {}) {
     },
     fn(name) { return (pat) => new Pattern((st) => guarded(() => compileSpec(name, { slot: null, p0: st.span.begin, cx: cxOf(st.controls), named: {} }), String(name))(pat).query(st)); },
     pipe(...names) { return hooks.fn(names.join(' | ')); },
-    reset(o = {}) { clear(); bid = 0; seq = 0; sid = 0; active.clear(); if (!o.keepJournal) hooks.journal.length = 0; diag.length = 0; seen.clear(); touch(); return hooks; },
+    reset(o = {}) { frozen = false; clear(); bid = 0; seq = 0; sid = 0; active.clear(); if (!o.keepJournal) hooks.journal.length = 0; diag.length = 0; seen.clear(); touch(); return hooks; },
     diag: () => diag.map((d) => ({ ...d })),
     clearDiag() { diag.length = 0; seen.clear(); },
   });
@@ -745,6 +772,27 @@ export function install(S, opts = {}) {
     touch(); return hooks;
   };
 
-  if (useGlobal) { globalThis.hooks = hooks; globalThis.tap = tap; }
-  return { hooks, tap };
+  // Strudel's transpiler turns every "double quoted" literal into a mini-notation Pattern. A simple name ("fx") survives as a pattern with
+  // `__pure`; we unwrap that at the API boundary. Anything with mini syntax ("@3b", "<3b", "a | b") must be single-quoted, or
+  // run the program text through protect() first (the CLI does), which rewrites the string arguments of hooks calls.
+  const plain = (x) => {
+    if (x && typeof x === 'object') {
+      if (typeof x.__pure === 'string' && typeof x.query === 'function') return x.__pure;
+      if (Array.isArray(x)) return x.map(plain);
+      if (isObj(x)) return Object.fromEntries(Object.entries(x).map(([k, v]) => [k, plain(v)]));
+    }
+    return x;
+  };
+  for (const k of Object.keys(hooks)) if (typeof hooks[k] === 'function' && !['diag', 'clearDiag', 'toJSON', 'check', 'plan', 'fn', 'pipe', 'publish'].includes(k)) { const f = hooks[k]; hooks[k] = (...a) => f(...a.map(plain)); }
+  for (const k of METHODS) { const f = proto[k]; proto[k] = mark(function (...a) { return f.apply(this, a.map(plain)); }); }
+  const tap0 = tap; const tapP = mark((...a) => tap0(...a.map(plain)));
+
+  // Per-layer evaluation (HOOKS_SYNTAX 4.9.3): after the registry pass the host freezes the registry, so re-running a header's
+  // def/bind/set/let does not duplicate anything; use/wrap/ns/tap/wire keep working (publishing is idempotent).
+  for (const k of ['def', 'undef', 'bind', 'unbind', 'replace', 'set', 'let', 'marker', 'scope', 'slot', 'wire', 'decorate', 'undecorate', 'load']) {
+    const f = hooks[k]; hooks[k] = (...a) => (frozen ? (k === 'bind' || k === 'set' ? undefined : hooks) : f(...a));
+  }
+  hooks.freeze = () => { frozen = true; return hooks; }; hooks.thaw = () => { frozen = false; return hooks; }; Object.defineProperty(hooks, 'frozen', { get: () => frozen });
+  if (useGlobal) { globalThis.hooks = hooks; globalThis.tap = tapP; }
+  return { hooks, tap: tapP };
 }

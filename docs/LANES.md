@@ -168,13 +168,13 @@ compiles (before Strudel's transpiler; bus 64 allocated to this split site) to t
 ```js
 drums: stack(
   s("bd*4, hh*8").lpf(4000).dry(0).bus(64),
-  s("bus").n(64).attack(0.005).release(0.005),
-  s("bus").n(64).attack(0.005).release(0.005).room(0.9).rsize(6).lpf(900),
-  s("bus").n(64).attack(0.005).release(0.005).crush(5).hpf(2000).gain(0.4))
+  s("bus").n(64).attack(0.01).release(0.01),
+  s("bus").n(64).attack(0.01).release(0.01).room(0.9).rsize(6).lpf(900),
+  s("bus").n(64).attack(0.01).release(0.01).crush(5).hpf(2000).gain(0.4))
 ```
 - **Source**: everything before `.split` is rendered once, per voice, with its per-voice effects (`lpf(4000)` here is one filter
   per note). `dry(0)` removes its direct path; its `post` signal goes only to the bus.
-- **Branch**: the function receives a **bus reader**: one hap per cycle of `s("bus").n(k)` with a 5 ms linear attack and release.
+- **Branch**: the function receives a **bus reader**: one hap per cycle of `s("bus").n(k)` with a 10 ms linear attack and release and `gain(1)` (superdough clamps a release to at least 10 ms, so a 5 ms attack would sum to 1.5x at each seam; the default gain 0.8 would also lower the lane by 2 dB).
   Consecutive reader haps cross-fade the same signal linearly, so the reader is continuous. What the branch adds is applied by
   superdough to that reader voice: **bus effects** (one filter for the whole lane, like an insert on a group), not per-note effects.
 - A branch may change the reader's *structure*: `gate => gate.struct("x*8").decay(0.05)` is a rhythmic gate on the lane audio.
@@ -477,7 +477,11 @@ Where the build differs from, or fixes, the text above:
 
 ## 12. Open questions
 
-1. **Reader seam.** The 5 ms linear cross-fade between consecutive reader haps should be exactly unity for an identical signal.
+1. **Reader seam (measured 2026-11-13, #75, `tests/site/lanes.mjs`, site offline render, @strudel/web 1.3.0).** With 10 ms attack and release
+   and `gain(1)` the seam is unity: max sample step 0.000 dB vs the unsplit render, boundary level deviation 0.000 dB, interior
+   difference -161 dB RMS (bit-identical in float). With the 5 ms of the first draft: max step +3.3 dB, level +1.1 dB (bump up to 1.43x),
+   because superdough's `bus` sound floors the release at 10 ms. The CLI half of the measurement is open (CLI not in this repo).
+   Original question: the 5 ms linear cross-fade between consecutive reader haps should be exactly unity for an identical signal.
    It must be measured on the site and in the CLI (chunked offline contexts, hap times in floats). If it is not clean, the fallback
    is one long reader hap per N cycles, which breaks when playback starts mid-hap. This is the biggest technical risk.
 2. **Undocumented API.** `bus` / `s("bus")` / `bmod` exist in superdough 1.3.0 with a one-comment description. Pin the version (the

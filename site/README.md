@@ -52,3 +52,25 @@ API:
     strudelCraft.intellisense.providers();    // ids
     strudelCraft.intellisense.learn(text);    // feed the user list; .forget() clears it
 Item flags: `method: true` = offered after `.`; `string: true` = offered inside quotes; `apply` = text to insert; `category` groups the popup.
+
+## Live coding
+While playing, every edit in the Code or Stack editor is evaluated after ~300 ms. A good pattern is hot-swapped on the next
+cycle boundary (`Engine.swap`: `evaluate()` on the running scheduler, audio never stops). A failing edit leaves the last good
+pattern playing; the chip turns to `error`, the message shows under the editor head and the line is marked in the editor
+(CodeMirror lint), clearing on the next good swap. The chip (`live` / `error` / `paused` / `off`) is also the toggle
+(persisted as `sc.live`). Events: `live:ok`, `live:error` `{view,line,message}`, `live:swap` `{id,kind,code}`.
+
+## Version history (`history.js`)
+Git-like, client-side history of everything persisted under `localStorage` `sc.*` (code edits `sc.edits`, stack, stack code,
+tempo, master, live toggle, theme, intellisense user list). Content-addressed in IndexedDB `sc-history` (`blobs` keyed by
+SHA-256 of the value, `commits`, `meta`); falls back to `localStorage` `schist.*`. Diffs use jsdiff (`diff@5.2.0`, esm.sh, on demand).
+- Auto-commit: any `sc.*` write is debounced (1.2 s) into a commit; every successful live swap commits too. Named snapshots via the dialog.
+- UI: history button in the header (key `H`): Undo / Redo across the whole state, Snapshot, a timeline scrubber (prev/next) with
+  "Restore this state" and a preview diff to now, a diff between any two states, and search (text or `/regex/flags`) listing every
+  matching state with time, key:line and context, with Show / Restore.
+- API `window.strudelCraft.history`:
+  `commit(label?, {auto,force}) -> commit`, `log() -> [{id,parent,time,label,changed,auto,named,head}]` (newest first),
+  `get(id) -> {key: value}`, `diff(a, b|null=now) -> [{key,status,hunks:[{op:'+'|'-'|'=',text}]}]`, `checkout(id)`,
+  `undo()`, `redo()`, `search(q, {regex, flags}) -> [{id,time,label,hits:[{key,line,context}]}]`,
+  `subscribe(fn) -> unsubscribe` (events `{type:'commit',commit}` / `{type:'checkout',id}`), `snapshot()`, `flush()`, `head()`.
+- `window.strudelCraft.app.reload()` re-applies persisted state to the UI after a checkout.

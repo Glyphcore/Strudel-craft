@@ -1,6 +1,6 @@
 /* Offline cache: app shell network-first, pinned Strudel bundle and sample maps cache-first. */
-const VERSION = 'sc-v2';
-const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'intellisense.js', 'data/intellisense/strudel.json', 'data/catalog.json', 'data/plugins.json', 'data/practices.json',
+const VERSION = 'sc-v3';
+const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'intellisense.js', 'history.js', 'data/intellisense/strudel.json', 'data/catalog.json', 'data/plugins.json', 'data/practices.json',
   'fonts/ChakraPetch-500.woff2', 'fonts/ChakraPetch-700.woff2', 'fonts/JetBrainsMono.woff2'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== VERSION).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });

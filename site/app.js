@@ -112,7 +112,7 @@ const Engine = {
 const S = {
   cat: null, labelsById: {}, recipes: [], filtered: [], sel: 0, view: 'rack',
   q: '', chips: new Set(), vonly: false,
-  edits: {}, stack: store.get('stack', []), tempo: store.get('tempo', TEMPO.def), master: store.get('master', MASTER.def),
+  edits: store.get('edits', {}), stack: store.get('stack', []), tempo: store.get('tempo', TEMPO.def), master: store.get('master', MASTER.def),
   playing: false, playingId: null, playingSource: null, busy: false,
 };
 S.stack = Array.isArray(S.stack) ? S.stack.filter((l) => l && typeof l.id === 'string') : [];
@@ -327,8 +327,23 @@ function syncTransport() {
   const src = currentSource(); $('#srcLabel').textContent = S.view === 'stack' ? 'Stack' : (S.playing && S.playingSource === 'stack' ? 'Stack playing' : 'Solo');
   $('#nowTitle').textContent = src ? src.title : 'No recipe';
 }
+/* state bridge for history.js: re-read persisted state after a checkout */
+window.strudelCraft = window.strudelCraft || {};
+window.strudelCraft.app = {
+  reload() {
+    S.edits = store.get('edits', {}); S.stack = store.get('stack', []);
+    const t = store.get('tempo', TEMPO.def), m = store.get('master', MASTER.def);
+    if (tempoK && t !== S.tempo) { S.tempo = t; tempoK.set(t, false); }
+    if (masterK && m !== S.master) { S.master = m; masterK.set(m, false); setMaster(m); }
+    S.live = store.get('live', 'on') !== 'off';
+    const r = cur(); if (r) $('#code').value = recipeCode(r);
+    renderStack(); renderList(); renderSelection(false);
+    const se = store.get('stackEdit', null); if (se != null) { S.stackEdit = se; $('#stackCode').value = se; }
+    syncTransport(); liveCode();
+  },
+};
 let liveT = 0, codeT = 0;
-S.live = (() => { try { return localStorage.getItem('sc.live') !== 'off'; } catch (e) { return true; } })();
+S.live = (() => { try { return store.get('live', 'on') !== 'off'; } catch (e) { return true; } })();
 function setLiveChip(state, msg) {
   const c = $('#liveChip'); if (!c) return; c.dataset.state = state; $('#liveState').textContent = state; c.title = msg || (state === 'live' ? 'Edits apply on the next cycle' : state === 'off' ? 'Live updates off: tap to turn on' : state === 'error' ? 'Last good pattern still playing' : 'Press Play to go live');
   const m = $('#liveMsg'); if (m) { m.hidden = state !== 'error'; m.textContent = state === 'error' ? msg : ''; }
@@ -500,7 +515,7 @@ const KEYS = [
   ['[  ]', 'Tempo −1 / +1 BPM (Shift: ±10)'], ['−  =', 'Master −1 / +1 dB'], ['A', 'Add / remove selected recipe in the stack'],
   ['1 2 3 4', 'Rack / Stack / Ref / Practice'], ['/', 'Search recipes'], ['Esc', 'Clear search, close dialog, leave a field'],
   ['Ctrl/⌘ + Enter', 'Run the code in the editor'], ['Ctrl/⌘ + Z', 'Undo knob or stack change (Shift: redo)'],
-  ['C', 'Copy code'], ['O', 'Open in strudel.cc'], ['T', 'Toggle theme'], ['?', 'This cheat sheet'],
+  ['C', 'Copy code'], ['O', 'Open in strudel.cc'], ['T', 'Toggle theme'], ['H', 'Version history (undo, timeline, diff, search)'], ['?', 'This cheat sheet'],
 ];
 function isField(t) { return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable); }
 function onKey(e) {
@@ -541,7 +556,7 @@ function runEditor() {
   const r = cur(); if (!r) return; commitEdit(ta.value);
   if (S.view !== 'rack') setView('rack'); play();
 }
-function commitEdit(val) { const r = cur(); if (!r) return; if (val === r.code) delete S.edits[r.id]; else S.edits[r.id] = val; $('#dirty').hidden = S.edits[r.id] == null; $('#revertBtn').disabled = S.edits[r.id] == null; }
+function commitEdit(val) { const r = cur(); if (!r) return; if (val === r.code) delete S.edits[r.id]; else S.edits[r.id] = val; $('#dirty').hidden = S.edits[r.id] == null; $('#revertBtn').disabled = S.edits[r.id] == null; store.set('edits', S.edits); }
 function clearFilters() { S.q = ''; $('#q').value = ''; S.chips.clear(); S.vonly = false; $('#vonly').checked = false; $$('.chip').forEach((b) => b.setAttribute('aria-pressed', 'false')); renderList(); say('Filters cleared'); }
 
 /* ---------- theme / help ---------- */
@@ -573,11 +588,11 @@ async function boot() {
   $('#filters').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (!b) return; const id = b.dataset.label; const on = !S.chips.has(id); on ? S.chips.add(id) : S.chips.delete(id); b.setAttribute('aria-pressed', on); renderList(); });
   const code = $('#code');
   code.addEventListener('input', () => { commitEdit(code.value); liveCode(); });
-  $('#liveChip').addEventListener('click', () => { S.live = !S.live; try { localStorage.setItem('sc.live', S.live ? 'on' : 'off'); } catch (e) { /* ignore */ } $('#liveChip').setAttribute('aria-pressed', S.live); setLiveChip(S.live ? (S.playing ? 'live' : 'paused') : 'off'); if (S.live) liveCode(); });
+  $('#liveChip').addEventListener('click', () => { S.live = !S.live; try { store.set('live', S.live ? 'on' : 'off'); } catch (e) { /* ignore */ } $('#liveChip').setAttribute('aria-pressed', S.live); setLiveChip(S.live ? (S.playing ? 'live' : 'paused') : 'off'); if (S.live) liveCode(); });
   $('#liveChip').setAttribute('aria-pressed', S.live);
-  const sc = $('#stackCode'); sc.addEventListener('input', () => { S.stackEdit = sc.value === stackProgram() ? null : sc.value; $('#stackOpen').href = strudelUrl(stackText()); liveCode(); });
+  const sc = $('#stackCode'); sc.addEventListener('input', () => { S.stackEdit = sc.value === stackProgram() ? null : sc.value; store.set('stackEdit', S.stackEdit); $('#stackOpen').href = strudelUrl(stackText()); liveCode(); });
   $('#evalBtn').addEventListener('click', runEditor);
-  $('#revertBtn').addEventListener('click', () => { const r = cur(); if (!r) return; delete S.edits[r.id]; code.value = r.code; renderSelection(false); liveUpdate(); });
+  $('#revertBtn').addEventListener('click', () => { const r = cur(); if (!r) return; delete S.edits[r.id]; store.set('edits', S.edits); code.value = r.code; renderSelection(false); liveUpdate(); });
   $('#stackCopy').addEventListener('click', (e) => copyText(stackText(), e.currentTarget));
   $('#stackClear').addEventListener('click', () => setStack([], 'clear stack'));
   $$('.views a').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); setView(a.dataset.view); }));

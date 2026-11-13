@@ -259,3 +259,23 @@ dialog::backdrop{background:rgba(5,6,8,.7)}
 .live-chip[data-state=error] i{background:#ff5a4f;box-shadow:0 0 8px #ff5a4f}
 .live-chip[data-state=error]{color:#ff8a80}
 .live-msg{margin:0;padding:6px 14px;font-family:var(--mono);font-size:.78rem;color:#ff8a80;background:var(--panel-2);border-left:3px solid #ff5a4f}
+/* history dialog */
+dialog.hist{width:min(640px,calc(100vw - 16px))}
+.hist-body{padding:0 16px 16px;display:grid;gap:10px;overflow:auto;max-height:calc(100vh - 140px)}
+.hist-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hist-row button{min-height:44px;min-width:44px}
+.hist-row input[type=range]{flex:1;min-height:44px;accent-color:var(--sig-2)}
+.hist-row input[type=search]{flex:1;min-height:44px;padding:0 12px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--r2)}
+.hist-col select{flex:1 1 100%;min-height:44px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--r2)}
+.hist-lab{margin:6px 0 0;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.hist-info{margin:0;font-family:var(--mono);font-size:.78rem;color:var(--dim)}
+.hist-re{display:flex;gap:4px;align-items:center;font-size:.8rem}
+.hist-diff{font-family:var(--mono);font-size:.76rem}
+.hd-file{margin-top:8px}.hd-st{color:var(--dim);font-size:.7rem;text-transform:uppercase}
+.hd-pre{margin:4px 0;padding:8px;background:var(--panel-2);border-radius:var(--r2);overflow:auto;white-space:pre-wrap;word-break:break-all}
+.hd-add{color:var(--sig-2);display:block}.hd-del{color:#ff8a80;display:block;text-decoration:line-through;text-decoration-thickness:1px}.hd-eq{color:var(--dim);display:block}
+.hd-none{color:var(--dim)}
+.hist-hits{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.hist-hits li{padding:8px;border:1px solid var(--line-2);border-radius:var(--r2)}
+.hh-top time{color:var(--dim);font-size:.75rem;margin-left:6px}
+.hh-ctx{font-family:var(--mono);font-size:.76rem;margin:4px 0;word-break:break-all}.hh-ctx span{color:var(--dim)}

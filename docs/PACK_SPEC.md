@@ -1,6 +1,6 @@
 # Craftpack: content packs for Strudel Craft (spec 1.0.0)
 
-Status: design, 2026-11-13. Owner: `daw-sme`. Schemas: `schemas/craftpack/1/`. Issues: section 16.
+Status: design, 2026-11-13; P1 (#65) and the engine half of P2 (#67: loader, adapters, service-worker cache) built, pack sheet UI coming. Owner: `daw-sme`. Schemas: `schemas/craftpack/1/`. Issues: section 16.
 Related: `docs/BLUEPRINT.md` (model, library, registries), `docs/HOOKS_SYNTAX.md` (config JSON, `E_OPAQUE`), `site/README.md` (what the site reads today).
 
 ## 1. What this is
@@ -234,6 +234,10 @@ Every atom in the entry file carries `rev` and `hash`; the host re-checks both o
 In `packs.json` (the request file) a `github:`/`git+` source may name a branch or tag instead of a commit (`@packs`, `@v1.2.0`; a `/` in a
 ref is written `%2F`); only `strudel packs lock` turns it into a commit. A lock that the site ships MUST contain commit-pinned or bundled
 entries only (`E_LOCK_MUTABLE` in CI for `https:` without a bundle, and for `file:`).
+
+> Built in P2 (#67): shipped-layer `file:` sources resolve same-origin (the shim pack only); the browser checks entry-file structure per kind and leaves
+> full schema validation to `tools/packs`; the site reads `x-glyphcore.words` (extension kind) for `words.json`; code ingredients are never run before #71.
+> `tools/packs/shim.py` keeps the shim pins in step with `site/data`.
 
 ### 9.2 Lockfile (`packs.lock.json`, schema `lock.schema.json`)
 

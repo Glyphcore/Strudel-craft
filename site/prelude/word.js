@@ -42,11 +42,12 @@
   globalThis.voxBank = (src) => {
     if (src === undefined) return pick();
     if (src && typeof src.queryArc === 'function') { try { const v = src.queryArc(0, 1)[0].value; src = Array.isArray(v) ? v.join('') : v; } catch (e) { src = String(src); } } // "double quoted" strings arrive as mini Patterns; prefer 'single quotes'
+    { const pk = globalThis.strudelCraft && globalThis.strudelCraft.packs; if (typeof src === 'string' && pk && pk.hasBank && pk.hasBank(src)) return pk.activateBank(src).then((id) => { active = id; return id; }); } // vox-bank pack ingredients (manual load)
     if (banks[src]) return (src === 'demo' ? ensure() : ensure().then(() => load(src, banks[src].url))).then(() => active);
     let u = String(src); if (/\/$/.test(u)) u += 'pitched/strudel.json';
     return load(u.split('/').slice(-3, -1).join('/') || 'custom', u);
   };
-  globalThis.voxBank.list = () => Object.entries(banks).map(([name, b]) => ({ name, url: b.url, words: b.words, active: name === active }));
+  globalThis.voxBank.list = () => Object.entries(banks).map(([name, b]) => ({ name, url: b.url, words: b.words, active: name === active })).concat(((globalThis.strudelCraft && globalThis.strudelCraft.packs && globalThis.strudelCraft.packs.banks && globalThis.strudelCraft.packs.banks()) || []).map((b) => ({ name: b.name, url: b.id, active: b.id === active })));
   if (typeof samples === 'function') setTimeout(ensure, 0); // json only; audio files stream lazily
   const slug = (w) => String(w).toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/^_+|_+$/g, '') || 'x';
   globalThis.wordKey = (w, bank = 'vox') => bank + '_' + slug(w);

@@ -1,0 +1,110 @@
+{
+  "craftpack": "1.0.0",
+  "id": "glyphcore/shim",
+  "version": "1.0.0",
+  "title": "Site data shim pack",
+  "description": "Today's site/data/* files presented as one pack so the loader runs on content that has not moved yet (PACK_SPEC 14.3 step 2). Replaced by glyphcore/core in P4 (#69).",
+  "license": "LicenseRef-undecided",
+  "ingredients": [
+    {
+      "id": "recipes",
+      "kind": "recipes",
+      "format": "recipes@1",
+      "version": "1.0.0",
+      "path": "data/catalog.json",
+      "hash": "sha256:0d12cb575150e3c0a2f64c945da22227043c783ea845c731adf79b94d4a1454f",
+      "load": "eager",
+      "bytes": 43677
+    },
+    {
+      "id": "strudel-docs",
+      "kind": "intellisense",
+      "format": "intellisense@1",
+      "version": "1.0.0",
+      "path": "data/intellisense/strudel.json",
+      "hash": "sha256:228c1fbb6ef2fe3c2b5dbc8ec8e7afe4f7cc8db10692f4f8a3aa1d602cbc22e2",
+      "load": "eager",
+      "bytes": 31474
+    },
+    {
+      "id": "params",
+      "kind": "param-shapes",
+      "format": "param-shapes@1",
+      "version": "1.0.0",
+      "path": "data/intellisense/strudel.json",
+      "hash": "sha256:228c1fbb6ef2fe3c2b5dbc8ec8e7afe4f7cc8db10692f4f8a3aa1d602cbc22e2",
+      "load": "eager",
+      "bytes": 31474
+    },
+    {
+      "id": "ranges",
+      "kind": "param-shapes",
+      "format": "param-shapes@1",
+      "version": "1.0.0",
+      "path": "data/mod_ranges.json",
+      "hash": "sha256:9e2f537ff80eb3551f8fdb66f62d02560b48e130f0030b1ecb7a701178096ef2",
+      "load": "eager",
+      "bytes": 1483
+    },
+    {
+      "id": "editors",
+      "kind": "param-editors",
+      "format": "param-editors@1",
+      "version": "1.0.0",
+      "path": "data/intellisense/strudel.json",
+      "hash": "sha256:228c1fbb6ef2fe3c2b5dbc8ec8e7afe4f7cc8db10692f4f8a3aa1d602cbc22e2",
+      "load": "eager",
+      "bytes": 31474
+    },
+    {
+      "id": "controls",
+      "kind": "control-types",
+      "format": "control-types@1",
+      "version": "1.0.0",
+      "path": "data/controls/types.json",
+      "hash": "sha256:5ba7f8c0a1eeff21e657a08067578f4eef581f50d731cc68f68ab43da130226a",
+      "load": "eager",
+      "bytes": 3602
+    },
+    {
+      "id": "syntax",
+      "kind": "syntax",
+      "format": "syntax@1",
+      "version": "1.0.0",
+      "path": "data/syntax.json",
+      "hash": "sha256:f2bff1351b45732f32b7131a2065f558c8167ff489ef185acae75652a72a8aa6",
+      "load": "eager",
+      "bytes": 17495
+    },
+    {
+      "id": "plugins",
+      "kind": "docs",
+      "format": "docs@1",
+      "version": "1.0.0",
+      "path": "data/plugins.json",
+      "hash": "sha256:ea8fba59fae42fcf200ae5740bd7a14bce1f6c7a17563271357fd2edc82eb082",
+      "load": "eager",
+      "bytes": 13014
+    },
+    {
+      "id": "practices",
+      "kind": "docs",
+      "format": "docs@1",
+      "version": "1.0.0",
+      "path": "data/practices.json",
+      "hash": "sha256:b3c2bebb8af02115f42bbcd5c2cd3303f877cfb2c62efa1b7d632b335a4d0673",
+      "load": "eager",
+      "bytes": 11292
+    },
+    {
+      "id": "words",
+      "kind": "x-glyphcore.words",
+      "format": "x-glyphcore.words@1",
+      "version": "1.0.0",
+      "path": "data/intellisense/words.json",
+      "hash": "sha256:8352baf1d4d04382ae334cc97290d2c59cf85f0b28346d9e413f2f5365deeb77",
+      "load": "eager",
+      "bytes": 8980
+    }
+  ]
+}

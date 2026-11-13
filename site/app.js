@@ -576,7 +576,9 @@ function ensureDoc(view) {
   const p = view === 'ref' ? loadDoc('plugins', $('#refDoc'), $('#refToc'), $('#refQ')) : loadDoc('practices', $('#pracDoc'), $('#pracToc'), $('#pracQ'));
   p.catch((e) => { docsLoaded[view] = false; say('Could not load ' + view + ': ' + e.message, true); });
 }
-async function loadJSON(name) { const r = await fetch('data/' + name + '.json'); if (!r.ok) throw new Error(name + ': HTTP ' + r.status); return r.json(); }
+/* content comes from packs (site/packs.js, a module that runs after this script): wait for it instead of reading it at parse time */
+const packsReady = new Promise((ok) => { const t = () => (window.strudelCraft && window.strudelCraft.packs ? ok(window.strudelCraft.packs) : setTimeout(t, 8)); t(); });
+async function loadJSON(name) { const P = await packsReady; return name === 'catalog' ? P.catalog() : P.doc(name); }
 
 /* ---------- views + routing ---------- */
 const VIEWS = ['rack', 'stack', 'ref', 'practice', 'perform', 'syntax', 'graph'];
@@ -585,7 +587,7 @@ let performLoad = null; function loadPerform() { if (!performLoad) performLoad =
 window.addEventListener('strudel:ready', () => loadPerform());
 let graphLoad = null; function loadGraph() { if (!graphLoad) graphLoad = import('./graph.js').catch((e) => { graphLoad = null; say('Graph view failed to load: ' + e.message, true); }); return graphLoad; }
 /* mod RANGE table for wire()/taps (mirror of the CLI's lib/mod.mjs): ranges + canonical param names */
-const modRanges = fetch('data/mod_ranges.json').then((r) => r.json()).catch(() => null);
+const modRanges = packsReady.then((P) => P.paramShapes()).then((p) => (p && p.ranges ? { ranges: p.ranges, canon: p.canon || {} } : null)).catch(() => null);
 function applyRanges() { const h = window.strudelCraft.hooks; if (!h) return false; return modRanges.then((m) => { if (m && !h.ranges) { h.ranges = m.ranges; h.canon = (p) => m.canon[p] || p; } return true; }); }
 window.addEventListener('strudel:ready', () => { if (!applyRanges()) setTimeout(applyRanges, 200); });
 function setView(v, { push = true } = {}) {
@@ -707,7 +709,7 @@ async function boot() {
     S.cat = await loadJSON('catalog');
     S.labelsById = Object.fromEntries(S.cat.labels.map((l) => [l.id, l])); S.recipes = S.cat.recipes;
     buildFilters(); renderList(); renderStack(); route();
-    say(`${S.recipes.length} recipes loaded. Press Play or Space.`);
+    say(S.recipes.length ? `${S.recipes.length} recipes loaded. Press Play or Space.` : 'No recipes: no content pack provides any. Type a program in the Stack view, or add a pack.');
   } catch (e) { say('Failed to load recipes: ' + e.message, true); $('#nowTitle').textContent = 'Offline'; }
 
   fetch('build.json', { cache: 'no-store' }).then((r) => r.json()).then((b) => { const e = $('#buildBadge'); if (e) { e.textContent = b.sha === 'dev' ? 'dev' : b.sha + (b.date ? ' ' + b.date : ''); e.title = 'Build ' + b.sha + (b.date ? ', ' + b.date : ''); } }).catch(() => {});

@@ -17,7 +17,7 @@ const HAS = {
   workspace: () => !!(sc.palette && sc.workspace && sc.range),
   capture: () => !!sc.capture,
 };
-const data = fetch('data/syntax.json').then((r) => r.json()).catch(() => ({ sections: [] }));
+const data = window.strudelCraft.packs.syntax().catch(() => ({ sections: [] }));
 
 /* intellisense snippets */
 function registerSnippets() {

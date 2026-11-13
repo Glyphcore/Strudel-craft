@@ -1,0 +1,9 @@
+{
+  "packs": 1,
+  "want": [
+    {
+      "id": "glyphcore/shim",
+      "source": "file:."
+    }
+  ]
+}

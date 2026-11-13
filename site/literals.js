@@ -158,7 +158,7 @@ function hideBadge() { if (bdg) { bdg.remove(); bdg = null; } }
 
 export async function attach(view, id) {
   view.__scId = id; views.set(id, view);
-  const d = await fetch('data/intellisense/strudel.json').then((r) => r.json()).catch(() => ({}));
+  const d = { editors: await sc.packs.editors().catch(() => ({})) };
   SPEC = { ...SPEC, ...(d.editors || {}) }; P = sc.intellisense && sc.intellisense.params ? await sc.intellisense.params() : d.params || {};
   attachGestures(view);
 }

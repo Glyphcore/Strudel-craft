@@ -8,11 +8,17 @@
 <meta name="theme-color" content="#0b0d10">
 <link rel="preload" href="fonts/ChakraPetch-500.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="data/catalog.json" as="fetch" crossorigin>
+<link rel="modulepreload" href="packs.js">
+<link rel="modulepreload" href="packs-kinds.js">
+<link rel="modulepreload" href="engine/packs-core.js">
+<link rel="preload" href="packs.lock.json" as="fetch" crossorigin>
+<link rel="preload" href="craftpack.json" as="fetch" crossorigin>
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b0d10'/%3E%3Cpath d='M4 16h5l3-9 4 18 4-14 3 5h5' fill='none' stroke='%23ff6a1a' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E">
 <script>try{var t=localStorage.getItem('sc.theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <script src="ui.js" defer></script>
 <script src="app.js" defer></script>
+<script type="module" src="packs.js"></script>
 <script type="module" src="engine/index.js"></script>
 <script type="module" src="atoms-site.js"></script>
 <script type="module" src="visuals.js"></script>

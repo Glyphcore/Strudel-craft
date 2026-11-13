@@ -30,12 +30,13 @@ api.completeFrom = async (ctx) => { const out = []; for (const s of sources.valu
 window.strudelCraft = window.strudelCraft || {}; window.strudelCraft.intellisense = api;
 
 /* 1. static config data */
-const staticData = fetch('data/intellisense/strudel.json').then((r) => r.json()).then((d) => d.items || []).catch(() => []);
-api.register({ id: 'strudel-docs', items: () => staticData });
+/* the `strudel-docs` provider is registered by the pack loader's `intellisense` adapter (packs-kinds.js) */
+const packs = () => window.strudelCraft.packs;
 
 /* 1b. typed params (docs/CONTROL_BINDING.md section 1): params[fn][i] = { name, shape, ... } merged with mod_ranges + control types */
-const shapes = Promise.all([fetch('data/intellisense/strudel.json').then((r) => r.json()).catch(() => ({})), fetch('data/mod_ranges.json').then((r) => r.json()).catch(() => ({ ranges: {} })), fetch('data/controls/types.json').then((r) => r.json()).catch(() => ({ types: [] }))])
-  .then(([d, mr, ty]) => {
+const shapes = Promise.all([packs().paramShapes().catch(() => ({})), packs().controlTypes().catch(() => ({ types: [] }))])
+  .then(([d, ty]) => {
+    const mr = { ranges: d.ranges || {} };
     const types = new Map((ty.types || []).map((t) => [t.id, t])); const drawnType = (id) => { let t = types.get(id); const seen = new Set(); while (t && !t.drawn && t.render && t.render.fallback && !seen.has(t.id)) { seen.add(t.id); t = types.get(t.render.fallback); } return t ? t.id : 'knob'; };
     const P = {};
     for (const [fn, ps] of Object.entries(d.params || {})) P[fn] = ps.map((q) => { const r = q.range && mr.ranges ? mr.ranges[q.range] : null; const o = { ...(r ? { min: r.min, max: r.max } : {}), ...q }; if (o.shape === 'number') o.control = drawnType(o.control || 'knob'); return o; });
@@ -85,7 +86,7 @@ function shapeOptions(p, ctx, items) {
 }
 
 /* 2. catalog presets */
-const catalog = fetch('data/catalog.json').then((r) => r.json()).catch(() => ({ recipes: [] }));
+const catalog = packs().catalog().catch(() => ({ recipes: [] }));
 api.register({ id: 'catalog', items: async () => (await catalog).recipes.filter((r) => r.expr).map((r) => ({ label: r.id, category: 'presets', detail: r.title, info: r.intent + '\n' + r.expr, apply: r.expr })) });
 
 /* 3. runtime discovery after Strudel loads: exported globals, Pattern methods, loaded sounds */
@@ -170,7 +171,7 @@ async function mount() {
   const [vmod, smod, cmds, inlineMod] = await Promise.all([import(`https://esm.sh/@codemirror/view@${V.view}`), import('https://esm.sh/@codemirror/state@6'), import('https://esm.sh/@codemirror/commands@6'), import('./inline.js')]);
   const ghost = inlineMod.setupInline(api, { EditorView, Decoration: vmod.Decoration, WidgetType: vmod.WidgetType, StateField: smod.StateField, StateEffect: smod.StateEffect, Prec: smod.Prec, keymap, ac, indentMore: cmds.indentMore });
   api.ghost = ghost; api.startCompletion = (view) => ac.startCompletion(view);
-  const docs = new Map(); (await staticData).forEach((d) => docs.set(d.label, d));
+  const docs = new Map(); (await packs().completions()).forEach((d) => docs.set(d.label, d));
   const { hoverTooltip } = await import(`https://esm.sh/@codemirror/view@${V.view}`);
   const hover = hoverTooltip((view, pos) => {
     const { from, to, text } = view.state.doc.lineAt(pos); let s = pos, e = pos;

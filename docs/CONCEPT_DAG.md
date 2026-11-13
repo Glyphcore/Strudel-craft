@@ -63,7 +63,7 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | atoms-ui (lazy reference-counted graph cards, atom browser, reference popover; ui-designer) | atoms-core, atoms-consumers, graph-editor-ui | issued | #64 |
 | pack-spec (craftpack manifest, kind sub-schemas, hash tree, lock, registry, validator; docs/PACK_SPEC.md, schemas/) | issues-protocol | issued | #65 |
 | licence-decision-pack-content (first-party pack licences) | issues-protocol | issued | #66 |
-| pack-loader-site (`strudelCraft.packs`, kind adapters, precedence, lazy load, service-worker pack cache, pack sheet) | pack-spec, intellisense-provider-registry, controls-engine | issued | #67 |
+| pack-loader-site (`strudelCraft.packs`, kind adapters, precedence, lazy load, service-worker pack cache, pack sheet) | pack-spec, intellisense-provider-registry, controls-engine | partial: loader, adapters, service-worker cache built; pack sheet UI open | #67 |
 | pack-loader-cli (`--packs`, `--pack`, install/verify/list, render.json credits, shared resolution module) | pack-spec | issued | #68 |
 | core-pack-migration (site/data -> glyphcore/core on branch `packs`, shipped lock, deploy bundling; vox packs prepared, publish needs owner approval) | pack-loader-site, pack-loader-cli, licence-decision-pack-content | issued | #69 |
 | pack-authoring (contributor guide, template layout, pack CI, registry CI) | pack-spec, core-pack-migration | issued | #70 |

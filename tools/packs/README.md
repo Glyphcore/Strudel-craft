@@ -29,6 +29,8 @@ Every diagnostic prints as `CODE where: message` with the codes of PACK_SPEC sec
 Shared resolution (bare-name precedence, shadowing, the report) is **not** here: it is one DOM-free, Node-free
 ES module at `site/engine/packs-core.js`, imported by both hosts the way `site/engine/hooks.js` is.
 
+`tools/packs/shim.py` (`--check`) keeps the site's shim pack (`site/craftpack.json`, `site/packs.lock.json`, #67) in step with `site/data`.
+
 ## Tests
 
 ```

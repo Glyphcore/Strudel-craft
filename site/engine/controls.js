@@ -2,7 +2,7 @@
 import { fromFrac, toFrac, parseLength, canonical } from './time.js';
 
 const err = (code, msg) => Object.assign(new Error(`${code}: ${msg}`), { code });
-const BUILTIN_URL = new URL('../data/controls/types.json', import.meta.url);
+const SHIM_MANIFEST = new URL('../craftpack.json', import.meta.url); // the shim pack's manifest names where the built-in control types live (PACK_SPEC 14.3)
 
 // ---------- curves: travel 0..1 <-> real value ----------
 const shape = {
@@ -132,8 +132,9 @@ export function createRegistry(initial = []) {
   return api;
 }
 export async function loadBuiltinTypes(registry, fetcher) {
-  const j = fetcher ? await (await fetcher(BUILTIN_URL)).json() : JSON.parse((await import('node:fs')).readFileSync(BUILTIN_URL, 'utf8'));
-  j.types.forEach(registry.registerType); return registry;
+  const read = async (u) => (fetcher ? (await fetcher(u)).json() : JSON.parse((await import('node:fs')).readFileSync(u, 'utf8')));
+  const ing = (await read(SHIM_MANIFEST)).ingredients.find((i) => i.kind === 'control-types');
+  (await read(new URL(ing.path, SHIM_MANIFEST))).types.forEach(registry.registerType); return registry;
 }
 
 // ---------- engine ----------

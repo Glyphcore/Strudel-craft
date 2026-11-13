@@ -123,7 +123,7 @@ Index: `schemas/craftpack/1/kinds/index.json`. Each kind has a schema `kinds/<ki
 | kind | entry file holds | goes into (existing plumbing) | code | hosts | today |
 |---|---|---|---|---|---|
 | `sounds` | strudel.json-compatible map: `key -> [files]` or `key -> {note: [files]}`, optional relative `_base` | `samples(map, base)`; sound names in intellisense | never | site, cli | third-party maps via `samples()` |
-| `vox-bank` | `{prefix, maps: {flat, pitched}, words, sr, voice, fallback}`; maps are `sounds@1`, words file is `vox-bank.words@1` | `voxBank()`, `word()`, `syl()`, word completions | never | site, cli | `site/data/vox/*` (local only) |
+| `vox-bank` | `{prefix, maps: {flat, pitched}, words, sr, voice, fallback}`; maps are `sounds@1`, words file is `vox-bank.words@1` | `voxBank()`, `word()`, `syl()`, word completions | never | site, cli | `site/data/vox/*` |
 | `recipes` | `{categories, labels, recipes[]}`; recipe = `id, title, intent, code, expr, labels, needs[], bpm_hint, verified, rms_dbfs, centroid_hz, ...` | Rack browser, Stack, `catalog` provider, pad targets | never (program text) | site, cli | `data/catalog.json` |
 | `syntax` | `sections[{id, title, needs, explain, examples[{title, code}]}]` | Syntax view, `syntax` provider | never (program text) | site | `data/syntax.json` |
 | `docs` | `{view, sections[{title, blocks[html \| table \| code]}]}` | Ref and Practice views | never | site | `data/plugins.json`, `data/practices.json` |
@@ -475,7 +475,7 @@ template/                            starter pack layout for contributors (secti
 | `DEFAULTS` in `workspace.js` | `core:layouts` (`layouts@1`) | |
 | built-in palette entries | `core:actions` (`palette-actions@1`, `do` ops) | |
 | `site/prelude/word.js` | `core:word` (`prelude@1`, realm `main`, granted in the shipped lock); the bank table inside it is removed | banks come from `vox-bank` ingredients |
-| `site/data/vox/{demo,call-me-baby,ljspeech,vocalset}` | packs `glyphcore/vox-*` | prepared, **not published**: section 14.3 |
+| `site/data/vox/{demo,call-me-baby}` (on `main`), `{ljspeech,vocalset}` (local only) | packs `glyphcore/vox-*` | prepared, **not published as packs**: section 14.3 |
 | `site/data/schema/model.v1.json` | stays (plumbing) | |
 
 After the migration `site/data/` holds `schema/` only, and `site/` gains `packs.json`, `packs.lock.json`, `packs.js` (loader),
@@ -499,8 +499,10 @@ deploys. The schemas are published under `<site>/schemas/craftpack/1/` so the `$
    Parity gates: same recipe ids and count (46), same intellisense labels, same control types (16), same `strudel events` output for
    every catalog recipe before and after.
 4. Vox packs are built on a local `packs` checkout in P4 and validated, but **pushing any `glyphcore/vox-*` pack, and listing it in the
-   registry or the shipped lock, waits for the owner's explicit approval** recorded on the issue. The local commit `a87e13a` (demo and
-   call-me-baby banks under `site/data/vox/`) should then never be pushed to `main`; its `word.js` changes move over without the data.
+   registry or the shipped lock, waits for the owner's explicit approval** recorded on the issue. State on 2026-11-13: `demo` and
+   `call-me-baby` are already on `origin/main` under `site/data/vox/` (commit `e0a51e8`); `ljspeech` and `vocalset` exist only in a
+   local tree. P4 removes `site/data/vox/` from the `main` tree either way; whether the two banks already there stay reachable (and
+   whether history needs rewriting) is the owner's call on #69.
 5. A licence for first-party content has to be chosen before P4 publishes (#66); until then the core manifest says
    `LicenseRef-undecided`, which the registry refuses by design.
 

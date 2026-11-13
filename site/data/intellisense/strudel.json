@@ -595,6 +595,13 @@
    "category": "vocals"
   },
   {
+   "label": "formant",
+   "method": true,
+   "detail": "word(...).note(x).formant(true)",
+   "info": "Pick the pre-rendered formant variant vox_<word>_f<semi> nearest to the note shift, fine-tune the residual (<= 50 cents) with speed. Needs a bank built with --formant-steps; otherwise plain note() retune plus one warning. #57",
+   "category": "vocals"
+  },
+  {
    "label": "strudelCraft.palette.register",
    "method": false,
    "detail": "register({id, title, group, keys, run})",

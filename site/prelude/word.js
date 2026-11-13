@@ -6,17 +6,25 @@
 // vowel() works unchanged (fixed formant filter).
 // Banks: the demo bank (espeak-ng speech) auto-loads on first word(). voxBank('call-me-baby') switches to the owner's vocal bank (keys it lacks fall back to demo);
 //   voxBank('ljspeech') = ~500 common English/lyric words from LJSpeech (public domain, keys vox_<word>, 1-3 takes; word() works); voxBank('vocalset') = sustained sung vowels (CC BY 4.0, keys vs_<a|e|i|o|u>[_straight|_forte|_pp|_messa|_trill], use s('vs_a').note('c4'), no word()).
+// word(...).note(x).formant(true): picks the pre-rendered formant variant vox_<word>_f<semi> nearest to the requested shift (bank built with --formant-steps), then
+//   fine-tunes the residual (<= 50 cents inside the built range) with speed; no variants in the bank -> plain note() retune + one warning (site toast; stderr in the CLI).
+//   Shift = note - the word's sung base note (from the pitched map); if the base is unknown a numeric note is taken as the semitone shift itself.
 //   voxBank(url) loads strudel.json from a URL (or a folder URL ending in /); voxBank() opens a folder picker (stays in the browser); voxBank.list() -> [{name,url,words,active}].
 (function () {
   const here = (typeof document !== 'undefined' && document.currentScript && document.currentScript.src) || (typeof location !== 'undefined' ? location.href : '');
   const root = (() => { try { return new URL('../data/vox/', here).href; } catch (e) { return 'data/vox/'; } })();
   const banks = { demo: { url: root + 'demo/pitched/strudel.json' }, 'call-me-baby': { url: root + 'call-me-baby/pitched/strudel.json' },
     ljspeech: { url: root + 'ljspeech/pitched/strudel.json' }, vocalset: { url: root + 'vocalset/pitched/strudel.json' } };
-  let active = null, boot = null;
+  let active = null, boot = null, fvars = {}, fbase = {}, fwarned = false;
   const toast = (m, kind) => { const u = globalThis.window && window.strudelCraft && window.strudelCraft.ui; if (u && u.toast) u.toast(m, { kind: kind || 'info', ms: 6000 }); else console.warn('[vox] ' + m); };
   const register = async (name, jsonUrl, map) => {
     if (!map) { const r = await fetch(jsonUrl); if (!r.ok) throw new Error('HTTP ' + r.status); map = await r.json(); }
     await globalThis.samples(map, jsonUrl.replace(/[^/]*$/, ''));
+    fvars = {}; fbase = {}; fwarned = false; const mid = (n) => { try { return globalThis.noteToMidi(n); } catch (e) { return undefined; } };
+    for (const [k, v] of Object.entries(map)) { // formant variants vox_<word>_f<semi>; sung base note of each pitched word
+      const m = /^(.+)_f(-?\d+)$/.exec(k); if (m) (fvars[m[1]] = fvars[m[1]] || []).push(Number(m[2]));
+      else if (v && !Array.isArray(v)) { const b = mid(Object.keys(v)[0]); if (b !== undefined) fbase[k] = b; }
+    }
     const b = (banks[name] = banks[name] || {}); b.url = jsonUrl; b.words = Object.keys(map).filter((k) => !/_s\d+$|_syl$|^_/.test(k)).length; active = name; return name;
   };
   const NOBANK = 'No vocal bank loaded. Run voxBank() to pick a folder, or voxBank("https://.../strudel.json") to load one from a URL.';
@@ -59,6 +67,20 @@
     if (n !== undefined && n !== '') o.n = Number(n);
     return o;
   };
-  globalThis.word = (str, bank = 'vox') => (ensure(), typeof str === 'string' ? mini(str) : str).fmap((v) => tok(v, bank));
-  globalThis.syl = (str, bank = 'vox') => s(bank + '_syl').n(str);
+  const warnF = () => { if (!fwarned) { fwarned = true; toast('formant(true): this bank has no formant variants (build it with wordbank --formant-steps); using the plain note() retune.', 'warn'); } };
+  const formantOf = (v) => {
+    if (!v || typeof v !== 'object' || typeof v.s !== 'string' || v.note === undefined) return v;
+    const vs = fvars[v.s]; if (!vs || !vs.length) { warnF(); return v; }
+    const n = typeof v.note === 'number' ? v.note : globalThis.noteToMidi(v.note), off = n - (fbase[v.s] !== undefined ? fbase[v.s] : (typeof v.note === 'number' ? 0 : 60));
+    const semi = vs.reduce((a, b) => (Math.abs(b - off) < Math.abs(a - off) ? b : a)), { note, ...rest } = v;
+    return { ...rest, s: v.s + '_f' + semi, speed: (v.speed === undefined ? 1 : v.speed) * 2 ** ((off - semi) / 12) };
+  };
+  const addFormant = (P) => { if (P && !P.formant) P.formant = function (on = true) {
+    if (on && typeof on.queryArc === 'function') { try { on = on.queryArc(0, 1)[0].value; } catch (e) { /* keep */ } }
+    return on === false || on === 0 || on === 'false' ? this : this.fmap(formantOf);
+  }; return P; };
+  if (globalThis.Pattern) addFormant(globalThis.Pattern.prototype);
+  const withF = (p) => (addFormant(Object.getPrototypeOf(p)), p);
+  globalThis.word = (str, bank = 'vox') => withF((ensure(), typeof str === 'string' ? mini(str) : str).fmap((v) => tok(v, bank)));
+  globalThis.syl = (str, bank = 'vox') => withF(s(bank + '_syl').n(str));
 })();

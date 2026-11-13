@@ -40,6 +40,7 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
     node tests/site/perform.mjs        # Perform view, learn/map, lanes, looper (#55)
     node tests/site/word_intellisense.mjs  # word() completions from data/intellisense/words.json (#44)
     node tests/site/vox.mjs            # vocal banks and voxBank()
+    STRUDEL_MODULES=... node tests/vocals/formant_helper.mjs  # word().formant(true) on a synthetic bank (#57)
     node tests/site/motion.mjs         # Perform lane / pad takes: JSON download, export audio, copy code, import (#72)
     node tests/site/capture.mjs        # audio capture at 360px: 2-cycle take, waveform, WAV header/length, exact render (#72)
 
@@ -178,8 +179,9 @@ states), `closers` (open brackets/quotes). Register more:
   `vox_<word>_f<semi>`, gate them with `python3 engine/vocals/formant.py --selftest --backend all`): pyworld (in-process WORLD
   vocoder) passes that selftest, the external `rubberband --formant` binary is approximate and fails 3 of its 4 vowels, which the
   tool reports rather than hides. Lyric words missing from the stem can be filled with opt-in TTS clips (`--tts-fallback`, Shabda speech,
-  network, per-clip `source`/`licence` in `words.json`, #46). Neither is baked into the banks that ship here, and `word(...).formant(true)`
-  is not built (#57) - the Syntax view marks it "coming".
+  network, per-clip `source`/`licence` in `words.json`, #46). Neither is baked into the banks that ship here. `word(...).note(x).formant(true)` (#57, prelude `word.js`) picks the variant
+  `vox_<word>_f<semi>` nearest to the shift (note minus the word's sung base note) and applies the residual (<= 50 cents) with `speed`;
+  on a bank without variants it plays the plain `note()` retune and warns once (toast). Check: `node tests/vocals/formant_helper.mjs` (synthetic bank, needs `STRUDEL_MODULES`).
 - Completions for word names come from `data/intellisense/words.json`, which covers the `demo` and `call-me-baby` banks (the ones
   a fresh page can play without a `voxBank` call); every bank also ships its own `words.json`. Regenerate with
   `python3 engine/vocals/complete.py "" --samples-dir site/data/vox/call-me-baby --samples-dir site/data/vox/demo --kind word`
@@ -401,7 +403,7 @@ taps/wire/variables/decorators, inline controls and mapping, pads and the board,
 Each example has "Load and play" (loads into Rack and plays, or hot-swaps if already playing); `"noplay": true` makes it "Load"
 only (for examples that need state first, such as a component saved in your library) and `"action": "perform"` opens Perform instead.
 A paradigm whose engine is not present is marked "coming" (detected at runtime), and a single example can carry `"coming": true` when
-the syntax around it is built but that call is not (`word(...).formant(true)`, #57). Every other example is expected to evaluate on the
+the syntax around it is built but that call is not (no example is marked so at present). Every other example is expected to evaluate on the
 site as built: check with `node tests/site/smoke.mjs` plus a load of each example into Rack. Examples are intellisense snippets (provider `syntax`).
 
 ## Typed params, AST-bound controls, inert validation

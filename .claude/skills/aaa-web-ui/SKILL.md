@@ -18,3 +18,4 @@ Bar: feels like a pro instrument/game UI (Ableton Push, Teenage Engineering, AAA
 2. Design note in the issue: layout sketch (ASCII), interaction map, visual tokens.
 3. Build in site/, test with Playwright (engine/strudel test_site style), screenshots at 390px and 1440px.
 4. Critic re-runs the checks; deploy via the Pages workflow.
+- UI dialogs: never use native alert()/prompt()/confirm(); inputs/confirms use the site modal component, notices use toasts. User directive 2026-11-13.

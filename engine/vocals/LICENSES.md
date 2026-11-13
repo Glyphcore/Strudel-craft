@@ -14,3 +14,12 @@
 No model weights or third-party code are vendored in this repo.
 
 | Shabda speech (shabda.ndre.gr; speech via Google TTS) | no per-clip licence published | optional `--tts-fallback` (opt-in, network): clips recorded in words.json as `source:tts` with URL and licence note; verify provider terms before redistributing |
+
+## Site vox banks (site/data/vox/)
+
+| Bank | Source | Licence / permission |
+|---|---|---|
+| `demo/` | espeak-ng (GPL-3.0+) speech, rendered locally by `build_demo_bank.py` and run through `wordbank.py`; clips are mono 22.05 kHz ogg. espeak-ng is run as a separate process and not bundled. | Synthesised speech output is not covered by the espeak-ng GPL; shipped as CC0 / free to redistribute. No Suno or user audio. |
+| `call-me-baby/` | The site owner's own Call Me Baby vocal stem (`tracks/call-me-baby/stems_stitched/vocals.wav`, handle matches `data/suno/owners.json`), sliced by `build_site_bank.py` (wordbank.py, `--own-file`). | Published on the site with the owner's explicit permission (2026-11-13). Not licensed for reuse by others. |
+
+Each bank has `strudel.json` (flat, natural pitch), `pitched/strudel.json` (note()-retunable) and `words.json`; `site/prelude/word.js` loads the pitched map.

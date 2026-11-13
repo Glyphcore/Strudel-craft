@@ -46,10 +46,11 @@
     },
     {
       "id": "word", "title": "word() vocals", "needs": "word",
-      "explain": "word(\"<call me baby>\") plays your vocal word bank (vox_<word> samples) with mini-notation; \"baby:2\" picks the third take. syl(\"0 1 2\") plays syllables in lyric order. vowel() is a formant filter. Needs a loaded vox bank.",
+      "explain": "word(\"<call me baby>\") plays your vocal word bank (vox_<word> samples) with mini-notation; \"baby:2\" picks the third take. syl(\"0 1 2\") plays syllables in lyric order. vowel() is a formant filter. A demo bank (espeak-ng speech) loads on first use; voxBank('call-me-baby') switches to the owner's vocal bank, voxBank() picks a local folder, voxBank.list() shows banks.",
       "examples": [
         { "title": "Words in a pattern", "code": "$: word(\"<call me baby>\").vowel(\"<a o>\")" },
-        { "title": "Syllables", "code": "$: syl(\"0 1 2 3\")" }
+        { "title": "Syllables", "code": "$: syl(\"0 1 2 3\")" },
+        { "title": "Call Me Baby bank, retuned", "code": "await voxBank('call-me-baby')\n$: word(\"<call me baby>\").note(\"<c3 e3 g3>\")" }
       ]
     },
     {

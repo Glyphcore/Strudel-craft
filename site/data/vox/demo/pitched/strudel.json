@@ -1,0 +1,610 @@
+{
+"vox_call": {
+"f#2": [
+"ogg/vox_call__0_call_0.ogg"
+]
+},
+"vox_call_s0": {
+"f#2": [
+"ogg/vox_call_s0__0_call_0_s0.ogg"
+]
+},
+"vox_syl": {
+"g2": [
+"ogg/vox_syl__0_call_0_s0.ogg",
+"ogg/vox_syl__1_me_0_s0.ogg",
+"ogg/vox_syl__2_baby_0_s0.ogg",
+"ogg/vox_syl__3_baby_0_s1.ogg",
+"ogg/vox_syl__4_la_0_s0.ogg",
+"ogg/vox_syl__5_hey_0_s0.ogg",
+"ogg/vox_syl__6_oh_0_s0.ogg",
+"ogg/vox_syl__7_yeah_0_s0.ogg",
+"ogg/vox_syl__8_time_0_s0.ogg",
+"ogg/vox_syl__9_edge_0_s0.ogg",
+"ogg/vox_syl__10_night_0_s0.ogg",
+"ogg/vox_syl__11_love_0_s0.ogg",
+"ogg/vox_syl__12_heart_0_s0.ogg",
+"ogg/vox_syl__13_fire_0_s0.ogg",
+"ogg/vox_syl__14_light_0_s0.ogg",
+"ogg/vox_syl__15_dark_0_s0.ogg",
+"ogg/vox_syl__16_dance_0_s0.ogg",
+"ogg/vox_syl__17_move_0_s0.ogg",
+"ogg/vox_syl__18_feel_0_s0.ogg",
+"ogg/vox_syl__19_need_0_s0.ogg",
+"ogg/vox_syl__20_want_0_s0.ogg",
+"ogg/vox_syl__21_know_0_s0.ogg",
+"ogg/vox_syl__22_say_0_s0.ogg",
+"ogg/vox_syl__23_go_0_s0.ogg",
+"ogg/vox_syl__24_run_0_s0.ogg",
+"ogg/vox_syl__25_fall_0_s0.ogg",
+"ogg/vox_syl__26_rise_0_s0.ogg",
+"ogg/vox_syl__27_down_0_s0.ogg",
+"ogg/vox_syl__28_up_0_s0.ogg",
+"ogg/vox_syl__29_high_0_s0.ogg",
+"ogg/vox_syl__30_low_0_s0.ogg",
+"ogg/vox_syl__31_sky_0_s0.ogg",
+"ogg/vox_syl__32_star_0_s0.ogg",
+"ogg/vox_syl__33_moon_0_s0.ogg",
+"ogg/vox_syl__34_sun_0_s0.ogg",
+"ogg/vox_syl__35_rain_0_s0.ogg",
+"ogg/vox_syl__36_dream_0_s0.ogg",
+"ogg/vox_syl__37_song_0_s0.ogg",
+"ogg/vox_syl__38_voice_0_s0.ogg",
+"ogg/vox_syl__39_sound_0_s0.ogg",
+"ogg/vox_syl__40_beat_0_s0.ogg",
+"ogg/vox_syl__41_bass_0_s0.ogg",
+"ogg/vox_syl__42_drop_0_s0.ogg",
+"ogg/vox_syl__43_break_0_s0.ogg",
+"ogg/vox_syl__44_tonight_0_s0.ogg",
+"ogg/vox_syl__45_tonight_0_s1.ogg",
+"ogg/vox_syl__46_forever_0_s0.ogg",
+"ogg/vox_syl__47_forever_0_s1.ogg",
+"ogg/vox_syl__48_forever_0_s2.ogg",
+"ogg/vox_syl__49_again_0_s0.ogg",
+"ogg/vox_syl__50_again_0_s1.ogg",
+"ogg/vox_syl__51_alone_0_s0.ogg",
+"ogg/vox_syl__52_alone_0_s1.ogg",
+"ogg/vox_syl__53_together_0_s0.ogg",
+"ogg/vox_syl__54_together_0_s1.ogg",
+"ogg/vox_syl__55_together_0_s2.ogg",
+"ogg/vox_syl__56_never_0_s0.ogg",
+"ogg/vox_syl__57_never_0_s1.ogg",
+"ogg/vox_syl__58_stay_0_s0.ogg"
+]
+},
+"vox_me": {
+"g2": [
+"ogg/vox_me__0_me_0.ogg"
+]
+},
+"vox_me_s0": {
+"g2": [
+"ogg/vox_me_s0__0_me_0_s0.ogg"
+]
+},
+"vox_baby": {
+"f#2": [
+"ogg/vox_baby__0_baby_0.ogg"
+]
+},
+"vox_baby_s0": {
+"g#2": [
+"ogg/vox_baby_s0__0_baby_0_s0.ogg"
+]
+},
+"vox_baby_s1": {
+"e2": [
+"ogg/vox_baby_s1__0_baby_0_s1.ogg"
+]
+},
+"vox_la": {
+"f#2": [
+"ogg/vox_la__0_la_0.ogg"
+]
+},
+"vox_la_s0": {
+"f#2": [
+"ogg/vox_la_s0__0_la_0_s0.ogg"
+]
+},
+"vox_hey": {
+"f#2": [
+"ogg/vox_hey__0_hey_0.ogg"
+]
+},
+"vox_hey_s0": {
+"f#2": [
+"ogg/vox_hey_s0__0_hey_0_s0.ogg"
+]
+},
+"vox_oh": {
+"f#2": [
+"ogg/vox_oh__0_oh_0.ogg"
+]
+},
+"vox_oh_s0": {
+"f#2": [
+"ogg/vox_oh_s0__0_oh_0_s0.ogg"
+]
+},
+"vox_yeah": {
+"g2": [
+"ogg/vox_yeah__0_yeah_0.ogg"
+]
+},
+"vox_yeah_s0": {
+"g2": [
+"ogg/vox_yeah_s0__0_yeah_0_s0.ogg"
+]
+},
+"vox_time": {
+"f#2": [
+"ogg/vox_time__0_time_0.ogg"
+]
+},
+"vox_time_s0": {
+"f#2": [
+"ogg/vox_time_s0__0_time_0_s0.ogg"
+]
+},
+"vox_edge": {
+"g2": [
+"ogg/vox_edge__0_edge_0.ogg"
+]
+},
+"vox_edge_s0": {
+"g2": [
+"ogg/vox_edge_s0__0_edge_0_s0.ogg"
+]
+},
+"vox_night": {
+"g2": [
+"ogg/vox_night__0_night_0.ogg"
+]
+},
+"vox_night_s0": {
+"g2": [
+"ogg/vox_night_s0__0_night_0_s0.ogg"
+]
+},
+"vox_love": {
+"g2": [
+"ogg/vox_love__0_love_0.ogg"
+]
+},
+"vox_love_s0": {
+"g2": [
+"ogg/vox_love_s0__0_love_0_s0.ogg"
+]
+},
+"vox_heart": {
+"f#2": [
+"ogg/vox_heart__0_heart_0.ogg"
+]
+},
+"vox_heart_s0": {
+"f#2": [
+"ogg/vox_heart_s0__0_heart_0_s0.ogg"
+]
+},
+"vox_fire": {
+"f#2": [
+"ogg/vox_fire__0_fire_0.ogg"
+]
+},
+"vox_fire_s0": {
+"f#2": [
+"ogg/vox_fire_s0__0_fire_0_s0.ogg"
+]
+},
+"vox_light": {
+"g2": [
+"ogg/vox_light__0_light_0.ogg"
+]
+},
+"vox_light_s0": {
+"g2": [
+"ogg/vox_light_s0__0_light_0_s0.ogg"
+]
+},
+"vox_dark": {
+"f#2": [
+"ogg/vox_dark__0_dark_0.ogg"
+]
+},
+"vox_dark_s0": {
+"f#2": [
+"ogg/vox_dark_s0__0_dark_0_s0.ogg"
+]
+},
+"vox_dance": {
+"f#2": [
+"ogg/vox_dance__0_dance_0.ogg"
+]
+},
+"vox_dance_s0": {
+"f#2": [
+"ogg/vox_dance_s0__0_dance_0_s0.ogg"
+]
+},
+"vox_move": {
+"g2": [
+"ogg/vox_move__0_move_0.ogg"
+]
+},
+"vox_move_s0": {
+"g2": [
+"ogg/vox_move_s0__0_move_0_s0.ogg"
+]
+},
+"vox_feel": {
+"g2": [
+"ogg/vox_feel__0_feel_0.ogg"
+]
+},
+"vox_feel_s0": {
+"g2": [
+"ogg/vox_feel_s0__0_feel_0_s0.ogg"
+]
+},
+"vox_need": {
+"g2": [
+"ogg/vox_need__0_need_0.ogg"
+]
+},
+"vox_need_s0": {
+"g2": [
+"ogg/vox_need_s0__0_need_0_s0.ogg"
+]
+},
+"vox_want": {
+"g2": [
+"ogg/vox_want__0_want_0.ogg"
+]
+},
+"vox_want_s0": {
+"g2": [
+"ogg/vox_want_s0__0_want_0_s0.ogg"
+]
+},
+"vox_know": {
+"g2": [
+"ogg/vox_know__0_know_0.ogg"
+]
+},
+"vox_know_s0": {
+"g2": [
+"ogg/vox_know_s0__0_know_0_s0.ogg"
+]
+},
+"vox_say": {
+"f#2": [
+"ogg/vox_say__0_say_0.ogg"
+]
+},
+"vox_say_s0": {
+"f#2": [
+"ogg/vox_say_s0__0_say_0_s0.ogg"
+]
+},
+"vox_go": {
+"g2": [
+"ogg/vox_go__0_go_0.ogg"
+]
+},
+"vox_go_s0": {
+"g2": [
+"ogg/vox_go_s0__0_go_0_s0.ogg"
+]
+},
+"vox_run": {
+"g2": [
+"ogg/vox_run__0_run_0.ogg"
+]
+},
+"vox_run_s0": {
+"g2": [
+"ogg/vox_run_s0__0_run_0_s0.ogg"
+]
+},
+"vox_fall": {
+"g2": [
+"ogg/vox_fall__0_fall_0.ogg"
+]
+},
+"vox_fall_s0": {
+"g2": [
+"ogg/vox_fall_s0__0_fall_0_s0.ogg"
+]
+},
+"vox_rise": {
+"g2": [
+"ogg/vox_rise__0_rise_0.ogg"
+]
+},
+"vox_rise_s0": {
+"g2": [
+"ogg/vox_rise_s0__0_rise_0_s0.ogg"
+]
+},
+"vox_down": {
+"f#2": [
+"ogg/vox_down__0_down_0.ogg"
+]
+},
+"vox_down_s0": {
+"f#2": [
+"ogg/vox_down_s0__0_down_0_s0.ogg"
+]
+},
+"vox_up": {
+"f#2": [
+"ogg/vox_up__0_up_0.ogg"
+]
+},
+"vox_up_s0": {
+"f#2": [
+"ogg/vox_up_s0__0_up_0_s0.ogg"
+]
+},
+"vox_high": {
+"g2": [
+"ogg/vox_high__0_high_0.ogg"
+]
+},
+"vox_high_s0": {
+"g2": [
+"ogg/vox_high_s0__0_high_0_s0.ogg"
+]
+},
+"vox_low": {
+"g2": [
+"ogg/vox_low__0_low_0.ogg"
+]
+},
+"vox_low_s0": {
+"g2": [
+"ogg/vox_low_s0__0_low_0_s0.ogg"
+]
+},
+"vox_sky": {
+"g2": [
+"ogg/vox_sky__0_sky_0.ogg"
+]
+},
+"vox_sky_s0": {
+"f#2": [
+"ogg/vox_sky_s0__0_sky_0_s0.ogg"
+]
+},
+"vox_star": {
+"f#2": [
+"ogg/vox_star__0_star_0.ogg"
+]
+},
+"vox_star_s0": {
+"f#2": [
+"ogg/vox_star_s0__0_star_0_s0.ogg"
+]
+},
+"vox_moon": {
+"g2": [
+"ogg/vox_moon__0_moon_0.ogg"
+]
+},
+"vox_moon_s0": {
+"g2": [
+"ogg/vox_moon_s0__0_moon_0_s0.ogg"
+]
+},
+"vox_sun": {
+"f#2": [
+"ogg/vox_sun__0_sun_0.ogg"
+]
+},
+"vox_sun_s0": {
+"f#2": [
+"ogg/vox_sun_s0__0_sun_0_s0.ogg"
+]
+},
+"vox_rain": {
+"g2": [
+"ogg/vox_rain__0_rain_0.ogg"
+]
+},
+"vox_rain_s0": {
+"g2": [
+"ogg/vox_rain_s0__0_rain_0_s0.ogg"
+]
+},
+"vox_dream": {
+"g2": [
+"ogg/vox_dream__0_dream_0.ogg"
+]
+},
+"vox_dream_s0": {
+"g2": [
+"ogg/vox_dream_s0__0_dream_0_s0.ogg"
+]
+},
+"vox_song": {
+"f#2": [
+"ogg/vox_song__0_song_0.ogg"
+]
+},
+"vox_song_s0": {
+"f#2": [
+"ogg/vox_song_s0__0_song_0_s0.ogg"
+]
+},
+"vox_voice": {
+"g2": [
+"ogg/vox_voice__0_voice_0.ogg"
+]
+},
+"vox_voice_s0": {
+"g2": [
+"ogg/vox_voice_s0__0_voice_0_s0.ogg"
+]
+},
+"vox_sound": {
+"f#2": [
+"ogg/vox_sound__0_sound_0.ogg"
+]
+},
+"vox_sound_s0": {
+"f#2": [
+"ogg/vox_sound_s0__0_sound_0_s0.ogg"
+]
+},
+"vox_beat": {
+"g2": [
+"ogg/vox_beat__0_beat_0.ogg"
+]
+},
+"vox_beat_s0": {
+"g2": [
+"ogg/vox_beat_s0__0_beat_0_s0.ogg"
+]
+},
+"vox_bass": {
+"f#2": [
+"ogg/vox_bass__0_bass_0.ogg"
+]
+},
+"vox_bass_s0": {
+"f#2": [
+"ogg/vox_bass_s0__0_bass_0_s0.ogg"
+]
+},
+"vox_drop": {
+"g2": [
+"ogg/vox_drop__0_drop_0.ogg"
+]
+},
+"vox_drop_s0": {
+"g2": [
+"ogg/vox_drop_s0__0_drop_0_s0.ogg"
+]
+},
+"vox_break": {
+"g2": [
+"ogg/vox_break__0_break_0.ogg"
+]
+},
+"vox_break_s0": {
+"g2": [
+"ogg/vox_break_s0__0_break_0_s0.ogg"
+]
+},
+"vox_tonight": {
+"g2": [
+"ogg/vox_tonight__0_tonight_0.ogg"
+]
+},
+"vox_tonight_s0": {
+"g2": [
+"ogg/vox_tonight_s0__0_tonight_0_s0.ogg"
+]
+},
+"vox_tonight_s1": {
+"f#2": [
+"ogg/vox_tonight_s1__0_tonight_0_s1.ogg"
+]
+},
+"vox_forever": {
+"g2": [
+"ogg/vox_forever__0_forever_0.ogg"
+]
+},
+"vox_forever_s0": {
+"g2": [
+"ogg/vox_forever_s0__0_forever_0_s0.ogg"
+]
+},
+"vox_forever_s1": {
+"g#2": [
+"ogg/vox_forever_s1__0_forever_0_s1.ogg"
+]
+},
+"vox_forever_s2": {
+"f2": [
+"ogg/vox_forever_s2__0_forever_0_s2.ogg"
+]
+},
+"vox_again": {
+"g2": [
+"ogg/vox_again__0_again_0.ogg"
+]
+},
+"vox_again_s0": {
+"g2": [
+"ogg/vox_again_s0__0_again_0_s0.ogg"
+]
+},
+"vox_again_s1": {
+"f#2": [
+"ogg/vox_again_s1__0_again_0_s1.ogg"
+]
+},
+"vox_alone": {
+"g2": [
+"ogg/vox_alone__0_alone_0.ogg"
+]
+},
+"vox_alone_s0": {
+"g2": [
+"ogg/vox_alone_s0__0_alone_0_s0.ogg"
+]
+},
+"vox_alone_s1": {
+"f#2": [
+"ogg/vox_alone_s1__0_alone_0_s1.ogg"
+]
+},
+"vox_together": {
+"g2": [
+"ogg/vox_together__0_together_0.ogg"
+]
+},
+"vox_together_s0": {
+"g#2": [
+"ogg/vox_together_s0__0_together_0_s0.ogg"
+]
+},
+"vox_together_s1": {
+"g2": [
+"ogg/vox_together_s1__0_together_0_s1.ogg"
+]
+},
+"vox_together_s2": {
+"e2": [
+"ogg/vox_together_s2__0_together_0_s2.ogg"
+]
+},
+"vox_never": {
+"g2": [
+"ogg/vox_never__0_never_0.ogg"
+]
+},
+"vox_never_s0": {
+"g#2": [
+"ogg/vox_never_s0__0_never_0_s0.ogg"
+]
+},
+"vox_never_s1": {
+"f2": [
+"ogg/vox_never_s1__0_never_0_s1.ogg"
+]
+},
+"vox_stay": {
+"f#2": [
+"ogg/vox_stay__0_stay_0.ogg"
+]
+},
+"vox_stay_s0": {
+"f#2": [
+"ogg/vox_stay_s0__0_stay_0_s0.ogg"
+]
+}
+}

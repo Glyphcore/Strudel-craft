@@ -87,6 +87,7 @@ async function onAudioSt() {
   if (ck.engine === 'failed') { try { await Engine.load(); audioNotice('Engine loaded', 'ok'); } catch (e) { audioNotice(e.message, 'error'); } }
   if (ck.samples === 'failed') await loadSampleMaps((m) => audioNotice(m, 'error'));
   const st = await resumeAudio(); syncAudioState();
+  try { window.strudelCraft.bg && window.strudelCraft.bg.openDiagnostics(); } catch (e) { /* optional */ }
   const c = audioCtx(); say(c ? `Audio ${st}: ${c.sampleRate} Hz, master ${S.master <= MASTER.min ? 'muted' : S.master.toFixed(1) + ' dB'}, engine ${ck.engine}, samples ${ck.samples}` : 'Audio starts on the first Play');
 }
 /* silence watchdog: playing with a running context but no level on the master for ~3 s says so (once per Play), with the likely causes */
@@ -156,7 +157,7 @@ const Engine = {
       const res0 = res, rej0 = rej; res = (v) => { done(true); res0(v); }; rej = (e) => { done(false, e); rej0(e); };
       const s = document.createElement('script'); s.src = STRUDEL_WEB; s.crossOrigin = 'anonymous';
       s.onload = () => {
-        try { window.initStrudel({ onUpdateState: (st) => { this.state = st; try { window.dispatchEvent(new CustomEvent('strudel:state', { detail: st })); } catch (e) { /* ignore */ } } }).then((r) => { this.repl = r; loadPreludes().then(() => res(r), () => res(r)); try { window.dispatchEvent(new CustomEvent('strudel:ready')); } catch (e2) { /* ignore */ } }, rej); } catch (e) { rej(e); }
+        try { window.initStrudel({ onUpdateState: (st) => { this.state = st; try { window.dispatchEvent(new CustomEvent('strudel:state', { detail: st })); } catch (e) { /* ignore */ } } }).then((r) => { this.repl = r; try { window.strudelCraft.bg && window.strudelCraft.bg.install(r.scheduler); } catch (e) { console.warn('background clock: ' + e.message); } loadPreludes().then(() => res(r), () => res(r)); try { window.dispatchEvent(new CustomEvent('strudel:ready')); } catch (e2) { /* ignore */ } }, rej); } catch (e) { rej(e); }
       };
       s.onerror = () => { this.ready = null; this.selfCheck.engine = 'failed'; rej(new Error('Could not load the Strudel engine from unpkg (offline or blocked?). Check the connection and press Play again.')); };
       document.head.append(s);
@@ -285,7 +286,8 @@ const Viz = {
   stopSoon() { this.stopAt = performance.now() + 900; },
   tick(t) {
     const minDt = reducedMotion.matches ? 100 : 0;
-    if (!this.last || t - this.last >= minDt - 1) {
+    if (document.hidden) { this.hiddenSkips = (this.hiddenSkips || 0) + 1; } /* hidden: no drawing (bgplay.js background citizenship); the loop idles */
+    else if (!this.last || t - this.last >= minDt - 1) {
       if (this.last) { this.frames.push(t - this.last); if (this.frames.length > 2000) this.frames.splice(0, 1000); }
       this.last = t; const d0 = performance.now(); this.drawAll(t); this.cost.push(performance.now() - d0); if (this.cost.length > 2000) this.cost.splice(0, 1000);
     }
@@ -415,13 +417,13 @@ async function play(src = currentSource()) {
     if (prep.ok) bindApply(src.kind === 'stack' ? 'stack' : pv, prep);
     Engine.evalCount++;
     S.playing = true; S.playingId = src.id; S.playingSource = src.kind; S.srcView = src.kind === 'stack' ? 'stack' : pv;
-    say('Playing ' + src.title); Viz.start(); startWatchdog(); syncAudioState(); setLiveChip(S.live ? 'live' : 'off'); window.dispatchEvent(new CustomEvent('live:ok', { detail: { view: S.view } }));
+    say('Playing ' + src.title); Viz.start(); startWatchdog(); syncAudioState(); try { window.strudelCraft.bg && window.strudelCraft.bg.onPlay(src.title); } catch (e) { /* optional */ } setLiveChip(S.live ? 'live' : 'off'); window.dispatchEvent(new CustomEvent('live:ok', { detail: { view: S.view } }));
   } catch (e) {
     say('Error: ' + (e && e.message ? e.message : e), true);
     if (!Engine.started) S.playing = false;
   } finally { btn.classList.remove('busy'); S.busy = false; syncTransport(); }
 }
-function stop() { Engine.stop(); S.playing = false; S.playingId = null; clearInterval(AudioSt.watch); say('Stopped'); Viz.stopSoon(); syncTransport(); syncAudioState(); }
+function stop() { Engine.stop(); S.playing = false; S.playingId = null; clearInterval(AudioSt.watch); try { window.strudelCraft.bg && window.strudelCraft.bg.onStop(); } catch (e) { /* optional */ } say('Stopped'); Viz.stopSoon(); syncTransport(); syncAudioState(); }
 function toggle() { if (S.playing) stop(); else play(); }
 function syncTransport() {
   if ($('#liveChip')) syncLiveChip();

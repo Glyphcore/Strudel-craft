@@ -26,6 +26,11 @@ One Record panel with one arm, one transport and one timeline of takes. A take i
 - An AudioWorklet (ScriptProcessor fallback) sits on the master bus GainNode, post master level. Its output is silent and only pulled, so the mix is unchanged.
 - Cycles cuts are computed from the Cyclist clock: a hap at cycle `c` sounds at `lastTick + (c - lastBegin) / cps + latency`.
 - A take continues across Rack/Stack tab switches and in a hidden browser tab.
+- Gaps (background playback, `site/bgplay.js`): when a realtime take crosses a pause or interruption (a suspended or interrupted
+  AudioContext, a frozen page, a stall longer than the scheduler's lookahead), the recipe gets `timing.segments`:
+  `[{kind: 'paused' | 'interrupted', cycle, audio, seconds}]` (`audio` = seconds from the take start), and a toast warns that the take
+  had interruptions. The captured audio contains the gap; the musical position does not jump (the scheduler resumes at the same cycle).
+  Remake and the exact offline render ignore `timing.segments`: they render cycles, not the wall clock, so their audio has no gap.
 - Events: control values are sampled about 10 times per second and stored as changes `{cycle, control, value}`. Pad journal entries in `[start, stop)` are stored as `{cycle, pad, op, args}`, and the active lanes are stored too.
 
 ## Recipe (version 1, forward only)

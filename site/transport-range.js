@@ -1,5 +1,5 @@
 /* Transport range: cycle position slider with scrub, loop start/end (cycle or bar), and a play-time clamp.
-   Clamp: total play time per run is limited to sc.range.maxMin minutes (default 20); remaining time shown;
+   Clamp: total played time per run (audio-clock time while running, not wall time) is limited to sc.range.maxMin minutes (default 20); remaining, played and paused time shown;
    at the limit the master fades (or stops, per settings) and playback stops. "+5 min" overrides for this run.
    Needs window.strudelCraft.transport (app.js hook). API: window.strudelCraft.range = { state, setLimit, extend, tick } */
 const sc = (window.strudelCraft = window.strudelCraft || {});
@@ -100,10 +100,14 @@ function tick() {
   if (p && !st.wasPlaying) { st.elapsed = 0; st.extra = 0; const s = sch(); if (st.loop && s && s.now() < st.start) seek(st.start); }
   if (!p && st.fading) { clearInterval(fadeT); st.fading = false; }
   st.wasPlaying = p;
-  if (p) st.elapsed += dt;
+  /* the clamp counts played time only: audio-clock time while the context runs, from the background clock (bgplay.js); paused,
+     suspended or frozen time is not played time. Without the background clock: wall time between ticks, capped at 1 s per tick. */
+  const bg = sc.bg && sc.bg.installed ? sc.bg : null;
+  if (p) st.elapsed = bg ? bg.played : st.elapsed + Math.min(dt, 1);
+  st.pausedSec = p && bg ? bg.paused : 0;
   const left = limit() - st.elapsed;
   if (p && left <= 0 && !st.fading) hitLimit();
-  if (!el.pos) return;
+  if (!el.pos || document.hidden) return; /* hidden: the clamp still runs, the readout waits */
   const s = sch(); let c = 0; try { c = p && s ? s.now() : 0; } catch (e) { c = 0; }
   if (p && s) installLoop(s);
   if (c > +el.pos.max && !st.loop) el.pos.max = Math.ceil(c / 4) * 4;
@@ -113,7 +117,8 @@ function tick() {
   const endC = st.loop ? st.end : c + Math.max(0, left) * k;
   const txt = `c ${c.toFixed(1)} / ${+endC.toFixed(1)} · ${mmss(c / k)} / ${mmss(endC / k)}`;
   if (txt !== st.lastTxt) { st.lastTxt = txt; $('#trPosTxt').textContent = txt; el.pos.setAttribute('aria-valuetext', `cycle ${c.toFixed(1)}, ${mmss(c / k)}`); }
-  el.left.textContent = fmt(left) + ' left'; el.left.dataset.warn = String(p && left < 60);
+  el.left.textContent = fmt(left) + ' left' + (p ? ` · played ${fmt(st.elapsed)}${st.pausedSec >= 1 ? ' · paused ' + fmt(st.pausedSec) : ''}` : ''); el.left.dataset.warn = String(p && left < 60);
+  el.left.title = `Remaining play time before the clamp. Played ${fmt(st.elapsed)} (audio time while running), paused ${fmt(st.pausedSec || 0)}`;
   el.more.hidden = !(p && (left < 60 || st.fading));
 }
 /* sample-accurate loop: the Cyclist writes lastEnd after each tick's query; when it crosses End we store

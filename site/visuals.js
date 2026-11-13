@@ -51,6 +51,7 @@ function install() {
 let raf = 0;
 function frame() {
   raf = requestAnimationFrame(frame);
+  if (document.hidden) return; /* hidden: no painting or highlighting */
   const st = sc.engineState && sc.engineState(); if (!st || !st.playing || !st.pattern || !st.scheduler) { clearHighlight(); return; }
   let t; try { t = st.scheduler.now(); } catch (e) { return; }
   let haps = [];

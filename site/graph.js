@@ -657,11 +657,11 @@ function bind() {
   const live = () => { const on = document.body.classList.contains('playing'); if (on !== G.live) { G.live = on; root.toggleAttribute('data-live', on); } };
   new MutationObserver(live).observe(document.body, { attributes: true, attributeFilter: ['class'] }); live();
   const tick = () => {
-    if (!planEl.hidden && G.live) {
+    if (!planEl.hidden && G.live && !document.hidden) {
       let bar = 1; try { const st = sc.engineState && sc.engineState(); if (st && st.scheduler) bar = st.scheduler.now() / ((G.model.settings || {}).cpb || 1) + 1; } catch (e) { bar = 1; }
       const max = +planEl.dataset.max || 16; const hd = planEl.querySelector('.gpl-head'); if (hd) hd.style.left = `calc(var(--gpl-l) + (100% - var(--gpl-l) - 16px) * ${((bar - 1) % max) / max})`;
     }
-    setTimeout(() => requestAnimationFrame(tick), reduce.matches ? 250 : 40);
+    setTimeout(() => requestAnimationFrame(tick), document.hidden ? 1000 : reduce.matches ? 250 : 40);
   };
   requestAnimationFrame(tick);
 }

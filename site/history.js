@@ -161,7 +161,9 @@ Storage.prototype.setItem = function (k, v) { nativeSet.call(this, k, v); if (th
 Storage.prototype.removeItem = function (k) { nativeRemove.call(this, k); if (this === localStorage && !suppress && OWN(String(k))) schedule('remove ' + String(k).slice(3)); };
 /* any editor content change, whatever the source (typing, preset load, paste, tab switch, swap, restore) */
 let lastUi = '';
-setInterval(() => { if (suppress) return; const u = uiText(); const key = u['ui:rack-editor'] + '\u0000' + u['ui:stack-editor']; if (key !== lastUi) { const first = !lastUi; lastUi = key; if (!first && !(window.strudelCraft && window.strudelCraft.settle)) schedule('editor change'); } }, 700);
+setInterval(() => { if (suppress || document.hidden) return; const u = uiText(); const key = u['ui:rack-editor'] + '\u0000' + u['ui:stack-editor']; if (key !== lastUi) { const first = !lastUi; lastUi = key; if (!first && !(window.strudelCraft && window.strudelCraft.settle)) schedule('editor change'); } }, 700);
+/* leaving or hiding the page: write the pending autosave now (the debounce timer may never fire in a frozen or discarded page) */
+window.addEventListener('pagehide', () => { flush(); }); document.addEventListener('visibilitychange', () => { if (document.hidden) flush(); });
 window.addEventListener('live:swap', (e) => { clearTimeout(autoT); pending = null; commit('live swap: ' + e.detail.id + (e.detail.why ? ' (' + e.detail.why + ')' : ''), { auto: true, force: true }); });
 
 const api = { docs, commit: (label, o) => commit(label, { ...(o || {}), named: !!label && !(o && o.auto) }), log, diff, checkout, search, subscribe, undo, redo, get, snapshot, flush, head: () => head };

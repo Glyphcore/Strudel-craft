@@ -29,7 +29,8 @@
       "type": "object", "required": ["cps", "start", "stop", "cycles", "loop", "mode", "exact"],
       "properties": {
         "cps": { "type": "number", "exclusiveMinimum": 0 }, "start": { "type": "number" }, "stop": { "type": "number" }, "cycles": { "type": "number" },
-        "loop": { "type": "boolean" }, "mode": { "enum": ["free", "cycles", "until"] }, "exact": { "type": "boolean" }, "fold": { "type": "boolean" }, "preRoll": { "type": "number" }
+        "loop": { "type": "boolean" }, "mode": { "enum": ["free", "cycles", "until"] }, "exact": { "type": "boolean" }, "fold": { "type": "boolean" }, "preRoll": { "type": "number" },
+        "segments": { "type": "array", "description": "Pauses or interruptions while a realtime take was recording (background playback, #56): kind, cycle where it began, audio time from the take start (s), length (s). Absent when the take ran without a gap; Remake and exact renders ignore it.", "items": { "type": "object", "required": ["kind", "cycle", "seconds"], "properties": { "kind": { "enum": ["paused", "interrupted"] }, "cycle": { "type": "number" }, "audio": { "type": "number" }, "seconds": { "type": "number", "minimum": 0 } } } }
       }
     },
     "random": { "type": "object", "required": ["seed"], "properties": { "seed": { "type": "integer" }, "note": { "type": "string" } } },

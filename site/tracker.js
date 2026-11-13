@@ -40,7 +40,8 @@ async function poll() {
   } catch (e) { cache.err = e.message; if (!failedOnce || ($('#help') && $('#help').open)) toast('Progress tracker: ' + e.message + ', showing the cached copy', 'info'); failedOnce = true; }
   render(); schedule();
 }
-function schedule() { clearTimeout(timer); const open = $('#help') && $('#help').open; timer = setTimeout(poll, open ? 60000 : 300000); }
+/* hidden: no polling at all; the next poll waits until the app is visible again (background citizenship, bgplay.js) */
+function schedule() { clearTimeout(timer); if (document.hidden) { if (!schedule.waiting) { schedule.waiting = true; document.addEventListener('visibilitychange', function on() { if (document.hidden) return; document.removeEventListener('visibilitychange', on); schedule.waiting = false; schedule(); }); } return; } const open = $('#help') && $('#help').open; timer = setTimeout(() => (document.hidden ? schedule() : poll()), open ? 60000 : 300000); }
 function ago(t) { if (!t) return 'never'; const s = Math.round((Date.now() - t) / 1000); return s < 60 ? s + 's ago' : s < 3600 ? Math.round(s / 60) + 'm ago' : Math.round(s / 3600) + 'h ago'; }
 const pct = (items) => { const d = items.filter((i) => i.state === 'done').length + 0.5 * items.filter((i) => i.state === 'wip').length; return items.length ? Math.round((100 * d) / items.length) : 0; };
 function bar(p, label) { return `<div class="tk-bar" role="progressbar" aria-label="${esc(label)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}"><i style="width:${p}%"></i></div>`; }
@@ -62,7 +63,7 @@ function ui() {
   const box = document.createElement('div'); box.id = 'tracker'; box.className = 'tracker'; box.setAttribute('aria-live', 'polite');
   d.append(box); render();
   new MutationObserver(() => { if (d.open) { poll(); } else schedule(); }).observe(d, { attributes: true, attributeFilter: ['open'] });
-  setInterval(() => { const a = $('#tkAgo'); if (a) a.textContent = 'updated ' + ago(cache.at); }, 1000);
+  setInterval(() => { if (document.hidden) return; const a = $('#tkAgo'); if (a) a.textContent = 'updated ' + ago(cache.at); }, 1000);
   poll();
 }
 window.addEventListener('online', () => poll());

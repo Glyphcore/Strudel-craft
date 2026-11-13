@@ -218,7 +218,7 @@ function loop() {
   const step = () => {
     if (st.phase === 'idle' && !st.open) { rafOn = false; return; }
     if (st.phase === 'idle' && opts.preRoll > 0 && sc.transport && sc.transport.playing && sc.transport.bus && st.tapCtx !== sc.transport.bus.ctx && !st.attaching) { st.attaching = true; attachTap().finally(() => { st.attaching = false; }); }
-    if (st.phase === 'waiting' && st.tapCtx && st.tapCtx.currentTime * sr() >= st.recFrame) { st.phase = 'recording'; sync(); }
+    if (st.phase === 'waiting' && st.tapCtx && st.tapCtx.currentTime * sr() >= st.recFrame) { st.phase = 'recording'; st.recAudio0 = st.tapCtx.currentTime; sync(); }
     if (st.phase === 'recording') sampleEvents();
     if ((st.phase === 'recording' || st.phase === 'waiting') && sc.transport && !sc.transport.playing) finish('transport');
     draw();
@@ -245,6 +245,10 @@ async function finish(why) {
     const C = sc.perform && sc.perform.controls;
     const events = includes.events || includes.code ? { pads: padEvents(c0, c1), hooks: hookPadEntries(c1), controls: st.ev ? st.ev.controls : [], lanes: C ? (C.toModel().automation || {}) : {} } : null;
     const timing = { cps: +(+st.cps).toFixed(6), start: +c0.toFixed(6), stop: +c1.toFixed(6), cycles: +(c1 - c0).toFixed(6), loop: exact, mode: ru.mode, exact, fold: !!opts.fold, preRoll: (st.recFrame - st.startFrame) / rate };
+    /* gaps (bgplay.js segments): a take that crossed a pause or interruption carries segment markers; the audio has the gap, Remake and
+       the exact render do not (they render the cycles, not the wall clock) */
+    const gaps = sc.bg && st.tapCtx && st.recAudio0 != null ? sc.bg.gapsBetween(st.recAudio0, st.tapCtx.currentTime) : [];
+    if (gaps.length) timing.segments = gaps.map((g) => ({ kind: g.kind, cycle: g.cycle, audio: +(g.audio - st.recAudio0).toFixed(3), seconds: g.seconds }));
     const recipe = await buildRecipe({ name: ru.name, includes, timing, state: st.state, events });
     rec = { id: recipe.id, recipe, audio: {} };
     if (audio) { rec.audio.capture = { L: audio.L, R: audio.R, sr: rate }; recipe.outputs.capture = { sha256: await audioHash(audio.L, audio.R), sr: rate, frames: audio.L.length, how: 'realtime', encoding: 'f32le-interleaved', envelope: envelope(audio.L, audio.R, rate) }; }
@@ -256,6 +260,7 @@ async function finish(why) {
       const out = await renderRecipe(recipe, { sr: rate });
       if (out) { rec.audio.render = { L: out.L, R: out.R, sr: out.sr }; recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr) }; await store.put(rec); }
     }
+    if (gaps.length) toast(`Take "${recipe.name}" had ${gaps.length} interruption${gaps.length > 1 ? 's' : ''} (${gaps.reduce((a, g) => a + g.seconds, 0).toFixed(1)} s paused); the recipe marks them (timing.segments)`, { kind: 'info', ms: 8000 });
     toast(`Take saved: ${recipe.name}. Download`, { kind: 'ok', ms: 6000, onClick: () => download(recipe.id, 'recipe') });
   } catch (e) { toast((e.message === 'Nothing captured' ? '' : 'Could not save take: ') + e.message, { kind: 'error' }); rec = null; }
   st.phase = 'idle'; if (!(opts.preRoll > 0)) st.chunks = []; st.ev = null; sync(); renderTakes(); st.resolve(rec);

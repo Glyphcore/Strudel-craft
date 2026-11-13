@@ -51,6 +51,47 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
    typed program; layout at 360px in every view, after typing and with the keyboard open (no sideways scroll, `elementFromPoint` at Play's
    centre is Play, every Play press a real tap, Revert visible with a 44px target); `--live URL` runs the fresh case against a deployed site.
 
+## Background playback (`bgplay.js`)
+Strudel 1.3.0's scheduler (core `Cyclist` + `zyklus` clock) ticks from a main-thread `setInterval` every 100 ms and schedules a fixed
+0.2 s ahead of `AudioContext.currentTime` (interval 0.1 + overlap 0.1, 0.05 s per callback). A tick later than that window drops its
+query ("skip query: too late") while the cycle count advances, so a hidden or throttled tab played with holes and a stalled page jumped
+ahead. Measured with `node tests/site/background.mjs --baseline` (Strudel's clock, `?bgclock=off`): 8 s hidden with throttled timers and
+CPU x4 gave 127 skipped queries and 25 dropped haps; a 2.5 s main-thread stall gave 47 skipped queries.
+- The clock: `bgplay.js` replaces the scheduler's `clock` instance property at runtime (Strudel's code is unmodified) with the same
+  per-tick work (same Cyclist fields, so seek, loop and capture keep working), ticked from a dedicated Web Worker timer (worker timers
+  are not throttled like main-thread timers) and always against `AudioContext.currentTime`.
+- Adaptive lookahead: 0.2 s in the foreground (Strudel's own), at least 1.0 s while hidden, raised after late ticks (1.5 x the gap),
+  bounded at 2.0 s, and decaying back once the page is visible and ticks are on time for 5 s. Cost: haps already scheduled cannot be
+  taken back, so while the lookahead is raised a live edit or a pad quantise is heard up to that much later (at most 2 s, only right
+  after a stall or while hidden; 0.2 s in normal foreground use).
+- No catch-up, no fast-forward: if the audio clock still runs past the window (a frozen page, a stall longer than the lookahead), the
+  clock re-anchors the same cycle at the current audio time and records a pause. A suspended or interrupted context stops the audio
+  clock, so the cycle position freezes and continues from the same cycle on resume.
+- Pause tracking: `visibilitychange`, `pagehide` / `pageshow`, `freeze` / `resume`, `blur` / `focus` and the AudioContext `statechange`
+  feed a segment timeline (`running`, `hidden-running`, `paused`, `interrupted`, each with the cycle and audio-clock time where it began).
+  Coming back after a pause of 1 s or more shows "Resumed at cycle N, paused m:ss".
+- Policy (`?` dialog > Background playback, or the audio dot's sheet): "Continue in background if audio is running; pause cleanly if the
+  OS suspends it" (default) or "Pause when the app is hidden; resume on return" (suspends the context while hidden).
+- Keep alive, legitimately: a Screen Wake Lock while playing in the foreground (setting "Keep the screen on while playing", default on,
+  re-acquired on return) and Media Session metadata with play / pause / stop handlers (lock-screen and notification controls where the
+  browser shows them). No silent-audio loop or other keep-alive hack is used.
+- Play-time clamp: counts played time only (audio-clock time while the context runs), not wall time; the transport readout shows
+  "N left · played m:ss · paused m:ss".
+- Background citizen: no drawing while hidden (stage scope, lanes, meter, inline `_scope` / `_pianoroll` widgets, graph playhead), the
+  #56 tracker does not poll while hidden, the history editor poll pauses, and the pending history autosave is flushed on `pagehide` and
+  when the page is hidden. Record takes mark gaps (docs/CAPTURE.md).
+- Diagnostics: tap the audio dot: clock kind, context state, lookahead in use, ticks and late ticks, max tick gap, underruns
+  (re-anchors), played / paused time, the segment timeline and the policy.
+- API: `strudelCraft.bg = { stats(), segments(), gapsBetween(a, b), events(), setPolicy('continue' | 'pause'), setWake(bool),
+  openDiagnostics(), played, paused, trace }` (`trace = true` records `[cycle, target time]` of every scheduled hap, for tests).
+- Verified in headless Chromium (`node tests/site/background.mjs`, 20 checks): hidden plus throttled main-thread timers plus CPU x4 with
+  no hole, every 1/8 cycle scheduled once and spaced exactly 0.25 s; a modelled freeze (freeze event, 3 s with no main thread, resume
+  event) and a 2.5 s stall resume at the same cycle with no burst; a suspended context freezes the cycle; the pause policy; the clamp;
+  no drawing while hidden; Media Session state; the diagnostics sheet. Not verified: real Android Chrome (screen lock, app switch,
+  renderer suspension, whether the media notification appears for Web Audio-only output), real tab hiding (headless never hides a tab,
+  so hidden and its timer throttling are emulated), and the CDP freeze itself, which has no effect on a page playing audio in headless
+  Chromium. Wake Lock is refused in headless (no permission); the code path is exercised, the lock itself is not.
+
 ## Install on Android
 Strudel Craft is an installable app (PWA, #73). In Chrome on Android open https://glyphcore.github.io/Strudel-craft/, then tap
 **Install app** (in the `?` dialog, the `...` overflow menu or Ctrl+K > App); Chrome's own menu > *Install app* works too. After you
@@ -99,6 +140,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     STRUDEL_MODULES=... node tests/vocals/formant_helper.mjs  # word().formant(true) on a synthetic bank (#57)
     node tests/site/record.mjs         # Record panel + recipes at 360px: record, download, clean-profile Remake hash match, tamper refused (#72)
     node tests/site/audio.mjs          # sound + visuals after Play at 360px DPR 3 touch: fresh profile and stale service worker (master peak, scope pixels, widgets, Stack typed program)
+    node tests/site/background.mjs     # background playback: hidden + throttled timers + CPU x4, freeze, stall, suspend, policy, clamp, no drawing while hidden (--baseline measures Strudel's own clock)
     node tests/site/standalone.mjs     # installed app (standalone, SW in control): sound peak, scope pixels, Syntax examples; upgrade from older builds; Range pass-through; Syntax error state + Retry
     node tests/site/pwa.mjs            # installable PWA at /Strudel-craft/: installability errors (CDP), icons, precache, offline reload, offline bank toast, update toast, standalone (#73)
 

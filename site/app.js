@@ -151,7 +151,8 @@ function loadPreludes() { return Promise.all(PRELUDES.map((src) => new Promise((
 const Engine = {
   ready: null, repl: null, samplesLoaded: false, mapsLoaded: new Set(), state: {}, selfCheck: { engine: 'idle', samples: 'idle' },
   load() {
-    if (!this.ready) this.ready = new Promise((res, rej) => {
+    /* #59: the deferred modules (hooks, atoms, visuals, background playback) listen for strudel:ready, so they load first (index.html) */
+    if (!this.ready) this.ready = Promise.resolve(window.strudelCraft.booted).then(() => new Promise((res, rej) => {
       this.selfCheck.engine = 'loading'; const slow = setTimeout(() => { if (this.selfCheck.engine === 'loading') audioNotice('The Strudel engine is still loading from unpkg.com (slow network?). Play starts once it arrives.', 'info'); }, 15000);
       const done = (ok, e) => { clearTimeout(slow); this.selfCheck.engine = ok ? 'ok' : 'failed'; if (!ok) { this.ready = null; console.warn('engine self-check: ' + (e && e.message)); } };
       const res0 = res, rej0 = rej; res = (v) => { done(true); res0(v); }; rej = (e) => { done(false, e); rej0(e); };
@@ -161,7 +162,7 @@ const Engine = {
       };
       s.onerror = () => { this.ready = null; this.selfCheck.engine = 'failed'; rej(new Error('Could not load the Strudel engine from unpkg (offline or blocked?). Check the connection and press Play again.')); };
       document.head.append(s);
-    });
+    }));
     return this.ready;
   },
   get scheduler() { return this.repl && this.repl.scheduler; },
@@ -277,11 +278,12 @@ const Viz = {
   fit(c) { const dpr = Math.min(2, window.devicePixelRatio || 1); const w = Math.round(c.clientWidth * dpr), h = Math.round(c.clientHeight * dpr); if (c.width !== w || c.height !== h) { c.width = w; c.height = h; } return dpr; },
   init() {
     this.viz = $('#viz'); this.lanes = $('#lanes'); this.meter = $('#meter'); this.cycleOut = $('#cycleOut'); this.cpsOut = $('#cpsOut'); this.peakOut = $('#peakOut');
-    this.readColors();
     new ResizeObserver(() => this.drawAll(performance.now())).observe(this.viz);
     window.__viz = { frames: this.frames, cost: this.cost, get interval() { return reducedMotion.matches ? 100 : 0; } };
-    this.drawAll(performance.now());
+    this.drawSoon();
   },
+  /* #59: one draw in the next frame instead of a forced layout now (boot, view switches): reading canvas sizes inside the frame reuses its layout */
+  drawSoon() { if (this.soon) return; this.soon = requestAnimationFrame(() => { this.soon = 0; this.drawAll(performance.now()); }); },
   start() { if (this.running) return; this.running = true; this.last = 0; this.raf = requestAnimationFrame((t) => this.tick(t)); },
   stopSoon() { this.stopAt = performance.now() + 900; },
   tick(t) {
@@ -294,7 +296,7 @@ const Viz = {
     if (!S.playing && this.stopAt && t > this.stopAt) { this.running = false; this.stopAt = 0; this.drawAll(t); return; }
     this.raf = requestAnimationFrame((tt) => this.tick(tt));
   },
-  drawAll(t) { this.drawViz(); this.drawLanes(); this.drawMeter(); },
+  drawAll(t) { if (!this.colors.sig) this.readColors(); this.drawViz(); this.drawLanes(); this.drawMeter(); },
   drawViz() {
     const c = this.viz, dpr = this.fit(c), g = c.getContext('2d'), W = c.width, H = c.height, C = this.colors;
     g.clearRect(0, 0, W, H);
@@ -676,8 +678,9 @@ let performLoad = null; function loadPerform() { if (!performLoad) performLoad =
 window.addEventListener('strudel:ready', () => loadPerform());
 let graphLoad = null; function loadGraph() { if (!graphLoad) graphLoad = import('./graph.js').catch((e) => { graphLoad = null; say('Graph view failed to load: ' + e.message, true); }); return graphLoad; }
 /* mod RANGE table for wire()/taps (mirror of the CLI's lib/mod.mjs): ranges + canonical param names */
-const modRanges = packsReady.then((P) => P.paramShapes()).then((p) => (p && p.ranges ? { ranges: p.ranges, canon: p.canon || {} } : null)).catch(() => null);
-function applyRanges() { const h = window.strudelCraft.hooks; if (!h) return false; return modRanges.then((m) => { if (m && !h.ranges) { h.ranges = m.ranges; h.canon = (p) => m.canon[p] || p; } return true; }); }
+let modRangesP = null; /* read on first use (hooks runtime present), not with the shell (#59) */
+const modRanges = () => modRangesP || (modRangesP = packsReady.then((P) => P.paramShapes()).then((p) => (p && p.ranges ? { ranges: p.ranges, canon: p.canon || {} } : null)).catch(() => null));
+function applyRanges() { const h = window.strudelCraft.hooks; if (!h) return false; return modRanges().then((m) => { if (m && !h.ranges) { h.ranges = m.ranges; h.canon = (p) => m.canon[p] || p; } return true; }); }
 window.addEventListener('strudel:ready', () => { if (!applyRanges()) setTimeout(applyRanges, 200); });
 function setView(v, { push = true } = {}) {
   if (!VIEWS.includes(v)) v = 'rack';
@@ -688,12 +691,12 @@ function setView(v, { push = true } = {}) {
   if (v === 'syntax') loadSyntax();
   if (v === 'graph') loadGraph();
   if (push) history.replaceState(null, '', v === 'rack' && cur() ? '#r/' + cur().id : '#' + v);
-  syncTransport(); Viz.drawAll(performance.now()); onViewChanged(); if (EDIT_VIEWS.includes(v)) liveCode(v);
+  syncTransport(); Viz.drawSoon(); onViewChanged(); if (EDIT_VIEWS.includes(v)) liveCode(v);
 }
 function route() {
   const h = decodeURIComponent(location.hash.slice(1));
   if (VIEWS.includes(h)) return setView(h, { push: false });
-  if (h.startsWith('code/') && window.strudelCraft.copycode) { setView('rack', { push: false }); window.strudelCraft.copycode.loadHash('#' + h); return; } /* shared code link (copycode.js) */
+  if (h.startsWith('code/')) { setView('rack', { push: false }); Promise.resolve(window.strudelCraft.booted).then(() => window.strudelCraft.copycode && window.strudelCraft.copycode.loadHash('#' + h)); return; } /* shared code link (copycode.js, loaded after the shell: #59) */
   const id = h.startsWith('r/') ? h.slice(2) : h;
   const i = S.filtered.findIndex((r) => r.id === id);
   setView('rack', { push: false }); if (i >= 0) select(i, { audition: false });
@@ -816,11 +819,12 @@ async function boot() {
     buildFilters(); renderList(); renderStack(); route();
     say(S.recipes.length ? `${S.recipes.length} recipes loaded. Press Play or Space.` : 'No recipes: no content pack provides any. Type a program in the Stack view, or add a pack.');
   } catch (e) { say('Failed to load recipes: ' + e.message, true); $('#nowTitle').textContent = 'Offline'; }
+  window.dispatchEvent(new Event('sc:shell')); /* #59: first frame with recipes is ready; index.html now loads the rest of the instrument */
   window.strudelCraft.recipes = { async reload() { S.cat = await loadJSON('catalog'); S.labelsById = Object.fromEntries(S.cat.labels.map((l) => [l.id, l])); S.recipes = S.cat.recipes; buildFilters(); renderList(); renderStack(); } };
   window.strudelCraft.packsSheet = { open: openPacks };
   packsReady.then((P) => P.ready.then(() => { if (P.proposals().some((x) => x.state === 'new')) window.strudelCraft.ui.toast('A link proposes a pack. Review it', { sticky: true, onClick: () => openPacks() }); }));
 
-  fetch('build.json', { cache: 'no-store' }).then((r) => r.json()).then((b) => { const e = $('#buildBadge'); if (e) { e.textContent = b.sha === 'dev' ? 'dev' : b.sha + (b.date ? ' ' + b.date : ''); e.title = 'Build ' + b.sha + (b.date ? ', ' + b.date : ''); } }).catch(() => {});
+  Promise.resolve(window.strudelCraft.shellPainted).then(() => fetch('build.json', { cache: 'no-store' })).then((r) => r.json()).then((b) => { const e = $('#buildBadge'); if (e) { e.textContent = b.sha === 'dev' ? 'dev' : b.sha + (b.date ? ' ' + b.date : ''); e.title = 'Build ' + b.sha + (b.date ? ', ' + b.date : ''); } }).catch(() => {});
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     /* a new build is applied at once while idle (nothing playing, no editor focused): the waiting worker takes over and the page reloads, so an
        installed app never keeps running an old shell next to new files. While playing or typing, the toast lets the user pick the moment. */

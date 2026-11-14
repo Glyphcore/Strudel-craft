@@ -195,7 +195,7 @@ export function createPacks(opts = {}) {
         let data; try { data = JSON.parse(new TextDecoder().decode(bytes)); } catch (e) { throw Object.assign(new Error('entry file is not JSON'), { code: 'E_PACK_SCHEMA' }); }
         const bad = data && typeof data === 'object' ? ad.check(data) : 'entry file must be an object';
         if (bad) throw Object.assign(new Error(bad), { code: 'E_PACK_SCHEMA' });
-        ing.data = ad.prepare ? ad.prepare(data) : data; dirty = true;
+        ing.data = ad.prepare ? await ad.prepare(data) : data; dirty = true;
         if (ad.apply) { const d = await ad.apply(ing, ing.data, ctxFor(pack, ing)); if (typeof d === 'function') ing.dispose = d; }
         if (ing.code && ad.sandbox && !gate(pack, ing)) { const d = await ad.sandbox(ing, ing.data, sandboxCtx(pack, ing, ing.data)); if (typeof d === 'function') ing.dispose = d; setState(ing, 'ready'); } // the module itself starts on first use, never here
         else if (ing.code) { ing.state = 'blocked'; ing.reason = { code: 'E_PACK_CODE_GRANT', message: ing.blockedReason }; err('E_PACK_CODE_GRANT', `${ingQ(pack, ing)}: ${ing.blockedReason} (data part loaded)`, { id: pack.id }); setState(ing, 'blocked', ing.reason); }
@@ -426,6 +426,7 @@ export function createPacks(opts = {}) {
     for (const L of layers) { const inL = new Set(); for (const e of L.packs) { if (inL.has(e.id) || first.has(e.id)) { inL.add(e.id); continue; } inL.add(e.id); first.add(e.id); todo.push([e, L.name]); } }
     dirty = true; await Promise.all(todo.map(([e, l]) => loadPack(e, l))); indexedOk();
     for (const p of new URLSearchParams(search || '').getAll('pack')) proposalList.push({ source: p, mirrors: [], state: 'new', id: null }); // a link only proposes; nothing is fetched until peek()
+    if (opts.eagerAfter) await opts.eagerAfter; // site: eager entries are fetched after the first frame (idle time, section 9.4; #59)
     await applyEager(); emit('report', {});
   }
   let indexedOk; const indexed = new Promise((ok) => { indexedOk = ok; });
@@ -455,4 +456,6 @@ export function createPacks(opts = {}) {
   function bankOf(n) { n = String(n); return allIngs().find((i) => i.kind === 'vox-bank' && i.pack.state === 'ready' && (ingQ(i.pack, i) === n || i.pack.id === n || i.pack.id.split('/')[1] === n || i.pack.id.split('/')[1].replace(/^vox-/, '') === n)) || null; }
 }
 
-if (typeof window !== 'undefined' && !window.__scPacksNoAuto) { const sc = (globalThis.strudelCraft = globalThis.strudelCraft || {}); sc.packs = createPacks(); }
+/* #59: the shell's first frame (index.html sc.shellPainted: app.js drew the recipes) goes out before the other eager entries are fetched */
+function shellPainted() { return (globalThis.strudelCraft && globalThis.strudelCraft.shellPainted) || new Promise((ok) => { window.addEventListener('sc:shell', () => setTimeout(ok, 50), { once: true }); setTimeout(ok, 3000); }); }
+if (typeof window !== 'undefined' && !window.__scPacksNoAuto) { const sc = (globalThis.strudelCraft = globalThis.strudelCraft || {}); sc.packs = createPacks({ eagerAfter: shellPainted() }); }

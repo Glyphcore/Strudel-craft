@@ -280,7 +280,9 @@ Array order is load order and tie-break order. Three lock layers exist at run ti
 
 - Boot: read the lock layers, fetch and verify each manifest (small), build the ingredient index. The manifest alone is enough to list a
   pack's contents; no entry file is needed for that.
-- `eager`: entry file fetched right after boot (idle time), for content the first screen or the first keystroke needs. Limits for packs
+- `eager`: entry file fetched right after boot (idle time), for content the first screen or the first keystroke needs. On the site, idle
+  time starts once the shell's first frame with recipes is on screen (#59); `packs.ready` resolves after that. A view that asks for an
+  ingredient sooner loads that one ingredient on demand. Limits for packs
   outside the shipped lock: 256 kB per eager ingredient, 1 MB per pack; above that the ingredient is treated as `lazy` (`W_PACK_EAGER`).
 - `lazy` (default): fetched on first use of its kind adapter: opening the view that shows it, the first completion query for its category,
   the first Play of a program that references it, or `packs.load(id)`.

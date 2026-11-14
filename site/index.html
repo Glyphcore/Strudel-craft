@@ -19,34 +19,39 @@
 <link rel="modulepreload" href="engine/packs-core.js">
 <link rel="preload" href="packs.lock.json" as="fetch" crossorigin>
 <link rel="preload" href="craftpack.json" as="fetch" crossorigin>
+<link rel="preload" href="app.js" as="script">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b0d10'/%3E%3Cpath d='M4 16h5l3-9 4 18 4-14 3 5h5' fill='none' stroke='%23ff6a1a' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E">
 <script>try{var t=localStorage.getItem('sc.theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<script>/* #59: resolves once the first frame with recipes is on screen (app.js fires sc:shell, then its largest-contentful-paint entry), max 4 s */
+(function(){var sc=window.strudelCraft=window.strudelCraft||{};sc.shellPainted=new Promise(function(ok){var go=function(){setTimeout(ok,0)};addEventListener('sc:shell',function(){var t=performance.now();try{new PerformanceObserver(function(l,o){if(l.getEntries().some(function(e){return e.startTime>=t})){o.disconnect();go()}}).observe({type:'largest-contentful-paint',buffered:true})}catch(e){}setTimeout(go,600)},{once:true});setTimeout(ok,4000)})})();</script>
 <script src="ui.js" defer></script>
 <script src="app.js" defer></script>
 <script type="module" src="packs.js"></script>
-<script type="module" src="engine/index.js"></script>
-<script type="module" src="atoms-site.js"></script>
-<script type="module" src="visuals.js"></script>
-<script type="module" src="intellisense.js"></script>
-<script type="module" src="hooks-intellisense.js"></script>
-<script type="module" src="lanes-intellisense.js"></script>
-<script type="module" src="word-intellisense.js"></script>
-<script type="module" src="history.js"></script>
-<script type="module" src="bgplay.js"></script>
-<script type="module" src="tracker.js"></script>
 <link rel="stylesheet" href="workspace.css">
 <script type="module" src="palette.js"></script>
-<link rel="stylesheet" href="copycode.css">
-<script type="module" src="copycode.js"></script>
-<script type="module" src="transport-range.js"></script>
-<link rel="stylesheet" href="capture.css">
-<script type="module" src="capture.js"></script>
-<script type="module" src="workspace.js"></script>
-<script type="module" src="vox-banks.js"></script>
-<script type="module" src="refs.js"></script>
 <link rel="stylesheet" href="pwa.css">
 <script type="module" src="pwa.js"></script>
+<script type="module">
+/* #59 shell first: only what the first paint needs loads with the page (app.js, packs.js for the catalog, the palette, PWA;
+   the transport range markup is static HTML, wired by transport-range.js).
+   The rest of the instrument loads right after the first frame with recipes is on screen (sc.shellPainted), or on the first pointer or key
+   input, whichever comes first: fetched in parallel, evaluated in this order (the order they had as eager module scripts).
+   Engine.load() (first Play, idle compiles) awaits window.strudelCraft.booted, so the first Play still needs one tap. */
+const sc = (window.strudelCraft = window.strudelCraft || {});
+const LATER = ['engine/index.js', 'atoms-site.js', 'visuals.js', 'intellisense.js', 'hooks-intellisense.js', 'lanes-intellisense.js', 'word-intellisense.js',
+  'history.js', 'bgplay.js', 'tracker.js', 'copycode.js', 'transport-range.js', 'capture.js', 'workspace.js', 'vox-banks.js', 'refs.js'];
+const CSS = ['copycode.css', 'capture.css'];
+let go; const start = new Promise((ok) => { go = ok; });
+sc.booted = start.then(async () => {
+  const css = CSS.map((h) => new Promise((ok) => document.head.append(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: h, onload: ok, onerror: ok }))));
+  for (const u of LATER) document.head.append(Object.assign(document.createElement('link'), { rel: 'modulepreload', href: u }));
+  await Promise.all(css); /* styled before their widgets appear */
+  for (const u of LATER) { try { await import('./' + u); } catch (e) { console.error('[boot] ' + u + ': ' + e.message); } await new Promise((ok) => setTimeout(ok, 0)); /* one task per module: no long task */ }
+});
+sc.shellPainted.then(go);
+for (const t of ['pointerdown', 'keydown']) addEventListener(t, () => go(), { once: true, capture: true });
+</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to instrument</a>
@@ -98,6 +103,18 @@
       </div>
       <canvas id="viz" class="viz" aria-label="Scope and spectrum of the master output" role="img"></canvas>
       <canvas id="lanes" class="lanes" aria-label="Pattern lanes for the current cycle with playhead" role="img"></canvas>
+      <div class="trange" id="trange"><label class="sr" for="trPos">Position</label>
+        <input id="trPos" class="tr-pos" type="range" min="0" max="16" step="0.01" value="0" aria-valuetext="cycle 0">
+        <div class="tr-row">
+          <button type="button" class="ghost tr-out" id="trOut" title="Go to a cycle or m:ss"><span id="trPosTxt">c 0 / 16 · 0:00 / 0:32</span></button>
+          <button type="button" class="ghost tr-unit" id="trUnit" title="Loop points in cycles, bars or m:ss">cycle</button>
+          <label class="tr-num"><span>Start</span><input id="trStart" type="text" inputmode="decimal" autocomplete="off" spellcheck="false"></label>
+          <label class="tr-num"><span>End</span><input id="trEnd" type="text" inputmode="decimal" autocomplete="off" spellcheck="false"></label>
+          <button type="button" class="ghost tr-loop" id="trLoop" aria-pressed="false" title="Loop between start and end">Loop</button>
+          <span class="tr-left" id="trLeft" title="Remaining play time before the clamp">20:00 left</span>
+          <button type="button" class="ghost tr-more" id="trMore" hidden title="Extend the clamp by 5 minutes for this run">+5 min</button>
+          <button type="button" class="icon tr-set" id="trSet" aria-label="Play-time limit settings" title="Play-time limit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 13V9M10 3h4"/></svg></button>
+        </div></div>
     </div>
 
     <div class="view view-rack" data-for="rack">

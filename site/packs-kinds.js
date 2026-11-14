@@ -37,7 +37,17 @@ export function sanitize(html) {
   };
   walk(t.content); return t.innerHTML;
 }
-const cleanDocs = (d) => ({ ...d, sections: (d.sections || []).map((sec) => ({ ...sec, blocks: (sec.blocks || []).map((b) => b.type === 'html' ? { ...b, html: sanitize(b.html) } : b.rows ? { ...b, rows: b.rows.map((r) => r.map((c) => sanitize(c))) } : b) })) });
+// #59: same result as one pass, but it yields to the event loop every ~8 ms, so sanitising a large docs pack is never one long task
+const cleanDocs = async (d) => {
+  let t = performance.now(); const pace = async () => { if (performance.now() - t > 8) { await new Promise((ok) => setTimeout(ok, 0)); t = performance.now(); } };
+  const sections = [];
+  for (const sec of d.sections || []) {
+    const blocks = [];
+    for (const b of sec.blocks || []) { blocks.push(b.type === 'html' ? { ...b, html: sanitize(b.html) } : b.rows ? { ...b, rows: b.rows.map((r) => r.map((c) => sanitize(c))) } : b); await pace(); }
+    sections.push({ ...sec, blocks });
+  }
+  return { ...d, sections };
+};
 
 // ---------------------------------------------------------------- adapters
 const noop = () => {};
@@ -103,7 +113,7 @@ export const KINDS = {
   'docs': { formats: ['docs@1'], code: 'never',
     check: (d) => (Array.isArray(d.sections) ? null : 'sections must be an array'),
     items: () => [],
-    prepare: cleanDocs, // sanitised once, before the data is stored
+    prepare: cleanDocs, // sanitised once, before the data is stored (async: packs.js awaits it)
     view: (entries) => (entries[0] ? entries[0].data : { sections: [] }) },
   'sounds': { formats: ['sounds@1'], code: 'never',
     check: (d) => (isObj(d) ? null : 'a sound map must be an object'),

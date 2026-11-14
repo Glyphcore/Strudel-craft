@@ -27,9 +27,9 @@ const fromU = (v) => parsePos(v);
 let el = {};
 
 function build() {
-  const host = $('.stage'); if (!host || $('#trange')) return;
-  const w = document.createElement('div'); w.className = 'trange'; w.id = 'trange';
-  w.innerHTML = `<label class="sr" for="trPos">Position</label>
+  /* #59: the markup ships in index.html so the stage has its final height at first paint (no layout shift); built here only if missing */
+  const host = $('.stage'); let w = $('#trange'); if (!host || (w && w.dataset.bound)) return;
+  if (!w) { w = document.createElement('div'); w.className = 'trange'; w.id = 'trange'; w.innerHTML = `<label class="sr" for="trPos">Position</label>
     <input id="trPos" class="tr-pos" type="range" min="0" max="16" step="0.01" value="0" aria-valuetext="cycle 0">
     <div class="tr-row">
       <button type="button" class="ghost tr-out" id="trOut" title="Go to a cycle or m:ss"><span class="tr-read" id="trPosTxt">c <span class="num" id="trC" style="--w:6ch">0.0</span><span class="tr-sep">/</span><span class="num" id="trCE" style="--w:6ch">16.0</span><span class="tr-sep">·</span><span class="num" id="trT" style="--w:7ch">00:00</span><span class="tr-sep">/</span><span class="num" id="trTE" style="--w:7ch">00:32</span></span></button>
@@ -40,8 +40,8 @@ function build() {
       <span class="tr-left" id="trLeft" title="Remaining play time before the clamp"><span class="num" id="trL" style="--w:7ch">20:00</span> left<span class="tr-pp" id="trPP"> · played <span class="num" id="trPl" style="--w:7ch">00:00</span><span class="tr-pz" id="trPz"> · paused <span class="num" id="trPa" style="--w:7ch">00:00</span></span></span></span>
       <button type="button" class="ghost tr-more" id="trMore" hidden title="Extend the clamp by 5 minutes for this run">+5 min</button>
       <button type="button" class="icon tr-set" id="trSet" aria-label="Play-time limit settings" title="Play-time limit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 13V9M10 3h4"/></svg></button>
-    </div>`;
-  host.append(w);
+    </div>`; host.append(w); }
+  w.dataset.bound = '1';
   el = { pos: $('#trPos'), out: $('#trOut'), unit: $('#trUnit'), start: $('#trStart'), end: $('#trEnd'), loop: $('#trLoop'), left: $('#trLeft'), more: $('#trMore') };
   const sync = () => { el.unit.textContent = st.unit === 'time' ? 'm:ss' : st.unit; el.start.value = u(st.start); el.end.value = u(st.end); el.loop.setAttribute('aria-pressed', String(st.loop)); el.pos.min = st.start; el.pos.max = Math.max(st.end, st.start + 1); };
   sync();

@@ -370,7 +370,13 @@ read through the loader's verified fetch path (`getVerified`, the one `packs.ver
 `allowCode` **and** a trust record exists for this pack id and **code hash** (`sha256` of manifest hash + entry hash + `[path, hash]` of every
 module, kept in `localStorage` `sc.packs.trust`), written only by the trust dialog (`packs.grant`, called from the pack sheet's modal and
 nowhere else); a new hash asks again and the dialog lists the changed module paths (`packs.codeInfo(ref).changed`); (c) the flag `sc.packs.code`
-is on (default off; `packs.setCodeEnabled(bool)`). A share link, a `?pack=` proposal, an imported recipe or a dependency never writes a grant.
+is on (default off; the pack sheet's **Code** tab, `packs.setCodeEnabled(bool)`). A share link, a `?pack=` proposal, an imported recipe or a dependency never writes a grant.
+The site writes a grant or switches the flag on only when the site modal is confirmed by a trusted click or key press inside it (a scripted `click()` or
+`requestSubmit()` is refused); switching off and revoking need no gesture. Grants are history entries (the user lock and `sc.packs.trust` are `sc.*` keys),
+but a history restore can only lower consent: the flag stays off unless it is on now, trust records survive only if present now with the same hash, and
+`allowCode` in the restored lock is limited to what is granted now. The Code tab lists every grant (`packs.trusts()`, including records whose pack is not
+loaded) with pack id and full code hash, and marks grants not made through the dialog in this tab "not confirmed here" (the engine cannot tell who wrote
+a record: see residual risk 6).
 Nothing starts on page load or on pack add: the frame starts on the first call (the first completion request) and not before.
 
 **Isolation.** One `<iframe sandbox="allow-scripts">` per ingredient (never `allow-same-origin`, `allow-top-navigation`, `allow-popups`,

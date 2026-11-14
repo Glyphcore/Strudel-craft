@@ -68,13 +68,26 @@ async function commit(label = 'edit', opts = {}) {
 }
 async function log() { await load(); return [...commits.values()].sort((a, b) => b.time - a.time).map(({ tree, ...c }) => ({ ...c, head: c.id === head })); }
 async function get(id) { await load(); return stateOf(id); }
+/* code consent (docs/PACK_SPEC.md 10.3): a restore may remove a code grant or switch code ingredients off, never add or switch on.
+   packs.code: kept off unless it is on now; packs.trust: only records present now with the same hash survive; packs.lock: allowCode limited to what is granted now. */
+function consentSafe(k, v, cur) {
+  const J = (x) => { try { return JSON.parse(x); } catch (e) { return null; } };
+  if (k === 'packs.code') return J(v) === true && J(cur) !== true ? (cur == null ? undefined : cur) : v;
+  if (k === 'packs.trust') { const a = J(v) || {}, b = J(cur) || {}, o = {};
+    for (const [p, m] of Object.entries(a)) for (const [i, r] of Object.entries(m || {})) if (b[p] && b[p][i] && r && b[p][i].hash === r.hash) (o[p] ||= {})[i] = b[p][i];
+    return JSON.stringify(o); }
+  if (k === 'packs.lock') { const a = J(v), b = J(cur); if (!a || !Array.isArray(a.packs)) return v;
+    for (const e of a.packs) { const now = b && Array.isArray(b.packs) ? b.packs.find((x) => x && x.id === e.id && x.manifest === e.manifest) : null; e.allowCode = (e.allowCode || []).filter((x) => now && (now.allowCode || []).includes(x)); }
+    return JSON.stringify(a); }
+  return v;
+}
 async function checkout(id, opts = {}) {
   return serial(async () => {
     await load(); const s = await stateOf(id); if (!s) throw new Error('no such state ' + id);
     suppress = true;
     try {
       const cur = snapshot(); for (const k of Object.keys(cur)) if (!k.startsWith('ui:') && !(k in s)) nativeRemove.call(localStorage, 'sc.' + k);
-      for (const [k, v] of Object.entries(s)) if (v != null && !k.startsWith('ui:')) nativeSet.call(localStorage, 'sc.' + k, v);
+      for (const [k, v0] of Object.entries(s)) { if (v0 == null || k.startsWith('ui:')) continue; const v = consentSafe(k, v0, cur[k]); if (v === undefined) nativeRemove.call(localStorage, 'sc.' + k); else nativeSet.call(localStorage, 'sc.' + k, v); }
       try { window.strudelCraft.app && window.strudelCraft.app.reload(); } catch (e) { console.warn('history: app reload failed', e); window.strudelCraft.ui && window.strudelCraft.ui.toast('History restore could not refresh the page state', { kind: 'error' }); }
     } finally { setTimeout(() => { suppress = false; }, 50); }
     if (!opts.fromUndo) redoStack = []; head = id; await saveMeta(); emit('checkout', { id }); return id;
@@ -157,7 +170,7 @@ function schedule(label) { pending = label; clearTimeout(autoT); autoT = setTime
 async function flush() { if (pending) { clearTimeout(autoT); const l = pending; pending = null; await commit(l, { auto: true }); } return busy; }
 /* editor keys commit from the shared settle scheduler (app.js settleRun, CONTROL_BINDING section 4) once it exists */
 const SETTLED = new Set(['sc.edits', 'sc.stackEdit']); const viaSettle = (k) => SETTLED.has(String(k)) && !!(window.strudelCraft && window.strudelCraft.settle);
-Storage.prototype.setItem = function (k, v) { nativeSet.call(this, k, v); if (this === localStorage && !suppress && OWN(String(k)) && !viaSettle(k)) schedule(({ edits: 'code edit', stack: 'stack change', stackEdit: 'stack code edit', tempo: 'tempo', master: 'master level', live: 'live toggle', theme: 'theme', 'intellisense.user': 'learned names' })[String(k).slice(3)] || 'edit ' + String(k).slice(3)); };
+Storage.prototype.setItem = function (k, v) { nativeSet.call(this, k, v); if (this === localStorage && !suppress && OWN(String(k)) && !viaSettle(k)) schedule(({ edits: 'code edit', stack: 'stack change', stackEdit: 'stack code edit', tempo: 'tempo', master: 'master level', live: 'live toggle', theme: 'theme', 'intellisense.user': 'learned names', 'packs.lock': 'pack lock', 'packs.trust': 'code trust', 'packs.code': 'code ingredients switch' })[String(k).slice(3)] || 'edit ' + String(k).slice(3)); };
 Storage.prototype.removeItem = function (k) { nativeRemove.call(this, k); if (this === localStorage && !suppress && OWN(String(k))) schedule('remove ' + String(k).slice(3)); };
 /* any editor content change, whatever the source (typing, preset load, paste, tab switch, swap, restore) */
 let lastUi = '';

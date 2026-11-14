@@ -120,6 +120,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/site/smoke.mjs          # Playwright Chromium: keyboard, views, every recipe plays, frame time, screenshots
     node tests/site/smoke.mjs --quick  # first 4 recipes only
     node tests/site/packs_sandbox.mjs  # sandbox host: escape attempts, protocol abuse, timeouts, consent (#71)
+    node tests/site/packs_code_ui.mjs  # Code tab, gesture-only grants, trust list, links / history never grant, sandboxed control renderer (#71)
     node tests/site/packs.mjs          # pack loader: parity, empty lock, vectors, integrity, shadowing, lazy, offline, security (#67)
     python3 tools/packs/shim.py --check  # the shim pack pins match site/data (rerun without --check after editing data/)
     node tests/site/lighthouse.mjs     # needs `npm i -g lighthouse@12`; mobile perf / a11y scores
@@ -161,7 +162,8 @@ a stale pin is `E_PACK_HASH` and that content is missing (fail closed). `shim.py
 - Lock layers: shipped (`packs.lock.json`), user (`localStorage` `sc.packs.lock`), session (memory). Precedence, shadowing and the report come from the shared
   `engine/packs-core.js`; `packs.prefer(id)` writes priority 10. A qualified id (`author/pack:item`) always resolves to its own pack.
 - Data API (for the pack sheet): `ready`, `list()`, `credits()`, `items(kind)`, `resolve(kind, ref)`, `report()`, `describe(ingredient)`, `load(id)`, `loadAll()`,
-  `add/remove/prefer/grant/offline`, `propose/peek/accept/proposals` (`?pack=<source>` only proposes: the manifest is fetched after `peek`, nothing else until `accept`,
+  `add/remove/prefer/grant/revoke/offline`, `codeEnabled()`, `setCodeEnabled(bool)`, `trusts()` (every code grant this browser holds: `{pack, ingredient, qualified, hash, at,
+  modules, loaded, current, allowCode, layer, state, record}`, read-only; `revoke('author/pack:id')` also drops a record whose pack is not loaded), `propose/peek/accept/proposals` (`?pack=<source>` only proposes: the manifest is fetched after `peek`, nothing else until `accept`,
   and accepting never grants code), `on('state'|'report'|'lock'|'offline', fn)`, `registerKind(def)`. Pull views used by the site: `catalog()`, `controlTypes()`,
   `syntax()`, `doc(name)`, `paramShapes()`, `editors()`, `completions()`, `words()`.
 - Kinds with an adapter: `recipes`, `control-types` (`controls.registerType`), `intellisense` (`intellisense.register`), `param-shapes`, `param-editors`, `syntax`, `docs`
@@ -172,8 +174,9 @@ a stale pin is `E_PACK_HASH` and that content is missing (fail closed). `shim.py
 - Code (#71, `packs-sandbox.js`, loaded lazily): `code: true` ingredients run only in the sandbox host (a Worker in an `<iframe sandbox="allow-scripts">` with a no-network CSP,
   data-only `MessageChannel`, timeouts, message caps, at most 4 frames; PACK_SPEC 10.4 has the threat model and the residual risks) and only when **all** hold: hash-verified,
   `allowCode` plus a trust record for the exact code hash (`packs.grant`, called only by the pack sheet's trust dialog; `packs.revoke`, `packs.codeInfo(ref)` for the dialog data
-  and the changed module paths), and the flag is on. **Flag (default off):** `localStorage` `sc.packs.code` = `true`, or `strudelCraft.packs.setCodeEnabled(true)` (there is no
-  settings toggle yet; a ui-designer task). Built kind: `intellisense-provider` (module calls `craft.handle('complete', ({before, after, line, pos}) => [{label, category, detail,
+  and the changed module paths), and the flag is on. **Flag (default off):** the **Code** tab of the pack sheet (`localStorage` `sc.packs.code`, `packs.setCodeEnabled`). A history restore
+  never raises consent: `history.checkout` keeps `sc.packs.code` off unless it is on now, keeps only trust records present now with the same hash, and limits
+  `allowCode` in the restored lock to what is granted now (grants still appear in history as `code trust` / `pack lock` commits). Built kind: `intellisense-provider` (module calls `craft.handle('complete', ({before, after, line, pos}) => [{label, category, detail,
   info, apply}])`; starts on the first completion, never on load). Other code kinds stay `blocked` (coming). Errors: `E_PACK_CODE_GRANT`, `E_PACK_CODE_TRUST`,
   `E_PACK_SANDBOX_TIMEOUT`, `E_PACK_SANDBOX_PROTOCOL`, `E_PACK_SANDBOX_LIMIT`. Main-realm code from the user tier is `E_PACK_CODE_REALM`; a module without `code: true` is
   `E_PACK_CODE_UNDECLARED`. Program text (recipes, syntax) runs only after Load/Play. Test: `node tests/site/packs_sandbox.mjs`.
@@ -183,11 +186,15 @@ a stale pin is `E_PACK_HASH` and that content is missing (fail closed). `shim.py
 - Pack sheet (`packs-ui.js`, `packs-ui.css`, loaded on first open only): command palette **Packs, licences and credits** (Ctrl+K, or the palette button on
   phones), the **Open packs** button of the empty recipe browser, the **Pack** badge in the Inspector, or the toast a `?pack=` link raises. Tabs: *Packs* (one card per
   pack: id, version, tier, state, authors, licence, licence file, credits, source, manifest hash with its verification, E_PACK_/W_PACK_ errors and warnings,
-  ingredients with state, size, load mode and the "contains code" mark), *Credits* (`packs.credits()`), *Report* (`packs.report()` errors, warnings, shadowed names).
+  ingredients with state, size, load mode and the "contains code" mark), *Code* (#71: the code-ingredient switch, `role="switch"`, default off, with what turning
+  it on allows and does not allow; the trust list: every grant from `packs.trusts()` with pack id, ingredient, the full code hash, when, its modules, whether it can run
+  (runs / stale: code changed / orphan: pack not loaded / lock-only), **Revoke** (site modal), and "confirmed here" only for grants made through the trust dialog in this
+  tab, otherwise "not confirmed here" (an earlier visit, another tab or a script: program text run in the page can write `localStorage`)), *Credits* (`packs.credits()`), *Report* (`packs.report()` errors, warnings, shadowed names).
   Every field is shown as the manifest records it; a missing one reads "not declared" (no licence is assumed). Actions confirm in the site modal and report in a
   toast: add by source (fetches the manifest only, shows it as a proposal card; **Add pack** pins its hash, never grants code), accept a `?pack=` proposal
   (**Fetch manifest** first), remove (user and session packs), prefer (shown when more than one pack is loaded), keep offline (packs not served from the deploy),
-  grant code (user packs; still not run before #71). With no user packs the sheet shows a "No packs added" empty state; with an empty lock, "No packs loaded".
+  grant code (user packs: the trust dialog). Granting and switching code on take effect only when the modal is confirmed by a trusted click or key press inside it
+  (`event.isTrusted`, `navigator.userActivation`); a scripted `click()` or `requestSubmit()` changes nothing. Switching off needs no confirmation. With no user packs the sheet shows a "No packs added" empty state; with an empty lock, "No packs loaded".
 - Recipes from a non-core pack show their pack id next to the title in the browser (`.row .pk`); core recipes have no badge. With no recipes at all the browser
   shows a "No recipes" empty state with **Open packs**. `strudelCraft.recipes.reload()` re-reads the catalog after the lock changes.
 - `packs.verify(ref, hash)` (also `verify` in `engine/packs-core.js` for node): async integrity check of a pinned reference, no UI, nothing loaded. `ref` is `author/pack[:ingredient][@github:o/r@<40 hex>[/path]]`

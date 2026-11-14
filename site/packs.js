@@ -336,7 +336,14 @@ export function createPacks(opts = {}) {
     regate(ing); return true;
   }
   function revoke(ref) {
-    const ing = findIng(ref); if (!ing) return false; const l = readUser(), e = l.packs.find((x) => x.id === ing.pack.id);
+    const ing = findIng(ref);
+    if (!ing) { // a grant whose pack is not loaded (or a record nobody made through the dialog): drop the trust record and the user-lock allowCode entry
+      const [pid, iid] = String(ref).split(':'); if (!pid || !iid) return false; let hit = false;
+      const t = lsGet(LS_TRUST, {}); if (t[pid] && t[pid][iid]) { delete t[pid][iid]; if (!Object.keys(t[pid]).length) delete t[pid]; lsSet(LS_TRUST, t); hit = true; }
+      const l = readUser(), e = l.packs.find((x) => x.id === pid); if (e && (e.allowCode || []).includes(iid)) { e.allowCode = e.allowCode.filter((x) => x !== iid); saveUser(l); hit = true; }
+      emit('report', {}); return hit;
+    }
+    const l = readUser(), e = l.packs.find((x) => x.id === ing.pack.id);
     if (e) { e.allowCode = (e.allowCode || []).filter((x) => x !== ing.id); saveUser(l); } ing.pack.entry.allowCode = (ing.pack.entry.allowCode || []).filter((x) => x !== ing.id);
     const t = lsGet(LS_TRUST, {}); if (t[ing.pack.id]) { delete t[ing.pack.id][ing.id]; lsSet(LS_TRUST, t); } regate(ing); return true;
   }
@@ -347,6 +354,18 @@ export function createPacks(opts = {}) {
     const changed = t ? ing.modules.filter((m) => was[m.path] !== m.hash).map((m) => m.path).concat(Object.keys(was).filter((k) => !ing.modules.some((m) => m.path === k))) : [];
     return { pack: p.id, ingredient: ing.id, qualified: ingQ(p, ing), authors: p.authors || [], license: p.license ?? null, manifest: p.manifest, hash: ing.codeHash, modules: ing.modules.map((m) => ({ path: m.path, hash: m.hash, bytes: m.bytes })),
       trusted: !!t && t.hash === ing.codeHash, hadTrust: !!t, changed, flag: codeEnabled(), can: CAN, cannot: CANNOT, sandboxed: !!KINDS[ing.kind].sandbox };
+  }
+  function trusts() { // every code grant this browser holds, read-only (pack sheet trust list): trust records, plus allowCode entries without one
+    const t = lsGet(LS_TRUST, {}), out = [], obj = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : {});
+    for (const [pid, m] of Object.entries(obj(t))) for (const [iid, r] of Object.entries(obj(m))) {
+      const ing = packs.get(pid)?.ingredients.get(iid) || null, hash = r && typeof r.hash === 'string' ? r.hash : null;
+      out.push({ pack: pid, ingredient: iid, qualified: pid + ':' + iid, hash, at: r && Number.isFinite(r.at) ? r.at : null, modules: Object.keys(obj(r && r.modules)), loaded: !!ing, current: !!ing && !!hash && ing.codeHash === hash,
+        allowCode: !!ing && (ing.pack.entry.allowCode || []).includes(iid), layer: ing ? ing.pack.layer : null, state: ing ? ing.state : null, record: true });
+    }
+    for (const p of packs.values()) for (const iid of p.entry.allowCode || []) if (!out.some((x) => x.pack === p.id && x.ingredient === iid)) {
+      const ing = p.ingredients.get(iid) || null; out.push({ pack: p.id, ingredient: iid, qualified: p.id + ':' + iid, hash: null, at: null, modules: [], loaded: !!ing, current: false, allowCode: true, layer: p.layer, state: ing ? ing.state : null, record: false });
+    }
+    return out;
   }
   function setCodeEnabled(on) { lsSet(LS_CODE, !!on); for (const i of allIngsAny()) regate(i); emit('report', {}); return codeEnabled(); }
   const raw = async (ref) => { await indexed; const i = findIng(ref); if (!i || ['skipped', 'failed'].includes(i.state)) return null; await loadIng(i); return i.data || null; }; // an ingredient's whole parsed file (e.g. the lanes block no kind view carries)
@@ -409,7 +428,7 @@ export function createPacks(opts = {}) {
     retry: async (kind) => { await ready; for (const i of allIngs()) if (i.kind === kind && ['failed', 'unavailable'].includes(i.state)) { i.promise = null; i.data = null; setState(i, 'listed'); } return get(kind); },
     failure: (kind) => { const i = allIngs().find((x) => x.kind === kind && ['failed', 'unavailable', 'blocked'].includes(x.state)); return i ? { ingredient: ingQ(i.pack, i), state: i.state, ...(i.reason || {}) } : null; },
     ensure: async (kind) => { await ready; await Promise.all(allIngs().filter((i) => i.kind === kind).map(loadIng)); return items(kind); },
-    add, remove, prefer, grant, revoke, codeInfo, codeEnabled, setCodeEnabled, offline, propose, accept, proposals: () => proposalList.map((p) => ({ ...p })), peek: async (source) => { const p = proposalList.find((x) => x.source === source && x.state === 'new'); if (!p) return null; proposalList.splice(proposalList.indexOf(p), 1); return propose(source); },
+    add, remove, prefer, grant, revoke, codeInfo, codeEnabled, setCodeEnabled, trusts, offline, propose, accept, proposals: () => proposalList.map((p) => ({ ...p })), peek: async (source) => { const p = proposalList.find((x) => x.source === source && x.state === 'new'); if (!p) return null; proposalList.splice(proposalList.indexOf(p), 1); return propose(source); },
     on: (type, fn) => { (listeners[type] ||= []).push(fn); return () => { listeners[type] = listeners[type].filter((f) => f !== fn); }; },
     registerKind: (def) => { KINDS[def.kind] = { code: 'never', check: () => null, items: () => [], view: () => [], ...def, formats: def.formats }; return () => { delete KINDS[def.kind]; }; },
     // vox banks (voxBank('<id>') in prelude/word.js asks here before its own table): bare pack name, pack name without `vox-`, or the qualified ingredient id

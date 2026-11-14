@@ -77,7 +77,7 @@ export function scan(code) {
   if (SCANS.has(code)) return SCANS.get(code);
   let ast; try { ast = acorn.parse(code, { ecmaVersion: 'latest', sourceType: 'module', allowAwaitOutsideFunction: true, allowReturnOutsideFunction: true }); }
   catch (e) { throw err('E_ATOM_PARSE', `cannot parse program: ${e.message}`, spanOf(code, e.pos ?? 0, (e.pos ?? 0) + 1)); }
-  const out = { decls: [], imports: [], sites: [] };
+  const out = { decls: [], imports: [], sites: [] }, spine = new Set();
   const visit = (n, path, parent, key, idx) => {
     if (n.type === 'ExpressionStatement' && n.expression.type === 'CallExpression') {
       const c = n.expression.callee;
@@ -85,12 +85,16 @@ export function scan(code) {
       if (c.type === 'MemberExpression' && !c.computed && c.object.type === 'Identifier' && c.object.name === 'atoms' && c.property.name === 'import') { out.imports.push({ node: n.expression, stmt: [n.start, n.end] }); return false; }
     }
     if (n.type === 'MemberExpression' || n.type === 'CallExpression') {
+      if (spine.has(n)) return true; // inner link of an already registered chain
       const segs = flatten(n);
       if (segs) {
         const site = { id: 'r' + b36(FNV(path)), path, from: n.start, to: n.end, node: n, segs: null, dynamic: false };
         try { site.segs = segsOf(segs); } catch { site.dynamic = true; }
-        if (parent && parent.type === 'CallExpression' && key === 'arguments') { site.callee = posKey(parent.callee); site.arg = idx; }
-        out.sites.push(site); return false;
+        if (parent && parent.type === 'CallExpression' && key === 'arguments' && !flatten(parent.callee)) { site.callee = posKey(parent.callee); site.arg = idx; }
+        out.sites.push(site);
+        // every `atoms.x` in the call arguments / computed keys of this chain is a site of its own (any depth); only the spine is skipped
+        for (let m = n; m && (m.type === 'CallExpression' || m.type === 'MemberExpression'); m = m.type === 'CallExpression' ? m.callee : m.object) spine.add(m);
+        return true;
       }
     }
     return true;

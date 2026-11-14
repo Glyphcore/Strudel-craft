@@ -233,6 +233,21 @@ else skip('CLI', 'present but `strudel atoms` is not implemented in this checkou
   box('W_ATOM_UNUSED = transitive closure of reference sites: prog_compose fixture (backbeat inside a used composition) clean; 2-level, param default, from/args, model-id chain clean; unused referrer warns both; a real unused atom still warns; catalog and imports never warn');
 }
 
+// Box: #83 reference sites include atoms.x inside call arguments (any depth, arrays, objects, plain Strudel calls)
+{
+  const run = (c) => { const r = A.check(c, {}, { strict: true }); assert.deepEqual(r.errors, []); const refs = {}; for (const x of r.refs) refs[x.atom] = (refs[x.atom] || 0) + 1; return { unused: r.warnings.filter((w) => w.code === 'W_ATOM_UNUSED').map((w) => w.message.split('"')[1]).sort(), refs }; };
+  const d = (n) => `atom("${n}", { type: "mini", body: "bd" })\n`;
+  const f = run(fx('prog.strudel.js')); // the issue's own fixture, unmodified
+  assert.ok(!f.unused.includes('backbeat')); assert.deepEqual(f.unused, []);
+  assert.deepEqual(f.refs, { kick4: 1, backbeat: 1, hats: 1 });
+  assert.deepEqual(run(d('a') + d('b') + d('c') + '$: s(atoms.a.stack(atoms.b.stack(atoms.c)))'), { unused: [], refs: { a: 1, b: 1, c: 1 } }); // nested depth
+  assert.deepEqual(run(d('a') + d('b') + d('c') + '$: s(atoms.a).x([atoms.b, { k: atoms.c }])').refs, { a: 1, b: 1, c: 1 }); // array / object arguments of a plain function
+  assert.deepEqual(run(d('a') + d('b') + '$: s(atoms.a).stack(s(atoms.b))').refs, { a: 1, b: 1 }); // plain Strudel function argument
+  assert.deepEqual(run(d('a') + d('b') + '$: s(atoms.a.stack(atoms.b))\n$: s(atoms.b)').refs, { a: 1, b: 2 }); // used both ways: two sites
+  assert.deepEqual(run(d('a') + d('b') + d('u') + '$: s(atoms.a.stack(atoms.b))'), { unused: ['u'], refs: { a: 1, b: 1 } }); // genuinely unused still warns, absent from refs
+  box('#83 prog.strudel.js: backbeat (only a .stack argument) is used, strict check passes, refs {kick4:1, backbeat:1, hats:1}; nested / array / object / plain-function arguments count; used both ways = 2; a real unused atom warns and is absent from refs');
+}
+
 // Box: no Strudel file modified or vendored anew
 {
   const root = new URL('../..', import.meta.url).pathname;

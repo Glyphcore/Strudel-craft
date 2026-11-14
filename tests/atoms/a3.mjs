@@ -306,4 +306,23 @@ $: s(atoms.kick4)
   box(`Pack ingredient: exporting the component lists both referenced atoms (and the dependency of one) in deps ${JSON.stringify(deps)}; the atomset entry file validates against kinds/atoms.1.schema.json, importing it with { as: "dk" } makes atoms.dk.kick4({ n: 8 }) compile to s("bd*8"), and a tampered ingredient raises E_ATOM_HASH`);
 }
 
+// Box: #83 argument references are sites for every consumer (sites(), model round trip with ops, modelRefs, modelDeps, popover data)
+{
+  const code = rd('./fixtures/prog.strudel.js');
+  const names = C.sites(code, A.buildEnv(code, {})).map((s) => s.atom);
+  assert.deepEqual(names, ['kick4', 'backbeat', 'hats']); // one site per textual reference, the argument included
+  const m = MD.parse(code);
+  assert.equal(MD.generate(m), code);
+  assert.deepEqual(validate(schema, m), []);
+  const id = (n) => Object.keys(m.atoms).find((k) => m.atoms[k].name === n);
+  const rs = A.modelRefs(m);
+  assert.deepEqual(rs.map((r) => r.atom), [id('kick4'), id('backbeat'), id('hats')]);
+  assert.deepEqual(rs[0].ref.ops, [['stack', { $atom: id('backbeat') }]]); // the Graph wire comes from this ref
+  assert.deepEqual(C.modelDeps(m).sort(), [id('backbeat'), id('hats'), id('kick4')].sort());
+  const a = 'atom("a", { type: "mini", body: "bd" })\natom("b", { type: "mini", body: "sd" })\n$: s(atoms.a).x([atoms.b, { k: atoms.b }])';
+  assert.deepEqual(C.sites(a, A.buildEnv(a, {})).map((s) => s.atom), ['a', 'b', 'b']); // array argument, counted per site
+  assert.equal(MD.generate(MD.parse(a)), a);
+  box('#83 sites(): kick4, backbeat, hats on prog.strudel.js; model round trip is byte-identical with the argument kept as ops [["stack", { $atom }]]; modelRefs and modelDeps include backbeat; array arguments count per site');
+}
+
 console.log(`\n${boxes} boxes checked.`);

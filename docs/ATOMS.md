@@ -266,6 +266,14 @@ rewriting and before Strudel's transpiler.
 | `W_ATOM_UNKNOWN_SOUND` | a `sound` / `bank` atom not in the catalog or `soundMap` (it may load later) |
 | `W_ATOM_UNUSED` / `W_ATOM_DUP` | declared and never used / two atoms of one type compile to the same string |
 
+**Reference sites.** Every static `atoms.<name>` member expression in program code is a reference site, wherever it appears: as the
+head of a chain, as an argument (at any depth, inside arrays, objects and nested calls) of a composition or partial-application op on
+another reference (`atoms.kick4.stack(atoms.backbeat)`), or as an argument of an ordinary Strudel function (`s(atoms.a).x([atoms.b])`).
+There is one scanner (`scan` in `site/engine/atoms.js`); `check`, `refs`, `closure`, model `$atom` refs with `args` / `ops` (an
+argument reference is kept in `ops` and survives `generate(parse(code))`), intellisense counts, the atom card reference list and pack
+`modelDeps` all read its sites. Each textual site counts once: an atom used directly and as an argument has two. An argument site
+inside an outer reference is compiled together with it (one edit for the outer span).
+
 **Usage rule (`W_ATOM_UNUSED`).** An atom is *used* when it is in the transitive closure of the reference sites in the program: every
 static `atoms.x` site is a root, and from a used atom the closure follows its `from` chain, body `$atom` nodes, param defaults and
 args / ops (names or ids, so model atoms and imports are walked too). An atom referenced only by an unused atom is itself unused, so

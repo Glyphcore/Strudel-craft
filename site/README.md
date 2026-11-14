@@ -505,9 +505,9 @@ same file on the site and in the CLI; it imports acorn from `vendor/` and never 
     `verifyIngredient` / `importedAtoms` (`E_ATOM_HASH`); `atoms.import("pack:…", { as })` namespaces an imported set.
     Schema: `schemas/craftpack/1/kinds/atoms.1.schema.json`, kind `atoms` in `kinds/index.json` (code `never`).
 - Tests: `node tests/atoms/a1.mjs`, `node tests/atoms/a2.mjs`, `node tests/atoms/a3.mjs` (need `STRUDEL_MODULES=<dir with @strudel/>`),
-  `node tests/site/atoms.mjs`, `node tests/site/atoms_inline.mjs` and `node tests/site/atoms_ui.mjs` (Playwright). Not built yet: the
-  `strudel atoms` CLI subcommands (`list | show | refs | compile | extract | check`, CLI in another repo) — those print SKIP / are marked
-  "coming" in the Syntax view.
+  `node tests/site/atoms.mjs`, `node tests/site/atoms_inline.mjs` and `node tests/site/atoms_ui.mjs` (Playwright). The CLI
+  subcommands `strudel atoms list | show | refs | compile | extract | check` and `--atoms FILE` are built (suno-track-lab
+  `engine/strudel-cli`, test `node engine/strudel-cli/test/atoms_test.mjs`); the `strudel complete` and `strudel packs ...` commands are built too.
 - UI (A4, #64; `atoms-ui.js` + `atoms-ui.css` load with the Graph view, `atoms-pop.js` on the first tap on a reference; none of them
   with the shell):
   - Graph atom cards: one card per referenced atom at the visible level (from `graph(model)`; never from `model.atoms`, so 5000

@@ -22,9 +22,9 @@
       "format": "intellisense@1",
       "version": "1.0.0",
       "path": "data/intellisense/strudel.json",
-      "hash": "sha256:797d72bf6c14df06e6a1e80d0cef23bfa7028cf16ee30e3be2c2ec418f2995b6",
+      "hash": "sha256:3cb9d2dd734533656e22f7498864aab78ed91cfcbeeed95693f3605db5d29f8a",
       "load": "eager",
-      "bytes": 40716
+      "bytes": 42058
     },
     {
       "id": "params",
@@ -32,9 +32,9 @@
       "format": "param-shapes@1",
       "version": "1.0.0",
       "path": "data/intellisense/strudel.json",
-      "hash": "sha256:797d72bf6c14df06e6a1e80d0cef23bfa7028cf16ee30e3be2c2ec418f2995b6",
+      "hash": "sha256:3cb9d2dd734533656e22f7498864aab78ed91cfcbeeed95693f3605db5d29f8a",
       "load": "eager",
-      "bytes": 40716
+      "bytes": 42058
     },
     {
       "id": "ranges",
@@ -52,9 +52,9 @@
       "format": "param-editors@1",
       "version": "1.0.0",
       "path": "data/intellisense/strudel.json",
-      "hash": "sha256:797d72bf6c14df06e6a1e80d0cef23bfa7028cf16ee30e3be2c2ec418f2995b6",
+      "hash": "sha256:3cb9d2dd734533656e22f7498864aab78ed91cfcbeeed95693f3605db5d29f8a",
       "load": "eager",
-      "bytes": 40716
+      "bytes": 42058
     },
     {
       "id": "controls",
@@ -72,9 +72,9 @@
       "format": "syntax@1",
       "version": "1.0.0",
       "path": "data/syntax.json",
-      "hash": "sha256:70ba056f76f2084dbe3a0f4e72b7c3e0e7b1fa00cebb4f85a6293950c8c753a1",
+      "hash": "sha256:fb9a3f94dedb922d21ceee41e29a5070914efa4bcc55cd0dc5dd7aa4403613af",
       "load": "eager",
-      "bytes": 31110
+      "bytes": 31732
     },
     {
       "id": "plugins",

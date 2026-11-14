@@ -108,7 +108,7 @@
         { "title": "One name for a gate and a tap ref", "code": "atom(\"drop\", { type: \"point\", body: \"17b\" })\natom(\"kickEnv\", { type: \"tapref\", body: \"kick:env\" })\nhooks.bind(\"fx\", \"murk\", atoms.drop.after())\n$: note(\"c2*8\").s(\"sawtooth\").wire(\"gain\", atoms.kickEnv, { range: [1, 0.3], op: \"mul\" })" },
         { "title": "Catalog atoms need no declaration", "code": "$: s(atoms.snd.bd).bank(atoms.bank.RolandTR909)\n$: n(\"0 2 4\").scale(atoms.scale.minor({ root: \"C\" }))\n$: chord(atoms.chord.m7({ root: \"D\" })).voicing()" },
         { "title": "Popover, cards and the browser", "code": "atom(\"kick4\", { type: \"mini\", params: { n: { shape: \"number\", min: 1, max: 16, step: 1, default: 4 } }, body: \"bd*${n}\" })\natom(\"loud\", { type: \"mini\", body: \"0.8 0.6\" })\n// tap atoms.kick4 below: popover with Derive / Detach / Go to card. Graph > Rack loads this: one kick4 card (x1), one derived card, one loud card\n$: s(atoms.kick4).gain(atoms.loud)\n$: s(atoms.kick4({ n: 8 })).gain(0.5)" },
-        { "title": "Migrate: extract (built in the toolkit, CLI coming)", "code": "// strudelCraft.atoms.extract(code) turns repeated strings into atoms and the references back; inline(code) undoes it\n$: s(\"bd*4 sd\")\n$: s(\"bd*4 sd\").gain(0.8)" }
+        { "title": "Migrate: extract (toolkit and `strudel atoms extract` CLI)", "code": "// strudelCraft.atoms.extract(code) turns repeated strings into atoms and the references back; inline(code) undoes it\n$: s(\"bd*4 sd\")\n$: s(\"bd*4 sd\").gain(0.8)" }
       ]
     }
   ]

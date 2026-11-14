@@ -491,8 +491,10 @@ on events | render | stems | check | info | hooks | perf | controls | complete:
 
 Reference implementation in this repository (P1, #65): `tools/packs/packs.py` (`tools/packs/README.md`) runs
 `validate | hash | lock | registry build | registry check | --api` with the same codes and exit statuses, offline,
-with Python 3 + `jsonschema`. The CLI in `engine/strudel-cli` (another repository) wraps it; until that lands the
-`strudel packs ...` spellings above are "coming" and the Python entry point is what CI and the fixtures use.
+with Python 3 + `jsonschema`. The CLI in `engine/strudel-cli` (suno-track-lab) is **built** (#65, #68): `strudel packs validate | hash | lock |
+registry build | registry check | --api` wrap that file, `install | verify | list` and the `--packs / --pack / --no-packs / --packs-offline /
+--packs-allow-code` flags on events, render, stems, check, info, hooks, controls and complete are native (`engine/strudel-cli/lib/packs.mjs`,
+test `node engine/strudel-cli/test/packs_test.mjs`). Not built in the CLI: `git+` sources (`E_PACK_SOURCE`).
 Shared resolution is `site/engine/packs-core.js`; fixtures and conformance vectors are `tests/packs/`.
 
 `render.json` gains `packs: [{id, version, manifest}]` and `attribution[]`. `strudel check` reports pack errors and warnings with the

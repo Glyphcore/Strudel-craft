@@ -1,10 +1,9 @@
 # Craftpack tools (`tools/packs/packs.py`)
 
 Offline reference implementation of the pack commands of `docs/PACK_SPEC.md` section 12 (issue #65).
-The `strudel` CLI lives in another repository (`engine/strudel-cli`, suno-track-lab); it is **not** in this
-checkout, so `strudel packs ...` cannot be run here. This file is the same behaviour, same error codes and
-same exit statuses, runnable with Python 3 + `jsonschema` alone; the CLI subcommands `strudel packs
-validate | hash | lock | registry build | registry check | --api` wrap it (status: coming, see #68).
+The `strudel` CLI lives in another repository (`engine/strudel-cli`, suno-track-lab). Its subcommands `strudel packs
+validate | hash | lock | registry build | registry check | --api` are **built** (#65, #68) and wrap this file, so they print the same
+behaviour, error codes and exit statuses; this file stays runnable on its own with Python 3 + `jsonschema` (set `STRUDEL_CRAFT` for the CLI).
 
 ```
 python3 tools/packs/packs.py validate DIR|craftpack.json [--strict]
@@ -48,4 +47,4 @@ vocals) is committed while the first-party content licence is open (#66).
 
 - `E_PACK_LICENSE` (registry refuses a missing or undecided licence) has no code in PACK_SPEC section 13,
   which lists only the `W_PACK_LICENSE` warning. Noted on #65 rather than diverging silently.
-- `packs install` / `verify` / `list` (fetching and caching) belong to the CLI loader, #68.
+- `packs install` / `verify` / `list` (fetching and caching) are in the CLI loader (`engine/strudel-cli/lib/packs.mjs`, #68, built).

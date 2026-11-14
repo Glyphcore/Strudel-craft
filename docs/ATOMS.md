@@ -413,8 +413,8 @@ $: chord(atoms.turn).voicing()
 
 | phase | issue | deliverable | depends on | owner |
 |---|---|---|---|---|
-| A1 | #61 | atoms core **built** (type registry, schema, `compile` with source map, runtime fallback, params / partial application / composition, ids, hashes); the `strudel atoms` CLI subcommands are **coming** (the CLI lives in another repo) | model schema (#49), control-binding parser | daw-implementer |
-| A2 | #62 | migration **built** in the toolkit: `extract`, `parse`, `inline`, catalog atoms, strudel.cc export inlines (the `strudel atoms extract` CLI is **coming**) | A1 | daw-implementer |
+| A1 | #61 | atoms core **built** (type registry, schema, `compile` with source map, runtime fallback, params / partial application / composition, ids, hashes); the `strudel atoms list | show | refs | compile | check` CLI subcommands and `--atoms FILE` are **built** (suno-track-lab `engine/strudel-cli/lib/atoms-cmd.mjs`) | model schema (#49), control-binding parser | daw-implementer |
+| A2 | #62 | migration **built** in the toolkit: `extract`, `parse`, `inline`, catalog atoms, strudel.cc export inlines (the `strudel atoms extract` CLI is **built**) | A1 | daw-implementer |
 | A3 | #63 | consumers **built**: intellisense source + signature provider, atom args in literal editors, `$atom` in hooks / model / pads / boards / maps, mapped atom params, revision records, `atoms@1` pack ingredient | A1, pack spec | daw-implementer |
 | A4 | #64 | UI **built**: lazy reference-counted atom cards in the graph (derived cards linked to their parent), atom browser / palette (port type filter, pages of 50), reference popover (Edit definition, Derive, Detach, Go to card); playback highlight of a whole reference is **coming** | A1, A3 | ui-designer |
 

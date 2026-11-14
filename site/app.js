@@ -56,6 +56,14 @@ AudioNode.prototype.connect = function (dest, ...rest) {
   }
   return nativeConnect.call(this, dest, ...rest);
 };
+/* #92: superdough's dry/wet teardown calls node.disconnect(target) after the node may already be fully disconnected (or, for the
+   destination, connected to our master gain instead), which throws InvalidAccessError as an uncaught page error under load. A targeted
+   disconnect of a connection that is already gone is a no-op here; a disconnect from the destination goes to the master gain we redirected to. */
+const nativeDisconnect = AudioNode.prototype.disconnect;
+AudioNode.prototype.disconnect = function (...a) {
+  if (a[0] instanceof AudioDestinationNode && Bus.gain && Bus.ctx === a[0].context && !Bus.own.has(this)) a = [Bus.gain, ...a.slice(1)];
+  try { return nativeDisconnect.apply(this, a); } catch (e) { if (a.length && e && e.name === 'InvalidAccessError') return undefined; throw e; }
+};
 /* ---------- audio status (#56 "Fix: no audio or waveforms") ----------
    One place that knows whether sound can come out: the context state (dot in the transport, tap to resume), a blocked notice with an
    "Enable audio" button that resumes the context inside the tap, and a silence watchdog that says so when Play runs but no signal reaches the master. */

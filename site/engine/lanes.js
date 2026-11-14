@@ -400,7 +400,7 @@ export function install(S, hooks, opts = {}) {
     const t = hap.whole ? hap.whole.begin : hap.part.begin; let on = o.on !== false;
     for (const e of jr) { if (e.c > +t + 1e-12) break; if (e.id === sel.id && e.op === o.op) on = !!e.on; }
     if (!on) return false;
-    return o.gate == null ? true : hooks.gateAt(o.gate, `${sel.id}.${o.op}`)(t, ctrl);
+    return o.gate == null ? true : hooks.gateAt(o.gate, `${sel.id}.${o.op}`, 0)(t, ctrl); // selections act per event onset: exact windows, so "16.3b..17b" cuts two beats
   };
   const stampLane = (haps, id) => haps.map((h) => (h.context?.lane === id ? h : h.setContext({ ...h.context, lane: id })));
   // ---- audio layer at runtime: the host check, bus allocation of the last compile, and checks on the queried haps (E_LANE_SOURCE, W_LANE_REFRAIN) ----

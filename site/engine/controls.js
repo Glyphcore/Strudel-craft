@@ -37,9 +37,12 @@ export const CLAMPS = ['hard', 'soft', 'none'];
 // ---------- gates (subset of HOOKS_SYNTAX 4.3 needed here) ----------
 export function gateOpen(gate, cycle, ctx = {}) {
   if (gate == null || gate === '*') return true;
-  const pt = (p) => (typeof p === 'string' && ctx.markers && p in ctx.markers) ? pt(ctx.markers[p]) : parseLength(p, ctx.time || {});
-  if (typeof gate === 'string') { const m = /^(?:(.*?)\.\.(.*)|<(.*)|@(.*))$/.exec(gate); if (!m) return true;
-    return m[4] ? cycle >= pt(m[4]) : m[3] ? cycle < pt(m[3]) : cycle >= pt(m[1]) && cycle < pt(m[2]); }
+  // a point "Nb" is bar N, 1-based (HOOKS_SYNTAX 4.1: cycle (N-1)*cpb); other units as parseLength (#90)
+  const pt = (p) => { if (typeof p === 'string' && ctx.markers && p in ctx.markers) return pt(ctx.markers[p]);
+    const bm = typeof p === 'string' && /^\s*(\d+(?:\.\d+)?)b\s*$/.exec(p); return bm ? (Number(bm[1]) - 1) * ((ctx.time && ctx.time.cpb) || 1) : parseLength(p, ctx.time || {}); };
+  if (typeof gate === 'string') { if (gate.includes(',')) return gate.split(',').some((g) => gateOpen(g.trim(), cycle, ctx)); // union of windows (#90)
+    const m = /^(?:(.*?)\.\.(.*)|<(.*)|@(.*))$/.exec(gate.trim()); if (!m) return true;
+    return m[4] ? cycle >= pt(m[4]) : m[3] ? cycle < pt(m[3]) : (m[1] === '' || cycle >= pt(m[1])) && (m[2] === '' || cycle < pt(m[2])); }
   let c = cycle;
   if (gate.period) { const P = parseLength(gate.period, ctx.time || {}); const w0 = gate.windows ? pt(gate.windows[0][0]) : 0; if (c >= w0) c = w0 + ((c - w0) % P); }
   let open = true;

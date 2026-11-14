@@ -148,7 +148,7 @@ Gate, object form:
 | `period` | length in cycles | - | the windows repeat every `period` cycles, counted from the first window's start (loops, recorded pad takes) |
 | `when` | tap-ref, mini-notation string or Pattern | - | extra condition: open only where this pattern is truthy, sampled at each `quant` boundary |
 | `latch` | boolean | `false` | with `when`: once true, stay open until `until` (found by scanning from `from`, 4.5) |
-| `quant` | cycles | 1 | boundary rounding (up to the next multiple); 0 = exact |
+| `quant` | cycles | 1 | boundary rounding (up to the next multiple); 0 = exact. Lane selections (`tagged(...).mute/solo`) and `hooks.map` gates are always exact |
 | `unreached` | `"else"` \| `"open"` \| `"error"` \| point | `"else"` | what to do when the gate never opens inside the render horizon (4.5) |
 
 Binding opts: `{ order: 0, priority: 0, args: {...}, else: hook-ref, rebase: false, id }`.

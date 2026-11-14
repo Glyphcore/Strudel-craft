@@ -7,7 +7,9 @@ Content pack (docs/PACK_SPEC.md) behind the Syntax entry **Track demo: night pho
 |---|---|---|---|
 | `atoms` | `atoms` / `atoms@1` | 22 atoms under `ph.`: `chords` (Eb Gm F Eb, VI-i-VII-VI in G minor), `sub` (808 line) and `glide` (penv per note), `lead`, `counter`, `bell`, `kick`, `snare`, `ghost`, `hats`, `accent`, `roll`, `every4`, `lastBar`; gates `noDrums`, `noLow`, `noDrop`, `noRoll`, `noRise`, `dark`, `builds`, `drop2` | site and CLI: `atoms.import("pack:glyphcore/phonk:atoms")` |
 | `racks` | `hooks` / `hooks@1` | instrument rigs as chain-only hook defs: `kick808`, `snareNoise`, `hat(len)`, `cowbell`, `sub808`, `hazePad(cut)`, `deepLead`, `wideLead`, `echoPluck`, `formant`, `chop`, `riser`, `reverseHit`, `impact`, `tape`; moves `murk` (dark filter walk), `thin(hz)`, `grit(amt)`, `pump(depth)` | CLI: `--hooks site/data/phonk/racks.json`; the site has no adapter for the `hooks` kind yet (coming, skipped with `W_PACK_KIND`) |
-| `presets` | `recipes` / `recipes@1` | `night-phonk-demo`: the standalone track | site Rack browser (pack recipes) |
+| `atoms-v2` | `atoms` / `atoms@1` | v2 (#93) under `ph2.`: `slides`, `toms`, `rim`, `stab`, `stut`, `rise`, `heart`; section gates `noDrums`, `noKick`, `noSub`, `noConf`, `noRelief`, `dropB`, `vac`, `noRoll`, `noRise`, `noRev`, `noHit`, `drops`, `conf`, `reliefs`, `relief2`, `dark`, `slams`, `builds` | site and CLI: `atoms.import("pack:glyphcore/phonk:atoms-v2")` |
+| `racks-v2` | `hooks` / `hooks@1` | v2: `pumpHard(depth)` (duckorbit pump on orbits 3-8 from the kick), `tom`, `rimshot`, `slam`, `open`, `swellPad`, `hush` | CLI with `racks` (render.sh merges both); site adapter coming (#91) |
+| `presets` | `recipes` / `recipes@1` | `night-phonk-demo` and `night-phonk-demo-v2`: the standalone tracks | site Rack browser (pack recipes) |
 
 ## Use
 ```js

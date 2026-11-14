@@ -867,7 +867,7 @@ export function install(S, opts = {}) {
   // Lanes support (docs/LANES.md): cache invalidation for control changes, the lane mode, gate evaluation and journal records for ext modules.
   hooks.invalidate = () => { tapGen++; return hooks; };
   hooks.laneMode = (m) => { if (m !== undefined) { if (m !== 'open' && m !== 'closed') throw code('E_BAD_ARG', `lane mode "${m}"`); R.laneMode = m; tapGen++; } return R.laneMode; };
-  hooks.gateAt = (g, id = 'gate') => { const gate = normGate(g); const key = `${id}|${JSON.stringify(gate)}`; return (t, ctrl) => compileGate({ id: key, gate, label: id, quant: 1 }, cxOf(ctrl)).open(F(t)); };
+  hooks.gateAt = (g, id = 'gate', quant = 1) => { const gate = normGate(g); const key = `${id}|${quant}|${JSON.stringify(gate)}`; return (t, ctrl) => compileGate({ id: key, gate, label: id, quant }, cxOf(ctrl)).open(F(t)); }; // quant: boundary rounding for bindings (1 cycle); selections pass 0
   hooks.record = (op, args, at) => {
     const lp = livePoint(at, 1) ?? (at == null ? null : parsePoint(at, pctx())); if (!lp) throw code('E_BAD_ARG', `record "${op}" needs a point`);
     hooks.journal.push({ cycle: frStr(lp), op, args }); touch(); return hooks;

@@ -1,0 +1,182 @@
+{
+ "format": "atoms@1",
+ "name": "ph2",
+ "doc": "glyphcore/phonk v2 atoms: confrontation rhythms (toms, rim, stab, stutter, heartbeat, slides) and the section gates of the v2 track (drops vs relief). Import next to the v1 atoms: atoms.import(\"pack:glyphcore/phonk:atoms-v2\").",
+ "atoms": {
+  "aedw0d9": {
+   "name": "ph2.slides",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[0 -5 0] [0 -2 0] [0 -3 0] [0 0 7]>",
+   "hash": "sha256:83ce86bd883725bd873295e7b8b4f7ba51742d2264925cd7463c9bbaa63fdd26"
+  },
+  "aj25gra": {
+   "name": "ph2.toms",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ g2 ~ d3 g2 ~ bb2 ~ ~ g2 d3 ~ bb2 g2 ~ d3",
+   "hash": "sha256:579e6d0a041bbb6de7bb1b1a001c8bfc57c4b62ec772d2f950c8074a07975bc6"
+  },
+  "a5rycc1": {
+   "name": "ph2.rim",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~ x ~ x",
+   "hash": "sha256:d2fc4d8f156201ab214fc018f2401b2d1fcb9fab5601c6c9684b912ea38ab098"
+  },
+  "asmm81z": {
+   "name": "ph2.stab",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[~@12 g5 ~ bb5 ~] [~@8 d6 ~ c6 ~ a5 ~ g5 ~] [~@12 f5 ~ g5 ~] [~@8 bb5 ~ a5 ~ g5 ~ d5 ~]>",
+   "hash": "sha256:644cb15249eec66bcc455eb9434af6ec91b379aa5718ca146c13be0ece446d0d"
+  },
+  "aj85zo5": {
+   "name": "ph2.stut",
+   "type": "mini",
+   "rev": 1,
+   "body": "<~!3 [~@8 x x x x [x x] [x x] [x x x] [x x x]]>",
+   "hash": "sha256:0850ddb84919f7deb49f5376f0bea695ee69592230e90da65d522d89fafa408c"
+  },
+  "a3d6w3i": {
+   "name": "ph2.rise",
+   "type": "mini",
+   "rev": 1,
+   "body": "<~ ~ ~ x>/4",
+   "hash": "sha256:b9c1d75d11d0b6365e8561906e97708e9059bccb2df595bb1bb387ba04bd4ae3"
+  },
+  "a8c681l": {
+   "name": "ph2.heart",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~",
+   "hash": "sha256:abac20faa23e60626a45d8607ce4017195afb55af6b0baaa70209f85907e925d"
+  },
+  "arc1byp": {
+   "name": "ph2.noDrums",
+   "type": "gate",
+   "rev": 1,
+   "body": "<9b, 33b..41b, 53b..61b, 81b..",
+   "hash": "sha256:28158098bdf23418038da0d257939aad39e907bbe092e85e4af2cf0223808141"
+  },
+  "avalsk6": {
+   "name": "ph2.noKick",
+   "type": "gate",
+   "rev": 1,
+   "body": "<17b, 33b..41b, 53b..65b, 81b..",
+   "hash": "sha256:bcb21abd1c1a5a0019c9cb9ae23c7496b565d6d8c1b21dd084a4dfe7e7d9cd73"
+  },
+  "anq5fje": {
+   "name": "ph2.noSub",
+   "type": "gate",
+   "rev": 1,
+   "body": "<5b, 9b..17b, 33b..41b, 53b..65b, 81b.., 17b..17.3b, 41b..41.3b, 65b..65.3b",
+   "hash": "sha256:770262ab5190178777e668572dc9e91651a2cb5022e9cdc8c2ffded53581de0d"
+  },
+  "altag72": {
+   "name": "ph2.noConf",
+   "type": "gate",
+   "rev": 1,
+   "body": "<17b, 33b..65b, 81b..",
+   "hash": "sha256:333be0588ed9ed3c6700fec02ee9d9ec3dcd98d3b3d423125961cbd16c0a01e9"
+  },
+  "avf5svl": {
+   "name": "ph2.noRelief",
+   "type": "gate",
+   "rev": 1,
+   "body": "<33b, 41b..53b, 61b..",
+   "hash": "sha256:172510949291e86acd9edd2f8341e07f7bb52af44f75d01bbe5e766274932631"
+  },
+  "awa8l3s": {
+   "name": "ph2.dropB",
+   "type": "gate",
+   "rev": 1,
+   "body": "41b..53b",
+   "hash": "sha256:ca09e875dae0f3160deeaa89325ca883cab987a0c9a185c497f4b3305a213b51"
+  },
+  "a67ost7": {
+   "name": "ph2.vac",
+   "type": "gate",
+   "rev": 1,
+   "body": "16.3b..17b, 40.3b..41b, 64.3b..65b",
+   "hash": "sha256:8af0c0452cac32d9a704f2eafa9b1af1169af194f34ec160f74a1574ba51f404"
+  },
+  "ahnh7ab": {
+   "name": "ph2.noRoll",
+   "type": "gate",
+   "rev": 1,
+   "body": "<15b, 17b..63b, 65b..",
+   "hash": "sha256:e8b3cce8011870a6119d82dc2f0ea1d1e4c23bbf476cf3d7b1da183b4d6950ab"
+  },
+  "akkicet": {
+   "name": "ph2.noRise",
+   "type": "gate",
+   "rev": 1,
+   "body": "<13b, 17b..61b, 65b..",
+   "hash": "sha256:0e7246d24c4e6e33c97e5146ec3dd85063d4577aef569d04ff4829e0da665ea7"
+  },
+  "as6nb1x": {
+   "name": "ph2.noRev",
+   "type": "gate",
+   "rev": 1,
+   "body": "<16b, 17b..40b, 41b..64b, 65b..",
+   "hash": "sha256:c683b7d9dd064b0b4b8290d62c7b0f08a2a1cc144d42d51b46a7a05f63eb6b1e"
+  },
+  "a1ezn8d": {
+   "name": "ph2.noHit",
+   "type": "gate",
+   "rev": 1,
+   "body": "<17b, 18b..41b, 42b..65b, 66b..",
+   "hash": "sha256:616e6b023fe941ca89a79046ffa0ac8fcc3d9b6ae2fe24d6cc2f68fa245694c4"
+  },
+  "a9vp43f": {
+   "name": "ph2.drops",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..33b, 41b..53b, 65b..81b",
+   "hash": "sha256:e0958aebc9b3fef3c525034415c3416150e007fd0f77ca46015f1318dba99a54"
+  },
+  "ajaglcd": {
+   "name": "ph2.conf",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..33b, 65b..81b",
+   "hash": "sha256:948b5c9411a139f5c41de9ac98340d673cce3a03bf056b89ae887c54b6366bae"
+  },
+  "a45fi4f": {
+   "name": "ph2.reliefs",
+   "type": "gate",
+   "rev": 1,
+   "body": "33b..41b, 53b..61b",
+   "hash": "sha256:8328e71f720a165a418a045b7bd1817f63db1cbca3b77410f2b2434d47a6e1b3"
+  },
+  "am45c18": {
+   "name": "ph2.relief2",
+   "type": "gate",
+   "rev": 1,
+   "body": "53b..61b",
+   "hash": "sha256:726403301b433406c75932f6272d3a87df7788cf3abbabb6ab4bbade1521518e"
+  },
+  "ari8eab": {
+   "name": "ph2.dark",
+   "type": "gate",
+   "rev": 1,
+   "body": "<9b, 33b..41b",
+   "hash": "sha256:4beeec6ea68226bb32024593b6f6a5512422935dd721b2a80db762f817b88d29"
+  },
+  "avzz3mn": {
+   "name": "ph2.slams",
+   "type": "gate",
+   "rev": 1,
+   "body": "24.3b..25b, 28.3b..29b, 72.3b..73b, 76.3b..77b",
+   "hash": "sha256:2ff3a0b17fbf1ab7240496ecf59f6885c4006b11d616e0f35a8fe21f2216d517"
+  },
+  "a5i8s66": {
+   "name": "ph2.builds",
+   "type": "gate",
+   "rev": 1,
+   "body": "9b..17b, 61b..65b",
+   "hash": "sha256:957229a5ad98e0d3ab340d66095d4fb97740f1987558fe9fc627601589d254f7"
+  }
+ }
+}

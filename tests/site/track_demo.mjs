@@ -2,12 +2,15 @@
    Syntax view > "Track demo: night phonk" > Load and play: the Rack editor holds exactly docs/tracks/night-phonk-demo/track.standalone.strudel.js,
    the transport plays, the master analyser peaks above 0.01 and the stage scope draws pixels, in the intro and after seeking to the drop
    (bar 17) and to drop 2 (bar 49); the glyphcore/phonk pack is in the site lock and loads (atoms and presets ready); no page errors.
-   Usage (repo root): node tests/site/track_demo.mjs [--live URL] [--debug]   -> PASS/FAIL lines, exit 1 on any FAIL. */
+   Usage (repo root): node tests/site/track_demo.mjs [--v2] [--live URL] [--debug]   -> PASS/FAIL lines, exit 1 on any FAIL. */
 import { createRequire } from 'module'; import http from 'http'; import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 const require = createRequire(import.meta.url); const { chromium } = require('playwright');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'), SITE = path.join(ROOT, 'site'), PREFIX = '/Strudel-craft/';
 const LIVE = (() => { const i = process.argv.indexOf('--live'); return i > 0 ? process.argv[i + 1] : null; })();
-const WANT = fs.readFileSync(path.join(ROOT, 'docs/tracks/night-phonk-demo/track.standalone.strudel.js'), 'utf8');
+const V2 = process.argv.includes('--v2'); /* --v2: night phonk v2 (#93): its Syntax entry, and Play from intro, drop A, relief 1, drop B, drop C */
+const WANT = fs.readFileSync(path.join(ROOT, `docs/tracks/night-phonk-demo/track${V2 ? '.v2' : ''}.standalone.strudel.js`), 'utf8');
+const TITLE = V2 ? 'Track demo: night phonk v2' : 'Track demo: night phonk';
+const AT = V2 ? [['drop A (bar 17)', 16], ['relief 1 (bar 33)', 32], ['drop B (bar 41)', 40], ['drop C (bar 65)', 64]] : [['drop (bar 17)', 16], ['drop 2 (bar 49)', 48]];
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.ogg': 'audio/ogg', '.wav': 'audio/wav', '.mp3': 'audio/mpeg', '.webmanifest': 'application/manifest+json' };
 const server = http.createServer((req, res) => { let p = decodeURIComponent(new URL(req.url, 'http://x').pathname); if (!p.startsWith(PREFIX)) { res.writeHead(404); return res.end(); }
   p = p.slice(PREFIX.length - 1); if (p.endsWith('/')) p += 'index.html'; const f = path.join(SITE, p);
@@ -24,8 +27,8 @@ await page.goto(BASE); await page.waitForFunction(() => window.__sc && window.__
 const pk = await page.evaluate(async () => { const P = window.strudelCraft.packs; await P.ready; await P.load('glyphcore/phonk:atoms'); await P.load('glyphcore/phonk:presets');
   const p = P.list().find((x) => x.id === 'glyphcore/phonk'); return p ? { state: p.state, ings: p.ingredients.map((i) => `${i.id}:${i.state}`) } : null; });
 check('glyphcore/phonk is in the site lock; atoms and presets load', pk && pk.state === 'ready' && pk.ings.includes('atoms:ready') && pk.ings.includes('presets:ready'), JSON.stringify(pk));
-await page.evaluate(() => window.__sc.setView('syntax')); const btn = page.locator('#sx-tracks .sx-run').first(); await btn.waitFor({ timeout: 30000 }); await btn.scrollIntoViewIfNeeded();
-const title = await page.locator('#sx-tracks figcaption span').first().textContent(); check('Syntax entry "Track demo: night phonk" is listed', title === 'Track demo: night phonk', title);
+await page.evaluate(() => window.__sc.setView('syntax')); const btn = page.locator('#sx-tracks .sx-run').nth(V2 ? 1 : 0); await btn.waitFor({ timeout: 30000 }); await btn.scrollIntoViewIfNeeded();
+const title = await page.locator('#sx-tracks figcaption span').nth(V2 ? 1 : 0).textContent(); check(`Syntax entry "${TITLE}" is listed`, title === TITLE, title);
 await btn.tap(); await page.waitForTimeout(3000);
 await page.waitForFunction(() => { const s = window.__sc.S; return (!s.busy && s.playing && window.__sc.Engine.started) || document.querySelector('#status').classList.contains('err'); }, null, { timeout: 90000 }).catch(() => {});
 const got = await page.evaluate(() => window.strudelCraft.copycode.text('rack'));
@@ -35,7 +38,7 @@ const measure = () => page.evaluate(() => new Promise((ok) => { const B = window
   let sc = 0; const iv = setInterval(() => { if (B.an) { B.an.getFloatTimeDomainData(t); for (const x of t) m = Math.max(m, Math.abs(x)); } const v = document.querySelector('#viz'); if (v) sc = Math.max(sc, ink(v)); }, 50);
   setTimeout(() => { clearInterval(iv); ok({ peak: +m.toFixed(4), scope: sc, state: B.ctx ? B.ctx.state : 'none', playing: window.__sc.S.playing, status: document.querySelector('#status').textContent.slice(0, 120) }); }, 4000); }));
 await page.waitForTimeout(6000); let r = await measure(); check('intro plays: peak > 0.01, scope pixels', r.playing && r.state === 'running' && r.peak > 0.01 && r.scope > 200, JSON.stringify(r));
-for (const [name, cyc] of [['drop (bar 17)', 16], ['drop 2 (bar 49)', 48]]) {
+for (const [name, cyc] of AT) {
   /* stop, set the transport range start, Play again with a real tap (seeking a playing bus program is tracked separately) */
   await page.tap('#playBtn'); await page.waitForFunction(() => !window.__sc.S.playing, null, { timeout: 10000 }).catch(() => {});
   await page.evaluate((c) => Object.assign(window.strudelCraft.range.state, { start: c }), cyc); await page.tap('#playBtn');

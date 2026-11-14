@@ -58,7 +58,7 @@ metrics.chromium = browser.version();
   await page.goto(BASE); await page.waitForSelector('#list li[data-id]');
   await page.evaluate(() => document.fonts.ready);
   const n = await page.locator('#list li[data-id]').count();
-  const total = await page.evaluate(async () => (await (await fetch('data/catalog.json')).json()).recipes.length);
+  const total = await page.evaluate(async () => { const core = (await (await fetch('data/catalog.json')).json()).recipes.length; const P = window.strudelCraft && window.strudelCraft.packs; const all = P && P.catalog ? await P.catalog() : null; const n = Array.isArray(all) ? all.length : all && all.recipes ? all.recipes.length : 0; return Math.max(core, n); }); /* core catalog plus pack recipes (e.g. glyphcore/phonk presets) */
   check('catalog renders every recipe in the browser', n === total && total > 0, `${n}/${total}`);
   /* #59: index.html ships the range bar markup for the first paint; it must equal transport-range.js TPL (the script rebuilds and flags drift) */
   const tr = await page.waitForFunction(() => { const w = document.querySelector('#trange'); return w && w.dataset.bound ? { rebuilt: w.dataset.rebuilt === '1' } : null; }, null, { timeout: 10000 }).then((h) => h.jsonValue()).catch(() => null);

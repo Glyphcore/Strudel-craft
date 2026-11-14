@@ -1,0 +1,148 @@
+{
+ "model": 1,
+ "meta": {
+  "id": "glyphcore/phonk:racks-v2",
+  "doc": "v2 rigs: pumpHard(depth) (duckorbit pump on orbits 3-8 from the kick), tom, rimshot, slam (filter slam), open (relief lift), swellPad. Load together with glyphcore/phonk:racks."
+ },
+ "defs": {
+  "pumpHard": {
+   "params": {
+    "depth": {
+     "min": 0,
+     "max": 1,
+     "default": 0.8
+    }
+   },
+   "chain": [
+    [
+     "duckorbit",
+     {
+      "$mini": "3:4:5:6:7:8"
+     }
+    ],
+    [
+     "duckdepth",
+     {
+      "$param": "depth"
+     }
+    ],
+    [
+     "duckattack",
+     0.23
+    ]
+   ]
+  },
+  "tom": {
+   "chain": [
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "penv",
+     7
+    ],
+    [
+     "pdecay",
+     0.05
+    ],
+    [
+     "decay",
+     0.16
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "noise",
+     0.2
+    ],
+    [
+     "shape",
+     0.3
+    ],
+    [
+     "gain",
+     0.85
+    ]
+   ]
+  },
+  "rimshot": {
+   "chain": [
+    [
+     "s",
+     "square"
+    ],
+    [
+     "note",
+     "a4"
+    ],
+    [
+     "noise",
+     0.6
+    ],
+    [
+     "bpf",
+     1400
+    ],
+    [
+     "decay",
+     0.05
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.6
+    ]
+   ]
+  },
+  "slam": {
+   "chain": [
+    [
+     "lpf",
+     320
+    ]
+   ]
+  },
+  "open": {
+   "chain": [
+    [
+     "lpf",
+     4200
+    ],
+    [
+     "room",
+     0.5
+    ]
+   ]
+  },
+  "swellPad": {
+   "chain": [
+    [
+     "attack",
+     1.8
+    ],
+    [
+     "release",
+     3
+    ],
+    [
+     "gain",
+     0.4
+    ]
+   ]
+  },
+  "hush": {
+   "chain": [
+    [
+     "postgain",
+     0.5
+    ]
+   ]
+  }
+ }
+}

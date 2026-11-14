@@ -15,6 +15,15 @@ Form (bars): intro 1-8 (pad, filtered lead, vocal pad, tape), build 9-16 (hats, 
 reverse hit), drop 17-32 (kick, 808 with glide and ducking, cowbell, counter-melody, chops; impact on 17), breakdown 33-40, build 2 41-48,
 drop 2 49-72 (lead rack swaps to `wideLead`, grit on kick/808/lead), outro 73-80 (low end out at 75, drums at 77).
 
+## v2 (#93): pump, confrontation, drops against relief
+`track.v2.standalone.strudel.js` (source of truth for v2) and the generated `track.v2.strudel.js` (imports `atoms` and `atoms-v2`; racks from
+`racks` + `racks-v2`). v1 stays as it is: v2 only adds pack ingredients, and `tools/packs/phonk.mjs` refuses a v2 line that changes a v1 item.
+Form (84 bars = 2:37): intro 1-8 (hook lead from bar 1, 808 from bar 5), build 9-16, drop A (confrontation) 17-32, relief 1 33-40, stop-cut,
+drop B 41-52 (half-time swing: gated `struct` and `swingBy` binds, no pad or counter), relief 2 53-60 (melody filter opens, vocal pad swells),
+build 61-64, drop C 65-80, outro 81-84. Pump: `pumpHard(0.8)` (duckorbit on orbits 3-8, 0.23 s recovery) on the kick in drops. Vacuum: two
+beats cut before drops A, B, C (all but the reverse hit). Measure with `engine/audio/contrast.py` (suno-track-lab): section short-term loudness,
+drop minus relief, and the pump dip per stem (`--stems`). Render: `render.sh OUT v2 84`; site check: `node tests/site/track_demo.mjs --v2`.
+
 ## Structure (what to edit)
 - **atoms** (`ph.*`): every chord, line, rhythm and gate string, declared once. A new section is a new gate atom plus one `tagged(...).mute(...)` or `hooks.bind(...)` line.
 - **racks**: `hooks.def` chains (sound source, envelope, filter); a lane names its rack through a slot (`.use("kick")`) and one `hooks.bind` fills it,

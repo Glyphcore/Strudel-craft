@@ -1,9 +1,9 @@
 {
   "craftpack": "1.0.0",
   "id": "glyphcore/phonk",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "title": "Night phonk kit",
-  "description": "Atoms (chords, lines, rhythms, section gates), racks (instrument rigs as hook defs) and the night phonk track preset. The track program only composes them.",
+  "description": "Atoms (chords, lines, rhythms, section gates), racks (instrument rigs as hook defs) and the night phonk track presets (v1, v2). v2 only adds ingredients (atoms-v2, racks-v2); the track programs only compose them.",
   "license": "CC0-1.0",
   "licenseFile": "LICENSE.md",
   "attribution": [
@@ -57,6 +57,30 @@
       "bytes": 5787
     },
     {
+      "id": "atoms-v2",
+      "kind": "atoms",
+      "format": "atoms@1",
+      "version": "1.0.0",
+      "path": "atoms-v2.json",
+      "title": "Phonk atoms v2",
+      "description": "under ph2.: confrontation rhythms (toms, rim, stab, stut, heart), 808 slides and the v2 section gates",
+      "load": "eager",
+      "hash": "sha256:3f01089d8b27f47fc751cd5cdcdac13888c1812541d8a6beb042619eec9a2d50",
+      "bytes": 5460
+    },
+    {
+      "id": "racks-v2",
+      "kind": "hooks",
+      "format": "hooks@1",
+      "version": "1.0.0",
+      "path": "racks-v2.json",
+      "title": "Phonk racks v2",
+      "description": "pumpHard (kick-synced duckorbit pump), tom, rimshot, slam, open, swellPad",
+      "load": "manual",
+      "hash": "sha256:9250ab3904c5f7027d734373ff529eac00cfee854a3937d8ab1effaead9b6217",
+      "bytes": 1591
+    },
+    {
       "id": "presets",
       "kind": "recipes",
       "format": "recipes@1",
@@ -65,8 +89,8 @@
       "title": "Phonk presets",
       "description": "Track demo: night phonk (the paste-ready standalone program)",
       "load": "manual",
-      "hash": "sha256:7a233553efae82c66b23a4e179b279bf7915101cb3e8e3839de6772a0d2f1707",
-      "bytes": 10211
+      "hash": "sha256:35110baa519d9f2d6176ad01114c4370e129a1a02c1052a2ccc2a48522398dc0",
+      "bytes": 22967
     }
   ]
 }

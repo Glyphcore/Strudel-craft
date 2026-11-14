@@ -131,7 +131,10 @@ function unmuteBus() {
 /* hooks calls take plain strings: protect them from mini-notation before Strudel's transpiler sees them (engine/hooks.js) */
 /* pipeline before every evaluation (docs/ATOMS.md section 5): atoms.compile -> protect() -> Strudel's transpiler.
    atoms.prepare returns the code unchanged when the program has no atoms ; an atom compile error (E_ATOM_*) makes the eval throw that coded error, which the error box and toast report. */
+/* lazy loads a program may need before it is compiled: capture / recall (lanes), pack hooks defs (#91); a failed load shows as the evaluation's own error */
+async function ensureCode(code) { const sc = window.strudelCraft; try { await sc.lanesCaptureEnsure?.(code); } catch (e) { /* see above */ } try { await sc.packHooks?.ensure(code); } catch (e) { /* see above */ } }
 function protectCode(code) {
+  try { window.strudelCraft.packHooks?.install(code); } catch (e) { /* pack defs stay as they were */ }
   try { const a = window.strudelCraft.atoms; if (a && a.prepare) code = a.prepare(code); } catch (e) { /* atoms stay as written */ }
   try { const p = window.strudelCraft.hooksLib && window.strudelCraft.hooksLib.protect; return p ? p(code) : code; } catch (e) { if (e && /^E_(LANE|BUS)_/.test(e.code || '')) throw e; return code; } // lanes audio errors (E_LANE_*, E_BUS_RANGE) stop the evaluation with their code
 }
@@ -182,7 +185,7 @@ const Engine = {
     await resumeAudio();
     this.state.evalError = undefined;
     unmuteBus();
-    try { await window.strudelCraft.lanesCaptureEnsure?.(code); } catch (e) { /* capture / recall load lazily; a failed load shows as the evaluation's own error */ }
+    await ensureCode(code);
     await window.evaluate(protectCode(code));
     if (this.state.evalError) throw this.state.evalError;
     const ctx = window.getAudioContext && window.getAudioContext();
@@ -196,7 +199,7 @@ const Engine = {
     if (!alive()) throw Object.assign(new Error('stale'), { stale: true });
     if (S.playing || this.started) return;
     this.state.evalError = undefined;
-    try { await window.strudelCraft.lanesCaptureEnsure?.(code); } catch (e) { /* capture / recall load lazily; a failed load shows as the evaluation's own error */ }
+    await ensureCode(code);
     await this.repl.evaluate(protectCode(code), false);
     if (this.state.evalError) throw this.state.evalError;
     window.dispatchEvent(new CustomEvent('strudel:idle', { detail: { ...this.state, srcView: view } }));
@@ -209,7 +212,7 @@ const Engine = {
     await new Promise((r) => setTimeout(r, wait));
     if (!alive()) throw Object.assign(new Error('stale'), { stale: true });
     this.state.evalError = undefined;
-    try { await window.strudelCraft.lanesCaptureEnsure?.(code); } catch (e) { /* capture / recall load lazily; a failed load shows as the evaluation's own error */ }
+    await ensureCode(code);
     await window.evaluate(protectCode(code));
     if (this.state.evalError) throw this.state.evalError;
   },

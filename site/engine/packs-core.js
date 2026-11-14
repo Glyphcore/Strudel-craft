@@ -18,6 +18,7 @@ const ITEMS = {
   'vox-bank': (d) => Object.keys({ ...(d.maps?.flat || {}), ...(d.maps?.pitched || {}) }).filter((k) => k !== '_base'),
   'param-shapes': (d) => ['params', 'ranges', 'canon'].flatMap((s) => Object.keys(d[s] || {}).map((k) => `${s}.${k}`)),
   'atoms': (d) => Object.values(d.atoms || {}).map((a) => a.name), // one ingredient = one namespace of atoms (ATOMS 10, PACK_SPEC 5.1)
+  'hooks': (d) => Object.keys(d.defs || {}), // #91: a def is one item; whole-def precedence
   'intellisense': (d) => (d.items || []).map((i) => `${i.category || ''}|${i.label}`),
 };
 export const itemIds = (kind, data) => (data && ITEMS[kind] ? ITEMS[kind](data) : []);

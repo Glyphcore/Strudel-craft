@@ -140,6 +140,12 @@ export const KINDS = {
       const imp = AC.importedAtoms({ id: ctx.id(ctx.ingredient), data: d });
       const a = await whenHas(() => sc().atoms && sc().atoms.imports); if (a) a({ ['pack:' + ctx.id(ctx.ingredient)]: imp });
     } },
+  // #91: model-document registry keys; the install (per evaluation, chain-only defs only) is site/packs-hooks.js, imported only when a program names a pack that ships hooks
+  'hooks': { formats: ['hooks@1'], code: 'optional',
+    check: (d) => (!isObj(d) || d.model !== 1 ? 'hooks needs model: 1' : Object.keys(d).find((k) => !['model', 'meta', 'markers', 'scopes', 'slots', 'defs', 'vars'].includes(k)) ? 'hooks holds registry keys only' : d.defs != null && !isObj(d.defs) ? 'defs must be an object' : null),
+    items: (d) => Object.entries(d.defs || {}),
+    view: (entries) => entries.map((e) => ({ pack: e.pack, ingredient: e.ingredient, data: e.data })), // precedence order (section 9.2); the installer picks first-wins
+    apply(ing, d) { const bad = Object.values(d.defs || {}).some((x) => isObj(x) && (x.opaque === true || JSON.stringify(x).includes('"$code"'))); if (bad && !ing.code) throw Object.assign(new Error('a def is code (opaque or $code) but the ingredient is not marked code: true'), { code: 'E_PACK_CODE_UNDECLARED' }); } },
   // extension kind: data-only passthrough (hosts without an adapter skip an x- kind silently, section 3)
   'x-glyphcore.words': { formats: ['x-glyphcore.words@1'], code: 'never',
     check: (d) => (Array.isArray(d.items) ? null : 'items must be an array'),
@@ -177,4 +183,4 @@ export const KINDS = {
 };
 export const knownKind = (kind) => Object.prototype.hasOwnProperty.call(KINDS, kind);
 // kinds the spec defines but this host has no adapter for yet: skipped with W_PACK_KIND, never an error
-export const DEFERRED = new Set(['hooks', 'components', 'layouts', 'palette-actions', 'visuals']);
+export const DEFERRED = new Set(['components', 'layouts', 'palette-actions', 'visuals']);

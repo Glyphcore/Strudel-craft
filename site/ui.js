@@ -1,6 +1,7 @@
 /* Site modal (input / yes-no) and toast components. Never use the browser's native dialogs.
    window.strudelCraft.ui = { ask({title, label, value, okText}) -> Promise<string|null>,
                               askYesNo({title, message, okText, danger}) -> Promise<boolean>,
+                              askLater({title, message, okText, notice}) -> Promise<boolean> (sticky toast first, modal on tap; never blocks Play),
                               toast(message, {kind: 'info'|'ok'|'error', ms}) } */
 (() => {
   const sc = (window.strudelCraft = window.strudelCraft || {});
@@ -46,7 +47,11 @@
     while (stack.children.length > 3) stack.firstChild.remove();
     if (!sticky) setTimeout(kill, ms || (kind === 'error' ? 6000 : 2600)); return t;
   }
-  sc.ui = { ask: (o) => modal({ ...o, input: true }), askYesNo: (o) => modal({ ...o, input: false }), toast };
+  /* askLater: for questions the user did not ask for (startup, upgrade or migration notices). A modal makes the page inert, and a migration
+     question opened on load covered Play, so the first Play after an upgrade did nothing (#84). askLater shows a sticky toast above the
+     transport instead; tapping it opens the yes/no modal and the promise resolves with the answer. Dismissing the toast leaves it pending. */
+  function askLater(o) { return new Promise((resolve) => { toast((o.notice || o.title) + ': tap to review', { kind: 'info', sticky: true, onClick: () => modal({ ...o, input: false }).then(resolve) }); }); }
+  sc.ui = { ask: (o) => modal({ ...o, input: true }), askYesNo: (o) => modal({ ...o, input: false }), askLater, toast };
 })();
 /* Phone chrome: overflow tools sheet and header that hides on scroll down, returns on scroll up. */
 (() => {

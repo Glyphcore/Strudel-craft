@@ -103,20 +103,27 @@ const seed = () => p.evaluate(async () => {
 });
 const legacyState = () => p.evaluate(async () => ({ key: localStorage.getItem('sc.capture.mode'), db: (await indexedDB.databases()).some((d) => d.name === 'sc-capture'), schema: localStorage.getItem('sc.record.schema') }));
 const modalBtn = async (re, label) => { await p.waitForFunction((s) => { const d = document.querySelector('dialog.scm[open]'); return d && new RegExp(s, 'i').test(d.querySelector('h2').textContent); }, re.source, { timeout: 10000 }); return p.locator('dialog.scm[open] button', { hasText: label }); };
+/* the first prune question is a sticky toast (never a modal on load: a modal made Play dead after an upgrade, #84); tapping it opens the modal */
+const firstModal = async (label) => {
+  await p.waitForSelector('.toast .toast-act', { timeout: 15000 });
+  const open0 = await p.evaluate(() => document.querySelectorAll('dialog[open]').length); if (open0) throw new Error('a modal covered the page on load');
+  await p.locator('.toast .toast-act', { hasText: /old takes found/i }).click();
+  return modalBtn(/old takes will be removed/, label);
+};
 await seed(); await p.reload(); await p.waitForSelector('#list li[data-id]');
-await (await modalBtn(/old takes will be removed/, 'Other options')).click();
+await (await firstModal('Other options')).click();
 await (await modalBtn(/clear old takes without a backup/, 'Keep for now')).click();
 await p.waitForTimeout(500);
 const kept = await legacyState();
 ok('legacy: Keep for now deletes nothing (modal, no native dialog)', kept.key === '"cycles"' && kept.db && kept.schema === null, JSON.stringify(kept));
 await p.reload(); await p.waitForSelector('#list li[data-id]');
-await (await modalBtn(/old takes will be removed/, 'Other options')).click();
+await (await firstModal('Other options')).click();
 await (await modalBtn(/clear old takes without a backup/, 'Clear')).click();
 await p.waitForFunction(() => [...document.querySelectorAll('.toast')].some((x) => /takes are now recipes/.test(x.textContent)), null, { timeout: 10000 }).catch(() => {});
 const cleared = await legacyState();
 ok('legacy: Clear (no backup) prunes with a notice, nothing downloaded', cleared.key === null && !cleared.db && cleared.schema === '1', JSON.stringify(cleared));
 await seed(); await p.reload(); await p.waitForSelector('#list li[data-id]');
-const [bk] = await Promise.all([p.waitForEvent('download'), (await modalBtn(/old takes will be removed/, 'Download backup (JSON) and clear')).click()]);
+const [bk] = await Promise.all([p.waitForEvent('download'), (await firstModal('Download backup (JSON) and clear')).click()]);
 const bkFile = path.join(TMP, 'backup.json'); await bk.saveAs(bkFile); const bkJson = JSON.parse(fs.readFileSync(bkFile, 'utf8'));
 await p.waitForFunction(() => [...document.querySelectorAll('.toast')].some((x) => /takes are now recipes/.test(x.textContent)), null, { timeout: 10000 }).catch(() => {});
 const pr = await legacyState();

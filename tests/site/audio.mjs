@@ -2,8 +2,9 @@
    GitHub Pages caching (max-age=600) and, in Playwright Chromium on the S22 profile (360x780, DPR 3, touch, NO autoplay flag: Play is a real tap),
    runs two cases:
      fresh  - a fresh profile, no service worker;
-     stale  - a service worker and HTTP cache installed by an older build (git archive of OLD_BUILD, else this build under another VERSION),
-              then the server flips to this build and the page reloads (old shell files + new files).
+     stale  - a service worker and HTTP cache installed by an older build (git archive of each OLD_BUILDS entry, else this build under another
+              VERSION), then the server flips to this build and the page reloads (old shell files + new files). Before the first Play no
+              modal may be open (an upgrade question is a toast, #84), and every scenario plays.
    In each case: Rack default recipe, Rack with the user's program, Stack with the user's program typed into an empty Stack, and a
    _scope/_pianoroll program. After Play it measures the peak on the master AnalyserNode (> 0.01), the AudioContext state (running),
    the audio status dot, non-blank pixels on the stage scope and the inline widget canvases, and fails on any page error or console error.
@@ -22,7 +23,7 @@ const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const SITE = path.join(ROOT, 'site'), PREFIX = '/Strudel-craft/';
-const OLD_BUILD = '8a48f53'; /* an older deployed build (audio capture era) whose service worker the stale case installs first */
+const OLD_BUILDS = ['8a48f53', 'e9bf37b']; /* older deployed builds whose service worker the stale case installs first: audio capture era (leaves an old take store) and the first installable PWA */
 const LIVE = (() => { const i = process.argv.indexOf('--live'); return i > 0 ? process.argv[i + 1] : null; })();
 const USER = `$: note("c2*8").s("sawtooth").gain(ctl("macro", { type: "knob", min: 0, max: 1, default: 0.6 }))
 $: s("supersaw*8").room(0.1).sometimes(x => x.vowel("e a"))
@@ -45,11 +46,12 @@ const BASE = LIVE || `http://127.0.0.1:${server.address().port}${PREFIX}`;
 const checks = [];
 const check = (name, ok, detail = '') => { checks.push({ name, ok: !!ok, detail }); console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? '  -- ' + detail : ''}`); };
 
-/* old build for the stale case */
-let OLD = null;
-if (!LIVE) {
-  try { const d = fs.mkdtempSync(path.join(os.tmpdir(), 'sc-old-')); execSync(`git -C "${ROOT}" archive ${OLD_BUILD} site | tar -x -C "${d}"`, { stdio: 'pipe' }); OLD = path.join(d, 'site'); }
-  catch (e) { OLD = SITE; console.log('note: git archive unavailable, the stale case uses this build under an old VERSION'); }
+/* old builds for the stale cases */
+const TMP = []; process.on('exit', () => { for (const d of TMP) try { fs.rmSync(d, { recursive: true, force: true }); } catch (e) { /* ignore */ } }); /* old-build archives are 43 MB each: never leave them in /tmp */
+const OLDS = [];
+if (!LIVE) for (const b of OLD_BUILDS) {
+  try { const d = fs.mkdtempSync(path.join(os.tmpdir(), 'sc-old-')); TMP.push(d); execSync(`git -C "${ROOT}" archive ${b} site | tar -x -C "${d}"`, { stdio: 'pipe' }); OLDS.push([b, path.join(d, 'site')]); }
+  catch (e) { OLDS.push([b + ' (this build)', SITE]); console.log(`note: git archive ${b} unavailable, that stale case uses this build under an old VERSION`); }
 }
 
 const browser = await chromium.launch(); /* no --autoplay-policy flag: audio must start from the tap */
@@ -148,16 +150,20 @@ async function scenario(tag, page) {
 }
 
 /* stale service worker: an older build installs its SW and fills the HTTP cache, then the server flips to this build */
-if (!LIVE) {
-  root = OLD; swVersion = 'sc-test-old';
-  const { page, ctx, errors } = await newPage('stale');
+for (const [b, OLD] of OLDS) {
+  const tag = 'stale ' + b;
+  root = OLD; swVersion = 'sc-test-old-' + b.split(' ')[0];
+  const { page, ctx, errors } = await newPage(tag);
   await page.goto(BASE); await page.evaluate(() => navigator.serviceWorker.ready); await page.waitForTimeout(2500);
-  check('[stale] old service worker controls the page', await page.evaluate(() => !!navigator.serviceWorker.controller));
+  check(`[${tag}] old service worker controls the page`, await page.evaluate(() => !!navigator.serviceWorker.controller));
   root = SITE; swVersion = 'sc-test-new'; errors.length = 0;
   await page.reload(); await page.waitForSelector('#list li[data-id]', { timeout: 30000 }); await page.waitForTimeout(1500);
-  check('[stale] page runs this build after reload (no mixed old shell)', await page.evaluate(() => !!document.querySelector('#audioSt') && !!(window.__sc && window.__sc.audio)));
-  await scenario('stale', page);
-  check('[stale] no page errors, console errors or name collisions', errors.length === 0, errors.slice(0, 5).join(' | '));
+  check(`[${tag}] page runs this build after reload (no mixed old shell)`, await page.evaluate(() => !!document.querySelector('#audioSt') && !!(window.__sc && window.__sc.audio)));
+  await page.waitForTimeout(1500);
+  const pre = await page.evaluate(() => ({ modals: [...document.querySelectorAll('dialog[open]')].map((d) => d.querySelector('h2')?.textContent || d.className), toasts: [...document.querySelectorAll('.toast')].map((t) => t.textContent.replace(/×$/, '')) }));
+  check(`[${tag}] after the upgrade no modal covers the transport (upgrade questions are toasts)`, pre.modals.length === 0, JSON.stringify(pre));
+  await scenario(tag, page);
+  check(`[${tag}] no page errors, console errors or name collisions`, errors.length === 0, errors.slice(0, 5).join(' | '));
   await ctx.close();
 }
 

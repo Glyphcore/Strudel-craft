@@ -712,7 +712,7 @@ function toggleSheet() { el.w && !el.w.hidden && !el.w.closest('.ws-body') ? clo
 
 function init() {
   build();
-  pruneLegacy({ notify: (m) => toast(m, { kind: 'info', ms: 8000 }), ask: (o) => sc.ui.askYesNo(o), saveBlob }).catch(() => {});
+  pruneLegacy({ notify: (m) => toast(m, { kind: 'info', ms: 8000 }), ask: (o) => sc.ui.askYesNo(o), askFirst: (o) => (sc.ui.askLater || sc.ui.askYesNo)(o), saveBlob }).catch(() => {});
   const P = sc.palette; if (P) {
     P.register({ id: 'record.open', group: 'Record', title: 'Open record panel', run: () => open() });
     P.register({ id: 'record.toggle', group: 'Record', title: 'Record / stop take', run: () => { open(); toggleRec(); } });

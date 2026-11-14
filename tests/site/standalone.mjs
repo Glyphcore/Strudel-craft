@@ -19,6 +19,7 @@ const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const SITE = path.join(ROOT, 'site'), PREFIX = '/Strudel-craft/';
+const TMP = []; process.on('exit', () => { for (const d of TMP) try { fs.rmSync(d, { recursive: true, force: true }); } catch (e) { /* ignore */ } }); /* old-build archives are 43 MB each: never leave them in /tmp */
 const OLD_BUILDS = ['8a48f53', 'e9bf37b']; /* audio-capture era and first installable PWA build */
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.webmanifest': 'application/manifest+json' };
 let root = SITE, swVersion = 'sc-test-new', breakSyntax = false;
@@ -54,6 +55,8 @@ async function playAndSyntax(tag, page) {
   check(`[${tag}] installed (standalone) mode active: html.pwa-standalone`, await page.waitForFunction(() => document.documentElement.classList.contains('pwa-standalone') && window.strudelCraft.pwa && window.strudelCraft.pwa.standalone, null, { timeout: 15000 }).then(() => true, () => false));
   check(`[${tag}] service worker controls the page`, await controlled(page));
   await page.waitForSelector('#list li[data-id]', { timeout: 30000 }); await page.waitForTimeout(1200);
+  const modals = await page.evaluate(() => [...document.querySelectorAll('dialog[open]')].map((d) => d.querySelector('h2')?.textContent || d.className));
+  check(`[${tag}] no modal over the transport before Play (upgrade questions are toasts, #84)`, modals.length === 0, modals.join(', '));
   await page.tap('#playBtn');
   await page.waitForFunction(() => { const s = window.__sc.S; return (!s.busy && s.playing && window.__sc.Engine.started) || document.querySelector('#status').classList.contains('err'); }, null, { timeout: 60000 }).catch(() => {});
   await page.waitForTimeout(1500);
@@ -87,7 +90,7 @@ async function playAndSyntax(tag, page) {
 
 /* 2. upgrade from an older installed build */
 for (const old of OLD_BUILDS) {
-  let OLD; try { const d = fs.mkdtempSync(path.join(os.tmpdir(), 'sc-old-')); execSync(`git -C "${ROOT}" archive ${old} site | tar -x -C "${d}"`, { stdio: 'pipe' }); OLD = path.join(d, 'site'); } catch (e) { console.log(`SKIP  upgrade from ${old}: git archive unavailable`); continue; }
+  let OLD; try { const d = fs.mkdtempSync(path.join(os.tmpdir(), 'sc-old-')); TMP.push(d); execSync(`git -C "${ROOT}" archive ${old} site | tar -x -C "${d}"`, { stdio: 'pipe' }); OLD = path.join(d, 'site'); } catch (e) { console.log(`SKIP  upgrade from ${old}: git archive unavailable`); continue; }
   root = OLD; swVersion = 'sc-test-old-' + old;
   const tag = 'upgrade ' + old; const { ctx, page, errors } = await installedPage(tag);
   await page.goto(BASE); await page.evaluate(() => navigator.serviceWorker.ready); await page.reload(); await controlled(page); await page.waitForTimeout(1500);

@@ -178,13 +178,13 @@ async function legacyDump() {
   } catch (e) { stores.error = String(e && e.message || e); }
   return { format: 'strudel-craft/legacy-takes-backup', note: 'Raw dump of the pre-recipe take store. Not importable; kept so nothing is lost.', created: new Date().toISOString(), settings, stores };
 }
-export async function pruneLegacy({ notify, ask, saveBlob } = {}) {
+export async function pruneLegacy({ notify, ask, askFirst, saveBlob } = {}) {
   if (localStorage.getItem('sc.record.schema') === String(VERSION)) return false;
   let had = Object.keys(localStorage).some((k) => k.startsWith('sc.capture.'));
   try { if (indexedDB.databases) had = had || (await indexedDB.databases()).some((d) => d.name === 'sc-capture'); } catch (e) { /* unsupported */ }
   if (had) {
     if (!ask) return false; /* no modal available: never delete unasked */
-    let backup = await ask({ title: 'Old takes will be removed', message: 'Takes are now recipes, and the old take store cannot be converted. Download a JSON backup of the old takes and settings before they are cleared?', okText: 'Download backup (JSON) and clear', cancelText: 'Other options' });
+    let backup = await (askFirst || ask)({ title: 'Old takes will be removed', message: 'Takes are now recipes, and the old take store cannot be converted. Download a JSON backup of the old takes and settings before they are cleared?', okText: 'Download backup (JSON) and clear', cancelText: 'Other options', notice: 'Old takes found' });
     if (!backup) {
       const clear = await ask({ title: 'Clear old takes without a backup?', message: 'The old audio takes and their settings are deleted from this device and cannot be recovered. "Keep for now" deletes nothing and asks again next time.', okText: 'Clear', cancelText: 'Keep for now', danger: true });
       if (!clear) return false;

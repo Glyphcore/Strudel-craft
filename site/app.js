@@ -823,8 +823,8 @@ async function boot() {
     /* a new build is applied at once while idle (nothing playing, no editor focused): the waiting worker takes over and the page reloads, so an
        installed app never keeps running an old shell next to new files. While playing or typing, the toast lets the user pick the moment. */
     const busy = () => S.playing || S.busy || !!(document.activeElement && document.activeElement.closest && document.activeElement.closest('.cm-editor, textarea, input'));
-    const offer = (w) => { if (!w || offer.shown) return; offer.shown = true; if (!busy()) { w.postMessage('SKIP_WAITING'); return; } window.strudelCraft.ui.toast('New version, tap to reload', { kind: 'info', sticky: true, onClick: () => w.postMessage('SKIP_WAITING') }); };
-    let reloading = false; navigator.serviceWorker.addEventListener('controllerchange', () => { if (!reloading && offer.shown) { reloading = true; location.reload(); } });
+    const offer = (w) => { if (!w || offer.shown) return; offer.shown = true; if (!busy()) { w.postMessage('SKIP_WAITING'); return; } window.strudelCraft.ui.toast('New version, tap to reload', { kind: 'info', sticky: true, onClick: () => { offer.tapped = true; w.postMessage('SKIP_WAITING'); } }); };
+    let reloading = false; navigator.serviceWorker.addEventListener('controllerchange', () => { if (reloading || !offer.shown) return; if (busy() && !offer.tapped) { window.strudelCraft.ui.toast('New version ready, tap to reload', { kind: 'info', sticky: true, onClick: () => location.reload() }); return; } reloading = true; location.reload(); }); /* Play pressed while the idle update was applying: never reload under a running transport (#84) */
     const reg = () => navigator.serviceWorker.register('sw.js').then((r) => {
       if (r.waiting && navigator.serviceWorker.controller) offer(r.waiting);
       r.addEventListener('updatefound', () => { const w = r.installing; if (w) w.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller) offer(w); }); });

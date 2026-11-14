@@ -350,6 +350,8 @@
   "literals.js",
   "manifest.webmanifest",
   "model.js",
+  "packs-control.css",
+  "packs-control.js",
   "packs-kinds.js",
   "packs-sandbox.js",
   "packs-ui.css",

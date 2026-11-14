@@ -48,7 +48,7 @@ One Record panel with one arm, one transport and one timeline of takes. A take i
 | `outputs` | `capture` (realtime) and/or `render` (offline): `{sha256, sr, frames, how, encoding: "f32le-interleaved", envelope}`. `envelope` is a level fingerprint: mono RMS per 10 ms block in dB, in 0.1 dB steps. The audio hash is sha256 of interleaved little-endian float32 frames |
 
 - Only version 1 exists. Older and unknown versions are rejected ("Recipe version N is not supported"). There are no legacy readers and no migration shims.
-- The pre-recipe take store (IndexedDB `sc-capture`, `sc.capture.*` settings) is deleted once, and never silently: when old data exists a site modal offers "Download backup (JSON) and clear" (a raw dump of every store plus the `sc.capture.*` settings, typed arrays and blobs as base64; not importable, there is still no legacy reader) or, under "Other options", "Clear" or "Keep for now" (deletes nothing, asked again next load). If the backup fails nothing is deleted. A notice follows the prune. Storage is now IndexedDB `sc-recipes` (`{id, recipe, audio: {capture?, render?, remake?}}`) plus settings in `sc.record.*`.
+- The pre-recipe take store (IndexedDB `sc-capture`, `sc.capture.*` settings) is deleted once, and never silently: when old data exists a sticky toast above the transport ("Old takes found: tap to review", `sc.ui.askLater`) opens a site modal on tap, never on load (a modal on load made the page inert and the first Play did nothing, #84), and the modal offers "Download backup (JSON) and clear" (a raw dump of every store plus the `sc.capture.*` settings, typed arrays and blobs as base64; not importable, there is still no legacy reader) or, under "Other options", "Clear" or "Keep for now" (deletes nothing, asked again next load). If the backup fails nothing is deleted. A notice follows the prune. Storage is now IndexedDB `sc-recipes` (`{id, recipe, audio: {capture?, render?, remake?}}`) plus settings in `sc.record.*`.
 - Sample maps the site loads by branch are pinned at record time to the commit the branch resolves to (GitHub API). The map's `_base` is rewritten to that commit on Remake, so every sample file is fixed by the commit.
 
 ## Reference render and Remake
@@ -108,7 +108,7 @@ A program can capture its own lanes: `capture("groove", "drums", { window: "1b..
   - workspace pane.
 - `node tests/site/capture.mjs` (audio, 360 px): 44px targets, `record.*` actions, 2-cycle take with exact loop length and non-silent waveform, WAV 16/24 headers and lengths, file name `<name>_<cycles>c_<cps>cps.wav`, quota line, rename/delete modals, tab-switch survival, exact render length.
 - **B** (clean):
-  - legacy prune: a modal first; backup path downloads a JSON with the old take and clears; "Keep for now" deletes nothing; "Clear" prunes with a notice;
+  - legacy prune: a toast first (tapped in the test), then the modal; backup path downloads a JSON with the old take and clears; "Keep for now" deletes nothing; "Clear" prunes with a notice;
   - import is inert;
   - Remake approval, then the audio hash matches A's render bit for bit;
   - a pad take replays its hooks pad journal: it matches, while the same render without the journal leaves the tolerance;

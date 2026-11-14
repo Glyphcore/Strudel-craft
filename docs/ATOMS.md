@@ -264,7 +264,14 @@ rewriting and before Strudel's transpiler.
 | `E_ATOM_TYPE_ID` | unknown atom type (strict); live it is treated as `text` |
 | `W_ATOM_DYNAMIC` | non-static reference; runs through the runtime fallback, not tracked |
 | `W_ATOM_UNKNOWN_SOUND` | a `sound` / `bank` atom not in the catalog or `soundMap` (it may load later) |
-| `W_ATOM_UNUSED` / `W_ATOM_DUP` | declared and never referenced / two atoms of one type compile to the same string |
+| `W_ATOM_UNUSED` / `W_ATOM_DUP` | declared and never used / two atoms of one type compile to the same string |
+
+**Usage rule (`W_ATOM_UNUSED`).** An atom is *used* when it is in the transitive closure of the reference sites in the program: every
+static `atoms.x` site is a root, and from a used atom the closure follows its `from` chain, body `$atom` nodes, param defaults and
+args / ops (names or ids, so model atoms and imports are walked too). An atom referenced only by an unused atom is itself unused, so
+both warn. Catalog atoms and imports are never declarations in the program and never warn. A code declaration bound to a model id is
+treated as used (hooks, pads, maps and `$atom` sites in the model are not visible to the text check). A dynamic site (`W_ATOM_DYNAMIC`)
+suppresses the warning for the whole program. The check resolves only the edges it walks; it does not force the lazily indexed declarations.
 
 Policy as elsewhere: while the program is invalid the site stays inert on the last good compile; `strudel check --strict` exits 1.
 

@@ -469,11 +469,18 @@ function analyze(code, env, diag, opts = {}) {
     } catch (e) { fail(e); }
   }
   // unused / duplicate declarations (warnings)
-  const mention = new Set(); const walkRefs = (x) => { if (!x || typeof x !== 'object') return; if (x.$segs) { try { mention.add(toRef(env, x).$atom); } catch { /* reported elsewhere */ } for (const s of x.$segs) if (s.call) s.call.forEach(walkRefs); return; } if (x.$atom) mention.add(x.$atom); if (x.from?.atom) mention.add(x.from.atom); Object.values(x).forEach(walkRefs); };
-  for (const r of env.decls) { walkRefs(r.body); walkRefs(r.from); walkRefs(r.params); }
+  // usage rule (ATOMS section 8): an atom is used when it is the transitive closure of the reference sites in code (including the
+  // sites of its own chain: a `from:` / body `$atom` / param default / arg / op reference counts only when its referrer is used).
+  const edges = new Map(); // rec name -> Set of rec names it mentions (by name or id, resolved through the env)
+  const walkRefs = (to, x) => { if (!x || typeof x !== 'object') return; if (x.$segs) { try { add(to, toRef(env, x).$atom); } catch { /* reported elsewhere */ } for (const s of x.$segs) if (s.call) s.call.forEach((y) => walkRefs(to, y)); return; } if (x.$atom) add(to, x.$atom); if (x.from?.atom) add(to, x.from.atom); Object.values(x).forEach((y) => walkRefs(to, y)); };
+  const add = (to, k) => { const t = lookup(env, k); if (t) to.add(t.name); };
+  const edgesOf = (rec) => { if (!edges.has(rec.name)) { const to = new Set(); walkRefs(to, rec.body); walkRefs(to, rec.from); walkRefs(to, rec.params); edges.set(rec.name, to); } return edges.get(rec.name); };
+  const live = new Set(), todo = [...used]; // closure over the same edges, resolved on demand (no full-index resolution)
+  for (const r of env.decls) if (r.id && r.origin !== 'catalog') todo.push(r.name); // bound to a model id: model-side sites (hooks, pads, maps) are not visible here
+  while (todo.length) { const n = todo.pop(); if (live.has(n)) continue; live.add(n); const rec = env.byName.get(n); if (rec) for (const m of edgesOf(rec)) todo.push(m); }
   const same = new Map();
   for (const r of env.decls) {
-    if (!used.has(r.name) && !mention.has(r.name) && !sc.sites.some((s) => s.dynamic)) warn('W_ATOM_UNUSED', `atom "${r.name}" is declared and never referenced`, r.at);
+    if (!live.has(r.name) && !sc.sites.some((s) => s.dynamic)) warn('W_ATOM_UNUSED', `atom "${r.name}" is declared and never referenced`, r.at);
     try { const f = flat(env, r); if (!f.ops && !Object.keys(f.all).length) { const v = instantiate(env, r, {}), k = r.type + '\0' + (v.text ?? JSON.stringify(v.obj)); if (same.has(k)) warn('W_ATOM_DUP', `atoms "${same.get(k)}" and "${r.name}" compile to the same ${r.type} string`, r.at); else same.set(k, r.name); } } catch { /* reported above */ }
   }
   edits.sort((a, b) => a.from - b.from || a.to - b.to);

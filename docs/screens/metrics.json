@@ -737,6 +737,7 @@
   }
  },
  "atoms_ui": {
+  "date": "2026-11-14T05:52:12.149Z",
   "derived_edit": {
    "added": [
     "k2: s(atoms.kick4({ n: 6 })).gain(0.5)"
@@ -839,48 +840,48 @@
   },
   "lazy": {
    "declared_5000": {
-    "first_paint_ms": 108.5,
+    "first_paint_ms": 120.3,
     "dom_cards": 3,
     "scene_cards": 3
    },
    "declared_3": {
-    "first_paint_ms": 75.1,
+    "first_paint_ms": 100.3,
     "dom_cards": 3
    },
-   "delta_pct": 44.5,
+   "delta_pct": 19.9,
    "rounds": [
     {
      "small": {
-      "ms": 92.5,
+      "ms": 90.1,
       "dom_cards": 3,
       "scene_cards": 3
      },
      "big": {
-      "ms": 156.6,
+      "ms": 158.2,
       "dom_cards": 3,
       "scene_cards": 3
      }
     },
     {
      "small": {
-      "ms": 74.2,
+      "ms": 100.3,
       "dom_cards": 3,
       "scene_cards": 3
      },
      "big": {
-      "ms": 108.5,
+      "ms": 105.2,
       "dom_cards": 3,
       "scene_cards": 3
      }
     },
     {
      "small": {
-      "ms": 75.1,
+      "ms": 113.5,
       "dom_cards": 3,
       "scene_cards": 3
      },
      "big": {
-      "ms": 106.4,
+      "ms": 120.3,
       "dom_cards": 3,
       "scene_cards": 3
      }

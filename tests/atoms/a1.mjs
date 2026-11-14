@@ -216,6 +216,23 @@ assert.deepEqual(A.types().map((t) => t.id), ['mini', 'sound', 'bank', 'note', '
 if (!hasCli) skip('CLI: strudel atoms list | show | refs | compile | check --strict on a fixture', NO_CLI + '; needs `strudel atoms` wired to site/engine/atoms.js');
 else skip('CLI', 'present but `strudel atoms` is not implemented in this checkout');
 
+// Box: W_ATOM_UNUSED is the transitive closure of the reference sites (docs/ATOMS.md section 8)
+{
+  const unused = (c, x) => { const r = A.check(c, x, { strict: true }); assert.deepEqual(r.errors, []); return r.warnings.filter((w) => w.code === 'W_ATOM_UNUSED').map((w) => w.message.split('"')[1]).sort(); };
+  const bb = 'atom("backbeat", { type: "mini", body: "~ sd ~ sd" })\n', g = (n, b) => `atom("${n}", { type: "mini", body: ${b} })\n`;
+  assert.deepEqual(unused(fx('prog_compose.strudel.js')), []); // report: backbeat only inside a used composition
+  assert.deepEqual(unused(bb + g('g1', '{ $seq: ["bd", { $atom: "backbeat" }] }') + g('g2', '{ $atom: "g1" }') + '$: s(atoms.g2)'), []); // two levels
+  assert.deepEqual(unused(bb + g('g1', '{ $seq: ["bd", { $atom: "backbeat" }] }') + '$: s("bd")'), ['backbeat', 'g1']); // referrer unused: both warn
+  assert.deepEqual(unused(bb + 'atom("g1", { type: "mini", params: { x: { shape: "atom:mini", default: { $atom: "backbeat" } } }, body: { $seq: ["bd", { $param: "x" }] } })\n$: s(atoms.g1)'), []); // param default
+  assert.deepEqual(unused(bb + 'atom("b2", { type: "mini", from: atoms.backbeat({}) })\n$: s(atoms.b2)'), []); // derived (from + args)
+  assert.deepEqual(unused(bb + g('g1', '{ $atom: "a1" }') + '$: s(atoms.g1)', { atoms: { a1: { name: 'x', type: 'mini', body: { $atom: 'backbeat' } } } }), []); // through a model atom addressed by id
+  assert.deepEqual(unused(bb + '$: s("bd")', { atoms: { a9: { name: 'backbeat', type: 'mini', body: '~ sd' } } }), []); // bound to a model id: model-side sites (hooks, pads, maps) are not visible here
+  assert.deepEqual(unused(bb + '$: s("bd")'), ['backbeat']); // genuinely unused still warns
+  assert.deepEqual(unused('$: s(atoms.snd.bd)'), []); // catalog atoms never warn
+  assert.deepEqual(unused('import atoms from "pk"\n$: s("bd")', { imports: { pk: { a1: { name: 'x', type: 'mini', body: 'bd' } } } }), []); // imports are not declarations
+  box('W_ATOM_UNUSED = transitive closure of reference sites: prog_compose fixture (backbeat inside a used composition) clean; 2-level, param default, from/args, model-id chain clean; unused referrer warns both; a real unused atom still warns; catalog and imports never warn');
+}
+
 // Box: no Strudel file modified or vendored anew
 {
   const root = new URL('../..', import.meta.url).pathname;

@@ -149,6 +149,97 @@ const modalOpen = (page) => page.evaluate(() => !!document.querySelector('dialog
   await ctx.close();
 }
 
+// ---- 5. sandboxed control renderer: draws in its own frame inside the host slot, host clamps set(), fallback when untrusted / timed out / killed, clickjacking
+const zlib = await import('zlib');
+function pngPixels(buf) { // minimal PNG decoder (8-bit RGB/RGBA, non-interlaced): enough for Playwright screenshots
+  let p = 8, w = 0, hgt = 0, ct = 0; const idat = [];
+  while (p < buf.length) { const len = buf.readUInt32BE(p), type = buf.toString('ascii', p + 4, p + 8), d = buf.subarray(p + 8, p + 8 + len); if (type === 'IHDR') { w = d.readUInt32BE(0); hgt = d.readUInt32BE(4); ct = d[9]; } else if (type === 'IDAT') idat.push(d); p += 12 + len; }
+  const bpp = ct === 6 ? 4 : 3, raw = zlib.inflateSync(Buffer.concat(idat)), out = Buffer.alloc(w * hgt * bpp), stride = w * bpp;
+  for (let y = 0; y < hgt; y++) { const f = raw[y * (stride + 1)], src = raw.subarray(y * (stride + 1) + 1, (y + 1) * (stride + 1)), row = out.subarray(y * stride, (y + 1) * stride), prev = y ? out.subarray((y - 1) * stride, y * stride) : null;
+    for (let i = 0; i < stride; i++) { const a = i >= bpp ? row[i - bpp] : 0, b = prev ? prev[i] : 0, c = prev && i >= bpp ? prev[i - bpp] : 0; let v = src[i];
+      if (f === 1) v += a; else if (f === 2) v += b; else if (f === 3) v += (a + b) >> 1; else if (f === 4) { const pp = a + b - c, pa = Math.abs(pp - a), pb = Math.abs(pp - b), pc = Math.abs(pp - c); v += pa <= pb && pa <= pc ? a : pb <= pc ? b : c; } row[i] = v & 255; } }
+  return { w, h: hgt, bpp, px: out };
+}
+const colours = (png) => { let mag = 0, grn = 0; for (let i = 0; i < png.px.length; i += png.bpp) { const r = png.px[i], g = png.px[i + 1], b = png.px[i + 2]; if (r > 200 && g < 60 && b > 200) mag++; if (r < 60 && g > 200 && b < 60) grn++; } return { mag, grn }; };
+const TYPE = 'testco.dial.dial';
+const mount = (page, id, o = {}) => page.evaluate(({ id, o }) => { const reg = window.strudelCraft.controls.registry; const fn = o.keep ? window.__keptRenderer : reg.renderer(id); if (!fn) return null; if (!o.keep) window.__keptRenderer = fn;
+  let host = document.getElementById('pkcHost'); if (!host) { host = document.createElement('div'); host.id = 'pkcHost'; host.style.cssText = 'position:fixed;left:40px;top:120px;width:260px;padding:8px;background:var(--panel)'; document.body.append(host); }
+  host.replaceChildren(); window.__io = { v: 2, sets: [], get() { return this.v; }, set(v) { this.sets.push(v); this.v = v; } };
+  window.__ctl = fn(host, 'dial1', { type: id, min: 0, max: 10, step: 0.5, unit: 'dB' }, window.__io); return true; }, { id, o });
+{
+  const { ctx, page } = await open({ lock: userLock(entry('dial')), flag: true });
+  await page.evaluate(() => window.strudelCraft.packs.load('testco/dial:dial')); await page.waitForTimeout(200);
+  const pre = await page.evaluate((id) => { const reg = window.strudelCraft.controls.registry; const ing = window.strudelCraft.packs.list().find((p) => p.id === 'testco/dial').ingredients[0]; return { chain: reg.fallbackChain(id), renderer: !!reg.renderer(id), st: ing.state, code: ing.reason && ing.reason.code, frames: document.querySelectorAll('iframe').length }; }, TYPE);
+  check('control-types without a grant: blocked, no sandboxed renderer, the type renders through its fallback (knob); no frame', pre.st === 'blocked' && pre.code === 'E_PACK_CODE_GRANT' && !pre.renderer && pre.chain[0] === TYPE && pre.chain[1] === 'knob' && pre.frames === 0, JSON.stringify(pre));
+  await page.evaluate(async () => { const p = window.strudelCraft.packs; p.grant('testco/dial:dial'); await p.load('testco/dial:dial'); }); // grant = the trust dialog's accept (section 2 tests the dialog path)
+  await page.waitForFunction((id) => !!window.strudelCraft.controls.registry.renderer(id), TYPE, { timeout: 8000 });
+  await mount(page, TYPE); await page.waitForFunction(() => window.__ctl.state === 'live', null, { timeout: 5000 }); await page.waitForTimeout(400);
+  const box = await page.evaluate(() => { const st = document.querySelector('#pkcHost .pkc-stage'), f = st.querySelector('iframe'), a = st.getBoundingClientRect(), b = f.getBoundingClientRect(), tag = document.querySelector('#pkcHost .pkc-tag');
+    const c = document.elementFromPoint(a.left + a.width / 2, a.top + a.height / 2);
+    return { sandbox: f.getAttribute('sandbox'), inert: f.inert, pe: getComputedStyle(f).pointerEvents, tab: f.tabIndex, aria: f.getAttribute('aria-hidden'), allow: f.getAttribute('allow'), inside: b.left >= a.left - 0.5 && b.top >= a.top - 0.5 && b.right <= a.right + 0.5 && b.bottom <= a.bottom + 0.5,
+      hit: c === st, tag: tag.textContent, tagOutside: tag.getBoundingClientRect().bottom <= a.top + 0.5, role: st.getAttribute('role'), label: st.getAttribute('aria-label'), z: getComputedStyle(st.closest('.pkc')).zIndex, iso: getComputedStyle(st.closest('.pkc')).isolation, rect: [a.x, a.y, a.width, a.height].map(Math.round) }; });
+  check('renderer frame: sandbox=allow-scripts only, inert, no pointer events, not focusable, aria-hidden; clipped inside its slot; a click at its centre hits the host slot, not the frame', box.sandbox === 'allow-scripts' && box.inert === true && box.pe === 'none' && box.tab === -1 && box.aria === 'true' && box.allow === '' && box.inside && box.hit, JSON.stringify(box));
+  check('host label: visible "third-party" tag naming the pack, outside the frame box; host slot is role=slider with an accessible name; own stacking context at z-index 0', /third-party\s+testco\/dial/.test(box.tag) && box.tagOutside && box.role === 'slider' && /third-party control from testco\/dial/.test(box.label) && box.z === '0' && box.iso === 'isolate', JSON.stringify(box));
+  const r = box.rect; const clip = { x: r[0] + 2, y: r[1] + 2, width: r[2] - 4, height: r[3] - 4 };
+  const c0 = colours(pngPixels(await page.screenshot({ clip })));
+  check('the module draws in its frame (OffscreenCanvas): its colours inside the slot, value 2 of 0..10 = about 20 % green', c0.mag > 100 && c0.grn > 50 && c0.grn / (c0.grn + c0.mag) > 0.1 && c0.grn / (c0.grn + c0.mag) < 0.35, JSON.stringify(c0));
+  await page.mouse.click(r[0] + r[2] / 2, r[1] + r[3] / 2); await page.waitForTimeout(300);
+  const afterPtr = await page.evaluate(() => ({ v: window.__io.v, sets: window.__io.sets.slice(), focus: document.activeElement === document.querySelector('#pkcHost .pkc-stage'), now: document.querySelector('#pkcHost .pkc-stage').getAttribute('aria-valuenow') }));
+  await page.keyboard.press('ArrowDown'); await page.waitForTimeout(300); const afterKey = await page.evaluate(() => window.__io.v);
+  check('set() outside min..max is clamped by the host: pointer answer 500 -> 10 (max), key answer -1e9 -> 0 (min); the slot takes focus', afterPtr.v === 10 && afterPtr.sets.every((v) => v >= 0 && v <= 10) && afterPtr.focus && afterPtr.now === '10' && afterKey === 0, JSON.stringify({ afterPtr, afterKey }));
+  await page.waitForTimeout(300); const c1 = colours(pngPixels(await page.screenshot({ clip })));
+  check('redraw follows the host value (0 -> no green)', c1.grn < 20 && c1.mag > 100, JSON.stringify(c1));
+  await page.evaluate(() => { const h = document.getElementById('pkcHost'); h.style.zIndex = '30'; h.style.top = '300px'; h.style.boxShadow = '0 0 0 1px var(--line-2)'; }); for (const w of [390, 1440]) { await page.setViewportSize({ width: w, height: 800 }); await page.waitForTimeout(200); await page.screenshot({ path: path.join(SHOTS, `packs-control-live-${w}.png`) }); } await page.evaluate(() => { const h = document.getElementById('pkcHost'); h.style.zIndex = ''; h.style.top = '120px'; h.style.boxShadow = ''; });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  // clickjacking: below modals, toasts and the transport; not focusable and not hit while a modal is open
+  const cj = await page.evaluate(async () => {
+    const st = document.querySelector('#pkcHost .pkc-stage'), host = document.getElementById('pkcHost'), a = st.getBoundingClientRect();
+    const pend = window.strudelCraft.ui.askYesNo({ title: 'Trust code?', message: 'test', okText: 'OK' }); await new Promise((r) => setTimeout(r, 100));
+    const hitModal = document.elementFromPoint(a.left + a.width / 2, a.top + a.height / 2); const dlg = document.querySelector('dialog.scm[open]');
+    st.focus(); const stFocus = document.activeElement === st; const inertOut = !dlg.contains(st);
+    dlg.querySelector('.ghost').click(); await pend;
+    const t = window.strudelCraft.ui.toast('toast over the control', { sticky: true }); const tr = t.getBoundingClientRect();
+    host.style.left = (tr.left - 10) + 'px'; host.style.top = (tr.top - 40) + 'px'; await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const tHit = document.elementFromPoint(tr.left + tr.width / 2, tr.top + tr.height / 2); const toastOnTop = t.contains(tHit);
+    t.querySelector('.toast-x').click();
+    const tp = document.querySelector('.transport'); let transportOnTop = null; if (tp && tp.getBoundingClientRect().height) { const q = tp.getBoundingClientRect(); host.style.top = (q.top - 60) + 'px'; host.style.left = '40px'; await new Promise((r) => requestAnimationFrame(r)); const e = document.elementFromPoint(80, q.top + 10); transportOnTop = tp.contains(e); }
+    host.style.left = '40px'; host.style.top = '120px';
+    return { modalHit: !!dlg && (hitModal === dlg || dlg.contains(hitModal)), stFocus, inertOut, toastOnTop, transportOnTop };
+  });
+  await page.evaluate(() => { window.__p = window.strudelCraft.ui.askYesNo({ title: 'x', message: 'y' }); }); await page.waitForSelector('dialog.scm[open]');
+  const tabs = []; for (let i = 0; i < 6; i++) { await page.keyboard.press('Tab'); tabs.push(await page.evaluate(() => document.activeElement === document.querySelector('#pkcHost .pkc-stage') || !!document.activeElement.closest('#pkcHost'))); }
+  await page.keyboard.press('Escape');
+  check('clickjacking: with a site modal open, a click over the control hits the modal, the slot cannot take focus (script or Tab); toasts and the transport stay above the frame', cj.modalHit && !cj.stFocus && !tabs.some(Boolean) && cj.toastOnTop && cj.transportOnTop !== false, JSON.stringify({ ...cj, tabs }));
+  // killed (code switched off at runtime) -> host fallback; a stale renderer mounted after that -> fallback with the gate code
+  await page.evaluate(() => window.strudelCraft.packs.setCodeEnabled(false)); await page.waitForTimeout(200);
+  const k = await page.evaluate(() => ({ st: window.__ctl.state, frames: document.querySelectorAll('#pkcHost iframe').length, fb: !!document.querySelector('#pkcHost input.pkc-fb'), note: document.querySelector('#pkcHost .pkc-note').textContent, renderer: !!window.strudelCraft.controls.registry.renderer('testco.dial.dial'), drawn: window.strudelCraft.controls.registry.type('testco.dial.dial').drawn }));
+  await page.fill('#pkcHost input.pkc-fb', '7.5'); const fbv = await page.evaluate(() => window.__io.v);
+  check('code switched off while drawn: frame removed, host-drawn fallback control (works: value 7.5), renderer withdrawn', k.st === 'fallback' && k.frames === 0 && k.fb && /stopped/.test(k.note) && !k.renderer && !k.drawn && fbv === 7.5, JSON.stringify({ k, fbv }));
+  await mount(page, TYPE, { keep: true }); await page.waitForFunction(() => window.__ctl.state === 'fallback', null, { timeout: 3000 });
+  const u = await page.evaluate(() => ({ note: document.querySelector('#pkcHost .pkc-note').textContent, frames: document.querySelectorAll('#pkcHost iframe').length }));
+  check('untrusted / off: a renderer mounted while the gate fails starts no frame and shows the host fallback with the reason', u.frames === 0 && /E_PACK_CODE_GRANT/.test(u.note), JSON.stringify(u));
+  await page.evaluate(() => { const h = document.getElementById('pkcHost'); h.style.zIndex = '30'; h.style.top = '300px'; h.style.boxShadow = '0 0 0 1px var(--line-2)'; }); for (const w of [360, 390, 1440]) { await page.setViewportSize({ width: w, height: 800 }); await page.screenshot({ path: path.join(SHOTS, `packs-control-fallback-${w}.png`) }); }
+  await ctx.close();
+}
+{
+  const { ctx, page } = await open({ lock: userLock(entry('slowdial')), flag: true });
+  await page.evaluate(async () => { const p = window.strudelCraft.packs; p.grant('testco/slowdial:dial'); await p.load('testco/slowdial:dial'); });
+  await page.waitForFunction(() => !!window.strudelCraft.controls.registry.renderer('testco.slowdial.dial'), null, { timeout: 8000 });
+  await mount(page, 'testco.slowdial.dial'); await page.waitForFunction(() => window.__ctl.state === 'live', null, { timeout: 5000 });
+  for (let i = 0; i < 4; i++) { await page.focus('#pkcHost .pkc-stage').catch(() => {}); await page.keyboard.press('ArrowUp'); await page.waitForTimeout(200); }
+  await page.waitForFunction(() => window.__ctl.state === 'fallback', null, { timeout: 4000 }).catch(() => {});
+  const t = await page.evaluate(() => ({ st: window.__ctl.state, note: document.querySelector('#pkcHost .pkc-note').textContent, v: window.__io.v, ing: window.strudelCraft.packs.list().find((p) => p.id === 'testco/slowdial').ingredients[0].state }));
+  check('a renderer that never answers: keys still move the value (host step), three timeouts stop the frame, host fallback shown, ingredient failed', t.st === 'fallback' && /E_PACK_SANDBOX_TIMEOUT/.test(t.note) && t.v > 2 && t.ing === 'failed', JSON.stringify(t));
+  await page.evaluate(() => { const h = document.getElementById('pkcHost'); h.style.zIndex = '30'; h.style.top = '300px'; h.style.boxShadow = '0 0 0 1px var(--line-2)'; }); await page.setViewportSize({ width: 390, height: 800 }); await page.screenshot({ path: path.join(SHOTS, 'packs-control-timeout-390.png') });
+  await ctx.close();
+}
+{
+  const { ctx, page } = await open({ lock: userLock(entry('dial', ['dial'])), flag: true }); // allowCode without a trust record (a lock edited outside the dialog)
+  await page.evaluate(() => window.strudelCraft.packs.load('testco/dial:dial')); await page.waitForTimeout(300); const r = await page.evaluate(() => ({ renderer: !!window.strudelCraft.controls.registry.renderer('testco.dial.dial'), frames: document.querySelectorAll('iframe').length, st: window.strudelCraft.packs.list().find((p) => p.id === 'testco/dial').ingredients[0].state, why: window.strudelCraft.packs.list().find((p) => p.id === 'testco/dial').ingredients[0].reason?.message }));
+  check('allowCode without a trust record: blocked (not trusted), no renderer, no frame', !r.renderer && r.frames === 0 && r.st === 'blocked' && /not trusted/.test(r.why || ''), JSON.stringify(r));
+  await ctx.close();
+}
+
 check('no unexpected page or console errors', errs.length === 0, errs.slice(0, 3).join(' | '));
 await browser.close(); server.close();
 const failed = results.filter((x) => !x).length; console.log(`${results.length} checks, ${failed} failed (screenshots in ${SHOTS})`); process.exit(failed ? 1 : 0);

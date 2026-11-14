@@ -176,8 +176,13 @@ a stale pin is `E_PACK_HASH` and that content is missing (fail closed). `shim.py
   `allowCode` plus a trust record for the exact code hash (`packs.grant`, called only by the pack sheet's trust dialog; `packs.revoke`, `packs.codeInfo(ref)` for the dialog data
   and the changed module paths), and the flag is on. **Flag (default off):** the **Code** tab of the pack sheet (`localStorage` `sc.packs.code`, `packs.setCodeEnabled`). A history restore
   never raises consent: `history.checkout` keeps `sc.packs.code` off unless it is on now, keeps only trust records present now with the same hash, and limits
-  `allowCode` in the restored lock to what is granted now (grants still appear in history as `code trust` / `pack lock` commits). Built kind: `intellisense-provider` (module calls `craft.handle('complete', ({before, after, line, pos}) => [{label, category, detail,
-  info, apply}])`; starts on the first completion, never on load). Other code kinds stay `blocked` (coming). Errors: `E_PACK_CODE_GRANT`, `E_PACK_CODE_TRUST`,
+  `allowCode` in the restored lock to what is granted now (grants still appear in history as `code trust` / `pack lock` commits). Built kinds: `control-types` renderers (`packs-control.js` + `packs-control.css`, lazy: a type with `renderer: {module}`
+  draws in its own sandboxed frame mounted in the control's slot, inert and below modals, toasts and the transport; the host slot owns focus and input, sends
+  `draw` / `input` as data, clamps `{set}` to `min..max`, labels the frame "third-party <pack>", and falls back to a host-drawn control when untrusted, off,
+  timed out or killed; `controls.registry.renderer(id)(host, name, spec, {get, set})`; the Perform board does not call registry renderers yet), and
+  `intellisense-provider` (module calls `craft.handle('complete', ({before, after, line, pos}) => [{label, category, detail,
+  info, apply}])`; starts on the first completion, never on load). Other code kinds (`param-editors` editors, `visuals` painters,
+  `palette-actions` `run`) stay `blocked` (coming). Errors: `E_PACK_CODE_GRANT`, `E_PACK_CODE_TRUST`,
   `E_PACK_SANDBOX_TIMEOUT`, `E_PACK_SANDBOX_PROTOCOL`, `E_PACK_SANDBOX_LIMIT`. Main-realm code from the user tier is `E_PACK_CODE_REALM`; a module without `code: true` is
   `E_PACK_CODE_UNDECLARED`. Program text (recipes, syntax) runs only after Load/Play. Test: `node tests/site/packs_sandbox.mjs`.
 - Cache and offline (`sw.js`): `sc-packs-1` holds verified manifests and entry files and is not deleted on activate. The page registers pack roots with the service worker,

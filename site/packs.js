@@ -226,7 +226,19 @@ export function createPacks(opts = {}) {
         await s.start(); sb = s; return s;
       })().finally(() => { starting = null; }));
     };
-    return { ensure, call: async (method, input, o) => (await ensure()).call(method, input, o), stop: () => { if (sb) sb.stop(); sb = null; src = null; }, ready: () => !!sb && sb.state === 'ready' };
+    // spawn(el, path): one more sandbox with a drawing surface mounted in the host element `el` (control renderers: one frame per drawn control).
+    // Same gate, same verified bytes, same limits; the ingredient must be ready (a killed renderer leaves it failed and nothing restarts by itself).
+    const kids = new Set(), srcs = new Map();
+    const spawn = async (el, path) => {
+      const g = gate(pack, ing); if (g) throw Object.assign(new Error(g.message), { code: g.code });
+      if (ing.state !== 'ready') throw Object.assign(new Error('ingredient is ' + ing.state), { code: (ing.reason && ing.reason.code) || 'E_PACK_SANDBOX_STATE' });
+      const m0 = ing.modules.find((m) => m.path === path); if (!m0) throw Object.assign(new Error(`module ${path} is not declared in modules`), { code: 'E_PACK_CODE_UNDECLARED' });
+      if (!srcs.has(path)) srcs.set(path, new TextDecoder('utf-8', { fatal: true }).decode(await getVerified(pack, m0.path, m0.hash, 512 * 1024)));
+      const m = await import('./packs-sandbox.js'); const s = m.createSandbox({ source: srcs.get(path), mount: el }); kids.add(s);
+      s.on((ev) => { if (ev.type === 'stopped') { kids.delete(s); dead(ev); } });
+      await s.start(); return s;
+    };
+    return { ensure, spawn, call: async (method, input, o) => (await ensure()).call(method, input, o), stop: () => { if (sb) sb.stop(); sb = null; src = null; for (const k of [...kids]) k.stop(); srcs.clear(); }, ready: () => !!sb && sb.state === 'ready' };
   }
   const dropErrors = (ing) => { for (let k = errors.length - 1; k >= 0; k--) if (/^E_PACK_(CODE|HASH|SANDBOX)/.test(errors[k].code) && errors[k].message.startsWith(ingQ(ing.pack, ing) + ':')) errors.splice(k, 1); };
   function regate(ing) { // grant / revoke / flag change: take effect now, in both directions

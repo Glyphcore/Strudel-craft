@@ -41,6 +41,7 @@ const cleanDocs = (d) => ({ ...d, sections: (d.sections || []).map((sec) => ({ .
 
 // ---------------------------------------------------------------- adapters
 const noop = () => {};
+const ctxTrack = (ing, p) => { ing.pending = Promise.resolve(p).catch(() => {}); }; // the registration settles after `load`; tests await ing.pending
 const edSrc = (d) => (isObj(d.editors) ? d.editors : d); // the shim file keeps the editors spec under `editors`
 export const KINDS = {
   'recipes': { formats: ['recipes@1'], code: 'never',
@@ -62,6 +63,22 @@ export const KINDS = {
         for (const t of d.types) if (!have.has(t.id)) undo.push(reg.registerType(t));
       }));
       return () => undo.forEach((u) => typeof u === 'function' && u());
+    },
+    // sandboxed renderers (#71): a type with `renderer: {module}` gets a registry renderer that draws inside its own sandboxed frame (packs-control.js);
+    // registered only when the gate passes, withdrawn on revoke / flag off. Without it the type renders through `render.fallback` (data part above).
+    sandbox(ing, d, sb) {
+      let dead = false; const offs = [];
+      const tps = (Array.isArray(d.types) ? d.types : []).filter((t) => t && typeof t.id === 'string' && t.renderer && typeof t.renderer.module === 'string' && ing.modules.some((m) => m.path === t.renderer.module));
+      if (tps.length) ctxTrack(ing, (async () => {
+        const reg = await whenHas(() => sc().controls && sc().controls.registry); if (!reg || dead) return;
+        const C = await import('./packs-control.js'); if (dead) return;
+        for (const t of tps) {
+          await whenHas(() => reg.type(t.id), 5000); if (dead) return; const ty = reg.type(t.id); if (!ty) continue;
+          const off = reg.registerRenderer(t.id, (host, name, spec, io) => C.mountSandboxControl(host, { type: ty, name, spec, io, pack: ing.pack.id, ingredient: ing.id, spawn: (el) => sb.spawn(el, t.renderer.module), registry: reg }));
+          offs.push(() => { off(); const x = reg.type(t.id); if (x) x.drawn = false; });
+        }
+      })());
+      return () => { dead = true; offs.forEach((f) => f()); sb.stop(); };
     } },
   'intellisense': { formats: ['intellisense@1'], code: 'never',
     check: (d) => (Array.isArray(d.items) ? null : 'items must be an array'),

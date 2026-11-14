@@ -360,7 +360,7 @@ dialog, and a link can never carry a grant. All dialogs use the site modal, neve
   Main-realm code runs in the CLI only with `--packs-allow-code <pack-id>[,...]`, the same shape as `--hooks-allow-code`, and never from
   a default.
 
-### 10.4 Sandbox host (site, **built for `intellisense-provider`**, #71; other kinds coming)
+### 10.4 Sandbox host (site, **built for `intellisense-provider` and `control-types` renderers**, #71; other kinds coming)
 
 Every third-party code ingredient is treated as hostile. The host is `site/packs-sandbox.js`, loaded lazily only when an ingredient passes the
 gate below; with the flag off nothing of it is fetched.
@@ -410,8 +410,17 @@ completion items, never evaluates them, never sets them as HTML, never passes th
 | kind | frame receives | frame may return |
 |---|---|---|
 | `intellisense-provider` (**built**) | `call('complete', {before, after, line, pos})`: up to 2000 chars before the caret, 500 after, the current line, the caret offset; nothing else | `[{label, category?, detail?, info?, apply?, method?, string?}]`, <= 200 items, within `timeoutMs` (default 150 ms, max 1000; then dropped) |
-| `control-types` renderer, `param-editors` editor, `visuals` painter | coming (needs a drawing surface owned by the frame document; ui-designer) | |
+| `control-types` renderer (**built**, `packs-control.js`) | one frame per drawn control, mounted in the control's slot with a drawing surface: the frame document owns a `<canvas>` whose `OffscreenCanvas` goes to the worker (`craft.canvas()`); `call('draw', {value, min, max, w, h, dpr, focused})`; `call('input', {kind: down\|move\|up\|key, x?, y?, key?, value})` | `draw`: ignored; `input`: `{set: number}` only, clamped by the host to `min..max` |
+| `param-editors` editor, `visuals` painter | coming | |
 | `palette-actions` `run` | coming (the kind has no adapter yet) | declarative ops the host checks like `do` |
+
+**Drawn frames (control renderers).** The frame is the same `allow-scripts` frame with the same CSP; it is mounted in a host slot, `inert`, with
+`pointer-events: none`, `tabindex=-1` and `aria-hidden`, so it never gets a click, a key or focus. The host slot (`role="slider"`) owns focus, pointer
+and keyboard and sends them as data. Clickjacking: the frame is clipped to its slot (`overflow: hidden`, `contain: paint`) inside a stacking context at
+`z-index: 0`, so the transport, toasts and the top layer (site modals, the trust dialog) are always above it, and an open modal makes the slot inert. A
+host-drawn "third-party" label naming the pack sits outside the frame's box. Untrusted, switched off, timed out or killed: the slot shows a host-drawn
+basic control and the reason; revoking or switching off stops every drawn frame of the ingredient. Board placement: `strudelCraft.controls.registry.renderer(id)`
+returns `(host, name, spec, io: {get, set}) -> {el, sync, destroy, state}`; the Perform board does not call registry renderers yet (coming).
 
 **Resource limits.** Module start (`loadMs`) 2000 ms; per call `timeoutMs`; three timeouts in a row stop the frame (`E_PACK_SANDBOX_TIMEOUT`,
 ingredient `failed`); at most 4 sandboxes at once (`E_PACK_SANDBOX_LIMIT`, the extra one does not start); a frame that throws, violates the

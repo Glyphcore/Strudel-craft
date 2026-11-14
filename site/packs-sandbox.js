@@ -28,15 +28,17 @@ export function measure(v, L) {
 
 // ---------------------------------------------------------------- worker bootstrap (the pack module is appended after it; it only gets `craft.handle`)
 const WORKER_BOOT = `'use strict';
-const H=Object.create(null);
-self.craft=Object.freeze({handle(n,f){if(typeof n==='string'&&typeof f==='function')H[n]=f;}});
-self.onmessage=async(e)=>{const m=e.data;if(!m||m.t!=='call')return;
+const H=Object.create(null);let CV=null;
+self.craft=Object.freeze({handle(n,f){if(typeof n==='string'&&typeof f==='function')H[n]=f;},canvas(){return CV;}});
+self.onmessage=async(e)=>{const m=e.data;if(m&&m.t==='surface'&&!CV&&typeof OffscreenCanvas!=='undefined'&&m.canvas instanceof OffscreenCanvas){CV=m.canvas;return;}if(!m||m.t!=='call')return;
  try{const f=H[m.method];if(!f)throw new Error('no handler '+m.method);const v=await f(m.input);self.postMessage({t:'res',id:m.id,ok:true,value:v});}
  catch(x){self.postMessage({t:'res',id:m.id,ok:false,error:String((x&&x.message)||x).slice(0,200)});}};
 `;
 
 // ---------------------------------------------------------------- frame document (host-built; the page text is the only script the frame ever runs)
-const frameScript = (L, probe) => `(()=>{
+// surface: the frame document owns one <canvas> filling the frame; its OffscreenCanvas goes to the worker (frame-internal transfer, never to the host)
+const frameScript = (L, probe, surface) => `(()=>{
+const SURF=${surface ? 'true' : 'false'};
 const L=${JSON.stringify(L)};const measure=${measure.toString()};
 const BOOT=${JSON.stringify(WORKER_BOOT)};
 let port=null,worker=null;
@@ -52,12 +54,13 @@ function onHost(e){const m=e.data;if(measure(m,{...L,maxMsgBytes:L.maxModuleByte
    worker=new Worker(URL.createObjectURL(b));
    worker.onmessage=(w)=>{const d=w.data;if(measure(d,L)<0||!d||typeof d.t!=='string')return bye('bad worker message');port.postMessage(d);};
    worker.onerror=(w)=>{w.preventDefault&&w.preventDefault();bye('module error');};
+   if(SURF){const c=document.createElement('canvas');c.style.cssText='display:block;width:100vw;height:100vh';document.documentElement.style.cssText='margin:0;overflow:hidden';(document.body||document.documentElement).append(c);if(document.body)document.body.style.margin='0';const off=c.transferControlToOffscreen();worker.postMessage({t:'surface',canvas:off},[off]);}
   }catch(x){bye('cannot start module');}
  }else if(m.t==='call'&&worker){worker.postMessage(m);}
 }
 ${probe ? probe : ''}
 })();`;
-export const frameDoc = (L = LIMITS, probe = '') => `<!doctype html><meta http-equiv="Content-Security-Policy" content="${CSP}"><meta charset="utf-8"><script>${frameScript(L, probe).replace(/<\/script/gi, '<\\/script')}</script>`;
+export const frameDoc = (L = LIMITS, probe = '', surface = false) => `<!doctype html><meta http-equiv="Content-Security-Policy" content="${CSP}"><meta charset="utf-8"><script>${frameScript(L, probe, surface).replace(/<\/script/gi, '<\\/script')}</script>`;
 
 // ---------------------------------------------------------------- host side
 const live = new Set();
@@ -104,13 +107,15 @@ export function createSandbox(o = {}) {
         onReady = { resolve, reject };
         loadTimer = setTimeout(() => kill('E_PACK_SANDBOX_TIMEOUT', `module did not start within ${L.loadMs} ms`), L.loadMs);
         iframe = doc.createElement('iframe'); iframe.setAttribute('sandbox', SANDBOX_ATTR); iframe.setAttribute('referrerpolicy', 'no-referrer'); iframe.setAttribute('allow', ''); iframe.setAttribute('aria-hidden', 'true'); iframe.tabIndex = -1;
-        iframe.setAttribute('style', 'position:fixed;width:0;height:0;border:0;opacity:0;pointer-events:none;left:-9999px');
+        // hidden by default; with o.mount (a drawing surface) it fills the host's slot but stays inert: no pointer events, no focus, below every modal and toast
+        if (o.mount) { iframe.setAttribute('inert', ''); iframe.setAttribute('style', 'position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none;background:transparent;color-scheme:normal'); }
+        else iframe.setAttribute('style', 'position:fixed;width:0;height:0;border:0;opacity:0;pointer-events:none;left:-9999px');
         iframe.addEventListener('load', () => {
           if (state !== 'framed' || !iframe) return; const ch = new MessageChannel(); port = ch.port1; port.onmessage = onMsg;
           iframe.contentWindow.postMessage({ t: 'init' }, '*', [ch.port2]);
         }, { once: true });
-        iframe.srcdoc = frameDoc(L, o.probe || '');
-        doc.body.append(iframe);
+        iframe.srcdoc = frameDoc(L, o.probe || '', !!o.mount);
+        (o.mount || doc.body).append(iframe);
       });
     },
     call(method, input, { timeoutMs } = {}) { // one RPC; input must be plain data; a reply later than timeoutMs is dropped; three in a row stop the frame

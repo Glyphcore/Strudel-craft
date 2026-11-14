@@ -46,6 +46,26 @@ A module that throws while loading, or never finishes loading within 2 s, is sto
 `fetch`, XHR, WebSocket, EventSource, `sendBeacon`, `importScripts`, dynamic `import()`, `eval`, `new Function`, nested workers from a URL, IndexedDB, Cache,
 `localStorage`, `window`/`document`/`parent`, the clipboard, navigation, popups. Do not design around them; there is no prompt that grants them.
 
+## Control renderers (`control-types`, built)
+
+A type with `renderer: {module}` draws in its own sandboxed frame; every other field of the type is data and loads without a grant:
+
+```json
+{ "types": [{ "id": "you.pack.dial", "value": "number", "label": "Dial", "render": { "fallback": "knob" }, "renderer": { "module": "dial.js" } }] }
+```
+
+`dial.js` (one frame per drawn control; `craft.canvas()` is an `OffscreenCanvas` filling the frame, available inside handlers):
+
+```js
+craft.handle('draw', ({ value, min, max, w, h, dpr, focused }) => { const c = craft.canvas(); c.width = w * dpr; c.height = h * dpr; /* draw with c.getContext('2d') */ });
+craft.handle('input', ({ kind, x, y, key, value }) => ({ set: value + 1 })); // kind: down | move | up (x, y in 0..1) or key (ArrowUp/Down/Left/Right, PageUp/Down, Home, End)
+```
+
+The frame never receives clicks, keys or focus: the host turns them into the `input` data above. Only `{set: <finite number>}` is accepted back, and the
+host clamps it to the control's `min..max` (keys also move the value by the host's own step, so the keyboard works even if you answer nothing). The host draws
+a "third-party" label with your pack id above the frame, and shows a basic host control instead of your frame when your code is not trusted, switched off,
+times out (three `draw`/`input` calls over 150 ms) or breaks the protocol. Draw quickly; `draw` is called on every value change and resize.
+
 ## Kinds not built yet (coming)
 
-Renderers, editors, painters (need a drawing surface in the frame) and `palette-actions` `run` (the kind has no adapter): until they exist they stay `blocked`.
+`param-editors` editors, `visuals` painters and `palette-actions` `run` (the kind has no adapter): until they exist they stay `blocked`.

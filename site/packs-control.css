@@ -1,0 +1,15 @@
+/* Sandboxed control renderer slot (packs-control.js, #71). The frame is clipped to .pkc-stage and sits in its own stacking context at
+   z-index 0, so it stays below the transport, toasts and the top layer (modals); the "third-party" label is host DOM outside the frame. */
+.pkc{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:4px;min-width:120px;width:100%;position:relative;z-index:0;isolation:isolate}
+.pkc-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.pkc-tag{display:inline-flex;align-items:center;gap:4px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono);font-size:.62rem;letter-spacing:.04em;color:var(--warn);border:1px solid var(--warn);border-radius:var(--r1);padding:2px 6px;background:var(--panel)}
+.pkc-tag b{text-transform:uppercase;letter-spacing:.1em}
+.pkc-val{font-family:var(--mono);font-size:.74rem;color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pkc-stage{position:relative;overflow:hidden;contain:paint;height:var(--pkc-h,96px);min-height:44px;max-height:240px;border:1px dashed var(--warn);border-radius:var(--r1);background:var(--panel-2);touch-action:none;cursor:grab}
+.pkc-stage:focus-visible{outline:2px solid var(--sig-2);outline-offset:2px}
+.pkc-stage iframe{z-index:0}
+.pkc[data-state="starting"] .pkc-stage{background:repeating-linear-gradient(135deg,var(--panel-2) 0 8px,var(--panel) 8px 16px)}
+.pkc[data-state="fallback"] .pkc-stage{border-style:solid;border-color:var(--line-2);cursor:auto;display:flex;align-items:center;padding:0 10px}
+.pkc-fb{width:100%;min-height:44px;accent-color:var(--sig-2)}
+.pkc-note{margin:0;font-size:.72rem;color:var(--dim);overflow-wrap:anywhere}
+.pkc-note:empty{display:none}

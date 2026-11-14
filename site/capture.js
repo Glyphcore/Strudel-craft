@@ -40,7 +40,7 @@ async function attachTap() {
     try {
       if (!modules.has(ctx)) modules.set(ctx, ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([WORKLET], { type: 'application/javascript' }))));
       await modules.get(ctx);
-      node = new AudioWorkletNode(ctx, 'sc-capture-tap', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [1], channelCount: 2, channelCountMode: 'explicit', channelInterpretation: 'speakers' });
+      node = new AudioWorkletNode(ctx, 'sc-capture-tap', { numberOfInputs: 1, numberOfOutputs: 0, channelCount: 2, channelCountMode: 'explicit', channelInterpretation: 'speakers' });
       node.port.onmessage = (e) => onChunk(e.data.f0, e.data.L, e.data.R);
     } catch (e) { node = null; }
   }
@@ -48,13 +48,17 @@ async function attachTap() {
     node = ctx.createScriptProcessor(4096, 2, 1);
     node.onaudioprocess = (e) => { const b = e.inputBuffer; onChunk(Math.round(e.playbackTime * ctx.sampleRate), b.getChannelData(0).slice(), (b.numberOfChannels > 1 ? b.getChannelData(1) : b.getChannelData(0)).slice()); };
   }
-  bus.own.add(node); /* own nodes bypass app.js's destination redirect, so this silent output never re-enters the bus */
-  bus.node.connect(node); node.connect(ctx.destination);
+  /* non-intrusive: the worklet has no outputs, so nothing leaves the tap and the audible path (bus.node -> destination) gets no extra stage or connection.
+     The ScriptProcessor fallback must have an output to run; it goes to a MediaStream sink, never to ctx.destination. */
+  if (node.numberOfOutputs > 0) { st.sink = ctx.createMediaStreamDestination(); node.connect(st.sink); }
+  bus.own.add(node);
+  bus.node.connect(node);
   st.tap = node; st.tapCtx = ctx; st.chunks = []; return node;
 }
 function detachTap() {
   if (!st.tap) return; try { st.tap.disconnect(); } catch (e) { /* gone */ }
   try { const b = sc.transport.bus; if (b && b.ctx === st.tapCtx) b.node.disconnect(st.tap); } catch (e) { /* gone */ }
+  if (st.sink) { try { st.sink.disconnect(); } catch (e) { /* gone */ } st.sink = null; }
   if (st.tap.port) st.tap.port.onmessage = null; st.tap.onaudioprocess = null; st.tap = null; st.tapCtx = null;
 }
 function sr() { return st.tapCtx ? st.tapCtx.sampleRate : 48000; }
@@ -74,6 +78,25 @@ function slice(a, b) {
     L.set(c.L.subarray(s - c.f0, e - c.f0), s - a); R.set(c.R.subarray(s - c.f0, e - c.f0), s - a);
   }
   return { L, R };
+}
+
+/* ---------- compressed take (webm/opus): MediaRecorder on a MediaStream sink fed from the same bus node as the tap ---------- */
+const WEBM_MIME = (() => { try { return typeof MediaRecorder !== 'undefined' && ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/webm'].find((m) => MediaRecorder.isTypeSupported(m)) || null; } catch (e) { return null; } })();
+const comp = { mr: null, msd: null, chunks: [] };
+function startCompressed() {
+  if (!WEBM_MIME || !opts.audio || comp.mr) return;
+  try {
+    const bus = sc.transport.bus; comp.msd = st.tapCtx.createMediaStreamDestination(); bus.node.connect(comp.msd); comp.chunks = [];
+    comp.mr = new MediaRecorder(comp.msd.stream, { mimeType: WEBM_MIME, audioBitsPerSecond: 128000 });
+    comp.mr.ondataavailable = (e) => { if (e.data && e.data.size) comp.chunks.push(e.data); };
+    comp.mr.start(250);
+  } catch (e) { comp.mr = null; }
+}
+function stopCompressed() {
+  const { mr, msd } = comp; comp.mr = null; comp.msd = null;
+  const drop = () => { try { sc.transport.bus.node.disconnect(msd); } catch (e) { /* gone */ } };
+  if (!mr) return Promise.resolve(null);
+  return new Promise((ok) => { mr.onstop = () => { drop(); ok(comp.chunks.length ? { blob: new Blob(comp.chunks, { type: mr.mimeType || WEBM_MIME }), mime: mr.mimeType || WEBM_MIME } : null); }; try { mr.stop(); } catch (e) { drop(); ok(null); } });
 }
 
 /* ---------- clock: cycle <-> audio time (cyclist: hap at cycle c sounds at lastTick + (c - lastBegin)/cps + latency) ---------- */
@@ -230,7 +253,7 @@ function loop() {
   const step = () => {
     if (st.phase === 'idle' && !st.open) { rafOn = false; return; }
     if (st.phase === 'idle' && opts.preRoll > 0 && sc.transport && sc.transport.playing && sc.transport.bus && st.tapCtx !== sc.transport.bus.ctx && !st.attaching) { st.attaching = true; attachTap().finally(() => { st.attaching = false; }); }
-    if (st.phase === 'waiting' && st.tapCtx && st.tapCtx.currentTime * sr() >= st.recFrame) { st.phase = 'recording'; st.recAudio0 = st.tapCtx.currentTime; sync(); }
+    if (st.phase === 'waiting' && st.tapCtx && st.tapCtx.currentTime * sr() >= st.recFrame) { st.phase = 'recording'; st.recAudio0 = st.tapCtx.currentTime; startCompressed(); sync(); }
     if (st.phase === 'recording') sampleEvents();
     if ((st.phase === 'recording' || st.phase === 'waiting') && sc.transport && !sc.transport.playing) finish('transport');
     draw();
@@ -247,6 +270,7 @@ async function finish(why) {
   const last = st.chunks.length ? st.chunks[st.chunks.length - 1] : null; const have = last ? last.f0 + last.L.length : st.startFrame;
   if (!end || why !== 'done' || end > have) end = Math.min(end || have, have);
   st.phase = 'saving'; sync();
+  const webm = await stopCompressed();
   const ru = st.run, exact = ru.mode === 'cycles' && why === 'done';
   const recLen = Math.max(0, end - st.recFrame); const c0 = st.c0, c1 = exact ? c0 + ru.n : c0 + recLen / rate * st.cps;
   let rec = null;
@@ -264,6 +288,7 @@ async function finish(why) {
     const recipe = await buildRecipe({ name: ru.name, includes, timing, state: st.state, events });
     rec = { id: recipe.id, recipe, audio: {} };
     if (audio) { rec.audio.capture = { L: audio.L, R: audio.R, sr: rate }; recipe.outputs.capture = { sha256: await audioHash(audio.L, audio.R), sr: rate, frames: audio.L.length, how: 'realtime', encoding: 'f32le-interleaved', envelope: envelope(audio.L, audio.R, rate) }; }
+    if (audio && webm) rec.audio.webm = webm;
     await store.put(rec);
     /* reference render: an exact take with code-state gets an offline render whose hash Remake checks (stops the transport) */
     if (audio && includes.code && exact) {
@@ -497,6 +522,7 @@ const bestAudio = (rec) => rec.audio.render ? ['render', rec.audio.render] : rec
 async function download(id, fmt = 'recipe') {
   const rec = await store.get(id); if (!rec) return; const r = rec.recipe;
   if (fmt === 'recipe') return saveBlob(new Blob([JSON.stringify(exportRecipe(rec), null, 2)], { type: 'application/json' }), baseName(r) + '.recipe.json');
+  if (fmt === 'webm') { const w = rec.audio.webm; if (!w) { toast(WEBM_MIME ? 'This take has no compressed audio (only realtime takes with Audio ticked have it)' : 'This browser cannot record webm/opus (MediaRecorder)', { kind: 'info' }); return; } return saveBlob(w.blob, baseName(r) + (/ogg/.test(w.mime) ? '.ogg' : '.webm')); }
   const [k, a] = fmt === 'wav16' || fmt === 'wav24' ? bestAudio(rec) : [fmt, rec.audio[fmt]];
   if (!a) { toast('This take has no audio yet: Remake it first', { kind: 'info' }); return; }
   return saveBlob(encodeWav(a, fmt === 'wav24' || opts.bits === 24 && fmt !== 'wav16' ? 24 : 16, { name: r.name, created: r.created, comment: { recipe: r.id, output: k, sha256: (r.outputs[k] || rec.remake || {}).sha256, cps: r.timing.cps, cycles: r.timing.cycles } }), baseName(r) + (k === 'capture' ? '' : '_' + k) + '.wav');
@@ -578,7 +604,7 @@ function sync() {
   el.rec.disabled = st.rendering;
   for (const i of el.w.querySelectorAll('.cap-opts input, .cap-opts select, .cap-opts button, .cap-inc input')) i.disabled = busy;
   const inc = ['audio', 'events', 'code'].filter((k) => opts[k]).map((k) => (k === 'code' ? 'code-state' : k)).join(' + ') || 'nothing';
-  el.hint.textContent = (opts.mode === 'cycles' ? `Cycles: starts and stops on cycle boundaries (${opts.n}), loops cleanly; with audio + code-state the transport stops at the end for an exact reference render.` : opts.mode === 'until' ? 'Until stop: records until you stop or the play-time limit.' : 'Free: records from now until you stop.') + ` Records ${inc}.`;
+  el.hint.textContent = (opts.mode === 'cycles' ? `Cycles: starts and stops on cycle boundaries (${opts.n}), loops cleanly; with audio + code-state the transport stops at the end for an exact reference render.` : opts.mode === 'until' ? 'Until stop: records until you stop or the play-time limit.' : 'Free: records from now until you stop.') + ` Records ${inc}.` + (WEBM_MIME ? ' Realtime audio takes also keep a WebM/opus copy.' : ' WebM/opus copies are not available in this browser (no MediaRecorder opus); WAV only.');
   if (!busy) { el.state.textContent = st.rendering ? 'Rendering offline' : 'Ready'; el.time.textContent = '0:00.0'; }
 }
 function draw() {
@@ -619,7 +645,7 @@ async function renderTakes() {
       <button type="button" class="ghost icon" data-act="rename" aria-label="Rename ${esc(r.name)}">${ICON.ren}</button>
       <button type="button" class="ghost icon" data-act="del" aria-label="Delete ${esc(r.name)}">${ICON.del}</button>
     </div>
-    <div class="cap-dl"><button type="button" data-act="recipe">Recipe</button>${hasAudio ? '<button type="button" data-act="wav">WAV</button>' : ''}${r.events && (Object.keys(r.events.lanes || {}).length || r.events.performance) ? '<button type="button" data-act="code">Copy code</button>' : ''}</div>
+    <div class="cap-dl"><button type="button" data-act="recipe">Recipe</button>${hasAudio ? '<button type="button" data-act="wav">WAV</button>' : ''}${audio.webm ? '<button type="button" data-act="webm" title="Compressed take, opus in webm (length within about 0.1 s of the cycle cut)">WebM</button>' : ''}${r.events && (Object.keys(r.events.lanes || {}).length || r.events.performance) ? '<button type="button" data-act="code">Copy code</button>' : ''}</div>
   </li>`;
   }).join('') : '<li class="cap-empty">No takes yet. Record or render one; takes stay on this device as recipes.</li>';
   for (const li of el.takes.querySelectorAll('li[data-id]')) { const rec = list.find((x) => x.id === li.dataset.id); const [, a] = bestAudio(rec); if (a) wave(li.querySelector('canvas'), peaksOf(a)); else eventWave(li.querySelector('canvas'), rec.recipe); }
@@ -662,6 +688,7 @@ async function takeAct(act, id, btn) {
     if (await sc.ui.askYesNo({ title: 'Delete take', message: `Delete "${cur}" (recipe and audio) from this device? Download the recipe first to keep it.`, okText: 'Delete', danger: true })) { if (playerId === id && player) player.pause(); await store.remove(id); toast('Deleted ' + cur, { kind: 'info' }); renderTakes(); }
   } else if (act === 'recipe') download(id, 'recipe');
   else if (act === 'wav') download(id, opts.bits === 24 ? 'wav24' : 'wav16');
+  else if (act === 'webm') download(id, 'webm');
   else if (act === 'code') { const rec = await store.get(id); const code = eventCode(rec.recipe); if (!code) { toast('No events to bounce', { kind: 'info' }); return; }
     try { await navigator.clipboard.writeText(code); toast('Strudel code copied', { kind: 'ok' }); } catch (e) { await sc.ui.ask({ title: 'Strudel code', label: 'Copy this code', value: code.replace(/\n/g, ' '), okText: 'Done' }); } }
 }
@@ -694,6 +721,6 @@ function init() {
     P.register({ id: 'record.import', group: 'Record', title: 'Import recipe', run: () => { open(); $('#capFile').click(); } });
   }
 }
-sc.capture = { open, close, toggle: toggleSheet, configure, record, stop, toggleRec, renderExact, remake, importRecipe, beforeRender, addTake, exportRecipe: async (id) => exportRecipe(await store.get(id)), renderRecipe,
+sc.capture = { open, close, toggle: toggleSheet, configure, record, stop, toggleRec, renderExact, remake, importRecipe, webmSupported: () => WEBM_MIME, beforeRender, addTake, exportRecipe: async (id) => exportRecipe(await store.get(id)), renderRecipe,
   download, list: () => store.list().then((l) => l.map((x) => ({ ...x.recipe, remake: x.remake || null, imported: x.imported || null, audio: Object.keys(x.audio) }))), get: (id) => store.get(id), remove: (id) => store.remove(id).then(renderTakes), rename, encodeWav, opts, state: st };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

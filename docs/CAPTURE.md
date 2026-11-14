@@ -23,7 +23,8 @@ One Record panel with one arm, one transport and one timeline of takes. A take i
 - 44px targets and a 360px layout. A storage line turns into a warning near the quota.
 
 ## Tap and timing
-- An AudioWorklet (ScriptProcessor fallback) sits on the master bus GainNode, post master level. Its output is silent and only pulled, so the mix is unchanged.
+- An AudioWorklet created with `numberOfOutputs: 0` sits on the master bus GainNode, post master level. It has no output, so nothing is added to the audible path: no gain stage and no connection to `ctx.destination`. The ScriptProcessor fallback (no worklet support) needs an output to run, so it goes to a MediaStream sink, never to the destination. `tests/site/capture.mjs` checks the worklet's output count, that no tap node connects to the destination, and that the master output has the same peak and RMS (within 0.5 dB) armed and disarmed.
+- Compressed copy: a realtime take with Audio ticked also records WebM/opus (`MediaRecorder`, 128 kbit/s) from a MediaStream sink fed by the same bus node (a sink, not the destination). The take row gets a `WebM` button (`<name>_<cycles>c_<cps>cps.webm`, `.ogg` where only Ogg opus exists). The WebM starts when recording starts and stops when the take is saved, so its length is within about 0.1 s of the cycle cut, not sample-exact; use WAV for loops. Offline renders have no WebM. Where `MediaRecorder` has no opus (older Safari), the panel hint says so and only WAV is offered.
 - Cycles cuts are computed from the Cyclist clock: a hap at cycle `c` sounds at `lastTick + (c - lastBegin) / cps + latency`.
 - A take continues across Rack/Stack tab switches and in a hidden browser tab.
 - Gaps (background playback, `site/bgplay.js`): when a realtime take crosses a pause or interruption (a suspended or interrupted

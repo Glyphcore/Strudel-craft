@@ -668,7 +668,7 @@
    "label": "strudelCraft.pwa.install",
    "method": false,
    "detail": "install()",
-   "info": "Install the site as an app (Android Chrome install prompt; elsewhere an Add to Home Screen hint in the site modal). Also in the ? dialog, the overflow menu and Ctrl+K > App. strudelCraft.pwa.installed / .standalone report the state.",
+   "info": "Install the site as an app (Android Chrome install prompt; elsewhere an Add to Home Screen hint in the site modal). Also in the ? dialog, the overflow menu and Ctrl+K > App. strudelCraft.pwa.installed / .standalone report the state. Installed, it loads and plays offline after the first visit (sw.js snapshot per deploy: site files, the Strudel bundle and CodeMirror); uncached sample banks toast.",
    "category": "site api"
   },
   {
@@ -739,6 +739,13 @@
    "method": false,
    "detail": "remake(id) -> Promise<{match, sha256, expected}>",
    "info": "Regenerate a take from its recipe: approval modal, trust prompts, hash verification of every pinned ref (mismatch refuses), offline render, compare with the stored audio hash.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.capture.webmSupported",
+   "method": false,
+   "detail": "webmSupported() -> mime | null",
+   "info": "The WebM/opus mime type MediaRecorder can record here, or null (then realtime takes keep WAV only and the panel says so).",
    "category": "site api"
   },
   {

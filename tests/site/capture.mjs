@@ -75,6 +75,39 @@ await page.waitForFunction(() => window.strudelCraft.capture.state.phase === 'id
 const fr = await page.evaluate(async () => { const l = await window.strudelCraft.capture.list(); const t = l.find((x) => x.name.startsWith('free')); const g = t && await window.strudelCraft.capture.get(t.id); return g ? g.audio.capture.L.length / g.audio.capture.sr : 0; });
 ok('recording survives tab switches', mid === 'recording' && fr > 2, `${mid} ${fr.toFixed(2)} s`);
 
+
+// tap is passive: the worklet has no outputs and the destination gets no extra connection; the master output is identical armed and disarmed
+await page.evaluate(() => { window.__connects = []; const c = AudioNode.prototype.connect; AudioNode.prototype.connect = function (d, ...a) { if (d && d === d.context.destination) window.__connects.push(this.constructor.name + (this.numberOfOutputs === 0 ? ':0out' : '')); return c.call(this, d, ...a); }; });
+const probe = (arm) => page.evaluate(async (arm) => {
+  const sc = window.strudelCraft, ctx = sc.transport.bus.ctx; const an = ctx.createAnalyser(); an.fftSize = 2048;
+  if (!sc.transport.playing) await window.__sc.play();
+  await new Promise((r) => setTimeout(r, 600));
+  if (arm) { sc.capture.configure({ mode: 'free', audio: true, events: false, code: false }); sc.capture.record(); await new Promise((r) => setTimeout(r, 800)); }
+  const tapNode = sc.capture.state.tap; const before = window.__connects.length;
+  /* measure the signal that reaches the destination: the master bus node output, sampled the same way in both runs */
+  sc.transport.bus.node.connect(an); const buf = new Float32Array(an.fftSize); let peak = 0, sum = 0, n = 0;
+  for (let k = 0; k < 40; k++) { an.getFloatTimeDomainData(buf); for (const x of buf) { peak = Math.max(peak, Math.abs(x)); sum += x * x; n++; } await new Promise((r) => setTimeout(r, 40)); }
+  try { sc.transport.bus.node.disconnect(an); } catch (e) { /* gone */ }
+  const info = { peak, rms: Math.sqrt(sum / n), tapOutputs: tapNode ? (tapNode.numberOfOutputs ?? 'script') : null, destCons: window.__connects.slice(), sink: !!sc.capture.state.sink };
+  if (arm) { sc.capture.stop(); await new Promise((r) => setTimeout(r, 1500)); }
+  return info;
+}, arm);
+const quiet = await probe(false); const armed = await probe(true);
+ok('tap: worklet has 0 outputs, no tap node connected to the destination', armed.tapOutputs === 0 && !armed.destCons.some((c) => /AudioWorkletNode|ScriptProcessor/.test(c)), JSON.stringify({ armed: armed.tapOutputs, dest: armed.destCons }));
+ok('tap: master output identical armed vs disarmed (peak and RMS within 0.5 dB)', quiet.peak > 0.01 && Math.abs(20 * Math.log10(armed.peak / quiet.peak)) < 0.5 && Math.abs(20 * Math.log10(armed.rms / quiet.rms)) < 0.5, JSON.stringify({ quiet: [quiet.peak, quiet.rms], armed: [armed.peak, armed.rms] }));
+
+// compressed take (webm/opus through MediaRecorder on the same bus node)
+const wsup = await page.evaluate(() => window.strudelCraft.capture.webmSupported());
+if (wsup) {
+  await page.evaluate(() => window.strudelCraft.capture.configure({ mode: 'cycles', n: 2, name: 'comp', audio: true, events: false, code: false }));
+  await page.evaluate(() => window.strudelCraft.capture.record());
+  await page.waitForFunction(() => window.strudelCraft.capture.state.phase === 'idle' && window.strudelCraft.capture.state.rendering === false, null, { timeout: 40000 }).catch(() => {});
+  await page.waitForSelector('#capTakes li[data-id] [data-act="webm"]', { timeout: 10000 }).catch(() => {});
+  const [dw] = await Promise.all([page.waitForEvent('download', { timeout: 10000 }), page.click('#capTakes li[data-id] [data-act="webm"]')]);
+  const wp = await dw.path(); const wb = wp ? fs.readFileSync(wp) : Buffer.alloc(0);
+  ok('compressed take: webm/opus download, EBML header, labelled in the row', /^comp.*\.(webm|ogg)$/.test(dw.suggestedFilename()) && wb.length > 2000 && (wb.readUInt32BE(0) === 0x1a45dfa3 || wb.toString('ascii', 0, 4) === 'OggS'), `${dw.suggestedFilename()} ${wb.length} B`);
+} else ok('compressed take: MediaRecorder opus unavailable, documented limit shown in the panel', /not available in this browser/.test(await page.textContent('#capHint')), 'no opus');
+
 // exact offline render
 await page.evaluate(() => window.strudelCraft.capture.configure({ code: true }));
 const ex = await page.evaluate(async () => { const rec = await window.strudelCraft.capture.renderExact(2); const o = rec.recipe.outputs.render; return { frames: o.frames, sr: o.sr, cps: rec.recipe.timing.cps, haps: o.haps, fails: o.fails, how: o.how }; });

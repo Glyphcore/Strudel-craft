@@ -7,6 +7,7 @@
    Storage: IndexedDB "sc-recipes" (recipe.js); settings: localStorage sc.record.* (history-friendly, no audio).
    API: window.strudelCraft.capture = { open, close, toggle, configure, record, stop, toggleRec, renderExact, remake, importRecipe, exportRecipe,
    download, list, get, remove, rename, encodeWav, opts, state } */
+import * as N from './numfmt.js';
 import { FORMAT, VERSION, audioHash, collectDeps, validate, refsOf, verify, trusted, grant, store, pruneLegacy, sha256 } from './recipe.js';
 const sc = (window.strudelCraft = window.strudelCraft || {});
 const $ = (s, r = document) => r.querySelector(s);
@@ -14,7 +15,7 @@ const get = (k, d) => { try { const v = localStorage.getItem('sc.record.' + k); 
 const set = (k, v) => { try { localStorage.setItem('sc.record.' + k, JSON.stringify(v)); } catch (e) { /* private mode */ } };
 const toast = (m, o) => sc.ui && sc.ui.toast(m, o);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const fmtT = (s) => { s = Math.max(0, s); const m = Math.floor(s / 60); const x = s - m * 60; return m + ':' + (x < 10 ? '0' : '') + x.toFixed(1); };
+const fmtT = (s) => N.clock(Math.max(0, s), { tenths: true }); /* mm:ss.s, fixed width (numfmt.js) */
 const safe = (s) => (String(s || 'take').trim().replace(/[^\w.-]+/g, '-').replace(/^-+|-+$/g, '') || 'take').slice(0, 60);
 const numStr = (x) => String(+(+x).toFixed(3));
 const short = (h) => (h ? String(h).replace('sha256:', '').slice(0, 12) : '-');
@@ -550,7 +551,7 @@ function build() {
   w.innerHTML = `
   <div class="cap-head">
     <button type="button" class="cap-rec" id="capRec" aria-pressed="false">${ICON_REC}<span id="capRecLabel">Record</span></button>
-    <div class="cap-read"><output id="capTime" class="cap-time">0:00.0</output><span id="capState" class="cap-state" role="status" aria-live="polite">Ready</span></div>
+    <div class="cap-read"><output id="capTime" class="cap-time num" style="--w:8ch">00:00.0</output><span id="capState" class="cap-state" role="status" aria-live="polite">Ready</span></div>
     <canvas id="capMeter" class="cap-meter" role="img" aria-label="Record input level"></canvas>
     <button type="button" class="icon ghost" id="capClose" aria-label="Close record panel">&times;</button>
   </div>
@@ -605,7 +606,7 @@ function sync() {
   for (const i of el.w.querySelectorAll('.cap-opts input, .cap-opts select, .cap-opts button, .cap-inc input')) i.disabled = busy;
   const inc = ['audio', 'events', 'code'].filter((k) => opts[k]).map((k) => (k === 'code' ? 'code-state' : k)).join(' + ') || 'nothing';
   el.hint.textContent = (opts.mode === 'cycles' ? `Cycles: starts and stops on cycle boundaries (${opts.n}), loops cleanly; with audio + code-state the transport stops at the end for an exact reference render.` : opts.mode === 'until' ? 'Until stop: records until you stop or the play-time limit.' : 'Free: records from now until you stop.') + ` Records ${inc}.` + (WEBM_MIME ? ' Realtime audio takes also keep a WebM/opus copy.' : ' WebM/opus copies are not available in this browser (no MediaRecorder opus); WAV only.');
-  if (!busy) { el.state.textContent = st.rendering ? 'Rendering offline' : 'Ready'; el.time.textContent = '0:00.0'; }
+  if (!busy) { el.state.textContent = st.rendering ? 'Rendering offline' : 'Ready'; el.time.textContent = '00:00.0'; }
 }
 function draw() {
   if (!el.w || el.w.hidden && st.phase === 'idle') return;
@@ -613,7 +614,7 @@ function draw() {
   if (st.phase === 'waiting') { const ck = clock(); const left = (st.recFrame - now) / rate; el.time.textContent = '-' + fmtT(left); el.state.textContent = ck && st.startCycle != null ? `Count-in: ${Math.max(0, Math.ceil(left * ck.cps))}` : 'Starting'; }
   else if (st.phase === 'recording') {
     const t = (now - st.recFrame) / rate; el.time.textContent = fmtT(t);
-    el.state.textContent = st.run.mode === 'cycles' ? `Cycle ${Math.min(st.run.n, t * st.cps).toFixed(1)} / ${st.run.n}` : st.run.mode === 'until' ? `Cap ${fmtT((st.endFrame - st.recFrame) / rate)}` : 'Recording';
+    el.state.textContent = st.run.mode === 'cycles' ? `Cycle ${N.cyc(Math.min(st.run.n, t * st.cps)).padStart(N.cyc(st.run.n).length, '\u2007')} / ${N.cyc(st.run.n)}` : st.run.mode === 'until' ? `Cap ${fmtT((st.endFrame - st.recFrame) / rate)}` : 'Recording';
   }
   const c = el.meter, dpr = Math.min(2, window.devicePixelRatio || 1), W = Math.round(c.clientWidth * dpr), H = Math.round(c.clientHeight * dpr);
   if (!W || !H) return; if (c.width !== W) c.width = W; if (c.height !== H) c.height = H;
@@ -638,7 +639,7 @@ async function renderTakes() {
     const deps = r.deps.packs.length + r.deps.samples.length + r.deps.vox.length + 1;
     return `<li data-id="${r.id}" class="cap-tk">
     <canvas class="cap-wave" aria-hidden="true"></canvas>
-    <div class="cap-tk-info"><b class="cap-tk-name">${chips}${ver}<span class="cap-tk-label">${esc(r.name)}</span></b><span class="cap-tk-sub">${numStr(r.timing.cycles)}c · ${numStr(r.timing.cps)} cps · c${numStr(r.timing.start)}-${numStr(r.timing.stop)}${r.meta && r.meta.from ? ' · from ' + esc(r.meta.from) : ''} · ${deps} dep${deps > 1 ? 's' : ''}${r.outputs.render ? ' · ' + short(r.outputs.render.sha256) : ''}</span></div>
+    <div class="cap-tk-info"><b class="cap-tk-name">${chips}${ver}<span class="cap-tk-label">${esc(r.name)}</span></b><span class="cap-tk-sub">${N.cyc(r.timing.cycles)}c · ${N.fix(r.timing.cps, 3)} cps · c${N.cyc(r.timing.start)}-${N.cyc(r.timing.stop)}${r.meta && r.meta.from ? ' · from ' + esc(r.meta.from) : ''} · ${deps} dep${deps > 1 ? 's' : ''}${r.outputs.render ? ' · ' + short(r.outputs.render.sha256) : ''}</span></div>
     <div class="cap-tk-acts">
       <button type="button" class="ghost icon" data-act="play" aria-label="Play ${esc(r.name)}" aria-pressed="false"${hasAudio ? '' : ' disabled'}>${ICON.play}</button>
       <button type="button" class="ghost icon" data-act="remake" aria-label="Remake ${esc(r.name)}"${r.includes.code ? '' : ' disabled'}>${ICON.remake}</button>

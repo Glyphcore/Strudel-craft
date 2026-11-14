@@ -2,20 +2,21 @@
    Clamp: total played time per run (audio-clock time while running, not wall time) is limited to sc.range.maxMin minutes (default 20); remaining, played and paused time shown;
    at the limit the master fades (or stops, per settings) and playback stops. "+5 min" overrides for this run.
    Needs window.strudelCraft.transport (app.js hook). API: window.strudelCraft.range = { state, setLimit, extend, tick } */
+import { cyc, clock } from './numfmt.js';
 const sc = (window.strudelCraft = window.strudelCraft || {});
 const $ = (s, r = document) => r.querySelector(s);
 const get = (k, d) => { try { const v = localStorage.getItem('sc.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
 const set = (k, v) => { try { localStorage.setItem('sc.' + k, JSON.stringify(v)); } catch (e) { /* private mode */ } };
 const st = { unit: get('range.unit', 'cycle'), start: get('range.start', 0), end: get('range.end', 16), loop: get('range.loop', false),
   maxMin: get('range.maxMin', 20), atLimit: get('range.atLimit', 'fade'), elapsed: 0, extra: 0, fading: false, wasPlaying: false, last: 0 };
-const fmt = (s) => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const fmt = (s) => clock(Math.max(0, s)); /* mm:ss, h:mm:ss from an hour: fixed digit count (numfmt.js) */
 const limit = () => st.maxMin * 60 + st.extra;
 const sch = () => { const s = sc.engineState && sc.engineState(); return s && s.scheduler; };
 const playing = () => !!(sc.transport && sc.transport.playing);
 /* cycles are canonical; time is derived from the live cps, so a tempo change re-converts every shown value */
 const cps = () => { const s = sch(); return (s && s.cps) || (sc.transport && sc.transport.cps) || 0.5; };
-const mmss = (sec) => { sec = Math.max(0, sec); const m = Math.floor(sec / 60), x = sec - m * 60; return m + ':' + (x < 9.95 ? '0' : '') + x.toFixed(sec < 600 ? 1 : 0).replace(/\.0$/, ''); };
-const u = (c) => (st.unit === 'bar' ? c + 1 : st.unit === 'time' ? mmss(c / cps()) : +c.toFixed(3)); // bars are 1-based (1 cycle = 1 bar of 4 beats here)
+const mmss = (sec) => clock(Math.max(0, sec));
+const u = (c) => (st.unit === 'bar' ? cyc(c + 1) : st.unit === 'time' ? clock(Math.max(0, c / cps()), { tenths: true }) : cyc(c)); // bars are 1-based (1 cycle = 1 bar of 4 beats here)
 /* accepts "1:30" (m:ss) or a number in the current unit (seconds when the unit is time) -> cycles, NaN if unreadable */
 export function parsePos(v, unit = st.unit, k = cps()) {
   v = String(v).trim(); const m = /^(\d+):(\d+(?:\.\d+)?)$/.exec(v); if (m) return (+m[1] * 60 + +m[2]) * k;
@@ -31,12 +32,12 @@ function build() {
   w.innerHTML = `<label class="sr" for="trPos">Position</label>
     <input id="trPos" class="tr-pos" type="range" min="0" max="16" step="0.01" value="0" aria-valuetext="cycle 0">
     <div class="tr-row">
-      <button type="button" class="ghost tr-out" id="trOut" title="Go to a cycle or m:ss"><span id="trPosTxt">c 0 / 16 · 0:00 / 0:32</span></button>
+      <button type="button" class="ghost tr-out" id="trOut" title="Go to a cycle or m:ss"><span class="tr-read" id="trPosTxt">c <span class="num" id="trC" style="--w:6ch">0.0</span><span class="tr-sep">/</span><span class="num" id="trCE" style="--w:6ch">16.0</span><span class="tr-sep">·</span><span class="num" id="trT" style="--w:7ch">00:00</span><span class="tr-sep">/</span><span class="num" id="trTE" style="--w:7ch">00:32</span></span></button>
       <button type="button" class="ghost tr-unit" id="trUnit" title="Loop points in cycles, bars or m:ss">cycle</button>
       <label class="tr-num"><span>Start</span><input id="trStart" type="text" inputmode="decimal" autocomplete="off" spellcheck="false"></label>
       <label class="tr-num"><span>End</span><input id="trEnd" type="text" inputmode="decimal" autocomplete="off" spellcheck="false"></label>
       <button type="button" class="ghost tr-loop" id="trLoop" aria-pressed="false" title="Loop between start and end">Loop</button>
-      <span class="tr-left" id="trLeft" title="Remaining play time before the clamp">20:00 left</span>
+      <span class="tr-left" id="trLeft" title="Remaining play time before the clamp"><span class="num" id="trL" style="--w:7ch">20:00</span> left<span class="tr-pp" id="trPP"> · played <span class="num" id="trPl" style="--w:7ch">00:00</span><span class="tr-pz" id="trPz"> · paused <span class="num" id="trPa" style="--w:7ch">00:00</span></span></span></span>
       <button type="button" class="ghost tr-more" id="trMore" hidden title="Extend the clamp by 5 minutes for this run">+5 min</button>
       <button type="button" class="icon tr-set" id="trSet" aria-label="Play-time limit settings" title="Play-time limit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 13V9M10 3h4"/></svg></button>
     </div>`;
@@ -49,7 +50,7 @@ function build() {
   el.start.onchange = pts; el.end.onchange = pts;
   el.loop.onclick = () => { st.loop = !st.loop; set('range.loop', st.loop); sync(); sc.ui && sc.ui.toast(st.loop ? `Looping ${st.unit} ${u(st.start)} to ${u(st.end)}` : 'Loop off'); };
   el.pos.addEventListener('input', () => seek(+el.pos.value));
-  el.out.onclick = async () => { if (!sc.ui) return; const v = await sc.ui.ask({ title: 'Go to', label: 'Cycle (e.g. 12) or time m:ss (e.g. 0:24)', value: '', okText: 'Go' }); if (v == null) return; const c = parsePos(v, /:/.test(v) ? 'time' : 'cycle'); if (!isFinite(c)) { sc.ui.toast('Enter a cycle or m:ss', { kind: 'error' }); return; } if (!seek(c)) sc.ui.toast('Press Play first, then seek'); };
+  el.out.onclick = async () => { if (!sc.ui) return; const v = await sc.ui.ask({ title: 'Go to', label: 'Cycle (e.g. 12) or time m:ss (e.g. 0:24)', value: cyc(sch() && playing() ? sch().now() : 0), okText: 'Go' }); if (v == null) return; const c = parsePos(v, /:/.test(v) ? 'time' : 'cycle'); if (!isFinite(c)) { sc.ui.toast('Enter a cycle or m:ss', { kind: 'error' }); return; } if (!seek(c)) sc.ui.toast('Press Play first, then seek'); };
   el.sync = sync;
   el.more.onclick = () => extend(300);
   $('#trSet').onclick = settings;
@@ -115,9 +116,12 @@ function tick() {
   const k = cps(); if (k !== st.lastCps) { st.lastCps = k; if (document.activeElement !== el.start && document.activeElement !== el.end) el.sync(); }
   /* end = loop End when looping, otherwise the clamp end projected from the current position */
   const endC = st.loop ? st.end : c + Math.max(0, left) * k;
-  const txt = `c ${c.toFixed(1)} / ${+endC.toFixed(1)} · ${mmss(c / k)} / ${mmss(endC / k)}`;
-  if (txt !== st.lastTxt) { st.lastTxt = txt; $('#trPosTxt').textContent = txt; el.pos.setAttribute('aria-valuetext', `cycle ${c.toFixed(1)}, ${mmss(c / k)}`); }
-  el.left.textContent = fmt(left) + ' left' + (p ? ` · played ${fmt(st.elapsed)}${st.pausedSec >= 1 ? ' · paused ' + fmt(st.pausedSec) : ''}` : ''); el.left.dataset.warn = String(p && left < 60);
+  /* every value has a fixed decimal count and its own fixed-width box (.num), so nothing around it moves */
+  put('trC', cyc(c)); put('trCE', cyc(endC)); put('trT', mmss(c / k)); put('trTE', mmss(endC / k));
+  if (st.lastAria !== $('#trC').textContent) { st.lastAria = $('#trC').textContent; el.pos.setAttribute('aria-valuetext', `cycle ${cyc(c)}, ${mmss(c / k)}`); }
+  put('trL', fmt(left)); put('trPl', fmt(st.elapsed)); put('trPa', fmt(st.pausedSec || 0));
+  $('#trPP').style.visibility = p ? 'visible' : 'hidden'; $('#trPz').style.visibility = p && st.pausedSec >= 1 ? 'visible' : 'hidden'; /* hidden, not removed: width stays */
+  el.left.dataset.warn = String(p && left < 60);
   el.left.title = `Remaining play time before the clamp. Played ${fmt(st.elapsed)} (audio time while running), paused ${fmt(st.pausedSec || 0)}`;
   el.more.hidden = !(p && (left < 60 || st.fading));
 }
@@ -133,6 +137,7 @@ function installLoop(s) {
     else raw = x;
   } });
 }
+const put = (id, t) => { const e = document.getElementById(id); if (e && e.textContent !== t) e.textContent = t; };
 function setLimit(min) { st.maxMin = min; set('range.maxMin', min); }
 sc.range = { state: st, setLimit, extend, tick, seek, parsePos };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build); else build();

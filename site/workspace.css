@@ -1,14 +1,14 @@
 /* transport range (stage), workspace panes, command palette */
 .trange{display:grid;gap:6px;padding:8px 12px 10px;border-top:1px solid var(--line)}
 .tr-pos{width:100%;height:28px;accent-color:var(--sig);margin:0}
-.tr-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font:500 .78rem var(--mono);color:var(--dim)}
-.tr-out{min-height:44px;padding:0 8px;font:500 .78rem var(--mono);white-space:nowrap;color:var(--text);font-variant-numeric:tabular-nums}
+.tr-row{contain:layout;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font:500 .78rem var(--mono);color:var(--dim)}
+.tr-out{min-height:44px;padding:0 8px;contain:layout;font:500 .78rem var(--mono);white-space:nowrap;color:var(--text);font-variant-numeric:tabular-nums}
 .tr-num{display:flex;align-items:center;gap:4px}.tr-num span{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase}
-.tr-num input{width:7ch;min-height:44px;padding:0 6px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--r1);color:var(--text);font:inherit;font-size:16px}
+.tr-num input{width:calc(8ch + 14px);text-align:right;font-variant-numeric:tabular-nums;min-height:44px;padding:0 6px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--r1);color:var(--text);font:inherit;font-size:16px}
 .tr-unit,.tr-loop,.tr-more{min-height:44px;padding:0 10px;font:500 .75rem var(--mono)}
 .tr-loop[aria-pressed="true"]{color:var(--sig-2);box-shadow:inset 0 0 0 1px var(--sig-2)}
-.tr-left{margin-left:auto;font-variant-numeric:tabular-nums}.tr-left[data-warn="true"]{color:var(--warn)}
-.tr-more[hidden]{display:none}
+.tr-left{margin-left:auto;font-variant-numeric:tabular-nums;white-space:nowrap;contain:layout}.tr-left[data-warn="true"]{color:var(--warn)}
+.tr-more[hidden]{display:inline-block;visibility:hidden} /* reserve its place: showing it must not move the timer button */
 .tr-more{color:var(--sig);box-shadow:var(--glow)}
 .tr-set{width:44px;min-height:44px}.tr-set svg,.ws-b svg,.ws-grip svg,.pal-fab svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
@@ -57,3 +57,12 @@ body.ws-on .deck>.browser,body.ws-on .deck>.side,body.ws-on .center>.view{displa
   .pal{top:auto;bottom:calc(var(--tp) + 72px)}
 }
 @media (prefers-reduced-motion:reduce){.pal{animation:none}}
+
+/* live numbers: tabular figures, monospace, right-aligned, fixed width per field (--w in ch, sized for the largest value) */
+.num{display:inline-block;letter-spacing:0;width:var(--w,6ch);box-sizing:content-box;overflow:visible;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tr-read{display:inline-flex;align-items:baseline;gap:0;white-space:nowrap}
+.tr-sep{display:inline-block;width:2ch;text-align:center}
+.cap-time,.peak,#cycleOut,#cpsOut,.pc-val,.pc-out,.bg-stats dd,.bg-segs li,.hist time,.ws-hist-log time,.lit-out{font-variant-numeric:tabular-nums}
+#cycleOut,#cpsOut{display:inline-block;min-width:7ch;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.peak{display:inline-block;min-width:8ch;text-align:right;font-variant-numeric:tabular-nums}
+.cap-time{text-align:right}

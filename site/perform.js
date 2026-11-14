@@ -4,6 +4,7 @@
    Strudel bindings ctl()/slider()/hooks.map(). All state lives in the engines (strudelCraft.pads / .controls / .hooks) and a
    persisted model (localStorage "sc.perform"); the views re-render from it. Loaded on first open of Perform or on first Play;
    its stylesheet (perform.css) loads with it, never with the shell. */
+import * as N from './numfmt.js';
 const sc = window.strudelCraft;
 const $ = (s, r = document) => r.querySelector(s);
 const h = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (v == null || v === false) continue; if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? '' : v); } e.append(...kids.flat().filter((x) => x != null)); return e; };
@@ -120,7 +121,10 @@ function askList({ title, label, value = '', okText = 'OK', list }) { // text in
 const paramList = () => sc.intellisense.all().then((items) => [...new Set(items.filter((i) => !i.string && /param|control|strudel functions|your names/.test(i.category || '')).map((i) => i.label))].slice(0, 300));
 
 /* ---------------- control renderers ---------------- */
-const fmt = (v, s) => (typeof v === 'number' ? (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2)) : String(v)) + (s.unit ? ' ' + s.unit : '');
+/* fixed decimals per control (from its step, else 2) so labels never change digit layout; width reserved from the range ends */
+const decOf = (s) => { const st = (s && s.step) || ((s && s.max != null && s.min != null) ? (s.max - s.min) / 100 : 0.01); return Math.min(3, Math.max(0, -Math.floor(Math.log10(Math.abs(st) || 0.01) + 1e-9))); };
+const fmt = (v, s) => (typeof v === 'number' ? N.fix(v, decOf(s)) : String(v)) + (s.unit ? ' ' + s.unit : '');
+const fmtW = (s) => Math.max(fmt(s.min ?? 0, s).length, fmt(s.max ?? 1, s).length, 4);
 const cur = (name) => controls.get(name, nowCycle());
 /* exact numeric entry (site modal, never a native prompt): unit-aware, accepts values outside the range, offers "Extend range to fit" */
 function enterValue(name) {
@@ -166,7 +170,7 @@ function numberish(kind) {
   return (host, name, s) => {
     const [lo, hi] = [s.min ?? 0, s.max ?? 1]; const step = s.step || (hi - lo) / 100;
     const el = h('div', { class: 'pc-' + kind, role: 'slider', tabindex: 0, 'aria-label': name, 'aria-valuemin': lo, 'aria-valuemax': hi, 'data-ctl': name });
-    const fill = h('i', { class: 'pc-fill' }); const out = h('output', { class: 'pc-val' });
+    const fill = h('i', { class: 'pc-fill' }); const out = h('output', { class: 'pc-val num', style: `--w:${fmtW(s)}ch` });
     el.append(fill, out);
     el.__sync = () => { const v = cur(name); const t = controls.travelOf(name, v); el.setAttribute('aria-valuenow', v); el.setAttribute('aria-valuetext', fmt(v, s)); out.textContent = fmt(v, s); el.style.setProperty('--t', t); };
     let drag = null;

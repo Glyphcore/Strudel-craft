@@ -4,6 +4,7 @@
    rewrites only that literal's span in one dispatch, so the settle scheduler compiles once and history commits once.
    API: strudelCraft.literals = { registerEditor({ id, match(lit, param) -> editorName|null, render?(host, ctx) }), list(viewId),
    set(litId, text, viewId?), nudge(litId, steps, viewId?), open(litId, viewId?), close() }  (ids from engine/bind.js literals()) */
+import * as N from './numfmt.js';
 import { literals, literalAt } from './engine/bind.js';
 import { curveIn, curveOut } from './engine/controls.js';
 
@@ -79,9 +80,10 @@ const notePool = (l) => { const oct = (/(\d+)$/.exec(String(l.value)) || [, '3']
 const EDITORS = {
   scrub(host, ctx) {
     const p = ctx.param; const [lo, hi] = lim(p); let v = ctx.lit.value;
-    const out = h('output', { class: 'lit-val' }, fmt(v, p) + (p.unit ? ' ' + p.unit : ''));
+    const show = (x) => N.fix(x, decimals(p) ?? 2) + (p.unit ? ' ' + p.unit : ''); /* fixed decimals for the live readout */
+    const out = h('output', { class: 'lit-val num', style: `--w:${Math.max(show(lo).length, show(hi).length)}ch` }, show(v));
     const r = h('input', { type: 'range', class: 'lit-range', min: 0, max: 1000, step: 1, value: Math.round(toTravel(p, v) * 1000), 'aria-label': `${p.name || 'value'} (${lo} to ${hi}${p.unit ? ' ' + p.unit : ''})`, 'aria-valuetext': fmt(v, p) });
-    r.addEventListener('input', () => { v = fromTravel(p, r.value / 1000); out.textContent = fmt(v, p) + (p.unit ? ' ' + p.unit : ''); r.setAttribute('aria-valuetext', fmt(v, p)); });
+    r.addEventListener('input', () => { v = fromTravel(p, r.value / 1000); out.textContent = show(v); r.setAttribute('aria-valuetext', fmt(v, p)); });
     r.addEventListener('change', () => ctx.set(fmt(v, p))); /* commit once when the gesture ends */
     host.append(h('div', { class: 'lit-row' }, out, h('span', { class: 'lit-rng' }, `${lo}..${hi}${p.curve && p.curve !== 'lin' ? ' ' + p.curve : ''}`)), r);
   },

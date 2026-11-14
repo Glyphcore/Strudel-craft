@@ -14,6 +14,7 @@
      re-anchors the same cycle at the current audio time and records a pause.
    It also tracks pauses (segment timeline), applies the background policy, holds a screen wake lock while playing in the
    foreground, publishes Media Session metadata and handlers, and exposes diagnostics. API: window.strudelCraft.bg */
+import * as N from './numfmt.js';
 const sc = (window.strudelCraft = window.strudelCraft || {});
 const $ = (s, r = document) => r.querySelector(s);
 const lsGet = (k, d) => { try { const v = localStorage.getItem('sc.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
@@ -24,7 +25,7 @@ export const POLICIES = {
   continue: 'Continue in background if audio is running; pause cleanly if the OS suspends it',
   pause: 'Pause when the app is hidden; resume on return',
 };
-const fmt = (s) => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const fmt = (s) => N.clock(Math.max(0, s));
 
 /* ---------- worker timer ---------- */
 function workerTimer(ms, fn) {
@@ -219,10 +220,10 @@ function openDiagnostics() {
   const render = () => {
     const s = stats(), segs = segments().slice(-12).reverse();
     d.innerHTML = `<div class="help-head"><h2 id="bgDiagH">Audio and background</h2><button type="button" class="icon bg-close" aria-label="Close">&times;</button></div>
-      <dl class="bg-stats">${[['Clock', s.clock], ['Audio context', s.context], ['Lookahead in use', s.lookaheadMs + ' ms (' + s.lookaheadBounds.baseMs + ' foreground, ' + s.lookaheadBounds.hiddenMs + ' hidden, max ' + s.lookaheadBounds.maxMs + ')'],
-        ['Ticks / late ticks', s.ticks + ' / ' + s.lateTicks], ['Max tick gap', s.maxGapMs + ' ms'], ['Underruns (re-anchored)', s.underruns], ['Played / paused', fmt(s.playedSec) + ' / ' + fmt(s.pausedSec)], ['Wake lock', s.wakeLock ? 'held' : 'off']]
+      <dl class="bg-stats">${[['Clock', s.clock], ['Audio context', s.context], ['Lookahead in use', N.span(N.ms(s.lookaheadMs), 7) + ' ms (' + N.span(N.ms(s.lookaheadBounds.baseMs), 7) + ' foreground, ' + N.span(N.ms(s.lookaheadBounds.hiddenMs), 7) + ' hidden, max ' + N.span(N.ms(s.lookaheadBounds.maxMs), 7) + ')'],
+        ['Ticks / late ticks', N.span(s.ticks, 8) + ' / ' + N.span(s.lateTicks, 6)], ['Max tick gap', N.span(N.ms(s.maxGapMs), 7) + ' ms'], ['Underruns (re-anchored)', N.span(s.underruns, 6)], ['Played / paused', N.span(fmt(s.playedSec), 7) + ' / ' + N.span(fmt(s.pausedSec), 7)], ['Wake lock', s.wakeLock ? 'held' : 'off']]
         .map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
-      <h3>Segments</h3><ol class="bg-segs">${segs.length ? segs.map((g) => `<li data-kind="${g.kind}"><b>${g.kind}</b> c ${g.cycle} · ${fmt(g.ms / 1000)} <span>${g.why || ''}</span></li>`).join('') : '<li>Nothing yet: press Play</li>'}</ol>
+      <h3>Segments</h3><ol class="bg-segs">${segs.length ? segs.map((g) => `<li data-kind="${g.kind}"><b>${g.kind}</b> c ${N.span(N.cyc(+g.cycle), 6)} · ${N.span(fmt(g.ms / 1000), 7)} <span>${g.why || ''}</span></li>`).join('') : '<li>Nothing yet: press Play</li>'}</ol>
       ${settingsHtml()}`;
     bindSettings(d);
   };

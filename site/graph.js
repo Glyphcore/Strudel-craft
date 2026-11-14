@@ -115,6 +115,26 @@ function doOps(ops, label) {
   return commit(generate(m), label);
 }
 
+/* required taps and remap (library "Requires and remap"; the CLI's `strudel library collapse` writes the same remap)
+   The library computes what a selection requires (extract -> exports.requires.taps) and what the rest of the program publishes
+   (extract over the other tracks -> exports.taps; an instance exports its taps as "as/tap", the way expand namespaces them).
+   One compatible provider per required tap: the tap of the same name, i.e. what the code read before the collapse (remap
+   { kick: "kick" }, as the CLI writes it); with no tap of that name, the instances' "as/<name>" copies; anything else is asked. */
+const nodeIdOf = (t) => (t.chain == null && t.source == null ? 'code:' : 'track:') + t.name;
+function recOf(ref, model) {
+  const emb = ((model && model.components) || {})[ref]; if (emb) return emb;
+  const m = /^([A-Za-z][\w-]*)@(\d+)$/.exec(ref || ''); if (!m) return null;
+  try { return lib.get(m[1], +m[2]) || null; } catch (e) { return null; }
+}
+const requiresOf = (rec) => (((rec && rec.exports) || {}).requires || {}).taps || [];
+function hostTaps(model, { skip = [], skipAs = null } = {}) {
+  const out = new Set(), ids = (model.tracks || []).map(nodeIdOf).filter((id) => !skip.includes(id));
+  if (ids.length) { try { for (const t of extract(model, ids).exports.taps) out.add(t); } catch (e) { /* the rest publishes nothing */ } }
+  for (const i of model.instances || []) if (i.as !== skipAs) for (const t of (((recOf(i.component, model) || {}).exports || {}).taps || [])) out.add(`${i.as}/${t}`);
+  return [...out].sort();
+}
+function providersFor(tap, taps) { if (taps.includes(tap)) return [tap]; const leaf = tap.split('/').pop(); return taps.filter((p) => p.includes('/') && p.split('/').pop() === leaf); }
+
 function portType(name, kind, dir) {
   if (kind === 'tap' && dir === 'out') return name === 'ev' || name === 'onset' ? 'pattern' : 'signal';
   if (name.startsWith('gate')) return 'gate';
@@ -145,9 +165,16 @@ function buildView(model) {
       case 'marker': port(v, 'out', 'point', 'gate', 'point'); v.sub = 'marker · ' + n.point; break;
       case 'component': {
         Object.keys(n.args || {}).forEach((a) => port(v, 'in', a, 'param')); port(v, 'in', 'gate', 'gate');
-        const [nm, rv] = n.component.split('@'); let rec = null; try { rec = lib.get(nm, +rv); } catch (e) { rec = null; }
+        const rec = recOf(n.component, model), inst = (model.instances || []).find((i) => `inst:${i.as}` === n.id) || {}, rm = inst.remap || {};
+        // required taps (library "Requires and remap"): one input port each, labelled with the tap it reads through remap
+        v.reqs = requiresOf(rec).map((t) => ({ tap: t, from: typeof rm[t] === 'string' ? rm[t] : null }));
+        v.reqs.forEach((r) => { const p = port(v, 'in', 'req:' + r.tap, 'signal', `${r.tap} ← ${r.from || 'unmapped'}`); p.req = r.tap; p.from = r.from || 'unmapped'; });
         ((rec && rec.exports && rec.exports.taps) || []).forEach((t) => port(v, 'out', t, 'signal'));
-        v.sub = 'component · ' + n.component; v.component = n.component; if (!rec) v.err = `E_COMPONENT_MISSING: ${n.component} is not in this browser's library`; break;
+        v.sub = 'component · ' + n.component; v.component = n.component; v.as = inst.as;
+        const unmet = v.reqs.filter((r) => !r.from).map((r) => r.tap);
+        if (!rec) v.err = `E_COMPONENT_MISSING: ${n.component} is not in this browser's library`;
+        else if (unmet.length) v.err = `E_COMPONENT_REQUIRES: no remap for ${unmet.join(', ')}; pick a provider in the inspector`;
+        break;
       }
       case 'code': n.ports.in.forEach((r) => port(v, 'in', r, 'signal')); port(v, 'out', 'out', 'pattern'); v.sub = 'code · opaque'; v.src = (tracks.get(n.name) || {}).src || ''; break;
       default: v.sub = n.kind;
@@ -166,6 +193,14 @@ function buildView(model) {
     const x = { id, type: w.type, from: { node: a, port: fp }, to: { node: b, port: tp } };
     if (id.startsWith('bind:')) { const bid = id.split(':')[1]; const bi = (model.bindings || []).findIndex((bb, i) => (bb.id || `b${i + 1}`) === bid); x.binding = bid; x.b = (model.bindings || [])[bi]; x.window = gateBadge(x.b && x.b.gate); }
     wires.push(x);
+  }
+  // remap wires: provider tap (a track's tap node, or another instance's exported "as/tap") -> the instance's required-tap port
+  for (const v of nodes) for (const r of v.reqs || []) {
+    if (!r.from) continue;
+    const sl = r.from.indexOf('/'), viaInst = sl > 0 && nmap.has('inst:' + r.from.slice(0, sl));
+    const src = viaInst ? 'inst:' + r.from.slice(0, sl) : nmap.has('tap:' + r.from) ? 'tap:' + r.from : null; if (!src || src === v.id) continue;
+    const fp = viaInst ? r.from.slice(sl + 1) : 'ev'; port(nmap.get(src), 'out', fp, 'signal');
+    wires.push({ id: `remap:${v.id}.${r.tap}`, type: 'signal', from: { node: src, port: fp }, to: { node: v.id, port: 'req:' + r.tap }, remap: r.tap });
   }
   const v0 = AU ? AU.decorate({ nodes, wires, nmap }, model) : { nodes, wires, nmap }; // atom cards, derived cards, per-reference wires (atoms-ui.js, #64)
   return LU ? LU.decorate(v0, model, g) : v0; // lane cards, split fans, bus / selection / capture nodes, tag chips (lanes-ui.js, #78)
@@ -200,6 +235,7 @@ function rule(a, b) {
   if (!on || !tn) return { ok: false, reason: 'Unknown node.' };
   if (LU) { const lr = LU.rule(out, inn, on, tn); if (lr) return lr; }
   if (tn.kind === 'code') return { ok: false, reason: 'Opaque code node: its inputs come from its text; edit the code instead.' };
+  if (tn.kind === 'component' && inn.port.startsWith('req:')) return { ok: false, reason: `Required tap ${inn.port.slice(4)} of ${tn.label} is set by its remap: pick the provider in the ${tn.label} inspector.` };
   if (tn.kind === 'component') return { ok: false, reason: `Component ${tn.label}: args and gate are set on its hooks.inst line, not by wires.` };
   if (out.type === 'hook' || inn.type === 'hook') {
     if (out.type === 'hook' && inn.type === 'hook' && tn.kind === 'slot') {
@@ -304,7 +340,7 @@ function render() {
   let html = '';
   for (const n of G.view.nodes) {
     const sel = G.sel.has(n.id);
-    const ports = (dir) => (dir === 'in' ? n.ins : n.outs).map((p, i) => `<button type="button" class="gp gp-${dir} gt-${p.type}" data-node="${esc(n.id)}" data-port="${esc(p.name)}" data-dir="${dir}" data-type="${p.type}" style="top:${HEAD + i * ROW}px" aria-label="${esc(`${n.label} ${dir === 'in' ? 'input' : 'output'} ${p.label}, ${p.type}`)}"><i class="gp-dot" aria-hidden="true"></i><span class="gp-l">${esc(p.label)}</span><span class="gp-t" aria-hidden="true">${p.type.slice(0, 3)}</span></button>`).join('');
+    const ports = (dir) => (dir === 'in' ? n.ins : n.outs).map((p, i) => `<button type="button" class="gp gp-${dir} gt-${p.type}" data-node="${esc(n.id)}" data-port="${esc(p.name)}" data-dir="${dir}" data-type="${p.type}" style="top:${HEAD + i * ROW}px"${p.req ? ` title="${esc(`requires ${p.label}`)}" data-req="${esc(p.req)}"` : ''} aria-label="${esc(`${n.label} ${dir === 'in' ? 'input' : 'output'} ${p.req ? 'requires ' : ''}${p.label}, ${p.type}`)}"><i class="gp-dot" aria-hidden="true"></i>${p.req ? `<span class="gp-l gp-l2"><b>${esc(p.req)}</b> <small>← ${esc(p.from)}</small></span>` : `<span class="gp-l">${esc(p.label)}</span>`}<span class="gp-t" aria-hidden="true">${p.type.slice(0, 3)}</span></button>`).join('');
     const rows = Math.max(1, n.ins.length, n.outs.length);
     let body = '';
     if (n.steps) body = `<ol class="gn-steps" style="top:${HEAD + rows * ROW}px">${n.steps.map((s, i) => `<li data-step="${i}"><span class="gs-t">${i ? '.' : ''}${esc(stepText(s))}</span>${s.slice(1).map((a, j) => ((typeof a === 'number' || typeof a === 'string' || (isObj(a) && '$mini' in a)) && !NONPARAM.has(s[0]) ? `<input class="gs-in" data-step="${i}" data-arg="${j}" value="${esc(isObj(a) ? a.$mini : a)}" aria-label="${esc(`${n.label} ${s[0]} argument ${j + 1}`)}"${ro ? ' readonly' : ''}>` : '')).join('')}</li>`).join('')}</ol>`;
@@ -382,7 +418,7 @@ function renderOutline() {
   outlineEl.replaceChildren(
     h('h3', { class: 'gx-oh' }, `Nodes (${v.nodes.length})`),
     h('ul', { class: 'gx-ol', 'aria-label': 'Graph nodes' }, ...v.nodes.map((n) => h('li', { 'data-id': n.id },
-      h('button', { type: 'button', class: 'ghost gx-on', 'data-act': 'select', 'data-node': n.id, 'aria-pressed': String(G.sel.has(n.id)) }, h('b', {}, n.label), h('span', {}, ' ' + n.sub)),
+      h('button', { type: 'button', class: 'ghost gx-on', 'data-act': 'select', 'data-node': n.id, 'aria-pressed': String(G.sel.has(n.id)) }, h('b', {}, n.label), h('span', { class: n.reqs && n.reqs.length ? 'gx-req' : null }, ' ' + n.sub + (n.reqs && n.reqs.length ? ' · requires ' + n.reqs.map((r) => `${r.tap} ← ${r.from || 'unmapped'}`).join(', ') : ''))),
       h('button', { type: 'button', class: 'ghost', 'data-act': 'connect', 'data-node': n.id, disabled: ro || !(n.ins.length + n.outs.length), 'aria-label': `Connect ${n.label} to…` }, 'Connect to…'),
       h('button', { type: 'button', class: 'ghost', 'data-act': 'move', 'data-node': n.id, 'aria-label': `Move ${n.label} to…` }, 'Move to…')))),
     h('h3', { class: 'gx-oh' }, `Wires (${v.wires.length})`),
@@ -433,6 +469,17 @@ function inspectNode(id) {
   } else if (n.kind === 'marker' && !G.fixture) {
     kids.push(h('div', { class: 'gx-row' }, h('label', {}, 'Point ', h('input', { class: 'gx-lit', 'data-marker': n.label, value: n.raw.point, readonly: ro }))));
   } else if (n.kind === 'component') {
+    if (n.reqs && n.reqs.length && !G.fixture) {
+      const taps = hostTaps(cur() ? cur().model : G.model, { skipAs: n.as });
+      kids.push(h('fieldset', { class: 'gx-facets gx-reqs' }, h('legend', {}, 'Required taps (remap)'),
+        ...n.reqs.map((r) => {
+          const named = providersFor(r.tap, taps), list = [...new Set([...(r.from ? [r.from] : []), ...named, ...taps])];
+          return h('label', { class: 'gx-reqrow' }, h('span', {}, `${r.tap} ←`), h('select', { class: 'gx-remap', 'data-inst': n.as, 'data-tap': r.tap, disabled: ro || !list.length, 'aria-label': `${n.label} requires tap ${r.tap}: read from` },
+            ...(r.from ? [] : [h('option', { value: '', selected: true, disabled: true }, 'unmapped: pick a tap')]),
+            ...list.map((t) => h('option', { value: t, selected: t === r.from }, t + (named.includes(t) || t === r.from ? '' : ' (other name)')))));
+        })),
+        h('p', { class: 'gx-hint' }, taps.length ? 'Each required tap reads the chosen tap of this program; a change rewrites remap on this hooks.inst line (one undo step).' : 'Nothing in this program publishes a tap: add a .tap(...) first.'));
+    }
     kids.push(h('button', { type: 'button', 'data-act': 'enter', 'data-node': id }, `Open ${n.label}`));
   } else if (n.kind === 'slot') {
     const bs = G.view.wires.filter((w) => w.to.node === id && w.type === 'hook');
@@ -462,6 +509,9 @@ function inspectWire(id) {
         h('button', { type: 'button', class: 'ghost', 'data-act': 'unbind', 'data-binding': w.binding, disabled: ro }, 'Unbind'),
         h('button', { type: 'button', class: 'ghost', disabled: true, title: 'Needs the live hooks.replace path on the playing program' }, 'Swap at next bar'),
         h('button', { type: 'submit', class: 'gx-ok', disabled: ro }, 'Apply window'))));
+  } else if (w.remap) {
+    kids.push(h('p', { class: 'gx-hint' }, `Remap: ${B.label} requires tap ${w.remap} and reads it from ${A.label}${w.from.port === 'ev' ? '' : '.' + w.from.port}. Change it in the ${B.label} inspector.`),
+      h('button', { type: 'button', 'data-act': 'select', 'data-node': B.id }, `Edit remap of ${B.label}`));
   } else kids.push(h('p', { class: 'gx-hint' }, w.type === 'signal' ? 'Signal wire (a .wire(...) step or a tap(...) argument): remove the step in the track inspector.' : 'Derived from the code: edit the track that makes it.'));
   openSheet('Wire', h('div', { class: 'gx-insp' }, ...kids), { label: 'Inspector: wire' });
 }
@@ -580,6 +630,8 @@ async function collapse(saveOnly = false) {
   if (readonly()) return refuse('Collapse works at the song level: open Song in the breadcrumb.');
   if (bad.length) return refuse(`Only tracks and code nodes collapse into a component; ${bad.map((b) => G.view.nmap.get(b).label).join(', ')} ${bad.length > 1 ? 'are' : 'is'} not.`);
   let comp; try { comp = extract(G.model, ids); } catch (e) { return refuse(e.message); }
+  let remap = {};
+  if (!saveOnly) { const r = await resolveRemap(comp, ids); if (!r) return say('Cancelled: nothing changed'); if (r.refuse) return refuse(r.refuse); remap = r.remap; }
   const name = await ui().ask({ title: saveOnly ? 'Save to library' : 'Collapse to subgraph', label: 'Component name (letters, digits, - or _)', value: 'part', okText: saveOnly ? 'Save' : 'Collapse' });
   if (name == null) return say('Cancelled');
   if (!/^[A-Za-z][\w-]*$/.test(name)) return refuse(`"${name}" is not a component name: start with a letter, then letters, digits, - or _.`);
@@ -588,8 +640,56 @@ async function collapse(saveOnly = false) {
   if (saveOnly) { ui().toast(`Saved ${ref} to the library`, { kind: 'ok' }); return; }
   const used = new Set([...(G.model.instances || []).map((i) => i.as), ...(G.model.tracks || []).map((t) => t.name)]);
   const base = name.replace(/-/g, '_'); let as = base; for (let i = 2; used.has(as); i++) as = base + i;
-  const m = replaceWithInstance(G.model, ids, { component: ref, as });
-  if (commit(generate(m), `Collapsed ${ids.length} nodes into ${ref} as ${as}`)) { G.sel.clear(); G.sel.add('inst:' + as); setMulti(false); render(); ui().toast(`Collapsed into ${ref}`, { kind: 'ok' }); }
+  const m = replaceWithInstance(G.model, ids, { component: ref, as, ...(Object.keys(remap).length ? { remap } : {}) });
+  const rtxt = Object.keys(remap).length ? ' (remap ' + Object.entries(remap).map(([k, v]) => `${k} ← ${v}`).join(', ') + ')' : '';
+  if (commit(generate(m), `Collapsed ${ids.length} nodes into ${ref} as ${as}${rtxt}`)) { G.sel.clear(); G.sel.add('inst:' + as); setMulti(false); render(); ui().toast(`Collapsed into ${ref}`, { kind: 'ok' }); }
+}
+// required taps of the selection -> remap: auto for exactly one compatible provider, the modal for several (or for a tap no one
+// publishes under that name: then every published tap is offered); refused when nothing outside the selection publishes a tap.
+// Returns { remap } | { refuse } | null (cancelled: nothing saved, the document is untouched).
+async function resolveRemap(comp, ids) {
+  const req = requiresOf(comp); if (!req.length) return { remap: {} };
+  const taps = hostTaps(G.model, { skip: ids }), remap = {}, ask = [];
+  for (const t of req) { const c = providersFor(t, taps); if (c.length === 1) remap[t] = c[0]; else ask.push({ tap: t, choices: c.length ? c : taps, named: c.length > 0 }); }
+  if (!ask.length) return { remap };
+  if (!taps.length) return { refuse: `The selection reads tap${req.length > 1 ? 's' : ''} ${req.map((t) => `"${t}"`).join(', ')} and nothing outside it publishes a tap, so the component's requirement cannot be met (E_COMPONENT_REQUIRES). Publish it with .tap(...) or add its publisher to the selection.` };
+  const picked = await chooseRemap(ask); if (!picked) return null;
+  for (const t of req) if (picked[t]) remap[t] = picked[t];
+  return { remap };
+}
+// site modal (dialog.scm: the shell modal's look, focus trap and Escape) with one radio group per required tap; resolves { tap: provider } or null
+function chooseRemap(ask) {
+  return new Promise((resolve) => {
+    const prev = document.activeElement, id = 'gxRm' + Date.now().toString(36);
+    const groups = ask.map((a, gi) => h('fieldset', { class: 'gx-facets gx-rmset' }, h('legend', {}, `${a.tap} reads`),
+      h('p', { class: 'gx-hint' }, a.named ? `${a.choices.length} taps are named ${a.tap.split('/').pop()}: pick the one this component reads.` : `Nothing publishes a tap named ${a.tap}: pick the tap it should read.`),
+      ...a.choices.map((c, ci) => h('label', { class: 'gx-radio' }, h('input', { type: 'radio', name: 'rm' + gi, value: c, checked: ci === 0 }), c))));
+    const ok = h('button', { type: 'submit', class: 'scm-ok' }, 'Use these'), cancel = h('button', { type: 'button', class: 'ghost' }, 'Cancel');
+    const form = h('form', { method: 'dialog', class: 'scm-body' }, h('p', { class: 'scm-msg', id: id + 'm' }, 'The selection reads taps it does not publish. Choose where each one comes from; the instance line gets remap: { ... }.'), ...groups, h('div', { class: 'scm-acts' }, cancel, ok));
+    const d = h('dialog', { class: 'scm gx-rm', 'data-remap': '1', 'aria-labelledby': id + 't', 'aria-describedby': id + 'm' }, h('div', { class: 'help-head' }, h('h2', { id: id + 't' }, 'Connect required taps')), form);
+    let done = false;
+    const finish = (v) => { if (done) return; done = true; d.close(); d.remove(); if (prev && prev.focus) prev.focus({ preventScroll: true }); resolve(v); };
+    form.addEventListener('submit', (e) => { e.preventDefault(); const f = new FormData(form); finish(Object.fromEntries(ask.map((a, gi) => [a.tap, f.get('rm' + gi)]))); });
+    cancel.addEventListener('click', () => finish(null));
+    d.addEventListener('cancel', (e) => { e.preventDefault(); finish(null); });
+    d.addEventListener('click', (e) => { if (e.target === d) finish(null); });
+    d.addEventListener('keydown', (e) => {
+      e.stopPropagation(); if (e.key === 'Escape') { e.preventDefault(); finish(null); return; } if (e.key !== 'Tab') return;
+      const f = [...d.querySelectorAll('button,input')].filter((x) => !x.disabled), first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+    document.body.append(d); d.showModal(); (d.querySelector('input:checked') || ok).focus();
+  });
+}
+// inspector edit of one remap entry: model.js has no instance op, so the instance's remap is set on a copy of the model and the
+// program is regenerated through generate(), the path Collapse uses; one commit = one undo step
+function setRemap(as, tap, from) {
+  if (readonly()) return refuse(G.fixture ? 'Fixture view is read-only.' : `Inside ${cur().label} the graph is read-only: component revisions are immutable.`);
+  if (!from) return;
+  const m = JSON.parse(JSON.stringify(G.model)), i = (m.instances || []).find((x) => x.as === as);
+  if (!i) return refuse(`No instance ${as} in this program.`);
+  i.remap = { ...(i.remap || {}), [tap]: from };
+  if (commit(generate(m), `${as} reads ${from} for required tap ${tap}`)) { G.sel.clear(); G.sel.add('inst:' + as); paintSel(); inspectNode('inst:' + as); }
 }
 function deleteSel() {
   const ids = [...G.sel];
@@ -634,6 +734,7 @@ function bind() {
   root.addEventListener('change', (e) => {
     const t = e.target;
     if (t.matches('.gs-in, .gx-lit')) applyLiteral(t);
+    else if (t.matches('.gx-remap')) setRemap(t.dataset.inst, t.dataset.tap, t.value);
     else if (t.matches('.gx-gate select') && t.value) { const inp = t.closest('.gx-gate').querySelector('input'); inp.value = t.value; t.value = ''; }
   });
   root.addEventListener('submit', (e) => {
@@ -865,7 +966,8 @@ const api = {
   zoomTo(s, x = 24, y = 24) { V.s = s; V.x = x; V.y = y; applyView(); },
   center(id, s = V.s) { const n = G.view.nmap.get(id); const r = vp.getBoundingClientRect(); V.s = s; V.x = r.width / 2 - (n.x + W / 2) * s; V.y = Math.min(r.height / 2, 140) - n.y * s; applyView(); },
   fixture(nn, nw) { G.fixture = makeFixture(nn, nw); G.sel.clear(); G.wire = null; closeSheet(); render(); }, clearFixture() { G.fixture = null; render(); },
-  expand: (m) => expand(m, { lookup: (n, r) => lib.get(n, r) }), generate, parse,
+  expand: (m) => expand(m, { lookup: (n, r) => lib.get(n, r) }), generate, parse, extract, replaceWithInstance,
+  load(text) { G.path = []; G.fixture = null; G.past = []; G.future = []; G.sel.clear(); G.wire = null; G.armed = null; setMulti(false); closeSheet(); setText(text); },
 };
 sc.graph = api; window.__graph = api;
 export default api;

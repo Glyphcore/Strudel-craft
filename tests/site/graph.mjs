@@ -35,6 +35,27 @@ const TARGETS = () => {
   return { n: rs.length, ports: ports.length, min_w: +Math.min(...rs.map(({ r }) => r.width)).toFixed(1), min_h: +Math.min(...rs.map(({ r }) => r.height)).toFixed(1), port_min: ports.length ? [+Math.min(...ports.map(({ r }) => r.width)).toFixed(1), +Math.min(...ports.map(({ r }) => r.height)).toFixed(1)] : null, small: small.slice(0, 8) };
 };
 
+// Queried events of a program before and after a remapped collapse, in node: unmodified @strudel/core + @strudel/mini (node_modules or
+// STRUDEL_MODULES) with site/engine/hooks.js; the instance plays through the library's hooks.inst (installInstances), with the record the
+// browser saved. Structured tracks are built step by step ($mini -> mini, $tap -> tap(...).range). Returns { skip } without Strudel.
+async function remapEvents(before, after, rec, control) {
+  const { bootRuntime, haps } = await import('../hooks/fixtures/rt.mjs');
+  const RT = await bootRuntime(); if (!RT) return { skip: '@strudel/core/@strudel/mini not installed (set STRUDEL_MODULES=<dir with @strudel/>)' };
+  const { parse } = await import('../../site/model.js'), { createLibrary, installInstances } = await import('../../site/library.js'), { fallbackStore } = await import('../../site/library-store.js');
+  const mem = () => { const o = {}; return { getItem: (k) => o[k] ?? null, setItem: (k, v) => { o[k] = v; } }; };
+  const L = createLibrary(fallbackStore(mem())); L.store.put(rec);
+  const sub = (v) => (Array.isArray(v) ? v.map(sub) : v && typeof v === 'object' ? ('$mini' in v ? RT.S.mini(v.$mini) : '$tap' in v ? (v.range ? RT.tap(v.$tap).range(...v.range) : RT.tap(v.$tap)) : Object.fromEntries(Object.entries(v).map(([k, x]) => [k, sub(x)]))) : v);
+  const track = (t) => { let p = RT.S[t.source[0]](...t.source.slice(1).map(sub)); for (const [m, ...a] of t.chain || []) p = p[m](...a.map(sub)); return p; };
+  const events = (text) => {
+    RT.hooks.reset(); RT.hooks.live = false; installInstances(RT.hooks, { lib: L, S: RT.S, tap: RT.tap });
+    const m = parse(text), pats = (m.tracks || []).map(track);
+    for (const i of m.instances || []) pats.push(RT.hooks.inst(i.component, { as: i.as, ...(i.remap ? { remap: i.remap } : {}), ...(i.args ? { args: i.args } : {}) }));
+    return haps(RT.S.stack(...pats), 0, 4).map((h) => JSON.stringify([h.b, h.v])).sort();
+  };
+  const a = events(before), b = events(after), c = control ? events(control) : null; // control: a program reading another tap, so the comparison is shown to see the tap
+  return { before: a.length, after: b.length, same: JSON.stringify(a) === JSON.stringify(b), control_differs: c ? JSON.stringify(c) !== JSON.stringify(a) : null, sample: b.filter((x) => x.includes('hh')).slice(0, 2) };
+}
+
 export async function graphSection({ browser, BASE, OUT, check, watch, metrics }) {
   const M = (metrics.graph = {});
   const gx = (page) => page.waitForFunction(() => window.__graph && document.querySelector('.gx .gn'), null, { timeout: 20000 });
@@ -215,6 +236,94 @@ export async function graphSection({ browser, BASE, OUT, check, watch, metrics }
     await page.keyboard.press('Control+z'); const u1 = await page.evaluate(() => window.__graph.text);
     await page.keyboard.press('Control+z'); const u2 = await page.evaluate(() => window.__graph.text);
     check('graph: one undo stack covers a code edit and a graph edit', t2.trimEnd().endsWith('// note') && !u1.includes('// note') && u1.includes('hooks.bind') && u2 === t0, JSON.stringify({ t2: t2.slice(-30), u1: u1.slice(-30), u2eq: u2 === t0 }));
+    await ctx.close();
+  }
+
+  /* ---------- collapse with required taps: remap (library "Requires and remap"; the CLI's library collapse writes the same) ---------- */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page = await ctx.newPage(); watch(page, 'graph-remap');
+    await page.goto(BASE + '#graph'); await gx(page); await page.evaluate(() => window.__graph.reset());
+    const DUCK = 'duck: s("hh*4").gain(tap("kick:env").range(0.2, 1))';
+    const select = async (id) => { await page.evaluate((id) => window.__graph.center(id, 1), id); await settle(page); if ((await page.getAttribute('#gxMulti', 'aria-pressed')) !== 'true') await page.click('#gxMulti'); if (!(await page.evaluate((id) => window.__graph.sel.includes(id), id))) await page.click(`.gn[data-id="${id}"] .gn-head`); await page.waitForTimeout(80); };
+    const name = async (n) => { await page.waitForSelector('dialog.scm input'); await page.fill('dialog.scm input', n); await page.click('dialog.scm .scm-ok'); await settle(page); };
+    // the library's own output for the same input: generate(replaceWithInstance(model, ids, { component, as, remap }))
+    const expected = (t0, ids, inst) => page.evaluate(({ t0, ids, inst }) => { const g = window.__graph; return g.generate(g.replaceWithInstance(g.parse(t0), ids, inst)); }, { t0, ids, inst });
+    const revOf = (t, n) => +(new RegExp(`hooks\\.inst\\("${n}@(\\d+)"`).exec(t) || [])[1];
+    const R = (M.remap = {});
+
+    // 1. one required tap, one provider: automatic remap { kick: "kick" }, no modal
+    const t0 = `setcpm(30)\nkick: s("bd ~ ~ bd").gain(0.8).tap("kick")\n${DUCK}\n`;
+    await page.evaluate((t) => window.__graph.load(t), t0); await settle(page);
+    await select('track:duck'); await page.click('.gx-selbar [data-act=collapse]');
+    const sawRemapModal = await page.waitForSelector('dialog.scm[data-remap]', { timeout: 400 }).then(() => true, () => false);
+    await name('duckc');
+    const t1 = await page.evaluate(() => window.__graph.text), rev1 = revOf(t1, 'duckc');
+    const want1 = await expected(t0, ['track:duck'], { component: `duckc@${rev1}`, as: 'duckc', remap: { kick: 'kick' } });
+    const node1 = await page.evaluate(() => { const g = window.__graph, n = g.view.nmap.get('inst:duckc'); const b = document.querySelector('.gp[data-node="inst:duckc"][data-port="req:kick"]'); return { reqs: n.reqs, label: b && b.querySelector('.gp-l').textContent, err: n.err, wire: g.view.wires.some((w) => w.remap === 'kick' && w.from.node === 'tap:kick' && w.to.node === 'inst:duckc'), outline: (document.querySelector('.gx-outline [data-act=select][data-node="inst:duckc"]') || {}).textContent || '' }; });
+    check('graph: collapse with one required tap and one provider remaps automatically; code equals the library replaceWithInstance output',
+      !sawRemapModal && t1 === want1 && t1.includes('$: hooks.inst("duckc@' + rev1 + '", { as: "duckc", remap: { kick: "kick" } })') && node1.label === 'kick ← kick' && !node1.err && node1.wire && /requires kick ← kick/.test(node1.outline),
+      JSON.stringify({ sawRemapModal, line: t1.split('\n').find((l) => l.includes('hooks.inst')), eq: t1 === want1, node1 }));
+    R.auto = { line: t1.split('\n').find((l) => l.includes('hooks.inst')), equals_library_output: t1 === want1, port_label: node1.label, outline: node1.outline.trim() };
+    // queried events before and after, node side: unmodified @strudel/core+mini + site/engine/hooks.js + library installInstances (hooks.inst)
+    const rec1 = await page.evaluate((r) => window.__graph.lib.get('duckc', r), rev1);
+    const ev = await remapEvents(t0, t1, rec1, t0.replace('tap("kick:env")', 'tap("none:env")'));
+    if (ev.skip) console.log('SKIP  graph: remap collapse queried events before = after  -- ' + ev.skip);
+    else check('graph: remap collapse: queried events identical before and after (hooks.inst with the remap, cycles 0-4)', ev.same && ev.before > 0 && ev.control_differs, JSON.stringify(ev));
+    R.events = ev;
+    // undo restores the original text exactly
+    await page.click('#gxUndo'); await settle(page);
+    const u1 = await page.evaluate(() => window.__graph.text);
+    check('graph: undo after a remapped collapse restores the original text exactly', u1 === t0, JSON.stringify({ same: u1 === t0 }));
+
+    // 2. two providers (two instances export kick): the site modal lists both; each choice gives the matching code
+    const kr = await page.evaluate(() => window.__graph.lib.save({ model: 1, tracks: [{ name: 'k', source: ['s', { $mini: 'bd*4' }], chain: [['tap', 'kick']] }], exports: { taps: ['kick'], params: {} } }, { name: 'kicker', kind: 'track' }).rev);
+    const t2 = `setcpm(30)\n$: hooks.inst("kicker@${kr}", { as: "a" })\n$: hooks.inst("kicker@${kr}", { as: "b" })\n${DUCK}\n`;
+    await page.evaluate((t) => window.__graph.load(t), t2); await settle(page);
+    const base2 = await page.evaluate(() => window.__graph.text);
+    // cancel leaves the document byte-identical and asks nothing else
+    await select('track:duck'); await page.click('.gx-selbar [data-act=collapse]'); await page.waitForSelector('dialog.scm[data-remap]');
+    const choices = await page.evaluate(() => [...document.querySelectorAll('dialog.scm[data-remap] input[type=radio]')].map((i) => i.value));
+    await page.click('dialog.scm[data-remap] button.ghost'); await settle(page);
+    const c0 = await page.evaluate(() => ({ text: window.__graph.text, dialogs: document.querySelectorAll('dialog.scm').length, msg: document.querySelector('.gx-msg').textContent }));
+    check('graph: two providers open the site modal listing both; Cancel leaves the document byte-identical', choices.join() === 'a/kick,b/kick' && c0.text === base2 && c0.dialogs === 0, JSON.stringify({ choices, same: c0.text === base2, dialogs: c0.dialogs, msg: c0.msg }));
+    const pick = async (v) => {
+      await select('track:duck'); await page.click('.gx-selbar [data-act=collapse]'); await page.waitForSelector('dialog.scm[data-remap]');
+      await page.check(`dialog.scm[data-remap] input[value="${v}"]`); await page.click('dialog.scm[data-remap] .scm-ok'); await name('duckc');
+      const t = await page.evaluate(() => window.__graph.text), r = revOf(t, 'duckc');
+      return { t, r, want: await expected(base2, ['track:duck'], { component: `duckc@${r}`, as: 'duckc', remap: { kick: v } }) };
+    };
+    const pb = await pick('b/kick');
+    const node2 = await page.evaluate(() => { const g = window.__graph; return { label: (document.querySelector('.gp[data-node="inst:duckc"][data-port="req:kick"] .gp-l') || {}).textContent, wire: g.view.wires.some((w) => w.remap === 'kick' && w.from.node === 'inst:b' && w.from.port === 'kick') }; });
+    await page.click('#gxUndo'); await settle(page); const ub = await page.evaluate(() => window.__graph.text);
+    const pa = await pick('a/kick');
+    check('graph: two providers: each modal choice gives the matching code (remap b/kick, then a/kick), equal to the library output',
+      pb.t === pb.want && pb.t.includes('remap: { kick: "b/kick" }') && pa.t === pa.want && pa.t.includes('remap: { kick: "a/kick" }') && ub === base2 && node2.label === 'kick ← b/kick' && node2.wire,
+      JSON.stringify({ b: pb.t.split('\n').find((l) => l.includes('"duckc')), a: pa.t.split('\n').find((l) => l.includes('"duckc')), eqB: pb.t === pb.want, eqA: pa.t === pa.want, undoB: ub === base2, node2 }));
+    R.modal = { choices, b: pb.t.split('\n').find((l) => l.includes('"duckc')), a: pa.t.split('\n').find((l) => l.includes('"duckc')) };
+    // inspector: the remap select rewrites the instance line in one undo step
+    await page.evaluate(() => window.__graph.center('inst:duckc', 1)); await settle(page);
+    await page.click('.gn[data-id="inst:duckc"] .gn-head'); await page.waitForSelector('.gx-sheet select.gx-remap[data-tap="kick"]');
+    const opts = await page.evaluate(() => [...document.querySelectorAll('.gx-sheet select.gx-remap option')].map((o) => o.value));
+    await page.selectOption('.gx-sheet select.gx-remap[data-tap="kick"]', 'b/kick'); await settle(page);
+    const ti = await page.evaluate(() => window.__graph.text);
+    const wantI = await expected(base2, ['track:duck'], { component: `duckc@${pa.r}`, as: 'duckc', remap: { kick: 'b/kick' } });
+    const outl = await page.evaluate(() => (document.querySelector('.gx-outline [data-act=select][data-node="inst:duckc"]') || {}).textContent || '');
+    await page.click('#gxUndo'); await settle(page); const ui1 = await page.evaluate(() => window.__graph.text);
+    check('graph: inspector remap select rewrites the instance line (one undo step); outline shows the mapping',
+      opts.includes('a/kick') && opts.includes('b/kick') && !opts.includes('duckc/kick') && ti === wantI && /requires kick ← b\/kick/.test(outl) && ui1 === pa.t,
+      JSON.stringify({ opts, eq: ti === wantI, outline: outl.trim(), undo: ui1 === pa.t }));
+    R.inspector = { options: opts, after: ti.split('\n').find((l) => l.includes('"duckc')), outline: outl.trim() };
+
+    // 3. no provider: refused with the reason in the status line and a toast; the document is unchanged
+    const t3 = `setcpm(30)\npad: note("c3 e3")\n${DUCK}\n`;
+    await page.evaluate((t) => window.__graph.load(t), t3); await settle(page);
+    const base3 = await page.evaluate(() => window.__graph.text);
+    await select('track:duck'); await page.click('.gx-selbar [data-act=collapse]'); await page.waitForTimeout(300);
+    const r3 = await page.evaluate(() => ({ text: window.__graph.text, msg: document.querySelector('.gx-msg').textContent, toast: [...document.querySelectorAll('.toast.error')].map((t) => t.textContent).join(' | '), dialogs: document.querySelectorAll('dialog.scm').length }));
+    check('graph: collapse whose required tap has no provider is refused (status line + toast), document unchanged',
+      r3.text === base3 && /^Refused: .*"kick".*E_COMPONENT_REQUIRES/.test(r3.msg) && /E_COMPONENT_REQUIRES/.test(r3.toast) && r3.dialogs === 0, JSON.stringify(r3));
+    R.refused = r3.msg;
     await ctx.close();
   }
 

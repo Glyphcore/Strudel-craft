@@ -140,7 +140,7 @@ Every edit is one registry operation, the same ones the code calls, so the graph
 | wire tap facet -> param port | add `wire` | appends `.wire(param, ref, opts)` to that track |
 | insert / remove / reorder a step | track chain edit | regenerates that track's chain |
 | turn a knob on a step or var | literal update | rewrites that literal only |
-| collapse selection | new component + instance | selection replaced by `hooks.inst(...)`; definition goes to the library |
+| collapse selection | new component + instance | selection replaced by `hooks.inst(...)` (with `remap` for required taps); definition goes to the library |
 | live swap button on a wire | `replace(..., "next")` | journal entry, no text change |
 
 ### 4.4 Code -> model
@@ -622,6 +622,13 @@ Direction and constraints, not a layout. Phone first (390 px wide), then desktop
 - **Collapse**: long-press starts multi-select, further taps add; actions: Collapse to subgraph, Save to library, Delete.
   A collapsed node shows only its exported ports; opening it pushes a breadcrumb (`Song / pad2 / fx`). Exporting a port is a toggle
   on the port inside the subgraph.
+  If the selection reads taps it does not publish (`exports.requires.taps` from `extract`), Collapse adds
+  `remap: { tap: "provider" }` to the instance, as the CLI's library collapse does:
+  - A tap of the same name elsewhere in the program is used without a question.
+  - With no tap of that name, an instance's `as/<name>` copy is used. If there are several of those, or none, the site modal asks.
+  - If nothing outside the selection publishes a tap, the collapse is refused (`E_COMPONENT_REQUIRES`).
+  - Required taps are input ports on the instance node (`kick ← kick`), are listed in the Outline, and can be remapped in the
+    inspector in one undo step.
 - **Add**: one "+" control opens a palette fed by the intellisense registry (section 7), searchable, grouped by category.
 - **Plan strip**: collapsible strip above the transport showing open windows per slot and variable against bars; the playhead is the
   same one as the lanes.

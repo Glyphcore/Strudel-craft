@@ -618,6 +618,17 @@ same document and undo is the shared history stack.
 - Canvas: pan and pinch zoom with a content-derived minimum zoom (zoom out always keeps every node visible), glyph level of detail,
   1:1 reset and Fit; on phones one finger scrolls the page (`touch-action: pan-y`), two fingers pan and zoom, and "Interact" locks
   one-finger panning. Selection -> "Save to library" or "Collapse to subgraph" (new component plus `hooks.inst(...)` in the code).
+- Collapse and required taps (`remap`): when the selection reads taps it does not publish, library `extract` lists them in
+  `exports.requires.taps` and the instance line gets `remap: { ... }`, written the same way as the CLI's `strudel library collapse`:
+  `$: hooks.inst("duck@1", { as: "duck", remap: { kick: "kick" } })`. The candidate taps are what the rest of the program publishes:
+  track taps, and other instances' exports as `as/tap`. A tap of the same name is the one compatible provider and is used without a
+  question. With no tap of that name, the instances' `as/<name>` copies are used; when there are several, the site modal lists them,
+  and when there are none it lists every published tap. Cancel leaves the text unchanged. If nothing outside the selection publishes
+  a tap, the collapse is refused (`E_COMPONENT_REQUIRES`, shown in the status line and a toast).
+  - On the instance node every required tap is an input port labelled `kick ← kick`, and a signal wire runs from the provider. A missing
+    mapping shows `E_COMPONENT_REQUIRES` on the node.
+  - The Outline row reads `requires kick ← kick`.
+  - The inspector has one select per required tap. Changing it rewrites `remap` on that `hooks.inst` line in one undo step.
 - Tests: `node tests/site/graph.mjs`, `graph_zoom.mjs`, `graph_scroll.mjs`; screenshots and metrics under `graph` in `docs/screens/`.
 - **Lanes in the graph** (`lanes-ui.js` + `lanes-ui.css`, #78, docs/LANES.md 11d; loaded with the Graph view, not with the shell). Drawn from `graph(model)`; edits go through `applyOp`
   (`addBranch`, `exportTap`, `addSend`, `literal`) or, where model.js has no op yet, one splice of that statement on the graph's undo stack (adding / removing a `tagged(...)` statement, a group

@@ -51,6 +51,8 @@ async function render() {
     <p>${esc(s.explain)}</p>
     ${(s.examples || []).map((e, i) => { const coming = e.coming || !built; return `<figure class="sx-ex">
       ${e.code ? `<pre><code>${esc(e.code)}</code></pre>` : ''}
+      ${e.flow ? `<ol class="sx-flow" aria-label="Signal flow">${e.flow.map((f) => `<li><b>${esc(f[0])}</b><span>${esc(f[1])}</span></li>`).join('')}</ol>` : ''}
+      ${e.explain ? `<p class="sx-exnote">${esc(e.explain)}</p>` : ''}
       <figcaption><span>${esc(e.title)}</span>${coming ? '<span class="sx-badge" data-built="false">coming</span>' : `<button type="button" class="sx-run" data-sec="${s.id}" data-i="${i}">${e.action ? 'Open' : e.noplay ? 'Load' : 'Load and play'}</button>`}</figcaption></figure>`; }).join('')}
     </section>`; }).join('')}`;
   root.querySelectorAll('.sx-toc a').forEach((a) => a.addEventListener('click', (ev) => { ev.preventDefault(); $('#sx-' + a.dataset.sx).scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }));

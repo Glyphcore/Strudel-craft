@@ -67,6 +67,20 @@
         },
         "noplay": {
          "type": "boolean"
+        },
+        "explain": {
+         "type": "string"
+        },
+        "flow": {
+         "type": "array",
+         "items": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+           "type": "string"
+          }
+         }
         }
        }
       }

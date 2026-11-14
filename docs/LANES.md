@@ -217,7 +217,8 @@ verb:  ret("verb").room(1).rsize(8).lpf(3000)
   directly or through others, to its own bus): `E_LANE_CYCLE`; Web Audio would mute such a loop silently. A `ret` inside a split
   branch or a branch reader used outside its split: `E_LANE_CROSS`.
 - Audio-rate modulation from a bus (`bmod`) is exposed as `.wire(param, "bus:name", opts)` (compiled to `.bmod({ bus: N, control: 'param', ...opts })`, opts `depth`, `depthabs`, `dc`, `subControl`); it carries the raw signal, not an
-  envelope. Event-driven ducking stays `duckorbit` or the event-level `tap("k:env")`.
+  envelope. Measured on superdough 1.3.0 (`modulators.mjs connectBusModulator`): the target gets `(signal + dc) * depthValue / 0.3` added, where `depthValue = depthabs` or, without it, `depth * currentValue` (depth is a multiple of the control's value, so `{ depth: 600 }` on a cutoff of 800 is 480000 Hz of swing; use `depthabs` in Hz). The signal is bipolar and is not normalised to 0.3: a default sine arriving through a unit send is about 0.14, so the cutoff moves only about 0.48 x depthabs; raise the send amount (`.send("mod", 2)`) or the source `gain` to reach the full range. A negative depth inverts, `dc` shifts the centre by `dc / 0.3 * depth`. The clamp wave shaper in that function is not connected to the target (min/max have no effect). A slow LFO is a sine with `.freq(0.25)`; `note("c1")` is 32.7 Hz, an audio-rate tone (a growl), and `.slow()` only lengthens the note. Open observation (offline render in the CLI): the first cycle of a held lead is unmodulated and retriggered lead notes are modulated intermittently, so the Syntax examples use held voices; not re-checked in the browser.
+ Event-driven ducking stays `duckorbit` or the event-level `tap("k:env")`.
 
 ### 5.4 Errors and warnings
 | code | when |

@@ -425,7 +425,7 @@ Same module. `compile(src, { host })` is a text-to-text pass (before atoms-free 
 `E_LANE_HOST`, `E_LANE_SOURCE`, `E_LANE_CROSS`, `E_LANE_CYCLE`, `E_BUS_RANGE`, `E_LANE_OPTS` (app.js lets those codes through to the eval error box). A program with none of the features is returned byte for byte (all 46 catalog recipes checked).
 - `.split(f, g, ..., { mix: [..], pre })`: source rendered once with `.dry(0).bus(k)`, one `s("bus").n(k).attack(0.01).release(0.01).gain(1)` reader per branch (10 ms: superdough floors a bus release at 10 ms; measured seamless).
   A branch is `x => x.effect(...)` (the parameter starts the body and is used once); it may add effects, gain, pan, orbit and structure, not `s n note freq bus dry`. `.merge(m => ...)` sums the branches on a second bus; splits nest.
-- `.send("name", amount)` forwards the lane's last bus to a named bus (reader `.dry(0).bus(N).busgain(amount)`); `ret("name")` is the reader of that bus and starts a lane; `.wire("lpf", "bus:name", { depth })` is `bmod`;
+- `.send("name", amount)` forwards the lane's last bus to a named bus (reader `.dry(0).bus(N).busgain(amount)`); `ret("name")` is the reader of that bus and starts a lane; `.wire("lpf", "bus:name", { depthabs })` is `bmod` (cutoff = base + (signal + dc) x depthabs / 0.3; `depth` is a multiple of the current value; a slow LFO is `s("sine").freq(0.25)`, `note("c1")` is audio rate; see docs/LANES.md 5.3);
   `tagged(sel).send("name", amount)` adds the send to every lane whose literal `.tags(...)` or `#id` match. Bus numbers: split and lane buses from 64 in source order, named buses from 512 in name order.
 - Checks: `E_LANE_SOURCE E_LANE_CROSS E_LANE_CYCLE E_BUS_RANGE E_LANE_HOST E_LANE_OPTS`, `W_LANE_POST_SPLIT W_BUS_NO_RETURN W_LANE_SELECT_EMPTY` (text, in `compile().graph.diagnostics`, with `line`), and on the queried haps `E_LANE_SOURCE`, `W_LANE_REFRAIN` (`lanes.diagnostics()`).
   `compile().graph.audio` holds the buses, splits, sends, returns and wires (what `strudel lanes` will print; the CLI commands and `stems` per lane group are in the CLI repo, not done yet).
@@ -667,6 +667,7 @@ param ranges (e.g. `lpf` -> `cutoff` 20..20000).
 ## Syntax (`syntax.js`, view 6)
 Teaches the new paradigms from `data/syntax.json` (sourced from docs/HOOKS_SYNTAX.md and docs/BLUEPRINT.md): slots/.use()/gates,
 taps/wire/variables/decorators, inline controls and mapping, pads and the board, library components, word() vocals, ghost text.
+An example may carry `"explain"` (a note under the code) and `"flow"` (a list of `[name, text]` boxes drawn as a signal-flow diagram, for instance the bus modulator examples).
 Each example has "Load and play" (loads into Rack and plays, or hot-swaps if already playing); `"noplay": true` makes it "Load"
 only (for examples that need state first, such as a component saved in your library) and `"action": "perform"` opens Perform instead.
 A paradigm whose engine is not present is marked "coming" (detected at runtime), and a single example can carry `"coming": true` when

@@ -1,6 +1,9 @@
 # Transport range, workspace and command palette
 
 ## Transport range (`site/transport-range.js`)
+- Markup: `TPL` in `transport-range.js` is the source; `index.html` ships the same markup inside `#trange`, so the stage has its final height at the
+  first paint (#59, no layout shift) while the script loads after the first frame. If the two differ, the script rebuilds from `TPL` and sets
+  `data-rebuilt` (`tests/site/smoke.mjs` fails on it): edit both together.
 - Readout: `c 12.0/64.0·00:24/02:08`, then `19:36 left · played 00:24 · paused 00:02` (cycle / end cycle · elapsed / end time). Cycles always show one decimal (`3.0`, never `3`); clocks are `mm:ss` (`h:mm:ss` from an hour, `mm:ss.s` in inputs and the record timer). End = loop End when Loop is on, else the clamp end projected from the current position (`cycle + remaining_s * cps`).
 - Units: cycles are canonical. `bar = cycle + 1` (1 cycle = 1 bar of 4 beats on this site); `seconds = cycle / cps`. Inputs accept `m:ss` in any unit, or a number in the current unit. Display re-converts when cps changes.
 - Seek: Strudel 1.3.0's default `Cyclist` has no `setCycle` (only the worker `NeoCyclist`). Each tick queries `[lastEnd, num_cycles_at_cps_change + ticks*dur*cps]`, and with `num_ticks_since_cps_change = 0` the next tick re-anchors `num_cycles_at_cps_change = lastEnd` at the current clock time. Seeking sets `lastEnd` and zeroes the tick count; `setCycle` is used when present.

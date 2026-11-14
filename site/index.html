@@ -109,12 +109,12 @@ for (const t of ['pointerdown', 'keydown']) addEventListener(t, () => go(), { on
       <div class="trange" id="trange"><label class="sr" for="trPos">Position</label>
         <input id="trPos" class="tr-pos" type="range" min="0" max="16" step="0.01" value="0" aria-valuetext="cycle 0">
         <div class="tr-row">
-          <button type="button" class="ghost tr-out" id="trOut" title="Go to a cycle or m:ss"><span id="trPosTxt">c 0 / 16 · 0:00 / 0:32</span></button>
+          <button type="button" class="ghost tr-out" id="trOut" title="Go to a cycle or m:ss"><span class="tr-read" id="trPosTxt">c <span class="num" id="trC" style="--w:6ch">0.0</span><span class="tr-sep">/</span><span class="num" id="trCE" style="--w:6ch">16.0</span><span class="tr-sep">·</span><span class="num" id="trT" style="--w:7ch">00:00</span><span class="tr-sep">/</span><span class="num" id="trTE" style="--w:7ch">00:32</span></span></button>
           <button type="button" class="ghost tr-unit" id="trUnit" title="Loop points in cycles, bars or m:ss">cycle</button>
           <label class="tr-num"><span>Start</span><input id="trStart" type="text" inputmode="decimal" autocomplete="off" spellcheck="false"></label>
           <label class="tr-num"><span>End</span><input id="trEnd" type="text" inputmode="decimal" autocomplete="off" spellcheck="false"></label>
           <button type="button" class="ghost tr-loop" id="trLoop" aria-pressed="false" title="Loop between start and end">Loop</button>
-          <span class="tr-left" id="trLeft" title="Remaining play time before the clamp">20:00 left</span>
+          <span class="tr-left" id="trLeft" title="Remaining play time before the clamp"><span class="num" id="trL" style="--w:7ch">20:00</span> left<span class="tr-pp" id="trPP"> · played <span class="num" id="trPl" style="--w:7ch">00:00</span><span class="tr-pz" id="trPz"> · paused <span class="num" id="trPa" style="--w:7ch">00:00</span></span></span></span>
           <button type="button" class="ghost tr-more" id="trMore" hidden title="Extend the clamp by 5 minutes for this run">+5 min</button>
           <button type="button" class="icon tr-set" id="trSet" aria-label="Play-time limit settings" title="Play-time limit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 13V9M10 3h4"/></svg></button>
         </div></div>

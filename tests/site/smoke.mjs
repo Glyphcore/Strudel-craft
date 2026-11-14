@@ -60,6 +60,9 @@ metrics.chromium = browser.version();
   const n = await page.locator('#list li[data-id]').count();
   const total = await page.evaluate(async () => (await (await fetch('data/catalog.json')).json()).recipes.length);
   check('catalog renders every recipe in the browser', n === total && total > 0, `${n}/${total}`);
+  /* #59: index.html ships the range bar markup for the first paint; it must equal transport-range.js TPL (the script rebuilds and flags drift) */
+  const tr = await page.waitForFunction(() => { const w = document.querySelector('#trange'); return w && w.dataset.bound ? { rebuilt: w.dataset.rebuilt === '1' } : null; }, null, { timeout: 10000 }).then((h) => h.jsonValue()).catch(() => null);
+  check('static #trange markup in index.html matches transport-range.js (no rebuild)', tr && !tr.rebuilt, JSON.stringify(tr));
   await page.screenshot({ path: path.join(OUT, 'desktop-1440-idle.png') });
 
   // keyboard: views 1-4

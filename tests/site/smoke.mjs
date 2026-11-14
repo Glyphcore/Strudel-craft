@@ -199,6 +199,8 @@ await section('perform', './perform.mjs', 'performSection'); /* Perform view, #5
 await browser.close(); server.close();
 check('zero console errors / page errors', errors.length === 0, errors.slice(0, 5).join(' | '));
 metrics.console_errors = errors; metrics.checks = checks;
+/* the Lighthouse record (#59, written from tests/site/lighthouse_relative.mjs runs) is not measured here: keep it across smoke runs */
+try { const prev = JSON.parse(fs.readFileSync(path.join(OUT, 'metrics.json'), 'utf8')); if (prev.lighthouse) metrics.lighthouse = prev.lighthouse; } catch (e) { /* first run */ }
 fs.writeFileSync(path.join(OUT, QUICK ? 'metrics-quick.json' : 'metrics.json'), JSON.stringify(metrics, null, 1));
 const failed = checks.filter((c) => !c.ok);
 console.log(`\n${checks.length - failed.length}/${checks.length} checks passed; ${errors.length} console errors; frame ${JSON.stringify(metrics.frame)}`);

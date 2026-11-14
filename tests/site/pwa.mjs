@@ -90,6 +90,8 @@ await ctx.setOffline(false);
 /* 6. "New version, tap to reload" still offered after a deploy while the user is busy (editor focused); idle, the update applies itself
    (tests/site/standalone.mjs upgrade cases) */
 swVersion = 'sc-test-2';
+/* the editor mounts after the shell's first frame (#59), so wait for it before focusing (about 0.35 s after the reload in this run) */
+await page.waitForFunction(() => [...document.querySelectorAll('.cm-content')].some((e) => e.offsetParent), null, { timeout: 10000 }).catch(() => {});
 await page.evaluate(() => { const c = [...document.querySelectorAll('.cm-content')].find((e) => e.offsetParent); if (c) c.focus(); });
 await page.evaluate(() => navigator.serviceWorker.getRegistration().then((r) => r.update()));
 const upd = await page.waitForFunction(() => [...document.querySelectorAll('.toast')].some((t) => /New version, tap to reload/.test(t.textContent)), null, { timeout: 15000 }).then(() => true).catch(() => false);

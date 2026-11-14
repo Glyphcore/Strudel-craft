@@ -1,0 +1,579 @@
+{
+ "model": 1,
+ "meta": {
+  "id": "glyphcore/phonk:racks",
+  "doc": "Instrument rigs (kick, snare, hats, cowbell, 808, pad, leads, pluck, vox, fx, texture) and shared moves (thin, grit, pump) as hook defs. Bind a rack into a slot: hooks.bind(\"kick\", \"kick808\"); $: s(\"x ~ x ~\").use(\"kick\")."
+ },
+ "defs": {
+  "kick808": {
+   "chain": [
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "freq",
+     55
+    ],
+    [
+     "penv",
+     36
+    ],
+    [
+     "pdecay",
+     0.04
+    ],
+    [
+     "decay",
+     0.28
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "noise",
+     0.12
+    ],
+    [
+     "shape",
+     0.4
+    ],
+    [
+     "gain",
+     0.8
+    ]
+   ]
+  },
+  "snareNoise": {
+   "chain": [
+    [
+     "s",
+     "triangle"
+    ],
+    [
+     "note",
+     "d3"
+    ],
+    [
+     "noise",
+     0.85
+    ],
+    [
+     "decay",
+     0.19
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     170
+    ],
+    [
+     "gain",
+     0.9
+    ]
+   ]
+  },
+  "hat": {
+   "params": {
+    "len": {
+     "min": 0.01,
+     "max": 0.2,
+     "default": 0.05
+    }
+   },
+   "chain": [
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     7000
+    ],
+    [
+     "decay",
+     {
+      "$param": "len"
+     }
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.45
+    ]
+   ]
+  },
+  "cowbell": {
+   "chain": [
+    [
+     "s",
+     "square"
+    ],
+    [
+     "bpf",
+     1300
+    ],
+    [
+     "bpq",
+     2.5
+    ],
+    [
+     "decay",
+     0.17
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.28
+    ]
+   ]
+  },
+  "sub808": {
+   "chain": [
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "pdecay",
+     0.14
+    ],
+    [
+     "decay",
+     0.6
+    ],
+    [
+     "sustain",
+     0.7
+    ],
+    [
+     "release",
+     0.1
+    ],
+    [
+     "shape",
+     0.45
+    ],
+    [
+     "lpf",
+     600
+    ],
+    [
+     "gain",
+     0.45
+    ]
+   ]
+  },
+  "hazePad": {
+   "params": {
+    "cut": {
+     "min": 200,
+     "max": 5000,
+     "default": 1400
+    }
+   },
+   "chain": [
+    [
+     "s",
+     "supersaw"
+    ],
+    [
+     "unison",
+     4
+    ],
+    [
+     "detune",
+     0.22
+    ],
+    [
+     "attack",
+     0.8
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     2.5
+    ],
+    [
+     "lpf",
+     {
+      "$param": "cut"
+     }
+    ],
+    [
+     "lpenv",
+     1.5
+    ],
+    [
+     "lpattack",
+     1.6
+    ],
+    [
+     "gain",
+     0.2
+    ]
+   ]
+  },
+  "deepLead": {
+   "chain": [
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "lpf",
+     1900
+    ],
+    [
+     "lpenv",
+     1
+    ],
+    [
+     "lpdecay",
+     0.25
+    ],
+    [
+     "attack",
+     0.012
+    ],
+    [
+     "sustain",
+     0.6
+    ],
+    [
+     "release",
+     0.35
+    ],
+    [
+     "vib",
+     5
+    ],
+    [
+     "vibmod",
+     0.1
+    ],
+    [
+     "gain",
+     0.38
+    ]
+   ]
+  },
+  "wideLead": {
+   "chain": [
+    [
+     "s",
+     {
+      "$mini": "sawtooth, square"
+     }
+    ],
+    [
+     "lpf",
+     2600
+    ],
+    [
+     "lpenv",
+     1
+    ],
+    [
+     "attack",
+     0.012
+    ],
+    [
+     "sustain",
+     0.6
+    ],
+    [
+     "release",
+     0.4
+    ],
+    [
+     "vib",
+     5
+    ],
+    [
+     "vibmod",
+     0.1
+    ],
+    [
+     "gain",
+     0.27
+    ]
+   ]
+  },
+  "echoPluck": {
+   "chain": [
+    [
+     "s",
+     "triangle"
+    ],
+    [
+     "decay",
+     0.25
+    ],
+    [
+     "sustain",
+     0.2
+    ],
+    [
+     "release",
+     0.3
+    ],
+    [
+     "delay",
+     0.35
+    ],
+    [
+     "delaytime",
+     0.349
+    ],
+    [
+     "delayfeedback",
+     0.45
+    ],
+    [
+     "gain",
+     0.4
+    ]
+   ]
+  },
+  "formant": {
+   "chain": [
+    [
+     "attack",
+     0.6
+    ],
+    [
+     "release",
+     1.5
+    ],
+    [
+     "vowel",
+     "o"
+    ],
+    [
+     "lpf",
+     2400
+    ],
+    [
+     "gain",
+     0.36
+    ]
+   ]
+  },
+  "chop": {
+   "chain": [
+    [
+     "end",
+     0.3
+    ],
+    [
+     "hpf",
+     300
+    ],
+    [
+     "lpf",
+     3500
+    ],
+    [
+     "gain",
+     0.32
+    ]
+   ]
+  },
+  "riser": {
+   "chain": [
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     6
+    ],
+    [
+     "release",
+     0.3
+    ],
+    [
+     "hpf",
+     300
+    ],
+    [
+     "lpf",
+     900
+    ],
+    [
+     "lpenv",
+     4
+    ],
+    [
+     "lpattack",
+     7
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "reverseHit": {
+   "chain": [
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     1.7
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.02
+    ],
+    [
+     "hpf",
+     2500
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "impact": {
+   "chain": [
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "note",
+     "c1"
+    ],
+    [
+     "penv",
+     30
+    ],
+    [
+     "pdecay",
+     0.2
+    ],
+    [
+     "decay",
+     2.5
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "noise",
+     0.25
+    ],
+    [
+     "gain",
+     0.7
+    ]
+   ]
+  },
+  "tape": {
+   "chain": [
+    [
+     "hpf",
+     3500
+    ],
+    [
+     "gain",
+     0.05
+    ]
+   ]
+  },
+  "murk": {
+   "chain": [
+    [
+     "lpf",
+     {
+      "$mini": "<500 600 750 900 750 600>"
+     }
+    ]
+   ]
+  },
+  "thin": {
+   "params": {
+    "hz": {
+     "min": 100,
+     "max": 2000,
+     "default": 450
+    }
+   },
+   "chain": [
+    [
+     "hpf",
+     {
+      "$param": "hz"
+     }
+    ]
+   ]
+  },
+  "grit": {
+   "params": {
+    "amt": {
+     "min": 0,
+     "max": 1,
+     "default": 0.5
+    }
+   },
+   "chain": [
+    [
+     "shape",
+     {
+      "$param": "amt"
+     }
+    ]
+   ]
+  },
+  "pump": {
+   "params": {
+    "depth": {
+     "min": 0,
+     "max": 1,
+     "default": 0.6
+    }
+   },
+   "chain": [
+    [
+     "wire",
+     "gain",
+     "kick:env",
+     {
+      "range": [
+       1,
+       {
+        "$expr": "1-depth"
+       }
+      ],
+      "op": "mul",
+      "r": 0.18
+     }
+    ]
+   ]
+  }
+ }
+}

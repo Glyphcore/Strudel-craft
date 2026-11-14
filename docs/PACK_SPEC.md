@@ -133,7 +133,7 @@ Index: `schemas/craftpack/1/kinds/index.json`. Each kind has a schema `kinds/<ki
 | `param-editors` | `{byShape, byGroup, gestures, defaults, pools, editors[{id, shapes, module}]}` | `literals.registerEditor` | optional | site | `strudel.json` `editors` |
 | `control-types` | `types[{id, value, keys, render: {fallback}, input, renderer}]` | `controls.registerType` / `registerRenderer` | optional | site, cli (types only) | `data/controls/types.json` |
 | `visuals` | `visuals[{id, method, inline, builtin, painter}]` | `visual.<name>` control types, `visuals` provider | optional | site | names in `visuals.js` |
-| `hooks` | model document with registry keys only (`defs, slots, markers, scopes, vars`); decorators are defs with `decorator: true` | `hooks.load` | optional (opaque defs, `$code`) | site, cli | none shipped |
+| `hooks` | model document with registry keys only (`defs, slots, markers, scopes, vars`); decorators are defs with `decorator: true` | `hooks.load` | optional (opaque defs, `$code`) | site, cli | `glyphcore/phonk:racks` (chain-only rack defs; CLI as `--hooks FILE`; the site adapter is coming, #91; the ingredient is skipped with `W_PACK_KIND`) |
 | `components` | `components{"name@rev": model document}` | library store, `hooks.inst`, pad targets | optional (as hooks) | site, cli (`--library`) | none shipped |
 | `layouts` | `layouts[{id, title, key, rows[[{id, w}]]}]` | `workspace.configs()` | never | site | `DEFAULTS` in `workspace.js` |
 | `palette-actions` | `actions[{id, title, group, keys, do: {op, args} \| run}]` | `palette.register` | optional | site | built-in entries in JS |

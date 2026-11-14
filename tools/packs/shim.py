@@ -18,6 +18,9 @@ sys.path.insert(0, str(ROOT / "tools" / "packs"))
 import packs as P  # noqa: E402
 
 
+SITE_PACKS = {"glyphcore/phonk": "file:data/phonk"}  # pack id -> source (relative to site/); glyphcore/vox is pinned by tools/vox/bank_index.py
+
+
 def main(argv):
     check = "--check" in argv
     changes, _ = P.cmd_hash(ROOT / "site", write=not check, check=check)
@@ -30,6 +33,22 @@ def main(argv):
         for e in lock["packs"]:
             if e["id"] == "glyphcore/shim":
                 e["manifest"] = want
+        lf.write_text(json.dumps(lock, indent=2) + "\n")
+    # content packs that live under site/data and ship with the site: pin their manifests in the same lock (added when missing)
+    lock = json.loads(lf.read_text()); dirty = False
+    for pid, src in SITE_PACKS.items():
+        mf = ROOT / "site" / src[len("file:"):] / "craftpack.json"
+        h = "sha256:" + hashlib.sha256(mf.read_bytes()).hexdigest()
+        e = next((x for x in lock["packs"] if x["id"] == pid), None)
+        if e is None or e["manifest"] != h:
+            stale.append(f"lock {pid} manifest")
+            if not check:
+                if e is None:
+                    lock["packs"].append({"id": pid, "version": json.loads(mf.read_text())["version"], "source": src, "manifest": h, "priority": 0, "allowCode": [], "dependencies": {}})
+                else:
+                    e["manifest"] = h
+                dirty = True
+    if dirty:
         lf.write_text(json.dumps(lock, indent=2) + "\n")
     out = changes + stale
     print(("stale: " if check else "updated: ") + ", ".join(out) if out else "shim pack is in step with site/data")

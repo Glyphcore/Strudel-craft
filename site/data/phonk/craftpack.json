@@ -1,0 +1,72 @@
+{
+  "craftpack": "1.0.0",
+  "id": "glyphcore/phonk",
+  "version": "1.0.0",
+  "title": "Night phonk kit",
+  "description": "Atoms (chords, lines, rhythms, section gates), racks (instrument rigs as hook defs) and the night phonk track preset. The track program only composes them.",
+  "license": "CC0-1.0",
+  "licenseFile": "LICENSE.md",
+  "attribution": [
+    {
+      "name": "LJ Speech Dataset 1.1, Keith Ito",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "LicenseRef-public-domain",
+      "text": "LJSpeech 1.1 words (public domain), played by the track preset through voxBank('ljspeech')"
+    },
+    {
+      "name": "VocalSet: A Singing Voice Dataset, Julia Wilkins et al.",
+      "url": "https://doi.org/10.5281/zenodo.1193957",
+      "license": "CC-BY-4.0",
+      "text": "VocalSet vowels (CC BY 4.0), played by the track preset through voxBank('vocalset')",
+      "changes": "trimmed, faded, normalised (glyphcore/vox)"
+    },
+    {
+      "name": "SoulX-Singer (Soul-AILab)",
+      "license": "Apache-2.0 AND CC-BY-4.0",
+      "text": "Sung words rendered with SoulX-Singer (Apache-2.0), VocalSet female6 timbre prompt (CC BY 4.0), played through voxBank('sung')"
+    },
+    {
+      "name": "call-me-baby vocals (site owner)",
+      "license": "LicenseRef-undecided",
+      "text": "The site owner's own vocals, played through voxBank('call-me-baby'); licence open (#66)"
+    }
+  ],
+  "ingredients": [
+    {
+      "id": "atoms",
+      "kind": "atoms",
+      "format": "atoms@1",
+      "version": "1.0.0",
+      "path": "atoms.json",
+      "title": "Phonk atoms",
+      "description": "22 typed atoms under ph.: chords, 808 line and glide, lead, counter, cowbell, drum rhythms, section gates",
+      "load": "eager",
+      "hash": "sha256:19e5965087e38fbb177b3aaa3741d4013017f36ab2a2089435d9a2190fb7051d",
+      "bytes": 4874
+    },
+    {
+      "id": "racks",
+      "kind": "hooks",
+      "format": "hooks@1",
+      "version": "1.0.0",
+      "path": "racks.json",
+      "title": "Phonk racks",
+      "description": "Instrument rigs as chain-only hook defs: kick808, snareNoise, hat, cowbell, sub808, hazePad, deepLead, wideLead, echoPluck, formant, chop, riser, reverseHit, impact, tape; moves murk, thin, grit, pump",
+      "load": "manual",
+      "hash": "sha256:80f3f8a524a8867451c064cd87574f23bb6f610a3d4ed5fd312f7cdea66a27da",
+      "bytes": 5787
+    },
+    {
+      "id": "presets",
+      "kind": "recipes",
+      "format": "recipes@1",
+      "version": "1.0.0",
+      "path": "presets.json",
+      "title": "Phonk presets",
+      "description": "Track demo: night phonk (the paste-ready standalone program)",
+      "load": "manual",
+      "hash": "sha256:7a233553efae82c66b23a4e179b279bf7915101cb3e8e3839de6772a0d2f1707",
+      "bytes": 10211
+    }
+  ]
+}

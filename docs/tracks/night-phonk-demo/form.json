@@ -1,0 +1,9 @@
+[
+ {"section": "intro", "bars": 8, "type": "flow"},
+ {"section": "build", "bars": 8, "type": "flow"},
+ {"section": "drop 1", "bars": 16, "type": "drive"},
+ {"section": "breakdown", "bars": 8, "type": "flow"},
+ {"section": "build 2", "bars": 8, "type": "flow"},
+ {"section": "drop 2", "bars": 24, "type": "return"},
+ {"section": "outro", "bars": 8, "type": "flow"}
+]

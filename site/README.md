@@ -125,6 +125,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     python3 tools/packs/shim.py --check  # the shim pack pins match site/data (rerun without --check after editing data/)
     node tests/site/lighthouse.mjs     # needs `npm i -g lighthouse@12`; mobile perf / a11y scores
     node tests/atoms/a1.mjs            # atoms core (#61); STRUDEL_MODULES=<dir with @strudel/> for the rendered checks
+    node tests/site/inline_widgets.mjs # inline visuals as block widgets under their line (360/1440, Rack/Stack, no shift on Play)
     node tests/atoms/a2.mjs            # atoms migration: extract / parse / inline / catalog (#62)
     node tests/atoms/a3.mjs            # atoms consumers: intellisense data, hooks / model / pads / maps $atom, packs (#63)
     node tests/site/atoms.mjs          # Playwright: atom completion, signature help, "use atoms.name", scrub on a reference arg (#63)
@@ -370,7 +371,14 @@ As on strudel.cc/learn/visual-feedback, using Strudel's own draw code in `@strud
 - active events in the mini-notation are outlined in the editor while playing (tinted by `.color()`);
 - global `.pianoroll() .punchcard() .spiral() .scope() .tscope() .fscope() .wordfall() .pitchwheel()` draw on a full-page
   `#test-canvas` layer (no pointer events); onPaint painters are driven by our frame loop;
-- inline `_pianoroll` ... `_pitchwheel` render in a canvas under their code line (widget types registered with the transpiler).
+- inline `_pianoroll` `_punchcard` `_spiral` `_scope` `_tscope` `_fscope` `_wordfall` `_pitchwheel` render as CodeMirror block
+  widgets (`Decoration.widget({ block: true, side: 1 })`) at the end of the line holding the call, as on strudel.cc: part of the
+  scroll flow (lines below move down, the widget scrolls with the code), as wide as the editor content (a `ResizeObserver` keeps the
+  canvas backing store equal to its CSS box), 140 px high by default or `{ height: N }` (60..600). The height is reserved as soon as
+  the code compiles (a still frame before Play), so Play does not shift lines; the canvas only resizes when the editor resizes, then
+  `view.requestMeasure()`. Haps are tagged with the widget id as strudel.cc does (pianoroll/punchcard draw only tagged haps). Taps on a
+  widget never move the caret; widgets are not part of the document text (copy, AST ids, ghost text). A failing edit keeps the last
+  good widgets in place. Check: `node tests/site/inline_widgets.mjs` (360 and 1440 px, Rack and Stack).
 Each visual is a control type `visual.<name>` / `visual._<name>` in `strudelCraft.controls` and an intellisense item (`visuals`).
 `engine/index.js` (controls, pads, input) is now loaded by `index.html`.
 

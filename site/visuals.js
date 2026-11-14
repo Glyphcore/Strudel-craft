@@ -16,13 +16,23 @@ const widgetCanvases = new Map(); // id -> canvas
 let cmApi = null; // set by intellisense.js via sc.visuals.attach
 
 function dpr() { return Math.min(2, window.devicePixelRatio || 1); }
-function widgetCanvas(id) {
-  let c = widgetCanvases.get(id);
-  if (!c) { c = document.createElement('canvas'); c.className = 'sc-widget'; c.dataset.id = id; widgetCanvases.set(id, c); }
-  const w = Math.max(200, (c.parentElement ? c.parentElement.clientWidth : 360) - 8), hgt = 110;
-  if (c.width !== Math.round(w * dpr())) { c.width = Math.round(w * dpr()); c.height = Math.round(hgt * dpr()); c.style.width = w + 'px'; c.style.height = hgt + 'px'; }
-  return c.getContext('2d');
+/* inline widget canvases: CSS width 100% of the editor content (the CodeMirror block widget sets it), fixed CSS height
+   (default 140 px, or the call's {height}); the backing store follows the CSS box through a ResizeObserver, so a canvas
+   never changes size while a pattern runs unless the editor itself is resized. */
+const DEFAULT_H = 140;
+const ro = typeof ResizeObserver === 'function' ? new ResizeObserver((es) => { for (const e of es) fit(e.target); }) : null;
+function fit(c) {
+  if (!c.isConnected) return; const w = Math.round(c.clientWidth * dpr()), h = Math.round(c.clientHeight * dpr());
+  if (w > 0 && h > 0 && (c.width !== w || c.height !== h)) { c.width = w; c.height = h; c.dispatchEvent(new Event('sc:resized')); }
 }
+function widgetCanvas(id, height) {
+  let c = widgetCanvases.get(id);
+  if (!c) { c = document.createElement('canvas'); c.className = 'sc-widget'; c.dataset.id = id; c.width = 600; c.height = DEFAULT_H; widgetCanvases.set(id, c); if (ro) ro.observe(c); }
+  const hgt = Math.max(60, Math.min(600, Math.round(+height || +c.dataset.h || DEFAULT_H)));
+  if (+c.dataset.h !== hgt) { c.dataset.h = hgt; c.style.height = hgt + 'px'; }
+  fit(c); return c.getContext('2d');
+}
+sc.visualsWidgetHeight = (el) => +(el && el.dataset.h) || DEFAULT_H;
 
 function globalCtx() {
   let c = document.getElementById('test-canvas');
@@ -41,8 +51,10 @@ function install() {
     try { const rw = window.registerWidgetType || (window.strudel && window.strudel.registerWidgetType); if (rw) rw(wname); } catch (e) { /* ignore */ }
     P[wname] = function (id, opts) {
       if (typeof id !== 'string') { opts = id; id = wname; }
-      const ctx = widgetCanvas(id); ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      return this[name]({ ...(opts || {}), ctx, id });
+      const o = opts && typeof opts === 'object' ? opts : {};
+      const ctx = widgetCanvas(id, o.height); ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      /* as strudel.cc: tag the haps with the widget id; pianoroll/punchcard draw only haps carrying that tag */
+      return this.tag(id)[name]({ ...o, ctx, id });
     };
   }
 }
@@ -101,7 +113,10 @@ function idlePaint(st) {
 }
 /* inline widgets: place each _visual canvas under its code line */
 function placeWidgets(st) {
-  if (!cmApi) return; const id = st.srcView === 'stack' ? 'stackCode' : 'code'; const doc = cmApi.doc(id); const { code, back } = unbind(st.activeCode || '');
+  if (!cmApi) return; const { code, back } = unbind(st.activeCode || '');
+  /* the evaluated program belongs to the editor whose text it ends with (state events can arrive before srcView flips on a tab swap) */
+  const pref = st.srcView === 'stack' ? ['stackCode', 'code'] : ['code', 'stackCode'];
+  const id = pref.find((e) => { const d = cmApi.doc(e); return d && code.endsWith(d); }) || pref[0]; const doc = cmApi.doc(id);
   const off = code.endsWith(doc) ? code.length - doc.length : -1; const ws = [];
   painted.clear();
   for (const w of st.widgets || []) {
@@ -113,6 +128,8 @@ function placeWidgets(st) {
 }
 
 window.addEventListener('strudel:ready', () => { install(); if (!raf) raf = requestAnimationFrame(frame); });
+/* after every successful swap (edit, tab switch) re-place from the engine's settled state */
+window.addEventListener('live:ok', () => { const es = sc.engineState && sc.engineState(); if (es && es.playing && es.widgets && es.activeCode) placeWidgets(es); });
 window.addEventListener('strudel:state', (e) => { const st = e.detail; const es = sc.engineState && sc.engineState(); if (!es || !es.playing) return; if (st && st.widgets && st.activeCode && !st.pending) placeWidgets({ ...st, srcView: (sc.engineState && sc.engineState().srcView) || 'rack' }); });
 
 /* registries: control types + intellisense */
@@ -120,7 +137,7 @@ function registerTypes() {
   const c = sc.controls; if (!c || !c.registerType) return false;
   for (const name of VIS) {
     c.registerType({ id: 'visual.' + name, value: 'visual', label: name, keys: [name, '_' + name], info: INFO[name] });
-    c.registerType({ id: 'visual._' + name, value: 'visual', label: '_' + name + ' (inline)', keys: ['_' + name], info: INFO[name] + ' - inline under the line', render: { fallback: 'visual.' + name } });
+    c.registerType({ id: 'visual._' + name, value: 'visual', label: '_' + name + ' (inline)', keys: ['_' + name], info: INFO[name] + ' - inline band under the calling line (editor width, 140 px or { height })', render: { fallback: 'visual.' + name } });
     if (c.registerRenderer) c.registerRenderer('visual.' + name, (host, spec = {}) => { const cv = document.createElement('canvas'); cv.className = 'sc-widget'; cv.dataset.visual = name; if (host) host.append(cv); return cv; });
   }
   return true;
@@ -129,7 +146,7 @@ if (!registerTypes()) { const iv = setInterval(() => { if (registerTypes()) clea
 function registerIntellisense() {
   const is = sc.intellisense; if (!is || !is.register) return false;
   is.register({ id: 'visuals', items: () => [
-    ...VIS.flatMap((n) => [{ label: n, method: true, category: 'visuals', detail: '.' + n + '()', info: INFO[n] + ' (global, full page)' }, { label: '_' + n, method: true, category: 'visuals', detail: '._' + n + '()', info: INFO[n] + ' (inline, under the line)' }]),
+    ...VIS.flatMap((n) => [{ label: n, method: true, category: 'visuals', detail: '.' + n + '()', info: INFO[n] + ' (global, full page)' }, { label: '_' + n, method: true, category: 'visuals', detail: '._' + n + '()', info: INFO[n] + ' (inline: a band under the calling line, editor width, 140 px or { height })' }]),
     { label: 'color', method: true, category: 'visuals', detail: '.color("cyan magenta")', info: 'Colour for events in visuals and highlighting' },
   ] });
   return true;

@@ -469,17 +469,19 @@ function syntaxCheck(view) {
 }
 function setMsg(view, msg) { const m = $(view === 'stack' ? '#liveMsgStack' : '#liveMsg'); if (m) m.textContent = msg; }
 let swapping = Promise.resolve();
+/* swaps wait for the next cycle boundary; the newest request wins (a tab-switch swap queued before an edit must not land after it) */
+S.swapGen = 0;
 function swapTo(src, why) {
   return (swapping = swapping.then(async () => {
     if (!S.playing || !src || src.empty) return false;
     try {
       const prep = bindPrep(src.kind === 'stack' ? 'stack' : 'rack', src.code);
-      await Engine.swap(prep.ok ? prep.code : src.code); Engine.evalCount++; if (prep.ok) bindApply(src.kind === 'stack' ? 'stack' : 'rack', prep);
+      const gen = ++S.swapGen; await Engine.swap(prep.ok ? prep.code : src.code, () => gen === S.swapGen); Engine.evalCount++; if (prep.ok) bindApply(src.kind === 'stack' ? 'stack' : 'rack', prep);
       S.playingId = src.id; S.playingSource = src.kind; S.srcView = src.kind === 'stack' ? 'stack' : 'rack';
       setLiveChip(S.live ? 'live' : 'off'); window.dispatchEvent(new CustomEvent('live:ok', { detail: { view: S.srcView } }));
       window.dispatchEvent(new CustomEvent('live:swap', { detail: { id: src.id, kind: src.kind, code: src.code, why } }));
       say('Playing ' + src.title); syncTransport(); return true;
-    } catch (e) { say('Swap failed: ' + (e && e.message ? e.message : e), true); return false; }
+    } catch (e) { if (e && e.stale) return false; say('Swap failed: ' + (e && e.message ? e.message : e), true); return false; }
   }));
 }
 function onViewChanged() { if (S.playing && S.follow && EDIT_VIEWS.includes(S.view) && S.view !== S.srcView) swapTo(currentSource(), 'tab ' + S.view); }
@@ -505,7 +507,7 @@ async function settleRun(views, ctx) {
     if (!prep.ok) { reportError(view, src, prep.error && prep.error.line, 'Not playing yet: ' + (prep.error && prep.error.message)); ctx.emit('invalid', view); continue; }
     const live = S.playing && view === playView();
     try {
-      if (S.playing) { if (live && S.live && !S.busy) { ctx.stats.compiles++; await Engine.swap(prep.code, ctx.alive); Engine.evalCount++; S.playingId = src.id; } }
+      if (S.playing) { if (live && S.live && !S.busy) { ctx.stats.compiles++; const gen = ++S.swapGen; await Engine.swap(prep.code, () => ctx.alive() && gen === S.swapGen); Engine.evalCount++; S.playingId = src.id; S.playingSource = src.kind; S.srcView = view; } }
       else if (S.linkHold && view === 'rack') { /* code from a shared #code/ link: never evaluated until the user presses Play / Run */ }
       else if (!S.busy && window.strudelCraft.idleCompile !== false && navigator.onLine && Engine.loadable !== false) { ctx.stats.compiles++; await Engine.idle(prep.code, ctx.alive, view); } /* offline: controls still render from the AST */
     } catch (e) {

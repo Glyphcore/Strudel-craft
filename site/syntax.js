@@ -11,6 +11,7 @@ const HAS = {
   taps: () => !!(sc.hooks && sc.hooks.let && P() && P().tap && P().wire) || (!!sc.hooksLib && !window.Pattern),
   lanes: () => !!(sc.lanes && sc.lanes.closed && P() && P().tags) || (!!sc.lanesLib && !window.Pattern),
   controls: () => !!(sc.controls && sc.controls.create),
+  visuals: () => !!sc.visuals,
   perform: () => !!(sc.controls && sc.pads),
   library: () => !!(sc.hooks && sc.hooks.inst),
   word: () => typeof window.word === 'function' || !window.Pattern,

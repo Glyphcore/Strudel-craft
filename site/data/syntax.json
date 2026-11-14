@@ -57,6 +57,15 @@
       ]
     },
     {
+      "id": "visuals", "title": "Inline visuals (_pianoroll, _scope ...)", "needs": "visuals",
+      "explain": "An underscore visual draws inside the code, in a band directly below the line that calls it, as on strudel.cc: _pianoroll, _punchcard, _spiral, _scope, _tscope, _fscope, _wordfall, _pitchwheel. The band is as wide as the editor, scrolls with the code and pushes the lines below it down; its height is reserved as soon as the code compiles, so Play does not move anything. Pass { height: 200 } for a taller band (60 to 600 px). Without the underscore (.pianoroll(), .scope()) the visual draws behind the whole page instead. .color() tints events in the visuals and in the code highlighting.",
+      "examples": [
+        { "title": "Piano roll under its line", "code": "$: note(\"c3 e3 g3 b3\").s(\"triangle\").color(\"cyan magenta\")\n  ._pianoroll()" },
+        { "title": "Two bands: piano roll and scope", "code": "$: note(\"<c3 eb3> g3 bb3\").s(\"sawtooth\").lpf(900)\n  ._pianoroll({ height: 160 })\n$: s(\"sine\").note(\"c2*2\").decay(0.3)\n  ._scope()" },
+        { "title": "Punchcard and spiral", "code": "$: note(\"c3 [e3 g3] a3 g3\").s(\"triangle\")._punchcard()\n$: note(\"c4 e4 g4\").s(\"sine\").gain(0.4)._spiral()" }
+      ]
+    },
+    {
       "id": "pads", "title": "Pads and the control board", "needs": "perform",
       "explain": "Perform (key 5) holds pad banks and control boards as tabs. In Perform mode a pad press is quantised (bar by default) and journaled; Edit mode opens the pad sheet to set its target, mode, quantise and choke, and lays the board out (sizes, move, place, remove). Boards show every control with its mapping; tap Map... to remap, or Learn and move a control to write one hooks.map(...) line into the playing editor (Unlearn removes it). \"Rec lane\" records the next control you move for 1/2/4 bars as an automation lane; the looper strip records, overdubs and replays pad takes; \"Tabs ...\" adds, renames and reorders tabs and switches scenes (rows/columns); \"Save to library\" stores a bank, board, take or lane as a component.",
       "examples": [

@@ -179,3 +179,49 @@ await (async () => {
   assert.equal(docs.m.get('library\0old').length, 1);
   pass('Adapter: docsStore (browser binding to history.docs) keeps the five calls synchronous, writes through, hydrates a fresh store from docs and migrates a local copy');
 })();
+
+// 11 Track-scoped slot refs survive collapse (#50): extract -> replaceWithInstance -> expand parses, round-trips and renders like the original
+{
+  const { generate, parse } = await import('../../site/model.js');
+  const murk = { chain: [['lpf', 400]] };
+  const bassT = () => ({ name: 'bass', source: ['note', { $mini: 'c2 e2' }], chain: [['use', 'fx'], ['tap', 'bass']] });
+  const orig = (bindings) => ({ model: 1, defs: { murk }, tracks: [bassT(), { name: 'kick', source: ['s', { $mini: 'bd' }], chain: [['tap', 'kick']] }], ...(bindings ? { bindings } : {}) });
+  const SLOT = /^([\w*:-]+\/)?[A-Za-z][\w-]*$/; // the slot-ref grammar of hooks.js: at most one scope prefix
+  const checkText = (m) => { // (a) parses, (b) round-trips
+    const t = generate(m), p = parse(t); assert.equal(generate(p), t, 'generate(parse(text)) differs from text');
+    for (const b of p.bindings || []) assert.match(b.slot, SLOT, `bad slot ref ${b.slot}`);
+    return p;
+  };
+  const collapse = (m, sel, as) => { const L = lib(), c = extract(m, sel); L.save(c, { name: 'grp', kind: 'set' }); return { L, c, flat: expand(replaceWithInstance(m, sel, { component: 'grp@1', as }), { lookup: L.lookup }) }; };
+  // the original program through the plain hooks API: the reference haps
+  const ref = (binds) => { RT.hooks.reset(); RT.hooks.live = false; RT.hooks.def('murk', murk); for (const s of binds) RT.hooks.bind(s, 'murk'); return cut(RT.S.note(RT.S.mini('c2 e2')).use('fx').ns('bass')); };
+  const cutInst = (p) => haps(p, 0, 1).filter((h) => h.v.cutoff !== undefined).map((h) => h.v.cutoff);
+  const lead = { name: 'lead', source: ['note', { $mini: 'c4' }], chain: [] };
+
+  // slot on a track inside the selection + the binding inside the selection
+  { const m = orig([{ slot: 'bass/fx', hook: 'murk' }]), { flat, c } = collapse(m, ['track:bass', 'bind:b1'], 'g');
+    assert.deepEqual(flat.bindings.map(b => b.slot), ['g_bass/fx']); assert.deepEqual(flat.tracks.map(t => t.name), ['kick', 'g_bass']); checkText(flat);
+    if (RT) { const want = ref(['bass/fx']); assert.deepEqual(want, [400, 400]);
+      const L = rtLib(); L.save(c, { name: 'grp', kind: 'set' }); assert.deepEqual(cutInst(RT.hooks.inst('grp@1', { as: 'g' })), want); } }
+  // a binding from outside targets a slot inside the instance (the binding is not part of the selection)
+  { const m = orig([{ slot: 'bass/fx', hook: 'murk' }]), { flat, c } = collapse(m, ['track:bass'], 'g');
+    assert.deepEqual(flat.bindings.map(b => b.slot), ['g_bass/fx']); checkText(flat); assert.deepEqual(c.exports.slots, ['bass/fx']);
+    if (RT) { const want = ref(['bass/fx']); const L2 = rtLib(); L2.save(c, { name: 'grp', kind: 'set' });
+      RT.hooks.def('murk', murk); RT.hooks.bind('g_bass/fx', 'murk'); assert.deepEqual(cutInst(RT.hooks.inst('grp@1', { as: 'g' })), want); } }
+  // nested depth: component B instances component A; the slot ref gains one prefix per level and keeps one slash
+  { const A = extract(orig([{ slot: 'bass/fx', hook: 'murk' }]), ['track:bass', 'bind:b1']), B = { model: 1, instances: [{ component: 'A@1', as: 'i' }], tracks: [lead], exports: {} }, L = lib();
+    L.save(A, { name: 'A', kind: 'set' }); L.save(B, { name: 'B', kind: 'set' });
+    const flat = expand({ model: 1, instances: [{ component: 'B@1', as: 'o' }] }, { lookup: L.lookup });
+    assert.deepEqual(flat.bindings.map(b => b.slot), ['o_i_bass/fx']); assert.ok(flat.tracks.some(t => t.name === 'o_i_bass')); checkText(flat);
+    if (RT) { const want = ref(['bass/fx']); const L2 = rtLib(); L2.save(A, { name: 'A', kind: 'set' }); L2.save(B, { name: 'B', kind: 'set' });
+      assert.deepEqual(cutInst(RT.hooks.inst('B@1', { as: 'o' })), want); } }
+  // the same component used twice: the as-namespaces keep the two slots distinct
+  { const c = extract(orig([{ slot: 'bass/fx', hook: 'murk' }]), ['track:bass', 'bind:b1']), L = lib(); L.save(c, { name: 'grp', kind: 'set' });
+    const flat = expand({ model: 1, instances: [{ component: 'grp@1', as: 'g1' }, { component: 'grp@1', as: 'g2' }] }, { lookup: L.lookup });
+    assert.deepEqual(flat.bindings.map(b => b.slot), ['g1_bass/fx', 'g2_bass/fx']); checkText(flat);
+    if (RT) { const L2 = rtLib(); L2.save(c, { name: 'grp', kind: 'set' }); const h = RT.hooks;
+      const p1 = h.inst('grp@1', { as: 'g1' }), p2 = h.inst('grp@1', { as: 'g2' }); assert.deepEqual(cutInst(p1), [400, 400]); assert.deepEqual(cutInst(p2), [400, 400]);
+      h.unbind('g1_bass/fx'); assert.deepEqual(cutInst(p1), []); assert.deepEqual(cutInst(p2), [400, 400]); } } // unbinding one instance's slot leaves the other bound
+  pass(RT ? 'Slot refs (#50): track-scoped slot bass/fx collapses to g_bass/fx (inside, outside binding, nested o_i_bass/fx, twice g1_/g2_); parses, round-trips, and the instance renders the same haps as the original' : 'Slot refs (#50, model level): slot rewrite for inside, outside, nested and twice-used instances; parse and round-trip (rendered half SKIPped: no runtime)');
+  if (!RT) skip('Slot refs (rendered)', NO_RT);
+}

@@ -66,6 +66,14 @@ function eachRead(track, fn, pub) { // fn(read name); pub(published name)
   if (track.chain == null && track.source == null && track.src) for (const m of track.src.matchAll(TAPRE)) { const before = track.src[m.index - 1]; (before === '.' ? pub : fn)(m[3]); }
 }
 
+// ---------------------------------------------------------------- slot refs under a namespace
+// A track-scoped slot ref "T/name" addresses the slot `name` of track T (HOOKS_SYNTAX 4.7). Instance tracks are renamed `${as}_${T}`
+// (which is also their scope), so every ref to T/name follows: "bass/fx" -> "g_bass/fx". The result keeps ONE slash (the slot-ref grammar
+// allows a single scope prefix). Refs with another scope (stem:/bus:/*) or a track outside the component are left alone.
+const USERE = /(\.(?:use|wrap)\(\s*)(["'`])([^"'`]+)\2/g;
+const slotUses = (t) => { const o = []; for (const s of [t.source, ...(t.chain || [])]) if (s && (s[0] === 'use' || s[0] === 'wrap') && typeof s[1] === 'string') o.push(s[1]); if (t.src) for (const m of t.src.matchAll(USERE)) o.push(m[3]); return o; };
+export const scopedSlot = (slot, trackNames, as) => { const i = slot.indexOf('/'); if (i < 0) return slot; const sc = slot.slice(0, i).replace(/^track:/, ''); return trackNames.has(sc) ? `${as}_${sc}${slot.slice(i)}` : slot; };
+
 // ---------------------------------------------------------------- extract
 // nodeIds are graph ids: track:NAME, code:NAME, bind:ID. Returns a component model (not yet saved) with exports and requires computed.
 export function extract(model, nodeIds, { kind } = {}) {
@@ -77,11 +85,11 @@ export function extract(model, nodeIds, { kind } = {}) {
   for (const t of tracks) eachRead(t, (n) => reads.add(baseOf(n)), (n) => pubs.add(baseOf(n)));
   const defs = {}, vars = {};
   for (const b of bindings) { const h = b.hook.replace(/\(.*$/, ''); if ((model.defs || {})[h]) defs[h] = clone(model.defs[h]); }
-  const slotNames = new Set(tracks.map(t => t.name));
   for (const n of [...reads]) if ((model.vars || {})[n] && !pubs.has(n)) { vars[n] = clone(model.vars[n]); reads.delete(n); }
   const requiresTaps = [...reads].filter(n => !pubs.has(n)).sort();
   const comp = { model: 1, ...(Object.keys(defs).length ? { defs } : {}), ...(Object.keys(vars).length ? { vars } : {}), ...(bindings.length ? { bindings } : {}), ...(tracks.length ? { tracks } : {}) };
-  comp.exports = { taps: [...pubs].sort(), slots: [...new Set(bindings.map(b => b.slot))].filter(s => slotNames.has(s.split('/')[0]) || true).sort(), params: {}, ...(requiresTaps.length ? { requires: { taps: requiresTaps } } : {}) };
+  const used = new Set(); for (const t of tracks) for (const n of slotUses(t)) if (!n.includes('/')) used.add(`${t.name}/${n}`);
+  comp.exports = { taps: [...pubs].sort(), slots: [...new Set([...bindings.map(b => b.slot), ...used])].sort(), params: {}, ...(requiresTaps.length ? { requires: { taps: requiresTaps } } : {}) };
   comp.meta = { kind: kind || (tracks.length === 1 && !bindings.length ? 'track' : 'set') };
   return comp;
 }
@@ -89,6 +97,8 @@ export function replaceWithInstance(model, nodeIds, inst) {
   const m = clone(model), ids = new Set(nodeIds);
   m.tracks = (m.tracks || []).filter(t => !ids.has(`track:${t.name}`) && !ids.has(`code:${t.name}`));
   m.bindings = (m.bindings || []).filter((b, i) => !ids.has(`bind:${b.id || `b${i + 1}`}`));
+  const moved = new Set((model.tracks || []).filter(t => ids.has(`track:${t.name}`) || ids.has(`code:${t.name}`)).map(t => t.name));
+  m.bindings = m.bindings.map(b => ({ ...b, slot: scopedSlot(b.slot, moved, inst.as) })); // outside bindings follow the slots of tracks that moved into the instance
   if (!m.bindings.length) delete m.bindings; if (!m.tracks.length) delete m.tracks;
   (m.instances ||= []).push(clone(inst));
   return m;
@@ -133,15 +143,20 @@ function setParams(comp, args, ref) {
 function namespaced(comp, as, remap, ref) {
   const req = new Set(((comp.exports || {}).requires || {}).taps || []);
   for (const n of req) if (!(remap && n in remap)) throw fail('E_COMPONENT_REQUIRES', `${ref} requires tap "${n}": give remap: { ${n}: "host/tap" }`);
-  const rn = (n) => { const b = baseOf(n), f = n.slice(b.length); return (req.has(b) ? remap[b] : `${as}/${b}`) + f; };
-  const pn = (n) => `${as}/${baseOf(n)}${n.slice(baseOf(n).length)}`;
+  const nsb = (b) => (b.includes('/') ? `${as}_${b}` : `${as}/${b}`); // nested instances: o + i/bass -> o_i/bass (tap refs allow one scope prefix)
+  const rn = (n) => { const b = baseOf(n), f = n.slice(b.length); return (req.has(b) ? remap[b] : nsb(b)) + f; };
+  const pn = (n) => nsb(baseOf(n)) + n.slice(baseOf(n).length);
   const out = { tracks: [], defs: {}, vars: {}, bindings: [] };
+  const names = new Set((comp.tracks || []).map(t => t.name)), bound = new Set((comp.bindings || []).map(b => b.slot).filter(x => !x.includes('/')));
+  const gs = (n) => (bound.has(n) ? `${as}/${n}` : n); // a global slot the component binds internally becomes the instance's slot as/name
+  const fixUse = (s) => (s[0] === 'use' || s[0] === 'wrap') && typeof s[1] === 'string' ? [s[0], gs(s[1]), ...s.slice(2)] : s;
   for (const t of comp.tracks || []) {
     const c = clone(t); c.name = `${as}_${t.name}`; if (c.src !== undefined) { c.src = rewriteCode(c.src, rn); }
     const fix = (s) => s[0] === 'tap' && typeof s[1] === 'string' ? ['tap', pn(s[1]), ...s.slice(2)] : s[0] === 'wire' && typeof s[2] === 'string' ? ['wire', s[1], rn(s[2]), ...mapValue(s.slice(3), rn)] : [s[0], ...mapValue(s.slice(1), rn)];
-    if (c.source) c.source = fix(c.source); if (c.chain) c.chain = c.chain.map(fix);
+    if (c.source) c.source = fix(c.source); if (c.chain) c.chain = c.chain.map(fix).map(fixUse);
     if (c.chain == null && c.source == null && c.src) { // text-only track: publishes (".tap(") get the namespace, reads follow requires
       c.src = t.src.replace(TAPRE, (_, a, q, n, off) => `${a}${q}${(t.src[off - 1] === '.' ? pn : rn)(n)}${q}`);
+      c.src = c.src.replace(USERE, (_, a, q, n) => `${a}${q}${gs(n)}${q}`);
     } else delete c.src;
     out.tracks.push(c);
   }
@@ -149,7 +164,7 @@ function namespaced(comp, as, remap, ref) {
   for (const [k, l] of Object.entries(comp.vars || {})) out.vars[`${as}/${k}`] = clone(l);
   for (const b of comp.bindings || []) {
     const hm = /^([^(]+)(\(.*)?$/.exec(b.hook), h = (comp.defs || {})[hm[1]] ? `${as}/${hm[1]}${hm[2] || ''}` : b.hook;
-    out.bindings.push({ ...clone(b), slot: b.slot.includes('/') ? `${as}/${b.slot}` : `${as}/${b.slot}`, hook: h });
+    out.bindings.push({ ...clone(b), slot: b.slot.includes('/') ? scopedSlot(b.slot, names, as) : gs(b.slot), hook: h });
   }
   return out;
 }
@@ -223,7 +238,7 @@ export function installInstances(hooks, { lib: L = lib, S = globalThis, tap = gl
       const fn = S[t.source[0]] || globalThis[t.source[0]]; if (typeof fn !== 'function') throw fail('E_UNKNOWN_METHOD', t.source[0]);
       let p = fn(...t.source.slice(1).map(x => sub(x, as, ex)));
       for (const [m, ...a] of t.chain || []) p = p[m](...(m === 'use' && slots.has(a[0]) ? [`${as}/${a[0]}`, ...a.slice(1)] : a).map(x => sub(x, as, ex)));
-      return p;
+      return p.ns(t.name); // the track's own scope (flat name `as_track`), so track-scoped bindings `as_track/slot` reach its slots
     };
     return S.stack(...(flat.tracks || []).map(stage));
   };

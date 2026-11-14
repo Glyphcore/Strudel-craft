@@ -282,6 +282,13 @@ A **component** is a model document with `meta.kind` and an `exports` block:
   Everything inside is namespaced under `as`: `tap("pad2/env")`, `hooks.bind("pad2/fx", "murk")`, `hooks.set("pad2.cutoff", 1200, "@33b")`.
   `gate` gates the whole instance (closed = silent, or the instance's `else`). `remap` satisfies `requires`; an unmet requirement is
   `E_COMPONENT_REQUIRES`. Instances nest; a component cannot contain itself (`E_COMPONENT_CYCLE`).
+- **Track-scoped slots in instances**: instance tracks are renamed `as_track` and that name is their scope, so a ref `T/slot` (HOOKS_SYNTAX
+  4.7) follows the rename: `bass/fx` becomes `g_bass/fx` (one slash; the slot-ref grammar allows one scope prefix). This holds for bindings
+  inside the component, for bindings outside it when "Collapse to subgraph" moves track `T` into instance `as` (`replaceWithInstance`
+  rewrites them), and for nested instances (`o_i_bass/fx`; nested tap names flatten the same way, `o_i/bass`). Address such a slot from the
+  host as `g_bass/fx`; `exports.slots` lists the component-side form (`bass/fx`). A global slot the component binds itself becomes `as/slot`.
+  Refs with another scope (`stem:`, `bus:`, `*`) or naming a track outside the component are left unchanged. Two instances of one component
+  keep separate slots (`g1_bass/fx`, `g2_bass/fx`). No case is refused.
 - **Versions**: saving creates revision `rev + 1` with `parent` = previous hash; revisions are immutable. Identical content saves
   nothing (same hash). References are always pinned `name@rev`. "Update to latest" is an explicit edit that rewrites the pin and shows
   the changed exports.

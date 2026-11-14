@@ -3,8 +3,11 @@
    graph(model) (model.js, L4 data) onto the view; every edit is one model.js applyOp through graph.js doOps, or, where model.js has no
    op yet (adding / removing a tagged(...) statement, a selection's .send amount, a capture window), one splice of that statement's
    text, committed on the graph's shared undo stack. The only view state is which split fans are folded and the tag filter.
-   Runtime: tags / tagged / mute / solo (#74) and the audio layer .split .merge .send ret (#75) are live. Capture / recall (#76) is not
-   built: capture nodes are drawn from the data, and every capture action that would need it is shown "coming" and disabled. */
+   Runtime: tags / tagged / mute / solo (#74), the audio layer .split .merge .send ret (#75) and capture / recall (#76) are live. Capture node
+   actions call the capture runtime's public entry points only (docs/LANES.md 11e): Bounce = lanesCapture.host.bounce (a take in the Record
+   list), Freeze / Thaw = lanesCapture.freeze / thaw (journaled), Use as sample = lanesCapture.host.resolve (registers cap_<name>) and then
+   one inserted `.from("<name>")` lane (a text splice on the graph's undo stack). Audio of bus: and rolling captures is "coming" there, so
+   those actions stay disabled with that reason. */
 import * as acorn from './vendor/acorn-8.19.0.mjs';
 import { checkWire } from './model.js';
 
@@ -17,9 +20,10 @@ const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
 const store = { get: (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* full */ } } };
 const strOf = (v) => (typeof v === 'string' ? v : isObj(v) && typeof v.$mini === 'string' ? v.$mini : null);
 const fmt = (v) => (typeof v === 'number' ? String(+v.toFixed(3)) : String(v));
-const COMING = { capture: 'needs capture and recall (#76)', pad: 'needs a pad-assign entry point in the Perform view' };
+const COMING = { pad: 'needs a pad-assign entry point in the Perform view' };
 
 let X = null; // graph.js context (functions only)
+let BUSY = null; // the capture action in flight { name, act } (one at a time: each one compiles the program and renders offline)
 let V = {}; // voice counts per lane, valid only for the exact program text they were counted on (view cache, not lane state)
 let P = { on: false, lanes: [], tags: [], state: {}, buses: [], captures: [], selections: [], refused: [], model: null, g: null, fold: new Set(store.get(FOLD, [])), filter: null };
 
@@ -173,15 +177,58 @@ function capNode(v) {
   for (const p of (r.ports && r.ports.out) || []) port(v, 'out', p.name, p.type);
   const order = ((r.ports && r.ports.out) || []).map((p) => p.name); v.outs.sort((x, y) => order.indexOf(x.name) - order.indexOf(y.name)); // ev, audio, level as recorded
   const win = r.window !== undefined ? (typeof r.window === 'string' ? r.window : JSON.stringify(r.window)) : null;
-  v.cap = { name: r.name, picker: r.tap || r.selector, matches: r.matches || [], what: r.what || [], window: win, last: r.last, live: r.live, state: capState(r) };
+  const picker = r.tap || strOf(r.selector) || String(r.selector || '');
+  v.cap = { name: r.name, picker, kind: r.tap ? 'tap' : /^bus:/.test(picker) ? 'bus' : picker === 'master' ? 'master' : 'selector', error: r.error || null, matches: r.matches || [], what: r.what || [], window: win, last: r.last, live: r.live, state: capState(r.name, r.last !== undefined), sample: capSample(r.name) };
   v.sub = 'capture · ' + v.cap.what.join(' ');
-  if (r.error) v.err = 'E_BAD_SELECTOR: ' + r.error;
-  v.extraH = 44 + (win !== null || r.last !== undefined ? 2 * ROWH : 0) + 44 + 3 * ROWH + PAD;
+  if (r.error && v.cap.kind !== 'bus') v.err = 'E_BAD_SELECTOR: ' + r.error; // bus:<name> is a capture picker (LANES 6.1), not a selector
+  v.extraH = 44 + (win !== null || r.last !== undefined ? 2 * ROWH : 0) + 44 + 3 * ROWH + (v.cap.sample ? ROWH : 0) + PAD;
   v.body = (top) => `<div class="gl-card" style="top:${top}px">${capHtml(v.cap)}</div>`;
   P.captures.push(v.cap);
 }
-// a capture's state comes from the capture runtime (#76); with none installed every capture is empty
-function capState(r) { const rt = sc.lanes && typeof sc.lanes.captureState === 'function' ? sc.lanes.captureState(r.name) : null; return ['empty', 'recording', 'frozen'].includes(rt) ? rt : 'empty'; }
+// a capture's state comes from the capture runtime (#76, loaded with the first program that names capture / recall / .from); before that every capture is empty
+// Two readings on top of the runtime word (LANES 6.2): a window capture whose audio was rendered (Bounce / Use as sample) is fixed, so "frozen"; and while
+// the transport plays, a live window capture reads from the play position: empty before From, recording until Until, then the runtime's word. The runtime
+// alone would say "frozen" at once, because look-ahead queries of the visuals reach Until first (the recall timing itself is right; bug #87).
+const ST = { empty: 'Empty', recording: 'Recording', frozen: 'Frozen' };
+function capPos() { try { const T = sc.transport; return T && T.playing ? sc.engineState().scheduler.now() : null; } catch (e) { return null; } }
+function capState(name, rolling) {
+  const rt = sc.lanes && typeof sc.lanes.captureState === 'function' ? sc.lanes.captureState(name) : null; let st = ['empty', 'recording', 'frozen'].includes(rt) ? rt : 'empty';
+  const C = sc.lanesCapture, d = C && C.defs && C.defs().find((x) => x.name === name);
+  if (!rolling && st === 'empty' && C && C.audio && C.audio(name)) st = 'frozen';
+  if (!rolling && d && d.from != null && d.until != null) {
+    const now = capPos(), an = C.analyze && C.analyze(), cc = an && an.captures.find((x) => x.name === name), live = d.live === true || (d.live !== false && cc && !cc.pure);
+    if (now != null && live) st = now < d.from ? 'empty' : now < d.until ? 'recording' : st;
+  }
+  return st;
+}
+function stateWhy(c) {
+  const roll = c.last !== undefined, busy = BUSY && BUSY.name === c.name ? BUSY : null;
+  return busy ? `${busy.verb}…` : c.state === 'empty' ? (c.window !== null ? `fills during ${c.window}, frozen after` : roll ? 'rolling: fills once it has run' : 'nothing captured yet')
+    : c.state === 'recording' ? (roll ? `rolling: always the last ${c.last}` : `window ${c.window} is open`) : roll ? 'held by a journaled freeze' : `holds ${c.window}`;
+}
+// the state word follows playback: a light poll updates the words in place (no re-render, focus stays), only while capture nodes are shown
+function capTick() {
+  if (!X || !P.on || !P.captures.length || document.hidden) return;
+  for (const c of P.captures) {
+    const st = capState(c.name, c.last !== undefined); if (st === c.state) continue; c.state = st;
+    for (const el of X.root().querySelectorAll(`.gl-state[data-cap="${CSS.escape(c.name)}"]`)) { el.dataset.state = st; el.querySelector('b').textContent = ST[st]; el.querySelector('.gl-why').textContent = stateWhy(c); }
+  }
+}
+// the registered sample of a capture (Use as sample ran): read from the runtime's audio store, never kept here
+function capSample(name) { const C = sc.lanesCapture, e = C && C.audio && C.audio(name); return e && e.registered ? { sound: 'cap_' + name, cycles: +(e.frames / e.sr * e.cps).toFixed(3) } : null; }
+// why a capture action cannot run (null: it can); `coming` marks what the capture runtime has not built yet (LANES 11e)
+function capWhy(c, a) {
+  if (BUSY) return { why: BUSY.name === c.name && BUSY.act === a ? 'running…' : `waiting: ${BUSY.verb.toLowerCase()} ${BUSY.name}` };
+  if (a === 'freeze' || a === 'thaw') return c.last === undefined ? { why: 'a window capture holds itself after Until' } : null;
+  if (c.kind === 'bus') return { why: 'audio of a bus: capture', coming: true }; // the graph data reads bus:<name> as a bad selector; the runtime parses it
+  if (c.error) return { why: 'fix the picker in Code first' };
+  if (c.kind === 'tap') return { why: 'a tap capture records events only' };
+  if (!c.what.includes('audio')) return { why: 'records no audio: add "audio" to what' };
+  if (c.last !== undefined) return { why: 'audio of a rolling capture', coming: true };
+  if (a === 'sample' && X && X.readonly()) return { why: 'read-only here' };
+  return null;
+}
+const CACT = { bounce: ['Bounce to takes', 'Bouncing', 'renders the window, adds a take to Record'], freeze: ['Freeze', 'Freezing', 'holds the rolling content from a cycle'], thaw: ['Thaw', 'Thawing', 'follows the rolling window again'], sample: ['Use as sample', 'Rendering', 'registers cap_<name>, inserts a .from lane'] };
 const winParts = (w) => { const m = /^(.*?)\.\.(.*)$/.exec(w || ''); return m ? [m[1], m[2]] : [w || '', '']; };
 function capHtml(c) {
   const step = (field, which, label) => `<button type="button" class="gl-b gl-step" data-act="gl-win" data-cap="${esc(c.name)}" data-field="${field}" data-d="${which}" aria-label="${esc(`${label} ${which < 0 ? 'one bar earlier' : 'one bar later'}`)}">${which < 0 ? '−' : '+'}</button>`;
@@ -189,11 +236,16 @@ function capHtml(c) {
   let win = '';
   if (c.window !== null) { const [a, b] = winParts(c.window); win = fld('from', 'From', a) + fld('until', 'Until', b); }
   else if (c.last !== undefined) win = fld('last', 'Last', String(c.last)) + '<p class="gl-why">rolling: always the bars before now</p>';
-  const ST = { empty: 'Empty', recording: 'Recording', frozen: 'Frozen' };
-  const act = (a, label) => `<button type="button" class="gl-b gl-cact" data-act="gl-cap-${a}" disabled aria-disabled="true" title="${esc(COMING.capture)}">${label} <span class="gl-soon">coming</span></button>`;
+  const roll = c.last !== undefined, busy = BUSY && BUSY.name === c.name ? BUSY : null, why = stateWhy(c);
+  const act = (a) => {
+    const [label, verb, info] = CACT[a], w = capWhy(c, a), run = busy && busy.act === a, sub = w ? w.why : info.replace('<name>', c.name);
+    return `<button type="button" class="gl-b gl-cact" data-act="gl-cap" data-op="${a}" data-cap="${esc(c.name)}"${w ? ' aria-disabled="true"' : ''}${run ? ' aria-busy="true"' : ''}`
+      + ` aria-label="${esc(`${label} ${c.name}: ${sub}${w && w.coming ? ' (coming)' : ''}`)}"><span class="gl-cl">${run ? `<i aria-hidden="true">■</i>${verb}…` : label}${w && w.coming ? ' <span class="gl-soon">coming</span>' : ''}</span><span class="gl-why">${esc(sub)}</span></button>`;
+  };
+  const smp = c.sample ? `<p class="gl-smp"><span class="gl-sn"><b>Sample</b> <code>${esc(c.sample.sound)}</code> <span class="gl-why">${fmt(c.sample.cycles)} c</span></span><button type="button" class="gl-b gl-copy" data-act="gl-cap-copy" data-cap="${esc(c.name)}" aria-label="${esc(`Copy the sample name ${c.sample.sound}`)}">Copy</button></p>` : '';
   return `<p class="gl-pick"><span class="gl-chip" title="picker">${esc(c.picker)}</span><span class="gl-match">${c.matches.length ? esc(c.matches.join(', ')) : 'no lane yet'}</span></p>${win}`
-    + `<p class="gl-state" data-state="${c.state}" role="status"><i aria-hidden="true"></i><b>${ST[c.state]}</b> <span class="gl-why">${c.state === 'empty' ? (c.window !== null ? `fills during ${esc(c.window)}, frozen after; ` : '') + esc(COMING.capture) : ''}</span></p>`
-    + act('bounce', 'Bounce to takes') + (c.last !== undefined ? act('freeze', 'Freeze / Thaw') : act('freeze', 'Freeze')) + act('sample', 'Use as sample');
+    + `<p class="gl-state" data-cap="${esc(c.name)}" data-state="${c.state}"${busy ? ' data-busy="true"' : ''} role="status"><i aria-hidden="true"></i><b>${ST[c.state]}</b> <span class="gl-why">${esc(why)}</span></p>`
+    + act('bounce') + act(roll && c.state === 'frozen' ? 'thaw' : 'freeze') + act('sample') + smp;
 }
 
 export function after(nodesEl) {
@@ -327,6 +379,99 @@ async function addBranch(lane) {
 }
 function fold(lane, on) { if (on === undefined) on = !P.fold.has(lane); if (on) P.fold.add(lane); else P.fold.delete(lane); store.set(FOLD, [...P.fold]); X.rerender(); return on; }
 
+/* ---------------------------------------------------------------- capture node actions (capture runtime #76, public entry points only) */
+const cerr = (c, m) => Object.assign(new Error(`${c}: ${m}`), { code: c });
+const capOf = (name) => P.captures.find((c) => c.name === name);
+const toast = (m, o) => sc.ui && sc.ui.toast(m, o);
+const STOP_TAIL_MS = 1500; // longest voice tail we wait for after stopping playback (notes of one cycle at 1 cps plus release)
+// the program as the capture runtime sees it: compile the graph's text (that loads capture / recall and defines the captures); stops playback, so ask first
+async function prime(name, verb) {
+  const T = sc.transport; if (!T || !T.compileCode) throw cerr('E_CAPTURE_HOST', 'the engine is not available on this page');
+  if (T.playing && !(await sc.ui.askYesNo({ title: `${verb} ${name}`, message: `${verb} compiles this program and renders the capture offline, which stops playback. Stop and continue?`, okText: 'Stop and continue' }))) return null;
+  if (T.playing) { // let the realtime voices end before the offline render swaps the audio context (a voice ending mid-swap throws in superdough, bug #88)
+    T.stop(); toast('Stopped playback; letting the voices ring out before the offline render…', { kind: 'info', ms: 2000 }); await new Promise((r) => setTimeout(r, STOP_TAIL_MS));
+  }
+  const text = X.text(); await T.compileCode(text);
+  const C = sc.lanesCapture; if (!C || !C.host) throw cerr('E_CAPTURE_HOST', 'the capture runtime did not load');
+  if (!C.defs().some((d) => d.name === name)) throw cerr('E_BAD_ARG', `capture "${name}" is not in the evaluated program`);
+  return { C, text };
+}
+// one action at a time; progress in the node (busy word, no animation) and in toasts; any failure is a toast naming the reason
+async function runCap(name, act, fn) {
+  const c = capOf(name); if (!c) return X.refuse(`No capture ${name} in the program`);
+  const w = capWhy(c, act); if (w) return X.refuse(`${CACT[act][0]} ${name}: ${w.why}${w.coming ? ' (coming)' : ''}`);
+  const back = focusKey(); BUSY = { name, act, verb: CACT[act][1] }; X.rerender(); refocus(back); X.say(`${CACT[act][1]} ${name}…`);
+  try { return await fn(c); } catch (e) { X.refuse(`${CACT[act][0]} ${name} failed: ${(e && e.message) || e}`); return null; } finally { BUSY = null; X.rerender(); refocus(back); }
+}
+// keep keyboard focus on the same control across the re-render an action causes (canvas, inspector or outline)
+let lastFocus = null;
+function focusKey() { const a = document.activeElement; return a && a.dataset && a.dataset.cap ? { sel: `[data-act="${a.dataset.act}"][data-cap="${CSS.escape(a.dataset.cap)}"]`, outline: !!a.closest('.gx-outline') } : lastFocus; }
+function refocus(k) { lastFocus = k; if (!k) return; const el = [...X.root().querySelectorAll(k.sel)].find((e) => !!e.closest('.gx-outline') === k.outline && e.getClientRects().length); if (el && document.activeElement !== el && !document.querySelector('dialog[open]')) el.focus({ preventScroll: true }); }
+export function bounce(name) {
+  return runCap(name, 'bounce', async (c) => {
+    const pr = await prime(name, 'Bounce'); if (!pr) return null;
+    toast(`Bouncing ${name}: rendering ${c.window} offline…`, { kind: 'info', ms: 4000 });
+    const rec = await pr.C.host.bounce(name, pr.text);
+    const take = (rec && rec.name) || 'capture ' + name;
+    toast(`Bounced ${name}: take "${take}" is in the Record list (open it)`, { kind: 'ok', ms: 7000, onClick: () => sc.capture && sc.capture.open && sc.capture.open() });
+    X.say(`Bounced ${name} into the takes list as "${take}"`); return rec;
+  });
+}
+// Freeze / Thaw of a rolling capture at a cycle: journaled (Remake replays it); no program text changes
+export function freeze(name, at) { return freezeOp(name, 'freeze', at); }
+export function thaw(name, at) { return freezeOp(name, 'thaw', at); }
+const cycOf = (c) => { const [n, q] = String(c).split('/'); return +n / (q ? +q : 1); };
+function freezeOp(name, op, at) {
+  return runCap(name, op, async (c) => {
+    let C = sc.lanesCapture; if (!C || !C.defs().some((d) => d.name === name)) { const pr = await prime(name, CACT[op][0]); if (!pr) return null; C = pr.C; }
+    const d = C.defs().find((x) => x.name === name), J = (sc.hooks && sc.hooks.journal) || [];
+    const lastF = J.filter((e) => e.op === 'freeze' && e.args[0] === name).map((e) => cycOf(e.cycle)).pop();
+    let now = null; try { const T = sc.transport; if (T && T.playing) now = Math.ceil(sc.engineState().scheduler.now()); } catch (e) { now = null; }
+    const dflt = now != null ? now : op === 'freeze' ? Math.ceil((d.last || 1) + (d.guard || 0) + 1) : Math.ceil((lastF || 0) + (d.last || 1) + (d.guard || 0));
+    if (at === undefined) {
+      at = await sc.ui.ask({ title: `${CACT[op][0]} ${name}`, message: op === 'freeze' ? `Holds the last ${c.last} of ${name} from that cycle on, until a Thaw. Journaled: Remake replays it.` : `${name} follows its rolling window again from that cycle.`, label: 'At cycle (a number, or a bar such as 3b)', value: String(dflt), okText: CACT[op][0] });
+      if (at == null) { X.say('Cancelled'); return null; }
+    }
+    const v = /^\s*\d+(\.\d+)?\s*$/.test(String(at)) ? +at : String(at).trim();
+    C[op](name, v);
+    toast(op === 'freeze' ? `${name} frozen from cycle ${v}: its recalls play the held content` : `${name} thawed from cycle ${v}: its recalls follow the window again`, { kind: 'ok', ms: 3500 });
+    return { name, op, at: v };
+  });
+}
+// Use as sample: render the capture and register it as cap_<name> (host.resolve), then insert one `.from("<name>")` lane after asking for its name
+export async function useAsSample(name, lane) {
+  const got = await runCap(name, 'sample', async () => {
+    const pr = await prime(name, 'Use as sample'); if (!pr) return null;
+    toast(`Rendering ${name} to the sample cap_${name}…`, { kind: 'info', ms: 4000 });
+    await pr.C.host.resolve(pr.text);
+    const e = pr.C.audio(name); if (!e || !e.registered) throw cerr('E_CAPTURE_HOST', `capture "${name}" gave no audio`);
+    const d = pr.C.defs().find((x) => x.name === name);
+    return { sound: 'cap_' + name, cycles: d && d.until != null ? +(d.until - d.from).toFixed(3) : +(e.frames / e.sr * e.cps).toFixed(3), frames: e.frames, sr: e.sr };
+  });
+  if (!got) return got;
+  return { ...got, lane: await insertSample(name, got.cycles, lane) };
+}
+async function insertSample(name, cycles, lane) {
+  const used = new Set(P.lanes.map((l) => l.name)); const base = (name.replace(/[^\w$]/g, '_').replace(/^(\d)/, '_$1')) + 'Smp'; let def = base; for (let i = 2; used.has(def); i++) def = base + i;
+  const line = (ln) => `${ln}: s("x").from(${JSON.stringify(name)})${cycles ? `.loopAt(${fmt(cycles)})` : ''}`;
+  if (lane === undefined) {
+    toast(`cap_${name} is a sample now (${fmt(cycles)} cycles): use it in any s("...")`, { kind: 'ok', ms: 4000 });
+    lane = await sc.ui.ask({ title: `Use cap_${name} as a sample`, message: `Inserts one lane that plays it: ${line(def)}. The sample stays registered either way.`, label: 'Lane name', value: def, okText: 'Insert lane' });
+  }
+  if (lane == null) { X.say(`cap_${name} is registered; no lane inserted (Copy puts the name on the clipboard)`); return null; }
+  lane = String(lane).trim();
+  if (!/^[A-Za-z_$][\w$]*$/.test(lane)) { X.refuse(`"${lane}" is not a lane name (letters, digits, _)`); return null; }
+  if (used.has(lane)) { X.refuse(`There is already a lane ${lane}`); return null; }
+  const text = X.text(), next = text + (text && !text.endsWith('\n') ? '\n' : '') + line(lane) + '\n';
+  if (!X.commit(next, `Added lane ${lane}: .from("${name}")`)) return null;
+  toast(`Lane ${lane} plays cap_${name} (Undo removes it)`, { kind: 'ok', ms: 3500 }); return lane;
+}
+async function copySample(name) {
+  const t = 'cap_' + name;
+  try { await navigator.clipboard.writeText(t); } catch (e) { const ta = document.createElement('textarea'); ta.value = t; document.body.append(ta); ta.select(); try { document.execCommand('copy'); } catch (e2) { /* no clipboard */ } ta.remove(); }
+  toast(`Copied ${t}`, { kind: 'ok', ms: 1800 }); X.say(`Copied ${t}`); return t;
+}
+
 /* ---------------------------------------------------------------- inspector and outline (every action without a pointer) */
 export function inspect(n) {
   if (!P.on) return [];
@@ -375,6 +520,8 @@ export function install(ctx) {
     const b = e.target.closest('button[data-act^="gl-"]'); if (!b || !root.contains(b) || b.disabled) return;
     const d = b.dataset;
     switch (d.act) {
+      case 'gl-cap': { const c = capOf(d.cap), w = c && capWhy(c, d.op); if (w) return X.refuse(`${CACT[d.op][0]} ${d.cap}: ${w.why}${w.coming ? ' (coming)' : ''}`); lastFocus = focusKey(); return d.op === 'bounce' ? bounce(d.cap) : d.op === 'sample' ? useAsSample(d.cap) : freezeOp(d.cap, d.op); }
+      case 'gl-cap-copy': return copySample(d.cap);
       case 'gl-tag': return toggleTag(d.tag, d.op);
       case 'gl-fold': return fold(d.lane);
       case 'gl-addb': return addBranch(d.lane);
@@ -393,12 +540,13 @@ export function install(ctx) {
     if (t.matches('.gl-amt')) setAmount(t.dataset.bus, t.dataset.lane, Number(t.value));
     else if (t.matches('.gl-wi')) setWindow(t.dataset.cap, t.dataset.field, t.value.trim());
   });
+  if (!install.tick) install.tick = setInterval(capTick, 400);
   const P2 = sc.palette;
   if (P2 && !install.reg) {
     install.reg = true;
     P2.register({ id: 'lanes.outline', group: 'Lanes', title: 'Lanes: lane list, tags, buses, captures (Graph outline)', run: () => { location.hash = '#graph'; const t = document.getElementById('gxTab-outline'); if (t) { t.click(); const hd = document.getElementById('glLanesH'); if (hd) hd.scrollIntoView({ block: 'start' }); } } });
     P2.register({ id: 'lanes.fold', group: 'Lanes', title: 'Lanes: collapse or expand every split fan', run: () => { const all = P.lanes.filter((l) => l.t.split).map((l) => l.name); const on = all.some((n) => !P.fold.has(n)); all.forEach((n) => (on ? P.fold.add(n) : P.fold.delete(n))); store.set(FOLD, [...P.fold]); X.rerender(); } });
   }
-  sc.lanesUI = { countVoices, toggleTag, setAmount, setWindow, addBranch, fold, cross: crossSheet, state: () => ({ on: P.on, lanes: P.lanes.map((l) => ({ id: l.id, name: l.name, tags: l.tags })), tags: P.tags, chips: P.state, buses: P.buses, captures: P.captures, selections: P.selections, refused: P.refused, folded: [...P.fold] }) };
+  sc.lanesUI = { countVoices, toggleTag, setAmount, setWindow, addBranch, fold, cross: crossSheet, bounce, freeze, thaw, useAsSample, copySample, state: () => ({ on: P.on, lanes: P.lanes.map((l) => ({ id: l.id, name: l.name, tags: l.tags })), tags: P.tags, chips: P.state, buses: P.buses, captures: P.captures, selections: P.selections, refused: P.refused, folded: [...P.fold] }) };
   return sc.lanesUI;
 }

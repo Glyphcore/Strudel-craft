@@ -63,7 +63,7 @@
 .gl-ops code{background:none;padding:0;color:var(--text)}
 .gl-win{border:2px dashed var(--line-2);border-radius:var(--r1);padding:1px 4px}
 .gl-pad{width:100%;justify-content:center;flex:none}
-.gl-b:disabled{opacity:1;color:var(--text);border-style:dashed;cursor:not-allowed}
+.gl-b:disabled,.gl-b[aria-disabled=true]{opacity:1;color:var(--text);border-style:dashed;cursor:not-allowed}
 
 /* ---- capture node: bracketed tape, state is a word ---- */
 .gk-capture{border-left:4px double var(--text);border-right:4px double var(--text)}
@@ -79,7 +79,19 @@
 .gl-state[data-state="frozen"] i{background:var(--text)}
 @keyframes gl-rec{50%{opacity:.35}}
 @media (prefers-reduced-motion:reduce){.gl-state[data-state="recording"] i{animation:none}}
-.gl-cact{width:100%;margin-top:8px;justify-content:space-between;flex:none}
+/* an action is two lines: what it is, and what it does or why it cannot run now (a stated reason, never colour or a greyed look alone) */
+.gl-cact{width:100%;height:44px;margin-top:8px;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;flex:none;overflow:hidden}
+.gl-cact .gl-why{color:var(--text);font-size:.62rem}
+.gl-cl,.gl-cact .gl-why{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2}
+.gl-cl{display:flex;align-items:center;gap:4px}
+.gl-cact[aria-busy=true]{border-width:2px;border-color:var(--text);border-style:solid}
+.gl-cact[aria-busy=true] i{font-size:.6rem}
+/* busy is a word and a filled square: nothing pulses while a bounce renders */
+.gl-state[data-busy=true] i{border-radius:0;background:var(--text);border-color:var(--text);animation:none}
+.gl-smp{display:grid;grid-template-columns:minmax(0,1fr) 64px;gap:6px;align-items:center;height:52px;margin:0;flex:none}
+.gl-sn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:500 .72rem var(--mono);color:var(--text)}
+.gl-sn code{background:none;padding:0;color:var(--text);font-weight:700}
+.gl-copy{justify-content:center}
 
 /* ---- inspector / outline ---- */
 .gl-insp{display:flex;flex-direction:column;gap:4px}

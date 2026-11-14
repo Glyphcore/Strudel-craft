@@ -565,7 +565,7 @@
    ],
    "removed": []
   },
-  "refusal": "Refused: A hook output connects only to a slot’s hook input (that makes a hooks.bind binding).",
+  "refusal": "Refused: A hook output connects only to a slot\u2019s hook input (that makes a hooks.bind binding).",
   "bridge": {
    "asked": {
     "facets": [
@@ -619,7 +619,7 @@
      "outs": [
       "hat"
      ],
-     "sub": "component · drums@1"
+     "sub": "component \u00b7 drums@1"
     }
    ],
    "crumbs": "Songdrums",
@@ -732,7 +732,7 @@
    "anims": 0,
    "live": true,
    "pulse": "0.6",
-   "badge": "\" ▸\"",
+   "badge": "\" \u25b8\"",
    "animations_without_reduce": 2
   }
  },
@@ -941,7 +941,11 @@
      ],
      "removed": [
       "a: s(\"hh*8\").split(x => x.tap(\"inner\").lpf(500), y => y.room(0.4))"
-     ]
+     ],
+     "after": {
+      "refusedRow": false,
+      "refused": 0
+     }
     },
     "Add send": {
      "sheet": {
@@ -956,7 +960,11 @@
      ],
      "removed": [
       "a: s(\"hh*8\").split(x => x.tap(\"inner\").lpf(500), y => y.room(0.4))"
-     ]
+     ],
+     "after": {
+      "refusedRow": true,
+      "refused": 2
+     }
     }
    }
   },
@@ -996,10 +1004,10 @@
    "word": "Empty",
    "from": "1b",
    "until": "3b",
-   "coming": [
-    "Bounce to takes coming|true",
-    "Freeze coming|true",
-    "Use as sample coming|true"
+   "acts": [
+    "bounce|on|renders the window, adds a take to Record",
+    "freeze|off|a window capture holds itself after Until",
+    "sample|on|registers cap_groove, inserts a .from lane"
    ],
    "recallWire": true,
    "fromWire": true,
@@ -1040,7 +1048,7 @@
   },
   "scroll_width_390": 390,
   "voices": {
-   "shown": "12 + 3 = 15 voices / cycle.layer: 36 (12 × 3)",
+   "shown": "12 + 3 = 15 voices / cycle.layer: 36 (12 \u00d7 3)",
    "recount": {
     "src": 12,
     "rd": 3,
@@ -1096,8 +1104,8 @@
    ],
    "chip": {
     "pressed": "true",
-    "text": "■Muted",
-    "icon": "■"
+    "text": "\u25a0Muted",
+    "icon": "\u25a0"
    },
    "solo": {
     "added": [
@@ -1124,9 +1132,199 @@
     "drums: s(\"bd*4\").tags(\"drums\")"
    ]
   },
+  "capture_actions": {
+   "states_before": {
+    "groove": "empty|Empty",
+    "last2": "empty|Empty",
+    "hits": "empty|Empty",
+    "wet": "empty|Empty"
+   },
+   "actions": {
+    "groove:bounce": "on|renders the window, adds a take to Record",
+    "groove:freeze": "off|a window capture holds itself after Until",
+    "groove:sample": "on|registers cap_groove, inserts a .from lane",
+    "last2:bounce": "off|audio of a rolling capture|coming",
+    "last2:freeze": "on|holds the rolling content from a cycle",
+    "last2:sample": "off|audio of a rolling capture|coming",
+    "hits:bounce": "off|records no audio: add \"audio\" to what",
+    "hits:freeze": "off|a window capture holds itself after Until",
+    "hits:sample": "off|records no audio: add \"audio\" to what",
+    "wet:bounce": "off|audio of a bus: capture|coming",
+    "wet:freeze": "off|a window capture holds itself after Until",
+    "wet:sample": "off|audio of a bus: capture|coming"
+   },
+   "refused_toast": "error|Bounce to takes last2: audio of a rolling capture (coming)",
+   "bounce": {
+    "busy": "\u25a0Bouncing\u2026running\u2026",
+    "toasts": [
+     "info|Bouncing groove: rendering 1b..3b offline\u2026",
+     "ok|Bounced groove: take \"capture groove\" is in the Record list (open it)"
+    ],
+    "take": {
+     "id": "rcmwg0z3uh9x9k",
+     "name": "capture-groove",
+     "from": "groove",
+     "audio": [
+      "capture"
+     ],
+     "cycles": 2,
+     "li": true,
+     "liText": "audiocapture-groove2c \u00b7 1 cps \u00b7 c0-2 \u00b7 from groove \u00b7 2 deps RecipeWAV"
+    },
+    "state_after": "frozen|Frozen"
+   },
+   "freeze": {
+    "before": {
+     "12": [
+      9
+     ],
+     "14": [
+      11
+     ]
+    },
+    "frozen_at_6": {
+     "12": [
+      3
+     ]
+    },
+    "state_frozen": "frozen|Frozen",
+    "thaw_button": "on|follows the rolling window again",
+    "toasts": [
+     "ok|last2 frozen from cycle 6: its recalls play the held content"
+    ],
+    "thawed_at_12": {
+     "12": [
+      9
+     ],
+     "14": [
+      11
+     ]
+    },
+    "state_after": "recording|Recording"
+   },
+   "sample": {
+    "modal": {
+     "title": "Use cap_groove as a sample",
+     "msg": "Inserts one lane that plays it: grooveSmp: s(\"x\").from(\"groove\").loopAt(2). The sample stays registered either way.",
+     "value": "grooveSmp"
+    },
+    "added": [
+     "grooveSmp: s(\"x\").from(\"groove\").loopAt(2)"
+    ],
+    "removed": [],
+    "row": {
+     "text": "Sample cap_groove 2 cCopy",
+     "copy": true
+    },
+    "copied": "cap_groove",
+    "play": {
+     "rms": 0.054937829307426946,
+     "fails": 0,
+     "haps": 1,
+     "sound": true
+    },
+    "undo_restores": true,
+    "toasts": [
+     "ok|cap_groove is a sample now (2 cycles): use it in any s(\"...\")",
+     "ok|Lane grooveSmp plays cap_groove (Undo removes it)",
+     "ok|Copied cap_groove"
+    ]
+   },
+   "failure": {
+    "toasts": [
+     "Bounce to takes groove failed: E_CAPTURE_HOST: the Record panel hook strudelCraft.capture.addTake is not available\u00d7"
+    ],
+    "native_dialogs": 0
+   },
+   "live_states": [
+    {
+     "c": -0.05,
+     "w": "empty|Empty"
+    },
+    {
+     "c": 0.36,
+     "w": "recording|Recording"
+    },
+    {
+     "c": 2.37,
+     "w": "frozen|Frozen"
+    }
+   ]
+  },
+  "capture_actions_390": {
+   "sample": {
+    "sound": "cap_groove",
+    "cycles": 2,
+    "frames": 96000,
+    "sr": 48000,
+    "lane": null
+   },
+   "targets": {
+    "n": 34,
+    "min_w": 44,
+    "min_h": 44,
+    "small": []
+   },
+   "contrast": {
+    "min": 7.11,
+    "n": 70,
+    "worst": "span.gl-wl \"From\""
+   }
+  },
   "reduced_motion": {
-   "animation": "none",
-   "word": "Recording"
+   "reduce": {
+    "recording": {
+     "rolling": "recording|Recording",
+     "dot": "none",
+     "groove": "empty|Empty|fills during 1b..3b, frozen after",
+     "busy": null,
+     "button": "Bounce to takesrenders the window, adds a take to Record",
+     "running_in_graph": 0,
+     "running_page": 0,
+     "names": []
+    },
+    "bouncing": {
+     "rolling": "recording|Recording",
+     "dot": "none",
+     "groove": "empty|Empty|Bouncing\u2026",
+     "busy": "true",
+     "button": "\u25a0Bouncing\u2026running\u2026",
+     "running_in_graph": 0,
+     "running_page": 0,
+     "names": [],
+     "ask": "Bounce compiles this program and renders the capture offline, which stops playback. Stop and continue?"
+    }
+   },
+   "no-preference": {
+    "recording": {
+     "rolling": "recording|Recording",
+     "dot": "gl-rec",
+     "groove": "empty|Empty|fills during 1b..3b, frozen after",
+     "busy": null,
+     "button": "Bounce to takesrenders the window, adds a take to Record",
+     "running_in_graph": 2,
+     "running_page": 2,
+     "names": [
+      "gx-flow",
+      "gl-rec"
+     ]
+    },
+    "bouncing": {
+     "rolling": "recording|Recording",
+     "dot": "gl-rec",
+     "groove": "empty|Empty|Bouncing\u2026",
+     "busy": "true",
+     "button": "\u25a0Bouncing\u2026running\u2026",
+     "running_in_graph": 1,
+     "running_page": 3,
+     "names": [
+      "CSSTransition",
+      "gl-rec",
+      "toastIn"
+     ],
+     "ask": "Bounce compiles this program and renders the capture offline, which stops playback. Stop and continue?"
+    }
+   }
   }
  },
  "perform": {
@@ -1177,25 +1375,25 @@
    "pads": {
     "min": 7.95,
     "n": 63,
-    "worst": "span.pp-mark \"●\" rgb(230, 233, 238) on rgb(30,75,76)"
+    "worst": "span.pp-mark \"\u25cf\" rgb(230, 233, 238) on rgb(30,75,76)"
    },
    "board": {
     "min": 10.25,
     "n": 35,
-    "worst": "button. \"↶ Lane\" rgb(195, 202, 211) on rgb(24,29,36)"
+    "worst": "button. \"\u21b6 Lane\" rgb(195, 202, 211) on rgb(24,29,36)"
    }
   },
   "state_marks": {
    "loaded": {
-    "mark": "○",
+    "mark": "\u25cb",
     "label": true
    },
    "on": {
-    "mark": "●",
+    "mark": "\u25cf",
     "label": true
    },
    "empty": {
-    "mark": "·",
+    "mark": "\u00b7",
     "label": true
    }
   },
@@ -1392,7 +1590,7 @@
   {
    "name": "stack view plays the stacked program",
    "ok": true,
-   "detail": "Playing Stack · 3 layers"
+   "detail": "Playing Stack \u00b7 3 layers"
   },
   {
    "name": "Ctrl+Z undoes stack add",
@@ -1492,7 +1690,7 @@
   {
    "name": "graph: incompatible target is refused with a visible reason",
    "ok": true,
-   "detail": "Refused: A hook output connects only to a slot’s hook input (that makes a hooks.bind binding)."
+   "detail": "Refused: A hook output connects only to a slot\u2019s hook input (that makes a hooks.bind binding)."
   },
   {
    "name": "graph: deleting the hooks.bind line in code removes the wire",
@@ -1505,7 +1703,7 @@
    "detail": "{\"asked\":{\"facets\":[\"onset\",\"gate\",\"env\"],\"range\":true},\"added\":[\"bass: note(\\\"c2 eb2\\\").s(\\\"sawtooth\\\").lpf(800).gain(0.7).use(\\\"fx\\\").wire(\\\"lpf\\\", \\\"kick:env\\\", { range: [200, 2000] })\"]}"
   },
   {
-   "name": "graph: changing a binding window rewrites only that binding’s gate; badge shows the window",
+   "name": "graph: changing a binding window rewrites only that binding\u2019s gate; badge shows the window",
    "ok": true,
    "detail": "{\"added\":[\"hooks.bind(\\\"bass/fx\\\", \\\"murk\\\", \\\"9b..17b\\\")\"],\"removed\":[\"hooks.bind(\\\"bass/fx\\\", \\\"murk\\\")\"],\"badge\":\"HOOK 9b..17b\"}"
   },
@@ -1517,7 +1715,7 @@
   {
    "name": "graph: long-press + tap multi-select, Collapse yields one component node with exported ports; entering shows the breadcrumb",
    "ok": true,
-   "detail": "{\"multi\":[\"track:hat\"],\"sel2\":[\"track:hat\",\"track:perc\"],\"comps\":[{\"id\":\"inst:drums\",\"outs\":[\"hat\"],\"sub\":\"component · drums@1\"}],\"crumbs\":\"Songdrums\",\"inner\":[\"track:hat\",\"tap:hat\",\"track:perc\"]}"
+   "detail": "{\"multi\":[\"track:hat\"],\"sel2\":[\"track:hat\",\"track:perc\"],\"comps\":[{\"id\":\"inst:drums\",\"outs\":[\"hat\"],\"sub\":\"component \u00b7 drums@1\"}],\"crumbs\":\"Songdrums\",\"inner\":[\"track:hat\",\"tap:hat\",\"track:perc\"]}"
   },
   {
    "name": "graph: collapse keeps every track chain when the instance is expanded (model level)",
@@ -1562,7 +1760,7 @@
   {
    "name": "graph: reduced motion runs no wire animation; live state still shown",
    "ok": true,
-   "detail": "{\"anims\":0,\"live\":true,\"pulse\":\"0.6\",\"badge\":\"\\\" ▸\\\"\",\"animations_without_reduce\":2}"
+   "detail": "{\"anims\":0,\"live\":true,\"pulse\":\"0.6\",\"badge\":\"\\\" \u25b8\\\"\",\"animations_without_reduce\":2}"
   },
   {
    "name": "atoms ui: atoms-ui.js / atoms-pop.js are not loaded with the shell",
@@ -1597,7 +1795,7 @@
   {
    "name": "atoms ui: a second port on the same atom raises the shown count to 2, no second card",
    "ok": true,
-   "detail": "after 1: 1; after 2: 2 shown \"×2\""
+   "detail": "after 1: 1; after 2: 2 shown \"\u00d72\""
   },
   {
    "name": "atoms ui: removing both references removes the card; undo brings it back at the same position",
@@ -1642,7 +1840,7 @@
   {
    "name": "atoms ui: popover opens on tap and on Enter with the caret on a reference (Enter inserts nothing)",
    "ok": true,
-   "detail": "tap 1, enter 1; \"MINIatoms.kick4×\"bd*4\"nEdit definitionDerive…DetachGo to card\""
+   "detail": "tap 1, enter 1; \"MINIatoms.kick4\u00d7\"bd*4\"nEdit definitionDerive\u2026DetachGo to card\""
   },
   {
    "name": "atoms ui: Escape closes the popover; opening it shifts no code line",
@@ -1732,12 +1930,12 @@
   {
    "name": "lanes ui: the split of LANES example 1 shows the engine counts 12 source + 3 readers (.layer: 36)",
    "ok": true,
-   "detail": "{\"shown\":\"12 + 3 = 15 voices / cycle.layer: 36 (12 × 3)\",\"recount\":{\"src\":12,\"rd\":3,\"bus_sounds\":[64]}}"
+   "detail": "{\"shown\":\"12 + 3 = 15 voices / cycle.layer: 36 (12 \u00d7 3)\",\"recount\":{\"src\":12,\"rd\":3,\"bus_sounds\":[64]}}"
   },
   {
    "name": "lanes ui: tag chip Mute adds one tagged(\"drums\").mute() and silences those lanes on the next cycle (queried events); again removes it",
    "ok": true,
-   "detail": "{\"added\":[\"tagged(\\\"drums\\\").mute()\"],\"events_before\":[\"bd\",\"bd\",\"bd\",\"bd\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"sd\",\"triangle\",\"triangle\",\"triangle\"],\"events_muted\":[\"triangle\",\"triangle\",\"triangle\"],\"events_after_unmute\":[\"bd\",\"bd\",\"bd\",\"bd\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"sd\",\"triangle\",\"triangle\",\"triangle\"],\"chip\":{\"pressed\":\"true\",\"text\":\"■Muted\",\"icon\":\"■\"},\"solo\":{\"added\":[\"tagged(\\\"harm\\\").solo()\"],\"events\":[\"triangle\",\"triangle\",\"triangle\"]}}"
+   "detail": "{\"added\":[\"tagged(\\\"drums\\\").mute()\"],\"events_before\":[\"bd\",\"bd\",\"bd\",\"bd\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"sd\",\"triangle\",\"triangle\",\"triangle\"],\"events_muted\":[\"triangle\",\"triangle\",\"triangle\"],\"events_after_unmute\":[\"bd\",\"bd\",\"bd\",\"bd\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"hh\",\"sd\",\"triangle\",\"triangle\",\"triangle\"],\"chip\":{\"pressed\":\"true\",\"text\":\"\u25a0Muted\",\"icon\":\"\u25a0\"},\"solo\":{\"added\":[\"tagged(\\\"harm\\\").solo()\"],\"events\":[\"triangle\",\"triangle\",\"triangle\"]}}"
   },
   {
    "name": "lanes ui: tag chip Solo adds one tagged(\"harm\").solo() and only those lanes sound",
@@ -1745,7 +1943,7 @@
    "detail": "{\"added\":[\"tagged(\\\"harm\\\").solo()\"],\"events\":[\"triangle\",\"triangle\",\"triangle\"]}"
   },
   {
-   "name": "lanes ui: keyboard only (outline Connect to… -> bus) adds .send(\"verb\", 0.3) to drums",
+   "name": "lanes ui: keyboard only (outline Connect to\u2026 -> bus) adds .send(\"verb\", 0.3) to drums",
    "ok": true,
    "detail": "{\"tabs\":[1,38,0],\"keys\":46,\"added\":[\"drums: s(\\\"bd*4\\\").tags(\\\"drums\\\").send(\\\"verb\\\", 0.3)\"],\"removed\":[\"drums: s(\\\"bd*4\\\").tags(\\\"drums\\\")\"]}"
   },
@@ -1762,7 +1960,7 @@
   {
    "name": "perform: tabs add (bank + board), rename, reorder; arrow keys move between tabs",
    "ok": true,
-   "detail": "{\"names2\":[\"▦Bank A (pad bank)\",\"◎Board (control board)\",\"◎Board 2 (control board)\",\"◎Knobs (control board)\",\"▦Bank B1 (pad bank)\"],\"sel\":[\"pft1\",\"true\"]}"
+   "detail": "{\"names2\":[\"\u25a6Bank A (pad bank)\",\"\u25ceBoard (control board)\",\"\u25ceBoard 2 (control board)\",\"\u25ceKnobs (control board)\",\"\u25a6Bank B1 (pad bank)\"],\"sel\":[\"pft1\",\"true\"]}"
   },
   {
    "name": "perform: KeyQ fires pad 1,0 in perform mode; with it off 1-4 and Space keep working; typing in the editor fires no pad",
@@ -1772,7 +1970,7 @@
   {
    "name": "perform: bar-quantised pad shows the queued mark until its boundary, then on; reduced motion: no animation, beats as text",
    "ok": true,
-   "detail": "{\"qd\":{\"state\":\"queued\",\"mark\":\"◔\",\"beats\":\"3 beats\",\"anim\":\"ppQ\"},\"qr\":{\"state\":\"queued\",\"beats\":\"3 beats\",\"anim\":\"none\",\"label\":\"Pad 0,0 lead, queued, 3 beats\"},\"qon\":\"on\"}"
+   "detail": "{\"qd\":{\"state\":\"queued\",\"mark\":\"\u25d4\",\"beats\":\"3 beats\",\"anim\":\"ppQ\"},\"qr\":{\"state\":\"queued\",\"beats\":\"3 beats\",\"anim\":\"none\",\"label\":\"Pad 0,0 lead, queued, 3 beats\"},\"qon\":\"on\"}"
   },
   {
    "name": "perform: looper records a 1-bar take, Save stores a performance record, the loaded take replays",
@@ -1822,7 +2020,7 @@
   {
    "name": "perform: pads and controls >= 44x44 at 390, text contrast >= 7:1, every pad state has its own mark + text",
    "ok": true,
-   "detail": "{\"tp\":[],\"tb\":[],\"cp\":7.95,\"cpw\":\"span.pp-mark \\\"●\\\" rgb(230, 233, 238) on rgb(30,75,76)\",\"cb\":10.25,\"cbw\":\"button. \\\"↶ Lane\\\" rgb(195, 202, 211) on rgb(24,29,36)\",\"marks\":{\"loaded\":{\"mark\":\"○\",\"label\":true},\"on\":{\"mark\":\"●\",\"label\":true},\"empty\":{\"mark\":\"·\",\"label\":true}},\"cols\":4}"
+   "detail": "{\"tp\":[],\"tb\":[],\"cp\":7.95,\"cpw\":\"span.pp-mark \\\"\u25cf\\\" rgb(230, 233, 238) on rgb(30,75,76)\",\"cb\":10.25,\"cbw\":\"button. \\\"\u21b6 Lane\\\" rgb(195, 202, 211) on rgb(24,29,36)\",\"marks\":{\"loaded\":{\"mark\":\"\u25cb\",\"label\":true},\"on\":{\"mark\":\"\u25cf\",\"label\":true},\"empty\":{\"mark\":\"\u00b7\",\"label\":true}},\"cols\":4}"
   },
   {
    "name": "perform: pointerdown handler -> journal entry, main-thread work p95 <= 10 ms (phone profile); #55 adds <= 5 kB (gzip) to the shell",

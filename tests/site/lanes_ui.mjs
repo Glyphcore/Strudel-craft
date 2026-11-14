@@ -42,6 +42,22 @@ capture("groove", "drums", { window: "1b..3b", what: ["events", "audio", "level"
 chop: n("0 3 2 1 4 7 6 5").from("groove").slice(8).gain(0.8)
 bass: note("c2*8").s("sawtooth").gain(recall("groove:level").range(1, 0.3))
 `;
+// capture runtime programs (synth voices only, no sample downloads): a window capture with audio, a rolling one recalled by a lane,
+// an events-only one and a bus: one (audio coming); and a live window capture for the state words during playback
+const CAPRT = `setcps(1)
+drums: note("c2*4").s("sine").attack(0.001).decay(0.12).sustain(0).release(0.02).gain(0.8).tags("drums")
+lead: note("<0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15>").s("triangle").gain(0.3).tags("lead").send("verb", 0.2)
+verb: ret("verb").room(0.3)
+capture("groove", "drums", { window: "1b..3b" })
+capture("last2", "lead", { last: "2b" })
+capture("hits", "drums", { window: "1b..2b", what: ["events"] })
+capture("wet", "bus:verb", { window: "1b..2b" })
+echo: recall("last2").s("sine").gain(0.11)
+`;
+const CAPLIVE = `setcps(1)
+drums: note("c2*4").s("sine").attack(0.001).decay(0.12).sustain(0).release(0.02).gain(0.8).tags("drums")
+capture("take", "drums", { window: "1b..3b", live: true })
+`;
 const KEYS = `drums: s("bd*4").tags("drums")
 keys: note("c e g").s("piano").tags("wet").send("verb", 0.5)
 verb: ret("verb").room(1)
@@ -150,11 +166,11 @@ export async function lanesUiSection({ browser, BASE, OUT, check, watch, metrics
     // capture node: picker chip, window with bar steppers, state as a word, coming actions
     await load(page, CAP);
     await shot(page, 'capture:groove', 'phone-390-capture-node.png');
-    const cap = await page.evaluate(() => { const n = document.querySelector('.gk-capture'); return { ports: [...n.querySelectorAll(':scope > .gp-out')].map((b) => `${b.dataset.port}:${b.dataset.type}`), state: n.querySelector('.gl-state').dataset.state, word: n.querySelector('.gl-state b').textContent, from: n.querySelector('.gl-wi[data-field=from]').value, until: n.querySelector('.gl-wi[data-field=until]').value, coming: [...n.querySelectorAll('.gl-cact')].map((b) => `${b.textContent.trim()}|${b.disabled}`), recallWire: window.__graph.view.wires.some((w) => w.from.node === 'capture:groove' && w.to.node === 'track:bass'), fromWire: window.__graph.view.wires.some((w) => w.from.node === 'capture:groove' && w.to.node === 'track:chop' && w.type === 'audio') }; });
+    const cap = await page.evaluate(() => { const n = document.querySelector('.gk-capture'); return { ports: [...n.querySelectorAll(':scope > .gp-out')].map((b) => `${b.dataset.port}:${b.dataset.type}`), state: n.querySelector('.gl-state').dataset.state, word: n.querySelector('.gl-state b').textContent, from: n.querySelector('.gl-wi[data-field=from]').value, until: n.querySelector('.gl-wi[data-field=until]').value, acts: [...n.querySelectorAll('.gl-cact')].map((b) => `${b.dataset.op}|${b.getAttribute('aria-disabled') === 'true' ? 'off' : 'on'}|${b.querySelector('.gl-why').textContent}`), recallWire: window.__graph.view.wires.some((w) => w.from.node === 'capture:groove' && w.to.node === 'track:bass'), fromWire: window.__graph.view.wires.some((w) => w.from.node === 'capture:groove' && w.to.node === 'track:chop' && w.type === 'audio') }; });
     b0 = await text(page); await press(page, '.gk-capture .gl-step[data-field=until][data-d="1"]'); await settle(page); const dWin = diff(b0, await text(page));
     M.capture = { ...cap, window_step: dWin };
-    check('lanes ui: capture node shows ev / audio / level ports, the window in bars with steppers, its state in words, and coming actions',
-      cap.ports.join() === 'ev:pattern,audio:audio,level:signal' && cap.word === 'Empty' && cap.from === '1b' && cap.until === '3b' && cap.coming.length === 3 && cap.coming.every((c) => /coming\|true$/.test(c)) && cap.recallWire && cap.fromWire
+    check('lanes ui: capture node shows ev / audio / level ports, the window in bars with steppers, its state in words, and its actions (window: Bounce and Use as sample on, Freeze off with its reason)',
+      cap.ports.join() === 'ev:pattern,audio:audio,level:signal' && cap.word === 'Empty' && cap.from === '1b' && cap.until === '3b' && cap.acts.length === 3 && /^bounce\|on/.test(cap.acts[0]) && /^freeze\|off\|a window capture/.test(cap.acts[1]) && /^sample\|on/.test(cap.acts[2]) && cap.recallWire && cap.fromWire
       && dWin.added.join().includes('window: "1b..4b"'), JSON.stringify(M.capture));
 
     // targets and contrast at 390 (zoom 100 %): every lanes control >= 44 x 44, text >= 7:1; canvas cards and the outline
@@ -229,16 +245,137 @@ export async function lanesUiSection({ browser, BASE, OUT, check, watch, metrics
     await ctx.close();
   }
 
-  /* ---------- reduced motion: the recording state is static and still in words ---------- */
+  /* ---------- capture node actions against the real capture runtime (#76): Bounce, Freeze / Thaw, Use as sample, reasons, states ---------- */
   {
-    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
-    const page = await ctx.newPage(); watch(page, 'lanes-reduced');
-    await page.goto(BASE); await page.waitForSelector('#list li[data-id]'); await openGraph(page); await load(page, CAP);
-    // no capture runtime yet (#76): the recording look is forced on the element to check the stylesheet only
-    const rm = await page.evaluate(() => { const s = document.querySelector('.gk-capture .gl-state'); s.dataset.state = 'recording'; s.querySelector('b').textContent = 'Recording'; const cs = getComputedStyle(s.querySelector('i')); return { animation: cs.animationName, word: s.querySelector('b').textContent }; });
-    M.reduced_motion = rm;
-    check('lanes ui: reduced motion - recording state style has no animation, the state word stays (CSS only; capture runtime #76)', rm.animation === 'none' && rm.word === 'Recording', JSON.stringify(rm));
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page = await ctx.newPage(); watch(page, 'lanes-capture'); const dialogs = []; page.on('dialog', (d) => { dialogs.push(d.type()); d.dismiss(); });
+    await page.goto(BASE); await page.waitForSelector('#list li[data-id]'); await openGraph(page);
+    await load(page, CAPRT);
+    const toasts = () => page.evaluate(() => [...document.querySelectorAll('.toasts .toast')].map((t) => `${t.className.replace('toast ', '')}|${t.textContent.replace('×', '').trim()}`));
+    const clearToasts = () => page.evaluate(() => document.querySelectorAll('.toasts .toast').forEach((t) => t.remove()));
+    const states = () => page.evaluate(() => Object.fromEntries([...document.querySelectorAll('.gx-world .gk-capture .gl-state')].map((e) => [e.dataset.cap, `${e.dataset.state}|${e.querySelector('b').textContent}`])));
+    const acts = () => page.evaluate(() => Object.fromEntries([...document.querySelectorAll('.gx-world .gk-capture .gl-cact')].map((b) => [`${b.dataset.cap}:${b.dataset.op}`, `${b.getAttribute('aria-disabled') === 'true' ? 'off' : 'on'}|${b.querySelector('.gl-why').textContent}${b.querySelector('.gl-soon') ? '|coming' : ''}`])));
+    const btn = (cap, op) => `.gx-world .gk-capture .gl-cact[data-cap="${cap}"][data-op="${op}"]`;
+    const ok = (re, ms = 90000) => page.waitForFunction((re) => [...document.querySelectorAll('.toasts .toast.ok, .toasts .toast.error')].some((t) => new RegExp(re).test(t.textContent)), re, { timeout: ms });
+    const s0 = await states(), a0 = await acts();
+    // reasons: what cannot run says why, in words; "coming" only where the runtime has not built it (bus: and rolling audio)
+    await clearToasts(); await press(page, btn('last2', 'bounce')); const refusedToast = (await toasts()).join(' / ');
+    M.capture_actions = { states_before: s0, actions: a0, refused_toast: refusedToast };
+    check('lanes ui: capture actions that cannot apply are disabled with a stated reason (window Freeze, events-only, bus: / rolling audio "coming"); activating one toasts the reason',
+      a0['groove:bounce'].startsWith('on|') && a0['groove:sample'].startsWith('on|') && /^off\|a window capture holds itself/.test(a0['groove:freeze']) && a0['last2:freeze'].startsWith('on|')
+      && /^off\|audio of a rolling capture\|coming$/.test(a0['last2:bounce']) && /^off\|records no audio/.test(a0['hits:bounce']) && /^off\|audio of a bus: capture\|coming$/.test(a0['wet:bounce'])
+      && /error\|Bounce to takes last2: audio of a rolling capture \(coming\)/.test(refusedToast), JSON.stringify(M.capture_actions));
+
+    // Bounce: progress and result in toasts, the take lands in the Record list with meta.from
+    await clearToasts();
+    const pb = page.evaluate(() => window.strudelCraft.lanesUI.bounce('groove'));
+    await page.waitForSelector(btn('groove', 'bounce') + '[aria-busy="true"]', { timeout: 20000 }); const busyWord = await page.evaluate((s) => document.querySelector(s).textContent, btn('groove', 'bounce'));
+    await pb; await ok('Bounced groove'); const tb = await toasts();
+    const take = await page.evaluate(async () => { const l = await window.strudelCraft.capture.list(); const t = l.find((x) => x.meta && x.meta.from === 'groove'); window.strudelCraft.capture.open(); await new Promise((r) => setTimeout(r, 600)); const li = t && document.querySelector(`#capTakes li[data-id="${t.id}"]`); return t && { id: t.id, name: t.name, from: t.meta.from, audio: t.audio, cycles: t.timing.cycles, li: !!li, liText: li ? li.textContent.replace(/\s+/g, ' ').trim().slice(0, 80) : null }; });
+    await page.evaluate(() => window.strudelCraft.capture.close && window.strudelCraft.capture.close()); await settle(page, 300);
+    const s1 = await states();
+    M.capture_actions.bounce = { busy: busyWord, toasts: tb, take, state_after: s1.groove };
+    check('lanes ui: Bounce (capture node) puts an audio take with meta.from = "groove" in the Record list, progress and result shown in toasts, state Frozen after',
+      /Bouncing…/.test(busyWord) && tb.some((t) => /^info\|Bouncing groove: rendering 1b\.\.3b offline/.test(t)) && tb.some((t) => /^ok\|Bounced groove: take "capture.groove" is in the Record list/.test(t))
+      && take && take.from === 'groove' && take.li && /capture.groove/.test(take.liText) && s0.groove === 'empty|Empty' && s1.groove === 'frozen|Frozen', JSON.stringify(M.capture_actions.bounce));
+
+    // Freeze then Thaw (site modal, keyboard): what the recall of the rolling capture plays changes and is restored
+    const notes = (c) => page.evaluate((c) => window.__sc.Engine.scheduler.pattern.queryArc(c, c + 1).filter((h) => h.hasOnset() && h.value.gain === 0.11).map((h) => h.value.note), c);
+    const n12 = await notes(12), n14 = await notes(14);
+    const viaKeys = async (sel, value) => { await page.focus(sel); await page.keyboard.press('Enter'); await page.waitForSelector('dialog.scm .scm-input', { timeout: 8000 }).catch(async (e) => { throw new Error('no modal; toasts: ' + (await toasts()).join(' / ') + ' focus: ' + (await page.evaluate(() => document.activeElement && document.activeElement.outerHTML.slice(0, 200)))); }); await page.keyboard.press('Control+A'); await page.keyboard.type(value); await page.keyboard.press('Enter'); await settle(page, 400); };
+    await clearToasts(); await viaKeys(btn('last2', 'freeze'), '6');
+    const f12 = await notes(12), sf = await states(), af = await acts(), tf = await toasts();
+    await viaKeys(btn('last2', 'thaw'), '12');
+    const t12 = await notes(12), t14 = await notes(14), st2 = await states();
+    M.capture_actions.freeze = { before: { 12: n12, 14: n14 }, frozen_at_6: { 12: f12 }, state_frozen: sf.last2, thaw_button: af['last2:thaw'], toasts: tf, thawed_at_12: { 12: t12, 14: t14 }, state_after: st2.last2 };
+    check('lanes ui: Freeze (keyboard, site modal) changes what the recall of the rolling capture plays; Thaw restores it; the state reads Frozen in between',
+      n12.length > 0 && JSON.stringify(f12) !== JSON.stringify(n12) && sf.last2 === 'frozen|Frozen' && af['last2:thaw'] && af['last2:thaw'].startsWith('on|') && tf.some((t) => /^ok\|last2 frozen from cycle 6/.test(t))
+      && JSON.stringify(t12) === JSON.stringify(n12) && JSON.stringify(t14) === JSON.stringify(n14) && st2.last2 === 'recording|Recording', JSON.stringify(M.capture_actions.freeze));
+
+    // Use as sample: cap_groove registered and shown (copy), one .from("groove") lane inserted as one undo step, and it plays
+    const tx0 = await text(page); await clearToasts();
+    await press(page, btn('groove', 'sample')); await page.waitForSelector('dialog.scm .scm-input', { timeout: 90000 });
+    const modal = await page.evaluate(() => ({ title: document.querySelector('dialog.scm h2').textContent, msg: document.querySelector('dialog.scm .scm-msg').textContent, value: document.querySelector('dialog.scm .scm-input').value }));
+    await page.click('dialog.scm .scm-ok'); await settle(page, 400);
+    const tx1 = await text(page), dS = diff(tx0, tx1);
+    const row = await page.evaluate(() => { const r = document.querySelector('.gx-world .gk-capture .gl-cact[data-cap="groove"]').closest('.gk-capture').querySelector('.gl-smp'); return r && { text: r.textContent.replace(/\s+/g, ' ').trim(), copy: !!r.querySelector('.gl-copy') }; });
+    await page.evaluate(() => { window.__copied = null; try { navigator.clipboard.writeText = async (t) => { window.__copied = t; }; } catch (e) { /* read-only */ } });
+    await press(page, '.gx-world .gk-capture .gl-copy[data-cap="groove"]'); await settle(page, 200); const copied = await page.evaluate(() => window.__copied);
+    const play = await page.evaluate(async (lane) => {
+      const sc = window.strudelCraft; const code = 'setcps(1)\n' + window.__graph.text.split('\n').filter((l) => /^(drums|grooveSmp):|^capture\("groove"/.test(l)).join('\n') + '\ntagged("drums").mute("3b..")\n';
+      const out = await sc.capture.renderRecipe({ id: 'smp', name: 'smp', state: { source: { kind: 'code', code }, settings: { masterDb: 0 } }, timing: { cps: 1, start: 2, stop: 4, cycles: 2, loop: false, mode: 'cycles' }, random: { seed: 1 }, outputs: {}, events: {} }, { sr: 48000 });
+      let s = 0; for (const v of out.L) s += v * v; return { code, rms: Math.sqrt(s / out.L.length), fails: out.fails, haps: out.haps, sound: !!(window.soundMap && window.soundMap.get()['cap_groove']) };
+    });
+    await page.evaluate(() => window.__graph.undo()); const tx2 = await text(page);
+    M.capture_actions.sample = { modal, added: dS.added, removed: dS.removed, row, copied, play: { rms: play.rms, fails: play.fails, haps: play.haps, sound: play.sound }, undo_restores: tx2 === tx0, toasts: await toasts() };
+    check('lanes ui: Use as sample registers a playable cap_groove (name shown, Copy), inserts exactly one .from("groove") lane as one undo step, and nothing else',
+      /cap_groove/.test(modal.title) && modal.value === 'grooveSmp' && dS.added.length === 1 && dS.added[0] === 'grooveSmp: s("x").from("groove").loopAt(2)' && !dS.removed.length
+      && row && /Sample cap_groove 2 c/.test(row.text) && row.copy && copied === 'cap_groove' && play.sound && play.rms > 1e-3 && !play.fails && tx2 === tx0, JSON.stringify(M.capture_actions.sample));
+
+    // a failure names its reason in a toast, never a native dialog
+    await clearToasts();
+    const fl = await page.evaluate(async () => { const c = window.strudelCraft.capture, keep = c.addTake; c.addTake = undefined; window.strudelCraft.lanesCapture.store; try { await window.strudelCraft.lanesUI.bounce('groove'); } finally { c.addTake = keep; } return [...document.querySelectorAll('.toasts .toast.error')].map((t) => t.textContent); });
+    M.capture_actions.failure = { toasts: fl, native_dialogs: dialogs.length };
+    check('lanes ui: a failing capture action shows a toast naming the reason (E_CAPTURE_HOST …), no native dialog', fl.some((t) => /Bounce to takes groove failed: E_CAPTURE_HOST/.test(t)) && dialogs.length === 0, JSON.stringify(M.capture_actions.failure));
+
+    // states follow real playback: a live window capture is Empty before its window, Recording during it, Frozen after (polled words, no re-render)
+    await load(page, CAPLIVE);
+    const seen = await page.evaluate(async (code) => {
+      const out = []; const word = () => { const e = document.querySelector('.gx-world .gk-capture .gl-state[data-cap="take"]'); return `${e.dataset.state}|${e.querySelector('b').textContent}`; };
+      await window.__sc.play({ kind: 'solo', id: 'cap-live', title: 'capture live', code });
+      const sch = window.__sc.Engine.scheduler; const t0 = performance.now();
+      while (performance.now() - t0 < 6500) { const c = sch.now(); const w = word(); if (!out.length || out[out.length - 1].w !== w) out.push({ c: +c.toFixed(2), w }); await new Promise((r) => setTimeout(r, 100)); }
+      window.__sc.stop(); return out;
+    }, CAPLIVE);
+    M.capture_actions.live_states = seen;
+    const ws = seen.map((x) => x.w.split('|')[1]);
+    check('lanes ui: a live capture shows Empty before its window (1b..3b = cycles 0-2), Recording during it and Frozen after, following playback',
+      ws[0] === 'Empty' && ws.includes('Recording') && ws[ws.length - 1] === 'Frozen' && ws.indexOf('Recording') < ws.indexOf('Frozen') && seen.find((x) => /Recording/.test(x.w)).c >= 0 && seen.find((x) => /Recording/.test(x.w)).c < 1 && seen.find((x) => /Frozen/.test(x.w)).c >= 2 && seen.find((x) => /Frozen/.test(x.w)).c < 2.6, JSON.stringify(seen));
+
+    // desktop screenshot of the capture node after the actions
+    await load(page, CAPRT); await page.evaluate(() => window.strudelCraft.lanesUI.useAsSample('groove', null)); await page.setViewportSize({ width: 1440, height: 1300 }); await settle(page, 300);
+    await clearToasts(); await page.evaluate(() => { const m = document.querySelector('.gx .gx-msg'); if (m) { m.textContent = ''; m.classList.remove('bad'); } const g = window.__graph, sc0 = 1; g.zoomTo(sc0, 24, 12); const el = document.querySelector('.gx-world .gn[data-id="capture:groove"]'), cv = document.querySelector('.gx-canvas').getBoundingClientRect(), r = el.getBoundingClientRect(); g.zoomTo(sc0, 24 - (r.left - cv.left) + 16, 12 - (r.top - cv.top) + 12); }); await settle(page, 500);
+    await page.screenshot({ path: path.join(OUT, 'desktop-1440-capture-node.png') });
     await ctx.close();
+  }
+
+  /* ---------- capture node at 390: action targets and contrast, screenshot with the sample row ---------- */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+    const page = await ctx.newPage(); watch(page, 'lanes-capture-390');
+    await page.goto(BASE); await page.waitForSelector('#list li[data-id]'); await openGraph(page); await load(page, CAPRT);
+    const r = await page.evaluate(() => window.strudelCraft.lanesUI.useAsSample('groove', null)); await settle(page, 400);
+    await page.evaluate(() => window.__graph.zoomTo(1, 12, 12)); await settle(page, 250);
+    const tc = await page.evaluate(({ T, C }) => { const T2 = eval(T), C2 = eval(C); return { targets: T2('.gx-world .gk-capture .gl-b, .gx-world .gk-capture .gl-wi'), contrast: C2('.gx-world .gk-capture .gl-card, .gx-world .gk-capture .gl-card *') }; }, { T: TARGETS.toString(), C: CONTRAST.toString() });
+    M.capture_actions_390 = { sample: r, targets: tc.targets, contrast: tc.contrast };
+    check('lanes ui: capture node actions and the sample row are >= 44 x 44 CSS px with text contrast >= 7:1 at 390', r && r.sound === 'cap_groove' && tc.targets.n >= 20 && !tc.targets.small.length && tc.contrast.min >= 7, JSON.stringify(M.capture_actions_390));
+    await shot(page, 'capture:groove', 'phone-390-capture-actions.png');
+    await ctx.close();
+  }
+
+  /* ---------- reduced motion: the real recording and bouncing states are static and still shown in words ---------- */
+  {
+    const R = {};
+    for (const mode of ['reduce', 'no-preference']) {
+      const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: mode });
+      const page = await ctx.newPage(); watch(page, 'lanes-motion-' + mode);
+      await page.goto(BASE); await page.waitForSelector('#list li[data-id]'); await openGraph(page); await load(page, CAPRT);
+      await page.evaluate((code) => window.__sc.play({ kind: 'solo', id: 'cap-motion', title: 'capture motion', code }), CAPRT); await settle(page, 1500); // real playback: the rolling capture records; the poll updates the words
+      const probe = () => page.evaluate(() => {
+        const st = document.querySelector('.gx-world .gl-state[data-cap="last2"]'), gr = document.querySelector('.gx-world .gl-state[data-cap="groove"]'), bb = document.querySelector('.gx-world .gl-cact[data-cap="groove"][data-op="bounce"]');
+        const run = document.getAnimations().filter((x) => x.playState === 'running'), inGx = run.filter((x) => x.effect && x.effect.target && x.effect.target.closest && x.effect.target.closest('.gx'));
+        return { rolling: `${st.dataset.state}|${st.querySelector('b').textContent}`, dot: getComputedStyle(st.querySelector('i')).animationName, groove: `${gr.dataset.state}|${gr.querySelector('b').textContent}|${gr.querySelector('.gl-why').textContent}`, busy: bb.getAttribute('aria-busy'), button: bb.textContent, running_in_graph: inGx.length, running_page: run.length, names: [...new Set(run.map((x) => x.animationName || x.constructor.name))] };
+      });
+      const recording = await probe();
+      const pb = page.evaluate(() => window.strudelCraft.lanesUI.bounce('groove'));
+      await page.waitForSelector('dialog.scm .scm-ok', { timeout: 20000 }); const ask = await page.evaluate(() => document.querySelector('dialog.scm .scm-msg').textContent); await page.click('dialog.scm .scm-ok'); // playing: the site modal asks before stopping
+      await page.waitForSelector('.gx-world .gl-cact[data-cap="groove"][data-op="bounce"][aria-busy="true"]', { timeout: 20000 }); await settle(page, 60); const bouncing = { ...(await probe()), ask }; await pb;
+      R[mode] = { recording, bouncing }; await ctx.close();
+    }
+    M.reduced_motion = R; const r = R.reduce, n = R['no-preference'];
+    check('lanes ui: reduced motion - in the real Recording state (rolling capture) and while bouncing nothing animates in the graph, and both states stay in words (and icon)',
+      r.recording.rolling === 'recording|Recording' && r.recording.dot === 'none' && r.recording.running_in_graph === 0 && r.bouncing.busy === 'true' && /Bouncing…/.test(r.bouncing.button) && /Bouncing…/.test(r.bouncing.groove) && r.bouncing.running_in_graph === 0 && r.bouncing.dot === 'none'
+      && n.recording.dot === 'gl-rec', JSON.stringify(R));
   }
 }
 
@@ -255,7 +392,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const check = (name, ok, detail = '') => { checks.push({ name, ok: !!ok }); console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? '  -- ' + detail : ''}`); };
   const watch = (page, tag) => {
     page.route(/api\.github\.com/, (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: r.request().url().includes('/issues/') ? JSON.stringify({ title: 't', html_url: 'x', body: '' }) : '[]' }));
-    page.on('console', (m) => { if (m.type() === 'error') errors.push(`[${tag}] ${m.text()}`); }); page.on('pageerror', (e) => errors.push(`[${tag}] pageerror: ${e.message}`));
+    page.on('console', (m) => { if (m.type() === 'error') errors.push(`[${tag}] ${m.text()}`); }); page.on("pageerror", (e) => errors.push(`[${tag}] pageerror: ${process.env.LANES_STACK ? e.stack : e.message}`));
   };
   const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
   try { await lanesUiSection({ browser, BASE, OUT, check, watch, metrics }); } catch (e) { check('lanes ui section ran to the end', false, e.stack); }

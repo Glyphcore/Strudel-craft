@@ -56,7 +56,7 @@ AudioNode.prototype.connect = function (dest, ...rest) {
   }
   return nativeConnect.call(this, dest, ...rest);
 };
-/* #92: superdough's dry/wet teardown calls node.disconnect(target) after the node may already be fully disconnected (or, for the
+/* #92 (docs/KNOWN_ISSUES.md): superdough's noise mix teardown (un -> zn) calls noiseNode.disconnect(gain) after the noise source's own end callback already ran disconnect() (or, for the
    destination, connected to our master gain instead), which throws InvalidAccessError as an uncaught page error under load. A targeted
    disconnect of a connection that is already gone is a no-op here; a disconnect from the destination goes to the master gain we redirected to. */
 const nativeDisconnect = AudioNode.prototype.disconnect;

@@ -147,7 +147,7 @@ triggers its own voices. Event taps are for structure and control (`.struct(tap(
 |---|---|
 | `.fx(f)` | `f` applied to the matching haps as a pattern (`stack(f(p.filter(match)), p.filter(!match))`); per-voice effects |
 | `.gain(g)`, `.orbit(n)` | sugar for `.fx(x => x.gain(g))`, `.fx(x => x.orbit(n))` |
-| `.mute()`, `.solo()` | drop the matching haps / drop all others. Several `solo()` selections add up. Both take a gate: `.mute("9b..17b")`; the gate is evaluated exactly at each event onset (no cycle quantisation, unlike a `hooks.bind` gate), so `.mute("16.3b..17b")` cuts the last two beats of bar 16 (#93) |
+| `.mute()`, `.solo()` | drop the matching haps / drop all others. Several `solo()` selections add up. Both take a gate: `.mute("9b..17b")` (busy send programs on the site: see docs/KNOWN_ISSUES.md, #92); the gate is evaluated exactly at each event onset (no cycle quantisation, unlike a `hooks.bind` gate), so `.mute("16.3b..17b")` cuts the last two beats of bar 16 (#93) |
 | `.send(bus, amount)` | group send to a named bus (section 5.3) for every matching lane |
 | `.capture(name, opts)` | the selection as a capture picker (section 6) |
 

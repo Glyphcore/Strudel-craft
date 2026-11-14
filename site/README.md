@@ -40,6 +40,7 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
   code and typed Stack programs too; a failed map is reported (synths keep playing) and retried on the next Play.
 
 ## Troubleshooting: no sound or no waveforms
+- AudioNode "destination is not connected" page errors under load come from superdough's `noise` teardown order; site/app.js guards them (docs/KNOWN_ISSUES.md, #92; test `node tests/site/disconnect_repro.mjs`).
 1. Look at the audio dot. Amber: the browser blocked audio; tap the "Audio blocked by the browser. Tap here to enable audio" toast or the dot
    (phones suspend audio in the background; coming back resumes it, or offers that button). Red: tap it to retry the engine or the sample banks
    (needs unpkg.com and raw.githubusercontent.com).

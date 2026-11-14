@@ -29,6 +29,10 @@ jobs:
         run: |
           python3 tools/packs/shim.py
           python3 tools/packs/shim.py --check
+      - name: Offline precache manifest (site/precache.json; sw.js installs every listed file + the crawled CDN graph as one snapshot per VERSION)
+        run: |
+          node tools/pwa/precache.mjs
+          node tools/pwa/precache.mjs --check
       - name: Publish craftpack schemas under the site (docs/PACK_SPEC.md 14.2, so the $id URLs resolve)
         run: |
           mkdir -p site/schemas

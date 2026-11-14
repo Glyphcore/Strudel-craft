@@ -1,6 +1,6 @@
 {
-  "date": "2026-11-13T18:05:03.752Z",
-  "base": "http://127.0.0.1:37321/Strudel-craft/",
+  "date": "2026-11-14T05:49:01.313Z",
+  "base": "http://127.0.0.1:34033/Strudel-craft/",
   "installabilityErrors": [],
   "icons": [
     {
@@ -48,7 +48,7 @@
     {
       "name": "manifest parsed without errors",
       "ok": true,
-      "detail": "http://127.0.0.1:37321/Strudel-craft/manifest.webmanifest []"
+      "detail": "http://127.0.0.1:34033/Strudel-craft/manifest.webmanifest []"
     },
     {
       "name": "manifest fields",
@@ -78,10 +78,10 @@
     {
       "name": "every same-origin file the shell fetched is cached",
       "ok": true,
-      "detail": "74 files"
+      "detail": "83 files"
     },
     {
-      "name": "every fetched shell file (outside data/) is in the SHELL precache list",
+      "name": "every fetched shell file is in the SHELL list or site/precache.json",
       "ok": true,
       "detail": ""
     },
@@ -96,7 +96,7 @@
       "detail": ""
     },
     {
-      "name": "\"New version, tap to reload\" toast after a new sw.js",
+      "name": "\"New version, tap to reload\" toast after a new sw.js while typing",
       "ok": true,
       "detail": ""
     },

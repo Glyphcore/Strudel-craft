@@ -71,9 +71,9 @@ const precached = await page.evaluate(async () => { const out = []; for (const k
 const pre = new Set(precached.map((p) => p.slice('/Strudel-craft/'.length) || './'));
 const missing = [...sameOrigin].filter((p) => !pre.has(p) && p !== 'sw.js' && !p.startsWith('data/vox/')); /* vox banks are lazy pack ingredients (sc-packs-1 rules, tests/site/packs.mjs) */
 check('every same-origin file the shell fetched is cached', missing.length === 0, missing.join(', ') || `${sameOrigin.size} files`);
-const shellList = fs.readFileSync(path.join(SITE, 'sw.js'), 'utf8');
-const notPrecached = [...sameOrigin].filter((p) => p !== 'sw.js' && p !== './' && !p.startsWith('data/') && !shellList.includes(`'${p}'`));
-check('every fetched shell file (outside data/) is in the SHELL precache list', notPrecached.length === 0, notPrecached.join(', '));
+const shellList = fs.readFileSync(path.join(SITE, 'sw.js'), 'utf8'), preFiles = new Set(JSON.parse(fs.readFileSync(path.join(SITE, 'precache.json'), 'utf8')).files);
+const notPrecached = [...sameOrigin].filter((p) => p !== 'sw.js' && p !== './' && p !== 'precache.json' && !p.startsWith('data/vox/') && !shellList.includes(`'${p}'`) && !preFiles.has(p));
+check('every fetched shell file is in the SHELL list or site/precache.json', notPrecached.length === 0, notPrecached.join(', '));
 
 /* 5. offline reload */
 await ctx.setOffline(true);

@@ -13,4 +13,4 @@ Layout = rows of panes `{id, w, c}` (`w` flex weight, `c` collapsed). Panes move
 ## Command palette (`site/palette.js`)
 Chord `sc.palette.chord` (default `Ctrl+K`). Ranking: prefix > word prefix > substring > fuzzy subsequence (consecutive runs score higher). `strudelCraft.palette.register({id, title, group, keys, run})` returns an unregister function.
 `copycode.js` registers group Copy: `copy.code` (Copy code), `copy.selection`, `copy.link` (shareable link), `copy.recipe` (with controls and state); each acts on the visible editor (Stack in Stack view, else Rack).
-`pwa.js` registers `app.install` (group App, "Install app") while the site is not installed; it is removed once installed or in standalone mode (site/README.md, Install on Android).
+`pwa.js` registers `app.install` (group App, "Install app") while the site is not installed; it is removed once installed or in standalone mode (site/README.md, Install on Android). Offline: the installed app loads, edits and plays from the per-deploy service-worker snapshot (`site/precache.json` + the crawled CDN graph; `node tests/site/pwa_offline.mjs`).

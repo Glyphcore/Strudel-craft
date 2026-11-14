@@ -1,0 +1,73 @@
+{
+  "date": "2026-11-14T05:48:38.672Z",
+  "base": "http://127.0.0.1:38203/Strudel-craft/",
+  "cdnModules": 66,
+  "files": 374,
+  "checks": [
+    {
+      "name": "site/precache.json is fresh (node tools/pwa/precache.mjs --check)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "install (first visit, no Play): every precache.json file is in the sc-offline-1 snapshot",
+      "ok": true,
+      "detail": "374 files; missing: "
+    },
+    {
+      "name": "install: every pinned CDN entry and its import graph is cached (Strudel bundle, CodeMirror, jsdiff)",
+      "ok": true,
+      "detail": "66 CDN modules; missing entries: "
+    },
+    {
+      "name": "install: default sample maps in sc-banks-1",
+      "ok": true,
+      "detail": "https://raw.githubusercontent.com/felixroos/dough-samples/main/tidal-drum-machines.json, https://raw.githubusercontent.com/tidalcycles/dirt-samples/main/strudel.json"
+    },
+    {
+      "name": "offline reload: app, recipes and CodeMirror editor",
+      "ok": true,
+      "detail": "{\"rows\":46,\"editor\":\"cm6\",\"title\":\"Four-on-the-floor\",\"controlled\":true}"
+    },
+    {
+      "name": "offline Play: engine loads from the snapshot, audio runs on the bgplay worker clock",
+      "ok": true,
+      "detail": "{\"playing\":true,\"engine\":\"ok\",\"samples\":\"ok\",\"ctx\":\"running\",\"clock\":\"worker\",\"toasts\":1}"
+    },
+    {
+      "name": "offline Play: sample maps resolve from sc-banks-1",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "offline Play with an uncached bank: exactly one \"sample bank is not cached\" toast",
+      "ok": true,
+      "detail": "Offline: this sample bank is not cached yet. It loads when you are back online.×"
+    },
+    {
+      "name": "offline: demo vox fallback map + audio, pack pins and the word() prelude load",
+      "ok": true,
+      "detail": "{\"vox\":true,\"voxAudio\":true,\"pins\":true,\"prelude\":true}"
+    },
+    {
+      "name": "offline: no code, data or module request failed (only uncached bank audio)",
+      "ok": true,
+      "detail": "2 bank audio misses"
+    },
+    {
+      "name": "same VERSION, changed file on the server: the page keeps its snapshot (no mixed shell)",
+      "ok": true,
+      "detail": "null"
+    },
+    {
+      "name": "new VERSION: whole snapshot swapped (new file live, old shell cache deleted)",
+      "ok": true,
+      "detail": "{\"marker\":\"v2\",\"caches\":[\"sc-offline-2\"]}"
+    },
+    {
+      "name": "no console errors",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

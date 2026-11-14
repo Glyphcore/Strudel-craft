@@ -215,6 +215,10 @@ STEP = 'consent';
   await page.evaluate(() => { window.__comp = async (t = 'zz') => (await window.strudelCraft.intellisense.completeFrom({ text: t, doc: t, pos: t.length, explicit: true })).flatMap((x) => x.options.map((o) => o.label)); });
   const bump = await page.evaluate(async () => { const p = window.strudelCraft.packs, i = p.list()[1].ingredients.find((x) => x.id === 'prov'); return { st: i.state, code: i.reason && i.reason.code, items: await window.__comp(), info: p.codeInfo('testco/good:prov') }; });
   check('hash-bound: a changed module (new manifest hash) puts the ingredient back to blocked (E_PACK_CODE_TRUST), nothing runs, the dialog data lists the changed module path', bump.st === 'blocked' && bump.code === 'E_PACK_CODE_TRUST' && bump.items.length === 0 && bump.info.hadTrust && bump.info.changed.join() === 'prov.js' && bump.info.trusted === false && hits.filter((h) => h.endsWith('/goodv2/prov.js')).length === fetched0, JSON.stringify({ ...bump, info: undefined, changed: bump.info.changed }));
+  const dlg = await page.evaluate(async () => { const m = await import('./packs-ui.js'); await m.sheet.open(); await new Promise((r) => setTimeout(r, 700));
+    const btn = [...document.querySelectorAll('[data-pack="testco/good"] button')].find((b) => /Grant code/.test(b.textContent)); if (!btn) return null; btn.click(); await new Promise((r) => setTimeout(r, 300));
+    const t = document.querySelector('.scm-msg') && document.querySelector('.scm-msg').textContent; const title = document.querySelector('.scm h2') && document.querySelector('.scm h2').textContent; document.querySelector('.scm .ghost').click(); return { t, title }; });
+  check('trust dialog (site modal) shows pack id, author, licence, code hash, the changed module path and what the code can / cannot do', !!dlg && /testco\/good/.test(dlg.t) && /by testco/.test(dlg.t) && /CC0-1\.0/.test(dlg.t) && /sha256:[0-9a-f]{64}/.test(dlg.t) && /CHANGED since you last trusted it: prov\.js/.test(dlg.t) && /It can:/.test(dlg.t) && /It cannot:/.test(dlg.t), JSON.stringify(dlg).slice(0, 300));
   await ctx.close();
 }
 {

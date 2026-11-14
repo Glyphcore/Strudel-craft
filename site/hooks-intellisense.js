@@ -10,7 +10,7 @@ const METHODS = [['use', '.use(slot)', 'Run the hook bound to a slot (bypass whi
   ['merge', '.merge(m => m.fx())', 'After .split: sum the branches on one bus and apply m and everything written after it to that sum (a true sum bus). Without .merge, effects written after the split are added to each branch separately (W_LANE_POST_SPLIT for shape, crush, compressor ...).'],
   ['send', '.send(name, amount?)', 'Send this lane to the named bus (amount 0..1, default 1); play it with ret(name). Also tagged(sel).send(name, amount). A send with no return is W_BUS_NO_RETURN.']];
 const FUNCS = [['tap', 'tap(name)'], ['tagged', 'tagged(selector)'], ['ret', 'ret(name)'], ['lanes.closed', 'lanes.closed()'], ['lanes.open', 'lanes.open()'], ['hooks.def', 'hooks.def(name, manifest)'], ['hooks.undef', 'hooks.undef(name)'], ['hooks.bind', 'hooks.bind(slot, hook, gate?)'],
-  ['hooks.replace', 'hooks.replace(slot, hook, when?)'], ['hooks.load', 'hooks.load(json)'], ['hooks.inst', 'hooks.inst(component, { as, args?, gate? })']];
+  ['hooks.replace', 'hooks.replace(slot, hook, when?)'], ['hooks.load', 'hooks.load(json)'], ['hooks.inst', 'hooks.inst(component, { as, args?, gate?, remap? })']];
 const GATES = [['"@17b"', 'at bar 17'], ['"<17b"', 'until bar 17'], ['"9b..17b"', 'bars 9 to 17']];
 const FACETS = ['onset', 'gate', 'env'];
 const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);

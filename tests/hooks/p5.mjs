@@ -42,6 +42,8 @@ try {
   { const its = await items();
     for (const [n, sig] of [['use', '.use('], ['wrap', '.wrap('], ['tap', '.tap('], ['wire', '.wire('], ['ns', '.ns(']]) { const i = its.find((x) => x.label === n && x.method && x.category === 'hooks'); assert(i && i.detail.includes(sig), n); }
     pass('Methods: use, wrap, tap, wire, ns offered after "." with signatures in detail'); }
+  { const its = await items(); const i = its.find((x) => x.label === 'hooks.inst' && x.category === 'hooks'); assert(i && i.detail.includes('remap?'), 'hooks.inst signature lists remap');
+    pass('hooks.inst signature lists remap?'); }
   const rtOn = () => page.evaluate(() => { window.strudelCraft.hooks = { manifest: () => window.__rtManifest() }; });
   const rtRefresh = () => page.evaluate(() => window.strudelCraft.hooksIntellisense.refresh());
   if (!RT) skip('Data-driven slots and hooks (evaluated hooks.def/.use -> bind completion)', NO_RT + '; model-text path is checked below instead'); else {

@@ -149,6 +149,8 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/site/lanes_capture.mjs  # lanes L3: audio pass, frame count, level, captured sample plays (Playwright, real superdough)
     STRUDEL_MODULES=... node tests/lanes/l4.mjs  # lanes L4: model schema, round trip, completion, atom types, ids, bus numbers, invariants (#77); needs core, mini, transpiler
     node tests/site/lanes_data.mjs     # lanes L4: graph() data (lane cards, buses, selection chips, split fan, capture node, E_LANE_CROSS fixes), no runtime needed
+    node tests/site/hooks_pack.mjs     # hooks kind (#91): pack track vs standalone haps over 80 bars, offline levels, removal
+    node tests/packs/hooks_kind.mjs    # hooks adapter units (needs STRUDEL_MODULES)
     node tests/hooks/p3.mjs            # model round trip (#49); the `strudel` CLI checks print SKIP without it
     node tests/hooks/p4.mjs            # component library, instances, lib: fragments (#50)
     node tests/hooks/p5.mjs            # hooks + model intellisense providers (#51)
@@ -176,8 +178,8 @@ All content is read through `window.strudelCraft.packs` (`api` 1.0.0), never fet
 looks and sounds the same. After you change a `data/` file (for example `build_catalog.py`), run `python3 tools/packs/shim.py` to refresh the pins;
 a stale pin is `E_PACK_HASH` and that content is missing (fail closed). `shim.py --check` is the read-only test.
 - Content pack **`glyphcore/phonk`** (`data/phonk/`, source `file:data/phonk`, CC0-1.0; pinned by `shim.py` too): `atoms` (atoms@1, 22 atoms under `ph.`,
-  `atoms.import("pack:glyphcore/phonk:atoms")`), `presets` (recipes@1, the night phonk track in the Rack browser) and `racks` (hooks@1 rack defs; the site
-  has no `hooks` kind adapter yet, so it is skipped here with `W_PACK_KIND` and used by the CLI as `--hooks data/phonk/racks.json`). Detail `data/phonk/README.md`.
+  `atoms.import("pack:glyphcore/phonk:atoms")`), `presets` (recipes@1, the night phonk track in the Rack browser) and `racks` and `racks-v2` (hooks@1 rack defs; a program that
+  names the pack, as `atoms.import("pack:glyphcore/phonk:atoms")` does, gets them in the hooks registry on every evaluation (#91); the CLI uses `--hooks data/phonk/racks.json`). Detail `data/phonk/README.md`.
 - Lock layers: shipped (`packs.lock.json`), user (`localStorage` `sc.packs.lock`), session (memory). Precedence, shadowing and the report come from the shared
   `engine/packs-core.js`; `packs.prefer(id)` writes priority 10. A qualified id (`author/pack:item`) always resolves to its own pack.
 - Data API (for the pack sheet): `ready`, `list()`, `credits()`, `items(kind)`, `resolve(kind, ref)`, `report()`, `describe(ingredient)`, `load(id)`, `loadAll()`,
@@ -187,7 +189,7 @@ a stale pin is `E_PACK_HASH` and that content is missing (fail closed). `shim.py
   `syntax()`, `doc(name)`, `paramShapes()`, `editors()`, `completions()`, `words()`.
 - Kinds with an adapter: `recipes`, `control-types` (`controls.registerType`), `intellisense` (`intellisense.register`), `param-shapes`, `param-editors`, `syntax`, `docs`
   (every `html` block is sanitised), `sounds` (`samples()`; a losing key is registered only as `<author>_<pack>__<key>`), `vox-bank` (manual; `voxBank('<id>')`), `atoms`
-  (`E_ATOM_HASH`), and the extension kind `x-glyphcore.words`. `layouts`, `palette-actions`, `visuals`, `hooks`, `components` are skipped with `W_PACK_KIND` (coming).
+  (`E_ATOM_HASH`), `hooks` (#91: chain-only defs installed per evaluation when the program names the pack; code-bearing defs refused with `E_PACK_CODE_GRANT`, never run; installer `packs-hooks.js` loads lazily), and the extension kind `x-glyphcore.words`. `layouts`, `palette-actions`, `visuals`, `components` are skipped with `W_PACK_KIND` (coming).
 - Integrity: manifest checked against the lock, each entry file against the manifest, before it is parsed (`E_PACK_HASH`: dropped, not cached). The browser checks
   structure per kind; the full JSON schemas run in CI (`tools/packs/packs.py validate`).
 - Code (#71, `packs-sandbox.js`, loaded lazily): `code: true` ingredients run only in the sandbox host (a Worker in an `<iframe sandbox="allow-scripts">` with a no-network CSP,

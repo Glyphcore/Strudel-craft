@@ -77,7 +77,7 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | lanes-consumers (model, graph data, param shapes, intellisense, atom types, AST ids) | lanes-events, model-schema-roundtrip, atoms-core | built (data side; runtime halves wait on #75 / #76; critic pending) | #77 |
 | lanes-ui (lane cards, split fan, bus and capture nodes, tag chips; ui-designer) | lanes-consumers, graph-editor-ui | issued | #78 |
 | track-demo-night-phonk (glyphcore/phonk pack: atoms, racks, preset; standalone + pack track; chunked CLI render) | atoms-consumers, lanes-audio, hooks-core, controls-engine, vox banks | built (critic pending) | #89 |
-| hooks-pack-site-adapter (site loads hooks@1 racks) | track-demo-night-phonk, packs-p2 | issued | #91 |
+| hooks-pack-site-adapter (site loads hooks@1 racks) | track-demo-night-phonk, packs-p2 | built (critic pending) | #91 |
 | map-gate-grammar (hooks.map gates: unions, bar points) | controls-engine | issued | #90 |
 | word-lane-disconnect (site page errors with word() lanes in send programs) | lanes-audio, vox banks | issued | #92 |
 

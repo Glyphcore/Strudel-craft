@@ -133,7 +133,7 @@ Index: `schemas/craftpack/1/kinds/index.json`. Each kind has a schema `kinds/<ki
 | `param-editors` | `{byShape, byGroup, gestures, defaults, pools, editors[{id, shapes, module}]}` | `literals.registerEditor` | optional | site | `strudel.json` `editors` |
 | `control-types` | `types[{id, value, keys, render: {fallback}, input, renderer}]` | `controls.registerType` / `registerRenderer` | optional | site, cli (types only) | `data/controls/types.json` |
 | `visuals` | `visuals[{id, method, inline, builtin, painter}]` | `visual.<name>` control types, `visuals` provider | optional | site | names in `visuals.js` |
-| `hooks` | model document with registry keys only (`defs, slots, markers, scopes, vars`); decorators are defs with `decorator: true` | `hooks.load` | optional (opaque defs, `$code`) | site, cli | `glyphcore/phonk:racks` and `racks-v2` (chain-only rack defs; CLI as `--hooks FILE`; the site adapter is coming, #91; the ingredient is skipped with `W_PACK_KIND`) |
+| `hooks` | model document with registry keys only (`defs, slots, markers, scopes, vars`); decorators are defs with `decorator: true` | `hooks.load` | optional (opaque defs, `$code`) | site, cli | `glyphcore/phonk:racks` and `racks-v2` (chain-only rack defs; site adapter **built** (#91, section 5.2); CLI as `--hooks FILE`) |
 | `components` | `components{"name@rev": model document}` | library store, `hooks.inst`, pad targets | optional (as hooks) | site, cli (`--library`) | none shipped |
 | `layouts` | `layouts[{id, title, key, rows[[{id, w}]]}]` | `workspace.configs()` | never | site | `DEFAULTS` in `workspace.js` |
 | `palette-actions` | `actions[{id, title, group, keys, do: {op, args} \| run}]` | `palette.register` | optional | site | built-in entries in JS |
@@ -166,6 +166,21 @@ Notes per kind:
   (`kinds/index.json` `ops`). `open-url` is https only and asks first. `run` names a sandboxed module that returns a list of the same ops.
 - **prelude**: must list every global and `Pattern.prototype` name it adds in `defines`; anything else, or a name that already exists, is
   `E_NAME_COLLISION` (same rule as the hooks runtime).
+
+### 5.2 Kind `hooks` on the site (**built**, #91)
+Adapter `site/packs-kinds.js` (`check`: model 1, registry keys only; `items`: one per def, so `engine/packs-core.js` reports shadowed defs; `apply`: a def that is
+code without `code: true` fails the ingredient with `E_PACK_CODE_UNDECLARED`), installer `site/packs-hooks.js` (lazy: imported only when a program asks for hooks).
+- **When a program gets them**: a hooks ingredient is not asked for with new syntax. Every hooks ingredient of a pack that the program text names
+  (`pack:author/pack:...` as in `atoms.import(...)`, or `author/pack:ingredient`, anywhere in the text, comments included) is loaded through the loader
+  (fetched and hash-verified there only), in precedence order, then installed on **every evaluation** (app.js `protectCode` chokepoint). A program that names no such pack
+  costs one lookup and gets no defs; a pack that drops out of the lock or out of the text leaves none of its defs (a def the program itself redefined is kept).
+- **Install**: chain-only defs, `slots`, `markers` and `scopes` go in through `hooks.load` (public data API); first definition of a name wins (higher precedence, then
+  manifest order), the program's own `hooks.def` runs after and overrides. Idempotent across re-evaluation and hot-swap; a `hooks.reset()` in between is repaired by the next install.
+  `vars` are not installed (`hooks.let` appends, so they are not idempotent without a reset the site does not do).
+- **Code-bearing defs** (`opaque: true` or a `$code` arg): never evaluated in the main realm. Without the code flag, a grant and a trust for the code hash they stay refused
+  (`E_PACK_CODE_GRANT` in the report, a sticky toast once per pack + code hash) while the chain-only defs of the same ingredient load. With every gate passed they are
+  **still refused**: the sandbox (section 10.4) runs declared modules and cannot express a hook def as data, and the main realm is not allowed (`E_PACK_CODE_REALM` for
+  remote packs). The kind has no `sandbox` runner on the site.
 
 ### 5.1 Kind `atoms` (**built**, #63)
 

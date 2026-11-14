@@ -194,11 +194,12 @@ export function installCapture(L, S, hooks, o = {}) {
   const rec2 = new Map(); // name -> { haps: [], closed, seenTo }
   const keyOf = (r) => JSON.stringify([String(r.wb), String(r.pb), r.lane, r.value]);
   const observe = (haps, args) => {
-    if (busy || !defs.size) return; const [b, e] = [+args[0], +args[1]];
+    if (busy || !defs.size) return; if (o.schedulerOnly && !(args[2] && args[2].cyclist)) return; // site: only the scheduler's queries (controls.cyclist, set by Cyclist / neocyclist / bgplay) are what sounds; the visuals' look-ahead queries carry no such mark (#87)
+    const [b, e] = [+args[0], +args[1]];
     for (const d of defs.values()) {
       if (!isLive(d) || !d.what.includes('events')) continue; const R = rec2.get(d.name) || (rec2.set(d.name, { haps: new Map(), closed: false, to: 0 }), rec2.get(d.name));
       const upper = d.until != null ? d.until : Infinity; if (R.closed) continue;
-      const base = F(d.from ?? 0); const pk = pickHaps(d, haps).filter((h) => (d.until != null ? onsetIn(h, d.from, d.until) : h.whole && +h.whole.begin >= 0));
+      const base = F(d.from ?? 0); const pk = pickHaps(d, haps).filter((h) => h.whole && h.part.begin.eq(h.whole.begin) && (d.until != null ? onsetIn(h, d.from, d.until) : +h.whole.begin >= 0)); // only haps with their onset in this query (the scheduler's tick fragments of a longer hap do not trigger)
       if (d.kind === 'tap') { busy++; try { const T = o.tap || globalThis.tap; for (const h of T(d.picker).query(new State(new TimeSpan(F(b), F(e)), args[2] || {}))) if (h.whole && onsetIn(h, d.from ?? 0, upper)) { const r = rec(h, base); r.abs = +h.whole.begin; R.haps.set(keyOf(r), r); } } catch { /* tap not published yet */ } finally { busy--; } }
       else for (const h of pk) { const r = rec(h, base); r.abs = +h.whole.begin; R.haps.set(keyOf(r), r); }
       if (d.last != null) for (const [k, r] of R.haps) if (r.abs < e - d.last - d.guard - 2) R.haps.delete(k);

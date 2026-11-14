@@ -26,7 +26,7 @@ sc.lanesLib = lanesMod;
 // capture / recall / .from (docs/LANES.md 6, issue #76) load lazily the first time a program names them; app.js awaits this before every evaluation
 sc.lanesCaptureEnsure = async (src) => {
   if (sc.lanesCapture || !sc.lanes || !/\bcapture\s*\(|\brecall\s*\(|\.\s*from\s*\(/.test(String(src))) return sc.lanesCapture || null;
-  const m = await import('./lanes-capture.js'); if (sc.lanesCapture) return sc.lanesCapture; const C = m.installCapture(sc.lanes, globalThis, sc.hooks, {}); sc.lanesCapture = C; sc.lanesCaptureLib = m;
+  const m = await import('./lanes-capture.js'); if (sc.lanesCapture) return sc.lanesCapture; const C = m.installCapture(sc.lanes, globalThis, sc.hooks, { schedulerOnly: true }); sc.lanesCapture = C; sc.lanesCaptureLib = m;
   try { const h = await import('../lanes-capture-site.js'); C.host = h.createHost(sc); } catch (e) { console.warn('[lanes] capture audio host:', e.message); }
   return C;
 };

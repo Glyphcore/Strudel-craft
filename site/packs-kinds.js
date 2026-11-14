@@ -135,6 +135,12 @@ export const KINDS = {
     check: (d) => (Array.isArray(d.items) ? null : 'items must be an array'),
     items: () => [],
     view: (entries) => firstWins(entries, (d) => d.items, (i) => `${i.kind}|${i.name}`).map(([i]) => i) },
+  // extension kind (#85): the vox bank index pack (glyphcore/vox, tools/vox/bank_index.py): banks.json plus each bank's words.json and pitched map,
+  // read whole through packs.raw() by the Banks browser and word() completions only when opened. Data only; registers nothing.
+  'x-glyphcore.vox-data': { formats: ['x-glyphcore.vox-data@1'], code: 'never',
+    check: (d) => (isObj(d) ? null : 'vox data must be an object'),
+    items: () => [],
+    view: (entries) => entries.map((e) => ({ pack: e.pack, ingredient: e.ingredient })) },
   // code-bearing kinds: the data part is never run here. Without the sandbox host (#71) they are `blocked` (fail closed).
   // sandboxed code kind (#71): `sandbox(ing, data, sb)` runs only when the loader's gate passes; the module starts on the first completion, never on load
   'intellisense-provider': { formats: ['intellisense-provider@1'], code: 'always',

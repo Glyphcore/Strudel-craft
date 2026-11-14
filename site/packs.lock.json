@@ -7,7 +7,16 @@
       "id": "glyphcore/shim",
       "version": "1.0.0",
       "source": "file:.",
-      "manifest": "sha256:6742b7f1cf9b2fd6a45e670312622cd960c70358959445f136a3948303a6887a",
+      "manifest": "sha256:7ad3433c71fb6d10824f51f5cf6d205d4886578cf5ce5535f7b2ab6e28117b4e",
+      "priority": 0,
+      "allowCode": [],
+      "dependencies": {}
+    },
+    {
+      "id": "glyphcore/vox",
+      "version": "1.0.0",
+      "source": "file:data/vox",
+      "manifest": "sha256:62ee6dfac18698697ededf9fd18d313153f4de3bd052946ed151f9edcded56d2",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}

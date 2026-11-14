@@ -376,6 +376,9 @@
   "ui.js",
   "vendor/acorn-8.19.0.mjs",
   "visuals.js",
+  "vox-banks.js",
+  "voxbrowser.css",
+  "voxbrowser.js",
   "word-intellisense.js",
   "workspace.css",
   "workspace.js"

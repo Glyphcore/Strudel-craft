@@ -142,6 +142,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/site/perform.mjs        # Perform view, learn/map, lanes, looper (#55)
     node tests/site/word_intellisense.mjs  # word() completions from data/intellisense/words.json (#44)
     node tests/site/vox.mjs            # vocal banks and voxBank()
+    node tests/site/voxbrowser.mjs     # Banks browser and bank-aware word() completions at 360px (#85)
     STRUDEL_MODULES=... node tests/vocals/formant_helper.mjs  # word().formant(true) on a synthetic bank (#57)
     node tests/site/capture.mjs        # Record panel audio at 360px: 2-cycle take, WAV 16/24 header + length, file name, quota, rename/delete modals, tab switch, exact render (#72)
     node tests/site/record_hooks.mjs   # Record hooks for lanes capture: capture.addTake (meta.from) and capture.beforeRender (#76)
@@ -223,7 +224,8 @@ Completions come from a runtime registry. Built-in providers:
 - `catalog`: recipe presets from `data/catalog.json` (inserts the recipe `expr`).
 - `runtime`: after Strudel loads (`strudel:ready` event): `Pattern.prototype` methods, new global functions, loaded sound names (`soundMap`).
 - `user`: names (`const x`) and quoted values the user types, persisted in `localStorage['sc.intellisense.user']`.
-- `words` (`word-intellisense.js`, #44): word names inside quotes, from `data/intellisense/words.json` (item shape of `engine/vocals/complete.py`: `{name, kind, detail, n}`; names and counts only, no audio).
+- `words` (`word-intellisense.js`, #44): word names inside quotes in any string, from `data/intellisense/words.json` (item shape of `engine/vocals/complete.py`: `{name, kind, detail, n}`; names and counts only, no audio).
+- `vox-banks` (`vox-banks.js`, #85, a completion source): inside `word("` the options come from the ACTIVE bank (section `words · <bank>`, detail = takes and pitches; keys it lacks fall back to `demo`, labelled), refreshed when `voxBank()` switches; inside `s("vs_` from the sound bank's keys. Bank files are read through the pack loader on first use.
 - `hooks` and `model` (`hooks-intellisense.js`, #51): see below.
 - `syntax` (`syntax.js`): every runnable Syntax-view example as a snippet.
 
@@ -322,7 +324,8 @@ states), `closers` (open brackets/quotes). Register more:
   SoulX-Singer render, Apache-2.0, with a VocalSet timbre prompt; model pinned by commit and weight sha256, see engine/vocals/SUNG.md; every bank has a `hashes.json` checked by `tests/site/vox.mjs`; `word()` works and `note()` plays the nearest sung pitch).
   `voxBank('ljspeech')` switches bank (keys it lacks fall back to demo),
   `voxBank(url)` loads a `strudel.json` (or a folder URL ending in `/`), `voxBank()` opens a folder picker (files stay in the
-  browser), `voxBank.list()` -> `[{name, url, words, active}]`. Failures toast, they do not throw.
+  browser), `voxBank.list()` -> `[{name, url, words, clips, notes, kind, prefix, licence, attribution, active}]` (counts from the loaded map or the bank index),
+  `voxBank.words(name)` -> `Promise<[{name, key, takes, notes, dur}]>`, `voxBank.active()`; every switch fires a `vox:bank` window event. Failures toast, they do not throw.
 - `.note()` on a pitched map retunes by speed, so formants move with the pitch. Formant-preserving takes are pre-rendered by the
   build-time CLI (`engine/vocals/wordbank.sh ... --formant-steps -5,7 [--formant-backend pyworld|rubberband]`, #45 - keys
   `vox_<word>_f<semi>`, gate them with `python3 engine/vocals/formant.py --selftest --backend all`): pyworld (in-process WORLD
@@ -331,10 +334,35 @@ states), `closers` (open brackets/quotes). Register more:
   network, per-clip `source`/`licence` in `words.json`, #46). Neither is baked into the banks that ship here. `word(...).note(x).formant(true)` (#57, prelude `word.js`) picks the variant
   `vox_<word>_f<semi>` nearest to the shift (note minus the word's sung base note) and applies the residual (<= 50 cents) with `speed`;
   on a bank without variants it plays the plain `note()` retune and warns once (toast). Check: `node tests/vocals/formant_helper.mjs` (synthetic bank, needs `STRUDEL_MODULES`).
-- Completions for word names come from `data/intellisense/words.json`, which covers the `demo` and `call-me-baby` banks (the ones
-  a fresh page can play without a `voxBank` call); every bank also ships its own `words.json`. Regenerate with
+- Completions for word names inside `word("` follow the active bank (`vox-banks.js`, #85, see the Banks browser below). The static
+  `data/intellisense/words.json` (the `demo` and `call-me-baby` banks) still feeds word names in other strings. Regenerate it with
   `python3 engine/vocals/complete.py "" --samples-dir site/data/vox/call-me-baby --samples-dir site/data/vox/demo --kind word`
   (add a `--samples-dir` per bank you want completed; merge duplicate names, keep the highest take count).
+
+## Banks browser (`vox-banks.js`, `voxbrowser.js`, `voxbrowser.css`, #85)
+"What is in a bank, so I know what I can type": the **Banks** button in the Syntax view head, Ctrl+K > *Browse vox banks*, or the
+workspace pane **Banks** (Ctrl+K > *Show Banks*).
+- Lists every bank: the shipped five, banks loaded with `voxBank(url)` or a folder (from the prelude's table, no fetch) and `vox-bank`
+  pack ingredients. Each card: kind (word bank `word("baby:1")` / sound bank `s("vs_a")`), word (or key) and clip counts, pitches (the
+  sung notes, or the range of a natural-pitch bank), licence, the active marker and a **Use** button. The top line shows the active
+  bank as the code that selects it, e.g. `voxBank('sung')`.
+- Opening a bank: search (prefix first), pitch filter, technique filter (vocalset), one row per word or key with takes, pitches and
+  durations. Tap a pitch / take chip or the round play button to hear that clip with no code (level ring on the button; routed
+  through the master bus once Strudel is loaded). Tap the snippet (`word("baby").note("a3")`, `word("baby:1").note("a#4")`,
+  `s("vs_a_forte").note("c4")`) to insert `$: snippet` on a new line in the Rack code, plus `await voxBank('<bank>')` when the code
+  lacks it. **Use** switches the active bank (loads the engine first) and toasts the `voxBank` line.
+- Data: pack `glyphcore/vox` (`data/vox/craftpack.json`, pinned in `packs.lock.json`, regenerated by
+  `python3 tools/vox/bank_index.py`, `--check` in pages.yml) lists `data/vox/banks.json` (summary per bank: kind, prefix, counts,
+  notes, range, licence, attribution) and each bank's `words.json` and `pitched/strudel.json` as `manual` ingredients of the data-only
+  extension kind `x-glyphcore.vox-data@1`. They are read with `packs.raw()` only when the panel or a bank opens (or a `word("`
+  completion needs the active bank); clip audio is fetched only when auditioned. `packs.entryOf(ref)` gives an ingredient's URL to
+  resolve clip paths. Offline: the index pack is not in the shell precache (large banks stay lazy), so the browser needs the network
+  once.
+- Hover (desktop) on `word` / `voxBank` / `syl` adds the active bank and its size to the docs tooltip; long-press (touch) shows the
+  same line.
+- API `strudelCraft.voxBanks = { list, info, active, open, words, use, snippet, line, audition, stop, lastPeak, describeActive, openPanel, on }`.
+- Test: `node tests/site/voxbrowser.mjs [shot.png]` (360px: all banks with counts, no bank file before the panel opens, search
+  "baby" in sung, audible audition, insert, completions change after switching bank, richer `voxBank.list()` / `voxBank.words()`).
 
 ## Visual feedback (`visuals.js`)
 As on strudel.cc/learn/visual-feedback, using Strudel's own draw code in `@strudel/web` 1.3.0 (unmodified):
@@ -641,7 +669,7 @@ and the chip dot. Test: `node tests/site/binding.mjs`.
 
 ## Transport range, workspace and palette (`transport-range.js`, `workspace.js`, `palette.js`, `workspace.css`)
 - **Transport range** (under the stage): position slider with scrub; readout `c 12.3 / 64 · 0:24 / 2:08` = current cycle / end cycle · elapsed / end time, plus remaining time. End is the loop End when looping, otherwise the play-time clamp end. Start, End and Go-to (tap the readout) take a cycle or `m:ss`; the unit button cycles cycle / bar / m:ss. Cycles are stored; times are converted with the live cps, so a tempo change keeps them right. Seeking re-anchors the Strudel 1.3.0 Cyclist time origin (`lastEnd` + tick reset; `setCycle` when present); the loop wraps inside the scheduler tick, sample-accurate. Clamp: 20 min per run by default (timer button: minutes, fade or hard stop), `+5 min` override near the limit. API `strudelCraft.range = { state, seek, parsePos, setLimit, extend }`.
-- **Workspace** (`W` or the layout button): docks Code, Graph, Recipes, Perform, Syntax, History and Tracker as panes pinned below the visuals. Each pane: move up/down/left/right, split (own row / join row above), collapse, close; desktop rows resize by dragging the gutter (arrow keys on a focused gutter); phones stack panes, reorder with the grip. Layouts Code, Perform, Visual, Full studio (`Alt+1..4`) plus saved ones (name + optional hotkey) live in `sc.ws.*`, so the history store versions them. API `strudelCraft.workspace = { on, off, load, save, layout, configs }`.
+- **Workspace** (`W` or the layout button): docks Code, Graph, Recipes, Perform, Syntax, History, Tracker, Record and Banks as panes pinned below the visuals. Each pane: move up/down/left/right, split (own row / join row above), collapse, close; desktop rows resize by dragging the gutter (arrow keys on a focused gutter); phones stack panes, reorder with the grip. Layouts Code, Perform, Visual, Full studio (`Alt+1..4`) plus saved ones (name + optional hotkey) live in `sc.ws.*`, so the history store versions them. API `strudelCraft.workspace = { on, off, load, save, layout, configs }`.
 - **Command palette** (`Ctrl+K`, configurable via the palette's "Set palette chord"; floating button on phones): type to filter (prefix, word prefix, substring, then fuzzy subsequence), arrows/Enter or digits 1-9 pick. Add actions with `strudelCraft.palette.register({id, title, group, keys, run})`.
 - **Copy code** (`copycode.js`, `copycode.css`): a 44px copy button at the top-right of the Rack editor, the Stack program and every Syntax example, in a right strip the code never runs under (no layout shift). Tap copies the whole CodeMirror doc (`navigator.clipboard.writeText`, hidden textarea + `execCommand('copy')` fallback), with a check mark and a Copied toast; it works with the code in an error state. Hold it (or right-click, Down, Shift+F10) for Copy selection, Copy as a shareable link (`#code/z<base64url deflate-raw>`, opened links load into Rack) and Copy with controls and state (recipe v1 JSON, `includes.code` only). Keyboard: Tab reaches the button before the editor; Enter / Space copy; Down / Up open the menu on its first / last item, Down / Up / Home / End move, Enter runs an item, Esc closes and returns focus (menu-button pattern; nothing reaches the global shortcuts). Shared links are untrusted input: **limit 256 KiB (262144 bytes) of UTF-8 code**. The encoded payload is length-checked before decoding (at most 352256 base64url chars), and `#code/z` inflation is streamed in 256-byte input slices and aborted as soon as the output passes 256 KiB, so a deflate bomb never materialises. Oversized, malformed base64url / deflate, unknown prefix, non-UTF-8 and empty payloads load nothing, leave the editor untouched and show an error toast naming the reason. Making a link from code over the limit is refused with a toast and nothing is copied. A loaded link is never evaluated or played: the idle compile is held for it until you press Play / Run (or pick another recipe). Palette group Copy. API `strudelCraft.copycode = { copy, text, selection, link, decode, loadHash, recipe, attach, limits }` (`limits = { code: 262144, hash: 352256 }`). Test: `node tests/site/copycode.mjs` (360 px, clipboard granted).
 - Test: `node tests/site/workspace.mjs` (palette fuzzy, pane move/split/close, layout save/load, scrub and loop via queried scheduler spans, readout, 44px targets, clamp + override at 360 and 1440 px).

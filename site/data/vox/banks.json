@@ -1,0 +1,178 @@
+{
+ "vox-index": 1,
+ "generator": "python3 tools/vox/bank_index.py",
+ "banks": [
+  {
+   "name": "demo",
+   "title": "Demo (espeak-ng speech)",
+   "kind": "word",
+   "prefix": "vox",
+   "voice": "speech",
+   "words": 50,
+   "clips": 50,
+   "notes": [
+    "f#2",
+    "g2"
+   ],
+   "range": [
+    "f#2",
+    "g2"
+   ],
+   "pitch": "natural",
+   "source": "espeak-ng demo",
+   "license": "LicenseRef-undecided",
+   "licence": "first-party render, licence open (#66)",
+   "attribution": [
+    {
+     "name": "espeak-ng speech synthesiser",
+     "url": "https://github.com/espeak-ng/espeak-ng",
+     "text": "Rendered with espeak-ng (the tool is GPL-3.0; the rendered audio is first-party)"
+    }
+   ],
+   "words_ingredient": "demo-words",
+   "map_ingredient": "demo-map",
+   "map": "demo/pitched/strudel.json"
+  },
+  {
+   "name": "call-me-baby",
+   "title": "Call me baby (owner vocals)",
+   "kind": "word",
+   "prefix": "vox",
+   "voice": "sung",
+   "words": 71,
+   "clips": 231,
+   "notes": [],
+   "range": [
+    "g3",
+    "b5"
+   ],
+   "pitch": "natural",
+   "source": "call-me-baby vocals (owner)",
+   "license": "LicenseRef-undecided",
+   "licence": "owner's own vocals, licence open (#66)",
+   "attribution": [
+    {
+     "name": "call-me-baby vocals (owner)",
+     "text": "The site owner's own vocal stem, cut into words"
+    }
+   ],
+   "words_ingredient": "call-me-baby-words",
+   "map_ingredient": "call-me-baby-map",
+   "map": "call-me-baby/pitched/strudel.json"
+  },
+  {
+   "name": "ljspeech",
+   "title": "LJSpeech words",
+   "kind": "word",
+   "prefix": "vox",
+   "voice": "speech",
+   "words": 500,
+   "clips": 1460,
+   "notes": [],
+   "range": [
+    "a2",
+    "c5"
+   ],
+   "pitch": "natural",
+   "source": "LJSpeech 1.1 (public domain), subset",
+   "license": "LicenseRef-public-domain",
+   "licence": "public domain",
+   "attribution": [
+    {
+     "name": "LJ Speech Dataset 1.1, Keith Ito",
+     "url": "https://keithito.com/LJ-Speech-Dataset/",
+     "text": "LJSpeech 1.1 (Keith Ito; LibriVox readings), public domain",
+     "changes": "word takes cut, peak-normalised, mono 22.05 kHz ogg"
+    }
+   ],
+   "words_ingredient": "ljspeech-words",
+   "map_ingredient": "ljspeech-map",
+   "map": "ljspeech/pitched/strudel.json"
+  },
+  {
+   "name": "vocalset",
+   "title": "VocalSet sustained vowels",
+   "kind": "sound",
+   "prefix": "vs",
+   "voice": "sung",
+   "words": 30,
+   "clips": 194,
+   "notes": [
+    "b2",
+    "c3",
+    "b3",
+    "c4",
+    "c#4",
+    "e4",
+    "f4",
+    "f#4",
+    "c5",
+    "c#5",
+    "f5",
+    "f#5"
+   ],
+   "range": [
+    "b2",
+    "f#5"
+   ],
+   "pitch": "sung",
+   "source": "VocalSet 1.2 long_tones (CC BY 4.0), singers female2, female4, female6, female8, male1, male3, male5, male7",
+   "license": "CC-BY-4.0",
+   "licence": "CC BY 4.0",
+   "attribution": [
+    {
+     "name": "VocalSet: A Singing Voice Dataset, Julia Wilkins et al.",
+     "url": "https://doi.org/10.5281/zenodo.1193957",
+     "license": "CC-BY-4.0",
+     "text": "VocalSet: A Singing Voice Dataset, Julia Wilkins et al., https://doi.org/10.5281/zenodo.1193957",
+     "changes": "trimmed to the steadiest ~3 s, faded, peak-normalised, mono 22.05 kHz ogg"
+    }
+   ],
+   "words_ingredient": "vocalset-words",
+   "map_ingredient": "vocalset-map",
+   "map": "vocalset/pitched/strudel.json"
+  },
+  {
+   "name": "sung",
+   "title": "Sung words (SoulX-Singer)",
+   "kind": "word",
+   "prefix": "vox",
+   "voice": "sung",
+   "words": 200,
+   "clips": 998,
+   "notes": [
+    "d#3",
+    "a3",
+    "d#4",
+    "a4",
+    "d#5"
+   ],
+   "range": [
+    "d#3",
+    "d#5"
+   ],
+   "pitch": "sung",
+   "source": "SoulX-Singer (Apache-2.0) score-controlled render; timbre prompt: VocalSet female6 long tones (CC BY 4.0)",
+   "license": "Apache-2.0 AND CC-BY-4.0",
+   "licence": "Apache-2.0 engine render; CC BY 4.0 timbre prompt (VocalSet)",
+   "attribution": [
+    {
+     "name": "SoulX-Singer (Soul-AILab)",
+     "url": "https://github.com/Soul-AILab/SoulX-Singer",
+     "license": "Apache-2.0",
+     "text": "Synthesised with SoulX-Singer (Apache-2.0)"
+    },
+    {
+     "name": "VocalSet: A Singing Voice Dataset, Julia Wilkins et al.",
+     "url": "https://doi.org/10.5281/zenodo.1193957",
+     "license": "CC-BY-4.0",
+     "text": "Timbre prompt: VocalSet female6 long tones, CC BY 4.0",
+     "changes": "used as a zero-shot timbre prompt; the clips are new synthetic audio"
+    }
+   ],
+   "words_ingredient": "sung-words",
+   "map_ingredient": "sung-map",
+   "map": "sung/pitched/strudel.json"
+  }
+ ]
+}

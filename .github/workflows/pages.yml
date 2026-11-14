@@ -29,6 +29,10 @@ jobs:
         run: |
           python3 tools/packs/shim.py
           python3 tools/packs/shim.py --check
+      - name: Pin the vox bank index pack (glyphcore/vox, data/vox/craftpack.json; the Banks browser reads bank files through it, #85)
+        run: |
+          python3 tools/vox/bank_index.py
+          python3 tools/vox/bank_index.py --check
       - name: Offline precache manifest (site/precache.json; sw.js installs every listed file + the crawled CDN graph as one snapshot per VERSION)
         run: |
           node tools/pwa/precache.mjs

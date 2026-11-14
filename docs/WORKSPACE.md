@@ -8,9 +8,10 @@
 - Clamp: per-run play time, default 20 min (`sc.range.maxMin`), fade (4 s) or hard stop (`sc.range.atLimit`), `+5 min` override shown in the last minute and during the fade.
 
 ## Workspace (`site/workspace.js`)
-Layout = rows of panes `{id, w, c}` (`w` flex weight, `c` collapsed). Panes move the existing panel DOM in (a comment marker keeps their home; Exit restores them). Defaults: Code, Perform, Visual, Full studio (`Alt+1..4`). Saved layouts: `sc.ws.configs` (history-versioned); the current one is `sc.ws.current`.
+Layout = rows of panes `{id, w, c}` (`w` flex weight, `c` collapsed). Panes move the existing panel DOM in (a comment marker keeps their home; Exit restores them). Defaults: Code, Perform, Visual, Full studio (`Alt+1..4`). Saved layouts: `sc.ws.configs` (history-versioned); the current one is `sc.ws.current`. Modules can add panes at runtime through `strudelCraft.workspace.panes` (`{title, find}` to move an existing panel, or `{title, make}` to build one): `vox-banks.js` adds `banks`, the Banks browser (#85).
 
 ## Command palette (`site/palette.js`)
 Chord `sc.palette.chord` (default `Ctrl+K`). Ranking: prefix > word prefix > substring > fuzzy subsequence (consecutive runs score higher). `strudelCraft.palette.register({id, title, group, keys, run})` returns an unregister function.
 `copycode.js` registers group Copy: `copy.code` (Copy code), `copy.selection`, `copy.link` (shareable link), `copy.recipe` (with controls and state); each acts on the visible editor (Stack in Stack view, else Rack).
+`vox-banks.js` registers group Banks: `banks.open` (Browse vox banks, the sheet) and `banks.pane` (Show Banks, the workspace pane).
 `pwa.js` registers `app.install` (group App, "Install app") while the site is not installed; it is removed once installed or in standalone mode (site/README.md, Install on Android). Offline: the installed app loads, edits and plays from the per-deploy service-worker snapshot (`site/precache.json` + the crawled CDN graph; `node tests/site/pwa_offline.mjs`).

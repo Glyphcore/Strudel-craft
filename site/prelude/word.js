@@ -10,7 +10,8 @@
 // word(...).note(x).formant(true): picks the pre-rendered formant variant vox_<word>_f<semi> nearest to the requested shift (bank built with --formant-steps), then
 //   fine-tunes the residual (<= 50 cents inside the built range) with speed; no variants in the bank -> plain note() retune + one warning (site toast; stderr in the CLI).
 //   Shift = note - the word's sung base note (from the pitched map); if the base is unknown a numeric note is taken as the semitone shift itself.
-//   voxBank(url) loads strudel.json from a URL (or a folder URL ending in /); voxBank() opens a folder picker (stays in the browser); voxBank.list() -> [{name,url,words,active}].
+//   voxBank(url) loads strudel.json from a URL (or a folder URL ending in /); voxBank() opens a folder picker (stays in the browser); voxBank.list() -> [{name,url,words,clips,notes,kind,prefix,licence,active}]; voxBank.words(name) -> Promise<[{name,key,takes,notes}]>; voxBank.active().
+//   Every switch fires a 'vox:bank' event ({detail:{name}}) so the site's completions and Banks browser follow it.
 (function () {
   const here = (typeof document !== 'undefined' && document.currentScript && document.currentScript.src) || (typeof location !== 'undefined' ? location.href : '');
   const root = (() => { try { return new URL('../data/vox/', here).href; } catch (e) { return 'data/vox/'; } })();
@@ -26,8 +27,14 @@
       const m = /^(.+)_f(-?\d+)$/.exec(k); if (m) (fvars[m[1]] = fvars[m[1]] || []).push(Number(m[2]));
       else if (v && !Array.isArray(v)) { const b = mid(Object.keys(v)[0]); if (b !== undefined) fbase[k] = b; }
     }
-    const b = (banks[name] = banks[name] || {}); b.url = jsonUrl; b.words = Object.keys(map).filter((k) => !/_s\d+$|_syl$|^_/.test(k)).length; active = name; return name;
+    const b = (banks[name] = banks[name] || {}); b.url = jsonUrl; b.map = map; b.words = Object.keys(map).filter((k) => !SKIPK.test(k)).length; active = name; changed(name); return name;
   };
+  const SKIPK = /_s\d+$|_syl$|^_|_f-?\d+$/; // syllables, the syllable index, private keys, formant variants
+  const changed = (name) => { try { globalThis.dispatchEvent && globalThis.dispatchEvent(new CustomEvent('vox:bank', { detail: { name } })); } catch (e) { /* no DOM events (CLI) */ } };
+  // entries of a sample map: one per key, with its takes (clip count) and pitches (the notes of a pitched map)
+  const entriesOf = (map) => Object.entries(map || {}).filter(([k]) => !SKIPK.test(k)).map(([key, v]) => { const notes = v && !Array.isArray(v) ? Object.keys(v) : [];
+    return { name: key.replace(/^[a-z0-9]+_/, ''), key, takes: notes.length ? Math.max(...Object.values(v).map((us) => us.length)) : (v || []).length, clips: notes.length ? Object.values(v).reduce((a, us) => a + us.length, 0) : (v || []).length, notes }; });
+  const statsOf = (map) => { const es = entriesOf(map), notes = [...new Set(es.flatMap((e) => e.notes))]; return { words: es.length, clips: es.reduce((a, e) => a + e.clips, 0), notes, kind: es.length && es.every((e) => !/^vox_/.test(e.key)) ? 'sound' : 'word', prefix: es.length ? es[0].key.split('_')[0] : 'vox' }; };
   const NOBANK = 'No vocal bank loaded. Run voxBank() to pick a folder, or voxBank("https://.../strudel.json") to load one from a URL.';
   const load = (name, url) => register(name, url).catch((e) => { toast(NOBANK + ' (' + name + ': ' + e.message + ')', 'error'); throw e; });
   const ensure = () => (boot = boot || load('demo', banks.demo.url).catch(() => { boot = null; }));
@@ -51,12 +58,27 @@
   globalThis.voxBank = (src) => {
     if (src === undefined) return pick();
     if (src && typeof src.queryArc === 'function') { try { const v = src.queryArc(0, 1)[0].value; src = Array.isArray(v) ? v.join('') : v; } catch (e) { src = String(src); } } // "double quoted" strings arrive as mini Patterns; prefer 'single quotes'
-    { const pk = globalThis.strudelCraft && globalThis.strudelCraft.packs; if (typeof src === 'string' && pk && pk.hasBank && pk.hasBank(src)) return pk.activateBank(src).then((id) => { active = id; return id; }); } // vox-bank pack ingredients (manual load)
-    if (banks[src]) return (src === 'demo' ? ensure() : ensure().then(() => load(src, banks[src].url))).then(() => active);
+    { const pk = globalThis.strudelCraft && globalThis.strudelCraft.packs; if (typeof src === 'string' && pk && pk.hasBank && pk.hasBank(src)) return pk.activateBank(src).then((id) => { active = id; changed(id); return id; }); } // vox-bank pack ingredients (manual load)
+    if (banks[src]) return (src === 'demo' ? ensure().then(() => { if (active !== 'demo' && banks.demo.map) return register('demo', banks.demo.url, banks.demo.map); }) : ensure().then(() => (banks[src].map && /^local:/.test(banks[src].url) ? register(src, banks[src].url, banks[src].map) : load(src, banks[src].url)))).then(() => active); // a folder bank re-registers from memory
     let u = String(src); if (/\/$/.test(u)) u += 'pitched/strudel.json';
     return load(u.split('/').slice(-3, -1).join('/') || 'custom', u);
   };
-  globalThis.voxBank.list = () => Object.entries(banks).map(([name, b]) => ({ name, url: b.url, words: b.words, active: name === active })).concat(((globalThis.strudelCraft && globalThis.strudelCraft.packs && globalThis.strudelCraft.packs.banks && globalThis.strudelCraft.packs.banks()) || []).map((b) => ({ name: b.name, url: b.id, active: b.id === active })));
+  // list(): every bank this prelude or the pack loader knows, with kind (word / sound), counts, pitches and licence. Counts come from the bank's map once it
+  // is loaded, or from the site's bank index (strudelCraft.voxBanks, filled when the Banks browser or a completion first reads it); unknown stays undefined.
+  const vb = () => globalThis.strudelCraft && globalThis.strudelCraft.voxBanks;
+  const rich = (name, b, extra) => { const st = b && b.map ? statsOf(b.map) : null, ix = (vb() && vb().info && vb().info(name)) || {};
+    return { name, url: b ? b.url : undefined, words: st ? st.words : (b && b.words) ?? ix.words, clips: st ? st.clips : ix.clips, notes: ix.notes && ix.notes.length ? ix.notes : st ? st.notes : ix.notes, range: ix.range,
+      kind: ix.kind || (st ? st.kind : undefined), prefix: ix.prefix || (st ? st.prefix : undefined), license: ix.license, licence: ix.licence, attribution: ix.attribution, source: ix.source || (banks[name] && !ix.name ? 'user' : undefined), active: name === active, ...extra }; };
+  globalThis.voxBank.list = () => Object.entries(banks).map(([name, b]) => rich(name, b)).concat(((globalThis.strudelCraft && globalThis.strudelCraft.packs && globalThis.strudelCraft.packs.banks && globalThis.strudelCraft.packs.banks()) || []).map((b) => rich(b.id, null, { name: b.name, url: b.id, pack: b.pack, active: b.id === active })));
+  // words(name): the entries of one bank ([{name, key, takes, notes, ...}]). The site reads them through its pack loader (strudelCraft.voxBanks.words);
+  // elsewhere (CLI) from the bank's map once loaded, else from its strudel.json.
+  globalThis.voxBank.words = async (name = active || 'demo') => {
+    if (vb() && vb().words) return vb().words(name);
+    const b = banks[name]; if (b && b.map) return entriesOf(b.map); if (!b || !b.url) throw new Error('unknown vox bank ' + name);
+    const r = await fetch(b.url); if (!r.ok) throw new Error('HTTP ' + r.status); return entriesOf(await r.json());
+  };
+  globalThis.voxBank.active = () => active;
+  globalThis.voxBank.mapOf = (name) => (banks[name] && banks[name].map ? { map: banks[name].map, url: banks[name].url } : null); // a registered bank's sample map (no fetch)
   if (typeof samples === 'function') setTimeout(ensure, 0); // json only; audio files stream lazily
   const slug = (w) => String(w).toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/^_+|_+$/g, '') || 'x';
   globalThis.wordKey = (w, bank = 'vox') => bank + '_' + slug(w);

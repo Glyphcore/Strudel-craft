@@ -446,6 +446,8 @@ export function createPacks(opts = {}) {
     // vox banks (voxBank('<id>') in prelude/word.js asks here before its own table): bare pack name, pack name without `vox-`, or the qualified ingredient id
     banks: () => allIngs().filter((i) => i.kind === 'vox-bank' && i.pack.state === 'ready').map((i) => ({ name: i.pack.id.split('/')[1].replace(/^vox-/, ''), id: ingQ(i.pack, i), pack: i.pack.id, state: i.state })),
     hasBank: (n) => !!bankOf(n),
+    // a vox-bank ingredient's entry URL once its pack is resolved (the Banks browser resolves clip URLs against it; nothing is fetched here)
+    entryOf: (ref) => { const i = findIng(ref) || bankOf(ref); return i && i.pack.base ? new URL(i.path, i.pack.base).href : null; },
     activateBank: async (n) => { const i = bankOf(n); if (!i) throw new Error('no vox bank ' + n); await loadIng(i); if (i.state === 'unavailable' || i.state === 'failed') throw new Error(i.reason?.message || 'bank ' + i.state); return ingQ(i.pack, i); },
     // the shim pack's own entry path for a kind (controls.js loadBuiltinTypes in headless hosts)
     entryUrl: (kind, name) => { const i = allIngs().find((x) => x.kind === kind && (!name || x.id === name)); return i ? new URL(i.path, i.pack.base).href : null; },

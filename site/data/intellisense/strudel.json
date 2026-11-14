@@ -784,6 +784,62 @@
    "category": "site api"
   },
   {
+   "label": "voxBank.words",
+   "method": false,
+   "detail": "voxBank.words(name) -> Promise<[{name, key, takes, notes, dur}]>",
+   "info": "Entries of one vox bank: word (or vocalset key), takes, sung pitches and durations. Read through the pack loader on the site. #85",
+   "category": "vocals"
+  },
+  {
+   "label": "voxBank.list",
+   "method": false,
+   "detail": "voxBank.list() -> [{name, kind, words, clips, notes, licence, active}]",
+   "info": "Every vox bank: shipped, voxBank(url) / folder banks and vox-bank packs, with kind (word / sound), counts, pitches, licence and the active one. #85",
+   "category": "vocals"
+  },
+  {
+   "label": "strudelCraft.voxBanks.list",
+   "method": false,
+   "detail": "list() -> Promise<[bank]>",
+   "info": "Banks browser data: every bank with kind, prefix, words, clips, notes, range, licence, attribution, origin (shipped / user / pack), active. Reads data/vox/banks.json through the pack loader (glyphcore/vox). #85",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.voxBanks.open",
+   "method": false,
+   "detail": "open(name) -> Promise<bank + entries>",
+   "info": "One bank with its entries: key, name, word, takes, notes, dur and clips [{note, i, url, dur}]; reads its words.json and pitched/strudel.json through the pack loader on first open. #85",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.voxBanks.use",
+   "method": false,
+   "detail": "use(name) -> Promise<\"voxBank('name')\">",
+   "info": "Switch the active vox bank (loads the engine if needed); completions and the Banks panel follow. #85",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.voxBanks.audition",
+   "method": false,
+   "detail": "audition(clip) -> Promise<{peak, dur}>",
+   "info": "Play one bank clip without code (through the master bus once Strudel is loaded); lastPeak holds its peak level. #85",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.voxBanks.snippet",
+   "method": false,
+   "detail": "snippet(bank, entry, clip) -> code",
+   "info": "The code that plays exactly that clip: word(\"baby:1\").note(\"a#4\") for word banks, s(\"vs_a_forte\").note(\"c4\") for sound banks. #85",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.voxBanks.openPanel",
+   "method": false,
+   "detail": "openPanel(name?)",
+   "info": "Open the Banks browser sheet, optionally on one bank. Also: Syntax view Banks button, Ctrl+K > Banks, workspace pane Banks. #85",
+   "category": "site api"
+  },
+  {
    "label": "strudelCraft.recipe.collectDeps",
    "method": false,
    "detail": "collectDeps(code) -> deps",
@@ -808,7 +864,7 @@
    "label": "voxBank",
    "method": false,
    "detail": "voxBank(name | url)",
-   "info": "Load a vocal word bank for word()/syl(): voxBank('call-me-baby'), voxBank('ljspeech'), voxBank('vocalset'), voxBank('sung') (200 sung words, d#3 to d#5), voxBank('https://host/strudel.json'), voxBank() picks a local folder, voxBank.list() lists banks. The demo bank loads on the first word(). Prelude #43.",
+   "info": "Load a vocal word bank for word()/syl(): voxBank('call-me-baby'), voxBank('ljspeech'), voxBank('vocalset'), voxBank('sung') (200 sung words, d#3 to d#5), voxBank('https://host/strudel.json'), voxBank() picks a local folder, voxBank.list() lists banks (kind, words, clips, notes, licence, active), voxBank.words(name) -> Promise of a bank's entries, voxBank.active() names the active bank. The demo bank loads on the first word(); word(\" completions follow the active bank. Browse every bank: Banks (Syntax view, Ctrl+K). Prelude #43.",
    "category": "vocals"
   }
  ],
@@ -1616,10 +1672,7 @@
    {
     "name": "bank",
     "shape": "enum",
-    "options": [
-     "demo",
-     "call-me-baby"
-    ]
+    "options": ["demo", "call-me-baby", "ljspeech", "vocalset", "sung"]
    }
   ],
   "tags": [

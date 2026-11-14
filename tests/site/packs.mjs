@@ -88,7 +88,7 @@ const errs = [];
     await p.ready; const all = await window.strudelCraft.intellisense.all();
     return { api: p.api, packs: l.map((x) => x.id), states: [...new Set(p.list()[0].ingredients.map((i) => i.state))], n: ing.length, ui: document.querySelectorAll('#list li[data-id]').length,
       labels: all.filter((i) => i.provider === 'strudel-docs').map((i) => i.label), ctl: (await p.controlTypes()).types.length, reg: (() => { const have = new Set(window.strudelCraft.controls.types().map((t) => t.id)); return (window.__ct = have); })().size, ids: [...document.querySelectorAll('#list li[data-id]')].map((x) => x.dataset.id), eager: p.list()[0].ingredients.map((i) => i.load) }; });
-  check('packs.api is 1.0.0 and the shim pack lists every ingredient ready', r.api === '1.0.0' && r.packs.join() === 'glyphcore/shim' && r.states.join() === 'ready' && r.n === 10, JSON.stringify({ api: r.api, packs: r.packs, states: r.states, n: r.n }));
+  check('packs.api is 1.0.0, the shipped lock holds the shim and the vox bank index (#85), and the shim lists every ingredient ready', r.api === '1.0.0' && r.packs.join() === 'glyphcore/shim,glyphcore/vox' && r.states.join() === 'ready' && r.n === 10, JSON.stringify({ api: r.api, packs: r.packs, states: r.states, n: r.n }));
   const cat = shimData('catalog.json').recipes.map((x) => x.id), docs = shimData('intellisense/strudel.json').items.map((x) => x.label);
   check('parity: recipe count and ids unchanged', r.ui === cat.length && cat.every((id) => r.ids.includes(id)), `${r.ui}/${cat.length}`);
   check('parity: strudel-docs completion labels are the same set', new Set(r.labels).size === new Set(docs).size && docs.every((l) => r.labels.includes(l)), `${r.labels.length}/${docs.length}`);

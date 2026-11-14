@@ -1,0 +1,243 @@
+{
+  "craftpack": "1.0.0",
+  "id": "glyphcore/vox",
+  "version": "1.0.0",
+  "title": "Vox bank index",
+  "description": "What each shipped vox bank holds (words.json and pitched/strudel.json per bank plus a summary), read by the Banks browser and word() completions only when opened. Audio is not listed; clips stream on audition or play.",
+  "license": "LicenseRef-per-ingredient",
+  "licenseFile": "LICENSES.md",
+  "ingredients": [
+    {
+      "id": "index",
+      "kind": "x-glyphcore.vox-data",
+      "format": "x-glyphcore.vox-data@1",
+      "version": "1.0.0",
+      "path": "banks.json",
+      "title": "Bank index",
+      "description": "One summary per bank (kind, counts, pitches, licence)",
+      "load": "manual",
+      "hash": "sha256:6e11fcc17e8e7d0cf5f119015e316e18bb2a602a9545bfaade35c5dec5ce1aa7",
+      "bytes": 4505
+    },
+    {
+      "id": "demo-words",
+      "kind": "x-glyphcore.vox-data",
+      "format": "x-glyphcore.vox-data@1",
+      "version": "1.0.0",
+      "path": "demo/words.json",
+      "title": "Demo (espeak-ng speech): words",
+      "description": "per clip words, takes, durations",
+      "load": "manual",
+      "license": "LicenseRef-undecided",
+      "attribution": [
+        {
+          "name": "espeak-ng speech synthesiser",
+          "url": "https://github.com/espeak-ng/espeak-ng",
+          "text": "Rendered with espeak-ng (the tool is GPL-3.0; the rendered audio is first-party)"
+        }
+      ],
+      "hash": "sha256:2bbbdd759b92aef8f82098bf4032a50a3e0601a4c0c9181dbf4ee95e4cd3e5b9",
+      "bytes": 24866
+    },
+    {
+      "id": "demo-map",
+      "kind": "x-glyphcore.vox-data",
+      "format": "x-glyphcore.vox-data@1",
+      "version": "1.0.0",
+      "path": "demo/pitched/strudel.json",
+      "title": "Demo (espeak-ng speech): map",
+      "description": "pitched sample map: key -> {note: [clip urls]}",
+      "load": "manual",
+      "license": "LicenseRef-undecided",
+      "attribution": [
+        {
+          "name": "espeak-ng speech synthesiser",
+          "url": "https://github.com/espeak-ng/espeak-ng",
+          "text": "Rendered with espeak-ng (the tool is GPL-3.0; the rendered audio is first-party)"
+        }
+      ],
+      "hash": "sha256:d6ac27fa7957414beddfb072719cd8a5b953225f8c5a17da28a167129400d693",
+      "bytes": 8760
+    },
+    {
+      "id": "call-me-baby-words",
+      "kind": "x-glyphcore.vox-data",
+      "format": "x-glyphcore.vox-data@1",
+      "version": "1.0.0",
+      "path": "call-me-baby/words.json",
+      "title": "Call me baby (owner vocals): words",
+      "description": "per clip words, takes, durations",
+      "load": "manual",
+      "license": "LicenseRef-undecided",
+      "attribution": [
+        {
+          "name": "call-me-baby vocals (owner)",
+          "text": "The site owner's own vocal stem, cut into words"
+        }
+      ],
+      "hash": "sha256:e931fd902c880895a00380ddeb2621c7e93d91e183864388ebe4a7463b09c988",
+      "bytes": 114176
+    },
+    {
+      "id": "call-me-baby-map",
+      "kind": "x-glyphcore.vox-data",
+      "format": "x-glyphcore.vox-data@1",
+      "version": "1.0.0",
+      "path": "call-me-baby/pitched/strudel.json",
+      "title": "Call me baby (owner vocals): map",
+      "description": "pitched sample map: key -> {note: [clip urls]}",
+      "load": "manual",
+      "license": "LicenseRef-undecided",
+      "attribution": [
+        {
+          "name": "call-me-baby vocals (owner)",
+          "text": "The site owner's own vocal stem, cut into words"
+        }
+      ],
+      "hash": "sha256:06f615d4a008032cc6be9619ecfcc810a15972d82094a7698c8f84f8d2164ac8",
+      "bytes": 31786
+    },
+    {
+      "id": "ljspeech-words",
+      "kind": "x-glyphcore.vox-data",
+      "format": "x-glyphcore.vox-data@1",
+      "version": "1.0.0",
+      "path": "ljspeech/words.json",
+      "title": "LJSpeech words: words",
+      "description": "per clip words, takes, durations",
+      "load": "manual",
+      "license": "LicenseRef-public-domain",
+      "attribution": [
+        {
+          "name": "LJ Speech Dataset 1.1, Keith Ito",
+          "url": "https://keithito.com/LJ-Speech-Dataset/",
+          "text": "LJSpeech 1.1 (Keith Ito; LibriVox readings), public domain",
+          "changes": "word takes cut, peak-normalised, mono 22.05 kHz ogg"
+        }
+      ],
+      "hash": "sha256:f60e46f171aa9179d4f2d2d6f145b23f6dce7389fe9f33bc36fca9ddc59f4156",
+      "bytes": 564928
+    },
+    {
+      "id": "ljspeech-map",
+      "kind": "x-glyphcore.vox-data",
+      "format": "x-glyphcore.vox-data@1",
+      "version": "1.0.0",
+      "path": "ljspeech/pitched/strudel.json",
+      "title": "LJSpeech words: map",
+      "description": "pitched sample map: key -> {note: [clip urls]}",
+      "load": "manual",
+      "license": "LicenseRef-public-domain",
+      "attribution": [
+        {
+          "name": "LJ Speech Dataset 1.1, Keith Ito",
+          "url": "https://keithito.com/LJ-Speech-Dataset/",
+          "text": "LJSpeech 1.1 (Keith Ito; LibriVox readings), public domain",
+          "changes": "word takes cut, peak-normalised, mono 22.05 kHz ogg"
+        }
+      ],
+      "hash": "sha256:99a732f212885e5ddd498869068723426a016862df8796c63b8326d67d3d468b",
+      "bytes": 59533
+    },
+    {
+      "id": "vocalset-words",
+      "kind": "x-glyphcore.vox-data",
+      "format": "x-glyphcore.vox-data@1",
+      "version": "1.0.0",
+      "path": "vocalset/words.json",
+      "title": "VocalSet sustained vowels: words",
+      "description": "per clip words, takes, durations",
+      "load": "manual",
+      "license": "CC-BY-4.0",
+      "attribution": [
+        {
+          "name": "VocalSet: A Singing Voice Dataset, Julia Wilkins et al.",
+          "url": "https://doi.org/10.5281/zenodo.1193957",
+          "license": "CC-BY-4.0",
+          "text": "VocalSet: A Singing Voice Dataset, Julia Wilkins et al., https://doi.org/10.5281/zenodo.1193957",
+          "changes": "trimmed to the steadiest ~3 s, faded, peak-normalised, mono 22.05 kHz ogg"
+        }
+      ],
+      "hash": "sha256:846665825502bd3e0d141ba7f807dbbefe0069862470042981382adea61c7afa",
+      "bytes": 23076
+    },
+    {
+      "id": "vocalset-map",
+      "kind": "x-glyphcore.vox-data",
+      "format": "x-glyphcore.vox-data@1",
+      "version": "1.0.0",
+      "path": "vocalset/pitched/strudel.json",
+      "title": "VocalSet sustained vowels: map",
+      "description": "pitched sample map: key -> {note: [clip urls]}",
+      "load": "manual",
+      "license": "CC-BY-4.0",
+      "attribution": [
+        {
+          "name": "VocalSet: A Singing Voice Dataset, Julia Wilkins et al.",
+          "url": "https://doi.org/10.5281/zenodo.1193957",
+          "license": "CC-BY-4.0",
+          "text": "VocalSet: A Singing Voice Dataset, Julia Wilkins et al., https://doi.org/10.5281/zenodo.1193957",
+          "changes": "trimmed to the steadiest ~3 s, faded, peak-normalised, mono 22.05 kHz ogg"
+        }
+      ],
+      "hash": "sha256:f856d814dad01143659555fca1b22fd6c7734199764a3bc5607c5e9eb50e9f23",
+      "bytes": 8591
+    },
+    {
+      "id": "sung-words",
+      "kind": "x-glyphcore.vox-data",
+      "format": "x-glyphcore.vox-data@1",
+      "version": "1.0.0",
+      "path": "sung/words.json",
+      "title": "Sung words (SoulX-Singer): words",
+      "description": "per clip words, takes, durations",
+      "load": "manual",
+      "license": "Apache-2.0 AND CC-BY-4.0",
+      "attribution": [
+        {
+          "name": "SoulX-Singer (Soul-AILab)",
+          "url": "https://github.com/Soul-AILab/SoulX-Singer",
+          "license": "Apache-2.0",
+          "text": "Synthesised with SoulX-Singer (Apache-2.0)"
+        },
+        {
+          "name": "VocalSet: A Singing Voice Dataset, Julia Wilkins et al.",
+          "url": "https://doi.org/10.5281/zenodo.1193957",
+          "license": "CC-BY-4.0",
+          "text": "Timbre prompt: VocalSet female6 long tones, CC BY 4.0",
+          "changes": "used as a zero-shot timbre prompt; the clips are new synthetic audio"
+        }
+      ],
+      "hash": "sha256:3bee8bad0911d5a25c7e6d5e87dfd2830b0206d9dfb66f8fcae6bfb20713ff45",
+      "bytes": 219437
+    },
+    {
+      "id": "sung-map",
+      "kind": "x-glyphcore.vox-data",
+      "format": "x-glyphcore.vox-data@1",
+      "version": "1.0.0",
+      "path": "sung/pitched/strudel.json",
+      "title": "Sung words (SoulX-Singer): map",
+      "description": "pitched sample map: key -> {note: [clip urls]}",
+      "load": "manual",
+      "license": "Apache-2.0 AND CC-BY-4.0",
+      "attribution": [
+        {
+          "name": "SoulX-Singer (Soul-AILab)",
+          "url": "https://github.com/Soul-AILab/SoulX-Singer",
+          "license": "Apache-2.0",
+          "text": "Synthesised with SoulX-Singer (Apache-2.0)"
+        },
+        {
+          "name": "VocalSet: A Singing Voice Dataset, Julia Wilkins et al.",
+          "url": "https://doi.org/10.5281/zenodo.1193957",
+          "license": "CC-BY-4.0",
+          "text": "Timbre prompt: VocalSet female6 long tones, CC BY 4.0",
+          "changes": "used as a zero-shot timbre prompt; the clips are new synthetic audio"
+        }
+      ],
+      "hash": "sha256:0937b61082b03d25f118c58782bf1eb2cc6e10472efb5059e57275816eef5bdf",
+      "bytes": 36093
+    }
+  ]
+}

@@ -197,17 +197,20 @@ export function installCapture(L, S, hooks, o = {}) {
     if (busy || !defs.size) return; if (o.schedulerOnly && !(args[2] && args[2].cyclist)) return; // site: only the scheduler's queries (controls.cyclist, set by Cyclist / neocyclist / bgplay) are what sounds; the visuals' look-ahead queries carry no such mark (#87)
     const [b, e] = [+args[0], +args[1]];
     for (const d of defs.values()) {
-      if (!isLive(d) || !d.what.includes('events')) continue; const R = rec2.get(d.name) || (rec2.set(d.name, { haps: new Map(), closed: false, to: 0 }), rec2.get(d.name));
-      const upper = d.until != null ? d.until : Infinity; if (R.closed) continue;
+      if (!isLive(d) || !d.what.includes('events')) continue; const R = rec2.get(d.name) || (rec2.set(d.name, { haps: new Map(), done: false, closed: false, to: 0 }), rec2.get(d.name));
+      const upper = d.until != null ? d.until : Infinity; if (R.done) continue;
       const base = F(d.from ?? 0); const pk = pickHaps(d, haps).filter((h) => h.whole && h.part.begin.eq(h.whole.begin) && (d.until != null ? onsetIn(h, d.from, d.until) : +h.whole.begin >= 0)); // only haps with their onset in this query (the scheduler's tick fragments of a longer hap do not trigger)
       if (d.kind === 'tap') { busy++; try { const T = o.tap || globalThis.tap; for (const h of T(d.picker).query(new State(new TimeSpan(F(b), F(e)), args[2] || {}))) if (h.whole && onsetIn(h, d.from ?? 0, upper)) { const r = rec(h, base); r.abs = +h.whole.begin; R.haps.set(keyOf(r), r); } } catch { /* tap not published yet */ } finally { busy--; } }
       else for (const h of pk) { const r = rec(h, base); r.abs = +h.whole.begin; R.haps.set(keyOf(r), r); }
       if (d.last != null) for (const [k, r] of R.haps) if (r.abs < e - d.last - d.guard - 2) R.haps.delete(k);
-      if (R.haps.size > LIMITS.maxHaps) { note('error', 'E_CAPTURE_LIMIT', `capture "${d.name}" has more than ${LIMITS.maxHaps} events`); R.closed = true; }
-      if (e >= upper - 1e-12) R.closed = true; R.to = Math.max(R.to, e);
+      if (R.haps.size > LIMITS.maxHaps) { note('error', 'E_CAPTURE_LIMIT', `capture "${d.name}" has more than ${LIMITS.maxHaps} events`); R.done = true; }
+      if (e >= upper - 1e-12) R.done = true; R.to = Math.max(R.to, e);
     }
   };
   L.after.push(observe);
+  // a window closes for the outside (captureState, state(), so recall / Bounce / Use as sample) when the AUDIO clock reaches `until`, not when the scheduler has queued it
+  // (look-ahead 0.2 s foreground, 1-2 s hidden): o.clock() = the play position in cycles, null when nothing plays (headless, stopped: closes as soon as it is recorded)
+  const closedNow = (R, d) => { if (R.closed) return true; if (!R.done) return false; let c = null; try { c = o.clock ? o.clock() : null; } catch { c = null; } if (c == null || d.until == null || c >= d.until - 1e-9 || R.haps.size > LIMITS.maxHaps) R.closed = true; return R.closed; }; // sticky: a later seek does not reopen it
   const isLive = (d) => { if (d.live === true) return true; if (d.live === false) return false; const a = analysis(); const c = a && a.captures.find((x) => x.name === d.name); return !!(c && !c.pure); };
 
   // ---- state of a capture at cycle c: { haps, len, origin } or null (not available: the else branch) ----
@@ -216,7 +219,7 @@ export function installCapture(L, S, hooks, o = {}) {
   function state(name, c, ctrl) {
     const d = defs.get(name); if (!d) return null; const live = isLive(d); const len = lengthOf(d);
     if (d.last == null) { // window
-      if (live) { const t = d.until + d.guard; if (c < t - 1e-12) return null; const R = rec2.get(name); if (!R || !R.closed) return null; return { haps: [...R.haps.values()].sort((x, y) => x.abs - y.abs), len }; }
+      if (live) { const t = d.until + d.guard; if (c < t - 1e-12) return null; const R = rec2.get(name); if (!R || !closedNow(R, d)) return null; return { haps: [...R.haps.values()].sort((x, y) => x.abs - y.abs), len }; }
       const k = `${name}|w`; if (!memo.has(k)) memo.set(k, offline(d, d.from, d.until, { ...(ctrl || {}), _cps: cpsNow(ctrl) })); return { haps: memo.get(k), len };
     }
     const at = frozenAt(name, c); const eff = at == null ? c : at; const q = Math.floor(eff - d.guard + 1e-12); if (q <= 0) return null; const a = q - d.last;
@@ -325,7 +328,7 @@ export function installCapture(L, S, hooks, o = {}) {
   L.captureState = (name) => {
     const d = defs.get(name); if (!d) return 'empty';
     if (d.last != null) { const R = rec2.get(name); if (hooks.journal.some((e) => e.op === 'freeze' && e.args[0] === name) && frozenAt(name, Infinity) != null) return 'frozen'; return isLive(d) ? (R && R.to ? 'recording' : 'empty') : (memo.size || program ? 'recording' : 'empty'); }
-    if (isLive(d)) { const R = rec2.get(name); return R && R.closed ? 'frozen' : R && R.to ? 'recording' : 'empty'; }
+    if (isLive(d)) { const R = rec2.get(name); return R && closedNow(R, d) ? 'frozen' : R && R.to ? 'recording' : 'empty'; }
     return [...memo.keys()].some((k) => k === `${name}|w`) ? 'frozen' : 'empty';
   };
   L.captures = C; CURRENT = C; return C;

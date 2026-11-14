@@ -82,18 +82,25 @@ try {
   console.log(`  recipe JSON ${rm.size} bytes (program text and timing only), stored hash ${String(rm.h0).slice(0, 12)}, remake 1 ${String(rm.r1).slice(0, 12)} (${rm.m1}), remake 2 ${String(rm.r2).slice(0, 12)} (${rm.m2}), chop RMS in cycles 2-4 ${Number(rm.rms).toExponential(2)}, hook registered before the first render: ${rm.hooked0}, after: ${rm.hooked}`);
   if (rm.hooked && rm.r1 && rm.r1 === rm.h0 && rm.r2 === rm.r1 && rm.m1 === true && !rm.hasAudio && rm.rms > 1e-3) pass(`Determinism (site half) and Remake: the Record panel's beforeRender hook runs the capture pass before each offline render; two Remakes of a recipe whose program holds capture + chop give the same audio hash as the stored render (${String(rm.r1).slice(0, 16)}), the recipe JSON (${rm.size} bytes) holds no capture audio, and the chop lane is audible (RMS ${Number(rm.rms).toExponential(2)}) in cycles 2-4 where the drums are muted. Scope: single-reader lanes are bit-exact; a two-reader bus (.split) is reproducible to about 1 ULP (LANES 11c). The CLI render hash is open (CLI repo)`);
   else fail('Remake ' + JSON.stringify(rm));
-  // #87: a live window capture records what the scheduler triggered, not the visuals' look-ahead queries
-  const lv = await session(async (page) => page.evaluate(async () => {
-    const code = 'setcps(1)\ndrums: note("c2*4").s("sine").attack(0.001).decay(0.1).sustain(0).release(0.02).gain(0.5).tags("drums")\ncapture("take", "drums", { window: "1b..3b", live: true })\n';
-    await window.__sc.play({ kind: 'solo', id: 'cap-87', title: 'cap 87', code });
-    const sc = window.strudelCraft; const t0 = performance.now(); const log = []; let last = '';
-    while (performance.now() - t0 < 4800) { const w = sc.lanes.captureState('take'); const c = (performance.now() - t0) / 1000; if (w !== last) { log.push([+c.toFixed(2), w]); last = w; } await new Promise((r) => setTimeout(r, 25)); }
-    const st = sc.lanesCapture.state('take', 10); return { log, n: st && st.haps.length, onsets: st && st.haps.map((h) => +h.abs) };
-  }));
-  const frozenAt = (lv.log.find(([, w]) => w === 'frozen') || [99])[0]; const rec0 = lv.log.find(([, w]) => w === 'recording');
-  console.log(`  live window 1b..3b (visuals on): ${JSON.stringify(lv.log)}; ${lv.n} events ${JSON.stringify(lv.onsets)}`);
-  if (rec0 && frozenAt > 1.5 && frozenAt < 2.6 && lv.n === 8 && lv.onsets.every((x, i) => Math.abs(x - i / 4) < 1e-9)) pass('Live window capture (#87): recording until its until, frozen when the scheduler has queued the window end (about cycle 2 minus the scheduler look-ahead, not at once), 8 scheduled events exactly (visuals look-ahead queries are not recorded)');
-  else fail('Live window capture #87 ' + JSON.stringify(lv));
+  // #87: a live window capture records what the scheduler triggered (not the visuals' look-ahead queries) and its state follows the audio clock:
+  // still recording just before the window end (cycle 2), frozen just after, with the foreground look-ahead (0.2 s) and the hidden one (>= 1 s)
+  for (const hidden of [false, true]) {
+    const lv = await session(async (page) => page.evaluate(async (hidden) => {
+      if (hidden) Object.defineProperty(document, 'hidden', { get: () => true, configurable: true }); // the worker clock raises its look-ahead at the next tick
+      const code = 'setcps(1)\ndrums: note("c2*4").s("sine").attack(0.001).decay(0.1).sustain(0).release(0.02).gain(0.5).tags("drums")\ncapture("take", "drums", { window: "1b..3b", live: true })\n';
+      await window.__sc.play({ kind: 'solo', id: 'cap-87', title: 'cap 87', code });
+      const sc = window.strudelCraft; const sch = sc.transport.scheduler; const samples = [];
+      const t0 = performance.now();
+      while (performance.now() - t0 < 4000) { const c = sch.now(); const w = sc.lanes.captureState('take'); samples.push([c, w]); await new Promise((r) => setTimeout(r, 8)); }
+      const st = sc.lanesCapture.state('take', 10);
+      return { samples, n: st && st.haps.length, onsets: st && st.haps.map((h) => +h.abs) };
+    }, hidden));
+    const S2 = lv.samples; const firstFrozen = S2.find(([, w]) => w === 'frozen'); const earlyFrozen = S2.filter(([c, w]) => c < 1.97 && w === 'frozen').length; const lateRec = S2.filter(([c, w]) => c > 2.3 && w !== 'frozen').length;
+    const rec = S2.some(([c, w]) => c > 1.5 && c < 1.97 && w === 'recording');
+    console.log(`  live window 1b..3b, ${hidden ? 'hidden' : 'foreground'}: first frozen at cycle ${firstFrozen && firstFrozen[0].toFixed(3)}, frozen before 1.97: ${earlyFrozen}, not frozen after 2.3: ${lateRec}; ${lv.n} events ${JSON.stringify(lv.onsets)}`);
+    if (rec && firstFrozen && firstFrozen[0] >= 1.97 && firstFrozen[0] < 2.25 && !earlyFrozen && !lateRec && lv.n === 8 && lv.onsets.every((x, i) => Math.abs(x - i / 4) < 1e-9)) pass(`Live window capture (#87, ${hidden ? 'hidden tab look-ahead' : 'foreground look-ahead'}): recording until the audio clock reaches cycle 2 (first frozen at ${firstFrozen[0].toFixed(3)}), 8 scheduled events exactly, visuals queries not recorded`);
+    else fail('Live window capture #87 ' + (hidden ? 'hidden ' : '') + JSON.stringify({ rec, ff: firstFrozen, earlyFrozen, lateRec, n: lv.n, onsets: lv.onsets }));
+  }
 } catch (e) { fail('site capture threw ' + (e.stack || e.message)); }
 await browser.close(); server.close();
 console.log(process.exitCode ? 'lanes site L3: FAIL' : 'lanes site L3 done');

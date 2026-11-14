@@ -438,9 +438,9 @@ and registers its static checks in `lanes.check` (`E_CAPTURE_LAYER LIVE EARLY CY
   Note Strudel's `slice` needs its index pattern: `s("x").from("groove").slice(8, "0 3 2 1 4 7 6 5")`.
 - API on `strudelCraft.lanesCapture`: `defs()`, `analyze()` (captures with `pure` / `isLive` / `availableAt`, dependency `order`, diagnostics), `content(name, cycle)` (events as plain data), `availableAt(name)`, `freeze(name, at)` / `thaw(name, at)` (journaled), `setAudio(name, { L, R, sr }, { cps })`, `audio(name)`, `level(name)`, `budget`, `host.resolve(src)` (pass 1: renders the picked lanes through `strudelCraft.capture.renderRecipe` and registers `cap_<name>`; the original program is compiled again), `diagnostics()`.
   Pure helpers (also for the CLI): `analyze(src, { automated })`, `define`, `levelOf`, `createBudget`, `memoryLimit(deviceMemory)`, `frames(cycles, cps, sr)`.
-- Not built (marked coming): audio of `bus:<name>` and of rolling captures, the pattern methods `.freeze()` / `.thaw()`, the CLI (`strudel capture`, capture passes in `render` / `stems` / `events`; another repo), the UI (#78).
+- Not built (marked coming): audio of `bus:<name>` and of rolling captures, the pattern methods `.freeze()` / `.thaw()`, the CLI (`strudel capture`, capture passes in `render` / `stems` / `events`; another repo). The UI is the Graph view's capture node (#78, below).
 Tests: `STRUDEL_MODULES=... node tests/lanes/l3.mjs` (events, time rules, cycles, bounds; CLI boxes print SKIP) and `node tests/site/lanes_capture.mjs` (Playwright: offline pass 1, frames, level, the captured sample plays, Bounce take with `meta.from`, two Remakes with the same hash).
-Built on the Record hooks: `engine/index.js` registers the capture passes with `strudelCraft.capture.beforeRender` (Remake and every offline render run them first; programs without captures add no work; `strudelCraft.lanesCaptureHookOff()` unregisters) and `strudelCraft.lanesCapture.host.bounce(name)` stores an audio take (`capture.addTake`, `meta.from`). The #78 buttons can call these.
+Built on the Record hooks: `engine/index.js` registers the capture passes with `strudelCraft.capture.beforeRender` (Remake and every offline render run them first; programs without captures add no work; `strudelCraft.lanesCaptureHookOff()` unregisters) and `strudelCraft.lanesCapture.host.bounce(name)` stores an audio take (`capture.addTake`, `meta.from`). The capture node's buttons in the Graph view (#78) call these.
 
 ## Perform (`perform.js` + `perform.css`, view 5, #55)
 Loaded on first open of Perform or on first Play (not part of the shell; `Engine.play` awaits it so `ctl()`/`hooks.map()` exist before the first evaluate). One tab strip (`role=tablist`, arrows, Home/End,
@@ -644,10 +644,18 @@ same document and undo is the shared history stack.
     A lane's `audio` port wires to a bus input (amount asked in the site modal, `addSend`).
   - Selection chip node: selector, ops, gate, matching lanes; "Send to pad" is **coming** (needs a pad-assign entry point in Perform).
   - Capture node: picker chip and matches, window From / Until (or Last) with bar steppers that rewrite the window string, one out port per recorded layer (`ev`, `audio`, `level`), the state as
-    a word (Empty / Recording / Frozen; static under reduced motion); Bounce, Freeze / Thaw and Use as sample are **coming** (#76; state is Empty until the capture runtime reports one).
+    a word and an icon (Empty / Recording / Frozen, from the capture runtime; while playing, a live window capture reads Empty before From and Recording until Until; a rendered window is
+    Frozen; nothing pulses under reduced motion). Actions, each a 44 px button with a second line saying what it does or why it cannot run (focusable, the reason is also toasted):
+    **Bounce to takes** (`lanesCapture.host.bounce`: an audio take with `meta.from` in the Record list; the result toast opens the Record panel), **Freeze / Thaw** for rolling captures
+    (`lanesCapture.freeze` / `thaw` at a cycle asked in the site modal; journaled, no code change) and **Use as sample** (`lanesCapture.host.resolve` registers `cap_<name>`, shown in the node
+    with **Copy**; then the site modal asks a lane name and one lane `name: s("x").from("<capture>").loopAt(<cycles>)` is added as one undo step; Cancel adds nothing). Bounce and Use as
+    sample render offline: they compile the graph program, so when playing they ask first, stop and let the voices ring out (1.5 s, #88). Progress shows as a busy word in the node and toasts;
+    failures are toasts naming the code (`E_CAPTURE_HOST`, `E_BAD_ARG`, ...). On `bus:` and rolling captures Bounce / Use as sample are disabled and marked **coming** (that audio is not built
+    in the runtime); events-only and tap captures say "records no audio" / "events only"; Freeze on a window capture says it holds itself after Until.
   - Audio wires: thick bar with a ladder of slots, badge `BUS` + amount (`ret` on a return). Outline pane: a Lanes section (tag filter, lane list with Connect to…, tags with Mute / Solo,
     split fans with Add branch / fold, buses with amounts, captures, refused wires with their fixes), so every action works without a pointer.
-  - `strudelCraft.lanesUI`: `toggleTag(tag, op)`, `setAmount(bus, lane, v)`, `setWindow(capture, field, value)`, `addBranch(lane)`, `countVoices(lane)`, `fold(lane, on?)`, `cross(c)`, `state()`.
+  - `strudelCraft.lanesUI`: `toggleTag(tag, op)`, `setAmount(bus, lane, v)`, `setWindow(capture, field, value)`, `addBranch(lane)`, `countVoices(lane)`, `fold(lane, on?)`, `cross(c)`,
+    `bounce(capture)`, `freeze(capture, at?)` / `thaw(capture, at?)`, `useAsSample(capture, lane?)` (`lane` null: register only), `copySample(capture)`, `state()`.
     Palette group Lanes. Test: `node tests/site/lanes_ui.mjs` (also run by the smoke test).
 
 ## Hooks wiring

@@ -630,6 +630,27 @@
    "category": "site api"
   },
   {
+   "label": "strudelCraft.lanesUI.bounce",
+   "method": false,
+   "detail": "bounce(capture) -> Promise<take | null>",
+   "info": "Graph view capture node, Bounce to takes: compiles the graph program (asks before stopping playback) and calls strudelCraft.lanesCapture.host.bounce; the take lands in the Record list with meta.from = capture. Progress and result in toasts. Disabled (coming) for bus: and rolling captures.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.lanesUI.freeze",
+   "method": false,
+   "detail": "freeze(capture, at?) / thaw(capture, at?)",
+   "info": "Graph view capture node, Freeze / Thaw of a rolling capture at a cycle (number or point such as 3b; asked in the site modal when omitted): strudelCraft.lanesCapture.freeze / thaw, journaled, no code change.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.lanesUI.useAsSample",
+   "method": false,
+   "detail": "useAsSample(capture, lane?) -> Promise<{ sound, cycles, lane } | null>",
+   "info": "Graph view capture node, Use as sample: renders the capture (lanesCapture.host.resolve) so cap_<capture> is a playable sample, then inserts one lane `lane: s(\"x\").from(\"capture\").loopAt(cycles)` as one undo step (lane asked in the site modal when omitted; null registers only).",
+   "category": "site api"
+  },
+  {
    "label": "strudelCraft.lanesUI.state",
    "method": false,
    "detail": "state() -> { lanes, tags, chips, buses, captures, selections, refused, folded }",

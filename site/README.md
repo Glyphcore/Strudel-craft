@@ -562,7 +562,8 @@ else an in-memory + `localStorage` `sc.library` fallback with the same five call
 - Runtime (`installInstances`, installed on the hooks runtime by `hooks-intellisense.js` on the first refresh):
   `hooks.inst("pad@3", { as: "pad2", args, gate, remap })` returns the instance's tracks as one pattern (its params follow
   `hooks.set("pad2.cutoff", v)`), and `hooks.bind(slot, "lib:warmth@1(0.4)")` binds a saved fragment's hook (its defs are registered
-  under a slugged name). Text-only (`src`) tracks, inline `$code` args and gated instance-param sets raise `E_UNSUPPORTED`.
+  under a slugged name). Instance tracks run in their own scope `as_track`, so a track-scoped slot `bass/fx` is addressed from the host as
+  `pad2_bass/fx` (collapse rewrites existing bindings; docs/BLUEPRINT.md section 6). Text-only (`src`) tracks, inline `$code` args and gated instance-param sets raise `E_UNSUPPORTED`.
 - Components are created from the UI: Graph (select nodes -> "Save to library" / "Collapse to subgraph") and Perform
   ("Save to library" for a bank, board, take or lane). Test: `node tests/hooks/p4.mjs`.
 

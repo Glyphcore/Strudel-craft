@@ -10,7 +10,10 @@ Status: **built without .NET** (2026-11-13). `site/data/vox/sung/` is rendered b
 | DiffSinger voicebanks licence-less or CC BY-NC-ND | **The real blocker**, and it stays: no English DiffSinger voicebank with CC0 / CC BY / MIT / Apache terms was found. |
 
 ## Chosen path: SoulX-Singer (Apache-2.0) + a VocalSet timbre prompt (CC BY 4.0)
-- Model: `Soul-AILab/SoulX-Singer` `model.pt` (2.8 GB, sha256 `447eaf41f91a6b66...`), zero-shot singing synthesis for English / Mandarin / Cantonese. Licence read from the source:
+- Model, pinned (also `MODEL_PIN` in `build_sung_bank.py`, and `engine.pin` in `words.json`; `render` refuses any other checkpoint):
+  - weights: `Soul-AILab/SoulX-Singer` `model.pt`, 2818092278 bytes, sha256 `447eaf41f91a6b6659d55e9ec3c9b809221724fb8592aebaec35a23751a5b500`, Hugging Face revision `40493ad90286056c7a9095035164434a79daa8c9` (last modified 2026-03-13), fetched from `https://huggingface.co/Soul-AILab/SoulX-Singer/resolve/40493ad90286056c7a9095035164434a79daa8c9/model.pt`;
+  - code: Hugging Face space `Soul-AILab/SoulX-Singer` at commit `339c325cbfbf8cf81bb1c1c9860df351f45758ae` (last modified 2026-03-12; it mirrors the GitHub repo, which this sandbox cannot query for a commit sha);
+  - zero-shot singing synthesis for English / Mandarin / Cantonese. Licence read from the source:
   `LICENSE` in github.com/Soul-AILab/SoulX-Singer is the Apache License 2.0 text; the README says "We use the Apache 2.0 license. Researchers and developers are free to use
   the codes and model weights"; the Hugging Face model card is tagged `license: apache-2.0`. The README's usage disclaimer asks not to impersonate people without
   authorisation; the prompt voice here is a dataset singer released under CC BY 4.0 for reuse.
@@ -28,13 +31,15 @@ Status: **built without .NET** (2026-11-13). `site/data/vox/sung/` is rendered b
   35 % at a4 and 6 % at d#5. Recognisers trained on speech do badly on high sung notes, so this cannot tell a weak d#5 from a hard-to-recognise one; the owner listening pass is
   an open acceptance box in #79.
 
+Manifest: `words.json` lists a `file` only for clips that were kept (the 2 rejected clips have `file: null`, `ok: false`); `prompt_files` are relative to the bank (`../vocalset/ogg/...`). `hashes.json` records the sha256 of every listed file (`python3 engine/vocals/hash_banks.py`, also run by `--stage slice`); `node tests/site/vox.mjs` checks existence and hash for every vox bank. The trim threshold is -30 dB re clip peak (the #79 issue text said -40 dB; the script and docs say -30).
+
 Rebuild:
 
     python3 engine/vocals/build_sung_bank.py --code SOULX_CHECKOUT --model model.pt --work WORK --limit 200 --steps 8 --notes "d#3 a3 d#4 a4 d#5"
     node tests/site/vox.mjs
 
-`SOULX_CHECKOUT`: `git clone https://huggingface.co/spaces/Soul-AILab/SoulX-Singer` (same code as the GitHub repo, reachable from the sandbox);
-`model.pt`: `https://huggingface.co/Soul-AILab/SoulX-Singer/resolve/main/model.pt`. With transformers newer than 4.53 the script sets the attention implementation itself.
+`SOULX_CHECKOUT`: `git clone https://huggingface.co/spaces/Soul-AILab/SoulX-Singer && git -C SoulX-Singer checkout 339c325cbfbf8cf81bb1c1c9860df351f45758ae`;
+`model.pt`: the pinned URL above (the builder checks its sha256). With transformers newer than 4.53 the script sets the attention implementation itself.
 
 ## Alternatives, with the reason each lost
 | Option | Verdict |

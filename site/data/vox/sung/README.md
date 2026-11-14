@@ -3,7 +3,7 @@
 200 English words, each sung at five pitches two octaves wide (**d#3 a3 d#4 a4 d#5**): 998 clips, mono 22.05 kHz ogg, about 0.7 to 1.0 s each.
 Synthesised offline, not recorded: no .NET, no OpenUtau, no DiffSinger voicebank.
 
-- Engine: **SoulX-Singer** (Soul-AILab, https://github.com/Soul-AILab/SoulX-Singer, weights https://huggingface.co/Soul-AILab/SoulX-Singer), code and weights **Apache-2.0**.
+- Engine: **SoulX-Singer** (Soul-AILab, https://github.com/Soul-AILab/SoulX-Singer, weights https://huggingface.co/Soul-AILab/SoulX-Singer), code and weights **Apache-2.0**. Pinned: weights `model.pt` sha256 `447eaf41f91a6b6659d55e9ec3c9b809221724fb8592aebaec35a23751a5b500` at Hugging Face revision `40493ad90286056c7a9095035164434a79daa8c9`; code = Hugging Face space commit `339c325cbfbf8cf81bb1c1c9860df351f45758ae` (details engine/vocals/SUNG.md). The timbre prompt files are in `../vocalset/ogg/` (see `prompt_files` in `words.json`); `hashes.json` records the sha256 of every listed clip.
   Score control: one note per word (CMUdict ARPAbet via g2p_en, MIDI pitch, 0.70 s), 8 flow steps, cfg 3, seed 7.
 - Voice: the model is zero-shot; its timbre prompt is five straight long tones (a e i o u, c5) of singer `female6` from **VocalSet** (Wilkins, Seetharaman, Wahl, Pardo;
   ISMIR 2018), licence **CC BY 4.0** (https://creativecommons.org/licenses/by/4.0/). Attribution: "VocalSet: A Singing Voice Dataset, Julia Wilkins et al.,

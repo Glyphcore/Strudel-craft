@@ -95,7 +95,8 @@
       "examples": [
         {"title": "Arm a 4-cycle take with audio, events and code-state", "code": "strudelCraft.capture.configure({ mode: 'cycles', n: 4, audio: true, events: true, code: true, name: 'arp-loop' })\nstrudelCraft.capture.open()\n$: note(\"<c3 eb3 g3 bb3>*4\").s(\"sawtooth\").lpf(900).room(.3)"},
         {"title": "Events and code-state only (no audio)", "code": "strudelCraft.capture.configure({ audio: false, events: true, code: true, name: 'moves' })\nstrudelCraft.capture.open()\n$: note(\"c3 e3 g3 b3\").s(\"sawtooth\").cutoff(ctl(\"cut\", { type: \"knob\", min: 200, max: 4000, unit: \"Hz\" }))"},
-        {"title": "Set up an exact 8-cycle render", "code": "strudelCraft.capture.configure({ n: 8, fold: true, bits: 24, name: 'pad-8c' })\nstrudelCraft.capture.open()\n// then tap Render exact 8 cycles; Remake re-checks its hash later\n$: note(\"<c3 eb3>/2\").s(\"triangle\").attack(.4).release(1.5)", "noplay": true}
+        {"title": "Set up an exact 8-cycle render", "code": "strudelCraft.capture.configure({ n: 8, fold: true, bits: 24, name: 'pad-8c' })\nstrudelCraft.capture.open()\n// then tap Render exact 8 cycles; Remake re-checks its hash later\n$: note(\"<c3 eb3>/2\").s(\"triangle\").attack(.4).release(1.5)", "noplay": true},
+        {"title": "Hooks for lane captures: beforeRender and addTake", "code": "const off = strudelCraft.capture.beforeRender(async (recipe, { code }) => { /* render cap_<name> audio before the offline pass */ })\nawait strudelCraft.capture.addTake({ name: 'groove', L, R, sr: 48000, cps: 0.5, cycles: 2, from: 'groove' })"}
       ]
     },
     {

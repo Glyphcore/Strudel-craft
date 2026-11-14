@@ -14,10 +14,18 @@ SOULX_CHECKOUT = a checkout of github.com/Soul-AILab/SoulX-Singer (or the Huggin
 huggingface.co/Soul-AILab/SoulX-Singer. Neither is vendored here. The checkpoint is loaded with weights_only=True (no pickle code).
 Render is resumable: finished segments in WORK_DIR are skipped. Licences: engine/vocals/LICENSES.md.
 """
-import argparse, json, os, sys, time
+import argparse, hashlib, json, os, sys, time
 import numpy as np
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import soundfile as sf
 
+# Model pin (#79): the exact inputs of the shipped bank. render() refuses a checkpoint whose sha256 differs and warns if the checkout is another commit.
+MODEL_PIN = dict(
+    weights='https://huggingface.co/Soul-AILab/SoulX-Singer/resolve/40493ad90286056c7a9095035164434a79daa8c9/model.pt',
+    weights_repo_revision='40493ad90286056c7a9095035164434a79daa8c9',  # huggingface.co/Soul-AILab/SoulX-Singer, last modified 2026-03-13
+    weights_sha256='447eaf41f91a6b6659d55e9ec3c9b809221724fb8592aebaec35a23751a5b500', weights_bytes=2818092278,
+    code_repo='https://huggingface.co/spaces/Soul-AILab/SoulX-Singer', code_revision='339c325cbfbf8cf81bb1c1c9860df351f45758ae',  # last modified 2026-03-12; mirrors the GitHub repo
+)
 SR = 24000          # model rate
 OUT_SR = 22050      # bank rate (same as the other site banks)
 FPS = 50            # 24000 / hop 480
@@ -82,6 +90,15 @@ def render(a, words, notes):
     from g2p_en import G2p
     torch.set_num_threads(a.threads); torch.manual_seed(a.seed)
     cfg = load_config(os.path.join(a.code, 'soulxsinger/config/soulxsinger.yaml'))
+    h = hashlib.sha256()
+    with open(a.model, 'rb') as fh:
+        for blk in iter(lambda: fh.read(1 << 24), b''): h.update(blk)
+    if h.hexdigest() != MODEL_PIN['weights_sha256']: raise SystemExit(f"model.pt sha256 {h.hexdigest()} != pinned {MODEL_PIN['weights_sha256']}; fetch {MODEL_PIN['weights']}")
+    try:
+        import subprocess
+        rev = subprocess.run(['git', '-C', a.code, 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip()
+        if rev and rev != MODEL_PIN['code_revision']: print(f"warning: code checkout {rev} != pinned {MODEL_PIN['code_revision']}")
+    except Exception: pass
     model = SoulXSinger(cfg)
     ck = torch.load(a.model, weights_only=True, map_location='cpu')
     model.load_state_dict(ck['state_dict'], strict=True); model.eval(); del ck
@@ -139,7 +156,7 @@ def slice_bank(a, words, notes):
             rel = f'ogg/{w.lower()}_{s["note"].replace("#", "s")}.ogg'
             if ok: sf.write(os.path.join(a.out, rel), out, OUT_SR, format='OGG', subtype='VORBIS')
             clips.append(dict(word=w.lower(), key='vox_' + w.lower(), note=s['note'], midi=s['midi'], dur=round(len(out) / OUT_SR, 3), f0_hz=round(hz, 2),
-                              cents=None if cents is None else round(cents, 1), voiced=round(voiced, 2), floor_db=round(floor, 1), file=rel, ok=bool(ok), phonemes=rm['phonemes'][w]))
+                              cents=None if cents is None else round(cents, 1), voiced=round(voiced, 2), floor_db=round(floor, 1), file=rel if ok else None, ok=bool(ok), phonemes=rm['phonemes'][w]))
     good = [c for c in clips if c['ok']]; flat, pitched = {}, {}
     mid = notes[len(notes) // 2]
     for c in good:
@@ -153,8 +170,10 @@ def slice_bank(a, words, notes):
     summary = dict(words=len(pitched), clips=len(good), rejected=len(clips) - len(good), segments_missing=missing, notes=notes,
                    median_abs_cents=round(float(np.median(ce)), 1) if ce else None, p95_abs_cents=round(float(np.percentile(ce, 95)), 1) if ce else None)
     json.dump(dict(bank='vox', source='SoulX-Singer (Apache-2.0) score-controlled render; timbre prompt: VocalSet ' + rm['singer'] + ' long tones (CC BY 4.0)',
-                   sr=OUT_SR, engine=dict(model='Soul-AILab/SoulX-Singer model.pt', steps=a.steps, cfg=a.cfg, seed=a.seed, control='score', note_dur=NOTE_DUR),
-                   prompt_files=rm['prompt_files'], summary=summary, words=clips), open(os.path.join(a.out, 'words.json'), 'w'), indent=0)
+                   sr=OUT_SR, engine=dict(model='Soul-AILab/SoulX-Singer model.pt', pin=MODEL_PIN, steps=a.steps, cfg=a.cfg, seed=a.seed, control='score', note_dur=NOTE_DUR),
+                   prompt_files=['../vocalset/' + f for f in rm['prompt_files']], summary=summary, words=clips), open(os.path.join(a.out, 'words.json'), 'w'), indent=0)
+    from hash_banks import write as write_hashes
+    write_hashes(a.out)
     print(json.dumps(summary))
 
 

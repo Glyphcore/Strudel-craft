@@ -31,6 +31,21 @@ $: word("<love fire night>").note("<a3 d#4 a4>")`, 5000);
 console.log('sung', JSON.stringify(sg));
 console.log('banks', JSON.stringify(await page.evaluate(() => window.voxBank.list().map((b) => [b.name, b.words]))));
 console.log('errors', JSON.stringify(errs), 'failed', JSON.stringify(fails.filter((u) => !/unpkg|cdn|fonts/.test(u))));
+/* every file a bank's words.json lists exists and matches its recorded hash (hashes.json, engine/vocals/hash_banks.py) */
+const VOXD = path.join(SITE, 'data/vox'); const crypto = await import('crypto'); const hashFails = [];
+for (const bank of fs.readdirSync(VOXD).filter((d) => fs.existsSync(path.join(VOXD, d, 'words.json')))) {
+  const dir = path.join(VOXD, bank); const w = JSON.parse(fs.readFileSync(path.join(dir, 'words.json'), 'utf8'));
+  const hp = path.join(dir, 'hashes.json'); const H = fs.existsSync(hp) ? JSON.parse(fs.readFileSync(hp, 'utf8')) : {};
+  const files = [...new Set([...w.words.map((x) => x.file).filter(Boolean), ...(w.prompt_files || [])])];
+  let n = 0; for (const f of files) {
+    const fp = path.join(dir, f);
+    if (!fs.existsSync(fp)) { hashFails.push(`${bank}: missing ${f}`); continue; }
+    if (!H[f]) { hashFails.push(`${bank}: no recorded hash ${f}`); continue; }
+    if (crypto.createHash('sha256').update(fs.readFileSync(fp)).digest('hex') !== H[f]) hashFails.push(`${bank}: hash mismatch ${f}`); else n++;
+  }
+  console.log('hashes', bank, files.length, 'listed', n, 'ok');
+}
+console.log('bank files', hashFails.length ? 'FAIL ' + JSON.stringify(hashFails.slice(0, 5)) : 'PASS');
 await b.close(); srv.close();
 const bad = errs.filter((e) => /vox/i.test(e) || !/getTrigger/.test(e));
-process.exit(a.peakLin > 0.001 && lj.peakLin > 0.001 && !lj.evalError && vs.peakLin > 0.001 && !vs.evalError && sg.peakLin > 0.001 && !sg.evalError && sg.active.includes('sung') && !a.evalError && !bad.length ? 0 : 1);
+process.exit(a.peakLin > 0.001 && lj.peakLin > 0.001 && !lj.evalError && vs.peakLin > 0.001 && !vs.evalError && sg.peakLin > 0.001 && !sg.evalError && sg.active.includes('sung') && !a.evalError && !bad.length && !hashFails.length ? 0 : 1);

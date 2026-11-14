@@ -742,6 +742,20 @@
    "category": "site api"
   },
   {
+   "label": "strudelCraft.capture.beforeRender",
+   "method": false,
+   "detail": "beforeRender(async (recipe, { code }) => ...) -> unregister",
+   "info": "Run an async hook before every offline render (exact render, reference render, Remake) with the recipe's program already compiled. The hook may call renderRecipe itself (nested renders skip hooks); a throwing hook aborts the render. Used by lanes captures to render cap_<name> audio first (#76).",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.capture.addTake",
+   "method": false,
+   "detail": "addTake({ name, L, R, sr, cps, cycles, from }) -> Promise<record>",
+   "info": "Store an audio-only take (Float32Array L, R) in the take store, e.g. the bounce of a lane capture; recipe.meta.from names the source capture. Listed in the Record panel as 'from <name>', downloads as WAV.",
+   "category": "site api"
+  },
+  {
    "label": "strudelCraft.capture.importRecipe",
    "method": false,
    "detail": "importRecipe(fileOrText)",

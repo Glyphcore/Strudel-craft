@@ -160,6 +160,18 @@ async function buildRecipe({ name, includes, timing, state, events, outputs = {}
     state: includes.code ? state : null, events: includes.events || includes.code ? events || null : null, deps, outputs };
 }
 
+/* Hook 2 (#76): addTake({name, L, R, sr, cps, cycles, from, code}) stores an audio-only take (Float32Array L, R) in the take store, e.g. the bounce of
+   a lane capture. recipe.meta.from names the source (capture name). Resolves with the stored record; it appears in the takes list and downloads as WAV. */
+async function addTake({ name = 'take', L, R, sr, cps, cycles, from = null, code = null } = {}) {
+  if (!(L instanceof Float32Array) || !(sr >= 8000) || !(cps > 0) || !(cycles > 0)) throw new Error('addTake needs L (Float32Array), sr >= 8000, cps > 0 and cycles > 0');
+  R = R instanceof Float32Array ? R : L;
+  const recipe = await buildRecipe({ name, includes: { audio: true, events: false, code: false }, timing: { cps: +(+cps).toFixed(6), start: 0, stop: cycles, cycles, loop: true, mode: 'cycles', exact: false, fold: false, preRoll: 0 } });
+  recipe.meta = { from: from == null ? null : String(from), ...(code ? { code: String(code) } : {}) };
+  recipe.outputs.capture = { sha256: await audioHash(L, R), sr, frames: L.length, how: 'offline', encoding: 'f32le-interleaved', envelope: envelope(L, R, sr) };
+  const rec = { id: recipe.id, recipe, audio: { capture: { L, R, sr } } };
+  await store.put(rec); renderTakes(); return rec;
+}
+
 /* ---------- record ---------- */
 /* run: one-off overrides that are not persisted ({mode, n, countIn, name, at: absolute start cycle, step}); resolves with the saved record */
 async function record(o = {}, run = {}) {
@@ -268,7 +280,24 @@ async function finish(why) {
 
 /* ---------- offline render of a recipe (Remake, reference render, exact render) ---------- */
 function mulberry(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
-async function renderRecipe(recipe, { sr: rateIn } = {}) {
+/* Hook 1 (#76): beforeRender(fn) registers an async fn(recipe, { code }) that runs once before every offline render (exact render, reference
+   render, Remake) with the recipe's program already compiled, so pattern-level captures (lanesCapture.host.resolve) can render and register their
+   audio first. fn may call renderRecipe itself (nested renders skip the hooks). Returns an unregister function. A throwing hook aborts the render. */
+const beforeHooks = new Set();
+function beforeRender(fn) { if (typeof fn !== 'function') throw new TypeError('beforeRender needs a function'); beforeHooks.add(fn); return () => beforeHooks.delete(fn); }
+async function renderRecipe(recipe, o = {}) {
+  if (beforeHooks.size && !st.inHook && recipe.state) {
+    st.inHook = true;
+    try {
+      const C = sc.perform && sc.perform.controls; const S = recipe.state;
+      if (S.aliases && Object.keys(S.aliases).length) { if (!C) await sc.transport.compileCode('silence'); const c = sc.perform && sc.perform.controls; if (c && c.alias) for (const [label, id] of Object.entries(S.aliases)) { try { c.alias(label, id); } catch (e) { /* keep */ } } }
+      await sc.transport.compileCode(S.source.code);
+      for (const fn of [...beforeHooks]) await fn(recipe, { code: S.source.code });
+    } finally { st.inHook = false; }
+  }
+  return renderRecipeCore(recipe, o);
+}
+async function renderRecipeCore(recipe, { sr: rateIn } = {}) {
   const W = window, T = sc.transport, S = recipe.state;
   if (!S) throw new Error('This take has no code-state, so it cannot be rendered');
   if (st.rendering) throw new Error('A render is already running');
@@ -583,7 +612,7 @@ async function renderTakes() {
     const deps = r.deps.packs.length + r.deps.samples.length + r.deps.vox.length + 1;
     return `<li data-id="${r.id}" class="cap-tk">
     <canvas class="cap-wave" aria-hidden="true"></canvas>
-    <div class="cap-tk-info"><b class="cap-tk-name">${chips}${ver}<span class="cap-tk-label">${esc(r.name)}</span></b><span class="cap-tk-sub">${numStr(r.timing.cycles)}c · ${numStr(r.timing.cps)} cps · c${numStr(r.timing.start)}-${numStr(r.timing.stop)} · ${deps} dep${deps > 1 ? 's' : ''}${r.outputs.render ? ' · ' + short(r.outputs.render.sha256) : ''}</span></div>
+    <div class="cap-tk-info"><b class="cap-tk-name">${chips}${ver}<span class="cap-tk-label">${esc(r.name)}</span></b><span class="cap-tk-sub">${numStr(r.timing.cycles)}c · ${numStr(r.timing.cps)} cps · c${numStr(r.timing.start)}-${numStr(r.timing.stop)}${r.meta && r.meta.from ? ' · from ' + esc(r.meta.from) : ''} · ${deps} dep${deps > 1 ? 's' : ''}${r.outputs.render ? ' · ' + short(r.outputs.render.sha256) : ''}</span></div>
     <div class="cap-tk-acts">
       <button type="button" class="ghost icon" data-act="play" aria-label="Play ${esc(r.name)}" aria-pressed="false"${hasAudio ? '' : ' disabled'}>${ICON.play}</button>
       <button type="button" class="ghost icon" data-act="remake" aria-label="Remake ${esc(r.name)}"${r.includes.code ? '' : ' disabled'}>${ICON.remake}</button>
@@ -656,7 +685,7 @@ function toggleSheet() { el.w && !el.w.hidden && !el.w.closest('.ws-body') ? clo
 
 function init() {
   build();
-  pruneLegacy((m) => toast(m, { kind: 'info', ms: 8000 })).catch(() => {});
+  pruneLegacy({ notify: (m) => toast(m, { kind: 'info', ms: 8000 }), ask: (o) => sc.ui.askYesNo(o), saveBlob }).catch(() => {});
   const P = sc.palette; if (P) {
     P.register({ id: 'record.open', group: 'Record', title: 'Open record panel', run: () => open() });
     P.register({ id: 'record.toggle', group: 'Record', title: 'Record / stop take', run: () => { open(); toggleRec(); } });
@@ -665,6 +694,6 @@ function init() {
     P.register({ id: 'record.import', group: 'Record', title: 'Import recipe', run: () => { open(); $('#capFile').click(); } });
   }
 }
-sc.capture = { open, close, toggle: toggleSheet, configure, record, stop, toggleRec, renderExact, remake, importRecipe, exportRecipe: async (id) => exportRecipe(await store.get(id)), renderRecipe,
+sc.capture = { open, close, toggle: toggleSheet, configure, record, stop, toggleRec, renderExact, remake, importRecipe, beforeRender, addTake, exportRecipe: async (id) => exportRecipe(await store.get(id)), renderRecipe,
   download, list: () => store.list().then((l) => l.map((x) => ({ ...x.recipe, remake: x.remake || null, imported: x.imported || null, audio: Object.keys(x.audio) }))), get: (id) => store.get(id), remove: (id) => store.remove(id).then(renderTakes), rename, encodeWav, opts, state: st };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

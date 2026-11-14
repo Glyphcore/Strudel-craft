@@ -20,6 +20,7 @@
   },
   "properties": {
     "format": { "const": "strudel-craft/recipe" },
+    "meta": { "type": "object", "description": "Optional. `from`: the capture name an audio-only take was bounced from (capture.addTake, #76); `code`: the program text that made it", "properties": { "from": { "type": ["string", "null"] }, "code": { "type": "string" } } },
     "version": { "const": 1 },
     "id": { "type": "string", "minLength": 1 },
     "name": { "type": "string", "minLength": 1 },

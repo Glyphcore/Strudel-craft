@@ -9,7 +9,7 @@
 | pyworld (JeremyCCHsu/Python-Wrapper-for-World-Vocoder; WORLD vocoder by M. Morise) | MIT (wrapper; WORLD is modified-BSD) | `formant.py` default backend: f0 shift with spectral envelope kept (`--formant-steps`) |
 | rubberband (breakfastquay) | GPL-2.0+ (commercial alt. exists) | optional `--formant-backend rubberband`: run only as a separate process (`rubberband -3 --formant -p N`), never linked, vendored or bundled; skipped if the binary is absent |
 | scipy | BSD-3 | selftest vowel synthesis only |
-| SoulX-Singer (Soul-AILab/SoulX-Singer, code + `model.pt`) | Apache-2.0 | `build_sung_bank.py` only: imported from an external checkout (`--code`), weights downloaded by the builder, neither vendored |
+| SoulX-Singer (Soul-AILab/SoulX-Singer, code + `model.pt`; pinned: weights HF revision `40493ad90286056c7a9095035164434a79daa8c9`, sha256 `447eaf41f91a6b6659d55e9ec3c9b809221724fb8592aebaec35a23751a5b500`; code = HF space commit `339c325cbfbf8cf81bb1c1c9860df351f45758ae`) | Apache-2.0 | `build_sung_bank.py` only: imported from an external checkout (`--code`), weights downloaded by the builder, neither vendored |
 | g2p_en (Kyubyong/g2p) + CMUdict + NLTK perceptron tagger data | Apache-2.0 / BSD-style / Apache-2.0 | word -> ARPAbet for `build_sung_bank.py` |
 | Rejected: torchaudio MMS_FA (model CC-BY-NC), Gentle, MFA (MIT, alt backend, external) | | |
 

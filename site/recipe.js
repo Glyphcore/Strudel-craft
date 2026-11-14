@@ -156,11 +156,44 @@ export const store = {
   async remove(id) { if (await DB) await tx('readwrite', (s) => s.delete(id)); else mem.delete(id); },
   async list() { const all = (await DB) ? await tx('readonly', (s) => s.getAll()) : [...mem.values()]; return (all || []).sort((a, b) => (a.recipe.created < b.recipe.created ? 1 : -1)); },
 };
-/* forward only: the pre-recipe take store and its settings are deleted once, with a notice */
-export async function pruneLegacy(notify) {
+/* forward only: the pre-recipe take store and its settings are deleted once, but never silently. When old data exists a site modal
+   offers "Download backup (JSON) and clear" or, under "Other options", "Clear" or "Keep for now" (nothing is deleted; asked again next load).
+   The backup is a raw dump (no legacy reader): every store of IndexedDB `sc-capture` plus the `sc.capture.*` settings, typed arrays and blobs as base64. */
+async function legacyDump() {
+  const b64 = (u8) => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
+  const enc = async (v) => {
+    if (v instanceof Blob) return { $blob: v.type, base64: b64(new Uint8Array(await v.arrayBuffer())) };
+    if (v instanceof ArrayBuffer) return { $type: 'ArrayBuffer', base64: b64(new Uint8Array(v)) };
+    if (ArrayBuffer.isView(v)) return { $type: v.constructor.name, base64: b64(new Uint8Array(v.buffer, v.byteOffset, v.byteLength)) };
+    if (Array.isArray(v)) return Promise.all(v.map(enc));
+    if (v && typeof v === 'object') { const o = {}; for (const k of Object.keys(v)) o[k] = await enc(v[k]); return o; }
+    return v;
+  };
+  const settings = {}; for (const k of Object.keys(localStorage)) if (k.startsWith('sc.capture.')) settings[k] = localStorage.getItem(k);
+  const stores = {};
+  try {
+    const db = await new Promise((ok, no) => { const q = indexedDB.open('sc-capture'); q.onsuccess = () => ok(q.result); q.onerror = () => no(q.error); q.onblocked = () => no(new Error('blocked')); });
+    for (const name of [...db.objectStoreNames]) stores[name] = await enc(await new Promise((ok, no) => { const r = db.transaction(name, 'readonly').objectStore(name).getAll(); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); }));
+    db.close();
+  } catch (e) { stores.error = String(e && e.message || e); }
+  return { format: 'strudel-craft/legacy-takes-backup', note: 'Raw dump of the pre-recipe take store. Not importable; kept so nothing is lost.', created: new Date().toISOString(), settings, stores };
+}
+export async function pruneLegacy({ notify, ask, saveBlob } = {}) {
   if (localStorage.getItem('sc.record.schema') === String(VERSION)) return false;
   let had = Object.keys(localStorage).some((k) => k.startsWith('sc.capture.'));
   try { if (indexedDB.databases) had = had || (await indexedDB.databases()).some((d) => d.name === 'sc-capture'); } catch (e) { /* unsupported */ }
+  if (had) {
+    if (!ask) return false; /* no modal available: never delete unasked */
+    let backup = await ask({ title: 'Old takes will be removed', message: 'Takes are now recipes, and the old take store cannot be converted. Download a JSON backup of the old takes and settings before they are cleared?', okText: 'Download backup (JSON) and clear', cancelText: 'Other options' });
+    if (!backup) {
+      const clear = await ask({ title: 'Clear old takes without a backup?', message: 'The old audio takes and their settings are deleted from this device and cannot be recovered. "Keep for now" deletes nothing and asks again next time.', okText: 'Clear', cancelText: 'Keep for now', danger: true });
+      if (!clear) return false;
+    }
+    if (backup) {
+      try { const d = await legacyDump(); await saveBlob(new Blob([JSON.stringify(d)], { type: 'application/json' }), 'strudel-craft-old-takes-backup.json'); }
+      catch (e) { if (notify) notify('Backup failed, old takes were kept: ' + (e.message || e)); return false; }
+    }
+  }
   await new Promise((r) => { try { const q = indexedDB.deleteDatabase('sc-capture'); q.onsuccess = q.onerror = q.onblocked = () => r(); } catch (e) { r(); } });
   for (const k of Object.keys(localStorage)) if (k.startsWith('sc.capture.')) localStorage.removeItem(k);
   localStorage.setItem('sc.record.schema', String(VERSION));

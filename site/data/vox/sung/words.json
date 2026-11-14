@@ -4,6 +4,14 @@
 "sr": 22050,
 "engine": {
 "model": "Soul-AILab/SoulX-Singer model.pt",
+"pin": {
+"weights": "https://huggingface.co/Soul-AILab/SoulX-Singer/resolve/40493ad90286056c7a9095035164434a79daa8c9/model.pt",
+"weights_repo_revision": "40493ad90286056c7a9095035164434a79daa8c9",
+"weights_sha256": "447eaf41f91a6b6659d55e9ec3c9b809221724fb8592aebaec35a23751a5b500",
+"weights_bytes": 2818092278,
+"code_repo": "https://huggingface.co/spaces/Soul-AILab/SoulX-Singer",
+"code_revision": "339c325cbfbf8cf81bb1c1c9860df351f45758ae"
+},
 "steps": 8,
 "cfg": 3.0,
 "seed": 7,
@@ -11,11 +19,11 @@
 "note_dur": 0.7
 },
 "prompt_files": [
-"ogg/a_straight_female6.ogg",
-"ogg/e_straight_female6.ogg",
-"ogg/i_straight_female6.ogg",
-"ogg/o_straight_female6.ogg",
-"ogg/u_straight_female6.ogg"
+"../vocalset/ogg/a_straight_female6.ogg",
+"../vocalset/ogg/e_straight_female6.ogg",
+"../vocalset/ogg/i_straight_female6.ogg",
+"../vocalset/ogg/o_straight_female6.ogg",
+"../vocalset/ogg/u_straight_female6.ogg"
 ],
 "summary": {
 "words": 200,
@@ -15991,7 +15999,7 @@
 "cents": -511.3,
 "voiced": 0.58,
 "floor_db": -52.0,
-"file": "ogg/watch_ds5.ogg",
+"file": null,
 "ok": false,
 "phonemes": [
 "W",
@@ -17573,7 +17581,7 @@
 "cents": -481.3,
 "voiced": 0.61,
 "floor_db": -41.9,
-"file": "ogg/just_ds5.ogg",
+"file": null,
 "ok": false,
 "phonemes": [
 "JH",

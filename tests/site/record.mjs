@@ -96,11 +96,25 @@ ok('noise take: render output carries a level fingerprint', Array.isArray(noiseT
 
 // ---------- profile B: clean import + Remake ----------
 const B = await profile(); p = B.page;
-await p.evaluate(() => { localStorage.setItem('sc.capture.mode', '"cycles"'); localStorage.removeItem('sc.record.schema'); });
+/* legacy store: seed an old sc-capture DB + setting; a modal comes first, nothing is deleted until a choice is made */
+const seed = () => p.evaluate(async () => {
+  await new Promise((r) => { const q = indexedDB.open('sc-capture', 1); q.onupgradeneeded = () => q.result.createObjectStore('takes', { keyPath: 'id' }); q.onsuccess = () => { const t = q.result.transaction('takes', 'readwrite'); t.objectStore('takes').put({ id: 'old1', name: 'oldtake', pcm: new Float32Array([0.5, -0.5, 0.25]) }); t.oncomplete = () => { q.result.close(); r(); }; }; });
+  localStorage.setItem('sc.capture.mode', '"cycles"'); localStorage.removeItem('sc.record.schema');
+});
+const legacyState = () => p.evaluate(async () => ({ key: localStorage.getItem('sc.capture.mode'), db: (await indexedDB.databases()).some((d) => d.name === 'sc-capture'), schema: localStorage.getItem('sc.record.schema') }));
+const modalBtn = async (re, label) => { await p.waitForFunction((s) => { const d = document.querySelector('dialog.scm[open]'); return d && new RegExp(s, 'i').test(d.querySelector('h2').textContent); }, re.source, { timeout: 10000 }); return p.locator('dialog.scm[open] button', { hasText: label }); };
+await seed(); await p.reload(); await p.waitForSelector('#list li[data-id]');
+await (await modalBtn(/old takes will be removed/, 'Other options')).click();
+await (await modalBtn(/clear old takes without a backup/, 'Keep for now')).click();
+await p.waitForTimeout(500);
+const kept = await legacyState();
+ok('legacy: Keep for now deletes nothing (modal, no native dialog)', kept.key === '"cycles"' && kept.db && kept.schema === null, JSON.stringify(kept));
 await p.reload(); await p.waitForSelector('#list li[data-id]');
+const [bk] = await Promise.all([p.waitForEvent('download'), (await modalBtn(/old takes will be removed/, 'Download backup (JSON) and clear')).click()]);
+const bkFile = path.join(TMP, 'backup.json'); await bk.saveAs(bkFile); const bkJson = JSON.parse(fs.readFileSync(bkFile, 'utf8'));
 await p.waitForFunction(() => [...document.querySelectorAll('.toast')].some((x) => /takes are now recipes/.test(x.textContent)), null, { timeout: 10000 }).catch(() => {});
-const pr = await p.evaluate(() => ({ toast: [...document.querySelectorAll('.toast')].some((x) => /takes are now recipes/.test(x.textContent)), key: localStorage.getItem('sc.capture.mode') }));
-ok('legacy take store pruned once with a notice', pr.toast && pr.key === null, JSON.stringify(pr));
+const pr = await legacyState();
+ok('legacy: backup JSON holds the old take, then the store is pruned with a notice', bkJson.stores.takes && bkJson.stores.takes[0].name === 'oldtake' && bkJson.stores.takes[0].pcm.base64 && bkJson.settings['sc.capture.mode'] && bk.suggestedFilename().endsWith('.json') && pr.key === null && !pr.db && pr.schema === '1', JSON.stringify(pr) + ' ' + bk.suggestedFilename());
 await p.click('#capBtn'); await p.waitForSelector('#capSheet:not([hidden])');
 await p.setInputFiles('#capFile', file); await p.waitForSelector('#capTakes li[data-id] .cap-badge[data-type="inert"]', { timeout: 10000 });
 const inert = await p.evaluate(() => ({ playing: window.__sc.S.playing, started: !!(window.__sc.Engine.repl) }));

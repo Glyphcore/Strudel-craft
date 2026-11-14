@@ -30,6 +30,14 @@ sc.lanesCaptureEnsure = async (src) => {
   try { const h = await import('../lanes-capture-site.js'); C.host = h.createHost(sc); } catch (e) { console.warn('[lanes] capture audio host:', e.message); }
   return C;
 };
+// Record panel hook (#76): every offline render (exact, reference, Remake) runs the capture passes first, in dependency order. Registered once per page, at load, because the first
+// Remake of a fresh page has to find it already there; programs without capture / recall / .from cost one regex test. Teardown: strudelCraft.lanesCaptureHookOff().
+const hookCapture = () => {
+  if (sc.lanesCaptureHookOff || !sc.capture || !sc.capture.beforeRender) return;
+  const off = sc.capture.beforeRender(async (recipe, o) => { if (!/\bcapture\s*\(|\brecall\s*\(|\.\s*from\s*\(/.test(String(o.code))) return; const C = await sc.lanesCaptureEnsure(o.code); if (C && C.host) await C.host.resolve(o.code); });
+  sc.lanesCaptureHookOff = () => { off(); sc.lanesCaptureHookOff = null; };
+};
+hookCapture(); globalThis.document?.addEventListener('DOMContentLoaded', hookCapture); globalThis.addEventListener?.('strudel:ready', hookCapture);
 sc.installHooks = (S = globalThis, o = {}) => {
   if (!S.Pattern || !S.signal || !S.Fraction) throw new Error('installHooks: Strudel globals (Pattern, signal, Fraction, ...) not ready');
   const r = hooksMod.install({ Pattern: S.Pattern, stack: S.stack, silence: S.silence, reify: S.reify, signal: S.signal, Fraction: S.Fraction, mini: S.mini }, o);

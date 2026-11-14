@@ -130,7 +130,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/atoms/a4_lazy.mjs       # atoms lazy declaration pass: lazy == eager, 5000 declared parse budget (#64)
     node tests/site/atoms_ui.mjs       # Playwright: atom cards, derived cards, browser, popover, keyboard path, 5000-atom paint (#64; also in smoke)
     STRUDEL_MODULES=... node tests/lanes/l1.mjs  # lanes L1: tap cache, lane scope, tags, selections, checks (#74); CLI box prints SKIP without the `strudel` CLI
-    STRUDEL_MODULES=... node tests/lanes/l3.mjs  # lanes L3: capture / recall / .from events, time rules, cycles, bounds (#76); CLI and Remake boxes print SKIP
+    STRUDEL_MODULES=... node tests/lanes/l3.mjs  # lanes L3: capture / recall / .from events, time rules, cycles, bounds (#76); CLI boxes print SKIP
     node tests/site/lanes_capture.mjs  # lanes L3: audio pass, frame count, level, captured sample plays (Playwright, real superdough)
     STRUDEL_MODULES=... node tests/lanes/l4.mjs  # lanes L4: model schema, round trip, completion, atom types, ids, bus numbers, invariants (#77); needs core, mini, transpiler
     node tests/site/lanes_data.mjs     # lanes L4: graph() data (lane cards, buses, selection chips, split fan, capture node, E_LANE_CROSS fixes), no runtime needed
@@ -398,8 +398,9 @@ and registers its static checks in `lanes.check` (`E_CAPTURE_LAYER LIVE EARLY CY
   Note Strudel's `slice` needs its index pattern: `s("x").from("groove").slice(8, "0 3 2 1 4 7 6 5")`.
 - API on `strudelCraft.lanesCapture`: `defs()`, `analyze()` (captures with `pure` / `isLive` / `availableAt`, dependency `order`, diagnostics), `content(name, cycle)` (events as plain data), `availableAt(name)`, `freeze(name, at)` / `thaw(name, at)` (journaled), `setAudio(name, { L, R, sr }, { cps })`, `audio(name)`, `level(name)`, `budget`, `host.resolve(src)` (pass 1: renders the picked lanes through `strudelCraft.capture.renderRecipe` and registers `cap_<name>`; the original program is compiled again), `diagnostics()`.
   Pure helpers (also for the CLI): `analyze(src, { automated })`, `define`, `levelOf`, `createBudget`, `memoryLimit(deviceMemory)`, `frames(cycles, cps, sr)`.
-- Not built (marked coming): audio of `bus:<name>` and of rolling captures, Remake of recipes that use captures and the bounce take (hooks in `site/capture.js`), the pattern methods `.freeze()` / `.thaw()`, the CLI (`strudel capture`, capture passes in `render` / `stems` / `events`; another repo), the UI (#78).
-Tests: `STRUDEL_MODULES=... node tests/lanes/l3.mjs` (events, time rules, cycles, bounds; CLI and Remake boxes print SKIP with the missing piece) and `node tests/site/lanes_capture.mjs` (Playwright: offline pass 1, frames, level, the captured sample plays).
+- Not built (marked coming): audio of `bus:<name>` and of rolling captures, the pattern methods `.freeze()` / `.thaw()`, the CLI (`strudel capture`, capture passes in `render` / `stems` / `events`; another repo), the UI (#78).
+Tests: `STRUDEL_MODULES=... node tests/lanes/l3.mjs` (events, time rules, cycles, bounds; CLI boxes print SKIP) and `node tests/site/lanes_capture.mjs` (Playwright: offline pass 1, frames, level, the captured sample plays, Bounce take with `meta.from`, two Remakes with the same hash).
+Built on the Record hooks: `engine/index.js` registers the capture passes with `strudelCraft.capture.beforeRender` (Remake and every offline render run them first; programs without captures add no work; `strudelCraft.lanesCaptureHookOff()` unregisters) and `strudelCraft.lanesCapture.host.bounce(name)` stores an audio take (`capture.addTake`, `meta.from`). The #78 buttons can call these.
 
 ## Perform (`perform.js` + `perform.css`, view 5, #55)
 Loaded on first open of Perform or on first Play (not part of the shell; `Engine.play` awaits it so `ctl()`/`hooks.map()` exist before the first evaluate). One tab strip (`role=tablist`, arrows, Home/End,

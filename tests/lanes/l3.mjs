@@ -140,13 +140,22 @@ skip('Audio capture equals the source (CLI WAV, -60 dB, round(2/cps*sr) frames)'
 
 // 10. Determinism
 skip('Determinism: `strudel render` of LANES example 7 twice gives the same mix.wav SHA-256', '`strudel render` is in the CLI repo (engine/strudel-cli)');
-skip('Determinism: Remake of a recipe from example 7 reproduces the stored audio hash with no capture audio in the recipe', 'needs a pre-render hook in site/capture.js (owned by the Record session): Remake (capture.remake -> renderRecipe) must run the capture passes and register cap_<name> before its render; the missing call is e.g. strudelCraft.capture.beforeRender(async (recipe) => ...) invoked at the start of renderRecipe');
+{
+  const rd = (f) => fs.readFileSync(new URL(f, import.meta.url), 'utf8');
+  const ix = rd('../../site/engine/index.js'); assert.ok(/capture\.beforeRender\(/.test(ix) && /C\.host\.resolve\(o\.code\)/.test(ix) && /lanesCaptureHookOff/.test(ix), 'index.js registers the capture passes through capture.beforeRender (once, with an unregister)');
+  pass('Determinism / Remake wiring: engine/index.js registers host.resolve through strudelCraft.capture.beforeRender once per page (unregister: lanesCaptureHookOff); the behaviour (two Remakes, same audio hash, no capture audio in the recipe) is measured in the browser in tests/site/lanes_capture.mjs');
+}
 
 // 11. Live equals headless
 skip('Live equals headless: realtime capture of a pure 2-bar window vs the CLI capture', 'the CLI capture (`strudel capture`) is in another repo; the realtime site capture is not wired to a headless counterpart here');
 
 // 12. Bounce
-skip('Bounce: `strudel capture IN --name groove -o groove.wav` and a take with meta.from', 'the CLI is in another repo; the site takes list is owned by site/capture.js (no public put-take call with meta.from on main: capture.importRecipe takes a recipe, not audio)');
+skip('Bounce: `strudel capture IN --name groove -o groove.wav`', 'the CLI is in another repo');
+{
+  const rd = (f) => fs.readFileSync(new URL(f, import.meta.url), 'utf8'); const cs = rd('../../site/lanes-capture-site.js');
+  assert.ok(/capture\.addTake\(/.test(cs) && /from: name/.test(cs));
+  pass('Bounce wiring (site): host.bounce(name) calls strudelCraft.capture.addTake with from = the capture name; the take in the Record list is measured in tests/site/lanes_capture.mjs');
+}
 
 // 13. Docs follow code
 {

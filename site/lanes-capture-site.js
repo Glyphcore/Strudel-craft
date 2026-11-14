@@ -39,13 +39,25 @@ export function createHost(sc, W = window) {
     const out = await sc.capture.renderRecipe(recipe, { sr: 48000 }); return { ...out, cps };
   }
   // all audio captures of the program, in dependency order; the original program is compiled again at the end
-  async function resolve(src) {
+  const wants = (c, an, name) => { const d = c.defs().find((x) => x.name === name); return d && d.what.some((w) => w !== 'events') && d.last == null && d.kind !== 'bus'; };
+  let busy = false; // the capture renders themselves are offline renders: their beforeRender hook must not resolve again
+  const resolve = async (src) => { if (busy) return []; busy = true; try { return await resolveAll(src); } finally { busy = false; } };
+  async function resolveAll(src) {
     const c = C(); const an = c.analyze(); const done = [];
+    if (!an || !an.order.some((n) => wants(c, an, n))) return done; // no audio capture: no work, the program is not recompiled
     try {
       for (const name of an.order) { const d = c.defs().find((x) => x.name === name); if (!d || !d.what.some((w) => w !== 'events')) continue; if (d.last != null || d.kind === 'bus') continue;
         const out = await renderCapture(src, name); const e = c.setAudio(name, { L: out.L, R: out.R, sr: out.sr }, { cps: out.cps }); c.register(name, { registerSound: (key, ent) => W.registerSound(key, sound(name, ent), { type: 'sample' }) }); done.push({ name, frames: e.frames, sr: out.sr }); }
     } finally { await sc.transport.compileCode(src); }
     return done;
   }
-  return { renderCapture, resolve, sound, restricted };
+  // Bounce: the audio of capture `name` (resolved first when not there yet) becomes an audio-only take in the Record list, recipe.meta.from = name (strudelCraft.capture.addTake)
+  async function bounce(name, src) {
+    const c = C(); if (!sc.capture || !sc.capture.addTake) throw code('E_CAPTURE_HOST', 'the Record panel hook strudelCraft.capture.addTake is not available');
+    src = src ?? (sc.transport.source && sc.transport.source() || {}).code; if (src == null) throw code('E_BAD_ARG', 'bounce needs the program text');
+    let e = c.audio(name); if (!e) { await resolve(src); e = c.audio(name); }
+    if (!e) throw code('E_BAD_ARG', `capture "${name}" has no audio to bounce (layers: audio is needed; bus: and rolling audio are coming)`);
+    return sc.capture.addTake({ name: 'capture ' + name, L: e.L, R: e.R || e.L, sr: e.sr, cps: e.cps, cycles: e.frames / e.sr * e.cps, from: name, code: src });
+  }
+  return { renderCapture, resolve, bounce, sound, restricted };
 }

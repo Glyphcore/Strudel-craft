@@ -1829,7 +1829,7 @@
   }
  },
  "lanes": {
-  "_doc": "docs/LANES.md section 10. Read by site/lanes-intellisense.js. branchControls: the only methods offered inside a split/merge branch callback (bus-safe: effects, filters, envelope, gain, pan, orbit, structure); never s, n, note, bus or dry (E_LANE_SOURCE). facets: recall facet -> the capture layer that must be recorded. status: built = parses and models today, coming = not built; the audio layer is built in #75, capture / recall / from in #76 (audio of bus: and of rolling captures, Remake and the CLI passes are coming).",
+  "_doc": "docs/LANES.md section 10. Read by site/lanes-intellisense.js. branchControls: the only methods offered inside a split/merge branch callback (bus-safe: effects, filters, envelope, gain, pan, orbit, structure); never s, n, note, bus or dry (E_LANE_SOURCE). facets: recall facet -> the capture layer that must be recorded. status: built = parses and models today, coming = not built; the audio layer is built in #75, capture / recall / from in #76 (audio of bus: and of rolling captures and the CLI passes are coming; Remake runs the capture passes through capture.beforeRender and host.bounce stores an audio take).",
   "status": {
    "tags": "built",
    "tagged": "built",

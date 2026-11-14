@@ -60,6 +60,28 @@ try {
   console.log(`  chop lane over cycles 2-4 (drums and lead muted there): ${smp.haps} haps, ${smp.fails} failed, RMS ${smp.rms.toExponential(2)} (drums RMS over the capture ${solo.toExponential(2)})`);
   if (smp.rms > 0.2 * solo && !smp.fails) pass(`As a sample (site render): after the capture pass, ".from(\"groove\").slice(4, ...)" plays the captured audio through superdough in cycles 2-4 with the drums and lead lanes muted: RMS ${smp.rms.toExponential(2)} (${(smp.rms / solo).toFixed(2)} of the source lane), ${smp.fails} failed events`);
   else fail('As a sample ' + JSON.stringify(smp));
+
+  // Bounce: the capture node's Bounce path lands an audio take with meta.from in the Record list (strudelCraft.capture.addTake)
+  const bn = await session(async (page) => inPage(page, KICKS, `const t = await C.host.bounce('groove', ${JSON.stringify(KICKS)}); const l = await sc.capture.list(); const e = l.find((x) => x.id === t.id); const au = C.audio('groove'); let ok = true; try { sc.recipe.validate(JSON.parse(JSON.stringify(e))); } catch (er) { ok = er.message; } return { from: e.meta && e.meta.from, audio: e.audio, cycles: e.timing.cycles, cps: e.timing.cps, frames: e.outputs.capture.frames, want: au.frames, valid: ok, name: e.name };`));
+  if (bn.from === 'groove' && bn.audio.includes('capture') && bn.frames === bn.want && bn.cycles === 2 && bn.valid === true) pass(`Bounce (site half): host.bounce("groove") stores an audio-only take "${bn.name}" in the Record list with meta.from = "groove", ${bn.frames} frames (= the capture's audio), 2 cycles at ${bn.cps} cps, valid recipe. The CLI form (strudel capture -o) is open (CLI repo)`);
+  else fail('Bounce ' + JSON.stringify(bn));
+
+  // Remake / determinism: the Record panel's beforeRender hook runs the capture passes first; two Remakes of one recipe give the same audio hash
+  const SOLO = 'setcps(1)\ndrums: note("c2*4").s("sine").attack(0.001).decay(0.12).sustain(0).release(0.02).gain(0.8).tags("drums")\ncapture("groove", "drums", { window: "1b..3b" })\n'; // one voice at a time: single-reader lanes are bit-exact
+  const REM = SOLO + 'tagged("drums").mute("3b..")\nchop: s("x").from("groove").slice(4, "0 1 2 3").mask("<0 0 1 1>").gain(1)\n';
+  const rm = await session(async (page) => page.evaluate(async ({ REM }) => {
+    const sc = window.strudelCraft, c = sc.capture; const sha = async (L, R) => { const b = new Float32Array(L.length * 2); for (let i = 0; i < L.length; i++) { b[2 * i] = L[i]; b[2 * i + 1] = R[i]; } return [...new Uint8Array(await crypto.subtle.digest('SHA-256', b.buffer))].map((x) => x.toString(16).padStart(2, '0')).join(''); };
+    const base = await c.renderExact(1); const recipe = JSON.parse(JSON.stringify(base.recipe)); recipe.id = 'lanes-remake-76'; recipe.name = 'lanes capture remake'; recipe.state.source.code = REM; recipe.state.source.title = 'capture example'; recipe.timing = { ...recipe.timing, cps: 1, start: 0, stop: 4, cycles: 4, loop: false, mode: 'cycles' };
+    const hooked0 = !!sc.lanesCaptureHookOff;
+    const first = await c.renderRecipe(recipe); const hooked = !!sc.lanesCaptureHookOff; const h0 = await sha(first.L, first.R);
+    recipe.outputs = { ...recipe.outputs, render: { sha256: 'sha256:' + h0, sr: first.sr, frames: first.L.length, how: 'offline', encoding: 'f32le-interleaved', envelope: base.recipe.outputs.render ? base.recipe.outputs.render.envelope : undefined } };
+    await c.importRecipe(JSON.stringify(recipe)); const r1 = await c.remake(recipe.id, { silent: true }); const r2 = await c.remake(recipe.id, { silent: true });
+    const json = JSON.stringify(recipe); let rms = 0; for (const v of first.L.subarray(2 * 48000)) rms += v * v;
+    return { hooked0, hooked, h0, r1: r1 && String(r1.sha256).replace('sha256:', ''), r2: r2 && String(r2.sha256).replace('sha256:', ''), m1: r1 && r1.match, m2: r2 && r2.match, e1: r1 && (r1.error || r1.refused), size: json.length, hasAudio: /"L"|cap_groove":\[|Float32/.test(json), rms: Math.sqrt(rms / (first.L.length - 2 * 48000)), notes: r1 && r1.notes };
+  }, { REM }));
+  console.log(`  recipe JSON ${rm.size} bytes (program text and timing only), stored hash ${String(rm.h0).slice(0, 12)}, remake 1 ${String(rm.r1).slice(0, 12)} (${rm.m1}), remake 2 ${String(rm.r2).slice(0, 12)} (${rm.m2}), chop RMS in cycles 2-4 ${Number(rm.rms).toExponential(2)}, hook registered before the first render: ${rm.hooked0}, after: ${rm.hooked}`);
+  if (rm.hooked && rm.r1 && rm.r1 === rm.h0 && rm.r2 === rm.r1 && rm.m1 === true && !rm.hasAudio && rm.rms > 1e-3) pass(`Determinism (site half) and Remake: the Record panel's beforeRender hook runs the capture pass before each offline render; two Remakes of a recipe whose program holds capture + chop give the same audio hash as the stored render (${String(rm.r1).slice(0, 16)}), the recipe JSON (${rm.size} bytes) holds no capture audio, and the chop lane is audible (RMS ${Number(rm.rms).toExponential(2)}) in cycles 2-4 where the drums are muted. Scope: single-reader lanes are bit-exact; a two-reader bus (.split) is reproducible to about 1 ULP (LANES 11c). The CLI render hash is open (CLI repo)`);
+  else fail('Remake ' + JSON.stringify(rm));
 } catch (e) { fail('site capture threw ' + (e.stack || e.message)); }
 await browser.close(); server.close();
 console.log(process.exitCode ? 'lanes site L3: FAIL' : 'lanes site L3 done');

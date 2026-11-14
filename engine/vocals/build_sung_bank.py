@@ -173,7 +173,8 @@ def slice_bank(a, words, notes):
                    sr=OUT_SR, engine=dict(model='Soul-AILab/SoulX-Singer model.pt', pin=MODEL_PIN, steps=a.steps, cfg=a.cfg, seed=a.seed, control='score', note_dur=NOTE_DUR),
                    prompt_files=['../vocalset/' + f for f in rm['prompt_files']], summary=summary, words=clips), open(os.path.join(a.out, 'words.json'), 'w'), indent=0)
     from hash_banks import write as write_hashes
-    write_hashes(a.out)
+    try: write_hashes(a.out)
+    except SystemExit as e: print('warning: hashes.json not written:', e)  # --out outside site/data/vox: the ../vocalset prompt files are not beside it
     print(json.dumps(summary))
 
 

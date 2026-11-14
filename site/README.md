@@ -138,6 +138,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/site/word_intellisense.mjs  # word() completions from data/intellisense/words.json (#44)
     node tests/site/vox.mjs            # vocal banks and voxBank()
     STRUDEL_MODULES=... node tests/vocals/formant_helper.mjs  # word().formant(true) on a synthetic bank (#57)
+    node tests/site/capture.mjs        # Record panel audio at 360px: 2-cycle take, WAV 16/24 header + length, file name, quota, rename/delete modals, tab switch, exact render (#72)
     node tests/site/record_hooks.mjs   # Record hooks for lanes capture: capture.addTake (meta.from) and capture.beforeRender (#76)
     node tests/site/record.mjs         # Record panel + recipes at 360px: record, download, clean-profile Remake hash match, tamper refused (#72)
     node tests/site/audio.mjs          # sound + visuals after Play at 360px DPR 3 touch: fresh profile and stale service worker (master peak, scope pixels, widgets, Stack typed program)

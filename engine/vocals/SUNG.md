@@ -41,6 +41,12 @@ Rebuild:
 `SOULX_CHECKOUT`: `git clone https://huggingface.co/spaces/Soul-AILab/SoulX-Singer && git -C SoulX-Singer checkout 339c325cbfbf8cf81bb1c1c9860df351f45758ae`;
 `model.pt`: the pinned URL above (the builder checks its sha256). With transformers newer than 4.53 the script sets the attention implementation itself.
 
+## Verification of the build path (2026-11-14, #79 `--stage slice` box)
+The original work dir (125 rendered segments) is gone, so `--stage slice` cannot reproduce `words.json` byte for byte. Instead a subset was re-rendered with the pinned model and sliced: the pinned `model.pt` (sha256 checked by the builder) and the pinned code commit, `--limit 8 --steps 8 --notes "d#3 a3 d#4"` (the first 8 words, the same first segment of each pitch as the shipped plan; 3 segments, 40 to 59 s each on 4 CPU cores, about 3 minutes including model load), written to a scratch `--out`.
+- Result: 24 of 24 clips pass the QC gate (|error| <= 80 cents, voiced, floor).
+- Against the shipped clips of the same word and note: f0 differs by a median 10 cents (max 60 cents), duration by at most 0.27 s. The Vorbis files are not byte-identical (0 of 24 hashes equal), because flow-matching sampling on CPU is not bit-reproducible across runs and machines, so `hashes.json` pins the shipped files, not a re-render.
+- So the build path (render -> slice -> QC) works end to end with the pinned inputs and gives clips equivalent within the tolerances above; exact reproduction of `words.json` needs the original work dir.
+
 ## Alternatives, with the reason each lost
 | Option | Verdict |
 |---|---|

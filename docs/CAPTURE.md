@@ -105,6 +105,7 @@ A program can capture its own lanes: `capture("groove", "drums", { window: "1b..
   - chips;
   - recipe download, with v1 and pinned deps;
   - workspace pane.
+- `node tests/site/capture.mjs` (audio, 360 px): 44px targets, `record.*` actions, 2-cycle take with exact loop length and non-silent waveform, WAV 16/24 headers and lengths, file name `<name>_<cycles>c_<cps>cps.wav`, quota line, rename/delete modals, tab-switch survival, exact render length.
 - **B** (clean):
   - legacy prune: a modal first; backup path downloads a JSON with the old take and clears; "Keep for now" deletes nothing; "Clear" prunes with a notice;
   - import is inert;

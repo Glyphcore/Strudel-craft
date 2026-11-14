@@ -1,7 +1,6 @@
 /* Strudel Craft instrument UI. Tokens first; signal colours are reserved for signal. */
+/* Chakra Petch 700 and JetBrains Mono are added by index.html after the first frame (#59) */
 @font-face{font-family:"Chakra Petch";font-weight:500;font-style:normal;font-display:swap;src:url(fonts/ChakraPetch-500.woff2) format("woff2")}
-@font-face{font-family:"Chakra Petch";font-weight:700;font-style:normal;font-display:swap;src:url(fonts/ChakraPetch-700.woff2) format("woff2")}
-@font-face{font-family:"JetBrains Mono";font-weight:400 700;font-style:normal;font-display:swap;src:url(fonts/JetBrainsMono.woff2) format("woff2")}
 
 :root{
   --bg:#0b0d10;--panel:#12161b;--panel-2:#181d24;--panel-3:#1f252e;--line:#262d36;--line-2:#333c47;

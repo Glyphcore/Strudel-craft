@@ -19,6 +19,7 @@
 <link rel="modulepreload" href="engine/packs-core.js">
 <link rel="preload" href="packs.lock.json" as="fetch" crossorigin>
 <link rel="preload" href="craftpack.json" as="fetch" crossorigin>
+<link rel="preload" href="data/vox/craftpack.json" as="fetch" crossorigin><!-- #59: every manifest in the shipped lock is read before the catalog -->
 <link rel="preload" href="app.js" as="script">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b0d10'/%3E%3Cpath d='M4 16h5l3-9 4 18 4-14 3 5h5' fill='none' stroke='%23ff6a1a' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E">
@@ -50,6 +51,8 @@ sc.booted = start.then(async () => {
   for (const u of LATER) { try { await import('./' + u); } catch (e) { console.error('[boot] ' + u + ': ' + e.message); } await new Promise((ok) => setTimeout(ok, 0)); /* one task per module: no long task */ }
 });
 sc.shellPainted.then(go);
+/* the bold display face and the mono face are not needed for the first frame (font-display: swap would show the fallback anyway): fetched after it */
+sc.shellPainted.then(() => { try { for (const [fam, url, weight] of [['Chakra Petch', 'fonts/ChakraPetch-700.woff2', '700'], ['JetBrains Mono', 'fonts/JetBrainsMono.woff2', '400 700']]) { const f = new FontFace(fam, `url(${url}) format("woff2")`, { weight, style: 'normal', display: 'swap' }); document.fonts.add(f); f.load().catch(() => {}); } } catch (e) { /* no Font Loading API: system fallback fonts */ } });
 for (const t of ['pointerdown', 'keydown']) addEventListener(t, () => go(), { once: true, capture: true });
 </script>
 </head>

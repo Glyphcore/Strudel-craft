@@ -4,7 +4,9 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import { pathToFileURL } from 'node:url';
+import { cliLine, cliUnspecified, wavInfo } from '../hooks/fixtures/cli.mjs';
 import { bootRuntime } from '../hooks/fixtures/rt.mjs';
 import * as LM from '../../site/engine/lanes.js';
 import * as CM from '../../site/engine/lanes-capture.js';
@@ -72,11 +74,11 @@ const DRUMS = 'drums: s("bd hh sd hh").tags("drums").tap("kick")\n';
   const p = await run(EX7); const c0 = q(p, 0, 1).filter((h) => h.value.s === 'cap_groove');
   assert.ok(c0.length > 0, 'chop has haps in cycle 0'); assert.equal(cap.availableAt('groove'), 0);
   pass(`Pure capture (classification + events): LANES example 7 is pure (available from cycle ${g.availableAt}); the lane "chop" has ${c0.length} sample haps on cap_groove in cycle 0; with ctl("kick") on the drums lane it is live ("${lg.liveReason}"), pure again when the host says kick has an automation lane. The CLI render half (non-silent bar 1) is open (SKIP below)`);
-  skip('Pure capture: `chop` non-silent in bar 1 of the CLI render', 'the `strudel` CLI is in another repo (engine/strudel-cli); the site-side offline render of the same program is tests/site/lanes_capture.mjs');
+  cliUnspecified('Pure capture: `chop` non-silent in bar 1 of the CLI render', 'the arguments of `strudel render` / `stems` (output location, cycles) and how to measure bar-1 level of a stem are not documented in the #76 comments; the site-side offline render of the same program is tests/site/lanes_capture.mjs');
 }
 
 // 4. Audio capture equals the source
-skip('Audio capture equals the source (CLI WAV, -60 dB, round(2/cps*sr) frames)', '`strudel capture` is in the CLI repo; the site half (offline render of the picked lanes, frame count, difference to a solo render) is measured in tests/site/lanes_capture.mjs');
+cliUnspecified('Audio capture equals the source (CLI WAV, -60 dB, round(2/cps*sr) frames)', 'the CLI WAV is documented (`strudel capture IN --name N -o N.wav`) but the solo render of the picked lane to compare against needs `strudel render` / `stems` arguments that are not documented');
 
 // 5. As a sample
 {
@@ -139,7 +141,7 @@ skip('Audio capture equals the source (CLI WAV, -60 dB, round(2/cps*sr) frames)'
 }
 
 // 10. Determinism
-skip('Determinism: `strudel render` of LANES example 7 twice gives the same mix.wav SHA-256', '`strudel render` is in the CLI repo (engine/strudel-cli)');
+cliUnspecified('Determinism: `strudel render` of LANES example 7 twice gives the same mix.wav SHA-256', 'the arguments of `strudel render` (where mix.wav is written, cycles, cps) are not documented in the #76 comments');
 {
   const rd = (f) => fs.readFileSync(new URL(f, import.meta.url), 'utf8');
   const ix = rd('../../site/engine/index.js'); assert.ok(/capture\.beforeRender\(/.test(ix) && /C\.host\.resolve\(o\.code\)/.test(ix) && /lanesCaptureHookOff/.test(ix), 'index.js registers the capture passes through capture.beforeRender (once, with an unregister)');
@@ -147,10 +149,19 @@ skip('Determinism: `strudel render` of LANES example 7 twice gives the same mix.
 }
 
 // 11. Live equals headless
-skip('Live equals headless: realtime capture of a pure 2-bar window vs the CLI capture', 'the CLI capture (`strudel capture`) is in another repo; the realtime site capture is not wired to a headless counterpart here');
+cliUnspecified('Live equals headless: realtime capture of a pure 2-bar window vs the CLI capture', 'the site realtime take needs a real browser (Record panel); the comparison with `strudel capture` lives in the CLI repo (test/live_vs_headless.mjs) and no command takes a site take as input');
 
 // 12. Bounce
-skip('Bounce: `strudel capture IN --name groove -o groove.wav`', 'the CLI is in another repo');
+{ // 12. Bounce (CLI half): commands per #76 (`strudel capture IN --name N [-o N.wav]`, unknown name exits 1); UNVERIFIED here, run where the CLI exists
+  const EX7 = 'setcps(1)\n' + fs.readFileSync(new URL('../../docs/LANES.md', import.meta.url), 'utf8').match(/\*\*7\. Capture a bar group[\s\S]*?```js\n([\s\S]*?)```/)[1];
+  cliLine('Bounce: `strudel capture IN --name groove -o groove.wav` writes the WAV', (run) => {
+    const d = fs.mkdtempSync(path.join(os.tmpdir(), 'l3-bounce-')), inp = path.join(d, 'ex7.strudel.js'), wav = path.join(d, 'groove.wav'); fs.writeFileSync(inp, EX7);
+    const r = run(['capture', inp, '--name', 'groove', '-o', wav], { cwd: d }); assert.equal(r.status, 0, r.stderr);
+    const w = wavInfo(wav); assert.equal(w.frames, Math.round(2 / 1 * w.sampleRate), 'window 1b..3b at cps 1 is round(2/cps*sr) frames'); assert.ok(w.channels >= 1);
+    const bad = run(['capture', inp, '--name', 'nope', '-o', path.join(d, 'nope.wav')], { cwd: d }); assert.equal(bad.status, 1, 'an unknown capture name exits 1'); assert.equal(fs.existsSync(path.join(d, 'nope.wav')), false);
+    return `groove.wav ${w.frames} frames at ${w.sampleRate} Hz, ${w.channels} ch; unknown name exits 1`;
+  });
+}
 {
   const rd = (f) => fs.readFileSync(new URL(f, import.meta.url), 'utf8'); const cs = rd('../../site/lanes-capture-site.js');
   assert.ok(/capture\.addTake\(/.test(cs) && /from: name/.test(cs));

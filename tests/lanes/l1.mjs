@@ -4,7 +4,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { pathToFileURL, fileURLToPath } from 'node:url';
+import { cliLine } from '../hooks/fixtures/cli.mjs';
 import { bootRuntime } from '../hooks/fixtures/rt.mjs';
 import { install as installLanes, check, compile, graphJSON, parseSelector } from '../../site/engine/lanes.js';
 import { protect } from '../../site/engine/hooks.js';
@@ -177,7 +178,14 @@ keys: note("c e").s("piano").tags("keys")
   const a = graphJSON(open); const b = graphJSON(open); assert.equal(a, b); const g = JSON.parse(a);
   assert.deepEqual(g.lanes.map((l) => l.id), ['drums', 'keys', 'bass']); assert.equal(g.selections.length, 2); assert.deepEqual(g.lanes[1].taps, [{ name: 'x', export: true }]);
   assert.equal(check(closed, { strict: true }).fail, true); assert.equal(check(closed).errors[0].code, 'E_LANE_PRIVATE'); assert.equal(check(open, { strict: true }).fail, true, 'open fixture has warnings: strict fails'); assert.equal(check(open).fail, false);
-  skip('CLI: `strudel lanes FIXTURE` twice identical JSON; `strudel check --strict` exits 1 on the closed fixture', `the strudel CLI (another repo, engine/strudel-cli) has no "lanes" command and "check" does not call site/engine/lanes.js yet; the library half is verified: graphJSON(open fixture) twice = ${a.length} identical bytes, check(closed, { strict: true }).fail = true`);
+  const FX = (n) => fileURLToPath(new URL('./fixtures/' + n, import.meta.url));
+  cliLine('CLI: `strudel lanes FIXTURE` twice identical JSON equal to graphJSON; `strudel check --strict` exits 1 on the closed fixture', (run) => { // commands per #74 (CLI comment: `lanes IN`, `check` with lanes.errors); UNVERIFIED here, run where the CLI exists
+    const x = run(['lanes', FX('open.strudel.js')]), y = run(['lanes', FX('open.strudel.js')]);
+    assert.equal(x.status, 0, x.stderr); assert.equal(y.status, 0, y.stderr); assert.equal(x.stdout, y.stdout, 'two runs differ'); const j = JSON.parse(x.stdout);
+    for (const k of Object.keys(g)) assert.deepEqual(j[k], g[k], `strudel lanes: key "${k}" differs from the site graphJSON`); // CLI output is graphJSON plus lane groups (and --host data)
+    const c = run(['check', FX('closed.strudel.js'), '--strict']); assert.equal(c.status, 1, `check --strict exit ${c.status}: ${c.stderr}`); assert.match(c.stdout + c.stderr, /E_LANE_PRIVATE/);
+    return `${x.stdout.length} identical bytes, lanes/selections/tags equal the site graphJSON, check --strict on the closed fixture exits 1 (E_LANE_PRIVATE)`;
+  });
 }
 // 14. syntax.json
 if (!needRepl('syntax.json examples')) {

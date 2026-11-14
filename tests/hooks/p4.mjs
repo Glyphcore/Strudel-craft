@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { cliLine, cliUnspecified } from './fixtures/cli.mjs';
+import { generate } from '../../site/model.js';
 import { createLibrary, expand, embed, extract, replaceWithInstance, verify, installInstances } from '../../site/library.js';
 import { bootRuntime, haps } from './fixtures/rt.mjs';
 import { fallbackStore, docsStore } from '../../site/library-store.js';
@@ -19,9 +20,6 @@ const PAD = (cut = 400) => ({ model: 1, tracks: [{ name: 'pad', source: ['note',
 const lib = () => createLibrary(fallbackStore(mem()));
 const host = (insts, extra = {}) => ({ model: 1, instances: insts, ...extra });
 const cutoffs = (m) => (m.tracks || []).map(t => t.chain[0][1]);
-const CLI = spawnSync('strudel', ['--version'], { encoding: 'utf8' });
-const hasCli = !CLI.error && CLI.status === 0;
-const NO_CLI = '`strudel` CLI not available in this checkout (lives in another repo); needs `strudel events`';
 const RT = await bootRuntime(); // unmodified @strudel/core+mini (node_modules or STRUDEL_MODULES) + site/engine/hooks.js
 const NO_RT = '@strudel/core/@strudel/mini not installed (set STRUDEL_MODULES=<dir with @strudel/>); cannot render events';
 const rtLib = () => { const L = lib(); if (RT) { RT.hooks.reset(); RT.hooks.live = false; installInstances(RT.hooks, { lib: L, S: RT.S, tap: RT.tap }); } return L; };
@@ -116,7 +114,13 @@ if (!RT) skip('Gate', NO_RT); else {
   const back = expand(swapped, { lookup: L.lookup });
   assert.deepEqual(back.tracks.map(t => t.source), [orig.tracks[2].source, orig.tracks[0].source, orig.tracks[1].source]);
   pass('Extract (model level): 2 tracks + 1 binding collapse to a component with requires {kick}; replacing them with the instance expands back to the same sources and a namespaced hook binding');
-  if (!hasCli) skip('Extract (strudel events deep-equal)', NO_CLI);
+  // CLI half (#50 box text and CLI comment: `strudel library collapse PROGRAM --nodes ... --name grp --verify` prints "N = N events, equal true"); UNVERIFIED here, run where the CLI exists
+  cliLine('Extract (strudel library collapse --verify: events before = after)', (run) => {
+    const d = fs.mkdtempSync(path.join(os.tmpdir(), 'p4-collapse-')), prog = path.join(d, 'orig.strudel.js'); fs.writeFileSync(prog, generate(orig));
+    const r = run(['library', 'collapse', prog, '--nodes', sel.join(','), '--name', 'grp', '--verify'], { cwd: d }); assert.equal(r.status, 0, r.stderr + r.stdout);
+    const m = /(\d+) = (\d+) events, equal true/.exec(r.stdout + r.stderr); assert.ok(m && m[1] === m[2] && +m[1] > 0, `no "N = N events, equal true" in the output: ${r.stdout}`);
+    return `${m[1]} = ${m[2]} events, equal true`;
+  });
 }
 
 // 8 Fragment
@@ -148,7 +152,7 @@ if (!RT) skip('Gate', NO_RT); else {
   const selfRec = (() => { const l = lib(); const c = { model: 1, instances: [{ component: 'loop@1', as: 'x' }], exports: {} }; l.save(c, { name: 'loop', kind: 'set' }); return l; })();
   assert.equal(code(() => expand(host([{ component: 'loop@1', as: 'y' }]), { lookup: selfRec.lookup })), 'E_COMPONENT_CYCLE');
   pass('Headless (module level): --library directory lookup equals embedded components; tampered embedded component raises E_COMPONENT_HASH; self-containing component raises E_COMPONENT_CYCLE');
-  skip('Headless (`strudel events ... --library DIR` equals the embedded run)', NO_CLI + '; the --library flag belongs to the CLI repo');
+  cliUnspecified('Headless (`strudel events FIXTURE --model M.json --library DIR` equals the embedded run; E_COMPONENT_HASH / E_COMPONENT_CYCLE exit 1)', 'how FIXTURE (program text) and --model M.json combine is not documented: whether the instance line lives in the program or in the model, and how embedded components reach the run without --library');
 }
 
 // 10 Adapter

@@ -1,6 +1,7 @@
 // Lanes L2 (#75): one minimal behavioural check per acceptance box that does not need the CLI. Run: STRUDEL_MODULES=<dir with @strudel/> node tests/lanes/l2.mjs
 // Real unmodified @strudel/core + mini + transpiler with site/engine/hooks.js and lanes.js on top. Rendered audio is in tests/site/lanes.mjs (Playwright).
 // Boxes that need the `strudel` CLI (another repo) print SKIP with the exact missing piece; nothing is stubbed to pass.
+import { cliUnspecified } from '../hooks/fixtures/cli.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -72,8 +73,8 @@ const EX1_COMPILED = `drums: stack(
   const layer = await evalProgram('drums: s("bd*4, hh*8").lpf(4000).layer(d => d, w => w.room(0.9).rsize(6).lpf(900), g => g.crush(5).hpf(2000).gain(0.4))'); const lh = q(layer, 0, 4);
   assert.deepEqual(src, [12, 12, 12, 12]); assert.deepEqual(rd, [3, 3, 3, 3]); assert.equal(lh.length, 36 * 4); assert.equal(h.filter((x) => x.value.s !== 'bus').length, 12 * 4);
   pass(`No re-synthesis (library query): per cycle ${src[0]} source haps and ${rd[0]} reader haps with .split, ${lh.length / 4} haps with .layer`);
-  skip('No re-synthesis via `strudel events`', 'the `strudel events` command lives in another repo (engine/strudel-cli); the counts above are queried from the same compiled program');
-  skip('Same sound as the hand-written bus program (`strudel render` mix.wav SHA-256)', '`strudel render` is in the CLI repo. Library half: compiled text equals the hand-written text (Compile box); the site offline renders are in tests/site/lanes.mjs');
+  cliUnspecified('No re-synthesis via `strudel events` (12 source / 3 reader haps per cycle; layer 36)', 'the output format of `strudel events` (how to count source vs reader haps per cycle) and its cycle-range flag are not documented in the #75 comments; the counts are queried from the same compiled program through the library above');
+  cliUnspecified('Same sound as the hand-written bus program (`strudel render` mix.wav SHA-256)', '`strudel render` arguments (where mix.wav is written, cycles, cps) are not documented, only `--no-lanes` for the compiled text; library half: compiled text equals the hand-written text (Compile box), site offline renders are in tests/site/lanes.mjs');
 }
 
 // 4. merge, gate, wire, nesting
@@ -151,6 +152,6 @@ const EX1_COMPILED = `drums: stack(
   assert.ok(sec.examples.some((e) => e.coming && /capture/.test(e.code)));
   pass(`syntax.json: ${aud.length} audio-layer examples (split, merge, send/ret, wire) are runnable and compile without errors (${total} haps over 2 cycles); the unbuilt capture forms (bus and rolling audio) stay "coming"`);
 }
-skip('Stems: `strudel stems` one stem per output-carrying lane, stems sum to mix.wav within -60 dB', '`strudel stems` is in the CLI repo (engine/strudel-cli); lane groups come from graph.audio (sends, returns) here, the stems command must solo output-carrying lanes by postgain(0) on the other readers (docs/LANES.md 8)');
-skip('`strudel lanes IN` shows buses and edges', 'the command lives in the CLI repo; the data it prints is graph.audio of compile() (buses, splits, sends, returns, wires)');
+cliUnspecified('Stems: `strudel stems` one stem per output-carrying lane, stems sum to mix.wav within -60 dB', '`strudel stems` arguments and output layout (output directory flag, stem file names) are not documented in the #75 comments; lane groups come from graph.audio here');
+cliUnspecified('`strudel lanes IN` shows buses and edges', 'the JSON field names `strudel lanes` uses for buses, splits, sends, returns and wires are not documented; the data it should print is graph.audio of compile()');
 console.log('lanes L2 done');

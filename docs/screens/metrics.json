@@ -2033,5 +2033,99 @@
    "ok": true,
    "detail": ""
   }
- ]
+ ],
+ "lighthouse": {
+  "issue": "#59",
+  "date": "2026-11-14",
+  "method": "node tests/site/lighthouse_relative.mjs --runs 5 <commits> (Lighthouse 12.8.2 npm, Chromium 153 headless=new, mobile default config, simulated throttling, performance only, site/ from git archive, same static server, runs interleaved); sandbox numbers, relative to the commits in the same run",
+  "shell": {
+   "main_after": {
+    "commit": "3d976f3",
+    "scores": [
+     92,
+     91,
+     92,
+     92,
+     92
+    ],
+    "median": 92,
+    "lcp_ms": [
+     3035,
+     3024,
+     3024,
+     3024,
+     3025
+    ],
+    "one_run": {
+     "score": 92,
+     "FCP_ms": 2258,
+     "LCP_ms": 3044,
+     "TBT_ms": 1,
+     "SI_ms": 2258,
+     "CLS": 0.004,
+     "requests": 132,
+     "bytes": 1343203
+    }
+   },
+   "step1_only": {
+    "commit": "b18a2ae",
+    "scores": [
+     88,
+     89,
+     89,
+     89,
+     89
+    ],
+    "median": 89
+   },
+   "main_before": {
+    "commit": "9d281f2",
+    "scores": [
+     57,
+     55,
+     55,
+     57,
+     57
+    ],
+    "median": 57,
+    "lcp_ms": [
+     9487,
+     9455,
+     9617,
+     9606,
+     9605
+    ]
+   },
+   "first_diagnosis": {
+    "commit": "194adbc",
+    "score": 58,
+    "FCP_ms": 4065,
+    "LCP_ms": 9177,
+    "TBT_ms": 0,
+    "CLS": 0.164,
+    "requests": 129,
+    "bytes": 1583185
+   }
+  },
+  "bisect_runs3_median": {
+   "9800995": 90,
+   "625e639": 93,
+   "072e824": 93,
+   "f191ec0": 91,
+   "0e2b16d": 91,
+   "834669f": 88,
+   "ea3d0a3": 80,
+   "c2633e8": 80,
+   "eafa160": 80,
+   "60e8760": 86,
+   "4b11427": 80,
+   "6b8a821": 80,
+   "8fe496f": 73,
+   "104ffc5": 72,
+   "4b903df": 72,
+   "b9b2b1a": 66,
+   "5174f96": 69,
+   "first_below_90": "834669f (0e2b16d 91,91,90 -> 834669f 88,88,88)"
+  }
+ }
 }

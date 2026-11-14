@@ -16,7 +16,7 @@ const SITE = path.join(ROOT, 'site');
 const OUT = path.join(SITE, 'precache.json');
 const EXT = new Set(['.html', '.js', '.mjs', '.css', '.json', '.webmanifest', '.woff2', '.png', '.svg', '.ogg', '.wav', '.mp3']);
 const SKIP = new Set(['sw.js', 'precache.json']); /* the worker itself, and this manifest (read with cache:'reload' at install) */
-const LAZY_VOX = (rel) => rel.startsWith('data/vox/') && !rel.startsWith('data/vox/demo/'); /* pack banks: cached on activation in sc-packs-1 */
+const LAZY_VOX = (rel) => rel.startsWith('data/vox/') && !rel.startsWith('data/vox/demo/') && !/^data\/vox\/[^/]+$/.test(rel); /* pack banks: cached on activation in sc-packs-1; the bank index pack's own top-level files (craftpack.json, banks.json, #85) stay in the shell so the loader and the Banks list work offline */
 
 function walk(dir, out = []) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {

@@ -356,8 +356,8 @@ workspace pane **Banks** (Ctrl+K > *Show Banks*).
   notes, range, licence, attribution) and each bank's `words.json` and `pitched/strudel.json` as `manual` ingredients of the data-only
   extension kind `x-glyphcore.vox-data@1`. They are read with `packs.raw()` only when the panel or a bank opens (or a `word("`
   completion needs the active bank); clip audio is fetched only when auditioned. `packs.entryOf(ref)` gives an ingredient's URL to
-  resolve clip paths. Offline: the index pack is not in the shell precache (large banks stay lazy), so the browser needs the network
-  once.
+  resolve clip paths. Offline: the index pack's `craftpack.json` and `banks.json` and the demo bank are in the shell precache, so the
+  list and demo completions work offline; the other banks' files stay lazy (network on first open).
 - Hover (desktop) on `word` / `voxBank` / `syl` adds the active bank and its size to the docs tooltip; long-press (touch) shows the
   same line.
 - API `strudelCraft.voxBanks = { list, info, active, open, words, use, snippet, line, audition, stop, lastPeak, describeActive, openPanel, on }`.

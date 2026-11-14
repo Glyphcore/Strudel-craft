@@ -26,6 +26,8 @@
   "data/practices.json",
   "data/schema/model.v1.json",
   "data/syntax.json",
+  "data/vox/banks.json",
+  "data/vox/craftpack.json",
   "data/vox/demo/hashes.json",
   "data/vox/demo/ogg/again_0.ogg",
   "data/vox/demo/ogg/again_0_s0.ogg",

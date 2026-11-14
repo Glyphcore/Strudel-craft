@@ -47,7 +47,8 @@ async function measureFrames(page, ms) {
 }
 const waitPlaying = (page, timeout = 60000) => page.waitForFunction(() => { const s = window.__sc.S; return (!s.busy && s.playing && window.__sc.Engine.started) || document.querySelector('#status').classList.contains('err'); }, null, { timeout });
 
-const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
+// --disable-dev-shm-usage: renderer shared memory in /tmp, not /dev/shm (containers often give /dev/shm 64 MB; a full run peaks near 500 MB per renderer)
+const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required', '--disable-dev-shm-usage'] });
 metrics.chromium = browser.version();
 
 /* ---------- desktop 1440 ---------- */
@@ -188,10 +189,13 @@ metrics.chromium = browser.version();
   await ctx.close();
 }
 
-{ const { graphSection } = await import('./graph.mjs'); await graphSection({ browser, BASE, OUT, check, watch, metrics }); } /* Graph view, #52 */
-{ const { atomsUiSection } = await import('./atoms_ui.mjs'); try { await atomsUiSection({ browser, BASE, OUT, check, watch, metrics }); } catch (e) { check('atoms ui section ran to the end', false, e.stack); } } /* Atoms A4 cards, browser, popover, #64 */
-{ const { lanesUiSection } = await import('./lanes_ui.mjs'); try { await lanesUiSection({ browser, BASE, OUT, check, watch, metrics }); } catch (e) { check('lanes ui section ran to the end', false, e.stack); } } /* Lanes L5 lane cards, split fan, bus / capture nodes, tag chips, #78 */
-{ const { performSection } = await import('./perform.mjs'); try { await performSection({ browser, BASE, OUT, check, watch, metrics }); } catch (e) { check('perform section ran to the end', false, e.stack); } } /* Perform view, #55 */
+/* each section runs in its own contexts; a section that throws before its ctx.close() would leave its pages (and their audio, caches and
+   handles) alive in the shared browser for the rest of the run, so any context still open after a section is closed here (#52 stability) */
+const section = async (name, file, fn) => { const m = await import(file); try { await m[fn]({ browser, BASE, OUT, check, watch, metrics }); } catch (e) { check(`${name} section ran to the end`, false, e.stack); } finally { for (const c of browser.contexts()) await c.close().catch(() => {}); } };
+await section('graph', './graph.mjs', 'graphSection'); /* Graph view, #52 */
+await section('atoms ui', './atoms_ui.mjs', 'atomsUiSection'); /* Atoms A4 cards, browser, popover, #64 */
+await section('lanes ui', './lanes_ui.mjs', 'lanesUiSection'); /* Lanes L5 lane cards, split fan, bus / capture nodes, tag chips, #78 */
+await section('perform', './perform.mjs', 'performSection'); /* Perform view, #55 */
 await browser.close(); server.close();
 check('zero console errors / page errors', errors.length === 0, errors.slice(0, 5).join(' | '));
 metrics.console_errors = errors; metrics.checks = checks;

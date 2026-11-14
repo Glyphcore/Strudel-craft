@@ -150,6 +150,7 @@ export function after(nodesEl) {
   for (const id of P.fresh || []) { const el = nodesEl.querySelector(`.gn[data-id="${CSS.escape(id)}"]`); if (el) el.classList.add('ax-new'); }
   for (const el of nodesEl.querySelectorAll('.gk-atom')) { const c = P.cards.get(el.dataset.id); if (c) { el.classList.toggle('ax-d', c.atom.derived); P.pos.set(c.id, { x: el.style.left, y: el.style.top, h: el.style.height, label: c.label }); } }
   if (!still()) for (const id of P.gone || []) { const p = P.pos.get(id); if (!p) continue; const g = document.createElement('div'); g.className = 'gn gk-atom ax-ghost'; g.setAttribute('aria-hidden', 'true'); g.style.cssText = `left:${p.x};top:${p.y};height:${p.h}`; g.textContent = p.label; nodesEl.append(g); const rm = () => g.remove(); g.addEventListener('animationend', rm); setTimeout(rm, 600); }
+  for (const id of P.gone || []) P.pos.delete(id); // positions are kept for live cards only (the ghost above was their last use)
   P.fresh = []; P.gone = [];
 }
 
@@ -285,8 +286,10 @@ export function query({ ns = 'doc', text = '', types = null, page = 0 } = {}) {
   }
   return { rows, more };
 }
+// the inspector closed or shows something else: drop the browser state (its rows are detached DOM) and its scroll listener
+export function released() { if (B.off) { B.off(); B.off = null; } B.S = null; }
 export async function browse(p) {
-  await loadFallback();
+  await loadFallback(); released();
   const h = X.h, tg = target(p); X.disarm(); // the port is held by the browser now
   const allTypes = A.types().map((t) => t.id).filter((t) => t !== 'text');
   const S = { ns: 'doc', page: 0, types: tg && tg.types ? [...tg.types] : null, locked: !!(tg && tg.types) };
@@ -314,8 +317,9 @@ export async function browse(p) {
   const hint = tg ? `Choose an atom for ${tg.label}${tg.types ? `: ${tg.types.map(TYPE).join(' / ')} only` : ''}. The card appears once the reference exists.` : 'Browsing: arm a param or gate port first (tap it, or Connect to… in Outline) to place a reference.';
   X.openSheet(tg ? `Atom for ${tg.label}` : 'Atoms', h('div', { class: 'ax-br' }, h('p', { class: 'gx-hint' }, hint), chips, nsBar, q, status, list, more), { label: 'Atom browser' });
   // scrolling to the end of the list fetches the next page (one page per scroll step)
+  // the sheet element is the graph's one persistent inspector: exactly one scroll listener, removed when the browser closes or reopens
   const sheet = list.closest('.gx-sheet');
-  if (sheet) { const onScroll = () => { if (B.S !== S || !sheet.isConnected) return sheet.removeEventListener('scroll', onScroll); if (S.more && !S.busy && sheet.scrollTop + sheet.clientHeight >= sheet.scrollHeight - 80) { S.busy = true; S.page++; load(false); requestAnimationFrame(() => { S.busy = false; }); } }; sheet.addEventListener('scroll', onScroll, { passive: true }); }
+  if (sheet) { const onScroll = () => { if (B.S !== S) return released(); if (S.more && !S.busy && sheet.scrollTop + sheet.clientHeight >= sheet.scrollHeight - 80) { S.busy = true; S.page++; load(false); requestAnimationFrame(() => { S.busy = false; }); } }; sheet.addEventListener('scroll', onScroll, { passive: true }); B.off = () => sheet.removeEventListener('scroll', onScroll); }
   q.focus();
   return S;
 }

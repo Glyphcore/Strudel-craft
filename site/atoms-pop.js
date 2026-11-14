@@ -52,7 +52,7 @@ export async function open(view, site, { focus = true } = {}) {
       act('detach', 'Detach', detach, { title: `Replace this reference with ${d.detach}` }),
       act('card', 'Go to card', goCard)));
   document.body.append(pop); document.body.classList.add('ax-popping'); place(view, d);
-  setTimeout(() => document.addEventListener('pointerdown', outside, true), 0); document.addEventListener('keydown', onKey, true);
+  const mine = pop; setTimeout(() => { if (pop === mine) document.addEventListener('pointerdown', outside, true); }, 0); document.addEventListener('keydown', onKey, true); // closed before the tick: no stale listener
   if (focus) { const f = pop.querySelector('input, [data-ax=detach]'); if (f) f.focus({ preventScroll: true }); }
   return true;
 }

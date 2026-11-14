@@ -139,6 +139,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/hooks/p4.mjs            # component library, instances, lib: fragments (#50)
     node tests/hooks/p5.mjs            # hooks + model intellisense providers (#51)
     node tests/site/graph.mjs          # Graph view (#52); tests/site/graph_zoom.mjs, graph_scroll.mjs for the gestures
+    node tests/site/graph_soak.mjs     # Graph view open/close soak: no growth after GC across 50 rounds (#52 stability)
     node tests/site/perform.mjs        # Perform view, learn/map, lanes, looper (#55)
     node tests/site/word_intellisense.mjs  # word() completions from data/intellisense/words.json (#44)
     node tests/site/vox.mjs            # vocal banks and voxBank()
@@ -610,7 +611,9 @@ Test: `node tests/hooks/p5.mjs`.
 ## Graph (`graph.js` + `graph.css`, view 7, #52)
 Blueprint node editor over `model.js` and `library.js`, lazy-loaded on first open (not in the shell). It never writes code or model
 fields directly: every edit is one `model.js` op (or the library's `extract` / `replaceWithInstance`), so code, graph and model stay the
-same document and undo is the shared history stack.
+same document and undo is the shared history stack (up to 200 steps or 8 M characters of program text, oldest dropped first, so a
+5000-atom document keeps about 30 steps). The plan-strip playhead only runs while the strip is open, the transport plays and the Graph view
+is showing; closing the view leaves no timer, animation frame or browser listener behind.
 - Nodes come from `graph(model)`: tracks (source + chain), defs, slots with their bindings and gates, taps and wires, variables,
   markers, component instances (a missing component shows `E_COMPONENT_MISSING` on the node) and atom cards for referenced atoms
   (`atoms-ui.js`, see Atoms > UI). Placement from `layout(model)`,
@@ -630,6 +633,9 @@ same document and undo is the shared history stack.
   - The Outline row reads `requires kick ← kick`.
   - The inspector has one select per required tap. Changing it rewrites `remap` on that `hooks.inst` line in one undo step.
 - Tests: `node tests/site/graph.mjs`, `graph_zoom.mjs`, `graph_scroll.mjs`; screenshots and metrics under `graph` in `docs/screens/`.
+  `node tests/site/graph_soak.mjs [--rounds 50] [--detail]` opens and closes the view 50 times (documents, collapse + undo, the 5000-atom
+  browser, pan / zoom, lane and capture nodes) and fails if heap, DOM nodes, listeners, detached DOM, timers or observers after GC grow
+  past the bounds in the file between round 5 and the last round.
 - **Lanes in the graph** (`lanes-ui.js` + `lanes-ui.css`, #78, docs/LANES.md 11d; loaded with the Graph view, not with the shell). Drawn from `graph(model)`; edits go through `applyOp`
   (`addBranch`, `exportTap`, `addSend`, `literal`) or, where model.js has no op yet, one splice of that statement on the graph's undo stack (adding / removing a `tagged(...)` statement, a group
   send amount, a capture window).

@@ -100,12 +100,16 @@ function setText(text, { save = true } = {}) {
   if (codeTa && codeTa.value !== text) codeTa.value = text;
   render();
 }
+// undo history: whole program texts, bounded by count (200) and by total size (8 M chars, ~16 MB), so a 5000-atom document
+// (~250 kB a copy) keeps ~30 steps instead of 200 x 250 kB; the oldest steps go first
+const UNDO_N = 200, UNDO_CHARS = 8e6;
+function remember(list, t) { list.push(t); let n = 0; for (const x of list) n += x.length; while (list.length > 1 && (list.length > UNDO_N || n > UNDO_CHARS)) n -= list.shift().length; }
 function commit(text, label) {
   if (text === G.text) { say('No change'); return false; }
-  G.past.push(G.text); if (G.past.length > 200) G.past.shift(); G.future = []; setText(text); say(label); return true;
+  remember(G.past, G.text); G.future = []; setText(text); say(label); return true;
 }
-function undo() { if (!G.past.length) return say('Nothing to undo'); G.future.push(G.text); setText(G.past.pop()); say('Undo'); }
-function redo() { if (!G.future.length) return say('Nothing to redo'); G.past.push(G.text); setText(G.future.pop()); say('Redo'); }
+function undo() { if (!G.past.length) return say('Nothing to undo'); remember(G.future, G.text); setText(G.past.pop()); say('Undo'); }
+function redo() { if (!G.future.length) return say('Nothing to redo'); remember(G.past, G.text); setText(G.future.pop()); say('Redo'); }
 const cur = () => (G.path.length ? G.path[G.path.length - 1] : null);
 const readonly = () => !!(cur() || G.fixture);
 function doOps(ops, label) {
@@ -435,10 +439,12 @@ function setPane(p) { G.pane = p; root.dataset.pane = p; root.querySelectorAll('
 function openSheet(title, body, { label = title } = {}) {
   if (narrow.matches && G.pane !== 'graph') setPane('graph'); // the sheet lives over the canvas: on a phone, show it
   if (sheetResolve) { const r = sheetResolve; sheetResolve = null; r(null); }
+  if (AU && AU.released && !(body && body.classList && body.classList.contains('ax-br'))) AU.released(); // another sheet replaces the atom browser
+  sheetEl.__opts = null;
   sheetEl.replaceChildren(h('div', { class: 'gx-sh-head' }, h('h3', {}, title), h('button', { type: 'button', class: 'icon ghost', 'aria-label': 'Close inspector', 'data-act': 'close' }, '×')), body);
   sheetEl.setAttribute('aria-label', label); sheetEl.hidden = false;
 }
-function closeSheet() { if (!sheetEl) return; sheetEl.hidden = true; sheetEl.replaceChildren(); if (sheetResolve) { const r = sheetResolve; sheetResolve = null; r(null); } }
+function closeSheet() { if (!sheetEl) return; sheetEl.hidden = true; sheetEl.replaceChildren(); sheetEl.__opts = null; if (AU && AU.released) AU.released(); if (sheetResolve) { const r = sheetResolve; sheetResolve = null; r(null); } }
 function bridgeSheet(tap, param, facet, cur0) {
   const def = { lpf: [200, 4000], hpf: [50, 2000], gain: [0, 1], pan: [0, 1], room: [0, 1], speed: [0.5, 2] }[param] || [Math.min(0, cur0), Math.max(1, cur0 * 2)];
   return new Promise((resolve) => {
@@ -556,7 +562,7 @@ async function paletteSheet() {
 /* ---------------------------------------------------------------- selection, messages */
 function say(m) { if (msgEl) { msgEl.textContent = m; msgEl.classList.remove('bad'); } }
 function refuse(reason) { if (msgEl) { msgEl.textContent = 'Refused: ' + reason; msgEl.classList.add('bad'); } if (ui()) ui().toast(reason, { kind: 'error', ms: 4000 }); }
-function paintSel() { for (const el of nodesEl.querySelectorAll('.gn')) { const on = G.sel.has(el.dataset.id); el.classList.toggle('sel', on); el.querySelector('.gn-head').setAttribute('aria-pressed', String(on)); } }
+function paintSel() { for (const el of nodesEl.querySelectorAll('.gn[data-id]')) { const on = G.sel.has(el.dataset.id); el.classList.toggle('sel', on); const hd = el.querySelector('.gn-head'); if (hd) hd.setAttribute('aria-pressed', String(on)); } } // fading atom ghosts (atoms-ui.js) have no id and no head
 function selectNode(id, { add = false, inspect = true, fromCode = false } = {}) {
   G.wire = null;
   if (add) { if (G.sel.has(id)) G.sel.delete(id); else G.sel.add(id); } else { G.sel.clear(); G.sel.add(id); }
@@ -745,7 +751,7 @@ function bind() {
     }
   });
   let codeT = 0;
-  codeTa.addEventListener('input', () => { syncMirror(false); clearTimeout(codeT); codeT = setTimeout(() => { const t = codeTa.value; if (t === G.text) return; G.past.push(G.text); G.future = []; setText(t); }, 350); });
+  codeTa.addEventListener('input', () => { syncMirror(false); clearTimeout(codeT); codeT = setTimeout(() => { const t = codeTa.value; if (t === G.text) return; remember(G.past, G.text); G.future = []; setText(t); }, 350); });
   codeTa.addEventListener('scroll', () => { mirror.scrollTop = codeTa.scrollTop; });
   const fromCaret = () => {
     const p = codeTa.selectionStart; const s = G.spans.find((x) => p >= x.start && p <= x.end); if (!s || cur()) return;
@@ -755,14 +761,23 @@ function bind() {
   codeTa.addEventListener('click', fromCaret); codeTa.addEventListener('keyup', (e) => { if (/^(Arrow|Home|End|Page)/.test(e.key)) fromCaret(); });
   pointer();
   // live state from the transport: pattern wires pulse while playing; with reduced motion the state is shown without animation
-  const live = () => { const on = document.body.classList.contains('playing'); if (on !== G.live) { G.live = on; root.toggleAttribute('data-live', on); } };
-  new MutationObserver(live).observe(document.body, { attributes: true, attributeFilter: ['class'] }); live();
+  const live = () => { const on = document.body.classList.contains('playing'); if (on !== G.live) { G.live = on; root.toggleAttribute('data-live', on); } planTick(); };
+  // one observer: transport state (body.playing) and the active view (#main data-view) start or stop the plan playhead
+  const mo = new MutationObserver(live); mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  const mainEl = document.getElementById('main'); if (mainEl) mo.observe(mainEl, { attributes: true, attributeFilter: ['data-view'] });
+  document.addEventListener('visibilitychange', planTick); live();
+}
+// plan-strip playhead: runs only while the strip is shown, the transport plays, the Graph view is the active view and the tab is
+// visible; otherwise no timer or animation frame is pending (it restarts from live(), the Plan button or visibilitychange)
+const viewOn = () => { const m = document.getElementById('main'); return !!(root && root.isConnected && (!m || m.dataset.view === 'graph')); };
+function planTick() {
+  if (planTick.on || !planEl || planEl.hidden || !G.live || document.hidden || !viewOn()) return;
+  planTick.on = true;
   const tick = () => {
-    if (!planEl.hidden && G.live && !document.hidden) {
-      let bar = 1; try { const st = sc.engineState && sc.engineState(); if (st && st.scheduler) bar = st.scheduler.now() / ((G.model.settings || {}).cpb || 1) + 1; } catch (e) { bar = 1; }
-      const max = +planEl.dataset.max || 16; const hd = planEl.querySelector('.gpl-head'); if (hd) hd.style.left = `calc(var(--gpl-l) + (100% - var(--gpl-l) - 16px) * ${((bar - 1) % max) / max})`;
-    }
-    setTimeout(() => requestAnimationFrame(tick), document.hidden ? 1000 : reduce.matches ? 250 : 40);
+    if (planEl.hidden || !G.live || document.hidden || !viewOn()) { planTick.on = false; planTick.t = 0; return; }
+    let bar = 1; try { const st = sc.engineState && sc.engineState(); if (st && st.scheduler) bar = st.scheduler.now() / ((G.model.settings || {}).cpb || 1) + 1; } catch (e) { bar = 1; }
+    const max = +planEl.dataset.max || 16; const hd = planEl.querySelector('.gpl-head'); if (hd) hd.style.left = `calc(var(--gpl-l) + (100% - var(--gpl-l) - 16px) * ${((bar - 1) % max) / max})`;
+    planTick.t = setTimeout(() => requestAnimationFrame(tick), reduce.matches ? 250 : 40);
   };
   requestAnimationFrame(tick);
 }
@@ -782,7 +797,7 @@ async function onClick(e) {
     case 'gxCollapse': { const c = root.dataset.collapsed !== 'on'; root.dataset.collapsed = c ? 'on' : 'off'; b.setAttribute('aria-pressed', String(c)); b.setAttribute('aria-expanded', String(!c)); b.textContent = c ? '\u2304' : '\u2303'; b.setAttribute('aria-label', c ? 'Expand graph canvas' : 'Collapse graph canvas'); if (!c) fit(); return; }
     case 'gxReset': return resetView();
     case 'gxMulti': return setMulti(!G.multi);
-    case 'gxPlanBtn': planEl.hidden = !planEl.hidden; b.setAttribute('aria-pressed', String(!planEl.hidden)); return renderPlan();
+    case 'gxPlanBtn': planEl.hidden = !planEl.hidden; b.setAttribute('aria-pressed', String(!planEl.hidden)); renderPlan(); return planTick();
     case 'gxImport': {
       const ta = document.getElementById('code'); const t = ta && ta.value; if (!t) return refuse('The Rack editor is empty.');
       if (await ui().askYesNo({ title: 'Load Rack code', message: 'Replace the graph program with the code in the Rack editor? Undo brings it back.', okText: 'Load' })) { G.path = []; G.fixture = null; commit(t, 'Loaded the Rack code'); fit(); }

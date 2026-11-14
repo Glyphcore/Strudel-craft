@@ -116,6 +116,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
 ## Tests (from the repo root)
     node tests/site/smoke.mjs          # Playwright Chromium: keyboard, views, every recipe plays, frame time, screenshots
     node tests/site/smoke.mjs --quick  # first 4 recipes only
+    node tests/site/packs_sandbox.mjs  # sandbox host: escape attempts, protocol abuse, timeouts, consent (#71)
     node tests/site/packs.mjs          # pack loader: parity, empty lock, vectors, integrity, shadowing, lazy, offline, security (#67)
     python3 tools/packs/shim.py --check  # the shim pack pins match site/data (rerun without --check after editing data/)
     node tests/site/lighthouse.mjs     # needs `npm i -g lighthouse@12`; mobile perf / a11y scores
@@ -164,8 +165,14 @@ a stale pin is `E_PACK_HASH` and that content is missing (fail closed). `shim.py
   (`E_ATOM_HASH`), and the extension kind `x-glyphcore.words`. `layouts`, `palette-actions`, `visuals`, `hooks`, `components` are skipped with `W_PACK_KIND` (coming).
 - Integrity: manifest checked against the lock, each entry file against the manifest, before it is parsed (`E_PACK_HASH`: dropped, not cached). The browser checks
   structure per kind; the full JSON schemas run in CI (`tools/packs/packs.py validate`).
-- Code: `code: true` ingredients are **never run** here. Without a grant they are `blocked`; granted non-core ones stay `blocked` until the sandbox host (#71);
-  main-realm code from the user tier is `E_PACK_CODE_REALM`; a module without `code: true` is `E_PACK_CODE_UNDECLARED`. Program text (recipes, syntax) runs only after Load/Play.
+- Code (#71, `packs-sandbox.js`, loaded lazily): `code: true` ingredients run only in the sandbox host (a Worker in an `<iframe sandbox="allow-scripts">` with a no-network CSP,
+  data-only `MessageChannel`, timeouts, message caps, at most 4 frames; PACK_SPEC 10.4 has the threat model and the residual risks) and only when **all** hold: hash-verified,
+  `allowCode` plus a trust record for the exact code hash (`packs.grant`, called only by the pack sheet's trust dialog; `packs.revoke`, `packs.codeInfo(ref)` for the dialog data
+  and the changed module paths), and the flag is on. **Flag (default off):** `localStorage` `sc.packs.code` = `true`, or `strudelCraft.packs.setCodeEnabled(true)` (there is no
+  settings toggle yet; a ui-designer task). Built kind: `intellisense-provider` (module calls `craft.handle('complete', ({before, after, line, pos}) => [{label, category, detail,
+  info, apply}])`; starts on the first completion, never on load). Other code kinds stay `blocked` (coming). Errors: `E_PACK_CODE_GRANT`, `E_PACK_CODE_TRUST`,
+  `E_PACK_SANDBOX_TIMEOUT`, `E_PACK_SANDBOX_PROTOCOL`, `E_PACK_SANDBOX_LIMIT`. Main-realm code from the user tier is `E_PACK_CODE_REALM`; a module without `code: true` is
+  `E_PACK_CODE_UNDECLARED`. Program text (recipes, syntax) runs only after Load/Play. Test: `node tests/site/packs_sandbox.mjs`.
 - Cache and offline (`sw.js`): `sc-packs-1` holds verified manifests and entry files and is not deleted on activate. The page registers pack roots with the service worker,
   which serves them cache-first, keeps them out of the shell cache and hash-checks asset files (audio) against the verified `files.sha256` before caching (a mismatch is a 502).
   `packs.offline(id, true)` fetches the whole asset index. Mirrors are tried first, then the source; the hash tree decides. The shim lives in the deploy and uses shell caching.

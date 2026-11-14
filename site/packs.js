@@ -1,7 +1,8 @@
 // Site pack loader (docs/PACK_SPEC.md sections 8-11, 13): reads the lock layers, verifies the hash tree, applies ingredients through the
 // kind adapters of packs-kinds.js, caches verified bytes for offline use and reports the resolution. Exposed as window.strudelCraft.packs.
-// Fail closed and never throw from loading: a bad ingredient is reported once and skipped. Code ingredients are never executed here
-// (the sandbox host is #71); assets are never fetched by the loader (they stream on first play, the service worker verifies them).
+// Fail closed and never throw from loading: a bad ingredient is reported once and skipped. Code ingredients run only in the sandbox host
+// (packs-sandbox.js, #71) and only when the pack is hash-verified, the ingredient is granted AND trusted for its code hash, and the flag is on;
+// assets are never fetched by the loader (they stream on first play, the service worker verifies them).
 import { resolve as coreResolve, API, aliasOf, itemIds, verify as coreVerify, pinnedBases } from './engine/packs-core.js';
 import { KINDS, DEFERRED, sanitize, whenHas } from './packs-kinds.js';
 
@@ -26,7 +27,7 @@ export function createPacks(opts = {}) {
   const base = opts.base || (typeof document !== 'undefined' ? document.baseURI : location.href);
   const doFetch = opts.fetch || ((u, o) => globalThis.fetch(u, o));
   const store = 'storage' in opts ? opts.storage : (() => { try { return globalThis.localStorage; } catch (e) { return null; } })();
-  const CACHE = opts.cacheName || 'sc-packs-1', SHIPPED = opts.shippedLock || 'packs.lock.json', LS_LOCK = 'sc.packs.lock', LS_PREFER = 'sc.packs.prefer', LS_OFFLINE = 'sc.packs.offline';
+  const CACHE = opts.cacheName || 'sc-packs-1', SHIPPED = opts.shippedLock || 'packs.lock.json', LS_LOCK = 'sc.packs.lock', LS_PREFER = 'sc.packs.prefer', LS_OFFLINE = 'sc.packs.offline', LS_TRUST = 'sc.packs.trust', LS_CODE = 'sc.packs.code';
   const search = 'search' in opts ? opts.search : (typeof location !== 'undefined' ? location.search : '');
   const sc = () => (globalThis.strudelCraft = globalThis.strudelCraft || {});
   const lsGet = (k, d) => { try { return JSON.parse(store.getItem(k)) ?? d; } catch (e) { return d; } };
@@ -41,6 +42,23 @@ export function createPacks(opts = {}) {
   let layers = [], packs = new Map(), proposalList = [], dirty = true, cached = null, seq = 0;
   const hostCtx = { api: API, strudel: null };
   const ingQ = (p, i) => `${p.id}:${i.id}`;
+
+  // ---------------------------------------------------------------- code ingredients: consent gate (docs/PACK_SPEC.md 10.3). Nothing runs unless every condition holds.
+  const HASHRE = /^sha256:[0-9a-f]{64}$/;
+  const codeEnabled = () => !!store && lsGet(LS_CODE, false) === true; // flag, default off
+  const trustOf = (pid, iid) => (lsGet(LS_TRUST, {})[pid] || {})[iid] || null;
+  const codeHashOf = (entry, ing) => sha(new TextEncoder().encode(JSON.stringify({ manifest: entry.manifest, entry: ing.hash, modules: ing.modules.map((m) => [m.path, m.hash]) })));
+  function gate(pack, ing) { // null = may run in the sandbox; else { code, message } (the ingredient stays blocked)
+    const ad = KINDS[ing.kind], granted = (pack.entry.allowCode || []).includes(ing.id);
+    if (!granted) return { code: 'E_PACK_CODE_GRANT', message: 'needs a grant' };
+    if (!ad.sandbox || ing.modules.some((m) => m.realm === 'main')) return { code: 'E_PACK_CODE_GRANT', message: ad.sandbox ? 'main-realm code is not run by this host yet (#69)' : 'this kind has no sandbox runner on this host yet' };
+    if (!codeEnabled()) return { code: 'E_PACK_CODE_GRANT', message: 'code ingredients are switched off (feature flag)' };
+    if (!pack.entry.manifest || !HASHRE.test(String(ing.hash)) || !ing.modules.length || ing.modules.some((m) => !HASHRE.test(String(m.hash)))) return { code: 'E_PACK_HASH', message: 'code is not hash-pinned; it is never run unverified' };
+    const t = trustOf(pack.id, ing.id);
+    if (!t) return { code: 'E_PACK_CODE_TRUST', message: 'not trusted: the trust dialog was not accepted for this code' };
+    if (t.hash !== ing.codeHash) return { code: 'E_PACK_CODE_TRUST', message: 'the code changed since it was trusted (new hash); trust it again to run it' };
+    return null;
+  }
 
   // ---------------------------------------------------------------- bytes: cache-first for immutable roots, verified before they are cached
   const cachePromise = () => (typeof caches !== 'undefined' ? caches.open(CACHE).catch(() => null) : Promise.resolve(null));
@@ -137,10 +155,10 @@ export function createPacks(opts = {}) {
       if (ad.code === 'always' && !ing.code) { bad('E_PACK_CODE_UNDECLARED', `kind ${ing.kind} is code but is not marked code: true`); continue; }
       if (ing.modules.some((m) => m.realm === 'main') && !(pack.tier === 'core' || pack.tier === 'local')) { bad('E_PACK_CODE_REALM', 'main-realm code is refused outside the core and local tiers'); continue; }
       if (ing.bytes > MAX_ENTRY) { bad('E_PACK_SIZE', `entry file is ${ing.bytes} bytes (cap ${MAX_ENTRY})`); continue; }
-      if (ing.code) { // flagged code: allowCode names the ingredient for exactly this manifest hash; without the sandbox host it still does not run
-        const granted = (entry.allowCode || []).includes(ing.id);
-        ing.granted = granted; ing.blockedReason = granted && pack.tier !== 'core' ? 'sandbox host not built yet (#71)' : granted ? 'main-realm code is not run by this host yet (#69)' : 'needs a grant';
-        if (ad.code === 'always') { ing.state = 'blocked'; ing.reason = { code: 'E_PACK_CODE_GRANT', message: ing.blockedReason }; err('E_PACK_CODE_GRANT', `${ingQ(pack, ing)}: ${ing.blockedReason}`, { id: pack.id }); continue; }
+      if (ing.code) { // flagged code: runs only through the gate (grant + trust for this code hash + flag + hash-verified), only in the sandbox host
+        ing.codeHash = await codeHashOf(entry, ing);
+        const g = gate(pack, ing); ing.granted = (entry.allowCode || []).includes(ing.id); ing.blockedReason = g ? g.message : null;
+        if (ad.code === 'always' && g) { ing.state = 'blocked'; ing.reason = g; err(g.code, `${ingQ(pack, ing)}: ${g.message}`, { id: pack.id }); continue; }
       }
       if (ing.load === 'eager' && pack.tier !== 'core') { // budgets outside the shipped lock
         eagerBytes += ing.bytes || 0;
@@ -179,7 +197,8 @@ export function createPacks(opts = {}) {
         if (bad) throw Object.assign(new Error(bad), { code: 'E_PACK_SCHEMA' });
         ing.data = ad.prepare ? ad.prepare(data) : data; dirty = true;
         if (ad.apply) { const d = await ad.apply(ing, ing.data, ctxFor(pack, ing)); if (typeof d === 'function') ing.dispose = d; }
-        if (ing.code) { ing.state = 'blocked'; ing.reason = { code: 'E_PACK_CODE_GRANT', message: ing.blockedReason }; err('E_PACK_CODE_GRANT', `${ingQ(pack, ing)}: ${ing.blockedReason} (data part loaded)`, { id: pack.id }); setState(ing, 'blocked', ing.reason); }
+        if (ing.code && ad.sandbox && !gate(pack, ing)) { const d = await ad.sandbox(ing, ing.data, sandboxCtx(pack, ing, ing.data)); if (typeof d === 'function') ing.dispose = d; setState(ing, 'ready'); } // the module itself starts on first use, never here
+        else if (ing.code) { ing.state = 'blocked'; ing.reason = { code: 'E_PACK_CODE_GRANT', message: ing.blockedReason }; err('E_PACK_CODE_GRANT', `${ingQ(pack, ing)}: ${ing.blockedReason} (data part loaded)`, { id: pack.id }); setState(ing, 'blocked', ing.reason); }
         else setState(ing, 'ready');
       } catch (e) {
         ing.data = null; dirty = true;
@@ -193,7 +212,32 @@ export function createPacks(opts = {}) {
     })();
     return ing.promise;
   }
+  // the sandbox for one ingredient: module bytes come from the verified buffer (read once, hash-checked, then handed over as data); started lazily by the first call
+  function sandboxCtx(pack, ing, data) {
+    let sb = null, starting = null, src = null; const mod = ing.modules.find((m) => m.path === data.module) || null;
+    const dead = (e) => { if (['E_PACK_SANDBOX_TIMEOUT', 'E_PACK_SANDBOX_PROTOCOL'].includes(e.code) && ing.state === 'ready') { ing.sandboxFailed = true; err(e.code, `${ingQ(pack, ing)}: ${e.message}`, { id: pack.id }); setState(ing, 'failed', { code: e.code, message: e.message }); } };
+    const ensure = () => {
+      if (sb && sb.state === 'ready') return Promise.resolve(sb);
+      return (starting ||= (async () => {
+        const g = gate(pack, ing); if (g) throw Object.assign(new Error(g.message), { code: g.code }); // re-checked at every start: revoke or flag-off takes effect
+        if (!mod) throw Object.assign(new Error(`module ${data.module} is not declared in modules`), { code: 'E_PACK_CODE_UNDECLARED' });
+        if (src == null) src = new TextDecoder('utf-8', { fatal: true }).decode(await getVerified(pack, mod.path, mod.hash, 512 * 1024));
+        const m = await import('./packs-sandbox.js'); const s = m.createSandbox({ source: src }); s.on((ev) => { if (ev.type === 'stopped') dead(ev); });
+        await s.start(); sb = s; return s;
+      })().finally(() => { starting = null; }));
+    };
+    return { ensure, call: async (method, input, o) => (await ensure()).call(method, input, o), stop: () => { if (sb) sb.stop(); sb = null; src = null; }, ready: () => !!sb && sb.state === 'ready' };
+  }
+  const dropErrors = (ing) => { for (let k = errors.length - 1; k >= 0; k--) if (/^E_PACK_(CODE|HASH|SANDBOX)/.test(errors[k].code) && errors[k].message.startsWith(ingQ(ing.pack, ing) + ':')) errors.splice(k, 1); };
+  function regate(ing) { // grant / revoke / flag change: take effect now, in both directions
+    const ad = KINDS[ing.kind]; if (!ing.code || !ad.sandbox) return; const g = gate(ing.pack, ing); ing.blockedReason = g ? g.message : null; ing.granted = (ing.pack.entry.allowCode || []).includes(ing.id);
+    if (g && ing.state !== 'blocked') { try { ing.dispose && ing.dispose(); } catch (e) { /* adapter cleanup */ } ing.dispose = null; ing.promise = null; ing.data = null; ing.sandboxFailed = false; ing.state = 'blocked'; ing.reason = g; err(g.code, `${ingQ(ing.pack, ing)}: ${g.message}`, { id: ing.pack.id }); }
+    else if (!g && (ing.state === 'blocked' || ing.sandboxFailed)) { dropErrors(ing); ing.promise = null; ing.sandboxFailed = false; ing.state = 'listed'; ing.reason = null; loadIng(ing); }
+    else if (g) { ing.reason = g; }
+    dirty = true; emit('state', { pack: ing.pack.id, ingredient: ing.id });
+  }
   const findIng = (ref) => { const [p, i] = String(ref).includes(':') ? String(ref).split(':') : [null, String(ref)]; if (p) return packs.get(p)?.ingredients.get(i) || null; const all = [...packs.values()].flatMap((x) => [...x.ingredients.values()]).filter((x) => x.id === i); return all.length === 1 ? all[0] : null; };
+  const allIngsAny = () => [...packs.values()].flatMap((p) => [...p.ingredients.values()]);
   const allIngs = () => [...packs.values()].filter((p) => p.state === 'ready').flatMap((p) => [...p.ingredients.values()]);
 
   // ---------------------------------------------------------------- resolution
@@ -233,7 +277,7 @@ export function createPacks(opts = {}) {
 
   // ---------------------------------------------------------------- public data API (for the pack sheet)
   const ingInfo = (i) => ({ id: i.id, qualified: ingQ(i.pack, i), kind: i.kind, format: i.format, version: i.version, title: i.title, description: i.description, tags: i.tags, state: i.state, reason: i.reason,
-    code: i.code, granted: !!i.granted, modules: i.modules.map((m) => ({ path: m.path, hash: m.hash, realm: m.realm || 'sandbox', bytes: m.bytes })), bytes: i.bytes, hash: i.hash, path: i.path, load: i.load, license: i.license, attribution: i.attribution, redistribution: i.redistribution,
+    code: i.code, granted: !!i.granted, trusted: !!(i.code && i.codeHash && (trustOf(i.pack.id, i.id) || {}).hash === i.codeHash), codeHash: i.codeHash || null, modules: i.modules.map((m) => ({ path: m.path, hash: m.hash, realm: m.realm || 'sandbox', bytes: m.bytes })), bytes: i.bytes, hash: i.hash, path: i.path, load: i.load, license: i.license, attribution: i.attribution, redistribution: i.redistribution,
     assets: i.assets ? { files: i.assets.files, bytes: i.assets.bytes } : null, requires: i.requires });
   const list = () => [...packs.values()].map((p) => ({ id: p.id, version: p.version, title: p.title, description: p.description, tier: p.tier, layer: p.layer, source: p.source, manifest: p.manifest, priority: effective().flatMap((L) => L.packs).find((e) => e.id === p.id)?.priority ?? 0,
     state: p.state, errors: p.errors.slice(), license: p.license, licenseFile: p.licenseFile, attribution: p.attribution, authors: p.authors, homepage: p.homepage, repository: p.repository,
@@ -276,6 +320,7 @@ export function createPacks(opts = {}) {
     for (const i of pk.ingredients.values()) { try { i.dispose && i.dispose(); } catch (e) { /* adapter cleanup */ } }
     packs.delete(id); for (const L of layers) L.packs = L.packs.filter((e) => e.id !== id);
     const l = readUser(); l.packs = l.packs.filter((e) => e.id !== id); if (store) saveUser(l);
+    { const t = lsGet(LS_TRUST, {}); if (t[id]) { delete t[id]; lsSet(LS_TRUST, t); } }
     dirty = true; await evict(); emit('report', {}); emit('state', { pack: id }); return true;
   }
   function prefer(id) { // "prefer this pack": priority 10 (9.3 rule 3); written into the user lock entry, or a user-side overlay for a shipped pack
@@ -284,10 +329,26 @@ export function createPacks(opts = {}) {
     else { const p = lsGet(LS_PREFER, {}); p[id] = 10; lsSet(LS_PREFER, p); emit('lock', { layer: 'user' }); }
     dirty = true; emit('report', {}); return true;
   }
-  function grant(ref) { // records the grant on the user lock entry; it is bound to that manifest hash. Code still does not run before #71.
-    const ing = findIng(ref); if (!ing || !ing.code) return false; const l = readUser(), e = l.packs.find((x) => x.id === ing.pack.id); if (!e) return false;
-    e.allowCode = [...new Set([...(e.allowCode || []), ing.id])]; saveUser(l); ing.pack.entry.allowCode = e.allowCode; ing.granted = true; dirty = true; emit('state', { pack: ing.pack.id, ingredient: ing.id }); return true;
+  function grant(ref) { // the trust dialog was accepted: allowCode on the user lock entry + a trust record for this exact code hash. Only the dialog calls this.
+    const ing = findIng(ref); if (!ing || !ing.code || !ing.codeHash) return false; const l = readUser(), e = l.packs.find((x) => x.id === ing.pack.id); if (!e) return false;
+    e.allowCode = [...new Set([...(e.allowCode || []), ing.id])]; saveUser(l); ing.pack.entry.allowCode = e.allowCode;
+    const t = lsGet(LS_TRUST, {}); (t[ing.pack.id] ||= {})[ing.id] = { hash: ing.codeHash, modules: Object.fromEntries(ing.modules.map((m) => [m.path, m.hash])), at: Date.now() }; lsSet(LS_TRUST, t);
+    regate(ing); return true;
   }
+  function revoke(ref) {
+    const ing = findIng(ref); if (!ing) return false; const l = readUser(), e = l.packs.find((x) => x.id === ing.pack.id);
+    if (e) { e.allowCode = (e.allowCode || []).filter((x) => x !== ing.id); saveUser(l); } ing.pack.entry.allowCode = (ing.pack.entry.allowCode || []).filter((x) => x !== ing.id);
+    const t = lsGet(LS_TRUST, {}); if (t[ing.pack.id]) { delete t[ing.pack.id][ing.id]; lsSet(LS_TRUST, t); } regate(ing); return true;
+  }
+  const CAN = ['Run in an isolated frame with no network, no storage and no access to this page', 'Receive plain data for its kind (for example the text around the caret) and return plain data'];
+  const CANNOT = ['Read or change this page, your recipes, history or settings', 'Fetch anything, store anything, open windows or navigate', 'Run for more than a fraction of a second or send large messages (it is stopped)'];
+  function codeInfo(ref) { // what the trust dialog shows; `changed` lists module paths whose hash differs from the trusted version
+    const ing = findIng(ref); if (!ing || !ing.code) return null; const p = ing.pack, t = trustOf(p.id, ing.id), was = (t && t.modules) || {};
+    const changed = t ? ing.modules.filter((m) => was[m.path] !== m.hash).map((m) => m.path).concat(Object.keys(was).filter((k) => !ing.modules.some((m) => m.path === k))) : [];
+    return { pack: p.id, ingredient: ing.id, qualified: ingQ(p, ing), authors: p.authors || [], license: p.license ?? null, manifest: p.manifest, hash: ing.codeHash, modules: ing.modules.map((m) => ({ path: m.path, hash: m.hash, bytes: m.bytes })),
+      trusted: !!t && t.hash === ing.codeHash, hadTrust: !!t, changed, flag: codeEnabled(), can: CAN, cannot: CANNOT, sandboxed: !!KINDS[ing.kind].sandbox };
+  }
+  function setCodeEnabled(on) { lsSet(LS_CODE, !!on); for (const i of allIngsAny()) regate(i); emit('report', {}); return codeEnabled(); }
   const raw = async (ref) => { await indexed; const i = findIng(ref); if (!i || ['skipped', 'failed'].includes(i.state)) return null; await loadIng(i); return i.data || null; }; // an ingredient's whole parsed file (e.g. the lanes block no kind view carries)
   const describe = (ref) => { const i = findIng(ref); return i ? { ...ingInfo(i), pack: i.pack.id, manifest: i.pack.manifest, tier: i.pack.tier } : null; };
 
@@ -348,7 +409,7 @@ export function createPacks(opts = {}) {
     retry: async (kind) => { await ready; for (const i of allIngs()) if (i.kind === kind && ['failed', 'unavailable'].includes(i.state)) { i.promise = null; i.data = null; setState(i, 'listed'); } return get(kind); },
     failure: (kind) => { const i = allIngs().find((x) => x.kind === kind && ['failed', 'unavailable', 'blocked'].includes(x.state)); return i ? { ingredient: ingQ(i.pack, i), state: i.state, ...(i.reason || {}) } : null; },
     ensure: async (kind) => { await ready; await Promise.all(allIngs().filter((i) => i.kind === kind).map(loadIng)); return items(kind); },
-    add, remove, prefer, grant, offline, propose, accept, proposals: () => proposalList.map((p) => ({ ...p })), peek: async (source) => { const p = proposalList.find((x) => x.source === source && x.state === 'new'); if (!p) return null; proposalList.splice(proposalList.indexOf(p), 1); return propose(source); },
+    add, remove, prefer, grant, revoke, codeInfo, codeEnabled, setCodeEnabled, offline, propose, accept, proposals: () => proposalList.map((p) => ({ ...p })), peek: async (source) => { const p = proposalList.find((x) => x.source === source && x.state === 'new'); if (!p) return null; proposalList.splice(proposalList.indexOf(p), 1); return propose(source); },
     on: (type, fn) => { (listeners[type] ||= []).push(fn); return () => { listeners[type] = listeners[type].filter((f) => f !== fn); }; },
     registerKind: (def) => { KINDS[def.kind] = { code: 'never', check: () => null, items: () => [], view: () => [], ...def, formats: def.formats }; return () => { delete KINDS[def.kind]; }; },
     // vox banks (voxBank('<id>') in prelude/word.js asks here before its own table): bare pack name, pack name without `vox-`, or the qualified ingredient id

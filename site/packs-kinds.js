@@ -119,7 +119,27 @@ export const KINDS = {
     items: () => [],
     view: (entries) => firstWins(entries, (d) => d.items, (i) => `${i.kind}|${i.name}`).map(([i]) => i) },
   // code-bearing kinds: the data part is never run here. Without the sandbox host (#71) they are `blocked` (fail closed).
-  'intellisense-provider': { formats: ['intellisense-provider@1'], code: 'always', check: () => null, items: () => [], view: () => [] },
+  // sandboxed code kind (#71): `sandbox(ing, data, sb)` runs only when the loader's gate passes; the module starts on the first completion, never on load
+  'intellisense-provider': { formats: ['intellisense-provider@1'], code: 'always',
+    check: (d) => (typeof d.module === 'string' && d.module ? null : 'module must name a declared module path'),
+    items: () => [], view: () => [],
+    sandbox(ing, d, sb) {
+      let off = null, dead = false; const id = typeof d.id === 'string' && d.id ? d.id : ing.id;
+      const hasApi = whenHas(() => sc().intellisense && sc().intellisense.registerSource && sc().intellisense).then((api) => {
+        if (!api || dead) return; off = api.registerSource({ id: 'pack:' + ing.pack.id + ':' + ing.id, async complete(c) {
+          if (ing.state !== 'ready') return null;
+          const line = c.doc.slice(c.doc.lastIndexOf('\n', c.pos - 1) + 1, (c.doc.indexOf('\n', c.pos) + 1 || c.doc.length + 1) - 1);
+          const input = { before: c.text.slice(-2000), after: c.doc.slice(c.pos, c.pos + 500), line: line.slice(0, 500), pos: c.pos };
+          const go = sb.ensure().then(() => sb.call('complete', input, { timeoutMs: Number(d.timeoutMs) > 0 ? Math.min(Number(d.timeoutMs), 1000) : undefined }));
+          let r; try { r = await Promise.race([go, new Promise((ok) => setTimeout(() => ok(null), 400))]); } catch (e) { return null; } // a slow or failing module never blocks the popup
+          const { cleanItems } = await import('./packs-sandbox.js'); const items = cleanItems(r, id); if (!items.length) return null;
+          const w = /[\w$]*$/.exec(c.text)[0];
+          return { from: c.pos - w.length, merge: true, options: items.map((i) => ({ label: i.label, type: i.method ? 'method' : 'function', detail: i.detail, info: i.info, apply: i.apply, section: { name: i.category, rank: 3 } })) };
+        } });
+      });
+      ing.dispose = null; void hasApi;
+      return () => { dead = true; if (typeof off === 'function') off(); sb.stop(); };
+    } },
   'prelude': { formats: ['prelude@1'], code: 'always', check: () => null, items: () => [], view: () => [] },
 };
 export const knownKind = (kind) => Object.prototype.hasOwnProperty.call(KINDS, kind);

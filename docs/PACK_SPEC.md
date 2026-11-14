@@ -346,7 +346,8 @@ dialog, and a link can never carry a grant. All dialogs use the site modal, neve
 
 - **Flagged**: `code: true` plus every file in `modules` with its hash. A module or opaque def found in an ingredient without the flag is
   `E_PACK_CODE_UNDECLARED` and the ingredient is refused. Registries and the pack sheet show a "contains code" mark per ingredient.
-- **Opt-in**: runs only if its ingredient id is in `allowCode` of the lock entry whose `manifest` hash matches. A new version has a new
+- **Opt-in**: runs only if its ingredient id is in `allowCode` of the lock entry whose `manifest` hash matches, a trust record for its code
+  hash exists and the code-ingredient flag is on (section 10.4). A new version has a new
   hash, so the grant does not carry over; the site asks again and shows which modules changed. Without a grant the ingredient is `blocked`
   and its data part (type declarations, fallbacks) still loads.
 - **Never auto-run**: no grant is ever created by a registry listing, a dependency, a link, or a default. The shipped lock is the only
@@ -359,21 +360,69 @@ dialog, and a link can never carry a grant. All dialogs use the site modal, neve
   Main-realm code runs in the CLI only with `--packs-allow-code <pack-id>[,...]`, the same shape as `--hooks-allow-code`, and never from
   a default.
 
-### 10.4 Sandbox host (site)
+### 10.4 Sandbox host (site, **built for `intellisense-provider`**, #71; other kinds coming)
 
-One `<iframe sandbox="allow-scripts">` per granted pack (opaque origin, `srcdoc`), with a CSP of
-`default-src 'none'; script-src blob: 'unsafe-inline'; img-src data: blob:; style-src 'unsafe-inline'`: no network, no storage, no access
-to the page. Modules arrive as verified bytes over `postMessage`. The frame speaks a small RPC, one capability set per kind:
+Every third-party code ingredient is treated as hostile. The host is `site/packs-sandbox.js`, loaded lazily only when an ingredient passes the
+gate below; with the flag off nothing of it is fetched.
+
+**Gate (all must hold, checked again at every sandbox start).** (a) the pack and the ingredient's entry and module bytes are hash-pinned and are
+read through the loader's verified fetch path (`getVerified`, the one `packs.verify` uses); (b) the ingredient id is in the lock entry's
+`allowCode` **and** a trust record exists for this pack id and **code hash** (`sha256` of manifest hash + entry hash + `[path, hash]` of every
+module, kept in `localStorage` `sc.packs.trust`), written only by the trust dialog (`packs.grant`, called from the pack sheet's modal and
+nowhere else); a new hash asks again and the dialog lists the changed module paths (`packs.codeInfo(ref).changed`); (c) the flag `sc.packs.code`
+is on (default off; `packs.setCodeEnabled(bool)`). A share link, a `?pack=` proposal, an imported recipe or a dependency never writes a grant.
+Nothing starts on page load or on pack add: the frame starts on the first call (the first completion request) and not before.
+
+**Isolation.** One `<iframe sandbox="allow-scripts">` per ingredient (never `allow-same-origin`, `allow-top-navigation`, `allow-popups`,
+`allow-forms`, `allow-modals`, `allow-downloads`): unique opaque origin, no cookies, no `localStorage`/IndexedDB/Cache of the site, no DOM
+access to the page. The host builds the `srcdoc`; its CSP is `default-src 'none'; script-src 'unsafe-inline'; worker-src blob:; form-action
+'none'; base-uri 'none'`: no `connect-src`, `img-src`, `font-src`, `media-src`, `frame-src`. The pack's module does not run in the frame's
+window at all but in a **Worker** the frame creates from a Blob (host bootstrap + module text); that worker inherits the CSP, so `fetch`, XHR,
+WebSocket, EventSource, `sendBeacon`, `importScripts`, dynamic `import()`, a worker from a URL, `eval` and `new Function` all fail, and it has
+no `window`, `document`, `parent` or `localStorage` to name. Its only global of ours is `craft.handle(method, fn)`. A busy loop or allocation bomb
+therefore blocks the worker thread, not the page; the page and the audio clock were measured to keep running.
+
+**Protocol (data only).** The host creates a `MessageChannel`, transfers `port2` once in `{t:'init'}` (the frame ignores it unless
+`event.source === parent`, with exactly one port, once) and keeps `port1`; nothing else is accepted from the frame, so a message cannot come
+from another source. Messages are structured-clone data; the host checks every one with `measure()` (plain objects/arrays/strings/finite
+numbers/booleans/null/typed arrays only, depth <= 6, nodes <= 4000, <= 64 KiB, no ports; the frame relays only what already passes the same
+check) and by shape:
+
+| direction | message | notes |
+|---|---|---|
+| host to frame | `{t:'init'}` + port | once |
+| frame to host | `{t:'ready'}` | twice: frame up, then module ran once |
+| host to frame | `{t:'load', src}` | module text from the verified buffer, <= 512 KiB |
+| host to frame | `{t:'call', id, method, input}` | `input` plain data |
+| frame to host | `{t:'res', id, ok:true, value}` or `{t:'res', id, ok:false, error}` | `id` must be pending; `error` string <= 200 chars |
+| frame to host | `{t:'err', message}` | frame or module failure; stops the frame |
+
+Anything else (unknown `t`, unknown id, non-data value, oversize, ports, more than 40 messages per 100 ms) is a **protocol violation**: the
+iframe is removed and every pending call rejected (`E_PACK_SANDBOX_PROTOCOL`). Replies are data: the host copies known string fields into
+completion items, never evaluates them, never sets them as HTML, never passes them to `Function`/`eval`/`import`.
 
 | kind | frame receives | frame may return |
 |---|---|---|
-| `intellisense-provider` | `{before, after, line, pos}` of the current editor (no other state) | items / inline strings, within `timeoutMs` (default 150 ms, then dropped) |
-| `control-types` renderer, `param-editors` editor | the control spec and value, size, theme tokens | draws in its own frame, placed by the host; `set(value)` clamped to the spec's range |
-| `visuals` painter | the event list of the visible window, time, size | draws in its own frame |
-| `palette-actions` `run` | nothing | a list of declarative ops, executed by the host with the same checks as `do` |
+| `intellisense-provider` (**built**) | `call('complete', {before, after, line, pos})`: up to 2000 chars before the caret, 500 after, the current line, the caret offset; nothing else | `[{label, category?, detail?, info?, apply?, method?, string?}]`, <= 200 items, within `timeoutMs` (default 150 ms, max 1000; then dropped) |
+| `control-types` renderer, `param-editors` editor, `visuals` painter | coming (needs a drawing surface owned by the frame document; ui-designer) | |
+| `palette-actions` `run` | coming (the kind has no adapter yet) | declarative ops the host checks like `do` |
 
-A frame that throws, times out three times in a row or exceeds 50 ms per frame of main-thread message handling is stopped; the ingredient
-falls back to its data part. Until this host exists (#71) every non-core code ingredient is `blocked`: fail closed.
+**Resource limits.** Module start (`loadMs`) 2000 ms; per call `timeoutMs`; three timeouts in a row stop the frame (`E_PACK_SANDBOX_TIMEOUT`,
+ingredient `failed`); at most 4 sandboxes at once (`E_PACK_SANDBOX_LIMIT`, the extra one does not start); a frame that throws, violates the
+protocol or times out is removed, never restarted by itself.
+
+**Threat model: defended.** Network exfiltration from the module, reading or writing site storage, reading the page or `strudelCraft`, navigating
+or opening windows, running longer than the timeouts, flooding or oversize messages, running unverified or changed code, running without the
+opt-in, flag or trust, running on load or from a link or recipe.
+**Residual risks, stated plainly.** (1) Browser bugs: the boundary is the browser's sandbox and CSP; a Chromium escape defeats it. (2) A worker
+can burn CPU and memory on its own thread until the host stops it (up to the timeout, or `loadMs` for a loop at load); a very fast allocation
+bomb can exhaust renderer memory inside that window, and a sandboxed frame may share the page's renderer process in this browser, so the tab
+could be killed. (3) Starting or removing a frame cost up to about 100 to 140 ms of main-thread time once in the test environment. (4) A message
+is cloned on the receiving thread before it can be measured, so a single huge message costs its clone; the frame relay measures first, the host
+measures again. (5) A module can learn the editor text around the caret you send it (that is its purpose) and could fingerprint timing; it cannot
+send it anywhere. (6) Program text that you choose to run in the page (a recipe, a `#code/` link after Play) runs in the main realm with full
+page access and can write `localStorage`, including the trust record and flag; the trust gate protects against packs and links, not against code
+you yourself run in the page. (7) Main-realm kinds (`prelude`, opaque hooks) are not run at all for remote packs (`E_PACK_CODE_REALM`).
 
 ## 11. Host API (plumbing contract)
 
@@ -469,8 +518,12 @@ and `packs validate` list everything, errors exit 1.
 | `E_PACK_UNAVAILABLE` | offline and not cached |
 | `E_PACK_SIZE` | entry file or asset above the caps |
 | `E_PACK_CODE_UNDECLARED` | executable content without `code: true` / missing from `modules` |
-| `E_PACK_CODE_GRANT` | code ingredient not in `allowCode` for this manifest hash (state `blocked`) |
+| `E_PACK_CODE_GRANT` | code ingredient not in `allowCode` for this manifest hash, the code-ingredient flag is off, or the kind has no sandbox runner yet (state `blocked`) |
 | `E_PACK_CODE_REALM` | main-realm code from a tier that may not run it |
+| `E_PACK_CODE_TRUST` | granted code has no trust record for its current code hash (never trusted, or the code changed): state `blocked` (#71) |
+| `E_PACK_SANDBOX_TIMEOUT` | a sandboxed module did not start in `loadMs`, or three calls in a row exceeded `timeoutMs`: frame stopped, ingredient `failed` |
+| `E_PACK_SANDBOX_PROTOCOL` | a sandbox sent a malformed, oversize, unexpected or too many messages, or errored: frame removed, ingredient `failed` |
+| `E_PACK_SANDBOX_LIMIT` | more than 4 sandboxes at once: the extra one does not start |
 | `E_LOCK_MUTABLE` / `E_LOCK_DUPLICATE` | shipped lock with an unpinned entry; one id twice in a layer |
 | `E_NAME_COLLISION`, `E_COMPONENT_HASH`, `E_OPAQUE`, `E_UNKNOWN_METHOD` | existing codes, unchanged |
 | `W_PACK_SHADOW` | a bare name has more than one claimant (winner and losers listed) |

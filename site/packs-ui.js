@@ -112,7 +112,7 @@ function attribution(arr) { // {name, url, license, text, changes}, each field s
 }
 const licence = (l) => (l == null || l === '' ? null : h('code', { class: 'pk-lic' }, String(l)));
 const stateMark = (s) => h('span', { class: 'pk-st', 'data-s': s }, s);
-const codeMark = () => h('span', { class: 'pk-code', title: 'Contains code: never run by this site without a grant and the sandbox host' }, 'contains code');
+const codeMark = () => h('span', { class: 'pk-code', title: 'Contains code: runs only in an isolated sandbox, and only after you grant it for this exact code' }, 'contains code');
 
 function verification(x) {
   const errs = x.errors || [];
@@ -165,8 +165,8 @@ function ingredients(p, x) {
       i.reason && i.state !== 'ready' ? h('p', { class: 'pk-ing-r' }, h('code', {}, i.reason.code), ' ', i.reason.message) : null,
       lic ? h('dl', { class: 'pk-dl pk-dl-s' }, field('Licence', licence(i.license)), i.attribution ? field('Credits', attribution(i.attribution)) : null) : null,
       i.redistribution === false ? h('p', { class: 'pk-ing-m' }, 'Not for redistribution (load from its source only)') : null,
-      i.code && !i.granted && x.layer !== 'shipped' ? h('button', { type: 'button', class: 'ghost', onclick: () => doGrant(p, x, i) }, 'Grant code') : null,
-      i.code && i.granted ? h('p', { class: 'pk-ing-m' }, 'Granted for manifest ' + short(x.manifest) + '; still not run on this host yet') : null);
+      i.code && !i.trusted && x.layer !== 'shipped' ? h('button', { type: 'button', class: 'ghost', onclick: () => doGrant(p, x, i) }, 'Grant code') : null,
+      i.code && i.trusted ? h('p', { class: 'pk-ing-m' }, 'Trusted for code ' + short(i.codeHash) + (p.codeEnabled() ? '' : '; code ingredients are switched off, so it does not run')) : null);
   })));
   return det;
 }
@@ -184,7 +184,7 @@ function proposalCard(p, x) {
       field('Version', x.version != null ? String(x.version) : null), field('Licence', licence(x.license)), field('Credits', attribution(x.attribution)),
       field('Manifest', h('code', { title: x.manifest }, short(x.manifest))),
       field('Ingredients', h('ul', { class: 'pk-ppl' }, (x.ingredients || []).map((i) => h('li', {}, h('span', { class: 'pk-ing-id' }, i.id), ' ', h('span', { class: 'pk-ing-k' }, i.kind), i.bytes != null ? ' ' + bytes(i.bytes) : '', i.code ? [' ', codeMark()] : null))))));
-    if (x.code) kids.push(h('p', { class: 'pk-hint' }, 'Contains code. Adding never grants it: code stays blocked until you grant it, and this site does not run pack code yet.'));
+    if (x.code) kids.push(h('p', { class: 'pk-hint' }, 'Contains code. Adding never grants it: code stays blocked until you grant it for its exact hash, and then runs only in an isolated sandbox while code ingredients are switched on.'));
     acts.push(h('button', { type: 'button', class: 'pk-go', onclick: () => doAccept(p, x) }, 'Add pack'));
   }
   acts.push(h('button', { type: 'button', class: 'ghost', onclick: () => { dismissed.add(x.source); render(); } }, 'Dismiss'));
@@ -251,10 +251,14 @@ async function doOffline(p, x) {
   const r = await p.offline(x.id, true); delete progress[x.id];
   toast(r ? `${x.id}: kept offline (${plural(r.files || 0, 'asset file')})` : 'Could not keep ' + x.id + ' offline', { kind: r ? 'ok' : 'error' }); render();
 }
-async function doGrant(p, x, i) {
-  const ok = await ui().askYesNo({ title: 'Grant code in ' + i.qualified + '?', message: `Allows this ingredient's code for manifest ${short(x.manifest)} only; a new version asks again. This site does not run pack code yet (sandbox host #71), so it stays blocked for now.`, okText: 'Grant', danger: true });
+async function doGrant(p, x, i) { // the trust dialog (site modal): pack, author, licence as recorded, code hash, changed modules, what the code can and cannot do
+  const c = p.codeInfo(i.qualified); if (!c) { toast('Could not grant ' + i.qualified, { kind: 'error' }); return; }
+  const lines = [`Pack ${c.pack} by ${c.authors.length ? c.authors.map((a) => a.name || a).join(', ') : ND}. Licence as recorded: ${c.license ?? ND}.`, `Code hash ${c.hash}`,
+    `Modules: ${c.modules.map((m) => `${m.path} (${m.hash ? short(m.hash) : ND})`).join(', ')}.`, c.hadTrust && c.changed.length ? `CHANGED since you last trusted it: ${c.changed.join(', ')}.` : c.hadTrust ? 'Changed since you last trusted it.' : 'First time for this code.',
+    'It can: ' + c.can.join('; ') + '.', 'It cannot: ' + c.cannot.join('; ') + '.', c.flag ? 'Applies to this exact code only; a new version asks again.' : 'Code ingredients are switched off in this browser, so granting does not run it until they are switched on.'];
+  const ok = await ui().askYesNo({ title: 'Trust code in ' + i.qualified + '?', message: lines.join(' '), okText: 'Trust this code', danger: true });
   if (!ok) return;
-  toast(p.grant(i.qualified) ? 'Granted ' + i.qualified : 'Could not grant ' + i.qualified, { kind: 'ok' }); render();
+  toast(p.grant(i.qualified) ? 'Trusted ' + i.qualified : 'Could not grant ' + i.qualified, { kind: 'ok' }); render();
 }
 
 export const sheet = { open, close, get isOpen() { return !!(d && d.open); } };

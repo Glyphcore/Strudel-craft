@@ -37,6 +37,8 @@ function strudelUrl(code) { code = plain(code); const b = new TextEncoder().enco
    connection lands on our master GainNode instead, which feeds analysers and then the real destination.
    The Strudel bundle itself is not modified. */
 const Bus = { ctx: null, gain: null, an: null, anL: null, anR: null, own: new WeakSet(), db: MASTER.def };
+/* render host page (index.html?host=render, capture.js): no service worker registration, no tracker polling, no visuals loops */
+const HOST_PAGE = /[?&]host=render\b/.test(location.search);
 const nativeConnect = AudioNode.prototype.connect;
 function ensureBus(ctx) {
   if (Bus.ctx === ctx) return;
@@ -842,7 +844,7 @@ async function boot() {
     const busy = () => S.playing || S.busy || !!(document.activeElement && document.activeElement.closest && document.activeElement.closest('.cm-editor, textarea, input'));
     const offer = (w) => { if (!w || offer.shown) return; offer.shown = true; if (!busy()) { w.postMessage('SKIP_WAITING'); return; } window.strudelCraft.ui.toast('New version, tap to reload', { kind: 'info', sticky: true, onClick: () => { offer.tapped = true; w.postMessage('SKIP_WAITING'); } }); };
     let reloading = false; navigator.serviceWorker.addEventListener('controllerchange', () => { if (reloading || !offer.shown) return; if (busy() && !offer.tapped) { window.strudelCraft.ui.toast('New version ready, tap to reload', { kind: 'info', sticky: true, onClick: () => location.reload() }); return; } reloading = true; location.reload(); }); /* Play pressed while the idle update was applying: never reload under a running transport (#84) */
-    const reg = () => navigator.serviceWorker.register('sw.js').then((r) => {
+    const reg = () => HOST_PAGE ? null : navigator.serviceWorker.register('sw.js').then((r) => {
       if (r.waiting && navigator.serviceWorker.controller) offer(r.waiting);
       r.addEventListener('updatefound', () => { const w = r.installing; if (w) w.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller) offer(w); }); });
       document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') r.update().catch(() => {}); });
@@ -869,7 +871,10 @@ window.strudelCraft.transport = { play: () => play(), stop: () => stop(), toggle
     await Engine.load(); await Engine.idle(code, () => true, 'rack');
     const sch = Engine.scheduler; return { pattern: sch && sch.pattern, cps: (sch && sch.cps) || S.tempo / 240 };
   },
-  async loadSampleMap(map) { await Engine.load(); await window.samples(map); } };
+  async loadSampleMap(map) { await Engine.load(); await window.samples(map); },
+  /* render host (capture.js): the site's default sample maps when the program needs them, and a warm engine before the first request */
+  async ensureSamples(code) { await Engine.load(); if (needsSamplesFor(code) && !Engine.samplesLoaded) await loadSampleMaps(); },
+  async warm() { await Engine.load(); try { if (!window.strudelCraft.hooks && window.strudelCraft.installHooks) window.strudelCraft.installHooks(); await applyRanges(); await loadPerform(); } catch (e) { /* optional */ } } };
 window.strudelCraft.engineState = () => ({ ...Engine.state, scheduler: Engine.scheduler, playing: S.playing, srcView: S.srcView || 'rack' });
 window.__sc = { S, Engine, Bus, play, stop, select, setView, History, toggleStack, holdLink: () => { S.linkHold = true; }, audio: { resume: resumeAudio, get state() { const c = audioCtx(); return c ? c.state : 'none'; }, get peak() { return AudioSt.lastPeak; }, needsSamplesFor } };
 document.addEventListener('DOMContentLoaded', boot);

@@ -66,7 +66,8 @@ const regControls = () => sc.intellisense?.register({ id: 'controls', items: () 
 if (!regControls()) { const later = () => regControls(); if (typeof document !== 'undefined' && document.readyState === 'loading') document.addEventListener('DOMContentLoaded', later); else setTimeout(later, 0); }
 // Maps apply to events: the outermost queryArc on a pattern passes its haps through every controls engine that has maps (unmapped: no-op).
 // Pattern.prototype.queryArc is wrapped once; nested queries (hooks internals, signals) are not re-mapped.
-const mapKey = (d) => { try { const h = globalThis.reify({})[d](1).queryArc(0, 0)[0]; const k = h && h.value && Object.keys(h.value)[0]; return k || d; } catch { return d; } };
+const mapKeyMemo = new Map(); const mapKey = (d) => { if (mapKeyMemo.has(d)) return mapKeyMemo.get(d); const k = mapKey0(d); mapKeyMemo.set(d, k); return k; }; // per hap per query before: a pattern built and queried each call
+const mapKey0 = (d) => { try { const h = globalThis.reify({})[d](1).queryArc(0, 0)[0]; const k = h && h.value && Object.keys(h.value)[0]; return k || d; } catch { return d; } };
 const rangeOfDest = (d) => { const H = sc.hooks, r = H?.ranges?.[mapKey(d)] || H?.ranges?.[d] || H?.ranges?.[H?.canon ? H.canon(d) : d]; return r ? [r.min, r.max] : null; };
 let qDepth = 0;
 const wrapQuery = () => { const P = globalThis.Pattern?.prototype; if (!P || P.__scMaps || typeof P.queryArc !== 'function') return; P.__scMaps = true; const orig = P.queryArc;

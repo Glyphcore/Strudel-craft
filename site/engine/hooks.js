@@ -65,7 +65,8 @@ export function install(S, opts = {}) {
   let frozen = false; let version = 0; let tapGen = 0; let effCache = null; let bid = 0; let seq = 0; let sid = 0; const active = new Set();
   function clear() { R.markers = new Map(); R.scopes = new Map(); R.slots = new Map(); R.declared = new Set(); R.defs = new Map(); R.bindings = []; R.vars = new Map(); R.sets = []; R.wires = []; R.taps = new Map(); R.reads = new Set(); R.laneMode = 'open'; }
   clear();
-  const touch = () => { version++; tapGen++; memo.clear(); effCache = null; };
+  const touch = () => { version++; tapGen++; memo.clear(); gateAtMemo.clear(); effCache = null; };
+  const gateAtMemo = new Map(); // hooks.gateAt(g, id, quant) closures: lanes selections call it per event per query (docs/AUDIO_ENGINE.md, win W3)
   const note = (level, c, msg) => { const k = c + '|' + msg; if (seen.has(k)) return; seen.add(k); diag.push({ level, code: c, msg }); if (hooks.live) console.warn(`[hooks] ${c} ${msg}`); };
   const fail = (c, msg) => { note('error', c, msg); if (!hooks.live) throw code(c, msg); return null; };
 
@@ -637,7 +638,8 @@ export function install(S, opts = {}) {
       });
     });
   }
-  const aliasKey = (param) => { try { const h = reify({})[param](1).queryArc(0, 0)[0]; const k = h && isObj(h.value) && Object.keys(h.value)[0]; return k || param; } catch { return param; } };
+  const aliasMemo = new Map(); const aliasKey = (param) => { if (aliasMemo.has(param)) return aliasMemo.get(param); const k = aliasKey0(param); aliasMemo.set(param, k); return k; };
+  const aliasKey0 = (param) => { try { const h = reify({})[param](1).queryArc(0, 0)[0]; const k = h && isObj(h.value) && Object.keys(h.value)[0]; return k || param; } catch { return param; } };
   const rangeOf = (param, key) => { const r = hooks.ranges?.[key] || hooks.ranges?.[param] || hooks.ranges?.[hooks.canon ? hooks.canon(param) : param]; return r ? [r.min, r.max] : [0, 1]; };
   function wireFn(src, param, ref, o = {}) {
     const key = aliasKey(param); const [lo, hi] = o.range || rangeOf(param, key); const op = o.op || 'set';
@@ -867,7 +869,8 @@ export function install(S, opts = {}) {
   // Lanes support (docs/LANES.md): cache invalidation for control changes, the lane mode, gate evaluation and journal records for ext modules.
   hooks.invalidate = () => { tapGen++; return hooks; };
   hooks.laneMode = (m) => { if (m !== undefined) { if (m !== 'open' && m !== 'closed') throw code('E_BAD_ARG', `lane mode "${m}"`); R.laneMode = m; tapGen++; } return R.laneMode; };
-  hooks.gateAt = (g, id = 'gate', quant = 1) => { const gate = normGate(g); const key = `${id}|${quant}|${JSON.stringify(gate)}`; return (t, ctrl) => compileGate({ id: key, gate, label: id, quant }, cxOf(ctrl)).open(F(t)); }; // quant: boundary rounding for bindings (1 cycle); selections pass 0
+  hooks.gateAt = (g, id = 'gate', quant = 1) => { const mk = typeof g === 'string' || g == null ? `${id}|${quant}|s:${g}` : null; if (mk && gateAtMemo.has(mk)) return gateAtMemo.get(mk); const f = gateAt0(g, id, quant); if (mk) gateAtMemo.set(mk, f); return f; };
+  const gateAt0 = (g, id, quant) => { const gate = normGate(g); const key = `${id}|${quant}|${JSON.stringify(gate)}`; return (t, ctrl) => compileGate({ id: key, gate, label: id, quant }, cxOf(ctrl)).open(F(t)); }; // quant: boundary rounding for bindings (1 cycle); selections pass 0
   hooks.record = (op, args, at) => {
     const lp = livePoint(at, 1) ?? (at == null ? null : parsePoint(at, pctx())); if (!lp) throw code('E_BAD_ARG', `record "${op}" needs a point`);
     hooks.journal.push({ cycle: frStr(lp), op, args }); touch(); return hooks;

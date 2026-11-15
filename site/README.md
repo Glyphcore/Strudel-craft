@@ -94,7 +94,21 @@ CPU x4 gave 127 skipped queries and 25 dropped haps; a 2.5 s main-thread stall g
   #56 tracker does not poll while hidden, the history editor poll pauses, and the pending history autosave is flushed on `pagehide` and
   when the page is hidden. Record takes mark gaps (docs/CAPTURE.md).
 - Diagnostics: tap the audio dot: clock kind, context state, lookahead in use, ticks and late ticks, max tick gap, underruns
-  (re-anchors), played / paused time, the segment timeline and the policy.
+  (re-anchors), engine (main thread, worker clock), main-thread long tasks and the worst, late haps (scheduled after their time,
+  which superdough drops) and tight ones (under 20 ms), voices in flight (from events), query and voice-construction time,
+  played / paused time, the segment timeline, the policy, and the Engine flags (applies after reload).
+
+## Audio engine flags and measurements (docs/AUDIO_ENGINE.md, #102-#104)
+- Measured on night phonk v1/v2 at 360 px with CPU throttling (`tests/site/engine_perf.mjs`, `tests/site/engine_perf_matrix.sh`): the
+  main thread was saturated by pattern queries, mostly visuals.js re-querying four cycles on every animation frame; stalls longer than
+  the lookahead re-anchor the clock (heard as tempo jumps) and late haps are dropped by superdough (dropouts, also in bus readers).
+- Flags (`?k=v` or `localStorage sc.flag.k`, also in the audio dot's sheet): `vis=cache|requery` (visuals and highlights from a
+  per-cycle hap cache, default cache), `sched=strudel|batch` (scheduler query windows of 0.05 s or 0.2 s), `rec=host|inline`
+  (offline renders in the render host page or in the page itself, default host). The numbers before and after are in docs/AUDIO_ENGINE.md.
+- Render host: `index.html?host=render` loaded in a hidden iframe renders every offline take (Record's default Offline render,
+  Render exact, reference renders, Remake, lane captures) with its own Strudel and superdough, so the live transport keeps playing.
+- Coming: the engine worker (evaluate, compile passes and pattern queries in a Worker, the main thread only schedules voices;
+  tests/site/engine_worker.mjs).
 - API: `strudelCraft.bg = { stats(), segments(), gapsBetween(a, b), events(), setPolicy('continue' | 'pause'), setWake(bool),
   openDiagnostics(), played, paused, trace }` (`trace = true` records `[cycle, target time]` of every scheduled hap, for tests).
 - Verified in headless Chromium (`node tests/site/background.mjs`, 20 checks): hidden plus throttled main-thread timers plus CPU x4 with
@@ -163,6 +177,8 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     STRUDEL_MODULES=... node tests/vocals/formant_helper.mjs  # word().formant(true) on a synthetic bank (#57)
     node tests/site/capture.mjs        # Record panel audio at 360px: 2-cycle take, WAV 16/24 header + length, file name, quota, rename/delete modals, tab switch, exact render (#72)
     node tests/site/record_hooks.mjs   # Record hooks for lanes capture: capture.addTake (meta.from) and capture.beforeRender (#76)
+    node tests/site/record_offline.mjs --ref REF/mix.wav   # offline Record while playing vs the CLI render, determinism, Cancel, live self-check (#104); REF from tests/site/ref_render.sh REF v2 16 8
+    node tests/site/engine_perf.mjs --prog v2 --throttle 4  # audio engine measurements: long tasks, LoAF sources, profile, scheduler lateness, late haps (#102); matrix: tests/site/engine_perf_matrix.sh OUT
     node tests/site/record.mjs         # Record panel + recipes at 360px: record, download, clean-profile Remake hash match, tamper refused (#72)
     node tests/site/audio.mjs          # sound + visuals after Play at 360px DPR 3 touch: fresh profile and stale service worker (master peak, scope pixels, widgets, Stack typed program)
     node tests/site/background.mjs     # background playback: hidden + throttled timers + CPU x4, freeze, stall, suspend, policy, clamp, no drawing while hidden (--baseline measures Strudel's own clock)

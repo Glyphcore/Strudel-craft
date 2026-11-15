@@ -730,8 +730,8 @@
   {
    "label": "strudelCraft.capture.configure",
    "method": false,
-   "detail": "configure({mode, n, countIn, preRoll, name, bits, fold, audio, events, code})",
-   "info": "Record options: arm mode 'free'|'cycles'|'until', n cycles, count-in, pre-roll s, take name, WAV bits, fold tail, and the include boxes audio / events / code (code-state). Persisted in sc.record.*.",
+   "detail": "configure({source, mode, n, countIn, preRoll, name, bits, fold, audio, events, code, autoFix})",
+   "info": "Record options: source 'offline' (default: render in the background, no playback) | 'live' (master tap, self-checked), autoFix (re-render a flagged live take at once), arm mode 'free'|'cycles'|'until', n cycles, count-in, pre-roll s, take name, WAV bits, fold tail, and the include boxes audio / events / code (code-state). Persisted in sc.record.*.",
    "category": "site api"
   },
   {
@@ -745,7 +745,21 @@
    "label": "strudelCraft.capture.stop",
    "method": false,
    "detail": "stop()",
-   "info": "Stop the running take and save its recipe.",
+   "info": "Stop the running take and save its recipe; while an offline Record renders, cancel it (nothing is stored).",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.capture.recordOffline",
+   "method": false,
+   "detail": "recordOffline(n, { at, name }) -> Promise<take>",
+   "info": "Render n cycles of the current program from cycle at (default: the transport range start) in the render host: no playback, the live transport keeps playing; sample-exact; progress in the panel.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.capture.rerender",
+   "method": false,
+   "detail": "rerender(id) -> Promise<take>",
+   "info": "Replace a take's audio with an offline render of its recipe (offered for live takes flagged by their self-check: tap dropouts, events scheduled too late, clock re-anchors).",
    "category": "site api"
   },
   {

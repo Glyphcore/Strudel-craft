@@ -42,6 +42,9 @@
 const sc = (window.strudelCraft = window.strudelCraft || {});
 const LATER = ['engine/index.js', 'atoms-site.js', 'visuals.js', 'intellisense.js', 'hooks-intellisense.js', 'lanes-intellisense.js', 'word-intellisense.js',
   'history.js', 'bgplay.js', 'tracker.js', 'copycode.js', 'transport-range.js', 'capture.js', 'workspace.js', 'vox-banks.js', 'refs.js'];
+/* render host (index.html?host=render, capture.js / docs/AUDIO_ENGINE.md): only the engine side loads, no editor helpers, tracker or workspace */
+const HOSTED = /[?&]host=render\b/.test(location.search), NOHOST = ['intellisense.js', 'hooks-intellisense.js', 'lanes-intellisense.js', 'word-intellisense.js', 'tracker.js', 'copycode.js', 'workspace.js', 'history.js', 'transport-range.js', 'bgplay.js'];
+if (HOSTED) for (const u of NOHOST) LATER.splice(LATER.indexOf(u), 1);
 const CSS = ['copycode.css', 'capture.css'];
 let go; const start = new Promise((ok) => { go = ok; });
 sc.booted = start.then(async () => {

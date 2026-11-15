@@ -21,9 +21,11 @@ const numStr = (x) => String(+(+x).toFixed(3));
 const short = (h) => (h ? String(h).replace('sha256:', '').slice(0, 12) : '-');
 
 const opts = {
-  mode: get('mode', 'cycles'), n: get('n', 2), countIn: get('countIn', 0), preRoll: get('preRoll', 0),
+  source: get('source', 'offline'), autoFix: get('autoFix', false), mode: get('mode', 'cycles'), n: get('n', 2), countIn: get('countIn', 0), preRoll: get('preRoll', 0),
   name: get('name', 'take'), bits: get('bits', 16), fold: get('fold', true), audio: get('audio', true), events: get('events', true), code: get('code', true),
 };
+/* render host (docs/AUDIO_ENGINE.md, Part C): this page loaded as index.html?host=render inside a hidden iframe renders recipes for its parent */
+const HOST = (() => { try { return new URLSearchParams(location.search).get('host') === 'render'; } catch (e) { return false; } })();
 const st = { phase: 'idle', startFrame: 0, endFrame: 0, startCycle: 0, chunks: [], peak: 0, hold: 0, tap: null, tapCtx: null, open: false, rendering: false, run: {}, ev: null };
 
 /* ---------- tap ---------- */
@@ -206,6 +208,7 @@ async function record(o = {}, run = {}) {
   if (!opts.audio && !opts.events && !opts.code) { toast('Tick at least one of Audio, Events, Code-state', { kind: 'error' }); st.resolve(null); return null; }
   if (st.rendering) { toast('Rendering, wait a moment', { kind: 'info' }); st.resolve(null); return null; }
   const T = sc.transport; if (!T) { st.resolve(null); return null; }
+  if ((run.source || opts.source) === 'offline') { const r = await recordOffline(ru); st.resolve(r); return r; }
   st.phase = 'arming'; sync();
   try {
     if (!T.playing) { await T.play(); if (!T.playing) throw new Error('Press Play first (audio is blocked or nothing to play)'); if (!(await waitTicking())) throw new Error('The transport did not start'); }
@@ -227,7 +230,7 @@ async function record(o = {}, run = {}) {
     else st.endFrame = 0;
     st.src = T.source(); st.state = opts.code || opts.audio ? await codeState(st.src) : null;
     st.ev = opts.events ? { controls: [], last: new Map() } : null;
-    st.hold = 0; st.phase = 'waiting'; st.t0 = performance.now();
+    st.hold = 0; st.phase = 'waiting'; st.t0 = performance.now(); st.perf0 = null;
     sync(); loop();
   } catch (e) { st.phase = 'idle'; sync(); toast('Record: ' + (e.message || e), { kind: 'error' }); st.resolve(null); }
   return done;
@@ -245,6 +248,7 @@ function configure(o = {}) {
   sync(); return { ...opts };
 }
 function stop() {
+  if (st.phase === 'rendering') { if (st.abort) st.abort.abort(); return; }
   if (st.phase === 'waiting' && (!st.tapCtx || st.tapCtx.currentTime * sr() < st.recFrame)) { st.phase = 'idle'; sync(); toast('Record cancelled', { kind: 'info' }); st.resolve(null); return; }
   if (st.phase === 'recording' || st.phase === 'waiting') finish(st.run.mode === 'cycles' ? 'early' : 'done');
 }
@@ -254,7 +258,7 @@ function loop() {
   const step = () => {
     if (st.phase === 'idle' && !st.open) { rafOn = false; return; }
     if (st.phase === 'idle' && opts.preRoll > 0 && sc.transport && sc.transport.playing && sc.transport.bus && st.tapCtx !== sc.transport.bus.ctx && !st.attaching) { st.attaching = true; attachTap().finally(() => { st.attaching = false; }); }
-    if (st.phase === 'waiting' && st.tapCtx && st.tapCtx.currentTime * sr() >= st.recFrame) { st.phase = 'recording'; st.recAudio0 = st.tapCtx.currentTime; startCompressed(); sync(); }
+    if (st.phase === 'waiting' && st.tapCtx && st.tapCtx.currentTime * sr() >= st.recFrame) { st.phase = 'recording'; st.recAudio0 = st.tapCtx.currentTime; st.perf0 = perfNow(); startCompressed(); sync(); }
     if (st.phase === 'recording') sampleEvents();
     if ((st.phase === 'recording' || st.phase === 'waiting') && sc.transport && !sc.transport.playing) finish('transport');
     draw();
@@ -265,11 +269,26 @@ function loop() {
 /* hidden tabs throttle rAF: the worklet keeps posting chunks, so onChunk still ends cycle takes on time */
 document.addEventListener('visibilitychange', () => { if (st.phase !== 'idle' && rafOn) { cancelAnimationFrame(st.raf); clearTimeout(st.raf); rafOn = false; loop(); } });
 
+/* live take self-check: the tap stamps every block with the audio thread's frame counter (f0), so a hole in the frame sequence is a dropout of the tap;
+   the scheduler counters (bgplay.js) say whether events were dropped (target already past) or the clock re-anchored (a stall longer than the
+   lookahead: the musical position paused, i.e. tempo drift); Chrome's playout statistics, where present, count output glitches */
+function perfNow() { const s = sc.bg && sc.bg.stats ? sc.bg.stats() : null; const c = st.tapCtx; const ps = c && c.playoutStats ? c.playoutStats : null;
+  return { late: s ? s.perf.lateHaps : 0, underruns: s ? s.underruns : 0, lt: s && s.perf.longTasks != null ? s.perf.longTasks : 0, worst: s ? s.perf.longTaskWorstMs : 0, glitch: ps && ps.fallbackFramesEvents != null ? ps.fallbackFramesEvents : null }; }
+function frameGaps(a, b) { const cs = st.chunks.filter((c) => c.f0 + c.L.length > a && c.f0 < b).sort((x, y) => x.f0 - y.f0); let gaps = 0, missing = 0, at = a;
+  for (const c of cs) { if (c.f0 > at) { gaps++; missing += c.f0 - at; } at = Math.max(at, c.f0 + c.L.length); } if (at < b) { gaps++; missing += b - at; } return { gaps, missing }; }
+function selfCheck(a, b) {
+  const p1 = perfNow(), p0 = st.perf0 || p1, fg = frameGaps(a, b);
+  const c = { frameGaps: fg.gaps, missingFrames: fg.missing, droppedEvents: p1.late - p0.late, reanchors: p1.underruns - p0.underruns, longTasks: p1.lt - p0.lt, outputGlitches: p1.glitch != null && p0.glitch != null ? p1.glitch - p0.glitch : null };
+  const why = [c.frameGaps ? `${c.frameGaps} gap${c.frameGaps > 1 ? 's' : ''} in the tap (${c.missingFrames} frames)` : '', c.droppedEvents ? `${c.droppedEvents} event${c.droppedEvents > 1 ? 's' : ''} scheduled too late (dropped)` : '', c.reanchors ? `${c.reanchors} clock re-anchor${c.reanchors > 1 ? 's' : ''} (timing jumps)` : '', c.outputGlitches ? `${c.outputGlitches} output glitch${c.outputGlitches > 1 ? 'es' : ''}` : ''].filter(Boolean);
+  return { ok: !why.length, ...c, why: why.join(', ') || null };
+}
 async function finish(why) {
   if (st.phase !== 'recording' && st.phase !== 'waiting') return;
   const rate = sr(); let end = st.endFrame;
   const last = st.chunks.length ? st.chunks[st.chunks.length - 1] : null; const have = last ? last.f0 + last.L.length : st.startFrame;
   if (!end || why !== 'done' || end > have) end = Math.min(end || have, have);
+  /* the audio and its self-check are taken now, before any await: while saving, onChunk keeps only the last second of blocks */
+  const audio0 = opts.audio && end - st.recFrame >= rate * 0.05 ? slice(st.startFrame, end) : null, check = audio0 ? selfCheck(st.recFrame, end) : null;
   st.phase = 'saving'; sync();
   const webm = await stopCompressed();
   const ru = st.run, exact = ru.mode === 'cycles' && why === 'done';
@@ -277,7 +296,7 @@ async function finish(why) {
   let rec = null;
   try {
     if (recLen < rate * 0.05) throw new Error('Nothing captured');
-    const audio = opts.audio ? slice(st.startFrame, end) : null;
+    const audio = audio0;
     const includes = { audio: !!opts.audio, events: !!opts.events, code: !!opts.code };
     const C = sc.perform && sc.perform.controls;
     const events = includes.events || includes.code ? { pads: padEvents(c0, c1), hooks: hookPadEntries(c1), controls: st.ev ? st.ev.controls : [], lanes: C ? (C.toModel().automation || {}) : {} } : null;
@@ -288,16 +307,20 @@ async function finish(why) {
     if (gaps.length) timing.segments = gaps.map((g) => ({ kind: g.kind, cycle: g.cycle, audio: +(g.audio - st.recAudio0).toFixed(3), seconds: g.seconds }));
     const recipe = await buildRecipe({ name: ru.name, includes, timing, state: st.state, events });
     rec = { id: recipe.id, recipe, audio: {} };
-    if (audio) { rec.audio.capture = { L: audio.L, R: audio.R, sr: rate }; recipe.outputs.capture = { sha256: await audioHash(audio.L, audio.R), sr: rate, frames: audio.L.length, how: 'realtime', encoding: 'f32le-interleaved', envelope: envelope(audio.L, audio.R, rate) }; }
+    if (audio) { rec.audio.capture = { L: audio.L, R: audio.R, sr: rate }; recipe.outputs.capture = { sha256: await audioHash(audio.L, audio.R), sr: rate, frames: audio.L.length, how: 'realtime', encoding: 'f32le-interleaved', envelope: envelope(audio.L, audio.R, rate), check }; }
     if (audio && webm) rec.audio.webm = webm;
     await store.put(rec);
     /* reference render: an exact take with code-state gets an offline render whose hash Remake checks (stops the transport) */
-    if (audio && includes.code && exact) {
+    const flagged = check && !check.ok;
+    if (audio && includes.code && (exact || (flagged && opts.autoFix))) {
       st.phase = 'idle'; sync();
-      if (sc.transport.playing) sc.transport.stop(); await new Promise((r) => setTimeout(r, 500)); /* let live voices end and in-flight superdough() calls settle before the offline swap */
+      if (FLAG_REC === 'inline') { if (sc.transport.playing) sc.transport.stop(); await new Promise((r) => setTimeout(r, 500)); } /* inline: let live voices end before the offline swap; the host needs neither */
       const out = await renderRecipe(recipe, { sr: rate });
+      if (out && flagged) rec.replaced = { at: new Date().toISOString(), why: check.why };
       if (out) { rec.audio.render = { L: out.L, R: out.R, sr: out.sr }; recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr) }; await store.put(rec); }
     }
+    if (flagged && !rec.replaced) toast(`Live take "${recipe.name}" is flagged: ${check.why}. ${includes.code ? 'Tap to replace it with an offline render' : 'Tick Code-state to allow an offline re-render'}`, { kind: 'error', sticky: includes.code, onClick: includes.code ? () => rerender(recipe.id) : null });
+    else if (flagged) toast(`Live take "${recipe.name}" was flagged (${check.why}); it now plays its offline render`, { kind: 'info', ms: 8000 });
     if (gaps.length) toast(`Take "${recipe.name}" had ${gaps.length} interruption${gaps.length > 1 ? 's' : ''} (${gaps.reduce((a, g) => a + g.seconds, 0).toFixed(1)} s paused); the recipe marks them (timing.segments)`, { kind: 'info', ms: 8000 });
     toast(`Take saved: ${recipe.name}. Download`, { kind: 'ok', ms: 6000, onClick: () => download(recipe.id, 'recipe') });
   } catch (e) { toast((e.message === 'Nothing captured' ? '' : 'Could not save take: ') + e.message, { kind: 'error' }); rec = null; }
@@ -311,7 +334,15 @@ function mulberry(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5
    audio first. fn may call renderRecipe itself (nested renders skip the hooks). Returns an unregister function. A throwing hook aborts the render. */
 const beforeHooks = new Set();
 function beforeRender(fn) { if (typeof fn !== 'function') throw new TypeError('beforeRender needs a function'); beforeHooks.add(fn); return () => beforeHooks.delete(fn); }
+/* every offline render goes to the render host (a hidden index.html?host=render page with its own Strudel and superdough) unless the page is the
+   host itself or the flag says inline (?rec=inline / localStorage sc.flag.rec): the live engine keeps playing and is never suspended or swapped */
+const FLAG_REC = (() => { try { return new URLSearchParams(location.search).get('rec') || localStorage.getItem('sc.flag.rec') || 'host'; } catch (e) { return 'host'; } })();
 async function renderRecipe(recipe, o = {}) {
+  if (!HOST && !o.inline && FLAG_REC !== 'inline' && !st.inHook) return renderViaHost(recipe, o);
+  return renderRecipeInline(recipe, o);
+}
+async function renderRecipeInline(recipe, o = {}) {
+  if (!HOST && sc.transport && sc.transport.playing) sc.transport.stop(); /* inline renders swap superdough's context: nothing live may run meanwhile */
   if (beforeHooks.size && !st.inHook && recipe.state) {
     st.inHook = true;
     try {
@@ -323,7 +354,14 @@ async function renderRecipe(recipe, o = {}) {
   }
   return renderRecipeCore(recipe, o);
 }
-async function renderRecipeCore(recipe, { sr: rateIn } = {}) {
+/* chunked offline render (docs/AUDIO_ENGINE.md, Part C): voices are created one chunk ahead of the offline render position (OfflineAudioContext.suspend at every
+   chunk boundary), never all at once, and the main thread yields every ~8 ms of voice construction, so a long render neither freezes the page nor
+   holds every voice of the take in memory. Superdough's polyphony cap (128 voices) sees voices end as the render advances, as in live play.
+   onProgress(fraction), signal (AbortSignal: stops between chunks; the render rejects with AbortError). */
+const yieldNow = () => (globalThis.scheduler && typeof globalThis.scheduler.yield === 'function' ? globalThis.scheduler.yield() : new Promise((r) => setTimeout(r, 0)));
+const abortErr = () => Object.assign(new Error('Render cancelled'), { name: 'AbortError' });
+export const CHUNK_S = 2, LEAD_S = 0.25;
+async function renderRecipeCore(recipe, { sr: rateIn, onProgress = null, signal = null, chunk = CHUNK_S, warm: doWarm = !HOST } = {}) {
   const W = window, T = sc.transport, S = recipe.state;
   if (!S) throw new Error('This take has no code-state, so it cannot be rendered');
   if (st.rendering) throw new Error('A render is already running');
@@ -358,30 +396,44 @@ async function renderRecipeCore(recipe, { sr: rateIn } = {}) {
     wasRunning = live.state === 'running'; if (wasRunning) await live.suspend();
     const rate = rateIn || (recipe.outputs.render && recipe.outputs.render.sr) || (recipe.outputs.capture && recipe.outputs.capture.sr) || live.sampleRate;
     const frames = Math.round((end - start) / cps * rate), tail = recipe.timing.fold ? Math.round(Math.min(4, (end - start) / cps) * rate) : 0;
-    const haps = info.pattern.queryArc(start, end, { _cps: cps }).filter((h) => h.hasOnset()).sort((a, b) => a.whole.begin.valueOf() - b.whole.begin.valueOf());
+    /* the take's haps, one cycle per query with a yield between (one query over a long take was a long task); onset fragments only, so each hap once */
+    const haps = []; for (let c = start; c < end - 1e-9; c = Math.min(end, Math.floor(c + 1))) { const c1 = Math.min(end, Math.floor(c + 1)); for (const h of info.pattern.queryArc(c, c1, { _cps: cps })) if (h.hasOnset()) haps.push(h); if (signal && signal.aborted) throw abortErr(); await yieldNow(); }
+    haps.sort((a, b) => a.whole.begin.valueOf() - b.whole.begin.valueOf());
     let fails = 0, retries = 0, warm = 0;
-    const pass = async (ctx, count) => {
-      W.setAudioContext(ctx); W.setSuperdoughAudioController(null); swapped = true;
-      try { await W.loadWorklets(); } catch (e) { /* worklet effects unavailable offline */ }
-      col = collectNodes(ctx); let f = 0, r = 0;
-      for (const h of haps) {
-        h.ensureObjectValue && h.ensureObjectValue(); const t = (h.whole.begin.valueOf() - start) / cps;
-        for (let k = 0; ; k++) {
-          try { await W.superdough({ ...h.value }, t, h.duration / cps, cps, h.whole.begin.valueOf()); break; } /* a copy per call: superdough may write into the value */
-          catch (e) { if (e && e.name === 'InvalidAccessError' && k < 64) { r++; continue; } f++; break; }
-        }
+    const items = haps.map((h) => { h.ensureObjectValue && h.ensureObjectValue(); return { h, t: (h.whole.begin.valueOf() - start) / cps }; });
+    let f = 0, r = 0, idx = 0;
+    const voice = async (h, t) => {
+      for (let k = 0; ; k++) {
+        try { await W.superdough({ ...h.value }, t, h.duration / cps, cps, h.whole.begin.valueOf()); break; } /* a copy per call: superdough may write into the value */
+        catch (e) { if (e && e.name === 'InvalidAccessError' && k < 64) { r++; continue; } f++; break; }
       }
-      col.restore(); unpool(col.seen); if (count) { fails = f; retries = r; } else warm = r;
     };
-    /* warm-up pass on a throwaway context: a failed superdough() call can leave a partial voice behind, so stale live nodes are drained
-       from the pools here (never rendered) and the real pass only ever gets fresh nodes: renders are bit-identical across sessions */
-    rnd = Math.random; Math.random = mulberry(recipe.random.seed);
-    await pass(new OfflineAudioContext(2, 128, rate), false);
+    /* voices for every hap before `until` (seconds from the render start), yielding every ~8 ms */
+    const schedule = async (until) => { let y0 = performance.now(); while (idx < items.length && items[idx].t < until) { const { h, t } = items[idx++]; await voice(h, t); if (performance.now() - y0 > 8) { await yieldNow(); y0 = performance.now(); if (signal && signal.aborted) throw abortErr(); } } if (col) { unpool(col.seen); col.seen.clear(); } }; /* offline nodes lose their pool key at once: released offline nodes are torn down, never pooled, so no live voice gets one */
+    const use = async (ctx) => { W.setAudioContext(ctx); W.setSuperdoughAudioController(null); swapped = true; try { await W.loadWorklets(); } catch (e) { /* worklet effects unavailable offline */ } col = collectNodes(ctx); f = 0; r = 0; idx = 0; };
+    rnd = Math.random;
+    if (doWarm) {
+      /* warm-up pass on a throwaway context: a failed superdough() call can leave a partial voice behind, so stale live nodes are drained
+         from the pools here (never rendered) and the real pass only ever gets fresh nodes: renders are bit-identical across sessions.
+         The render host (a separate page that never plays) has no live nodes, so it skips this pass. */
+      Math.random = mulberry(recipe.random.seed);
+      await use(new OfflineAudioContext(2, 128, rate)); await schedule(Infinity); col.restore(); unpool(col.seen); warm = r;
+    }
     /* seeded Math.random for the real pass only (noise buffers, random phases); restored in finally */
     Math.random = mulberry(recipe.random.seed);
-    const off = new OfflineAudioContext(2, frames + tail, rate);
-    await pass(off, true);
-    const buf = await off.startRendering();
+    const total = frames + tail, off = new OfflineAudioContext(2, total, rate);
+    await use(off);
+    const step = Math.max(0.5, +chunk || CHUNK_S), dur = total / rate; let failed = null;
+    await schedule(step + LEAD_S);
+    for (let k = 1; k * step < dur; k++) {
+      off.suspend(k * step).then(async () => {
+        try { await yieldNow(); /* ended-voice events before the next chunk */ if (signal && signal.aborted) throw abortErr(); onProgress && onProgress(Math.min(1, (k * step) / dur)); await schedule((k + 1) * step + LEAD_S); }
+        catch (e) { failed = e; } finally { if (!failed) off.resume(); }
+      });
+    }
+    const cancelled = new Promise((_, no) => { if (signal) signal.addEventListener('abort', () => no(abortErr()), { once: true }); });
+    const buf = await Promise.race([off.startRendering(), cancelled, new Promise((_, no) => { const iv = setInterval(() => { if (failed) { clearInterval(iv); no(failed); } }, 50); off.addEventListener('complete', () => clearInterval(iv)); })]);
+    fails = f; retries = r; col.restore(); unpool(col.seen); onProgress && onProgress(1);
     await new Promise((r) => setTimeout(r, 300)); /* let the offline onended cleanups run while the offline context is still current */
     W.setAudioContext(live); W.setSuperdoughAudioController(ctl); swapped = false;
     const L = buf.getChannelData(0).slice(0, frames), R = (buf.numberOfChannels > 1 ? buf.getChannelData(1) : buf.getChannelData(0)).slice(0, frames);
@@ -399,6 +451,103 @@ async function renderRecipeCore(recipe, { sr: rateIn } = {}) {
     st.rendering = false; sync();
   }
 }
+/* ---------- render host (docs/AUDIO_ENGINE.md, Part C) ----------
+   Parent: one hidden same-origin iframe (index.html?host=render) created on first use and kept; render requests go by postMessage with the recipe
+   (plus pinned sample maps and vox banks for Remake), progress comes back, the PCM comes back as transferred Float32Arrays. Cancel posts a cancel.
+   Host: the same site with its own Strudel + superdough instance; it never plays, so its renders never touch the live context, its node pools
+   hold no live nodes, and the parent's transport is never stopped. The host's main thread is the page's main thread (same origin), so the render
+   yields every ~8 ms of voice construction and between chunks. */
+const HS = { frame: null, ready: null, seq: 0, pending: new Map(), bootMs: null };
+function hostFrame() {
+  if (HS.ready) return HS.ready;
+  const t0 = performance.now();
+  HS.ready = new Promise((ok, no) => {
+    const f = document.createElement('iframe'); f.src = new URL('index.html?host=render', document.baseURI).href; f.title = 'Offline render host'; f.setAttribute('aria-hidden', 'true'); f.tabIndex = -1; f.inert = true;
+    f.style.cssText = 'position:fixed;left:-10px;top:-10px;width:1px;height:1px;opacity:0;pointer-events:none;border:0;visibility:hidden';
+    const fail = setTimeout(() => { HS.ready = null; f.remove(); no(new Error('The offline render host did not start')); }, 90000);
+    addEventListener('message', (e) => {
+      if (e.source !== f.contentWindow || e.origin !== location.origin) return; const d = e.data || {};
+      if (d.type === 'sc-host-ready') { clearTimeout(fail); HS.bootMs = Math.round(performance.now() - t0); ok(f); return; }
+      const P = HS.pending.get(d.id); if (!P) return;
+      if (d.type === 'sc-host-progress') P.onProgress && P.onProgress(d.p);
+      else if (d.type === 'sc-host-done') { HS.pending.delete(d.id); P.ok(d.out); }
+      else if (d.type === 'sc-host-error') { HS.pending.delete(d.id); P.no(Object.assign(new Error(d.message), { name: d.name || 'Error' })); }
+    });
+    document.body.append(f); HS.frame = f;
+  });
+  return HS.ready;
+}
+function renderViaHost(recipe, o = {}) { /* one render at a time in the host: requests queue */
+  const job = (HS.queue || Promise.resolve()).catch(() => {}).then(async () => { st.rendering = true; sync(); try { return await renderViaHost0(recipe, o); } finally { st.rendering = false; sync(); } });
+  HS.queue = job; return job;
+}
+async function renderViaHost0(recipe, o = {}) {
+  const f = await hostFrame(); const id = ++HS.seq;
+  if (o.signal && o.signal.aborted) throw abortErr();
+  return new Promise((ok, no) => {
+    HS.pending.set(id, { ok, no, onProgress: o.onProgress });
+    if (o.signal) o.signal.addEventListener('abort', () => { f.contentWindow.postMessage({ type: 'sc-host-cancel', id }, location.origin); }, { once: true });
+    f.contentWindow.postMessage({ type: 'sc-host-render', id, recipe: JSON.parse(JSON.stringify(recipe)), o: { sr: o.sr, chunk: o.chunk, maps: o.maps || null, vox: o.vox || null } }, location.origin);
+  });
+}
+if (HOST) {
+  const jobs = new Map();
+  addEventListener('message', async (e) => {
+    if (e.source !== parent || e.origin !== location.origin) return; const d = e.data || {};
+    if (d.type === 'sc-host-cancel') { const j = jobs.get(d.id); if (j) j.abort(); return; }
+    if (d.type !== 'sc-host-render') return;
+    const ac = new AbortController(); jobs.set(d.id, ac); const post = (m, tr) => parent.postMessage(m, location.origin, tr || []);
+    try {
+      const T = sc.transport, code = d.recipe.state && d.recipe.state.source ? d.recipe.state.source.code : '';
+      if (d.o.maps) for (const m of d.o.maps) await T.loadSampleMap(m); else if (T.ensureSamples) await T.ensureSamples(code);
+      if (d.o.vox && window.voxBank) for (const u of d.o.vox) await window.voxBank(u);
+      let last = 0; const out = await renderRecipe(d.recipe, { sr: d.o.sr, chunk: d.o.chunk, signal: ac.signal, onProgress: (p) => { const now = performance.now(); if (p >= 1 || now - last > 200) { last = now; post({ type: 'sc-host-progress', id: d.id, p }); } } });
+      post({ type: 'sc-host-done', id: d.id, out }, [out.L.buffer, out.R.buffer]);
+    } catch (err) { post({ type: 'sc-host-error', id: d.id, message: err.message || String(err), name: err.name }); } finally { jobs.delete(d.id); }
+  });
+  const ready = () => parent.postMessage({ type: 'sc-host-ready' }, location.origin);
+  Promise.resolve(sc.packs && sc.packs.ready).catch(() => {}).then(() => (sc.transport && sc.transport.warm ? sc.transport.warm() : null)).catch(() => {}).then(ready);
+}
+
+/* ---------- offline Record (the panel's default source): the current program, N cycles from the transport range start, rendered by the host,
+   no audible playback; events = the control histories and the pad / hooks journals as they stand ---------- */
+function controlEvents(c0, c1) {
+  const C = sc.perform && sc.perform.controls; if (!C || !C.history) return [];
+  const out = []; for (const x of C.list()) { const h = C.history(x.name) || []; for (const e of h) if (isFinite(e.cycle) && e.cycle >= c0 - 1e-9 && e.cycle < c1 - 1e-9 && (e.value == null || typeof e.value !== 'object')) out.push({ cycle: +(+e.cycle).toFixed(4), control: x.name, value: e.value }); }
+  return out.sort((a, b) => a.cycle - b.cycle);
+}
+async function recordOffline(ru) {
+  const T = sc.transport; st.phase = 'rendering'; st.abort = new AbortController(); sync();
+  try {
+    const src = T.source(); if (!src || src.empty || !src.code) throw new Error('Nothing to render: pick a recipe or add Stack layers');
+    const r = sc.range && sc.range.state; const c0 = ru.at != null ? ru.at : Math.max(0, Math.floor((r && +r.start) || 0)), c1 = c0 + ru.n;
+    const cps = T.scheduler && T.scheduler.started && T.scheduler.cps ? T.scheduler.cps : (lsj('tempo') || 120) / 240;
+    const state = await codeState(src); const C = sc.perform && sc.perform.controls;
+    const includes = { audio: true, events: !!opts.events, code: true };
+    const events = { pads: padEvents(c0, c1), hooks: hookPadEntries(c1), controls: controlEvents(c0, c1), lanes: C ? (C.toModel().automation || {}) : {} };
+    const timing = { cps: +(+cps).toFixed(6), start: c0, stop: c1, cycles: ru.n, loop: true, mode: 'offline', exact: true, fold: !!opts.fold, preRoll: 0 };
+    const recipe = await buildRecipe({ name: ru.name, includes, timing, state, events });
+    const t0 = performance.now();
+    const out = await renderRecipe(recipe, { signal: st.abort.signal, onProgress: (p) => { st.progress = p; if (el.state) el.state.textContent = `Rendering offline ${Math.round(p * 100)} %`; } });
+    const rec = { id: recipe.id, recipe, audio: { render: { L: out.L, R: out.R, sr: out.sr } } };
+    recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr), ms: Math.round(performance.now() - t0) };
+    await store.put(rec); renderTakes();
+    toast(`Rendered "${recipe.name}" offline: ${ru.n} cycles from cycle ${c0}, ${out.L.length} frames${out.fails ? `, ${out.fails} events failed` : ''}. Download`, { kind: out.fails ? 'info' : 'ok', ms: 6000, onClick: () => download(recipe.id, 'recipe') });
+    return rec;
+  } catch (e) { toast(e.name === 'AbortError' ? 'Offline render cancelled' : 'Offline render: ' + (e.message || e), { kind: e.name === 'AbortError' ? 'info' : 'error' }); return null; }
+  finally { st.phase = 'idle'; st.abort = null; st.progress = 0; sync(); }
+}
+/* re-render a flagged live take from its recipe; the render becomes the take's audio (Play, WAV) and the live capture stays as outputs.capture */
+async function rerender(id) {
+  const rec = await store.get(id); if (!rec || !rec.recipe.state) { toast('This take has no code-state, so it cannot be re-rendered', { kind: 'error' }); return null; }
+  try {
+    const out = await renderRecipe(rec.recipe, { sr: rec.recipe.outputs.capture && rec.recipe.outputs.capture.sr });
+    rec.audio.render = { L: out.L, R: out.R, sr: out.sr }; rec.recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr) };
+    rec.replaced = { at: new Date().toISOString(), why: rec.recipe.outputs.capture && rec.recipe.outputs.capture.check ? rec.recipe.outputs.capture.check.why : 'manual' };
+    await store.put(rec); renderTakes(); toast(`"${rec.recipe.name}" now plays its offline render`, { kind: 'ok' }); return rec;
+  } catch (e) { toast('Re-render: ' + (e.message || e), { kind: 'error' }); return null; }
+}
+
 /* Render exact N cycles of the current program as a recipe (code-state + render output) */
 async function renderExact(n = opts.n) {
   if (st.rendering || st.phase !== 'idle') return null;
@@ -408,7 +557,7 @@ async function renderExact(n = opts.n) {
     const state = await codeState({ kind: info.kind, title: info.title, code: info.code });
     const includes = { audio: true, events: false, code: true };
     const recipe = await buildRecipe({ name: opts.name, includes, state, timing: { cps: +(+info.cps).toFixed(6), start: 0, stop: n, cycles: n, loop: true, mode: 'cycles', exact: true, fold: !!opts.fold, preRoll: 0 } });
-    if (T.playing) { T.stop(); await new Promise((r) => setTimeout(r, 150)); }
+    if (T.playing && FLAG_REC === 'inline') { T.stop(); await new Promise((r) => setTimeout(r, 150)); }
     const out = await renderRecipe(recipe);
     const rec = { id: recipe.id, recipe, audio: { render: { L: out.L, R: out.R, sr: out.sr } } };
     recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr) };
@@ -436,10 +585,11 @@ async function remake(id, { silent = false } = {}) {
     const msg = `${bad.kind} ${bad.id} (${bad.ref}): ${bad.error ? bad.error : `expected ${bad.sha}, got ${bad.have}`}. Nothing was loaded or run.`;
     await ask({ title: 'Load refused: hash mismatch', message: msg, okText: 'OK' }); toast('Remake refused: ' + bad.id, { kind: 'error' }); return { refused: bad.id, ref: bad.ref };
   }
-  for (const s of r.deps.samples) { const q = v.refs.find((x) => x.kind === 'samples' && x.id === s.bank); const map = JSON.parse(new TextDecoder().decode(q.bytes)); const sha = /@([0-9a-f]{40})\//.exec(s.source)[1]; if (typeof map._base === 'string') map._base = map._base.replace(/\/(main|master)\//, `/${sha}/`); await sc.transport.loadSampleMap(map); }
-  for (const b of r.deps.vox) if (window.voxBank) await window.voxBank(b.url);
+  const maps = []; for (const s of r.deps.samples) { const q = v.refs.find((x) => x.kind === 'samples' && x.id === s.bank); const map = JSON.parse(new TextDecoder().decode(q.bytes)); const sha = /@([0-9a-f]{40})\//.exec(s.source)[1]; if (typeof map._base === 'string') map._base = map._base.replace(/\/(main|master)\//, `/${sha}/`); maps.push(map); }
+  const vox = r.deps.vox.map((b) => b.url);
+  if (FLAG_REC === 'inline') { for (const m of maps) await sc.transport.loadSampleMap(m); for (const u of vox) if (window.voxBank) await window.voxBank(u); } /* the render host loads them itself (renderViaHost o.maps / o.vox) */
   const notes = [...v.notes]; if (r.deps.site.build !== (await siteBuild())) notes.push(`Made with site build ${r.deps.site.build}, this is ${await siteBuild()}.`);
-  let out; try { out = await renderRecipe(r); } catch (e) { toast('Remake: ' + e.message, { kind: 'error' }); return { error: e.message }; }
+  let out; try { out = await renderRecipe(r, { maps, vox }); } catch (e) { toast('Remake: ' + e.message, { kind: 'error' }); return { error: e.message }; }
   if (r.events && r.events.pads && r.events.pads.length && !r.events.hooks) notes.push('Pad events were recorded but this recipe has no hooks journal, so they are not replayed.');
   if (r.events && r.events.performance) notes.push('Looper pad takes are not replayed in offline renders yet: the render plays the program without the looper.');
   const got = await audioHash(out.L, out.R); const want = r.outputs.render ? r.outputs.render.sha256 : null;
@@ -561,6 +711,7 @@ function build() {
     <label class="switch"><input id="capInc_code" type="checkbox"${opts.code ? ' checked' : ''}><span>Code-state</span></label>
   </fieldset>
   <div class="cap-opts">
+    ${seg('source', 'Source', [['offline', 'Offline render'], ['live', 'Live capture']], opts.source)}
     ${seg('mode', 'Arm', [['free', 'Free'], ['cycles', 'Cycles'], ['until', 'Until stop']], opts.mode)}
     <div class="cap-num"><span class="cap-lab" id="capNLab">Cycles</span><div class="cap-step"><button type="button" class="ghost" data-step="-1" aria-label="Fewer cycles">-</button><output id="capN" aria-labelledby="capNLab">${opts.n}</output><button type="button" class="ghost" data-step="1" aria-label="More cycles">+</button></div></div>
     <label class="cap-sel"><span class="cap-lab">Count-in</span><select id="capCount">${[0, 1, 2, 4].map((v) => `<option value="${v}"${v === opts.countIn ? ' selected' : ''}>${v ? v + ' cyc' : 'Off'}</option>`).join('')}</select></label>
@@ -582,7 +733,7 @@ function build() {
   $('#capFile').addEventListener('change', async (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return; try { await importRecipe(f); } catch (err) { await sc.ui.askYesNo({ title: 'Import refused', message: err.message, okText: 'OK' }); } });
   w.addEventListener('change', (e) => {
     const t = e.target;
-    if (t.name === 'cap-mode') configure({ mode: t.value }); else if (t.name === 'cap-bits') configure({ bits: +t.value });
+    if (t.name === 'cap-source') configure({ source: t.value }); else if (t.name === 'cap-mode') configure({ mode: t.value }); else if (t.name === 'cap-bits') configure({ bits: +t.value });
     else if (t.id === 'capCount') configure({ countIn: +t.value }); else if (t.id === 'capPre') configure({ preRoll: +t.value });
     else if (t.id === 'capFold') configure({ fold: t.checked }); else if (t.id === 'capName') configure({ name: t.value });
     else if (t.id && t.id.startsWith('capInc_')) configure({ [t.id.slice(7)]: t.checked });
@@ -597,14 +748,16 @@ function build() {
 function sync() {
   if (!el.w) return;
   const busy = st.phase !== 'idle';
-  el.rec.setAttribute('aria-pressed', String(busy)); el.lab.textContent = st.phase === 'waiting' ? 'Cancel' : busy ? 'Stop' : 'Record';
+  el.rec.setAttribute('aria-pressed', String(busy)); el.lab.textContent = st.phase === 'waiting' || st.phase === 'rendering' ? 'Cancel' : busy ? 'Stop' : opts.source === 'offline' ? 'Render' : 'Record';
   el.w.dataset.phase = st.phase; el.tb.dataset.phase = st.phase; document.body.classList.toggle('capturing', busy);
   el.tb.setAttribute('aria-label', busy ? 'Record panel: recording' : 'Record panel');
   el.n.textContent = opts.n; $('#capExactN').textContent = opts.n; $('#capNLab').closest('.cap-num').classList.toggle('off', opts.mode !== 'cycles');
   el.exact.disabled = st.rendering || busy; el.exact.firstChild.textContent = st.rendering ? 'Rendering ' : 'Render exact ';
-  el.rec.disabled = st.rendering;
+  el.rec.disabled = st.rendering && st.phase !== 'rendering'; /* Cancel stays available while an offline Record renders */
   for (const i of el.w.querySelectorAll('.cap-opts input, .cap-opts select, .cap-opts button, .cap-inc input')) i.disabled = busy;
   const inc = ['audio', 'events', 'code'].filter((k) => opts[k]).map((k) => (k === 'code' ? 'code-state' : k)).join(' + ') || 'nothing';
+  el.w.dataset.source = opts.source;
+  if (opts.source === 'offline') { el.hint.textContent = `Offline render: ${opts.n} cycles of the current program from the transport range start, rendered in the background with no playback (the live engine keeps playing). Hooks, pads, control histories and lanes are in the recipe; Arm, count-in and pre-roll apply to live capture only.`; if (!busy) { el.state.textContent = st.rendering ? 'Rendering offline' : 'Ready'; el.time.textContent = '00:00.0'; } return; }
   el.hint.textContent = (opts.mode === 'cycles' ? `Cycles: starts and stops on cycle boundaries (${opts.n}), loops cleanly; with audio + code-state the transport stops at the end for an exact reference render.` : opts.mode === 'until' ? 'Until stop: records until you stop or the play-time limit.' : 'Free: records from now until you stop.') + ` Records ${inc}.` + (WEBM_MIME ? ' Realtime audio takes also keep a WebM/opus copy.' : ' WebM/opus copies are not available in this browser (no MediaRecorder opus); WAV only.');
   if (!busy) { el.state.textContent = st.rendering ? 'Rendering offline' : 'Ready'; el.time.textContent = '00:00.0'; }
 }
@@ -632,9 +785,11 @@ function peaksOf(a, cols = 160) {
 async function renderTakes() {
   if (!el.takes) return;
   const list = await store.list();
-  el.takes.innerHTML = list.length ? list.map(({ recipe: r, audio, remake: rm, imported }) => {
+  el.takes.innerHTML = list.length ? list.map(({ recipe: r, audio, remake: rm, imported, replaced }) => {
     const hasAudio = !!(audio.render || audio.capture || audio.remake);
-    const chips = ['audio', 'events', 'code'].filter((k) => r.includes[k]).map((k) => `<i class="cap-badge" data-type="${k}">${k === 'code' ? 'code' : k}</i>`).join('');
+    const ck = r.outputs && r.outputs.capture && r.outputs.capture.check;
+    const chips = ['audio', 'events', 'code'].filter((k) => r.includes[k]).map((k) => `<i class="cap-badge" data-type="${k}">${k === 'code' ? 'code' : k}</i>`).join('')
+      + (r.timing.mode === 'offline' ? '<i class="cap-badge" data-type="ok">offline</i>' : '') + (ck && !ck.ok ? `<i class="cap-badge" data-type="bad" title="${esc(ck.why)}">${replaced ? "replaced" : "flagged"}</i>` : '');
     const ver = rm ? (rm.match === 'tolerance' ? '<i class="cap-badge" data-type="ok">remake ~ok</i>' : rm.match === true ? '<i class="cap-badge" data-type="ok">remake ok</i>' : rm.match === false ? '<i class="cap-badge" data-type="bad">differs</i>' : '') : imported ? '<i class="cap-badge" data-type="inert">inert</i>' : '';
     const deps = r.deps.packs.length + r.deps.samples.length + r.deps.vox.length + 1;
     return `<li data-id="${r.id}" class="cap-tk">
@@ -712,6 +867,7 @@ function close() { if (!el.w) return; if (el.w.closest('.ws-body')) return; el.w
 function toggleSheet() { el.w && !el.w.hidden && !el.w.closest('.ws-body') ? close() : open(); }
 
 function init() {
+  if (HOST) return; /* the render host has no panel, prompts or store writes */
   build();
   pruneLegacy({ notify: (m) => toast(m, { kind: 'info', ms: 8000 }), ask: (o) => sc.ui.askYesNo(o), askFirst: (o) => (sc.ui.askLater || sc.ui.askYesNo)(o), saveBlob }).catch(() => {});
   const P = sc.palette; if (P) {
@@ -722,6 +878,6 @@ function init() {
     P.register({ id: 'record.import', group: 'Record', title: 'Import recipe', run: () => { open(); $('#capFile').click(); } });
   }
 }
-sc.capture = { open, close, toggle: toggleSheet, configure, record, stop, toggleRec, renderExact, remake, importRecipe, webmSupported: () => WEBM_MIME, beforeRender, addTake, exportRecipe: async (id) => exportRecipe(await store.get(id)), renderRecipe,
+sc.capture = { open, close, toggle: toggleSheet, configure, record, stop, toggleRec, renderExact, remake, rerender, recordOffline: (n, o = {}) => recordOffline({ n: Math.max(1, n | 0 || opts.n), name: o.name || opts.name, at: o.at }), host: { warm: () => hostFrame().then(() => HS.bootMs), get bootMs() { return HS.bootMs; }, get frame() { return HS.frame; } }, flag: FLAG_REC, isHost: HOST, importRecipe, webmSupported: () => WEBM_MIME, beforeRender, addTake, exportRecipe: async (id) => exportRecipe(await store.get(id)), renderRecipe,
   download, list: () => store.list().then((l) => l.map((x) => ({ ...x.recipe, remake: x.remake || null, imported: x.imported || null, audio: Object.keys(x.audio) }))), get: (id) => store.get(id), remove: (id) => store.remove(id).then(renderTakes), rename, encodeWav, opts, state: st };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

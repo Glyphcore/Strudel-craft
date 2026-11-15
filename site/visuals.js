@@ -61,15 +61,36 @@ function install() {
 
 /* painters (onPaint visuals) + highlight loop */
 let raf = 0;
+/* Hap cache (docs/AUDIO_ENGINE.md, win W1). The frame loop used to query the whole program over [t-2, t+2] on every animation frame: on the night
+   phonk v2 program that was ~60 ms of main-thread pattern query per frame, 70 % of the main thread, the largest source of long tasks and late audio
+   scheduling. Now each integer cycle is queried once (queryArc(c, c + 1)) and reused; the current and future cycles are re-queried at most once a
+   second (control moves, pads and hooks journal changes show within a second); past cycles are kept until the pattern changes. A fragment of a hap
+   that began in an earlier cached cycle is dropped (its onset fragment is already in the set). Flag: ?vis=requery (or localStorage sc.flag.vis) restores
+   the per-frame query for A/B. */
+const FLAG_VIS = (() => { try { return new URLSearchParams(location.search).get('vis') || localStorage.getItem('sc.flag.vis') || 'cache'; } catch (e) { return 'cache'; } })();
+const VC = { pat: null, cycles: new Map(), TTL: 1000, queries: 0 };
+function cachedHaps(pat, t, back) {
+  if (VC.pat !== pat) { VC.pat = pat; VC.cycles.clear(); }
+  const now = performance.now(), c0 = Math.max(0, Math.floor(t - back)), c1 = Math.floor(t + (back > 1 ? 2 : 0)), cur = Math.floor(t), out = [];
+  for (let c = c0; c <= c1; c++) {
+    let e = VC.cycles.get(c);
+    if (!e || (c >= cur && now - e.at > VC.TTL)) { let hs = []; try { hs = pat.queryArc(c, c + 1); } catch (err) { hs = []; } VC.queries++; e = { at: now, haps: hs }; VC.cycles.set(c, e); }
+    for (const h of e.haps) if (c === c0 || !h.whole || h.hasOnset()) out.push(h);
+  }
+  for (const c of VC.cycles.keys()) if (c < c0 - 1 || c > c1 + 1) VC.cycles.delete(c);
+  return out;
+}
 function frame() {
   raf = requestAnimationFrame(frame);
   if (document.hidden) return; /* hidden: no painting or highlighting */
   const st = sc.engineState && sc.engineState(); if (!st || !st.playing || !st.pattern || !st.scheduler) { clearHighlight(); return; }
   let t; try { t = st.scheduler.now(); } catch (e) { return; }
   let haps = [];
-  try { haps = st.pattern.queryArc(Math.max(0, t - 2), t + 2).filter((h) => h.hasOnset ? true : true); } catch (e) { haps = []; }
+  const painters0 = st.pattern.getPainters ? st.pattern.getPainters() : [];
+  if (FLAG_VIS === 'requery') { try { haps = st.pattern.queryArc(Math.max(0, t - 2), t + 2); } catch (e) { haps = []; } } /* A/B: the old per-frame 4-cycle query */
+  else haps = cachedHaps(st.pattern, t, painters0.length ? 2 : 1);
   try {
-    const painters = st.pattern.getPainters ? st.pattern.getPainters() : [];
+    const painters = painters0;
     if (painters.length) {
       const g = globalCtx(); if (g) g.clearRect(0, 0, g.canvas.width, g.canvas.height);
       for (const id of widgetCanvases.keys()) { const c = widgetCanvases.get(id); if (painted.has(id)) c.getContext('2d').clearRect(0, 0, c.width, c.height); }
@@ -153,4 +174,4 @@ function registerIntellisense() {
 }
 if (!registerIntellisense()) { const iv = setInterval(() => { if (registerIntellisense()) clearInterval(iv); }, 300); setTimeout(() => clearInterval(iv), 20000); }
 
-sc.visuals = { list: VIS, attach(api) { cmApi = api; const es = sc.engineState && sc.engineState(); if (lastIdle && !(es && es.playing)) idlePaint(lastIdle); }, canvas: (id) => widgetCanvases.get(id) };
+sc.visuals = { flag: FLAG_VIS, cacheStats: () => ({ queries: VC.queries, cycles: VC.cycles.size }), list: VIS, attach(api) { cmApi = api; const es = sc.engineState && sc.engineState(); if (lastIdle && !(es && es.playing)) idlePaint(lastIdle); }, canvas: (id) => widgetCanvases.get(id) };

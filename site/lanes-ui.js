@@ -410,7 +410,7 @@ function refocus(k) { lastFocus = k; if (!k) return; const el = [...X.root().que
 export function bounce(name) {
   return runCap(name, 'bounce', async (c) => {
     const pr = await prime(name, 'Bounce'); if (!pr) return null;
-    toast(`Bouncing ${name}: rendering ${c.window} offline…`, { kind: 'info', ms: 4000 });
+    toast(`Bouncing ${name}: rendering ${c.window} offline…`, { kind: 'info', ms: 20000 } /* the first offline render also boots the render host (a few seconds) */);
     const rec = await pr.C.host.bounce(name, pr.text);
     const take = (rec && rec.name) || 'capture ' + name;
     toast(`Bounced ${name}: take "${take}" is in the Record list (open it)`, { kind: 'ok', ms: 7000, onClick: () => sc.capture && sc.capture.open && sc.capture.open() });

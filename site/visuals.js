@@ -63,12 +63,12 @@ function install() {
 let raf = 0;
 /* Hap cache (docs/AUDIO_ENGINE.md, win W1). The frame loop used to query the whole program over [t-2, t+2] on every animation frame: on the night
    phonk v2 program that was ~60 ms of main-thread pattern query per frame, 70 % of the main thread, the largest source of long tasks and late audio
-   scheduling. Now each integer cycle is queried once (queryArc(c, c + 1)) and reused; the current and future cycles are re-queried at most once a
-   second (control moves, pads and hooks journal changes show within a second); past cycles are kept until the pattern changes. A fragment of a hap
+   scheduling. Now each integer cycle is queried once (queryArc(c, c + 1)) and reused; the current and future cycles are re-queried at most every
+   4 s (control moves, pads and hooks journal changes show in the visuals within 4 s; the audio is not affected); past cycles are kept until the pattern changes. A fragment of a hap
    that began in an earlier cached cycle is dropped (its onset fragment is already in the set). Flag: ?vis=requery (or localStorage sc.flag.vis) restores
    the per-frame query for A/B. */
 const FLAG_VIS = (() => { try { return new URLSearchParams(location.search).get('vis') || localStorage.getItem('sc.flag.vis') || 'cache'; } catch (e) { return 'cache'; } })();
-const VC = { pat: null, cycles: new Map(), TTL: 1000, queries: 0 };
+const VC = { pat: null, cycles: new Map(), TTL: 4000, queries: 0 };
 function cachedHaps(pat, t, back) {
   if (VC.pat !== pat) { VC.pat = pat; VC.cycles.clear(); }
   const now = performance.now(), c0 = Math.max(0, Math.floor(t - back)), c1 = Math.floor(t + (back > 1 ? 2 : 0)), cur = Math.floor(t), out = [];

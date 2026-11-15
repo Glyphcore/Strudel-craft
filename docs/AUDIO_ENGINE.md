@@ -25,7 +25,7 @@ recording needs the stack played out loud and can glitch. This page has the meas
   and optionally a live capture compared with the CLI render of the same window.
 - `tests/site/engine_perf_matrix.sh OUT_DIR [--site DIR] [--query k=v] [--cells "v2:4 v2:6h"]`: the matrix v2 and v1 at x1, x4, x6 and
   v2 at x4 hidden; one summary line per cell. Baselines are served from a `git archive` of the commit (`--site`).
-- `tests/site/lib/glitch.mjs`: a take against a reference render of the same window, on a 5 ms grid: onset match and deviation,
+- `tests/site/lib/glitch.mjs`: a take against a reference render of the same window, on a 5 ms grid (aligned within +-150 ms): onset match and deviation,
   drift (ms per s), dropouts (>= 10 ms where the reference is loud and the take is >= 18 dB below), clicks, level within 3 dB.
 - `tests/site/ref_render.sh OUT v2 16 8 [BPM]`: the CLI reference (cycles 15..23). The site's Tempo knob rewrites `setcpm(...)` to
   the knob's BPM (120 by default), so the reference is rendered at the same tempo.
@@ -57,7 +57,7 @@ Flags: URL `?k=v` or `localStorage sc.flag.k`, also selectable in the audio dot'
 
 | flag | values (default first) | what |
 |---|---|---|
-| `vis` | `cache`, `requery` | W1: visuals and highlights read a per-cycle hap cache: each integer cycle is queried once (`queryArc(c, c+1)`), current and future cycles at most once a second (control moves and pads show within a second), past cycles kept until the pattern changes; without painters only 2 cycles are needed. `requery` is the old per-frame query |
+| `vis` | `cache`, `requery` | W1: visuals and highlights read a per-cycle hap cache: each integer cycle is queried once (`queryArc(c, c+1)`), current and future cycles at most every 4 s (control moves and pads show in the visuals within 4 s; the sound is unaffected), past cycles kept until the pattern changes; without painters only 2 cycles are needed. `requery` is the old per-frame query |
 | `sched` | see section 5 | W2: scheduler query windows of 0.05 s (`strudel`, 20 queries per second) or 0.2 s (`batch`, 5 per second; audio is scheduled 0.2 to 0.4 s ahead) |
 | `late` | `reanchor`, `drop` | a window whose first onset is already late (the query or a stall ate the margin) moves the clock by that much, so every hap keeps its place relative to the others and nothing is dropped; counted as a re-anchor (and in a take's self-check). `drop` is Strudel's behaviour |
 | `rec` | `host`, `inline` | Part C: offline renders in the render host page, or in the page itself (stops the transport) |

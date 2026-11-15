@@ -328,17 +328,21 @@ async function finish(why) {
 }
 
 /* ---------- offline render of a recipe (Remake, reference render, exact render) ---------- */
+const seedWorklet = (seed) => `{let a=${seed >>> 0};Math.random=()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;};}`;
 function mulberry(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 /* Hook 1 (#76): beforeRender(fn) registers an async fn(recipe, { code }) that runs once before every offline render (exact render, reference
    render, Remake) with the recipe's program already compiled, so pattern-level captures (lanesCapture.host.resolve) can render and register their
    audio first. fn may call renderRecipe itself (nested renders skip the hooks). Returns an unregister function. A throwing hook aborts the render. */
-const beforeHooks = new Set();
-function beforeRender(fn) { if (typeof fn !== 'function') throw new TypeError('beforeRender needs a function'); beforeHooks.add(fn); return () => beforeHooks.delete(fn); }
+const beforeHooks = new Set(), hostHooks = new WeakSet();
+/* { host: true }: the hook is one the render host registers for itself too (engine/index.js lane captures), so a render sent to the host skips the
+   page's copy. A page hook without it must run where the render runs, so a render with such a hook renders in the page (rec=inline behaviour) */
+function beforeRender(fn, o = {}) { if (typeof fn !== 'function') throw new TypeError('beforeRender needs a function'); beforeHooks.add(fn); if (o.host) hostHooks.add(fn); return () => beforeHooks.delete(fn); }
 /* every offline render goes to the render host (a hidden index.html?host=render page with its own Strudel and superdough) unless the page is the
    host itself or the flag says inline (?rec=inline / localStorage sc.flag.rec): the live engine keeps playing and is never suspended or swapped */
 const FLAG_REC = (() => { try { return new URLSearchParams(location.search).get('rec') || localStorage.getItem('sc.flag.rec') || 'host'; } catch (e) { return 'host'; } })();
 async function renderRecipe(recipe, o = {}) {
-  if (!HOST && !o.inline && FLAG_REC !== 'inline' && !st.inHook) return renderViaHost(recipe, o);
+  const pageHook = [...beforeHooks].some((f) => !hostHooks.has(f));
+  if (!HOST && !o.inline && FLAG_REC !== 'inline' && !st.inHook && !pageHook) return renderViaHost(recipe, o);
   return renderRecipeInline(recipe, o);
 }
 async function renderRecipeInline(recipe, o = {}) {
@@ -410,7 +414,11 @@ async function renderRecipeCore(recipe, { sr: rateIn, onProgress = null, signal 
     };
     /* voices for every hap before `until` (seconds from the render start), yielding every ~8 ms */
     const schedule = async (until) => { let y0 = performance.now(); while (idx < items.length && items[idx].t < until) { const { h, t } = items[idx++]; await voice(h, t); if (performance.now() - y0 > 8) { await yieldNow(); y0 = performance.now(); if (signal && signal.aborted) throw abortErr(); } } if (col) { unpool(col.seen); col.seen.clear(); } }; /* offline nodes lose their pool key at once: released offline nodes are torn down, never pooled, so no live voice gets one */
-    const use = async (ctx) => { W.setAudioContext(ctx); W.setSuperdoughAudioController(null); swapped = true; try { await W.loadWorklets(); } catch (e) { /* worklet effects unavailable offline */ } col = collectNodes(ctx); f = 0; r = 0; idx = 0; };
+    const use = async (ctx) => { W.setAudioContext(ctx); W.setSuperdoughAudioController(null); swapped = true;
+      /* the worklets' Math.random (supersaw phases and other audio-thread randomness) lives in the context's AudioWorkletGlobalScope: a module
+         loaded before superdough's own seeds it with the recipe seed, so those phases repeat render after render */
+      try { await ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([seedWorklet(recipe.random.seed)], { type: 'application/javascript' }))); } catch (e) { /* no worklets */ }
+      try { await W.loadWorklets(); } catch (e) { /* worklet effects unavailable offline */ } col = collectNodes(ctx); f = 0; r = 0; idx = 0; };
     rnd = Math.random;
     if (doWarm) {
       /* warm-up pass on a throwaway context: a failed superdough() call can leave a partial voice behind, so stale live nodes are drained
@@ -506,7 +514,12 @@ if (HOST) {
     } catch (err) { post({ type: 'sc-host-error', id: d.id, message: err.message || String(err), name: err.name }); } finally { jobs.delete(d.id); }
   });
   const ready = () => parent.postMessage({ type: 'sc-host-ready' }, location.origin);
-  Promise.resolve(sc.packs && sc.packs.ready).catch(() => {}).then(() => (sc.transport && sc.transport.warm ? sc.transport.warm() : null)).catch(() => {}).then(ready);
+  /* superdough caches its white / pink / brown noise buffers for the life of the page (noise.mjs); filled here once from a fixed seed, before any
+     render, every render of the host sees the same buffers and the same Math.random sequence, so noise takes repeat too */
+  const fillNoise = async () => { const W = window; if (typeof W.superdough !== 'function' || typeof W.setAudioContext !== 'function') return; const live = W.getAudioContext(), ctl = W.getSuperdoughAudioController(), rnd = Math.random;
+    try { const off = new OfflineAudioContext(2, 2205, 44100); W.setAudioContext(off); W.setSuperdoughAudioController(null); Math.random = mulberry(0x5c0153); for (const n of ['white', 'pink', 'brown']) { try { await W.superdough({ s: n, gain: 0 }, 0.01, 0.01, 1, 0); } catch (e) { /* type missing */ } } await off.startRendering(); }
+    finally { Math.random = rnd; W.setAudioContext(live); W.setSuperdoughAudioController(ctl); } };
+  Promise.resolve(sc.packs && sc.packs.ready).catch(() => {}).then(() => (sc.transport && sc.transport.warm ? sc.transport.warm() : null)).then(fillNoise).catch(() => {}).then(ready);
 }
 
 /* ---------- offline Record (the panel's default source): the current program, N cycles from the transport range start, rendered by the host,

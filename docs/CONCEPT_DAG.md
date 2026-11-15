@@ -80,8 +80,19 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | hooks-pack-site-adapter (site loads hooks@1 racks) | track-demo-night-phonk, packs-p2 | built (critic pending) | #91 |
 | map-gate-grammar (hooks.map gates: unions, bar points) | controls-engine | issued | #90 |
 | word-lane-disconnect (site page errors with word() lanes in send programs) | lanes-audio, vox banks | issued | #92 |
+| audio-engine-measurements (long tasks, LoAF, profile, late haps, glitch metric) | background-playback | built | #102 |
+| visuals-hap-cache (per-cycle query, flag vis) | audio-engine-measurements | built | #103 |
+| scheduler-query-batching (flag sched) | audio-engine-measurements | built | #103 |
+| late-window-reanchor (flag late) | audio-engine-measurements | built | #103 |
+| per-query-memo (gateAt, mapKey, aliasKey) | audio-engine-measurements | built | #103 |
+| engine-diagnostics (long tasks, late haps, voices in flight, flags) | audio-engine-measurements | built | #103 |
+| engine-worker (evaluate + passes + queries in a Worker) | visuals-hap-cache, late-window-reanchor | designed | #103 (B1) |
+| offline-render-host (hidden page, own superdough, chunked, cancellable) | record-recipes | built | #104 |
+| offline-record-default (no speakers) | offline-render-host | built | #104 |
+| live-take-self-check + re-render | offline-render-host, audio-engine-measurements | built | #104 |
 
 ## Waiting nodes
+- audio engine (#102-#104): measured first (#102); B wins behind flags (vis, sched, late) and C (render host, offline Record default, self-checking live takes) built; the engine worker (B1) is designed in docs/AUDIO_ENGINE.md 7 and waits for its own issue once the flag numbers settle.
 - live-mic-input: Strudel has no live input; needs browser/Node audio capture and an AGPL licence-decision issue before touching Strudel code (do not copy PR #1414). Size L. Waits for #14 and that decision.
 - resynthesis: own design (STFT partial tracking + additive render -> WAV -> sample map), size L; waits for #16 to settle the shared STFT/mask helpers. No Harmor copying.
 - vocal-chop-slicer (user stems -> slice map): slicer #4 accepted; next after #39. Size M.

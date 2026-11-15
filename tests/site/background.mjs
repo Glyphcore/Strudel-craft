@@ -104,7 +104,7 @@ else {
   const seg = await S(() => window.strudelCraft.bg.segments().filter((s) => s.kind === 'paused').map((s) => s.ms));
   check('freeze recorded as a paused segment (>= 2.5 s)', seg.some((ms) => ms >= 2500), JSON.stringify(seg));
   const toast = await S(() => [...document.querySelectorAll('.toast')].map((t) => t.textContent).find((t) => /Resumed at cycle/.test(t)) || '');
-  check('"Resumed at cycle N, paused m:ss" toast', /Resumed at cycle \d+, paused 0:0[2-4]/.test(toast), toast);
+  check('"Resumed at cycle N, paused m:ss" toast', /Resumed at cycle \d+, paused (00:|0:)0[2-4]/.test(toast), toast);
 }
 
 /* 2b. a 2.5 s stall with no lifecycle events (a busy or starved main thread): the clock re-anchors the same cycle and records the pause */

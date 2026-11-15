@@ -20,12 +20,13 @@ page.on('pageerror', (e) => errs.push(String(e))); page.on('console', (m) => { i
 await page.route(/api\.github\.com/, (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '[]' }));
 await page.goto(`http://localhost:${server.address().port}/index.html`); await page.waitForSelector('#list li[data-id]');
 await page.click('#list li[data-id] .row');
+await page.waitForSelector('#capBtn', { timeout: 60000 }); /* capture.js loads after the shell's first frame or the first input (#59) */
 const lay = await page.evaluate(() => { const b = document.getElementById('capBtn').getBoundingClientRect(); return { w: b.width, h: b.height, sw: document.documentElement.scrollWidth }; });
 ok('transport record button 44px, no horizontal overflow at 360', lay.w >= 44 && lay.h >= 44 && lay.sw <= 360, JSON.stringify(lay));
 const pal = await page.evaluate(() => window.strudelCraft.palette.list().filter((i) => i.id.startsWith('record.')).map((i) => i.id));
 ok('palette record.* actions registered', pal.length >= 4, pal.join(','));
 await page.click('#capBtn'); await page.waitForSelector('#capSheet:not([hidden])');
-await page.evaluate(() => window.strudelCraft.capture.configure({ audio: true, events: false, code: false, mode: 'cycles', n: 2, name: 'loop' }));
+await page.evaluate(() => window.strudelCraft.capture.configure({ source: 'live', audio: true, events: false, code: false, mode: 'cycles', n: 2, name: 'loop' }));
 const tgt = await page.evaluate(() => { const els = [...document.querySelectorAll('#capSheet button, #capSheet select, #capSheet input[type=text], #capSheet .cap-seg span')].filter((e) => e.getClientRects().length); const small = els.filter((e) => { const r = e.getBoundingClientRect(); return r.height < 43.5 && r.width < 43.5; }).map((e) => e.id || e.className || e.tagName); return { n: els.length, small, right: Math.max(...els.map((e) => e.getBoundingClientRect().right)), left: Math.min(...els.map((e) => e.getBoundingClientRect().left)) }; });
 ok('panel targets >= 44px (one side) and fit 360', tgt.small.length === 0 && tgt.left >= 0 && tgt.right <= 360.5, JSON.stringify(tgt));
 const q = await page.textContent('#capQuota').catch(() => '');
@@ -65,7 +66,7 @@ const left = await page.evaluate(async () => (await window.strudelCraft.capture.
 ok('rename and delete via site modals, no native dialog', nm === 'renamed' && left === 0 && native === 0, `${nm} left ${left} native ${native}`);
 
 // recording survives Rack -> Stack -> Rack (free mode)
-await page.evaluate(() => window.strudelCraft.capture.configure({ mode: 'free', name: 'free' }));
+await page.evaluate(() => window.strudelCraft.capture.configure({ source: 'live', mode: 'free', name: 'free' }));
 await page.click('#capRec'); await page.waitForFunction(() => window.strudelCraft.capture.state.phase === 'recording', null, { timeout: 15000 });
 await page.evaluate(() => { location.hash = '#stack'; }); await page.waitForTimeout(1200);
 const mid = await page.evaluate(() => window.strudelCraft.capture.state.phase);
@@ -82,7 +83,7 @@ const probe = (arm) => page.evaluate(async (arm) => {
   const sc = window.strudelCraft, ctx = sc.transport.bus.ctx; const an = ctx.createAnalyser(); an.fftSize = 2048;
   if (!sc.transport.playing) await window.__sc.play();
   await new Promise((r) => setTimeout(r, 600));
-  if (arm) { sc.capture.configure({ mode: 'free', audio: true, events: false, code: false }); sc.capture.record(); await new Promise((r) => setTimeout(r, 800)); }
+  if (arm) { sc.capture.configure({ source: 'live', mode: 'free', audio: true, events: false, code: false }); sc.capture.record(); await new Promise((r) => setTimeout(r, 800)); }
   const tapNode = sc.capture.state.tap; const before = window.__connects.length;
   /* measure the signal that reaches the destination: the master bus node output, sampled the same way in both runs */
   sc.transport.bus.node.connect(an); const buf = new Float32Array(an.fftSize); let peak = 0, sum = 0, n = 0;
@@ -99,7 +100,7 @@ ok('tap: master output identical armed vs disarmed (peak and RMS within 0.5 dB)'
 // compressed take (webm/opus through MediaRecorder on the same bus node)
 const wsup = await page.evaluate(() => window.strudelCraft.capture.webmSupported());
 if (wsup) {
-  await page.evaluate(() => window.strudelCraft.capture.configure({ mode: 'cycles', n: 2, name: 'comp', audio: true, events: false, code: false }));
+  await page.evaluate(() => window.strudelCraft.capture.configure({ source: 'live', mode: 'cycles', n: 2, name: 'comp', audio: true, events: false, code: false }));
   await page.evaluate(() => window.strudelCraft.capture.record());
   await page.waitForFunction(() => window.strudelCraft.capture.state.phase === 'idle' && window.strudelCraft.capture.state.rendering === false, null, { timeout: 40000 }).catch(() => {});
   await page.waitForSelector('#capTakes li[data-id] [data-act="webm"]', { timeout: 10000 }).catch(() => {});
@@ -109,7 +110,7 @@ if (wsup) {
 } else ok('compressed take: MediaRecorder opus unavailable, documented limit shown in the panel', /not available in this browser/.test(await page.textContent('#capHint')), 'no opus');
 
 // exact offline render
-await page.evaluate(() => window.strudelCraft.capture.configure({ code: true }));
+await page.evaluate(() => window.strudelCraft.capture.configure({ source: 'live', code: true }));
 const ex = await page.evaluate(async () => { const rec = await window.strudelCraft.capture.renderExact(2); const o = rec.recipe.outputs.render; return { frames: o.frames, sr: o.sr, cps: rec.recipe.timing.cps, haps: o.haps, fails: o.fails, how: o.how }; });
 ok('render exact 2 cycles: sample-exact length, 0 failed', ex.how === 'offline' && ex.frames === Math.round(2 / ex.cps * ex.sr) && ex.haps > 0 && ex.fails === 0, JSON.stringify(ex));
 ok('no console errors', errs.length === 0, errs.slice(0, 3).join(' | '));

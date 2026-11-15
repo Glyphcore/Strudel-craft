@@ -57,7 +57,7 @@ if (HIDDEN) { other = await ctx.newPage(); await other.goto('about:blank'); awai
     await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, get: () => true }); Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' }); document.dispatchEvent(new Event('visibilitychange')); }); vis = 'simulated-hidden'; } }
 let take = null;
 if (CAP > 0) {
-  take = await page.evaluate(async ({ n, at }) => { const C = window.strudelCraft.capture; C.configure({ audio: true, events: false, code: false });
+  take = await page.evaluate(async ({ n, at }) => { const C = window.strudelCraft.capture; C.configure({ source: 'live', audio: true, events: false, code: false });
     const rec = await C.record({}, { mode: 'cycles', n, at, name: 'perf' }); if (!rec || !rec.audio.capture) return null;
     const { L, R, sr } = rec.audio.capture; const m = new Float32Array(L.length); for (let i = 0; i < L.length; i++) m[i] = 0.5 * (L[i] + R[i]);
     const b = new Uint8Array(m.buffer); let s = ''; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000));

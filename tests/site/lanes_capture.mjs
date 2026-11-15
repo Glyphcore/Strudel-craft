@@ -17,6 +17,7 @@ async function session(fn) {
   const page = await browser.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
   try {
     await page.goto(BASE); await page.waitForSelector('#list li[data-id]'); await page.click('#list li[data-id="minor-arp"] .row');
+    await page.waitForFunction(() => typeof window.strudelCraft.lanesCaptureEnsure === 'function' && window.strudelCraft.capture, null, { timeout: 60000 }); /* the engine modules load after the shell's first frame (#59) */
     return await fn(page, errs);
   } finally { await page.close(); }
 }

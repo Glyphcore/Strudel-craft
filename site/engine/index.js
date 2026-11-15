@@ -46,7 +46,7 @@ sc.packHooks = {
 // Remake of a fresh page has to find it already there; programs without capture / recall / .from cost one regex test. Teardown: strudelCraft.lanesCaptureHookOff().
 const hookCapture = () => {
   if (sc.lanesCaptureHookOff || !sc.capture || !sc.capture.beforeRender) return;
-  const off = sc.capture.beforeRender(async (recipe, o) => { if (!/\bcapture\s*\(|\brecall\s*\(|\.\s*from\s*\(/.test(String(o.code))) return; const C = await sc.lanesCaptureEnsure(o.code); if (C && C.host) await C.host.resolve(o.code); });
+  const off = sc.capture.beforeRender(async (recipe, o) => { if (!/\bcapture\s*\(|\brecall\s*\(|\.\s*from\s*\(/.test(String(o.code))) return; const C = await sc.lanesCaptureEnsure(o.code); if (C && C.host) await C.host.resolve(o.code); }, { host: true }); // the render host runs its own copy
   sc.lanesCaptureHookOff = () => { off(); sc.lanesCaptureHookOff = null; };
 };
 hookCapture(); globalThis.document?.addEventListener('DOMContentLoaded', hookCapture); globalThis.addEventListener?.('strudel:ready', hookCapture);

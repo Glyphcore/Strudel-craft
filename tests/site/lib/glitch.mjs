@@ -2,9 +2,10 @@
    Works on mono Float32 PCM at any sample rate; features live on a 5 ms grid, so two renders at different rates compare.
    - envelope: RMS per 5 ms hop (dB), and its high-passed twin (first difference) for onsets
    - onsets: rise of the high-passed envelope > 6 dB over 10 ms above a floor, 40 ms refractory
-   - align: lag (in hops, +-0.6 s) that maximises the correlation of the two envelopes
+   - align: lag (in hops, +-0.15 s) that maximises the correlation of the two envelopes
    - onset match: each reference onset to the nearest candidate onset within 25 ms; deviation stats, drift (least-squares slope of the deviations, ms per s)
-   - dropouts: runs of >= 2 hops (10 ms) where the reference is above -40 dBFS and the candidate is >= 18 dB below it
+   - dropouts: runs of >= 2 hops (10 ms) where the reference is above -40 dBFS and the candidate is >= 18 dB below it (after the median level offset)
+   - level: share of loud hops within 3 dB, raw and after removing the median offset (levelOffsetDb: master gain, gain staging)
    - clicks: hops whose peak second difference exceeds 2x the reference's 99.9th-percentile hop value and 3x the reference at the same hop
    No dependencies: node or browser. */
 export const HOP_S = 0.005;
@@ -21,7 +22,7 @@ export function onsets(F, floorDb = -45) {
   for (let k = 2; k < F.n; k++) { const rise = F.hpe[k] - Math.min(F.hpe[k - 1], F.hpe[k - 2]); if (F.hpe[k] > floorDb && rise > 6 && (k - last) * HOP_S > 0.04) { out.push(k * HOP_S); last = k; } }
   return out;
 }
-export function align(A, B, maxLagS = 0.6) {
+export function align(A, B, maxLagS = 0.15) { /* a take cut more than 150 ms off its window is itself an error: it shows as unmatched onsets, not as a lag */
   const M = Math.round(maxLagS / HOP_S), n = Math.min(A.n, B.n); let best = 0, bv = -Infinity;
   const a = A.env, b = B.env; const ma = mean(a, n), mb = mean(b, n);
   for (let lag = -M; lag <= M; lag++) { let s = 0, c = 0; for (let k = Math.max(0, -lag); k < n && k + lag < B.n; k++) { s += (a[k] - ma) * (b[k + lag] - mb); c++; } const v = c ? s / c : -Infinity; if (v > bv) { bv = v; best = lag; } }
@@ -37,15 +38,17 @@ export function compare(ref, cand, o = {}) {
   for (const t of oa) { let bj = null, bd = Infinity; for (const u of ob) { const d = Math.abs(u - t); if (d < bd) { bd = d; bj = u; } if (u > t + 0.05) break; } if (bj != null && bd <= 0.025) { dev.push((bj - t) * 1000); tt.push(t); } else missing++; }
   let slope = 0; if (dev.length > 2) { const mt = tt.reduce((s, v) => s + v, 0) / tt.length, md = dev.reduce((s, v) => s + v, 0) / dev.length; let nu = 0, de = 0; for (let i = 0; i < dev.length; i++) { nu += (tt[i] - mt) * (dev[i] - md); de += (tt[i] - mt) ** 2; } slope = de ? nu / de : 0; }
   const ad = dev.map(Math.abs);
-  let drop = 0, dropHops = 0, run = 0, clicks = 0, within3 = 0, audible = 0; const thr = pct(Array.from(A.d2), 0.999) * 2;
+  let drop = 0, dropHops = 0, run = 0, clicks = 0, within3 = 0, audible = 0, within3o = 0; const thr = pct(Array.from(A.d2), 0.999) * 2;
+  /* constant level offset (master gain, bus gain staging): the median of the per-hop differences over loud hops */
+  const diffs = []; for (let k = 0; k < A.n; k++) { const j = k + lag; if (j >= 0 && j < B.n && A.env[k] > -40) diffs.push(B.env[j] - A.env[k]); } const off = pct(diffs, 0.5) ?? 0;
   for (let k = 0; k < A.n; k++) { const j = k + lag; if (j < 0 || j >= B.n) continue;
-    const loud = A.env[k] > -40; if (loud) { audible++; if (Math.abs(A.env[k] - B.env[j]) <= 3) within3++; }
-    if (loud && B.env[j] <= A.env[k] - 18) { run++; dropHops++; } else { if (run >= 2) drop++; run = 0; }
+    const loud = A.env[k] > -40; if (loud) { audible++; if (Math.abs(A.env[k] - B.env[j]) <= 3) within3++; if (Math.abs(A.env[k] + off - B.env[j]) <= 3) within3o++; }
+    if (loud && B.env[j] <= A.env[k] + off - 18) { run++; dropHops++; } else { if (run >= 2) drop++; run = 0; }
     if (B.d2[j] > thr && B.d2[j] > 3 * A.d2[k]) clicks++; }
   if (run >= 2) drop++;
   return { lagMs: +(lag * HOP_S * 1000).toFixed(1), refOnsets: oa.length, candOnsets: ob.length, matched: dev.length, missingOnsets: missing,
     onsetDevMedMs: +((pct(ad, 0.5) ?? 0)).toFixed(2), onsetDevP95Ms: +((pct(ad, 0.95) ?? 0)).toFixed(2), onsetDevMaxMs: ad.length ? +Math.max(...ad).toFixed(2) : 0,
-    driftMsPerS: +slope.toFixed(3), dropouts: drop, dropoutMs: dropHops * HOP_S * 1000, clicks, levelWithin3dB: audible ? +(within3 / audible).toFixed(4) : null, seconds: +(A.n * HOP_S).toFixed(2) };
+    driftMsPerS: +slope.toFixed(3), dropouts: drop, dropoutMs: dropHops * HOP_S * 1000, clicks, levelWithin3dB: audible ? +(within3 / audible).toFixed(4) : null, levelOffsetDb: +off.toFixed(2), levelWithin3dBAligned: audible ? +(within3o / audible).toFixed(4) : null, seconds: +(A.n * HOP_S).toFixed(2) };
 }
 /* minimal WAV reader (PCM 16/24/32, float32), returns { L, R, sr } */
 export function readWav(buf) {

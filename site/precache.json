@@ -361,6 +361,7 @@
   "numfmt.js",
   "packs-control.css",
   "packs-control.js",
+  "packs-hooks.js",
   "packs-kinds.js",
   "packs-sandbox.js",
   "packs-ui.css",

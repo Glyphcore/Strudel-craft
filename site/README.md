@@ -734,7 +734,7 @@ Smart literal editors (`literals.js`): tap a number, name, chord or mini-notatio
 chips, piano, sound list, toggle, step chips); a drag on a number rewrites the source once on release. A provider may own a literal's
 shape or editor: `strudelCraft.literals.registerEditor({ id, shape(lit), match(lit, param), render(host, ctx) })` - the atoms provider gives
 an atom reference's args the atom's own `atomParam` range (#63). Reference inspector (`refs.js`,
-`strudelCraft.refs`: resolve/related/highlight/describe): selecting a control marks its source span and related references;
+`strudelCraft.refs`: resolve/related/highlight/describe): selecting a control marks its source span and related references without ever scrolling the editor (a press belongs to the control); Go to code is the tooltip's target button or a 500 ms still long-press (`refs.gotoCode(id)`);
 long-press, hover or focus shows its id, path, label, type, value, range and mappings; the caret on a call makes its controls glow.
 Design: docs/CONTROL_BINDING.md sections 7 and 8.
 Range spec: numeric controls carry min/max/step/unit/curve/clamp (override per AST id > code > param shape > 0..1); tap the number for

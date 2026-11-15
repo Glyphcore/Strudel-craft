@@ -70,15 +70,16 @@ export function highlight(id, { scroll = true, editor = true } = {}) {
 }
 
 /* ---- tooltip ---- */
-let tipEl = null, tipFor = null;
+let tipEl = null, tipFor = null, tipId = null;
 function tipNode() {
   if (tipEl) return tipEl; tipEl = document.createElement('div'); tipEl.id = 'scRefTip'; tipEl.className = 'ref-tip'; tipEl.setAttribute('role', 'tooltip'); tipEl.hidden = true;
   const x = document.createElement('button'); x.type = 'button'; x.className = 'ref-tip-x'; x.setAttribute('aria-label', 'Dismiss'); x.textContent = '×'; x.addEventListener('click', hideTip);
-  tipEl.append(x, document.createElement('dl')); document.body.append(tipEl); return tipEl;
+  const g = document.createElement('button'); g.type = 'button'; g.className = 'ref-tip-go'; g.setAttribute('aria-label', 'Go to code'); g.title = 'Go to code'; g.textContent = '\u2316';
+  g.addEventListener('click', () => { if (tipId) gotoCode(tipId); }); tipEl.append(g, x, document.createElement('dl')); document.body.append(tipEl); return tipEl;
 }
 const fmtV = (v) => (typeof v === 'number' ? String(+v.toFixed(Math.abs(v) >= 100 ? 0 : 3)) : v && typeof v === 'object' ? JSON.stringify(v) : String(v));
 export function tip(el, id) {
-  const d = describe(id); if (!d) return; const t = tipNode(); const dl = t.querySelector('dl');
+  const d = describe(id); if (!d) return; tipId = id; const t = tipNode(); if (!t.querySelector('.ref-tip-go').dataset.hinted) { t.querySelector('.ref-tip-go').dataset.hinted = '1'; } const dl = t.querySelector('dl');
   const rows = [['id', d.id], ['path', d.path], ['label', d.label], ['type', d.type + (d.shape ? ' · ' + d.shape : '')], ['value', fmtV(d.value) + (d.range ? `  (${d.range[0]} to ${d.range[1]})` : '')], ['maps', d.maps.length ? d.maps.join(', ') : 'none']];
   dl.replaceChildren(...rows.flatMap(([k, v]) => { const a = document.createElement('dt'); a.textContent = k; const b = document.createElement('dd'); b.textContent = v; b.dataset.k = k; return [a, b]; }));
   t.hidden = false; const r = el.getBoundingClientRect(); const w = t.offsetWidth, ht = t.offsetHeight;
@@ -89,14 +90,22 @@ export function hideTip() { if (tipEl) tipEl.hidden = true; if (tipFor) { tipFor
 
 /* ---- surface wiring: long-press (touch), hover / focus (desktop), select = highlight ---- */
 const focusable = (el) => el && el.closest && el.closest(SEL) && !el.closest('.cm-editor') && !el.closest('#scRefTip');
-let lp = null;
+let lp = null; const LONG_MS = 500;
+/* Deliberate navigation: scroll the editor to the id's span. Only the target button, a 500 ms still long-press or a double-tap/click call this. */
+export function gotoCode(id) { const r = id && resolve(id); if (!r) return null; highlight(r.id, { scroll: true }); return r.id; }
+let hinted = false;
+function hint() { try { if (hinted || localStorage.getItem('sc.refs.hint')) return; hinted = true; localStorage.setItem('sc.refs.hint', '1'); } catch (er) { if (hinted) return; hinted = true; } const ui = sc.ui; if (ui && ui.toast) ui.toast('Long-press or use the target icon to jump to code', { kind: 'info', ms: 4000 }); }
 document.addEventListener('pointerdown', (e) => {
   if (tipEl && !tipEl.hidden && !tipEl.contains(e.target)) hideTip();
   if (!focusable(e.target)) return; const id = idOf(e.target); if (!id) return; const host = e.target.closest(SEL);
-  highlight(id); clearTimeout(lp && lp.t); lp = { x: e.clientX, y: e.clientY, t: setTimeout(() => tip(host, id), e.pointerType === 'mouse' ? 600 : 450) };
+  highlight(id, { scroll: false }); /* a plain press never moves the editor viewport (the gesture belongs to the control) */
+  if (lp) { clearTimeout(lp.t); clearTimeout(lp.j); }
+  lp = { x: e.clientX, y: e.clientY, t: setTimeout(() => tip(host, id), e.pointerType === 'mouse' ? 600 : 450), j: e.pointerType === 'mouse' ? 0 : setTimeout(() => { if (lp) { lp.j = 0; gotoCode(id); hint(); } }, LONG_MS) };
 }, true);
-document.addEventListener('pointermove', (e) => { if (lp && Math.hypot(e.clientX - lp.x, e.clientY - lp.y) > 10) { clearTimeout(lp.t); lp = null; } }, true);
-document.addEventListener('pointerup', () => { if (lp) { clearTimeout(lp.t); lp = null; } }, true);
+const dropLp = () => { if (lp) { clearTimeout(lp.t); clearTimeout(lp.j); lp = null; } };
+document.addEventListener('pointermove', (e) => { if (lp && Math.hypot(e.clientX - lp.x, e.clientY - lp.y) > 10) dropLp(); }, true);
+document.addEventListener('pointerup', dropLp, true); document.addEventListener('pointercancel', dropLp, true);
+/* no double-tap jump: double-click on a number already means exact entry */
 let hov = 0;
 document.addEventListener('pointerover', (e) => { if (e.pointerType !== 'mouse' || !focusable(e.target)) return; const host = e.target.closest(SEL); const id = idOf(host); clearTimeout(hov); hov = setTimeout(() => id && tip(host, id), 350); });
 document.addEventListener('pointerout', (e) => { if (e.pointerType !== 'mouse') return; clearTimeout(hov); if (tipFor && !(e.relatedTarget && tipFor.contains(e.relatedTarget))) hideTip(); });
@@ -120,4 +129,4 @@ export function attachEditor(view, edId) {
   view.dom.addEventListener('pointerup', later); view.dom.addEventListener('keyup', later);
 }
 
-sc.refs = { resolve, related, highlight, describe, tip, hideTip, clear, attachEditor, current: () => cur };
+sc.refs = { resolve, related, highlight, gotoCode, gotoCode, describe, tip, hideTip, clear, attachEditor, current: () => cur };

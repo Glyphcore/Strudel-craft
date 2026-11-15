@@ -162,13 +162,14 @@ One shared service, `window.strudelCraft.refs`, for every surface (inline strip,
 |---|---|
 | `resolve(id)` | `{ id, kind: 'control' \| 'literal', view, site \| literal, off }`; accepts site ids, literal ids and label aliases (`controls.resolve`) |
 | `related(id)` | `{ spans, ids, dests, slot }`: the mapped param (the call name the site sits in), explicit map dests (`.dest(` and `hooks.map` lines), the hook slot string, `tap('label')` sites, other controls with the same label |
-| `highlight(id \| null, { scroll, editor })` | marks the source span (`.cm-ref-primary`, soft background) plus a gutter indicator (`.cm-ref-gutter`), tints related spans in the same colour (`.cm-ref-related`), scrolls the span into view, and adds `.ref-glow` / `.ref-glow-rel` to every element carrying the id; fires `refs:highlight` |
+| `highlight(id \| null, { scroll = true, editor })` | marks the source span (`.cm-ref-primary`, soft background) plus a gutter indicator (`.cm-ref-gutter`), tints related spans in the same colour (`.cm-ref-related`), adds `.ref-glow` / `.ref-glow-rel` to every element carrying the id; fires `refs:highlight` |
+| `gotoCode(id)` | the only call that scrolls the editor to the span (`highlight` with `scroll: true`); used by the tooltip target button and the 500 ms long-press |
 | `describe(id)` | `{ id, path, label, type, shape, value, range, maps, slot, view }` |
 | `tip(el, id)`, `hideTip()`, `clear()` | the tooltip; `clear` drops every mark and glow |
 
 Elements opt in with `data-site`, `data-ctl`, `data-id` or `data-ref` set to an id or label (pads and graph cards use `data-ref`).
 
-- **Select**: pointerdown or focus on such an element highlights it. **Inspect**: long-press 450 ms on touch, hover 350 ms with a mouse,
+- **Select**: pointerdown or focus on such an element highlights it (span, gutter, glow) but never scrolls or moves focus: the control keeps the whole gesture (pointer capture). **Go to code** is deliberate: the target button (&#8982;) in the tooltip, or a 500 ms still long-press on touch (a toast hints once: "Long-press or use the target icon to jump to code"). Double-tap is not used (it opens exact entry on numbers). Test: `node tests/site/refs_noscroll.mjs`. **Inspect**: long-press 450 ms on touch, hover 350 ms with a mouse,
   or keyboard focus opens `#scRefTip` (`role=tooltip`, fixed position, so no layout shift). The element gets `aria-describedby="scRefTip"`.
   Escape, the dismiss button or a tap elsewhere closes it.
 - **Reverse**: the caret or a tap inside a control call, or inside the param call that holds it (`lpf(slider(800...))`), makes the

@@ -11,7 +11,13 @@ Content pack (docs/PACK_SPEC.md) behind the Syntax entry **Track demo: night pho
 | `racks-v2` | `hooks` / `hooks@1` | v2: `pumpHard(depth)` (duckorbit pump on orbits 3-8 from the kick), `tom`, `rimshot`, `slam`, `open`, `swellPad`, `hush` | site: with `racks` (#91); CLI with `racks` (render.sh merges both) |
 | `presets` | `recipes` / `recipes@1` | `night-phonk-demo` and `night-phonk-demo-v2`: the standalone tracks | site Rack browser (pack recipes) |
 
-## Use
+## Rack standard (#94)
+Every instrument rack starts with the band scope of its class, `["hook", "hygiene-<class>"]` (built-in hook defs, `site/engine/hygiene.js`): `kick808` kick, `snareNoise` snare,
+`hat` hat, `cowbell` bell, `sub808` sub, `hazePad` pad, `deepLead` / `wideLead` lead, `echoPluck` pluck, `formant` / `chop` vox, `riser` riser, `reverseHit` reverse, `impact` impact,
+`tape` texture, `tom` / `rimshot` perc. Moves (`murk`, `thin`, `grit`, `pump`, `pumpHard`, `slam`, `open`, `swellPad`, `hush`) have no scope of their own. With the scope came two level
+and shape changes: `sub808` has a 4 ms attack and `postgain` 0.87 (one voice peaks under -6 dBFS; the drive is unchanged), and the track sets `.postgain(1)` on its sub lane to keep the 808 at its old level in the mix, `riser` sweeps 3.5 octaves (was 4; the top stays under the scope).
+Check: `node tools/racks/audit.mjs --only racks` (docs/RACK_STANDARD.md). A new rack: name its class at the head of the chain and add it to `tools/racks/targets.json`.
+
 ```js
 atoms.import("pack:glyphcore/phonk:atoms")
 hooks.bind("kick", "kick808"); hooks.bind("sub", "sub808")          // a rack goes into a slot; swapping it is one bind

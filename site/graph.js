@@ -14,7 +14,7 @@ const KEY = 'sc.graph', POSKEY = 'sc.graph.pos';
 const COLW = 330, W = 220, HEAD = 52, ROW = 52, STEP = 30, GAP = 28, PILL = 52, CODEH = 64;
 const FAR = 0.85, NEAR = 1.5, GLYPH = 0.4, ZMIN = 0.25, ZMAX = 2; // ZMIN is a floor only for small graphs: zmin() always lets the whole graph fit
 const REG = new Set(['marker', 'hook', 'module', 'decorator', 'var', 'control']); // definitions sit in the first column
-const NONPARAM = new Set(['tap', 'use', 'wrap', 'wire', 'ns', 'split', 'merge', 'tags', 'tag', 'send']); // lanes steps are edited on the lane card (lanes-ui.js), not as param ports
+const NONPARAM = new Set(['tap', 'use', 'wrap', 'wire', 'ns', 'hook', 'split', 'merge', 'tags', 'tag', 'send']); // lanes steps are edited on the lane card (lanes-ui.js), not as param ports
 const FACETS = ['onset', 'gate', 'env'];
 const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 const DEMO = `setcpm(30)

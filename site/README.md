@@ -168,6 +168,9 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/hooks/p3.mjs            # model round trip (#49); the `strudel` CLI checks print SKIP without it
     node tests/hooks/p4.mjs            # component library, instances, lib: fragments (#50)
     node tests/hooks/p5.mjs            # hooks + model intellisense providers (#51)
+    STRUDEL_MODULES=... node tests/hooks/p9_hook.mjs   # .hook() and the hygiene racks (#94)
+    node tools/racks/audit.mjs --only racks            # rack standard audit (#94; needs the strudel CLI; full audit without --only)
+    node tests/lanes/mixer_model.mjs   # mixer read model over the lane graph (#95)
     node tests/site/graph.mjs          # Graph view (#52); tests/site/graph_zoom.mjs, graph_scroll.mjs for the gestures
     node tests/site/graph_soak.mjs     # Graph view open/close soak: no growth after GC across 50 rounds (#52 stability)
     node tests/site/perform.mjs        # Perform view, learn/map, lanes, looper (#55)
@@ -433,6 +436,24 @@ never throw) and `hooks.position` to the scheduler cycle; headless hosts keep `l
 literal into mini-notation, so write gate and hook strings with single quotes or run program text through `protect(code)` first (the CLI
 does; `hooks.bind("fx", "x", "@3b")` is rewritten to single quotes). Design: `docs/HOOKS_SYNTAX.md`; tests: `node tests/hooks/p1.mjs`,
 `p2.mjs`. The CLI (`engine/strudel-cli` in suno-track-lab) imports this file from `$STRUDEL_CRAFT/site/engine/hooks.js`.
+
+## Rack standard and hygiene racks (`engine/hygiene.js`, `tools/racks/`, #94; docs/RACK_STANDARD.md)
+- A rack is a clean signal for one instrument class: source, band scope (high-pass and low-pass for the class), tone and shape, drive, dynamics, sends, gain with headroom.
+- `engine/hygiene.js` holds the band scope per class as chain-only hook defs: `hygiene-kick`, `-sub`, `-bass`, `-snare`, `-hat`, `-perc`, `-bell`, `-pluck`, `-stab`, `-pad`, `-lead`,
+  `-keys`, `-arp`, `-supersaw`, `-riser`, `-sweep`, `-reverse`, `-impact`, `-texture`, `-vox`. They are standard-library defs of the hooks runtime (site and CLI, no pack needed), a
+  program's own `hooks.def("hygiene-pad", ...)` replaces one, and `hooks.toJSON()` never holds them.
+- `.hook(expr)` (new Pattern method, `engine/hooks.js`): a hook expression applied in place, always on: `.s("sawtooth").hook("hygiene-pluck")`; a pipe works. A rack starts with
+  `["hook", "hygiene-<class>"]`; what it sets afterwards wins. `protect()` keeps its string out of mini-notation; the model and the graph treat it as a reference step, not a param.
+- Catalog recipes stay plain Strudel (they open on strudel.cc), so they carry the same scope as literal `.hpf().lpf()`.
+- Audit: `node tools/racks/audit.mjs [--only racks,catalog,syntax] [--item NAME] [--baseline OLD/report.json]` renders a test phrase per class through every rack with the strudel CLI and
+  checks band leak, DC, sub-20 Hz, above 18 kHz, aliasing on a high note, peak, crest, clipping, correlation and side energy below 120 Hz against `tools/racks/standard.json`
+  (classes of the audited items: `tools/racks/targets.json`); writes `tools/racks/out/report.json` and `report.md`. Syntax section **Rack standard** has runnable racks per class.
+  Tests: `STRUDEL_MODULES=... node tests/hooks/p9_hook.mjs`, `node tools/racks/audit.mjs --only racks` (in `tests/smoke.sh`).
+
+## Mixer read model (`engine/mixer-model.js`, #95; docs/REFACTOR_PLAN.md phase R1)
+`channels(graph)` turns the lane graph (`engine/lanes.js` `compile(src).graph`) into channel strips: one per lane (`kind: "lane"`), one per `ret(name)` lane (`kind: "return"`, with its
+`bus` and the `inputs` that send to it), `master`, tag groups with members and group sends, the gated mutes and solos each strip is under, and `dangling` sends (a bus nobody returns).
+Pure and derived: nothing is stored, strip edits stay text edits, bus numbers never appear. No UI reads it yet (mixer view: coming, #96). Test: `node tests/lanes/mixer_model.mjs`.
 
 ## Lanes: event layer (`engine/lanes.js`, #74; design docs/LANES.md)
 Standalone ES module, no DOM, shared with the CLI. `install(S, hooks, { outer })` (called by `engine/index.js` after the hooks runtime; headless hosts call it with

@@ -8,6 +8,10 @@
   "kick808": {
    "chain": [
     [
+     "hook",
+     "hygiene-kick"
+    ],
+    [
      "s",
      "sine"
     ],
@@ -48,6 +52,10 @@
   "snareNoise": {
    "chain": [
     [
+     "hook",
+     "hygiene-snare"
+    ],
+    [
      "s",
      "triangle"
     ],
@@ -87,6 +95,10 @@
    },
    "chain": [
     [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
      "s",
      "white"
     ],
@@ -112,6 +124,10 @@
   },
   "cowbell": {
    "chain": [
+    [
+     "hook",
+     "hygiene-bell"
+    ],
     [
      "s",
      "square"
@@ -141,8 +157,16 @@
   "sub808": {
    "chain": [
     [
+     "hook",
+     "hygiene-sub"
+    ],
+    [
      "s",
      "sine"
+    ],
+    [
+     "attack",
+     0.004
     ],
     [
      "pdecay",
@@ -171,6 +195,10 @@
     [
      "gain",
      0.45
+    ],
+    [
+     "postgain",
+     0.87
     ]
    ]
   },
@@ -183,6 +211,10 @@
     }
    },
    "chain": [
+    [
+     "hook",
+     "hygiene-pad"
+    ],
     [
      "s",
      "supersaw"
@@ -230,6 +262,10 @@
   "deepLead": {
    "chain": [
     [
+     "hook",
+     "hygiene-lead"
+    ],
+    [
      "s",
      "sawtooth"
     ],
@@ -274,6 +310,10 @@
   "wideLead": {
    "chain": [
     [
+     "hook",
+     "hygiene-lead"
+    ],
+    [
      "s",
      {
       "$mini": "sawtooth, square"
@@ -316,6 +356,10 @@
   "echoPluck": {
    "chain": [
     [
+     "hook",
+     "hygiene-pluck"
+    ],
+    [
      "s",
      "triangle"
     ],
@@ -352,6 +396,10 @@
   "formant": {
    "chain": [
     [
+     "hook",
+     "hygiene-vox"
+    ],
+    [
      "attack",
      0.6
     ],
@@ -376,6 +424,10 @@
   "chop": {
    "chain": [
     [
+     "hook",
+     "hygiene-vox"
+    ],
+    [
      "end",
      0.3
     ],
@@ -395,6 +447,10 @@
   },
   "riser": {
    "chain": [
+    [
+     "hook",
+     "hygiene-riser"
+    ],
     [
      "s",
      "white"
@@ -417,7 +473,7 @@
     ],
     [
      "lpenv",
-     4
+     3.5
     ],
     [
      "lpattack",
@@ -431,6 +487,10 @@
   },
   "reverseHit": {
    "chain": [
+    [
+     "hook",
+     "hygiene-reverse"
+    ],
     [
      "s",
      "white"
@@ -459,6 +519,10 @@
   },
   "impact": {
    "chain": [
+    [
+     "hook",
+     "hygiene-impact"
+    ],
     [
      "s",
      "sine"
@@ -495,6 +559,10 @@
   },
   "tape": {
    "chain": [
+    [
+     "hook",
+     "hygiene-texture"
+    ],
     [
      "hpf",
      3500

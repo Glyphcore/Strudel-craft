@@ -58,6 +58,7 @@ tap-pub     = "." "tap"  "(" name [ "," tap-opts ] ")" ;              (* publish
 tap-read    = "tap" "(" tap-ref [ "," read-opts ] ")" ;              (* a Pattern; use it anywhere a pattern is accepted *)
 wire-call   = "." "wire" "(" param "," tap-ref [ "," wire-opts ] ")" ;
 ns-call     = "." "ns"   "(" scope-id ")" ;                          (* sets the scope of every slot/tap upstream in this chain *)
+hook-call   = "." "hook" "(" hook-expr ")" ;                         (* a hook expression applied in place, always on (4.2b) *)
 
 lifecycle   = "hooks" "." ( "def" | "undef" | "bind" | "unbind" | "replace" | "set"
                           | "marker" | "scope" | "slot" | "load" | "toJSON" | "plan" | "reset" ) "(" args ")" ;
@@ -133,6 +134,16 @@ Slot mode (per slot, default `"chain"`; set with `hooks.slot("fx", { mode })` or
 and decides how to run it (dry/wet, every N cycles, parallel). With no open binding, `inner` is applied directly.
 
 `use-opts`: `{ mode, else, quant, ns }`. The first `use` of a slot name declares it; conflicting opts on a later `use` -> `E_SLOT_CONFLICT`.
+
+### 4.2b In-place hooks and the standard library (#94)
+`pat.hook("name")`, `pat.hook("a | b(0.3)")`: applies a hook expression directly, with no slot, binding or gate. It is resolved at query time,
+so a later `hooks.def` of the same name takes over an existing pattern; params take their defaults or the arguments in the expression (gated
+`hooks.set` values do not split it: use a slot for a move that changes over time). In a def it is a chain step: `["hook", "hygiene-pad"]`.
+Errors: a non-string -> `E_BAD_ARG`; an unknown name -> `E_UNKNOWN_HOOK` diagnostic and the pattern passes through.
+
+The runtime ships a **standard library** of defs (`site/engine/hygiene.js`: the band-scope racks `hygiene-<class>` of docs/RACK_STANDARD.md).
+A name resolves to the program's def first, then to the library; library defs are not part of `hooks.toJSON()`, `plan` or the model, and
+`hooks.reset()` does not remove them. `install(S, { stdlib: false })` leaves the library out; `{ stdlib: { name: def } }` adds to it.
 
 ### 4.3 Bindings and gates
 `hooks.bind(slotRef, hook, gate?, opts?)` returns a binding id (`"b1"`, `"b2"`, ... in bind order, stable across runs).

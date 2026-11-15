@@ -8,7 +8,7 @@ import * as LD from './engine/lanes-data.js';
 
 const LAYOUT_RE = /\/\/ @model-layout (\{[^\n]*\})\n?$/;
 // string args are references, not mini-notation: plain strings (lanes: tags, bus names, capture names)
-const REF_METHODS = new Set(['tap', 'use', 'wrap', 'ns', 'wire', 'tags', 'tag', 'send', 'ret', 'from', 'recall', 'capture', 'tagged']);
+const REF_METHODS = new Set(['tap', 'use', 'wrap', 'ns', 'wire', 'hook', 'tags', 'tag', 'send', 'ret', 'from', 'recall', 'capture', 'tagged']);
 const ANON = /^\$\d*$/;
 const IDENT = /^[A-Za-z_$][\w$]*$/;
 const GATE_KEYS = new Set(['from', 'until', 'windows', 'period', 'when', 'latch', 'quant', 'unreached']);

@@ -18,33 +18,33 @@
   "gen": true
  },
  "recipe:reese-style-detuned-bass": {
-  "graph": "41d7c64c7ebb11fb",
-  "model": "c3d89118eea4f310",
-  "hash": "c3d89118eea4f310ec627936ef1b4d925074daad45c3a069831fb7c116bd8815",
+  "graph": "2a46f693eadfabaa",
+  "model": "a3f1470d792a62bf",
+  "hash": "a3f1470d792a62bf1d053f7a8cc9b217c52615185224d9e65275bfc908926de7",
   "gen": true
  },
  "recipe:sub-bass": {
-  "graph": "87338e06d853f870",
-  "model": "d0c71fd9ec4b0123",
-  "hash": "d0c71fd9ec4b01230cb8eff6701c64b18ba5859c558b3529e1725f3cde32f929",
+  "graph": "cabf408611cb5814",
+  "model": "f16374bc8f9911d3",
+  "hash": "f16374bc8f9911d3685457a3529958fb1aa75f65a77bbb8e5acbc81a8f1c3400",
   "gen": true
  },
  "recipe:pad-swell": {
-  "graph": "bf57c67601f934f6",
-  "model": "18e22a4686d2ac25",
-  "hash": "18e22a4686d2ac25518091a2ad9b34ed40b5bf87588d0d5b1bfda3564286c50d",
+  "graph": "499ee6c8c9f67222",
+  "model": "4934668be88d5085",
+  "hash": "4934668be88d50850b603a2cdeeb4f0da4aefa21bcb523c90c15ce952f1eaad6",
   "gen": true
  },
  "recipe:filter-sweep-build": {
-  "graph": "bc5472321750c343",
-  "model": "707309aa305c04cf",
-  "hash": "707309aa305c04cfa9452633a72a8fc683ca04c65878f71aa16fc2a40aadc6a7",
+  "graph": "b2400b0c28081b49",
+  "model": "1ad425dd317ad049",
+  "hash": "1ad425dd317ad049097cb7ea5ad1a8145be6c013d300d1dbbf257386a489e27e",
   "gen": true
  },
  "recipe:riser": {
-  "graph": "ccec50dc79b5fe10",
-  "model": "e437c9ff7e823626",
-  "hash": "e437c9ff7e8236263fb98337786332bd448a53cd9efb88d0457d07228b7d94bd",
+  "graph": "3307109344bd89c0",
+  "model": "adc8bcbabb4c7aad",
+  "hash": "adc8bcbabb4c7aad96e431776becdc13bb2c9079367998e1c96892475630564c",
   "gen": true
  },
  "recipe:breakdown-drop-arrangement-over-bars": {
@@ -72,33 +72,33 @@
   "gen": true
  },
  "recipe:chord-stabs": {
-  "graph": "b59d4193c419d31f",
-  "model": "b44ab5d4038085d0",
-  "hash": "b44ab5d4038085d0d250cfc73848055a28aa967fdcd35df085b9387a0359f8c1",
+  "graph": "9fd89de260bdb979",
+  "model": "14e95c8727324917",
+  "hash": "14e95c8727324917a0975f05a049e86a88ed3bbbcc57bc3cc11280615e6583f6",
   "gen": true
  },
  "recipe:sidechain-pump": {
-  "graph": "edc8a16969bac118",
-  "model": "37b052f203918675",
-  "hash": "37b052f203918675e788adaa6b04410fe15f3c6c41484b4ab3a715b86f6df1a4",
+  "graph": "ee528d73404bae49",
+  "model": "6bc17f1509f8f78d",
+  "hash": "6bc17f1509f8f78db4fae9303e4dac0157056dcfa66333573f44eb86a6f2e4ca",
   "gen": true
  },
  "recipe:fade-out": {
-  "graph": "4115ba5b223ace8e",
-  "model": "f2876317af8bc321",
-  "hash": "f2876317af8bc3215e4386f2f298e5f9c9008059057754ee0354dc4e72b513f9",
+  "graph": "93c8b26eea871f62",
+  "model": "dfa68db4c4651d7d",
+  "hash": "dfa68db4c4651d7d7ea3424c28c0b279e75c658e55088e4e845aa293274805f7",
   "gen": true
  },
  "recipe:synth-kick": {
-  "graph": "415484cac6585315",
-  "model": "0d5988cbe6270435",
-  "hash": "0d5988cbe627043538b434240f3ae2ae05c73126fd547266b488bd02fd4c5e1d",
+  "graph": "5b435e484b42160b",
+  "model": "60486b9fe0ca31a0",
+  "hash": "60486b9fe0ca31a0ecb0388b3edb7136c9e924881ccfd8bf736a0bf43bc1537f",
   "gen": true
  },
  "recipe:synth-hat-offbeat": {
-  "graph": "ac79c21045ece19a",
-  "model": "326c535f918ff916",
-  "hash": "326c535f918ff916b1ac8f8e30a69d80688b16ed065d1609fcfa518fc705ee07",
+  "graph": "74e8f16146cd5236",
+  "model": "39742cd8f728db8a",
+  "hash": "39742cd8f728db8a973d0b0db2adb1773a50b395f0e125d6c487938d8d6a8bdd",
   "gen": true
  },
  "recipe:synth-backbeat": {
@@ -108,21 +108,21 @@
   "gen": true
  },
  "recipe:synth-euclid": {
-  "graph": "415484cac6585315",
-  "model": "35a2c912ee9979ff",
-  "hash": "35a2c912ee9979ffc05b82cf1b08f4a2867f973dcabf5959e9dd5a59dbecfe7c",
+  "graph": "5b435e484b42160b",
+  "model": "d85f3cd2bbde2992",
+  "hash": "d85f3cd2bbde2992e1ab9bfad6ec14114e203dd75223478c21d71dd57af8cdfa",
   "gen": true
  },
  "recipe:syncopated-bass": {
-  "graph": "d0642ed67dd91efa",
-  "model": "5bd79a511719cc57",
-  "hash": "5bd79a511719cc57eb8502da85742238805f47516e46c6992789aa0903e57aa6",
+  "graph": "822788eb64595c6e",
+  "model": "f1d0cd5cf2322774",
+  "hash": "f1d0cd5cf2322774150b71e15e2c79724534ad569ba60279f59464e5b5777598",
   "gen": true
  },
  "recipe:supersaw-pad": {
-  "graph": "ef6738d09e68e94f",
-  "model": "134a4df3e85fedab",
-  "hash": "134a4df3e85fedab5f4001af012efc8ff4adc5b3f6e06e3b6da7e958aea73f36",
+  "graph": "c6ad46fd81b10fce",
+  "model": "9a45c04cb0c74bba",
+  "hash": "9a45c04cb0c74bbaecb2bff2e127bb9d7543154a5adb2509fe4678a2dbf9ab2b",
   "gen": true
  },
  "recipe:pluck": {
@@ -132,21 +132,21 @@
   "gen": true
  },
  "recipe:minor-arp": {
-  "graph": "f321f46d00a806ea",
-  "model": "74b6c937c27a2901",
-  "hash": "74b6c937c27a2901807d2824ea7a20abf7115138a0121da002df1e0098010e34",
+  "graph": "24f71f0e6bbd25c3",
+  "model": "b2fa60d0947a0ade",
+  "hash": "b2fa60d0947a0ade4691020b85e4f518ef483ee132103987e5a2ca15da61660e",
   "gen": true
  },
  "recipe:chord-progression": {
-  "graph": "3fe88871273d868b",
-  "model": "4c71cc5c836062ef",
-  "hash": "4c71cc5c836062ef97eed9794a6a7edce83e761f4700f9a65026f1749989e64a",
+  "graph": "cee58b8b48e8c4ff",
+  "model": "f8a62503914e9f5b",
+  "hash": "f8a62503914e9f5bb4d059f8d51d09d2871198c0069622c0a5f62b861f7ecda0",
   "gen": true
  },
  "recipe:root-bass": {
-  "graph": "87338e06d853f870",
-  "model": "9a00d22a028153c5",
-  "hash": "9a00d22a028153c56b7bac55bb936f8019582915dacddb8e1aef0bb8f7cc08bf",
+  "graph": "c10501a547ddeaf0",
+  "model": "eb4a41f67fb862d1",
+  "hash": "eb4a41f67fb862d1d07035305ec7756edb36b19337ee5f302160c426af96c81b",
   "gen": true
  },
  "recipe:delay-echo": {
@@ -156,9 +156,9 @@
   "gen": true
  },
  "recipe:stereo-jux": {
-  "graph": "fd98f2d67df24f78",
-  "model": "d388d792b4c4b543",
-  "hash": "d388d792b4c4b543c9d9bc2b5bb46b3e3d2817067a3870bbd4a2bdd4fc4fc63c",
+  "graph": "67d477f51aee2ea9",
+  "model": "0d1237c2f8c662a4",
+  "hash": "0d1237c2f8c662a44881c4c984c9858fdad5a8bf709d486f97e19fbb39284654",
   "gen": true
  },
  "recipe:big-reverb": {
@@ -168,9 +168,9 @@
   "gen": true
  },
  "recipe:dry-tight": {
-  "graph": "673c4a5b4418c85e",
-  "model": "8ddf383d455c2454",
-  "hash": "8ddf383d455c24540b3b2b939f46296f3a921180b2e7171191a847010b453dfa",
+  "graph": "1d0c10588eacef39",
+  "model": "92d000753e22ea54",
+  "hash": "92d000753e22ea547fca83c1327495ad2252af6a42ea7afefc4cef710e0ab524",
   "gen": true
  },
  "recipe:phaser-sweep": {
@@ -180,9 +180,9 @@
   "gen": true
  },
  "recipe:tremolo-pad": {
-  "graph": "677c65210960b2c5",
-  "model": "7886a0f5c05ce623",
-  "hash": "7886a0f5c05ce6239ab8dc097b6d91cbaa028e98d8c9f8a1af123460161a5eb2",
+  "graph": "428341489ff70c1a",
+  "model": "a01f1e36704878bd",
+  "hash": "a01f1e36704878bd88862e1661bf8c6586f9184ca257f9c62f6821a1baad06f0",
   "gen": true
  },
  "recipe:vowel-voice": {
@@ -192,75 +192,75 @@
   "gen": true
  },
  "recipe:fm-bell": {
-  "graph": "284febc029a59f6c",
-  "model": "0dc857d71c00615c",
-  "hash": "0dc857d71c00615cc3b9fd28a8e0240aaadc7eee429cff6e54d386e8d869ecea",
+  "graph": "b8f3cfd6bb4b57d0",
+  "model": "7b0dc5ddda336bc4",
+  "hash": "7b0dc5ddda336bc46f3c46e67cd2148c7963ae4b7b79b0b852432bb716e9db28",
   "gen": true
  },
  "recipe:lofi-crunch": {
-  "graph": "6087fd920f9192a4",
-  "model": "cf9ccd1d3e8769f8",
-  "hash": "cf9ccd1d3e8769f8705c527617eaaf60c2c167e70433e2fc530c5a223f5864c7",
+  "graph": "717f8033f7dfef97",
+  "model": "f27ccd09b1b81254",
+  "hash": "f27ccd09b1b812549dbccffe4cc030a10af994b1c75c937a9a6b8f3b65599117",
   "gen": true
  },
  "recipe:perlin-drift": {
-  "graph": "4919eb53d859b418",
-  "model": "c8ffb0e8b304058a",
-  "hash": "c8ffb0e8b304058a1c9de71c1864a25bbd5c78fc1da30cf08b837af823d22a9a",
+  "graph": "19abd6f8d728aac0",
+  "model": "358147fb4e723b7c",
+  "hash": "358147fb4e723b7cac5a03a4502791888ae45637055780908cfa2ab232f44995",
   "gen": true
  },
  "recipe:crescendo": {
-  "graph": "87338e06d853f870",
-  "model": "1ea9fd0d72452b1a",
-  "hash": "1ea9fd0d72452b1a310b62e7d061067e3371caf41517c739898c520c37a36585",
+  "graph": "2e937ef85d91e2b6",
+  "model": "788f873ebae4c0c8",
+  "hash": "788f873ebae4c0c8d020056259026b51f130ed5ad0d14a107808593925093385",
   "gen": true
  },
  "recipe:accents": {
-  "graph": "7d56e52173c3a5dd",
-  "model": "91b5a9ffcf98835e",
-  "hash": "91b5a9ffcf98835e1ebde344d94a7352514f50efbd609b638203c65065b3e9d5",
+  "graph": "8da5c95032f1a067",
+  "model": "a831fa6931689a44",
+  "hash": "a831fa6931689a44405ca12fbb08638fe5c62f1ef55a71787939fec6e3f4bd6a",
   "gen": true
  },
  "recipe:sidechain-synth": {
-  "graph": "db9244d12dbafe3e",
-  "model": "3a997fc340efc879",
-  "hash": "3a997fc340efc879d753e845a0ea2988fecad9963992311e8c54971191138a9f",
+  "graph": "a567f1ce34678b45",
+  "model": "ca3d9b59d3394e2e",
+  "hash": "ca3d9b59d3394e2e243485edc278fa018dcd154a87c1a976a617dc792d3308e2",
   "gen": true
  },
  "recipe:build-drop": {
   "graph": "a810796f3e87ab18",
-  "model": "95ae9f411cccd2e3",
-  "hash": "95ae9f411cccd2e3abd2844ec5a7943049abb745be0ea9c336938dea80f05c07",
+  "model": "8b79eb281def5591",
+  "hash": "8b79eb281def5591bcfedd2d6353a00e0579ef00ab725b9e426a13d56c22bfb6",
   "gen": true
  },
  "recipe:layers-in": {
-  "graph": "58d8cecebf50dda6",
-  "model": "78e12eb727128e77",
-  "hash": "78e12eb727128e773fa923e26bd58b91164d81014d84c8fa535d5d7070b0c3d5",
+  "graph": "906ac9c1b5b5d553",
+  "model": "c45d1c95aab98047",
+  "hash": "c45d1c95aab98047d0c79144418b97542c5e08d11c7b7e79730816ece54f4e73",
   "gen": true
  },
  "recipe:filter-open-intro": {
-  "graph": "4919eb53d859b418",
-  "model": "d67ff613e2d26c9d",
-  "hash": "d67ff613e2d26c9dfc34699dda3a7d6b676d68001a5a8e8b7f11dfb009a11130",
+  "graph": "19abd6f8d728aac0",
+  "model": "ce10b651f07ca49e",
+  "hash": "ce10b651f07ca49e69db309005d51c62ffc775c6de570fe20ef8f21f6b27a801",
   "gen": true
  },
  "recipe:random-thin": {
-  "graph": "ac79c21045ece19a",
-  "model": "2f7406a00475257c",
-  "hash": "2f7406a00475257c40509c4af396e0e49e1956e136e8b2ad224400d1388dce58",
+  "graph": "74e8f16146cd5236",
+  "model": "c24ec7a361502fac",
+  "hash": "c24ec7a361502fac8a6f4d92a51eb10664bc3e111a65c0583760ea2398f35fa2",
   "gen": true
  },
  "recipe:polymeter": {
-  "graph": "4115ba5b223ace8e",
-  "model": "165b0e50759bbb23",
-  "hash": "165b0e50759bbb23f8b9cadfbfbcbaabd1b91458f218bd214012a4dead7a5d5f",
+  "graph": "93c8b26eea871f62",
+  "model": "541ea649b2e46616",
+  "hash": "541ea649b2e46616a2d2aa48651d85d7eb3f345ee270ebac725e015f98cf8d34",
   "gen": true
  },
  "recipe:dark-drone": {
-  "graph": "4919eb53d859b418",
-  "model": "f46c3365c2cfd24b",
-  "hash": "f46c3365c2cfd24be0a86cb7fea4ed2ad029afd6d608a056f1b98cfe7ced9811",
+  "graph": "478d6c668d4969af",
+  "model": "0d54383de3da872c",
+  "hash": "0d54383de3da872c0273588cf06f8db9cc1fc4db8f5a7af669e29f30d0c198a8",
   "gen": true
  },
  "recipe:sparse-line": {

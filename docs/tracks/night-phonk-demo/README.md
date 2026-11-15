@@ -24,6 +24,12 @@ build 61-64, drop C 65-80, outro 81-84. Pump: `pumpHard(0.8)` (duckorbit on orbi
 beats cut before drops A, B, C (all but the reverse hit). Measure with `engine/audio/contrast.py` (suno-track-lab): section short-term loudness,
 drop minus relief, and the pump dip per stem (`--stems`). Render: `render.sh OUT v2 84`; site check: `node tests/site/track_demo.mjs --v2`.
 
+## Rack standard (#94)
+Every instrument rack starts with the band scope of its class (`["hook", "hygiene-<class>"]`, docs/RACK_STANDARD.md). `sub808` has a 4 ms attack and
+`postgain` 0.87 (one voice under -6 dBFS); both tracks set `.postgain(1)` on the sub lane, a mix decision that keeps the 808 at its old level.
+`riser` sweeps 3.5 octaves. v2 re-rendered: 9 of 12 genre targets and -12.0 LUFS as before, centroid 2134 -> 1800 Hz, drops minus reliefs 8.4 -> 7.8 LU
+(table in docs/RACK_STANDARD.md section 7).
+
 ## Structure (what to edit)
 - **atoms** (`ph.*`): every chord, line, rhythm and gate string, declared once. A new section is a new gate atom plus one `tagged(...).mute(...)` or `hooks.bind(...)` line.
 - **racks**: `hooks.def` chains (sound source, envelope, filter); a lane names its rack through a slot (`.use("kick")`) and one `hooks.bind` fills it,

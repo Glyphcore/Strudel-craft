@@ -50,7 +50,7 @@ const render = (code) => page.evaluate(async ({ code, from, to }) => {
   const haps = pat.queryArc(from, to, { _cps: cps }).filter((h) => h.hasOnset()).sort((x, y) => x.whole.begin.valueOf() - y.whole.begin.valueOf());
   const live = W.getAudioContext(), ctl = W.getSuperdoughAudioController(), rnd = Math.random; let fails = 0;
   const pass = async (ctx, count) => { W.setAudioContext(ctx); W.setSuperdoughAudioController(null); try { await W.loadWorklets(); } catch (e) { /* offline worklets */ }
-    for (const h of haps) { h.ensureObjectValue && h.ensureObjectValue(); const t = (h.whole.begin.valueOf() - from) / cps; try { await W.superdough({ ...h.value }, t, h.duration / cps, cps, h.whole.begin.valueOf()); } catch (e) { if (count) fails++; } } };
+    for (const h of haps) { h.ensureObjectValue && h.ensureObjectValue(); const t = (h.whole.begin.valueOf() - from) / cps; for (let k = 0; ; k++) { try { await W.superdough({ ...h.value }, t, h.duration / cps, cps, h.whole.begin.valueOf()); break; } catch (e) { if (e && e.name === 'InvalidAccessError' && k < 64) continue; if (count) fails++; break; } } } }; // retry as site/capture.js does: superdough pools filters across contexts, a failed call pops one stale node (a voice with hpf + lpf holds several)
   try { Math.random = mul(1); await pass(new OfflineAudioContext(2, 128, rate), false); Math.random = mul(1);
     const frames = Math.round((to - from) / cps * rate), off = new OfflineAudioContext(2, frames, rate); await pass(off, true); const buf = await off.startRendering();
     const L = buf.getChannelData(0); let pk = 0, ss = 0, sum = 0; for (let i = 0; i < L.length; i++) { const v = L[i]; pk = Math.max(pk, Math.abs(v)); ss += v * v; sum += v * (i % 97 + 1); }

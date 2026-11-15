@@ -11,13 +11,14 @@ const sortKeys = (x) => (Array.isArray(x) ? x.map(sortKeys) : isObj(x) ? Object.
 const GATEKEYS = ['from', 'until', 'windows', 'period', 'when', 'latch', 'quant', 'unreached', 'scanLimit'];
 const NUMRE = '\\d+(?:\\.\\d+)?(?:/\\d+)?';
 const TAPREF = /^(?:((?:[\w-]+:)?[\w$*-]+)\/)?([A-Za-z][\w-]*)(?::([A-Za-z]\w*))?$/;
-const METHODS = ['use', 'wrap', 'ns', 'tap', 'wire'];
+import { HYGIENE } from './hygiene.js';
+const METHODS = ['use', 'wrap', 'ns', 'tap', 'wire', 'hook'];
 
-// Rewrite double-quoted string literals that sit directly in the argument list of hooks.*(...), .use/.wrap/.ns/.tap/.wire(...) and
+// Rewrite double-quoted string literals that sit directly in the argument list of hooks.*(...), .use/.wrap/.ns/.tap/.wire/.hook(...) and
 // tap(...) into single-quoted ones, so Strudel's transpiler does not turn gates ("@3b"), hook expressions ("a | b") or slot names
 // into mini-notation. Strings inside nested calls (s("bd*4") inside a wrap callback) are left alone.
 export function protect(src) {
-  const re = /(?:\bhooks\s*\.\s*[A-Za-z]+|\.\s*(?:use|wrap|ns|tap|wire|tags|mute|solo)|\btap|\bctl|\btagged|\bcapture|\brecall|\.\s*from)\s*\(/g; const edits = new Map(); let m;
+  const re = /(?:\bhooks\s*\.\s*[A-Za-z]+|\.\s*(?:use|wrap|ns|tap|wire|hook|tags|mute|solo)|\btap|\bctl|\btagged|\bcapture|\brecall|\.\s*from)\s*\(/g; const edits = new Map(); let m;
   while ((m = re.exec(src))) {
     let i = m.index + m[0].length; let depth = 1;
     while (i < src.length && depth > 0) {
@@ -61,7 +62,9 @@ export function install(S, opts = {}) {
   // ---------------- registry state ----------------
   const R = {};
   const diag = []; const seen = new Set();
-  const memo = new Map(); const built = new WeakMap(); const astCache = new Map();
+  const memo = new Map(); const built = new WeakMap(); const builtHook = new WeakMap(); const astCache = new Map();
+  // standard-library defs (hygiene racks, docs/RACK_STANDARD.md): resolvable everywhere, shadowed by hooks.def, never serialised
+  const STDLIB = new Map(Object.entries(opts.stdlib === false ? {} : { ...HYGIENE, ...(opts.stdlib || {}) })); const defOf = (name) => R.defs.get(name) || STDLIB.get(name);
   let frozen = false; let version = 0; let tapGen = 0; let effCache = null; let bid = 0; let seq = 0; let sid = 0; const active = new Set();
   function clear() { R.markers = new Map(); R.scopes = new Map(); R.slots = new Map(); R.declared = new Set(); R.defs = new Map(); R.bindings = []; R.vars = new Map(); R.sets = []; R.wires = []; R.taps = new Map(); R.reads = new Set(); R.laneMode = 'open'; }
   clear();
@@ -264,7 +267,7 @@ export function install(S, opts = {}) {
   const BUILTIN = new Set(['every', 'mix', 'gated', 'sometimes', 'ns', 'tapped', 'with']);
   function namesOf(spec, out = new Set()) {
     if (typeof spec !== 'string') return out;
-    const walk = (ast) => { for (const t of ast.terms) { if (!(t.deco && BUILTIN.has(t.name) && !R.defs.has(t.name))) out.add(t.name); if (t.deco) walk(t.deco); } };
+    const walk = (ast) => { for (const t of ast.terms) { if (!(t.deco && BUILTIN.has(t.name) && !defOf(t.name))) out.add(t.name); if (t.deco) walk(t.deco); } };
     walk(parseExpr(spec)); return out;
   }
   const ident = (p) => p;
@@ -329,7 +332,7 @@ export function install(S, opts = {}) {
     return (def.chain || []).reduce((p, [m, ...a]) => p[m](...a.map((x) => sub(x, vals, innerFn))), pat);
   };
   function compileTerm(t, ctx) {
-    const def = R.defs.get(t.name);
+    const def = defOf(t.name);
     if (t.deco) {
       const bi = BUILTIN.has(t.name) && !def;
       if (!bi && !def) { note('error', 'E_UNKNOWN_HOOK', `unknown decorator "${t.name}"`); return ident; }
@@ -368,7 +371,7 @@ export function install(S, opts = {}) {
     if (isObj(spec)) return wrapFn(spec, {}, ctx, null);
     throw code('E_BAD_ARG', 'hook must be a name, a chain array, or a function');
   }
-  const isApplySpec = (spec) => typeof spec === 'function' || (typeof spec === 'string' && parseExpr(spec).terms.length === 1 && !!R.defs.get(parseExpr(spec).terms[0].name)?.apply);
+  const isApplySpec = (spec) => typeof spec === 'function' || (typeof spec === 'string' && parseExpr(spec).terms.length === 1 && !!defOf(parseExpr(spec).terms[0].name)?.apply);
   function guarded(mk, src) { // mk: () => (pat -> pat). our own codes -> fail(), anything else -> E_HOOK_THREW + bypass
     return (pat) => {
       try { return mk()(pat); } catch (e) {
@@ -391,7 +394,7 @@ export function install(S, opts = {}) {
   }
   function validateSpec(s) { // syntax + checks that are possible now (defs may come later)
     const ast = parseExpr(s);
-    const walk = (a) => { for (const t of a.terms) { const def = R.defs.get(t.name);
+    const walk = (a) => { for (const t of a.terms) { const def = defOf(t.name);
       if (t.deco && def && !def.decorator) throw code('E_NOT_DECORATOR', `"${t.name}" is a plain hook, not a decorator`);
       if (def?.params && !t.deco) { const names = Object.keys(def.params); t.args.forEach((v, i) => { if (names[i]) checkParam(t.name, names[i], def.params[names[i]], v); else throw code('E_BAD_ARG', `hook "${t.name}" takes ${names.length} args`); }); for (const k of Object.keys(t.named)) if (!names.includes(k)) throw code('E_BAD_ARG', `hook "${t.name}" has no param "${k}"`); }
       if (t.deco) walk(t.deco); } };
@@ -578,14 +581,14 @@ export function install(S, opts = {}) {
   }
   const lenOf = (v, d, ctrl) => lenCycles(v ?? d, hooks.cps ?? ctrl?._cps);
   function paramTimeline(name, param, t, cx) {
-    const def = R.defs.get(name); const s = openSet(`${name}.${param}`, t, cx); return s ? s.value : def.params[param].default;
+    const def = defOf(name); const s = openSet(`${name}.${param}`, t, cx); return s ? s.value : def.params[param].default;
   }
   function evalCont(P, o, t, ctrl, gateN) {
     const facet = P.facet; const cx = cxOf(ctrl);
     if (gateN && !compileGate({ gate: gateN, label: 'gated read' }, cx).open(t)) return o.default;
     const key = `${P.sel ? P.sel + '/' : ''}${P.name}:${facet}`;
     return guard(key, () => {
-      const def = !P.sel && R.defs.get(P.name);
+      const def = !P.sel && defOf(P.name);
       if (def?.params && facet in def.params) { const v = paramTimeline(P.name, facet, t, cx); return isPatternValue(v) ? first(valuePattern(v).queryArc(t, t, ctrl))?.value : v; }
       if (def?.taps && facet in def.taps) return first(makeTap(def.taps[facet], o).queryArc(t, t, ctrl))?.value ?? o.default;
       const T = lookupTap(P, ctrl?._hookNs, ctrl?.id);
@@ -657,6 +660,21 @@ export function install(S, opts = {}) {
   const mark = (f) => { f.__hooks = true; return f; };
   proto.use = mark(function use(slotRef, o) { return useOrWrap(this, slotRef, null, o); });
   proto.wrap = mark(function wrap(slotRef, inner, o) { if (typeof inner !== 'function') throw code('E_BAD_ARG', 'wrap needs an inner function'); return useOrWrap(this, slotRef, inner, o); });
+  // .hook(expr): a hook expression applied in place, always on (no slot, no gate). Resolved at query time, so a later hooks.def of the
+  // same name takes over; params take their defaults or the arguments in the expression. Racks start with it: ["hook", "hygiene-pad"].
+  proto.hook = mark(function hook(expr) {
+    if (typeof expr !== 'string' || !expr.trim()) throw code('E_BAD_ARG', 'hook needs a hook expression string');
+    validateSpec(expr); const src = this;
+    return new Pattern((state) => {
+      let m = builtHook.get(src); if (!m) { m = new Map(); builtHook.set(src, m); }
+      let e = m.get(expr);
+      if (!e || e.v !== version) {
+        const ctx = { slot: null, scope: state.controls?._hookNs, p0: state.span.begin, cx: cxOf(state.controls), named: {}, innerWrap: null };
+        e = { v: version, pat: guarded(() => compileSpec(expr, ctx), expr)(src) }; m.set(expr, e);
+      }
+      return e.pat.query(state);
+    });
+  });
   proto.ns = mark(function ns(id) {
     const src = this; const sc = normSlot(id);
     for (const t of src._hookTaps || []) setTap(`${sc}/${t.name}`, { pat: t.src, opts: t.opts });
@@ -718,7 +736,7 @@ export function install(S, opts = {}) {
     },
     set(key, value, gate) {
       const m = /^([A-Za-z][\w-]*)\.(\w+)$/.exec(key); if (!m) throw code('E_BAD_ARG', `set key must be "hook.param", got "${key}"`);
-      const def = R.defs.get(m[1]);
+      const def = defOf(m[1]);
       if (def) { if (!def.params?.[m[2]]) throw code('E_BAD_ARG', `hook "${m[1]}" has no param "${m[2]}"`); checkParam(m[1], m[2], def.params[m[2]], value); }
       const s = { key, value, gate: normGate(gate), seq: ++seq }; R.sets.push(s); touch(); return s.seq;
     },

@@ -1,0 +1,311 @@
+{
+ "version": 1,
+ "doc": "Rack quality standard (docs/RACK_STANDARD.md). band = target band in Hz; *_max_db are upper limits; energy ratios are dB relative to the in-band energy (below/above) or to the total (sub20, ultra). Checked by tools/racks/audit.mjs.",
+ "test": {
+  "cpm": 30,
+  "sr": 44100,
+  "fft": 32768,
+  "low_mono_hz": 120
+ },
+ "global": {
+  "dc_max_db": -60,
+  "sub20_max_db": -40,
+  "ultra_hz": 18000,
+  "ultra_max_db": -45,
+  "clip_max": 0,
+  "peak_max_db": -3,
+  "peak_min_db": -36,
+  "corr_min": -0.1,
+  "side_low_max_db": -30,
+  "crest_min_db": 3
+ },
+ "classes": {
+  "kick": {
+   "band": [
+    28,
+    6000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -30,
+   "peak_max_db": -3,
+   "side_low_max_db": -50,
+   "phrase": "s(\"x ~ x ~\")",
+   "bars": 2
+  },
+  "sub": {
+   "band": [
+    25,
+    400
+   ],
+   "below_max_db": -26,
+   "above_max_db": -24,
+   "peak_max_db": -6,
+   "side_low_max_db": -50,
+   "crest_min_db": 2,
+   "phrase": "note(\"eb1 f1 g1 bb0\")",
+   "bars": 2,
+   "sub20_max_db": -30
+  },
+  "bass": {
+   "band": [
+    30,
+    2500
+   ],
+   "below_max_db": -30,
+   "above_max_db": -24,
+   "peak_max_db": -6,
+   "side_low_max_db": -50,
+   "alias": {
+    "note": "c4",
+    "max_db": -40
+   },
+   "phrase": "note(\"c2 ~ c2 eb2 ~ g1 ~ c2\")",
+   "bars": 2
+  },
+  "snare": {
+   "band": [
+    100,
+    12000
+   ],
+   "below_max_db": -24,
+   "above_max_db": -24,
+   "peak_max_db": -3,
+   "phrase": "s(\"~ x ~ x\")",
+   "bars": 2
+  },
+  "hat": {
+   "band": [
+    3000,
+    16000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -15,
+   "ultra_max_db": -15,
+   "peak_max_db": -6,
+   "phrase": "s(\"x*8\")",
+   "bars": 2
+  },
+  "perc": {
+   "band": [
+    80,
+    9000
+   ],
+   "below_max_db": -24,
+   "above_max_db": -24,
+   "peak_max_db": -3,
+   "phrase": "note(\"g2 d3 bb2 g2\")",
+   "bars": 2
+  },
+  "bell": {
+   "band": [
+    300,
+    9000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -24,
+   "peak_max_db": -6,
+   "alias": {
+    "note": "c7",
+    "max_db": -40
+   },
+   "phrase": "note(\"g5 ~ bb5 g5 ~ d5 f5 ~\")",
+   "bars": 2
+  },
+  "pluck": {
+   "band": [
+    120,
+    9000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -30,
+   "peak_max_db": -6,
+   "alias": {
+    "note": "c7",
+    "max_db": -40
+   },
+   "phrase": "note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\")",
+   "bars": 2
+  },
+  "stab": {
+   "band": [
+    100,
+    10000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -30,
+   "peak_max_db": -6,
+   "alias": {
+    "note": "c7",
+    "max_db": -40
+   },
+   "phrase": "note(\"[c4,eb4,g4] ~ [bb3,d4,f4] ~\")",
+   "bars": 2
+  },
+  "pad": {
+   "band": [
+    100,
+    8000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -30,
+   "peak_max_db": -6,
+   "alias": {
+    "note": "c6",
+    "max_db": -34
+   },
+   "phrase": "note(\"<[c3,eb3,g3,bb3] [bb2,d3,f3,a3]>\")",
+   "bars": 4,
+   "side_low_max_db": -24
+  },
+  "lead": {
+   "band": [
+    150,
+    10000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -30,
+   "peak_max_db": -6,
+   "alias": {
+    "note": "c7",
+    "max_db": -40
+   },
+   "phrase": "note(\"g4 bb4 d5 a4 g4 f4 g4 bb4\")",
+   "bars": 2
+  },
+  "keys": {
+   "band": [
+    80,
+    8000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -30,
+   "peak_max_db": -6,
+   "alias": {
+    "note": "c7",
+    "max_db": -40
+   },
+   "phrase": "note(\"[c3,g3,eb4] [f3,c4,ab4] [g3,d4,bb4] [c3,g3,eb4]\")",
+   "bars": 2
+  },
+  "arp": {
+   "band": [
+    150,
+    10000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -30,
+   "peak_max_db": -6,
+   "alias": {
+    "note": "c7",
+    "max_db": -40
+   },
+   "phrase": "note(\"[c4 eb4 g4 c5 g4 eb4]*2\")",
+   "bars": 2
+  },
+  "supersaw": {
+   "band": [
+    100,
+    12000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -30,
+   "peak_max_db": -6,
+   "alias": {
+    "note": "c6",
+    "max_db": -34
+   },
+   "phrase": "note(\"<[c3,g3,c4,eb4] [ab2,eb3,ab3,c4]>\")",
+   "bars": 4,
+   "side_low_max_db": -24
+  },
+  "riser": {
+   "band": [
+    150,
+    14000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -20,
+   "ultra_max_db": -30,
+   "peak_max_db": -6,
+   "phrase": "s(\"x/4\")",
+   "bars": 4
+  },
+  "sweep": {
+   "band": [
+    150,
+    14000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -20,
+   "ultra_max_db": -30,
+   "peak_max_db": -6,
+   "phrase": "s(\"x/4\")",
+   "bars": 4
+  },
+  "reverse": {
+   "band": [
+    200,
+    14000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -20,
+   "ultra_max_db": -30,
+   "peak_max_db": -6,
+   "phrase": "s(\"x\")",
+   "bars": 2
+  },
+  "impact": {
+   "band": [
+    25,
+    6000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -30,
+   "peak_max_db": -3,
+   "side_low_max_db": -50,
+   "phrase": "s(\"x/2\")",
+   "bars": 2,
+   "sub20_max_db": -30
+  },
+  "texture": {
+   "band": [
+    200,
+    14000
+   ],
+   "below_max_db": -24,
+   "above_max_db": -20,
+   "ultra_max_db": -30,
+   "peak_max_db": -18,
+   "peak_min_db": -54,
+   "phrase": "s(\"pink, brown\")",
+   "bars": 2
+  },
+  "vox": {
+   "band": [
+    150,
+    9000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -30,
+   "peak_max_db": -6,
+   "phrase": "s(\"<vs_o_pp vs_a_pp>\").note(\"<g4 d4>\")",
+   "bars": 2,
+   "vox": true
+  },
+  "move": {
+   "doc": "FX-only racks (filter moves, drive, ducking, level): rendered over a band-scoped saw chord; global safety checks only",
+   "peak_max_db": -1,
+   "phrase": "note(\"<[c3,eb3,g3,bb3] [bb2,d3,f3,a3]>\").s(\"sawtooth\").hpf(100).lpf(6000).gain(0.3)",
+   "bars": 2,
+   "dc_max_db": -40
+  },
+  "demo": {
+   "doc": "Whole programs whose point is syntax or arrangement, not one instrument: global safety checks only",
+   "peak_max_db": -0.3,
+   "peak_min_db": -60,
+   "crest_min_db": 1,
+   "ultra_max_db": -20,
+   "side_low_max_db": -20
+  }
+ }
+}

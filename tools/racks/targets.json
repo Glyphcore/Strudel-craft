@@ -1,0 +1,182 @@
+{
+ "doc": "Which class of tools/racks/standard.json each audited item belongs to. racks: hook def name -> { class, expr?, phrase?, noalias?, skip? }; catalog: recipe id -> { class, bars? }; syntax: 'section/title' -> { class, bars?, skip? }. Items not listed in catalog / syntax are class demo (global safety checks only). hygiene: true = a classed rack must start with [\"hook\", \"hygiene-<class>\"].",
+ "hygiene": true,
+ "racks": {
+  "kick808": {
+   "class": "kick"
+  },
+  "snareNoise": {
+   "class": "snare"
+  },
+  "hat": {
+   "class": "hat"
+  },
+  "cowbell": {
+   "class": "bell"
+  },
+  "sub808": {
+   "class": "sub"
+  },
+  "hazePad": {
+   "class": "pad"
+  },
+  "deepLead": {
+   "class": "lead"
+  },
+  "wideLead": {
+   "class": "lead"
+  },
+  "echoPluck": {
+   "class": "pluck"
+  },
+  "formant": {
+   "class": "vox"
+  },
+  "chop": {
+   "class": "vox"
+  },
+  "riser": {
+   "class": "riser"
+  },
+  "reverseHit": {
+   "class": "reverse"
+  },
+  "impact": {
+   "class": "impact"
+  },
+  "tape": {
+   "class": "texture"
+  },
+  "murk": {
+   "class": "move"
+  },
+  "thin": {
+   "class": "move"
+  },
+  "grit": {
+   "class": "move"
+  },
+  "pumpHard": {
+   "class": "move"
+  },
+  "pump": {
+   "class": "move",
+   "skip": "needs a kick tap in the program (wire to kick:env); covered by the track render"
+  },
+  "tom": {
+   "class": "perc"
+  },
+  "rimshot": {
+   "class": "perc",
+   "phrase": "s(\"~ x ~ x\")"
+  },
+  "slam": {
+   "class": "move"
+  },
+  "open": {
+   "class": "move"
+  },
+  "swellPad": {
+   "class": "move"
+  },
+  "hush": {
+   "class": "move"
+  }
+ },
+ "catalog": {
+  "reese-style-detuned-bass": {
+   "class": "bass"
+  },
+  "sub-bass": {
+   "class": "sub"
+  },
+  "pad-swell": {
+   "class": "pad",
+   "bars": 4
+  },
+  "riser": {
+   "class": "riser",
+   "bars": 8
+  },
+  "chord-stabs": {
+   "class": "stab"
+  },
+  "synth-kick": {
+   "class": "kick"
+  },
+  "synth-hat-offbeat": {
+   "class": "hat"
+  },
+  "synth-backbeat": {
+   "class": "snare"
+  },
+  "synth-euclid": {
+   "class": "kick"
+  },
+  "syncopated-bass": {
+   "class": "bass"
+  },
+  "supersaw-pad": {
+   "class": "supersaw",
+   "bars": 4
+  },
+  "pluck": {
+   "class": "pluck"
+  },
+  "minor-arp": {
+   "class": "arp"
+  },
+  "chord-progression": {
+   "class": "keys"
+  },
+  "root-bass": {
+   "class": "sub"
+  },
+  "fm-bell": {
+   "class": "bell"
+  },
+  "dark-drone": {
+   "class": "bass"
+  },
+  "minor-motif": {
+   "class": "lead"
+  },
+  "sparse-line": {
+   "class": "lead"
+  },
+  "random-thin": {
+   "class": "hat"
+  }
+ },
+ "syntax": {
+  "racks/Scope a source first (.hook)": {
+   "class": "pluck"
+  },
+  "racks/A rack names its class at the head of its chain": {
+   "class": "pluck"
+  },
+  "racks/Stab: short chord, filter envelope, scoped": {
+   "class": "stab"
+  },
+  "racks/Pad: slow attack, unison, low end kept out": {
+   "class": "pad",
+   "bars": 4
+  },
+  "racks/Lead: vibrato, filter envelope, scoped": {
+   "class": "lead"
+  },
+  "racks/808 / sub: soft attack, drive after the scope, mono": {
+   "class": "sub"
+  },
+  "racks/Noise riser: the sweep stays inside the scope": {
+   "class": "riser",
+   "bars": 8
+  },
+  "racks/Replace a hygiene rack for the whole program": {
+   "class": "lead"
+  },
+  "racks/The same scope in plain Strudel (opens on strudel.cc)": {
+   "class": "bass"
+  }
+ }
+}

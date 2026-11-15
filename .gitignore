@@ -4,3 +4,4 @@ __pycache__/
 tests/packs/fixtures/**/*.wav
 # schemas are copied here by the Pages workflow
 site/schemas/
+tools/racks/out/

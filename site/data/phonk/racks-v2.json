@@ -35,6 +35,10 @@
   "tom": {
    "chain": [
     [
+     "hook",
+     "hygiene-perc"
+    ],
+    [
      "s",
      "sine"
     ],
@@ -70,6 +74,10 @@
   },
   "rimshot": {
    "chain": [
+    [
+     "hook",
+     "hygiene-perc"
+    ],
     [
      "s",
      "square"

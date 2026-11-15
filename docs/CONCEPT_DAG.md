@@ -93,6 +93,21 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 
 ## Waiting nodes
 - audio engine (#102-#104): measured first (#102); B wins behind flags (vis, sched, late) and C (render host, offline Record default, self-checking live takes) built; the engine worker (B1) is designed in docs/AUDIO_ENGINE.md 7 and waits for its own issue once the flag numbers settle.
+| rack-standard (signal order, class bands, hygiene racks as stdlib hook defs, `.hook()`, audit tool; docs/RACK_STANDARD.md) | hooks-core, track-demo-night-phonk | built (critic pending) | #94 |
+| daw-survey + refactor-plan (docs/DAW_SURVEY.md, docs/REFACTOR_PLAN.md) | issues-protocol | built (critic pending) | #95 |
+| mixer-read-model (R1: channel strips derived from the lane graph, `site/engine/mixer-model.js`) | lanes-audio, lanes-consumers | built (critic pending) | #95 |
+| strip-meters (R2: per-strip peak / RMS / LUFS in the CLI manifest and on the site; `strudel lanes --mixer`) | mixer-read-model, audio-engine-measurements | issued | #96 |
+| take-lanes (R3: recipes grouped per lane and range, comp list) | mixer-read-model, lanes-capture | issued | #97 |
+| freeze-by-hash (R4) | take-lanes, lanes-capture | issued | #98 |
+| project-time-model (R5: project@1, tempo map, markers, DAWproject export) | strip-meters, take-lanes | issued | #99 |
+| summing-groups + delay-compensation (R6: `.group`, strip latency) | mixer-read-model | issued | #100 |
+| transactional-undo (R7: one undo stack over model ops) | project-time-model | issued | #101 |
+| wam-plugin-hosting (WAM 2 effects on returns) | summing-groups + delay-compensation | unexplored | - |
+| glitch-free-text-diff (unchanged lanes keep sounding through an edit, Glicol-style) | audio-engine-measurements | unexplored | - |
+
+## Waiting nodes
+- refactor (#95-#101): build order R1 (#95, built) -> R2 (#96) -> R3 (#97) and R6 (#100) on disjoint files -> R4 (#98) -> R5 (#99) -> R7 (#101). Design: docs/REFACTOR_PLAN.md; survey: docs/DAW_SURVEY.md. R2's site half and R6 wait for the engine seam of docs/AUDIO_ENGINE.md.
+- rack standard (#94): every new rack names its class (`["hook", "hygiene-<class>"]`) and is listed in tools/racks/targets.json; a new class is an entry in tools/racks/standard.json plus a hygiene def.
 - live-mic-input: Strudel has no live input; needs browser/Node audio capture and an AGPL licence-decision issue before touching Strudel code (do not copy PR #1414). Size L. Waits for #14 and that decision.
 - resynthesis: own design (STFT partial tracking + additive render -> WAV -> sample map), size L; waits for #16 to settle the shared STFT/mask helpers. No Harmor copying.
 - vocal-chop-slicer (user stems -> slice map): slicer #4 accepted; next after #39. Size M.

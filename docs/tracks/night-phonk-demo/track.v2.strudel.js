@@ -36,7 +36,7 @@ perc: stack(note(atoms.ph2.toms).use("tom"), s(atoms.ph2.rim).use("rim")).tags("
 bell: note(atoms.ph.bell).add(note("0,6.8")).use("bell").orbit(7).tags("conf", "wet")
 stab: note(atoms.ph2.stab).add(note("0,6.8")).use("bell").velocity(1.1).orbit(7).tags("conf", "wet")
 chime: note(atoms.ph.bell).slow(2).add(note("0,6.8")).use("bell").velocity(0.35).lpf(2500).orbit(7).tags("relief", "wet")
-sub: note(atoms.ph.sub).penv(atoms.ph2.slides).use("sub").use("drive").orbit(3).tags("bass")
+sub: note(atoms.ph.sub).penv(atoms.ph2.slides).use("sub").postgain(1).use("drive").orbit(3).tags("bass")
 pad: note(atoms.ph.chords).use("pad").lpf(sine.slow(16).range(900, 1800)).use("tone").pan(0.5).orbit(4).tags("harm", "wet")
 lead: note(atoms.ph.lead).use("lead").use("tone").use("drive").room(0.3).orbit(5).tags("melody", "wet")
 ctr: note(atoms.ph.counter).use("ctr").use("tone").orbit(6).tags("conf", "wet")

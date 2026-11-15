@@ -175,7 +175,7 @@ function numberish(kind) {
     el.__sync = () => { const v = cur(name); const t = controls.travelOf(name, v); el.setAttribute('aria-valuenow', v); el.setAttribute('aria-valuetext', fmt(v, s)); out.textContent = fmt(v, s); el.style.setProperty('--t', t); };
     let drag = null;
     el.addEventListener('pointerdown', (e) => { el.setPointerCapture(e.pointerId); drag = { y: e.clientY, x: e.clientX, t: controls.travelOf(name), onVal: e.target === out, t0: performance.now() }; e.preventDefault(); el.focus({ preventScroll: true }); });
-    el.addEventListener('pointermove', (e) => { if (!drag) return; if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 4) drag.moved = true; else if (!drag.moved) return; const d = kind === 'slider' ? (e.clientX - drag.x) / Math.max(80, el.clientWidth) : (drag.y - e.clientY) / 160; controls.input('value', name, Math.min(1, Math.max(0, drag.t + d))); persistControls(); refreshValues(name); touched(name); });
+    el.addEventListener('pointermove', (e) => { if (!drag) return; if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 4) drag.moved = true; else if (!drag.moved) return; const d = kind === 'slider' ? (e.clientX - drag.x) / Math.max(80, el.clientWidth) : (drag.y - e.clientY) / 160; controls.input('value', name, Math.min(1, Math.max(0, drag.t + d)), { takeover: 'jump' }); persistControls(); refreshValues(name); touched(name); });
     const end = (e) => { const d = drag; drag = null; if (!d) return; if (e.type === 'pointerup' && d.onVal && !d.moved && performance.now() - d.t0 < 400) typed(); }; /* tap the number: exact entry (long-press = reference inspector) */
     el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
     el.addEventListener('keydown', (e) => {

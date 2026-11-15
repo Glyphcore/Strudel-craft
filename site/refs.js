@@ -79,7 +79,7 @@ function tipNode() {
 }
 const fmtV = (v) => (typeof v === 'number' ? String(+v.toFixed(Math.abs(v) >= 100 ? 0 : 3)) : v && typeof v === 'object' ? JSON.stringify(v) : String(v));
 export function tip(el, id) {
-  const d = describe(id); if (!d) return; tipId = id; const t = tipNode(); if (!t.querySelector('.ref-tip-go').dataset.hinted) { t.querySelector('.ref-tip-go').dataset.hinted = '1'; } const dl = t.querySelector('dl');
+  const d = describe(id); if (!d) return; clearTimeout(hideT); tipId = id; const t = tipNode(); const dl = t.querySelector('dl');
   const rows = [['id', d.id], ['path', d.path], ['label', d.label], ['type', d.type + (d.shape ? ' · ' + d.shape : '')], ['value', fmtV(d.value) + (d.range ? `  (${d.range[0]} to ${d.range[1]})` : '')], ['maps', d.maps.length ? d.maps.join(', ') : 'none']];
   dl.replaceChildren(...rows.flatMap(([k, v]) => { const a = document.createElement('dt'); a.textContent = k; const b = document.createElement('dd'); b.textContent = v; b.dataset.k = k; return [a, b]; }));
   t.hidden = false; const r = el.getBoundingClientRect(); const w = t.offsetWidth, ht = t.offsetHeight;
@@ -108,9 +108,12 @@ document.addEventListener('pointerup', dropLp, true); document.addEventListener(
 /* no double-tap jump: double-click on a number already means exact entry */
 let hov = 0;
 document.addEventListener('pointerover', (e) => { if (e.pointerType !== 'mouse' || !focusable(e.target)) return; const host = e.target.closest(SEL); const id = idOf(host); clearTimeout(hov); hov = setTimeout(() => id && tip(host, id), 350); });
-document.addEventListener('pointerout', (e) => { if (e.pointerType !== 'mouse') return; clearTimeout(hov); if (tipFor && !(e.relatedTarget && tipFor.contains(e.relatedTarget))) hideTip(); });
+/* grace period so the mouse can travel from the control to the tooltip (its target button) across the gap */
+let hideT = 0;
+document.addEventListener('pointerout', (e) => { if (e.pointerType !== 'mouse') return; clearTimeout(hov); if (tipFor && !(e.relatedTarget && (tipFor.contains(e.relatedTarget) || (tipEl && tipEl.contains(e.relatedTarget))))) { clearTimeout(hideT); hideT = setTimeout(hideTip, 400); } });
+document.addEventListener('pointerover', (e) => { if (tipEl && tipEl.contains(e.target)) clearTimeout(hideT); });
 document.addEventListener('focusin', (e) => { if (!focusable(e.target)) return; const host = e.target.closest(SEL); const id = idOf(host); if (id) { highlight(id, { scroll: false }); tip(e.target, id); } });
-document.addEventListener('focusout', (e) => { if (tipFor && (tipFor === e.target || tipFor.contains(e.target))) hideTip(); });
+document.addEventListener('focusout', (e) => { if (tipEl && e.relatedTarget && tipEl.contains(e.relatedTarget)) return; if (tipFor && (tipFor === e.target || tipFor.contains(e.target))) hideTip(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && ((tipEl && !tipEl.hidden) || cur)) { hideTip(); clear(); } });
 
 /* ---- reverse: caret / tap in the code makes its controls glow ---- */
@@ -129,4 +132,4 @@ export function attachEditor(view, edId) {
   view.dom.addEventListener('pointerup', later); view.dom.addEventListener('keyup', later);
 }
 
-sc.refs = { resolve, related, highlight, gotoCode, gotoCode, describe, tip, hideTip, clear, attachEditor, current: () => cur };
+sc.refs = { resolve, related, highlight, gotoCode, describe, tip, hideTip, clear, attachEditor, current: () => cur };

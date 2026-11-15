@@ -26,14 +26,35 @@ const away = async () => { await page.evaluate(() => { const c = document.queryS
 await away(); const s0 = await st(); check('view parked with the control at the top edge', s0.top > 50, JSON.stringify(s0));
 const cell = page.locator('.pc-inline .pc-cell [data-ctl]').first(); const id = await page.locator('.pc-inline .pc-cell').first().getAttribute('data-site'); const getV = () => page.evaluate(() => { const e = document.querySelector('.pc-inline .pc-cell [data-ctl]'); return String(window.strudelCraft.perform.controls.get(e.dataset.ctl)); }); const val0 = await getV(id);
 const box = await cell.boundingBox(); const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
-await page.mouse.move(cx, cy); await page.mouse.down(); await page.mouse.move(cx + 30, cy, { steps: 6 }); await page.mouse.move(cx - 30, cy, { steps: 12 }); /* crosses the start once: the default soft takeover picks up there */ await page.waitForTimeout(150);
+await page.mouse.move(cx, cy); await page.mouse.down(); await page.mouse.move(cx + 30, cy, { steps: 8 }); /* one direction only: never crosses the start value */ await page.waitForTimeout(150);
 const mid = await st();  await page.mouse.up(); await page.waitForTimeout(300);
 const s1 = await st(); const val1 = await getV(id);
 check('pointerdown + drag does not scroll the editor', mid.top === s0.top && s1.top === s0.top && s1.y === s0.y, `${s0.top} -> ${mid.top} -> ${s1.top}`);
-check('drag changed the value', val1 !== val0, `${val0} -> ${val1}`);
+check('one-directional first drag changes the value (on-screen controls jump, no dead pickup)', val1 !== val0, `${val0} -> ${val1}`);
+const hw = await page.evaluate(() => { const c = window.strudelCraft.perform.controls; const n = document.querySelector('.pc-inline .pc-cell [data-ctl]').dataset.ctl; const t = c.travelOf(n), v0 = c.get(n); const opt = { control: 'midi:cc7' };
+  const away = Math.min(0.99, t + 0.2); c.input('value', n, away, opt); const v1 = c.get(n); c.input('value', n, Math.min(1, away + 0.05), opt); const v2 = c.get(n); c.input('value', n, t, opt); const v3 = c.get(n); return { v0, v1, v2, v3, t }; });
+check('hardware input still uses pickup (ignored until it crosses the current value)', hw.v1 === hw.v0 && hw.v2 === hw.v0, JSON.stringify(hw));
 await page.evaluate((i) => window.strudelCraft.refs.highlight(i, { scroll: false }), id); await page.waitForTimeout(200);
 check('highlight(scroll:false) marks the span without scrolling', (await st()).top === s0.top && await page.locator('.cm-ref-primary').count() > 0);
 await page.evaluate((i) => window.strudelCraft.refs.gotoCode(i), id); await page.waitForTimeout(500);
 const s2 = await st(); check('explicit gotoCode scrolls the editor to the span', Math.abs(s2.top - s0.top) > 100, `${s0.top} -> ${s2.top}`);
+/* tooltip target button */
+await away(); const s3 = await st();
+await page.evaluate((i) => window.strudelCraft.refs.tip(document.querySelector('.pc-inline .pc-cell'), i), id); await page.waitForTimeout(150);
+const gb = await page.locator('.ref-tip-go').boundingBox(); await page.mouse.click(gb.x + gb.width / 2, gb.y + gb.height / 2); await page.waitForTimeout(500);
+const s4 = await st(); check('tooltip target button scrolls the editor to the code', Math.abs(s4.top - s3.top) > 100, `${s3.top} -> ${s4.top}`);
+await page.keyboard.press('Escape');
+/* touch long-press: synthetic touch pointer events on the cell (not the control child) */
+const touch = (type, el, x, y) => page.evaluate(([t, sel, x, y]) => document.querySelector(sel).dispatchEvent(new PointerEvent(t, { bubbles: true, cancelable: true, pointerType: 'touch', pointerId: 77, isPrimary: true, clientX: x, clientY: y })), [type, '.pc-inline .pc-cell', x, y]);
+const toasts = () => page.evaluate(() => [...document.querySelectorAll('.toasts *')].filter((n) => /jump to code/.test(n.textContent) && !n.children.length).length);
+await page.evaluate(() => { try { localStorage.removeItem('sc.refs.hint'); } catch (e) {} });
+await away(); const s5 = await st(); const cb = await page.locator('.pc-inline .pc-cell').first().boundingBox(); const px = cb.x + 4, py = cb.y + 4;
+await touch('pointerdown', 0, px, py); await page.waitForTimeout(250); await touch('pointermove', 0, px + 30, py); await page.waitForTimeout(500); await touch('pointerup', 0, px + 30, py);
+const s6 = await st(); check('touch hold with >10px movement cancels the long-press jump', Math.abs(s6.top - s5.top) < 5 && await toasts() === 0, `${s5.top} -> ${s6.top}`);
+await touch('pointerdown', 0, px, py); await page.waitForTimeout(700); const s7 = await st(); await touch('pointerup', 0, px, py);
+check('500 ms still touch long-press triggers gotoCode', Math.abs(s7.top - s5.top) > 100, `${s5.top} -> ${s7.top}`);
+check('long-press shows the one-time toast', await toasts() === 1);
+await away(); await touch('pointerdown', 0, px, py); await page.waitForTimeout(700); await touch('pointerup', 0, px, py); await page.waitForTimeout(200);
+check('toast is shown only once', await toasts() === 1);
 check('no page errors', errors.length === 0, errors.join(' | '));
 await browser.close(); server.close(); console.log(fail ? `${fail} FAILED` : 'ALL PASS'); process.exit(fail ? 1 : 0);

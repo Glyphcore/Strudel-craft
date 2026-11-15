@@ -215,10 +215,10 @@ export function createControls({ registry = createRegistry(), model = {}, time =
   const travelOf = (name, v) => { name = R(name); if (v === undefined) v = manual(name); const s = specs.get(name), [lo, hi] = range(s); return Math.min(1, Math.max(0, curveIn(s.curve, v, lo, hi))); };
   const fromTravel = (name, t) => { name = R(name); const s = specs.get(name), [lo, hi] = range(s); let v = curveOut(s.curve, t, lo, hi); if (s.step) v = Math.round(v / s.step) * s.step; return Math.min(hi, Math.max(lo, v)); };
   // input events: absolute 'value' with soft takeover, relative 'delta', nudge
-  function input(type, name, value, { control = name } = {}) {
+  function input(type, name, value, { control = name, takeover } = {}) {
     name = R(name);
     const s = declare(name); if (type === 'delta') return set(name, fromTravel(name, travelOf(name) + value));
-    const mode = model.pads?.settings?.takeover ?? 'pickup', key = control + '>' + name, st = picked.get(key) || { picked: false, prev: null };
+    const mode = takeover ?? model.pads?.settings?.takeover ?? 'pickup', key = control + '>' + name, st = picked.get(key) || { picked: false, prev: null };
     const cur = travelOf(name);
     if (mode === 'pickup' && !st.picked) {
       const crossed = Math.abs(value - cur) < 1e-9 || (st.prev != null && (st.prev - cur) * (value - cur) <= 0);

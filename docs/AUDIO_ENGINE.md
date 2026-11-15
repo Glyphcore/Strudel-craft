@@ -71,8 +71,38 @@ tight haps, voices in flight (from events: a triggered hap counts until its end 
 Rejected: sharing the scheduler's haps with the visuals (they have no future cycles for a pianoroll); lowering the frame rate (still a
 60 ms task per frame); raising the base lookahead alone (more latency for live edits, the same number of queries).
 
-## 5. After
-(filled from the matrix: see the table below)
+## 5. After (defaults: vis=cache, late=reanchor, sched=strudel)
+Base (6eb2f72 + counters, served from `git archive`) and after were run back to back per cell under the same machine load
+(`tests/site/engine_perf_matrix.sh`, 15 s windows; the machine was shared with another session's CLI renders, so absolute numbers move
+between runs, the pairs do not). Per played minute.
+
+| cell | build | main thread busy | long tasks / min, worst | re-anchors / min | dropped haps / min | scheduler query time |
+|---|---|---|---|---|---|---|
+| v2 x1 | base | 99.7 % | 737, 192 ms | 1.6 | 0 | 10.9 % |
+| v2 x1 | after | **60.2 %** | **8**, 176 ms | 1.3 | 0 | 8.6 % |
+| v2 x4 | base | 99.7 % | 234, 744 ms | 6.0 | 0 | 46.6 % |
+| v2 x4 | after | 99.2 % | 292, 931 ms | **4.5** | 0 | 39.1 % |
+| v2 x6 | base | 99.9 % | 118, 2172 ms | 12.2 | 81.5 | 71.5 % |
+| v2 x6 | after | 99.6 % | 191, 1765 ms | **6.6** | **0** | 68.4 % |
+| v1 x6 | base | 99.9 % | 146, 2451 ms | 11.9 | 62.7 | 58.4 % |
+| v1 x6 | after | 99.2 % | 296, **773 ms** | **9.0** | **0** | 61.7 % |
+| v2 x4 hidden | base | 99.5 % | 195, 1147 ms | 8.0 | 0 | 52.7 % |
+| v2 x4 hidden | after | **67.8 %** | 149, 1025 ms | 9.0 | 0 | 46.5 % |
+
+- W1 (visuals cache) is the big win in the foreground: the main thread goes from saturated to 60 % busy at x1 and long tasks from 737 to 8
+  per minute; with `vis=requery` the old numbers come back.
+- `late=reanchor` ends dropped voices: 81.5 and 62.7 dropped haps per minute at x6 become 0. The stall still costs time (a re-anchor), but
+  every voice sounds and keeps its place in its window, so bus readers and bmod get their input.
+- At x4 and x6 the main thread is still saturated, and the scheduler's own query is now most of it (39 to 68 % of the time): the hooks /
+  lanes / maps passes per query. `sched=batch` cuts that time 3x (v2 x4: 47 % -> 14 %, 2026-11-15 run) but makes each task longer (worst
+  1416 ms vs 917 ms in the same pair) and gave no fewer re-anchors, so it stays opt-in. The structural fix is the engine worker (section 7).
+- Live capture vs the CLI render (glitch metric, v2, 4 cycles): at x4 the current engine's take had 21 of 25 onsets matched, p95 10 ms,
+  drift 0.80 ms/s, 8 dropouts and one tap gap of 128 frames (the audio thread skipped a render quantum), and its self-check flagged it; the
+  offline render of the same window matched 20-22 of 24-25 onsets, p95 5 ms (one hop), drift 0.13-0.18 ms/s, 0 dropouts, level within 3 dB
+  (after a -4.1 dB master offset) on 78-85 % of loud hops. Chrome against node-web-audio-api with random supersaw phases and noise bounds
+  that match; `tests/site/record_offline.mjs` uses 80 % onsets and 70 % level as its floor.
+- Offline renders repeat: two renders of the same recipe in the render host are within 1.5 dB on 99 % of 10 ms blocks (92 % before the
+  worklet seed and the noise prefill).
 
 ## 6. Offline Record and the render host (Part C)
 docs/CAPTURE.md has the panel and recipe detail. In short: superdough keeps one AudioContext per page (module state), so an offline

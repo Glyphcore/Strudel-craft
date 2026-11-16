@@ -109,6 +109,18 @@ function resolveLen(R, code, cps) {
   } catch (e) { return { cycles: null, rule: 'none', note: 'end not readable: loops until stopped' }; }
 }
 function applyMode(r = run) { if (!r) return; r.endC = state.mode === 'bars' ? state.bars : state.mode === 'loop' ? null : r.found ? r.found.cycles : null; if (r.tail && (r.endC == null || (r.cyc || 0) < r.endC)) { /* a stop already scheduled stays */ } }
+/* ---- isolation: what an audition's evaluate rebinds is saved before it and put back after it / on the final release ----
+   1. the program's repl-bound globals (all, each, hush, cpm, setcps/setcpm..., Pattern.prototype.p/q/d1..): saved and restored around the evaluate;
+   2. the hooks registry (defs, binds, markers, slots, vars, taps...): the audition is evaluated against a blank registry (so its own End resolves from its own
+      markers and gates, and an earlier audition's entries are gone), then merged over the program's for playback; the final release restores the program's exactly
+      (skipped when the program re-evaluated meanwhile: its registry is then already newer). */
+const GN = ['all', 'each', 'hush', 'cpm', 'setCps', 'setcps', 'setCpm', 'setcpm', 'compileKabel'];
+const PK = () => ['p', 'q', ...[1, 2, 3, 4, 5, 6, 7, 8, 9].flatMap((i) => ['d' + i, 'p' + i, 'q' + i])];
+function saveGlobals() { const P = window.Pattern && window.Pattern.prototype; return { g: GN.map((k) => [k, window[k]]), d: P ? PK().map((k) => [k, Object.getOwnPropertyDescriptor(P, k)]) : [] }; }
+function putGlobals(v) { for (const [k, x] of v.g) { try { if (x === undefined) delete window[k]; else window[k] = x; } catch (e) { /* locked */ } } const P = window.Pattern && window.Pattern.prototype; if (P) for (const [k, d] of v.d) { try { if (d) Object.defineProperty(P, k, d); else delete P[k]; } catch (e) { /* locked */ } } }
+let hbase = null, hbaseEval = 0, hadd = null;
+const blankHooks = (b) => ({ R: { markers: new Map(), scopes: new Map(), slots: new Map(), declared: new Set(), defs: new Map(), bindings: [], vars: new Map(), sets: [], wires: [], taps: new Map(), reads: new Set(), laneMode: b.R.laneMode }, bid: b.bid, seq: b.seq, sid: b.sid, frozen: false, cpb: b.cpb, bpb: b.bpb, cps: b.cps, journal: b.journal });
+function unhook(r) { const H = sc.hooks; if (!hbase || !H || !H.restore) { hbase = null; return; } if (run && run !== r) return; const same = S0() && S0().Engine.evalCount === hbaseEval; try { if (same) H.restore(hbase); else if (hadd) H.unmerge(hadd, hbase); } catch (e) { console.warn('quickplay: hooks restore: ' + e.message); } hbase = null; hadd = null; }
 /* one cleanup for every exit (error, failed prepare, blocked, switch, Stop, page hide): Solo off and the program's orbits back to 1, the bus muted again if we unmuted it */
 function release(r) {
   const was = state.solo; state.solo = false; if (was) applySolo();
@@ -136,15 +148,18 @@ export async function play(spec) {
     await Q.ensureCode(code); const prot = Q.protectCode(code);
     const R = await getRepl(); if (me !== token) { release(r); return; }
     R.state.evalError = undefined; run = r;
-    await R.evaluate(prot, true); restoreGlobals();
-    if (R.state.evalError) throw R.state.evalError;
+    const H = sc.hooks && sc.hooks.snapshot ? sc.hooks : null, G = saveGlobals(); let A = null;
+    if (H) { if (hbase) H.restore(hbase); else { hbase = H.snapshot(); hbaseEval = Q.Engine.evalCount; } H.restore(blankHooks(hbase)); }
+    try { await R.evaluate(prot, true); } finally { putGlobals(G); restoreGlobals(); }
+    if (R.state.evalError) { if (H) H.restore(hbase); throw R.state.evalError; }
     if (me !== token) return;
-    r.start = R.scheduler.now(); r.t0a = ctx.currentTime; r.cps = R.scheduler.cps || 0.5; r.found = resolveLen(R, prot, r.cps); applyMode(r);
+    r.start = R.scheduler.now(); r.t0a = ctx.currentTime; r.cps = R.scheduler.cps || 0.5; r.found = resolveLen(R, prot, r.cps);
+    if (H) { A = H.snapshot(); hadd = A; H.restore(hbase); H.merge(A); } applyMode(r);
     state.phase = 'playing'; stats.plays++; sync(); startLoops();
   } catch (e) {
     if (me !== token) return;
     run = null; state.phase = 'idle'; state.key = null; state.error = e && e.message || String(e); sync(); restoreGlobals();
-    release(r);
+    release(r); unhook(r);
     try { repl && repl.scheduler.stop(); } catch (er) { /* idle */ }
     if (!(e && e.silent)) toast(`Quick play: ${spec.title || 'example'} did not play: ${state.error}`, 'error');
   }
@@ -160,7 +175,7 @@ async function endRun(r, fade, hard) {
   if (o) { try { o.disconnect(); } catch (e) { /* gone */ } const c = ctrl(); if (c && c.nodes && c.nodes[QP_ORBIT] === o) delete c.nodes[QP_ORBIT]; }
   if (run === r) run = null;
   if (!hard) {
-    stopLoops(); release(r); const Q = S0(); if (Q && !Q.S.playing) { try { Q.muteBus(); } catch (e) { /* no bus */ } }
+    stopLoops(); release(r); unhook(r); const Q = S0(); if (Q && !Q.S.playing) { try { Q.muteBus(); } catch (e) { /* no bus */ } }
     state.phase = 'idle'; state.key = null; sync();
     restoreGlobals();
   }

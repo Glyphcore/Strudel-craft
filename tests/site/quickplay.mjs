@@ -109,6 +109,23 @@ try {
   await page.waitForFunction(() => window.strudelCraft.quickplay.state.phase === 'idle', null, { timeout: 30000 }); await page.evaluate(() => { const E = window.__sc.Engine; E.prepare = E.__p; }); await page.waitForTimeout(300);
   const a2 = await o1(); const pb = await peak(800); check('after a failed prepare with Solo on: orbit 1 back to 1 and the program is audible', a2 > 0.9 && pb.pk > 0.003, JSON.stringify({ after: a2, peak: pb.pk }));
   await page.evaluate(() => window.__sc.stop());
+  // isolation: the program's hooks registry, Record end and globals are unchanged by auditions; a second audition does not inherit the first's gates
+  const MAIN = 'setcpm(240/4)\nhooks.def("mp", { chain: [["lpf", 300]] })\nhooks.bind("fx", "mp", "1b..3b")\nhooks.marker("end", "8b")\nnote("c3 e3").s("sawtooth").use("fx")';
+  await page.evaluate((c) => { const ta = document.getElementById('code'); ta.value = c; ta.dispatchEvent(new Event('input', { bubbles: true })); document.activeElement.blur(); }, MAIN);
+  await page.evaluate(() => window.__sc.play()); await page.waitForFunction(() => window.__sc.S.playing, null, { timeout: 60000 });
+  const reg = () => page.evaluate(async () => { const RL = await import('./record-length.js'); const h = window.strudelCraft.hooks; const plan = h.plan({ horizon: 1024 }); return JSON.stringify({ j: (({ atoms, ...o }) => o)(JSON.parse(h.toJSON())), p: plan, end: RL.resolveEnd({ plan, horizon: 1024, markers: plan.markers || null, code: '' }).cycle, g: [typeof window.setcpm, String(window.setcpm).length, String(window.hush).length] }); });
+  await page.waitForTimeout(2500); const regBefore = await reg(); const fn0 = await page.evaluate(() => { window.__g0 = [window.setcpm, window.hush, window.all]; });
+  const AUD1 = 'setcpm(240/4)\nhooks.def("ad", { chain: [["hpf", 900]] })\nhooks.bind("fx", "ad")\nhooks.marker("end", "2b")\nnote("e4 g4").s("triangle").use("fx")';
+  await page.evaluate((c) => window.strudelCraft.quickplay.play({ key: 'i:1', title: 'I1', code: c }), AUD1); await page.waitForFunction(() => window.strudelCraft.quickplay.state.phase === 'playing', null, { timeout: 30000 });
+  const e1 = await page.evaluate(() => window.strudelCraft.quickplay.run.endC); check('the audition resolves its own End (marker 2b = 1 cycle), not the program marker (8)', Math.abs(e1 - 1) < 0.01, 'endC ' + e1);
+  check('program globals (setcpm, hush, all) are the program\'s while auditioning', await page.evaluate(() => window.__g0[0] === window.setcpm && window.__g0[1] === window.hush && window.__g0[2] === window.all));
+  await page.waitForFunction(() => window.strudelCraft.quickplay.state.phase === 'idle', null, { timeout: 20000 }); await page.waitForTimeout(200);
+  { const ra = await reg(); check('after the audition the hooks plan / registry and Record end are exactly the program\'s', ra === regBefore, ra === regBefore ? '' : (() => { const a = JSON.parse(ra), b = JSON.parse(regBefore); return ['j', 'p', 'end', 'g'].filter((k) => JSON.stringify(a[k]) !== JSON.stringify(b[k])).map((k) => k + ': ' + JSON.stringify(a[k]).slice(0, 300) + ' vs ' + JSON.stringify(b[k]).slice(0, 300)).join(' ;; '); })()); }
+  await page.evaluate(() => window.strudelCraft.quickplay.play({ key: 'i:2', title: 'I2', code: 'setcpm(240/4)\n$: s("bd hh")' })); await page.waitForFunction(() => window.strudelCraft.quickplay.state.phase === 'playing', null, { timeout: 30000 });
+  const e2 = await page.evaluate(() => { const r = window.strudelCraft.quickplay.run; return { endC: r.endC, rule: r.found.rule }; }); check('a second audition does not inherit the first one\'s marker or gates (endless)', e2.endC == null, JSON.stringify(e2));
+  await page.evaluate(() => window.strudelCraft.quickplay.stop('fast')); await page.waitForTimeout(300);
+  check('registry still the program\'s after the second audition; the program still sounds', (await reg()) === regBefore && (await peak(800)).pk > 0.003);
+  await page.evaluate(() => window.__sc.stop());
   console.log(JSON.stringify(nums));
   const real = errors.filter((e) => !/notAFunction/.test(e)); check('no console errors (the deliberate bad entry logs its own eval error)', real.length === 0, real.slice(0, 3).join(' | '));
 } catch (e) { check('run to the end', false, e.stack); }

@@ -16,6 +16,7 @@
         "how": { "enum": ["realtime", "offline"] }, "encoding": { "const": "f32le-interleaved" },
         "haps": { "type": "integer" }, "fails": { "type": "integer" }, "envelope": { "type": "array", "items": { "type": "number" }, "description": "mono RMS per 10 ms block in dB (0.1 dB steps); noise-based takes are compared by it within 1.5 dB" },
         "ms": { "type": "integer", "description": "wall time of an offline render (ms)" },
+        "underLoad": { "type": "object", "description": "set when an offline render attached to a take started while the main thread was busy (waited waitedMs, longest timer gap gapMs); re-render offline recommended (#108)", "properties": { "gapMs": { "type": "number" }, "waitedMs": { "type": "number" } } },
         "check": { "type": "object", "description": "self-check of a realtime capture (docs/AUDIO_ENGINE.md): ok, frameGaps, missingFrames, droppedEvents, reanchors, longTasks, outputGlitches (null when the browser has no playout statistics), why" }
       }
     }

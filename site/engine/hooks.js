@@ -593,7 +593,7 @@ export function install(S, opts = {}) {
       const def = !P.sel && defOf(P.name);
       if (def?.params && facet in def.params) { const v = paramTimeline(P.name, facet, t, cx); return isPatternValue(v) ? first(valuePattern(v).queryArc(t, t, ctrl))?.value : v; }
       if (def?.taps && facet in def.taps) return first(makeTap(def.taps[facet], o).queryArc(t, t, ctrl))?.value ?? o.default;
-      const T = lookupTap(P, ctrl?._hookNs, ctrl?.id);
+      const T = lookupTap(P, ctrl?._hookNs, ctrl?.id) || (!P.sel && padSource(P.name));
       if (!T) { note('error', 'E_UNKNOWN_TAP', `no tap "${P.name}" for read "${key}"`); return o.default; }
       if (facet === 'gate') return T.queryArc(t, t, ctrl).length ? 1 : 0;
       const on = latestOnset(T, t, o.lookback ?? 4, ctrl);
@@ -609,6 +609,33 @@ export function install(S, opts = {}) {
       return v === undefined ? o.default : v;
     }, () => o.default);
   }
+  // ---------------- pad taps: a bare tap("x") with no publisher reads the Perform pad "x" (docs/PERFORM_PRESETS.md 3) ----------------
+  // Journal entries `pad:tap` [ref] on press and `pad:tap-end` [ref] on release give exact held windows: 1 while held, no haps while idle. A
+  // published tap of the same name wins; hooks.padRefs (a Set of pad refs the host shows) makes an idle pad a silent reader instead of E_UNKNOWN_TAP.
+  const PAD_OPEN = -1; let padHap = null; // PAD_OPEN end = still held: the hap's whole ends one cycle after the press or at the next whole cycle past the queried span (never unbounded: structure-from-left joins query the whole)
+  function padWindows(name) {
+    const ev = hooks.journal.filter((e) => (e.op === 'pad:tap' || e.op === 'pad:tap-end') && (e.args || [])[0] === name).map((e, i) => ({ e, i }));
+    ev.sort((a, b) => F(a.e.cycle).compare(F(b.e.cycle)) || a.i - b.i);
+    const w = []; let open = null;
+    for (const { e } of ev) { if (e.op === 'pad:tap') { if (open === null) open = F(e.cycle); } else if (open !== null) { w.push([open, F(e.cycle)]); open = null; } }
+    if (open !== null) w.push([open, PAD_OPEN]);
+    return w;
+  }
+  const padKnown = (name) => !!(hooks.padRefs && hooks.padRefs.has(name)) || hooks.journal.some((e) => (e.op === 'pad:tap' || e.op === 'pad:tap-end') && (e.args || [])[0] === name);
+  function padSource(name) {
+    if (!padKnown(name)) return null;
+    if (!padHap) { const h0 = reify(1).queryArc(0, 1)[0]; padHap = { Hap: h0.constructor, Span: h0.part.constructor }; }
+    return new Pattern((state) => {
+      const b = state.span.begin, e = state.span.end; const out = [];
+      for (const [s, t0] of padWindows(name)) {
+        const t = t0 === PAD_OPEN ? F(Math.max(+s.add(1), Math.ceil(+e) + 0)) : t0;
+        const zero = b.equals ? b.equals(e) : +b === +e;
+        if (zero ? !(s.lte(b) && b.lt(t)) : !(s.lt(e) && t.gt(b))) continue;
+        out.push(new padHap.Hap(new padHap.Span(s, t), new padHap.Span(s.gt(b) ? s : b, t.lt(e) ? t : e), 1, {}));
+      }
+      return out;
+    });
+  }
   function makeTap(ref, o = {}) {
     const P = parseRef(ref); const facet = P.facet || 'ev'; const gateN = o.gate != null ? normGate(o.gate) : null;
     if (facet !== 'ev' && facet !== 'onset') { P.facet = facet; return signal((t, ctrl) => evalCont(P, o, F(t), ctrl, gateN) ?? 0); }
@@ -617,7 +644,7 @@ export function install(S, opts = {}) {
       const run = (sp) => guard(key, () => {
         const st = state.setSpan(sp);
         if (!P.sel && facet === 'ev' && (eff().vars.has(P.name))) return assignPattern(eff().vars.get(P.name), 'var:' + P.name).query(st);
-        const T = lookupTap(P, ctrl?._hookNs, ctrl?.id);
+        const T = lookupTap(P, ctrl?._hookNs, ctrl?.id) || (!P.sel && padSource(P.name));
         if (!T) { note('error', 'E_UNKNOWN_TAP', `no tap "${P.name}" for read "${key}"`); return []; }
         const haps = T.query(st); return facet === 'onset' ? haps.map((h) => h.withValue(() => 1)) : haps;
       }, () => []);

@@ -220,6 +220,8 @@ markers behave as `"else"`.
 | `env` | continuous | attack/release envelope in 0..1 retriggered at each onset: opts `{ a: 0, r: 0.25 }` in cycles (suffix `"s"` for seconds), `curve: "lin" \| "exp"` |
 | any control name (`note`, `cutoff`, `gain`, ...) | continuous | sample-and-hold of that field from the most recent onset; before the first one: `read-opts.default` |
 
+**Pad reader (#118).** A bare `tap("x")` with no publisher of `x` reads the Perform pad `x` (host journal entries `pad:tap` / `pad:tap-end`, `args[0]` = the ref; `hooks.padRefs` lists the pads the host shows, so an idle pad is a silent reader instead of `E_UNKNOWN_TAP`): one hap, value `1`, from press to release (still held: open window of at least one cycle), none while idle; facets `gate`, `onset`, `env` work as for any tap. A published tap of the same name wins. `.tap("x")` the method only publishes. Detail: docs/PERFORM_PRESETS.md section 3.
+
 Continuous facets look back at most `lookback` cycles (default 4) for the governing onset; this bounds query cost and keeps
 random access exact. `read-opts`: `{ gate, default, lookback, a, r, curve }`. A **gated read** (`tap("kick:env", { gate: "<17b" })`) is
 open only inside the gate; outside it yields `default` (continuous facets, default `0`) or silence (discrete facets).

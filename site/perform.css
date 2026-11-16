@@ -128,3 +128,20 @@
 .pf-graph-glow{outline:2px solid var(--sig-2);outline-offset:2px}
 @media (prefers-reduced-motion:no-preference){.pf-graph-glow{transition:outline-color .2s}}
 .pp-pad .pp-ref{color:var(--text)}.pp-orph{position:absolute;top:6px;right:8px;font-size:.8rem;opacity:.7}
+
+/* pad-first phone layout (#118): in Perform the pad grid is the first thing under the header and fits on screen without scrolling.
+   The stage keeps its title/readouts/scope as a slim strip; the lanes canvas and the position/loop row (all still in the other views) fold away, and the
+   tabs + Presets + mode controls share compact rows. Outputs and sources, looper and hint sit below the grid. */
+@media (max-width:760px){
+  .deck[data-view="perform"] .stage .lanes,.deck[data-view="perform"] .stage .trange{display:none}
+  .deck[data-view="perform"] .stage .viz{height:36px}
+  .deck[data-view="perform"] .stage-head{padding:6px 12px 2px}
+  .deck[data-view="perform"] .stage-head h1{font-size:1rem;margin:0}
+  .deck[data-view="perform"] .stage{position:static}
+  .perform{padding:8px;gap:8px}
+  .perform>*,.pf-body{min-width:0}
+  .pf-presets{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pf-tools{gap:6px}
+  .pf-body{gap:8px}
+  .pp-grid{gap:6px}.pp-row{gap:6px}
+}

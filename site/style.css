@@ -341,10 +341,12 @@ dialog.scm{width:min(420px,calc(100vw - 24px))}
 .scm-acts{display:flex;gap:8px;justify-content:flex-end}.scm-acts button{min-height:44px;min-width:88px}
 .scm-ok.danger{color:var(--bad);border-color:var(--bad)}
 .toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--tp,120px) + 12px + env(safe-area-inset-bottom));z-index:60;display:grid;gap:8px;width:min(420px,calc(100vw - 24px));pointer-events:none}
-.toast{pointer-events:auto;display:flex;align-items:center;gap:8px;padding:10px 8px 10px 14px;background:var(--panel-3);border:1px solid var(--line-2);border-left:3px solid var(--sig-2);border-radius:var(--r2);font-size:.86rem;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:toastIn .18s var(--ease,ease-out)}
+.toast{pointer-events:none;display:flex;align-items:center;gap:8px;padding:10px 8px 10px 14px;background:var(--panel-3);border:1px solid var(--line-2);border-left:3px solid var(--sig-2);border-radius:var(--r2);font-size:.86rem;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:toastIn .18s var(--ease,ease-out)}
 .toast span{flex:1}.toast.error{border-left-color:var(--bad)}.toast.ok{border-left-color:var(--ok)}
 .toast-x{min-width:44px;min-height:44px;border:0;background:transparent;color:var(--dim);font-size:1.2rem}
 .toast.out{opacity:0;transition:opacity .2s}
+/* only toasts a person must act on take pointer events; status toasts never swallow a tap (#118) */
+.toast.error,.toast.sticky,.toast.act{pointer-events:auto}.toast:not(.error):not(.sticky):not(.act) .toast-x{display:none}
 @keyframes toastIn{from{opacity:0;transform:translateY(8px)}}
 @media (prefers-reduced-motion:reduce){.toast{animation:none}}
 .scm-ok:not(.danger){background:var(--sig-2);color:var(--sig-ink,#000);border-color:var(--sig-2)}

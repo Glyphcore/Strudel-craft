@@ -87,10 +87,16 @@ function toHooks(e) {
   if (e.op === 'bind' && e.args.slot) return { ...b, op: 'bind', args: [e.args.slot, e.args.hook] };
   if (e.op === 'unbind' && e.args.slot) return { ...b, op: 'unbind', args: [e.args.slot] };
   if (e.op === 'let' && e.args.value !== undefined) return { ...b, op: 'let', args: [e.args.name, e.args.value] };
+  if (e.op === 'tap' || e.op === 'tap-end') { // bare tap("x") readers: held windows by ref; shifted by the scheduler lookahead live, or the onset is already in the past
+    const lead = !playing() ? 0 : PAD_LEAD_S * padCps();
+    return { ...b, cycle: lead ? T.toFrac(frac(e.cycle) + lead) : e.cycle, op: 'pad:' + e.op, args: [e.target.ref] };
+  }
   return { ...b, op: 'pad:' + e.op, args: [] };
 }
+const PAD_LEAD_S = 0.3; const padCps = () => { try { return sc.engineState().scheduler.cps || 0.5; } catch (e) { return 0.5; } };
 function bridge(j = sc.perform && sc.perform.journal) {
   const H = sc.hooks; if (!H || !j) return;
+  H.padRefs = new Set(Object.values(M.banks).flatMap((b) => b.pads).filter((p) => p.target && p.target.kind === 'tap').map((p) => p.target.ref));
   const keep = H.journal.filter((e) => !e.pad); H.journal.length = 0; H.journal.push(...keep, ...j.map(toHooks));
   try { H.undef('__scPerformTouch'); } catch (e) { /* invalidates the runtime's journal cache */ }
 }
@@ -563,6 +569,8 @@ const allPresets = () => [...BUILTIN, ...PP.store.list()];
 const clone = (x) => JSON.parse(JSON.stringify(x));
 const codeTexts = () => [['rack', 'code'], ['stack', 'stackCode']].map(([view, id]) => ({ view, id, text: (document.getElementById(id) || {}).value || '' }));
 function upsertTab(kind, id, name) { const i = M.tabs.findIndex((t) => t.kind === kind && t.id === id); if (i >= 0) { M.tabs[i].name = name; return i; } M.tabs.push({ kind, id, name }); return M.tabs.length - 1; }
+const presetLabel = () => { const p = M.preset && allPresets().find((x) => x.id === M.preset); return p ? 'Presets: ' + p.title : 'Presets'; };
+const announce = (m) => { let r = document.getElementById('pfLive'); if (!r) { r = h('p', { id: 'pfLive', class: 'sr', role: 'status', 'aria-live': 'polite' }); document.body.append(r); } r.textContent = ''; setTimeout(() => { r.textContent = m; }, 30); };
 function applyPreset(p) {
   const bad = PP.validate(p); if (bad) { ui().toast('Preset: ' + bad, { kind: 'error' }); return false; }
   let first = null;
@@ -578,7 +586,7 @@ function applyPreset(p) {
   if (p.bank) { const id = 'pb-' + p.id; M.banks[id] = { id, rows: p.bank.rows, cols: p.bank.cols, ...(p.bank.scenes ? { scenes: p.bank.scenes } : {}), pads: clone(p.bank.pads || []) }; first = upsertTab('bank', id, p.title); }
   if (p.keys) M.keys = { ...p.keys }; else delete M.keys;
   M.takeover = p.takeover || 'pickup'; CM.pads.settings.takeover = M.takeover; if (p.perform != null) M.perform = !!p.perform; M.preset = p.id;
-  rebuildPads(); select(first, false); ui().toast(`Preset applied: ${p.title}`, { kind: 'ok' }); return true;
+  rebuildPads(); select(first, false); announce(`Preset applied: ${p.title}`); return true; // status lives in the Presets button + a live region: a toast sat over pad row 1 (#118)
 }
 function snapshot(title) { // the current configuration as a preset (first-class: same shape as the built-ins)
   const t = curTab(); const bank = t.kind === 'bank' ? M.banks[t.id] : M.banks[(M.tabs.find((x) => x.kind === 'bank') || {}).id];
@@ -677,7 +685,7 @@ function render() {
   strip.addEventListener('click', (e) => { const b = e.target.closest('[role=tab]'); if (b) select(+b.dataset.i); });
   strip.addEventListener('keydown', (e) => { const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key]; if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); select(e.key === 'Home' ? 0 : M.tabs.length - 1, true); return; } if (!d) return; e.preventDefault(); e.stopPropagation(); if (e.altKey) move(d); else { const i0 = +(e.target.closest('[role=tab]')?.dataset.i ?? M.active); select((i0 + d + M.tabs.length) % M.tabs.length, true); } });
   const bank = t.kind === 'bank' ? M.banks[t.id] : null;
-  const tools = h('div', { class: 'pf-tools' }, h('button', { type: 'button', class: 'pf-presets', id: 'pfPresetBtn', 'aria-haspopup': 'dialog', onclick: () => openPresets() }, 'Presets'), h('details', { class: 'pf-more' }, h('summary', {}, 'Tabs ⋯'), h('div', { class: 'pf-menu' },
+  const tools = h('div', { class: 'pf-tools' }, h('button', { type: 'button', class: 'pf-presets', id: 'pfPresetBtn', 'aria-haspopup': 'dialog', onclick: () => openPresets() }, presetLabel()), h('details', { class: 'pf-more' }, h('summary', {}, 'Tabs ⋯'), h('div', { class: 'pf-menu' },
     h('button', { type: 'button', class: 'ghost', onclick: () => addTab('bank') }, '+ Bank'), h('button', { type: 'button', class: 'ghost', onclick: () => addTab('board') }, '+ Board'),
     h('button', { type: 'button', class: 'ghost', onclick: renameTab }, 'Rename'), h('button', { type: 'button', class: 'ghost', onclick: dupTab }, 'Duplicate'),
     h('button', { type: 'button', class: 'ghost', 'aria-label': 'Move tab left', onclick: () => move(-1) }, '◀'), h('button', { type: 'button', class: 'ghost', 'aria-label': 'Move tab right', onclick: () => move(1) }, '▶'),

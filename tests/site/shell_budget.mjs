@@ -5,8 +5,8 @@
 //   2. the eager shell grows past BUDGET bytes: index.html + every eager file + the static import graph of every eager module (raw bytes,
 //      what the uncompressed local Lighthouse server sends);
 //   3. a module of the deferred set (index.html LATER) is pulled into the eager graph by a static import;
-//   4. a manifest of the shipped lock, or a recipes entry of one (the catalog view reads all of them before the first frame), is not preloaded:
-//      that is a lock -> manifest -> entry request chain in front of the first frame with recipes.
+// (Preloading every shipped-lock manifest and recipes entry was measured on 2026-11-16 and made LCP worse, 4.24 -> 4.40 s: more early
+//  high-priority requests compete with the shell; so it is not required here.)
 // Usage: node tests/site/shell_budget.mjs   (also run by tests/site/smoke.mjs). Exit 1 on any FAIL.
 import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 const SITE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../site');
@@ -15,12 +15,12 @@ const SITE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../s
    to make the first paint wait for it; keep the budget in step and re-measure with tests/site/lighthouse_relative.mjs. */
 export const EAGER = [
   'preload fonts/ChakraPetch-500.woff2', 'preload data/catalog.json', 'modulepreload packs.js', 'modulepreload packs-kinds.js', 'modulepreload engine/packs-core.js',
-  'preload packs.lock.json', 'preload craftpack.json', 'preload data/vox/craftpack.json', 'preload data/phonk/craftpack.json', 'preload data/phonk/presets.json',
+  'preload packs.lock.json', 'preload craftpack.json', 'preload data/vox/craftpack.json',
   'preload app.js', 'style style.css', 'style taxonomy.css', 'style organizer.css', /* #120: the organizer in the Recipes browser (first paint) */ 'script ui.js', 'script forms.js', 'script app.js', 'module packs.js', 'style workspace.css', 'module palette.js', 'style pwa.css', 'module pwa.js',
 ];
 /* the budget leaves under 3% for small fixes, not for a new feature: data/catalog.json alone is 121,056 of it */
-export const BUDGET_MEASURED = 457_815; // index.html + 20 eager files + their static imports, 2026-11-16 (7eced68 + the #59 rework)
-export const BUDGET = 470_000; // +2.7%
+export const BUDGET_MEASURED = 418_999; // index.html + 18 eager files + their static imports, 2026-11-16 (7eced68 + the #59 rework)
+export const BUDGET = 430_000; // +2.6%
 
 export function shellBudget() {
   const checks = []; const check = (name, ok, detail = '') => checks.push({ name, ok: !!ok, detail });
@@ -53,17 +53,6 @@ export function shellBudget() {
   const later = JSON.parse('[' + ((/const LATER = \[([^\]]*)\]/.exec(html) || [])[1] || '').replace(/'/g, '"') + ']');
   const pulled = later.filter((u) => files.has(u));
   check(`no deferred module (${later.length} in LATER) is in the eager import graph`, later.length > 0 && !pulled.length, pulled.join(', ') || (later.length ? '' : 'LATER list not found in index.html'));
-  // shipped lock: manifests and recipes entries preloaded
-  const lock = JSON.parse(fs.readFileSync(path.join(SITE, 'packs.lock.json'), 'utf8')); const want = [];
-  for (const p of lock.packs || []) {
-    if (!String(p.source || '').startsWith('file:')) continue;
-    const dir = p.source.slice(5).replace(/^\.\/?/, ''); const man = path.posix.join(dir || '.', 'craftpack.json');
-    want.push(man);
-    const m = JSON.parse(fs.readFileSync(path.join(SITE, man), 'utf8'));
-    for (const i of m.ingredients || []) if (i.kind === 'recipes') want.push(path.posix.join(dir || '.', i.path));
-  }
-  const notPre = want.filter((u) => !tags.includes('preload ' + u));
-  check('every shipped-lock manifest and recipes entry is preloaded (no request chain before the first frame)', !notPre.length, notPre.length ? 'add <link rel="preload" as="fetch" crossorigin> for: ' + notPre.join(', ') : want.join(', '));
   return { checks, total, budget: BUDGET, files: sizes };
 }
 

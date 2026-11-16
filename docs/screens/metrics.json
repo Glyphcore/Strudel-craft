@@ -2441,10 +2441,62 @@
     "mjs_fixed": 69
    },
    "eager_shell_bytes": {
-    "93cea67 (my finishing point, approx)": 327000,
-    "b9e7024 + rework": 419567,
-    "7eced68 + rework (taxonomy.css, organizer.css, catalog 121,056)": 457815,
-    "budget": 470000
+    "7eced68 + rework, phonk preloads removed": 418999,
+    "budget": 430000
+   },
+   "final_run": {
+    "run": "2026-11-16 after push, interleaved 5 runs",
+    "mjs_fixed": {
+     "0eeeb9e": [
+      99,
+      99,
+      99,
+      99,
+      99
+     ],
+     "20c18b0 (main before the push)": [
+      67,
+      65,
+      62,
+      68,
+      68
+     ],
+     "eadb652 (rework with phonk preloads)": [
+      68,
+      67,
+      63,
+      68,
+      74
+     ]
+    },
+    "legacy_mime": {
+     "0eeeb9e": [
+      99,
+      99,
+      99,
+      99,
+      99
+     ],
+     "20c18b0": [
+      82,
+      82,
+      81,
+      82,
+      82
+     ],
+     "eadb652": [
+      81,
+      81,
+      81,
+      81,
+      81
+     ]
+    },
+    "lcp_ms": {
+     "20c18b0": 4241,
+     "eadb652": 4395
+    },
+    "note": "the phonk manifest+presets preloads cost LCP ~0.15 s and were removed in the next commit"
    }
   }
  }

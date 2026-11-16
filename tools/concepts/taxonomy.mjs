@@ -116,4 +116,5 @@ export function packTaxonomy(tagsUsed, { labels = [], extraPriority = [] } = {})
 export const folderDescriptions = {
   hiphop: 'Hip-hop, trap and hyphy components', 'hiphop/trap': 'Trap: rolling hats, half-time, held 808', 'hiphop/boom-bap': 'Boom-bap: dusty knock and pocket', 'hiphop/hyphy': 'Hyphy: bounce and stomp', 'hiphop/cloud': 'Cloud rap: airy pads',
   dovetail: 'How sections interlock', groove: 'Timing feel', grooves: 'Groove presets as hooks', feels: 'Feel templates (one import fills the slots)', racks: 'Instrument racks (hook defs)', phonk: 'Night phonk kit', strudel: 'Plain Strudel recipes',
+  dnb: 'Drum and bass: two-step, breaks and chops, sub and reese / neuro layers, liquid harmony', electro: 'Electro-funk and electro house', house: 'House, techno, trance and big room', 'dnb-electro': 'Feel templates and tracks of glyphcore/dnb-electro', tracks: 'Whole track demos'
 };

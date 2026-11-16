@@ -9,11 +9,11 @@
    "rev": 1,
    "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~",
    "doc": "kick pattern",
-   "folder": "feels/neuro/drums",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "drums",
     "feel",
-    "neuro",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:de06729586e457eea6ecbfade8323300f60d93d4dc29d6160834b42c3eb44211"
@@ -24,11 +24,11 @@
    "rev": 1,
    "body": "1",
    "doc": "kick accents (velocity)",
-   "folder": "feels/neuro/drums",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "drums",
     "feel",
-    "neuro",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -40,11 +40,11 @@
    "rev": 1,
    "body": "dnbKick | groove-human(0.5, 0.05, 1)",
    "doc": "kick rack and groove",
-   "folder": "feels/neuro/drums",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "drums",
     "feel",
-    "neuro",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:8f238d765ce237c6a8a27fc6cc97bc91e62287766f747843bd6378689ee87bdb"
@@ -55,11 +55,11 @@
    "rev": 1,
    "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
    "doc": "snare pattern",
-   "folder": "feels/neuro/drums",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "drums",
     "feel",
-    "neuro",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
@@ -70,11 +70,11 @@
    "rev": 1,
    "body": "1",
    "doc": "snare accents (velocity)",
-   "folder": "feels/neuro/drums",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "drums",
     "feel",
-    "neuro",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -86,11 +86,11 @@
    "rev": 1,
    "body": "dnbSnare | groove-human(0.5, 0.05, 2)",
    "doc": "snare rack and groove",
-   "folder": "feels/neuro/drums",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "drums",
     "feel",
-    "neuro",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:49d2a78706d57aa98403b96af7a61980a1e62625ff08a4a0e07d3e3e061a9f36"
@@ -101,11 +101,11 @@
    "rev": 1,
    "body": "~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~ ~ x x",
    "doc": "perc pattern",
-   "folder": "feels/neuro/drums",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "drums",
     "feel",
-    "neuro",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:b06e822bc4dcf4c31bbf946c985c7bd1fe7d8f06070f56006f877af2bc0846d3"
@@ -116,11 +116,11 @@
    "rev": 1,
    "body": "[.55 .4 .6 .45]*4",
    "doc": "perc accents (velocity)",
-   "folder": "feels/neuro/drums",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "drums",
     "feel",
-    "neuro",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -132,11 +132,11 @@
    "rev": 1,
    "body": "ghostSnare | groove-human(0.5, 0.05, 3)",
    "doc": "perc rack and groove",
-   "folder": "feels/neuro/drums",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "drums",
     "feel",
-    "neuro",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:0e88d98a1d3054ad9e14e2375897be34f0a6752fc2aec7f19a1d029168ed1ccb"
@@ -147,11 +147,11 @@
    "rev": 1,
    "body": "x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~",
    "doc": "hats pattern",
-   "folder": "feels/neuro/drums",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "drums",
     "feel",
-    "neuro",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:eea614f257dc29afdd2e10dc9b45a7edd4ce711ed02575f0725a31692898c0a8"
@@ -162,11 +162,11 @@
    "rev": 1,
    "body": "1",
    "doc": "hats accents (velocity)",
-   "folder": "feels/neuro/drums",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "drums",
     "feel",
-    "neuro",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -178,11 +178,11 @@
    "rev": 1,
    "body": "dnbHat | groove-human(0.5, 0.05, 4)",
    "doc": "hats rack and groove",
-   "folder": "feels/neuro/drums",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "drums",
     "feel",
-    "neuro",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:fe97b5eff12a8bf1a704b3f60c5b58bbad17bdd307685ba3f6a40e5aaef61d0f"
@@ -193,11 +193,11 @@
    "rev": 1,
    "body": "~",
    "doc": "top pattern",
-   "folder": "feels/neuro/drums",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "drums",
     "feel",
-    "neuro",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
@@ -208,11 +208,11 @@
    "rev": 1,
    "body": "1",
    "doc": "top accents (velocity)",
-   "folder": "feels/neuro/drums",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "drums",
     "feel",
-    "neuro",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -224,11 +224,11 @@
    "rev": 1,
    "body": "groove-human(0.5, 0.05, 5)",
    "doc": "top rack and groove",
-   "folder": "feels/neuro/drums",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "drums",
     "feel",
-    "neuro",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:695ac2ec6d8f5ca05acd60ec9c1c9cc7236610be9aea5cbec65579fa02918576"
@@ -239,11 +239,11 @@
    "rev": 1,
    "body": "<[f1 ~ f1 f1 ~ f1 ~ ~ f2 ~ f1 ~ ab1 ~ f1 ~] [f1 ~ ~ f1 ~ ~ f1 ~ eb2 ~ ~ f1 c2 ~ f1 ~]>",
    "doc": "bass pattern",
-   "folder": "feels/neuro/bass",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "bass",
     "feel",
-    "neuro",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:6f8dab96026adc2fae83f385c0d9fc1a6352ee244fec8b2dd5a7bc559e7ecbd7"
@@ -254,11 +254,11 @@
    "rev": 1,
    "body": "1",
    "doc": "bass accents (velocity)",
-   "folder": "feels/neuro/bass",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "bass",
     "feel",
-    "neuro",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -270,11 +270,11 @@
    "rev": 1,
    "body": "neuroBass | groove-human(0.5, 0.05, 6)",
    "doc": "bass rack and groove",
-   "folder": "feels/neuro/bass",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "bass",
     "feel",
-    "neuro",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:c730bcf240bed74b09f7d56da459ba563e21123cc94136ebdbb5e687ce3e81b2"
@@ -285,11 +285,11 @@
    "rev": 1,
    "body": "~",
    "doc": "harmony pattern",
-   "folder": "feels/neuro/keys",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "keys",
     "feel",
-    "neuro",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
@@ -300,11 +300,11 @@
    "rev": 1,
    "body": "1",
    "doc": "harmony accents (velocity)",
-   "folder": "feels/neuro/keys",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "keys",
     "feel",
-    "neuro",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -316,11 +316,11 @@
    "rev": 1,
    "body": "groove-human(0.5, 0.05, 7)",
    "doc": "harmony rack and groove",
-   "folder": "feels/neuro/keys",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "keys",
     "feel",
-    "neuro",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:76267bac01dbada94ddf6629c936dfe5c087fec87154aea3fe003c64ac6da869"
@@ -331,11 +331,11 @@
    "rev": 1,
    "body": "~",
    "doc": "fx pattern",
-   "folder": "feels/neuro/fx",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "fx",
     "feel",
-    "neuro",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
@@ -346,11 +346,11 @@
    "rev": 1,
    "body": "1",
    "doc": "fx accents (velocity)",
-   "folder": "feels/neuro/fx",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "fx",
     "feel",
-    "neuro",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -362,11 +362,11 @@
    "rev": 1,
    "body": "groove-human(0.5, 0.05, 8)",
    "doc": "fx rack and groove",
-   "folder": "feels/neuro/fx",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "fx",
     "feel",
-    "neuro",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:219ccd614c85ee1ea91becf9eca7d6846ae9bd6da0bc33b43ebd0aa214649d34"
@@ -377,11 +377,11 @@
    "rev": 1,
    "body": "groove-human(0.5, 0.05, 0)",
    "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
-   "folder": "feels/neuro/groove",
+   "folder": "dnb-electro/feel/neuro",
    "tags": [
     "groove",
     "feel",
-    "neuro",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:ed3ab28ff2d571caafb5612d034391520550a57cb6f472ed0d1e6d8d3beb5aef"

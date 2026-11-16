@@ -121,9 +121,8 @@
    "rev": 1,
    "body": "x*16",
    "doc": "16th shaker",
-   "folder": "dnb/drums",
+   "folder": "dnb/misc",
    "tags": [
-    "drums",
     "dnb",
     "pattern"
    ],
@@ -135,9 +134,8 @@
    "rev": 1,
    "body": "[.35 .2 .6 .2]*4",
    "doc": "shaker accents on the offbeat 8ths",
-   "folder": "dnb/drums",
+   "folder": "dnb/misc",
    "tags": [
-    "drums",
     "dnb",
     "pattern"
    ],
@@ -149,9 +147,8 @@
    "rev": 1,
    "body": "[1 .55]*4",
    "doc": "ride accents: on-beat strong",
-   "folder": "dnb/drums",
+   "folder": "dnb/misc",
    "tags": [
-    "drums",
     "dnb",
     "pattern"
    ],
@@ -191,9 +188,8 @@
    "rev": 1,
    "body": "[.35 .5 .35 .35 1 .35 .35 .55 .35 .5 .35 .35 1 .35 .45 .55]",
    "doc": "amen accent table: backbeats full, the in-between snares as ghosts",
-   "folder": "dnb/drums",
+   "folder": "dnb/misc",
    "tags": [
-    "drums",
     "dnb",
     "pattern"
    ],
@@ -247,9 +243,9 @@
    "rev": 1,
    "body": "<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 2 3 4 5 6 7 0 1 2 3 12 13 14 15] [0 1 2 3 8 9 10 11 4 5 6 7 12 13 14 15] [0 1 2 3 4 5 6 7 8 9 10 11 [12 12] [12 12] [14 14 14] [15 15 15 15]]>",
    "doc": "chop order for .bite(16, ...): bar 1 as played, bar 2 repeats beat 1 on beat 3, bar 3 swaps beats 2 and 3, bar 4 ends in a stutter roll",
-   "folder": "dnb/drums",
+   "folder": "dnb/keys",
    "tags": [
-    "drums",
+    "keys",
     "dnb",
     "pattern"
    ],
@@ -261,9 +257,9 @@
    "rev": 1,
    "body": "<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 0 1 4 5 6 7 8 8 10 11 12 13 [14 15] [14 15]] [15 14 13 12 4 5 6 7 8 9 10 11 0 1 2 3] [0 0 2 2 4 [4 4] 6 7 [8 8 8] 9 10 11 [12 12 12 12] [13 13] [14 14 14] [15 15 15 15]]>",
    "doc": "busier jungle chop order: doubled slices, a reversed beat, a closing roll",
-   "folder": "dnb/drums",
+   "folder": "dnb/keys",
    "tags": [
-    "drums",
+    "keys",
     "dnb",
     "pattern"
    ],
@@ -289,9 +285,8 @@
    "rev": 1,
    "body": "<[f1 ~ f1 f1 ~ f1 ~ ~ f2 ~ f1 ~ ab1 ~ f1 ~] [f1 ~ ~ f1 ~ ~ f1 ~ eb2 ~ ~ f1 c2 ~ f1 ~]>",
    "doc": "neuro 16th riff over two bars, octave jumps",
-   "folder": "dnb/bass",
+   "folder": "dnb/misc",
    "tags": [
-    "bass",
     "dnb",
     "pattern"
    ],
@@ -345,9 +340,8 @@
    "rev": 1,
    "body": "x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ ~ ~ ~",
    "doc": "Rhodes comp rhythm (struct over dnb.chords)",
-   "folder": "dnb/keys",
+   "folder": "dnb/misc",
    "tags": [
-    "keys",
     "dnb",
     "pattern"
    ],
@@ -359,9 +353,8 @@
    "rev": 1,
    "body": "<g4 ab4 f4 ab4 f4 db5 eb4 g4>",
    "doc": "string top line, one note per bar (the 9th / 3rd / 5th of each chord)",
-   "folder": "dnb/pad",
+   "folder": "dnb/misc",
    "tags": [
-    "pad",
     "dnb",
     "pattern"
    ],
@@ -373,9 +366,9 @@
    "rev": 1,
    "body": "<[~ ~ c5 ~ ~ ~ ab4 ~ ~ ~ ~ ~ c5 ~ eb5 ~] [~ ~ f4 ~ ~ ~ ab4 ~ ~ ~ ~ ~ g4 ~ f4 ~]>",
    "doc": "vocal chop rhythm and notes",
-   "folder": "dnb/lead",
+   "folder": "dnb/keys",
    "tags": [
-    "lead",
+    "keys",
     "dnb",
     "pattern"
    ],
@@ -387,9 +380,9 @@
    "rev": 1,
    "body": "<a o e o>",
    "doc": "vowel per chop bar",
-   "folder": "dnb/lead",
+   "folder": "dnb/keys",
    "tags": [
-    "lead",
+    "keys",
     "dnb",
     "pattern"
    ],

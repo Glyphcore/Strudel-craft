@@ -65,9 +65,8 @@
    "rev": 1,
    "body": "<[~ ~ x ~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~] [~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]>",
    "doc": "cowbell over two bars (play with .note(\"[c#5,g#5]\"))",
-   "folder": "electro/drums",
+   "folder": "electro/misc",
    "tags": [
-    "drums",
     "electro",
     "pattern"
    ],

@@ -93,7 +93,6 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | edm-core foundations (sidechain / pump / OTT / drive / wobble moves, risers, impacts, roll and filter grammars, 104-bar gates and masks; pack glyphcore/edm; multi-pack builder) | concept-framework, feels, rack standard | built (critic pending) | #127 |
 | dubstep family (UKF half-time, melodic, riddim, brostep; reese / growl / screech classes; feels halftime, ukf, riddim, brostep) | edm-core foundations | built (critic pending) | #128 |
 | edm-dubstep tutorial track (104 bars, 11 lessons, program recipe with generated standalone) | dubstep family | built (critic pending) | #129 |
-| dnb / electro / house / techno / trance / big-room families (glyphcore/dnb-electro) | edm-core foundations | issued (other session) | - |
 | wavetable growl (wt_ frames) | dubstep family, sample banks | designed | - |
 
 ## Waiting nodes
@@ -122,7 +121,7 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | dnb-electro references + genre targets (docs/DNB_ELECTRO_REFERENCES.md; suno-track-lab docs/genres dnb / electro / house.json, master presets dnb / electro / house) | edm-core references | built (critic pending) | #121 |
 | dnb / electro / house-techno-trance-big-room components, forms, tension grammar (pack glyphcore/dnb-electro: racks-dnb-electro, `dnb.` `el.` `hs.` atoms; per-role classes break, gate; multi-pack builder) | concept-framework, edm-core foundations, rack-standard | built (critic pending) | #122 |
 | breakbeat chops (synthesised amen / think-style kits; slice orders for `.bite(16, ...)`, same order as `.slice` on a sample) | dnb components | built (critic pending) | #122 |
-| feel templates liquid, neuro, jump-up, electro-house, techno, trance, big-room (pack grooves groove-liquid, -tight, -jump, -drive, -house) | feel-templates, dnb / electro / house components | built (critic pending) | #123 |
+| feel templates liquid, neuro, jump-up, electro-house, techno, trance, big-room (grooves composed from groove-swing, groove-push, groove-human) | feel-templates, dnb / electro / house components | built (critic pending) | #123 |
 | dnb-electro tutorial track + electro and house examples (lesson per section, standalone + pack versions, master + genre score) | dnb / electro / house components, feel templates | built (critic pending) | #124 |
 | more concept families (drill, jersey club, footwork, dancehall, amapiano log drums, lo-fi, garage / 2-step, breakcore, psytrance; groove templates extracted from audio) | concept-framework | unexplored | - |
 | groove-from-audio (onset offsets of a reference stem -> a groove table / preset) | groove, motifs analysis | unexplored | - |

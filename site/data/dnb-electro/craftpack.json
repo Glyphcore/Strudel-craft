@@ -16,8 +16,8 @@
       "title": "DnB, electro and house track demos",
       "description": "Track demos: DnB tutorial, electro, house / techno / trance / big room (the paste-ready standalone programs)",
       "load": "manual",
-      "hash": "sha256:3178c53b4415ecbcd90e3088df152334bc970d691c79cb8abb2133f3b9545257",
-      "bytes": 37025
+      "hash": "sha256:4861ff1c448a09b4f53f9650d727257eed8668a3dd74434b98a9cfc21f7ee825",
+      "bytes": 41203
     },
     {
       "id": "racks-dnb-electro",
@@ -28,8 +28,8 @@
       "title": "DnB, electro and house racks",
       "description": "Chain-only hook defs: dnbKick, dnbSnare, ghostSnare, breakKick, breakSnare, ride, dnbShaker, dnbHat, dnbSub, reese, neuroBass, rollingBass, jumpWobble, liquidRhodes, liquidPad, strings, vocalChop, boom808, clap808, hat808, open808, cowbell808, electroBass, vocoLead, robotStab, filterBass, sawStab, houseKick, bigKick, houseClap, offHat, closedHat, houseBass, rumble, pluck, bigChords and 2 more",
       "load": "manual",
-      "hash": "sha256:d31f77b2454c1a4a7a3ac718e178a5bf932e7a9faa0da95e117c8963b4905f52",
-      "bytes": 17331
+      "hash": "sha256:fc03df3120f65a007f0892e6a76c013828b79fc912513d138fcdbdf38190b27a",
+      "bytes": 19187
     },
     {
       "id": "atoms-dnb",
@@ -40,8 +40,8 @@
       "title": "DnB atoms",
       "description": "glyphcore/dnb-electro drum-and-bass atoms (dnb.): two-step kick and snare, ghost notes and accents, amen-style and think-style breaks, chop orders for .bite(16, ...), shaker and ride, sub, reese, neuro, rolling and wobble lines, liquid chords, strings and vocal chops; gates of the 128-bar DnB form (intro, build, drop1, breakdown, build2, drop2, halftime, outro, drops, builds, vacuum).",
       "load": "eager",
-      "hash": "sha256:a011a092b5ae39c6dbb4836e1cbd0939266c275716b6ffabe634ad67d37e1aac",
-      "bytes": 12447
+      "hash": "sha256:ae1383be5b66f36575c78d6b9551583afe605750cdb91ea9babb3a55111a718d",
+      "bytes": 15751
     },
     {
       "id": "atoms-electro",
@@ -52,8 +52,8 @@
       "title": "Electro atoms",
       "description": "glyphcore/dnb-electro electro atoms (el.): electro-funk 808 kick, clap, hats and cowbell, synth bass, robot lead line and vowels, stab rhythm and chords; electro house kick, clap, offbeat hat, filtered bass line, stab rhythm, clap build and its velocity ramp; gates of the 40-bar electro form (intro, build, drop, break, drop2).",
       "load": "eager",
-      "hash": "sha256:3ef76357c91311aee7271e77f71717c353b1de34f6ddaf9721d82d5b5ac7a051",
-      "bytes": 6397
+      "hash": "sha256:ca8d1150efac85d3553d19b1a3306e68a9bd245245a04d3192c929e49af1af2e",
+      "bytes": 8422
     },
     {
       "id": "atoms-house",
@@ -64,8 +64,8 @@
       "title": "House / techno / trance atoms",
       "description": "glyphcore/dnb-electro house, techno, trance and big-room atoms (hs.): four-on-the-floor kick, offbeat open hat, 16th hats and accents, clap, rolling and offbeat bass, rumble, pluck arp, chords, trance gate, big-room lead motif; gates of the 56-bar house example (intro, groove, breakdown, build, drop, drop2, outro) and of a 160-bar club map in 32-bar blocks (mapIntro .. mapOutro, phrase8 ends).",
       "load": "eager",
-      "hash": "sha256:a0f3437f191f505967214ef34a49ac1f797fa73c1f0951c244b71ebaab20627d",
-      "bytes": 8023
+      "hash": "sha256:f6dc46679313b57dc3a6856ded70cdd027ac156182a1ed6198f79f5fc0f30318",
+      "bytes": 10343
     },
     {
       "id": "feel-liquid",
@@ -76,8 +76,8 @@
       "title": "Feel: Liquid DnB",
       "description": "Feel template \"Liquid DnB\" (172-176 bpm): rolling two-step with ghost notes behind the beat, shaker, held sub, liquid pad and vocal chops. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove).",
       "load": "eager",
-      "hash": "sha256:e069d78c937f269fcc0c9855842af051852c1a50709f4f2a30bb92c4a5f6db11",
-      "bytes": 6236
+      "hash": "sha256:e29234b8050aaa840f135728688813f63c607773e154fb367176b595eae431b5",
+      "bytes": 9310
     },
     {
       "id": "feel-neuro",
@@ -88,8 +88,8 @@
       "title": "Feel: Neurofunk",
       "description": "Feel template \"Neurofunk\" (172-176 bpm): machine-tight two-step, rolling ghosts, 8th hats and a 16th neuro riff (add a sub lane on atoms.feel.bass with dnbSub). Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove).",
       "load": "eager",
-      "hash": "sha256:61b52442029b62d60424502b8e51ac00c077916de6ea18946c895aa051ff76ce",
-      "bytes": 6080
+      "hash": "sha256:00a258d35ecdbb4a804d8634f434c528127f4dbcce5e3bddea3fc54cacbd8867",
+      "bytes": 9003
     },
     {
       "id": "feel-jumpup",
@@ -100,8 +100,8 @@
       "title": "Feel: Jump-up",
       "description": "Feel template \"Jump-up\" (172-176 bpm): bouncy two-step pushed slightly forward, a wobble bass with octave jumps. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove).",
       "load": "eager",
-      "hash": "sha256:527d89901faeab8033322252ed1ae5b0a3a59d779e7c63ba8166569dcb14589f",
-      "bytes": 6007
+      "hash": "sha256:125decc15f74bc0de3f07ec830cfe7c0ea297225e9df8d46da1956fac9a067ed",
+      "bytes": 9279
     },
     {
       "id": "feel-electrohouse",
@@ -112,8 +112,8 @@
       "title": "Feel: Electro house",
       "description": "Feel template \"Electro house\" (126-130 bpm): four-on-the-floor, offbeat hat, filtered saw bass and supersaw stabs on the offbeats. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove).",
       "load": "eager",
-      "hash": "sha256:0fda303beb4d60e76a5597a8fa7965aa51f5787030b720c7394180a86f27c442",
-      "bytes": 6034
+      "hash": "sha256:224dd84ef25f8c9eef99f3af7fcae469a9e5b2ad56e26c63ba8b32e0bf1558fa",
+      "bytes": 9132
     },
     {
       "id": "feel-techno",
@@ -124,8 +124,8 @@
       "title": "Feel: Driving techno",
       "description": "Feel template \"Driving techno\" (128-135 bpm): four-on-the-floor, offbeat ride, 16th hats with accents, rolling bass in the kick's gaps. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove).",
       "load": "eager",
-      "hash": "sha256:221987a2d18363db8c8f5fd8de59adae3a13ecc5bad66a5aa6909136433cef16",
-      "bytes": 5942
+      "hash": "sha256:ff49d851eeb16929bd462501953cd80e6f70bef2eeeb5f87dbfe2aae4f40be99",
+      "bytes": 8890
     },
     {
       "id": "feel-trance",
@@ -136,8 +136,8 @@
       "title": "Feel: Uplifting trance",
       "description": "Feel template \"Uplifting trance\" (136-140 bpm): four-on-the-floor, offbeat bass, pluck arp and trance-gated supersaw chords. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove).",
       "load": "eager",
-      "hash": "sha256:0ef7f7136d0428ea1486bc7dd0ab38eb879819c6c4e02b3ab04029e77e38d6c5",
-      "bytes": 6304
+      "hash": "sha256:21fd5256dd0d9449379bf83d548f0a5f9e5d9a8c58fef2555bd78c8ba6d0e07a",
+      "bytes": 9252
     },
     {
       "id": "feel-bigroom",
@@ -148,8 +148,8 @@
       "title": "Feel: Big room",
       "description": "Feel template \"Big room\" (126-130 bpm): stripped drop: a big kick, a clap, an offbeat hat and one lead motif. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove).",
       "load": "eager",
-      "hash": "sha256:551e6944cb7ca7478c40af50b152d695a3fafa8356e387ace500cfd2831cadba",
-      "bytes": 5974
+      "hash": "sha256:ad7cdaff91c5fd6f8a5080752da0ac8cb6e6a51ac44974b6230fe9fc94aa1f62",
+      "bytes": 8947
     }
   ],
   "taxonomy": {
@@ -216,9 +216,6 @@
       "big-room": {
         "group": "feel"
       },
-      "bigroom": {
-        "group": "technique"
-      },
       "dnb": {
         "group": "feel"
       },
@@ -229,11 +226,11 @@
         "group": "drums",
         "description": "kick, snare, clap, hats, percussion"
       },
-      "electro": {
+      "edm": {
         "group": "feel"
       },
-      "electrohouse": {
-        "group": "technique"
+      "electro": {
+        "group": "feel"
       },
       "feel": {
         "group": "feel",
@@ -257,9 +254,6 @@
       },
       "house": {
         "group": "feel"
-      },
-      "jumpup": {
-        "group": "technique"
       },
       "keys": {
         "group": "keys",
@@ -307,19 +301,16 @@
     },
     "folders": {
       "dnb": {
-        "description": "Drum and bass: two-step, breaks, chops, sub and reese layers"
+        "description": "Drum and bass: two-step, breaks and chops, sub and reese / neuro layers, liquid harmony"
+      },
+      "dnb-electro": {
+        "description": "Feel templates and tracks of glyphcore/dnb-electro"
       },
       "electro": {
         "description": "Electro-funk and electro house"
       },
-      "feels": {
-        "description": "Feel templates (one import fills the slots)"
-      },
       "house": {
         "description": "House, techno, trance and big room"
-      },
-      "racks": {
-        "description": "Instrument racks (hook defs)"
       },
       "tracks": {
         "description": "Whole track demos"

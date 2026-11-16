@@ -15,6 +15,7 @@
    "electro"
   ]
  },
+ "racksIngredient": "racks-dnb-electro",
  "atomsIngredient": {
   "id": "atoms-electro",
   "ns": "el",

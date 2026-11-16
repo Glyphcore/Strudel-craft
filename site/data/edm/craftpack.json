@@ -104,5 +104,127 @@
       "hash": "sha256:866c7150769372d04fe21cf5f74b8127c2d9d233ec1e5ccc8fb4f476ed4827b9",
       "bytes": 8965
     }
-  ]
+  ],
+  "taxonomy": {
+    "version": 1,
+    "groups": {
+      "technique": {
+        "title": "Technique",
+        "description": "production move the entry shows"
+      },
+      "bass": {
+        "title": "Bass"
+      },
+      "drums": {
+        "title": "Drums"
+      },
+      "feel": {
+        "title": "Feel",
+        "description": "groove and attitude: boom-bap, trap, hyphy, cloud, lazy"
+      },
+      "form": {
+        "title": "Form",
+        "description": "song sections and gates"
+      },
+      "fx": {
+        "title": "Fx"
+      },
+      "groove": {
+        "title": "Groove"
+      },
+      "keys": {
+        "title": "Keys"
+      },
+      "lead": {
+        "title": "Lead"
+      },
+      "pad": {
+        "title": "Pad"
+      },
+      "vox": {
+        "title": "Vox"
+      }
+    },
+    "priority": [
+      "drums",
+      "bass",
+      "keys",
+      "pad",
+      "lead",
+      "vox",
+      "fx",
+      "form",
+      "groove",
+      "feel",
+      "technique"
+    ],
+    "tags": {
+      "accents": {
+        "group": "technique"
+      },
+      "bass": {
+        "group": "bass",
+        "description": "bass and 808 lines"
+      },
+      "drums": {
+        "group": "drums",
+        "description": "kick, snare, clap, hats, percussion"
+      },
+      "dubstep": {
+        "group": "feel"
+      },
+      "edm": {
+        "group": "feel"
+      },
+      "feel": {
+        "group": "feel",
+        "description": "a feel template entry"
+      },
+      "form": {
+        "group": "form",
+        "description": "sections, gates and arrangement"
+      },
+      "fx": {
+        "group": "fx",
+        "description": "risers, impacts, space, texture"
+      },
+      "gate": {
+        "group": "technique",
+        "description": "a section gate atom"
+      },
+      "groove": {
+        "group": "groove",
+        "description": "timing: swing, push, jitter, drift"
+      },
+      "keys": {
+        "group": "keys",
+        "description": "chords, stabs and chops"
+      },
+      "lead": {
+        "group": "lead",
+        "description": "melody, bells, plucks"
+      },
+      "pad": {
+        "group": "pad",
+        "description": "sustained washes"
+      },
+      "pattern": {
+        "group": "technique",
+        "description": "a mini-notation pattern atom"
+      },
+      "rack": {
+        "group": "technique",
+        "description": "a hook def (instrument rack or move)"
+      },
+      "rack-slot": {
+        "group": "technique",
+        "description": "a hook expression for a slot"
+      },
+      "vox": {
+        "group": "vox",
+        "description": "vocal-like and word content"
+      }
+    },
+    "folders": {}
+  }
 }

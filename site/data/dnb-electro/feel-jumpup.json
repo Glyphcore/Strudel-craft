@@ -9,11 +9,11 @@
    "rev": 1,
    "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~",
    "doc": "kick pattern",
-   "folder": "feels/jumpup/drums",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "drums",
     "feel",
-    "jumpup",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:de06729586e457eea6ecbfade8323300f60d93d4dc29d6160834b42c3eb44211"
@@ -24,11 +24,11 @@
    "rev": 1,
    "body": "1",
    "doc": "kick accents (velocity)",
-   "folder": "feels/jumpup/drums",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "drums",
     "feel",
-    "jumpup",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -40,11 +40,11 @@
    "rev": 1,
    "body": "dnbKick | groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 1)",
    "doc": "kick rack and groove",
-   "folder": "feels/jumpup/drums",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "drums",
     "feel",
-    "jumpup",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:a810d0ec153d0881ffeee9df8112501b16008d0cceed9e580913429a124ef6fe"
@@ -55,11 +55,11 @@
    "rev": 1,
    "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
    "doc": "snare pattern",
-   "folder": "feels/jumpup/drums",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "drums",
     "feel",
-    "jumpup",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
@@ -70,11 +70,11 @@
    "rev": 1,
    "body": "1",
    "doc": "snare accents (velocity)",
-   "folder": "feels/jumpup/drums",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "drums",
     "feel",
-    "jumpup",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -86,11 +86,11 @@
    "rev": 1,
    "body": "dnbSnare | groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 2)",
    "doc": "snare rack and groove",
-   "folder": "feels/jumpup/drums",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "drums",
     "feel",
-    "jumpup",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:811b744d4046dbe3c5c47099d040d68d438b8e1bfe26492307c3a6d6aac5ba1c"
@@ -101,11 +101,11 @@
    "rev": 1,
    "body": "~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~",
    "doc": "perc pattern",
-   "folder": "feels/jumpup/drums",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "drums",
     "feel",
-    "jumpup",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:1c90100bacf8865037135144d89853893d48a8a0407d03eb9716fb6fc9b5683f"
@@ -116,11 +116,11 @@
    "rev": 1,
    "body": "[.55 .4 .6 .45]*4",
    "doc": "perc accents (velocity)",
-   "folder": "feels/jumpup/drums",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "drums",
     "feel",
-    "jumpup",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -132,11 +132,11 @@
    "rev": 1,
    "body": "ghostSnare | groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 3)",
    "doc": "perc rack and groove",
-   "folder": "feels/jumpup/drums",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "drums",
     "feel",
-    "jumpup",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:5c077159fd20d05627af7a5415aa306e93aa8ca57c2851eb5bb2a503c0ed79d9"
@@ -147,11 +147,11 @@
    "rev": 1,
    "body": "x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~",
    "doc": "hats pattern",
-   "folder": "feels/jumpup/drums",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "drums",
     "feel",
-    "jumpup",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:eea614f257dc29afdd2e10dc9b45a7edd4ce711ed02575f0725a31692898c0a8"
@@ -162,11 +162,11 @@
    "rev": 1,
    "body": "1",
    "doc": "hats accents (velocity)",
-   "folder": "feels/jumpup/drums",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "drums",
     "feel",
-    "jumpup",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -178,11 +178,11 @@
    "rev": 1,
    "body": "dnbHat | groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 4)",
    "doc": "hats rack and groove",
-   "folder": "feels/jumpup/drums",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "drums",
     "feel",
-    "jumpup",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:87f6c5972ab5e0114ae43cc1554ab7170e7628dc21d4e5418458b4f20c6e7f70"
@@ -193,11 +193,11 @@
    "rev": 1,
    "body": "~",
    "doc": "top pattern",
-   "folder": "feels/jumpup/drums",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "drums",
     "feel",
-    "jumpup",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
@@ -208,11 +208,11 @@
    "rev": 1,
    "body": "1",
    "doc": "top accents (velocity)",
-   "folder": "feels/jumpup/drums",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "drums",
     "feel",
-    "jumpup",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -224,11 +224,11 @@
    "rev": 1,
    "body": "groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 5)",
    "doc": "top rack and groove",
-   "folder": "feels/jumpup/drums",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "drums",
     "feel",
-    "jumpup",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:1870cf76e72611cf74c7d58372a67d7d5fa82f0660594e40fca93d4db8faeb30"
@@ -239,11 +239,11 @@
    "rev": 1,
    "body": "<[f1@3 f1@3 f1@2 f2@3 f1@3 ab1@2] [f1@3 f1@3 f1@2 c2@3 bb1@3 ab1@2]>",
    "doc": "bass pattern",
-   "folder": "feels/jumpup/bass",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "bass",
     "feel",
-    "jumpup",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:4080fcd45a301f118d86f188635aee90d9257741e98d6456e09f4c69cd60e08b"
@@ -254,11 +254,11 @@
    "rev": 1,
    "body": "1",
    "doc": "bass accents (velocity)",
-   "folder": "feels/jumpup/bass",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "bass",
     "feel",
-    "jumpup",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -270,11 +270,11 @@
    "rev": 1,
    "body": "jumpWobble | groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 6)",
    "doc": "bass rack and groove",
-   "folder": "feels/jumpup/bass",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "bass",
     "feel",
-    "jumpup",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:6c6c62572264f7c3fd881b6f2f21ca43179c7b860826a3bcf7dd2bb8a1745024"
@@ -285,11 +285,11 @@
    "rev": 1,
    "body": "~",
    "doc": "harmony pattern",
-   "folder": "feels/jumpup/keys",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "keys",
     "feel",
-    "jumpup",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
@@ -300,11 +300,11 @@
    "rev": 1,
    "body": "1",
    "doc": "harmony accents (velocity)",
-   "folder": "feels/jumpup/keys",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "keys",
     "feel",
-    "jumpup",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -316,11 +316,11 @@
    "rev": 1,
    "body": "groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 7)",
    "doc": "harmony rack and groove",
-   "folder": "feels/jumpup/keys",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "keys",
     "feel",
-    "jumpup",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:30f537b1037bc38ec029d8c17eaba88e015b11b85e9a2219e8ca70bd5d8a5d51"
@@ -331,11 +331,11 @@
    "rev": 1,
    "body": "~",
    "doc": "fx pattern",
-   "folder": "feels/jumpup/fx",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "fx",
     "feel",
-    "jumpup",
+    "edm",
     "pattern"
    ],
    "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
@@ -346,11 +346,11 @@
    "rev": 1,
    "body": "1",
    "doc": "fx accents (velocity)",
-   "folder": "feels/jumpup/fx",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "fx",
     "feel",
-    "jumpup",
+    "edm",
     "accents",
     "pattern"
    ],
@@ -362,11 +362,11 @@
    "rev": 1,
    "body": "groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 8)",
    "doc": "fx rack and groove",
-   "folder": "feels/jumpup/fx",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "fx",
     "feel",
-    "jumpup",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:509796c5ca56c9aa40ff2442f1b3aad5023879eaca8e92c719015f748469c3fe"
@@ -377,11 +377,11 @@
    "rev": 1,
    "body": "groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 0)",
    "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
-   "folder": "feels/jumpup/groove",
+   "folder": "dnb-electro/feel/jumpup",
    "tags": [
     "groove",
     "feel",
-    "jumpup",
+    "edm",
     "rack-slot"
    ],
    "hash": "sha256:7b4afb33c2b6cd969561b38789b515a3d1e7b9c8e940b96099e7b0c031ead197"

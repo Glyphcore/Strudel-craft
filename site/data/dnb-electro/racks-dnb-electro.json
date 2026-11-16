@@ -52,11 +52,11 @@
      0.8
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "dnbSnare": {
@@ -102,11 +102,11 @@
      0.85
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "ghostSnare": {
@@ -152,11 +152,11 @@
      0.3
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "breakKick": {
@@ -210,11 +210,11 @@
      0.75
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "breakSnare": {
@@ -264,11 +264,11 @@
      0.8
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "ride": {
@@ -298,11 +298,11 @@
      0.16
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "dnbShaker": {
@@ -336,11 +336,11 @@
      0.3
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "dnbHat": {
@@ -370,11 +370,11 @@
      0.35
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "dnbSub": {
@@ -420,11 +420,11 @@
      0.8
     ]
    ],
-   "folder": "racks/bass",
+   "folder": "house/racks/bass",
    "tags": [
     "bass",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "reese": {
@@ -486,11 +486,11 @@
      0.4
     ]
    ],
-   "folder": "racks/bass",
+   "folder": "house/racks/bass",
    "tags": [
     "bass",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "neuroBass": {
@@ -556,11 +556,11 @@
      0.22
     ]
    ],
-   "folder": "racks/bass",
+   "folder": "house/racks/bass",
    "tags": [
     "bass",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "rollingBass": {
@@ -606,11 +606,11 @@
      0.4
     ]
    ],
-   "folder": "racks/bass",
+   "folder": "house/racks/bass",
    "tags": [
     "bass",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "jumpWobble": {
@@ -668,11 +668,11 @@
      0.28
     ]
    ],
-   "folder": "racks/bass",
+   "folder": "house/racks/bass",
    "tags": [
     "bass",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "liquidRhodes": {
@@ -730,11 +730,11 @@
      0.2
     ]
    ],
-   "folder": "racks/keys",
+   "folder": "house/racks/keys",
    "tags": [
     "keys",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "liquidPad": {
@@ -784,11 +784,11 @@
      0.14
     ]
    ],
-   "folder": "racks/pad",
+   "folder": "house/racks/pad",
    "tags": [
     "pad",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "strings": {
@@ -830,11 +830,11 @@
      0.12
     ]
    ],
-   "folder": "racks/pad",
+   "folder": "house/racks/pad",
    "tags": [
     "pad",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "vocalChop": {
@@ -872,11 +872,11 @@
      0.3
     ]
    ],
-   "folder": "racks/vox",
+   "folder": "house/racks/vox",
    "tags": [
     "vox",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "boom808": {
@@ -926,11 +926,11 @@
      0.8
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "clap808": {
@@ -968,11 +968,11 @@
      0.95
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "hat808": {
@@ -1002,11 +1002,11 @@
      0.35
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "open808": {
@@ -1036,11 +1036,11 @@
      0.22
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "cowbell808": {
@@ -1078,11 +1078,11 @@
      0.18
     ]
    ],
-   "folder": "racks/lead",
+   "folder": "house/racks/lead",
    "tags": [
     "lead",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "electroBass": {
@@ -1132,11 +1132,11 @@
      0.38
     ]
    ],
-   "folder": "racks/bass",
+   "folder": "house/racks/bass",
    "tags": [
     "bass",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "vocoLead": {
@@ -1182,11 +1182,11 @@
      0.3
     ]
    ],
-   "folder": "racks/lead",
+   "folder": "house/racks/lead",
    "tags": [
     "lead",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "robotStab": {
@@ -1232,11 +1232,11 @@
      0.16
     ]
    ],
-   "folder": "racks/keys",
+   "folder": "house/racks/keys",
    "tags": [
     "keys",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "filterBass": {
@@ -1286,11 +1286,11 @@
      0.28
     ]
    ],
-   "folder": "racks/bass",
+   "folder": "house/racks/bass",
    "tags": [
     "bass",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "sawStab": {
@@ -1344,11 +1344,11 @@
      0.13
     ]
    ],
-   "folder": "racks/keys",
+   "folder": "house/racks/keys",
    "tags": [
     "keys",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "houseKick": {
@@ -1398,11 +1398,11 @@
      0.8
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "bigKick": {
@@ -1452,11 +1452,11 @@
      0.78
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "houseClap": {
@@ -1494,11 +1494,11 @@
      0.9
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "offHat": {
@@ -1528,11 +1528,11 @@
      0.3
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "closedHat": {
@@ -1562,11 +1562,11 @@
      0.3
     ]
    ],
-   "folder": "racks/drums",
+   "folder": "house/racks/drums",
    "tags": [
     "drums",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "houseBass": {
@@ -1612,11 +1612,11 @@
      0.4
     ]
    ],
-   "folder": "racks/bass",
+   "folder": "house/racks/bass",
    "tags": [
     "bass",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "rumble": {
@@ -1654,11 +1654,11 @@
      0.42
     ]
    ],
-   "folder": "racks/bass",
+   "folder": "house/racks/bass",
    "tags": [
     "bass",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "pluck": {
@@ -1700,11 +1700,11 @@
      0.26
     ]
    ],
-   "folder": "racks/lead",
+   "folder": "house/racks/lead",
    "tags": [
     "lead",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "bigChords": {
@@ -1750,11 +1750,11 @@
      0.11
     ]
    ],
-   "folder": "racks/keys",
+   "folder": "house/racks/keys",
    "tags": [
     "keys",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "gatePad": {
@@ -1810,11 +1810,10 @@
      0.15
     ]
    ],
-   "folder": "racks/pad",
+   "folder": "house/racks/misc",
    "tags": [
-    "pad",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   },
   "roomLead": {
@@ -1864,11 +1863,11 @@
      0.16
     ]
    ],
-   "folder": "racks/lead",
+   "folder": "house/racks/lead",
    "tags": [
     "lead",
     "rack",
-    "dnb-electro"
+    "house"
    ]
   }
  }

@@ -1,0 +1,10 @@
+{"bpm": 174, "form": [
+ {"section": "intro", "bars": 16, "type": "flow"},
+ {"section": "build1", "bars": 16, "type": "flow"},
+ {"section": "drop1", "bars": 32, "type": "drive"},
+ {"section": "float", "bars": 24, "type": "stunt"},
+ {"section": "build2", "bars": 8, "type": "flow"},
+ {"section": "drop2", "bars": 32, "type": "return"},
+ {"section": "bridge", "bars": 16, "type": "stunt"},
+ {"section": "outro", "bars": 16, "type": "flow"}
+]}

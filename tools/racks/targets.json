@@ -81,6 +81,66 @@
   },
   "hush": {
    "class": "move"
+  },
+  "bbKick": {
+   "class": "kick"
+  },
+  "clap": {
+   "class": "snare"
+  },
+  "snap": {
+   "class": "perc"
+  },
+  "openHat": {
+   "class": "hat"
+  },
+  "bbBass": {
+   "class": "bass"
+  },
+  "rhodes": {
+   "class": "keys"
+  },
+  "trapBell": {
+   "class": "bell"
+  },
+  "airPad": {
+   "class": "pad"
+  },
+  "hyphyLead": {
+   "class": "lead"
+  },
+  "chopStab": {
+   "class": "stab"
+  },
+  "voxTag": {
+   "class": "vox",
+   "phrase": "note(\"<c4 g4>\")",
+   "noalias": true
+  },
+  "vinyl": {
+   "class": "texture"
+  },
+  "downlifter": {
+   "class": "sweep"
+  },
+  "fadeOut": {
+   "class": "move"
+  },
+  "fadeIn": {
+   "class": "move"
+  },
+  "throw": {
+   "class": "move"
+  },
+  "tailHold": {
+   "class": "move"
+  },
+  "duckUnder": {
+   "class": "move",
+   "skip": "needs a hit tap in the program; covered by the Syntax example"
+  },
+  "knock808": {
+   "class": "kick"
   }
  },
  "catalog": {
@@ -146,6 +206,156 @@
   },
   "random-thin": {
    "class": "hat"
+  },
+  "boom-bap-kick": {
+   "class": "kick"
+  },
+  "clap-backbeat": {
+   "class": "snare"
+  },
+  "trap-hats-rolls": {
+   "class": "hat",
+   "bars": 4
+  },
+  "open-hat-offbeat": {
+   "class": "hat"
+  },
+  "finger-snaps": {
+   "class": "perc"
+  },
+  "trap-808-line": {
+   "class": "sub",
+   "bars": 4
+  },
+  "boom-bap-bass": {
+   "class": "bass"
+  },
+  "rhodes-keys": {
+   "class": "keys",
+   "bars": 2
+  },
+  "trap-bell-melody": {
+   "class": "bell"
+  },
+  "cloud-pad": {
+   "class": "pad",
+   "bars": 4
+  },
+  "chopped-chords": {
+   "class": "stab"
+  },
+  "hyphy-lead": {
+   "class": "lead"
+  },
+  "vox-tag-synth": {
+   "class": "demo"
+  },
+  "vinyl-bed": {
+   "class": "texture"
+  },
+  "downlifter": {
+   "class": "sweep"
+  },
+  "boom-bap-beat": {
+   "class": "demo",
+   "bars": 2
+  },
+  "trap-beat": {
+   "class": "demo",
+   "bars": 2
+  },
+  "hyphy-bounce-stomp": {
+   "class": "demo",
+   "bars": 4
+  },
+  "hook-drop-bar": {
+   "class": "demo",
+   "bars": 4
+  },
+  "drop-last-beat": {
+   "class": "demo",
+   "bars": 4
+  },
+  "beat-switch": {
+   "class": "demo",
+   "bars": 4
+  },
+  "switch-up": {
+   "class": "demo",
+   "bars": 8
+  },
+  "dovetail-pickup-fill": {
+   "class": "demo",
+   "bars": 4
+  },
+  "dovetail-808-pickup": {
+   "class": "demo",
+   "bars": 4
+  },
+  "dovetail-overlapping-tail": {
+   "class": "demo",
+   "bars": 4
+  },
+  "dovetail-call-response": {
+   "class": "demo",
+   "bars": 2
+  },
+  "dovetail-crossfade": {
+   "class": "demo",
+   "bars": 5
+  },
+  "dovetail-riser-impact": {
+   "class": "demo",
+   "bars": 4
+  },
+  "dovetail-ducked-transition": {
+   "class": "demo",
+   "bars": 4
+  },
+  "dovetail-delay-throw": {
+   "class": "demo",
+   "bars": 4
+  },
+  "dovetail-turnaround": {
+   "class": "demo",
+   "bars": 4
+  },
+  "groove-mpc-swing": {
+   "class": "hat"
+  },
+  "groove-lazy-snare": {
+   "class": "demo",
+   "bars": 2
+  },
+  "groove-humanize": {
+   "class": "hat"
+  },
+  "groove-drag-vs-rush": {
+   "class": "demo"
+  },
+  "groove-drift": {
+   "class": "demo",
+   "bars": 4
+  },
+  "feel-boombap": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-lazy": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-trap": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-hyphy": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-cloud": {
+   "class": "demo",
+   "bars": 2
   }
  },
  "syntax": {
@@ -177,6 +387,49 @@
   },
   "racks/The same scope in plain Strudel (opens on strudel.cc)": {
    "class": "bass"
+  },
+  "feels/Song form as gates (intro, verse, hook, bridge, outro)": {
+   "class": "demo",
+   "bars": 24
+  },
+  "feels/Beat switch with gated racks": {
+   "class": "demo",
+   "bars": 4
+  },
+  "feels/Pickup fill on a gate atom (dt.pickup)": {
+   "class": "demo",
+   "bars": 6
+  },
+  "feels/Crossfade two sections with gated fade racks": {
+   "class": "demo",
+   "bars": 6
+  },
+  "feels/Riser into the drop, impact on the one, bed ducked under it": {
+   "class": "demo",
+   "bars": 6
+  },
+  "feels/Call and response with mask atoms": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feels/Swing, push, humanize in one call (.groove)": {
+   "class": "demo"
+  },
+  "feels/Groove presets with a seed per voice": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feels/Pick a feel (one import line)": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feels/Override one slot of a feel": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feels/Beat switch between two feels": {
+   "class": "demo",
+   "bars": 4
   }
  }
 }

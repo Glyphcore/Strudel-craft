@@ -7,7 +7,7 @@
       "id": "glyphcore/shim",
       "version": "1.0.0",
       "source": "file:.",
-      "manifest": "sha256:a25959cf326857cee978b823e10f0e9d5ce28b077e4d11878b6ec2479c08807c",
+      "manifest": "sha256:90deadd395b7b6ce07c0df622042c926c53e4f0a54f0b3faf6fce5388a105265",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}
@@ -25,7 +25,7 @@
       "id": "glyphcore/phonk",
       "version": "1.2.0",
       "source": "file:data/phonk",
-      "manifest": "sha256:aa106e0c4aabbdb746e02251cc36377c1fb68893f4798cb4125f980e16ab91dd",
+      "manifest": "sha256:9f6ed1142bddcd3bc36be7932a06239ea1f743ed611279152482415a67abd51c",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}

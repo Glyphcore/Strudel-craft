@@ -1,0 +1,207 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"Lazy drag\" (78-86 bpm): everything behind the beat (push 8), kick a little ahead of the rest, snare dragged furthest, slow drift. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/phonk:feel-lazy\", { as: \"feel\" }).",
+ "atoms": {
+  "a224xyv": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "kick pattern",
+   "hash": "sha256:b128547ab09ad6e9d613dcb93bf44de2c79b0f4c8a228b1fde3473b25edbe62b"
+  },
+  "aexdiru": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "aawthy8": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "bbKick | groove-lazy(1) | groove-push(-10)",
+   "doc": "kick rack and groove",
+   "hash": "sha256:9f335b85dba319a3fe335679ded9531e48aef169f27ea9bc5b8b971ba1f19740"
+  },
+  "ab734se": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "snare pattern",
+   "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
+  },
+  "a2mj1qp": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ab56gyl": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "clap | groove-lazy(2) | groove-push(6)",
+   "doc": "snare rack and groove",
+   "hash": "sha256:63e8ad41cd7a496aeec39dda312a094464a8f2863b0a5b72ec831afa8f32735c"
+  },
+  "a1384fh": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "perc pattern",
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "a4sn5y8": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "perc accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "awwh58a": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-lazy(3)",
+   "doc": "perc rack and groove",
+   "hash": "sha256:aeec174725cca3c55c333e490d581b14ef9f29e56e1f7c6054c17c041d897ba1"
+  },
+  "autmmkb": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*8",
+   "doc": "hats pattern",
+   "hash": "sha256:c2845fc5d1dfae91f61227e9f77fbff665ea294e5367dbd32a4f511e758525ec"
+  },
+  "a4ezqi6": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[1 .7]*4",
+   "doc": "hats accents (velocity)",
+   "hash": "sha256:0a4a21d4952b67aba6ad7736a64bcbc3df28e957a8d731e07c21a68aa4227636"
+  },
+  "aer8ob8": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "hat(0.05) | groove-lazy(4)",
+   "doc": "hats rack and groove",
+   "hash": "sha256:717c7831edb364453b0df5baea6f6ef9203e77f00dcc9396fc0aae9494eba217"
+  },
+  "afvfnqc": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "top pattern",
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "a8g89wf": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ai2eagf": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-lazy(5)",
+   "doc": "top rack and groove",
+   "hash": "sha256:34afc8bffe2b2f3603dc59f81d1255928d126053ec63606a90846dfa53a25dab"
+  },
+  "a8r05gi": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~",
+   "doc": "bass pattern",
+   "hash": "sha256:6d3f7579036f97f7782290954d057f657326466e43a8498e90e41f992259bdce"
+  },
+  "a3awd2t": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "bass accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a5e2ojl": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "bbBass | groove-lazy(6)",
+   "doc": "bass rack and groove",
+   "hash": "sha256:792f3525300f07f47ea1b0e86f7a7ac2955502fdd4d04ac7c00dc836ccacb39b"
+  },
+  "a348wfd": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>",
+   "doc": "harmony pattern",
+   "hash": "sha256:6c7fb99033f92c749dab049d0538c23f2b21b92f277b1d91c77ce1859509ee43"
+  },
+  "ag27lb0": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "atwieee": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "rhodes | groove-lazy(7) | groove-push(4)",
+   "doc": "harmony rack and groove",
+   "hash": "sha256:40a207b53d8bc1f94652fdbb82f9e35a5b146cff2df2ee1a117d518ca0de73a5"
+  },
+  "azuonjf": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "x",
+   "doc": "fx pattern",
+   "hash": "sha256:857b6b1c9bbefde11ebf65bcc7763f81dbb7ffac3ab6a7cb7b65e74c6a468988"
+  },
+  "axa2rby": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ahci4qs": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "vinyl",
+   "doc": "fx rack and groove",
+   "hash": "sha256:7d514af99e4cb541f16315adbe7cca5a8cfa8b87163701c42eaf9b539cbc0d51"
+  },
+  "ae8a2bn": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-lazy(0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "hash": "sha256:8627ec0bd206e06d8bbf3a28aeae3ea054999b42397ae6618395c984c9827506"
+  }
+ }
+}

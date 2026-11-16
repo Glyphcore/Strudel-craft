@@ -10,6 +10,12 @@ Content pack (docs/PACK_SPEC.md) behind the Syntax entry **Track demo: night pho
 | `atoms-v2` | `atoms` / `atoms@1` | v2 (#93) under `ph2.`: `slides`, `toms`, `rim`, `stab`, `stut`, `rise`, `heart`; section gates `noDrums`, `noKick`, `noSub`, `noConf`, `noRelief`, `dropB`, `vac`, `noRoll`, `noRise`, `noRev`, `noHit`, `drops`, `conf`, `reliefs`, `relief2`, `dark`, `slams`, `builds` | site and CLI: `atoms.import("pack:glyphcore/phonk:atoms-v2")` |
 | `racks-v2` | `hooks` / `hooks@1` | v2: `pumpHard(depth)` (duckorbit pump on orbits 3-8 from the kick), `tom`, `rimshot`, `slam`, `open`, `swellPad`, `hush` | site: with `racks` (#91); CLI with `racks` (render.sh merges both) |
 | `presets` | `recipes` / `recipes@1` | `night-phonk-demo` and `night-phonk-demo-v2`: the standalone tracks | site Rack browser (pack recipes) |
+| `racks-hiphop` | `hooks` / `hooks@1` | hip-hop, trap and hyphy racks (#111): `bbKick`, `knock808`, `clap`, `snap`, `openHat`, `bbBass`, `rhodes`, `trapBell`, `airPad`, `hyphyLead`, `chopStab`, `voxTag`, `vinyl`, `downlifter`; dovetail moves `fadeOut`, `fadeIn`, `throw(fb)`, `tailHold`, `duckUnder(depth)` | site with the other racks (#91); CLI `--hooks` |
+| `atoms-hiphop` | `atoms` / `atoms@1` | `hh.`: boom-bap, trap (rolls, accents, 808) and hyphy (bounce, stomp) patterns, chords, chops, tag, fx; form gates `intro`, `drop`, `verse`, `hook`, `bridge`, `outro`, `dropBar`, `lastBeat`, `switch`, `bounce`, `stomp` | `atoms.import("pack:glyphcore/phonk:atoms-hiphop")` |
+| `atoms-dovetail` | `atoms` / `atoms@1` | `dt.`: `pickup({ at })`, `pickupBar`, `rise({ at, len })`, `hit`, `tail`, call / answer masks, `xfadeOut` / `xfadeIn`, `turnaround({ a, b })` | `atoms.import("pack:glyphcore/phonk:atoms-dovetail")` |
+| `feel-boombap`, `feel-lazy`, `feel-trap`, `feel-hyphy`, `feel-cloud` | `atoms` / `atoms@1` | feel templates (#112): the same 25 names each (`<v>`, `<v>Vel`, `<v>Rack` for kick, snare, perc, hats, top, bass, harmony, fx; `groove`) | `atoms.import("pack:glyphcore/phonk:feel-trap", { as: "feel" })` |
+
+The hip-hop, dovetail and feel ingredients are generated: edit `tools/concepts/families/*.json`, then `node tools/concepts/build.mjs --render` (docs/CONVENTIONS.md section 7).
 
 ## Rack standard (#94)
 Every instrument rack starts with the band scope of its class, `["hook", "hygiene-<class>"]` (built-in hook defs, `site/engine/hygiene.js`): `kick808` kick, `snareNoise` snare,

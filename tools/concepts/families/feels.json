@@ -1,0 +1,301 @@
+{
+ "family": "feels",
+ "title": "Feel templates",
+ "doc": "A feel fills the template slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx and groove. Each feel is one atoms@1 ingredient with the same atom names, so a track picks a feel with one import line (atoms.import(\"pack:glyphcore/phonk:feel-<id>\", { as: \"feel\" })) and overrides a slot by binding something else into it.",
+ "template": {
+  "voices": [
+   "kick",
+   "snare",
+   "perc",
+   "hats",
+   "top",
+   "bass",
+   "harmony",
+   "fx"
+  ],
+  "slots": {
+   "drums": [
+    "kick",
+    "snare",
+    "perc"
+   ],
+   "top": [
+    "hats",
+    "top"
+   ],
+   "bass": [
+    "bass"
+   ],
+   "harmony": [
+    "harmony"
+   ],
+   "fx": [
+    "fx"
+   ],
+   "groove": []
+  },
+  "src": {
+   "kick": "s",
+   "snare": "s",
+   "perc": "s",
+   "hats": "s",
+   "top": "note",
+   "bass": "note",
+   "harmony": "note",
+   "fx": "s"
+  }
+ },
+ "feels": {
+  "boombap": {
+   "title": "Boom-bap pocket",
+   "tempo": "86-94 bpm",
+   "cpm": 90,
+   "groove": "groove-pocket",
+   "doc": "swing 57 on 16ths, snare and keys a little behind, vinyl bed",
+   "labels": [
+    "boom-bap",
+    "hip-hop",
+    "human-feel"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@hh:boomKick",
+     "rack": "bbKick"
+    },
+    "snare": {
+     "pat": "@hh:boomSnare",
+     "rack": "clap",
+     "push": 4
+    },
+    "perc": {
+     "pat": "~"
+    },
+    "hats": {
+     "pat": "@hh:boomHats",
+     "rack": "hat",
+     "args": "(0.04)",
+     "vel": "[1 .6]*8"
+    },
+    "top": {
+     "pat": "~"
+    },
+    "bass": {
+     "pat": "@hh:boomBass",
+     "rack": "bbBass",
+     "push": 3
+    },
+    "harmony": {
+     "pat": "@hh:boomChords",
+     "rack": "rhodes",
+     "push": 6
+    },
+    "fx": {
+     "pat": "x",
+     "rack": "vinyl",
+     "groove": false
+    }
+   }
+  },
+  "lazy": {
+   "title": "Lazy drag",
+   "tempo": "78-86 bpm",
+   "cpm": 82,
+   "groove": "groove-lazy",
+   "doc": "everything behind the beat (push 8), kick a little ahead of the rest, snare dragged furthest, slow drift",
+   "labels": [
+    "boom-bap",
+    "human-feel",
+    "dark"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@hh:boomKick",
+     "rack": "bbKick",
+     "push": -10
+    },
+    "snare": {
+     "pat": "@hh:boomSnare",
+     "rack": "clap",
+     "push": 6
+    },
+    "perc": {
+     "pat": "~"
+    },
+    "hats": {
+     "pat": "x*8",
+     "rack": "hat",
+     "args": "(0.05)",
+     "vel": "[1 .7]*4"
+    },
+    "top": {
+     "pat": "~"
+    },
+    "bass": {
+     "pat": "@hh:boomBass",
+     "rack": "bbBass"
+    },
+    "harmony": {
+     "pat": "@hh:boomChords",
+     "rack": "rhodes",
+     "push": 4
+    },
+    "fx": {
+     "pat": "x",
+     "rack": "vinyl",
+     "groove": false
+    }
+   }
+  },
+  "trap": {
+   "title": "Rolling trap",
+   "tempo": "130-150 bpm (half-time)",
+   "cpm": 140,
+   "groove": "groove-rolling",
+   "doc": "straight grid, velocity life on the hats and rolls, 808 and pad tight",
+   "labels": [
+    "trap",
+    "hip-hop",
+    "half-time"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@hh:trapKick",
+     "rack": "knock808"
+    },
+    "snare": {
+     "pat": "@hh:trapClap",
+     "rack": "clap"
+    },
+    "perc": {
+     "pat": "~"
+    },
+    "hats": {
+     "pat": "@hh:trapHats",
+     "rack": "hat",
+     "args": "(0.03)",
+     "vel": "@hh:rollVel"
+    },
+    "top": {
+     "pat": "@hh:trapBell",
+     "rack": "trapBell"
+    },
+    "bass": {
+     "pat": "@hh:trap808",
+     "rack": "sub808",
+     "groove": "groove-straight",
+     "vel": "0.6"
+    },
+    "harmony": {
+     "pat": "@hh:trapChords",
+     "rack": "airPad",
+     "groove": "groove-straight"
+    },
+    "fx": {
+     "pat": "<~ ~ ~ x>",
+     "rack": "downlifter",
+     "groove": false
+    }
+   }
+  },
+  "hyphy": {
+   "title": "Bouncy hyphy",
+   "tempo": "98-106 bpm",
+   "cpm": 100,
+   "groove": "groove-bounce",
+   "doc": "light swing, claps rushing a hair, snaps on the ands, bounce kick and a square lead",
+   "labels": [
+    "hyphy",
+    "driving",
+    "syncopated"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@hh:hyphyKick",
+     "rack": "bbKick"
+    },
+    "snare": {
+     "pat": "@hh:hyphyClap",
+     "rack": "clap",
+     "push": -3
+    },
+    "perc": {
+     "pat": "@hh:hyphySnap",
+     "rack": "snap"
+    },
+    "hats": {
+     "pat": "@hh:boomHats",
+     "rack": "hat",
+     "args": "(0.03)",
+     "vel": "[1 .5]*8"
+    },
+    "top": {
+     "pat": "@hh:hyphyLead",
+     "rack": "hyphyLead"
+    },
+    "bass": {
+     "pat": "c2 ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~ ~ c2 ~ ~",
+     "rack": "bbBass"
+    },
+    "harmony": {
+     "pat": "@hh:chops",
+     "rack": "chopStab"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  },
+  "cloud": {
+   "title": "Cloud / wave",
+   "tempo": "60-75 bpm",
+   "cpm": 70,
+   "groove": "groove-cloud",
+   "doc": "loose and floating: swing 56, everything a little late, slow drift, big pad",
+   "labels": [
+    "cloud",
+    "floaty",
+    "pad"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@hh:trapKick",
+     "rack": "knock808"
+    },
+    "snare": {
+     "pat": "@hh:trapClap",
+     "rack": "clap",
+     "push": 6
+    },
+    "perc": {
+     "pat": "~"
+    },
+    "hats": {
+     "pat": "x*8",
+     "rack": "hat",
+     "args": "(0.04)",
+     "vel": "[.9 .5]*4"
+    },
+    "top": {
+     "pat": "@hh:trapBell",
+     "rack": "trapBell",
+     "push": 6
+    },
+    "bass": {
+     "pat": "@hh:trap808",
+     "rack": "sub808",
+     "vel": "0.6"
+    },
+    "harmony": {
+     "pat": "@hh:cloudChords",
+     "rack": "airPad",
+     "push": 10
+    },
+    "fx": {
+     "pat": "x",
+     "rack": "vinyl",
+     "groove": false
+    }
+   }
+  }
+ }
+}

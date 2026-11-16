@@ -1,0 +1,604 @@
+{
+ "model": 1,
+ "meta": {
+  "id": "glyphcore/phonk:racks-hiphop",
+  "doc": "Hip-hop, trap and hyphy instrument racks (band-scoped, docs/RACK_STANDARD.md) and dovetail moves (fadeOut, fadeIn, throw, tailHold, duckUnder). Bind into a slot: hooks.bind(\"kick\", \"bbKick | groove-pocket(1)\")."
+ },
+ "defs": {
+  "bbKick": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-kick"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "freq",
+     50
+    ],
+    [
+     "hpf",
+     40
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "penv",
+     30
+    ],
+    [
+     "pdecay",
+     0.05
+    ],
+    [
+     "decay",
+     0.32
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "shape",
+     0.3
+    ],
+    [
+     "lpf",
+     3000
+    ],
+    [
+     "gain",
+     0.75
+    ]
+   ]
+  },
+  "knock808": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-kick"
+    ],
+    [
+     "hook",
+     "kick808"
+    ],
+    [
+     "hpf",
+     40
+    ]
+   ]
+  },
+  "clap": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-snare"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "bpf",
+     1200
+    ],
+    [
+     "bpq",
+     1.2
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "decay",
+     0.14
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.9
+    ]
+   ]
+  },
+  "snap": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-perc"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "bpf",
+     2400
+    ],
+    [
+     "bpq",
+     2
+    ],
+    [
+     "lpf",
+     5000
+    ],
+    [
+     "decay",
+     0.05
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.8
+    ]
+   ]
+  },
+  "openHat": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     7000
+    ],
+    [
+     "decay",
+     0.22
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "bbBass": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-bass"
+    ],
+    [
+     "s",
+     "triangle"
+    ],
+    [
+     "lpf",
+     700
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "decay",
+     0.3
+    ],
+    [
+     "sustain",
+     0.4
+    ],
+    [
+     "release",
+     0.12
+    ],
+    [
+     "gain",
+     0.5
+    ]
+   ]
+  },
+  "rhodes": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-keys"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "fm",
+     1.2
+    ],
+    [
+     "fmh",
+     1
+    ],
+    [
+     "attack",
+     0.01
+    ],
+    [
+     "decay",
+     0.9
+    ],
+    [
+     "sustain",
+     0.3
+    ],
+    [
+     "release",
+     0.5
+    ],
+    [
+     "lpf",
+     3500
+    ],
+    [
+     "gain",
+     0.22
+    ]
+   ]
+  },
+  "trapBell": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-bell"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "fm",
+     1.5
+    ],
+    [
+     "fmh",
+     4
+    ],
+    [
+     "decay",
+     0.5
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "airPad": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-pad"
+    ],
+    [
+     "s",
+     "triangle"
+    ],
+    [
+     "attack",
+     1.2
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     2.5
+    ],
+    [
+     "lpf",
+     1800
+    ],
+    [
+     "gain",
+     0.16
+    ]
+   ]
+  },
+  "hyphyLead": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-lead"
+    ],
+    [
+     "s",
+     "square"
+    ],
+    [
+     "lpf",
+     2800
+    ],
+    [
+     "lpenv",
+     1
+    ],
+    [
+     "attack",
+     0.01
+    ],
+    [
+     "decay",
+     0.2
+    ],
+    [
+     "sustain",
+     0.5
+    ],
+    [
+     "release",
+     0.15
+    ],
+    [
+     "vib",
+     6
+    ],
+    [
+     "vibmod",
+     0.15
+    ],
+    [
+     "gain",
+     0.26
+    ]
+   ]
+  },
+  "chopStab": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-stab"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "attack",
+     0.003
+    ],
+    [
+     "decay",
+     0.14
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "lpf",
+     1600
+    ],
+    [
+     "lpenv",
+     2.5
+    ],
+    [
+     "lpdecay",
+     0.12
+    ],
+    [
+     "gain",
+     0.2
+    ]
+   ]
+  },
+  "voxTag": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-vox"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "vowel",
+     "o"
+    ],
+    [
+     "attack",
+     0.01
+    ],
+    [
+     "decay",
+     0.25
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "lpf",
+     3000
+    ],
+    [
+     "gain",
+     0.35
+    ]
+   ]
+  },
+  "vinyl": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-texture"
+    ],
+    [
+     "s",
+     "pink"
+    ],
+    [
+     "hpf",
+     1500
+    ],
+    [
+     "lpf",
+     8000
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "gain",
+     0.06
+    ]
+   ]
+  },
+  "downlifter": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-sweep"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     400
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "decay",
+     2
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "lpf",
+     1200
+    ],
+    [
+     "lpenv",
+     3
+    ],
+    [
+     "lpattack",
+     0.001
+    ],
+    [
+     "lpdecay",
+     2
+    ],
+    [
+     "lpsustain",
+     0
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "fadeOut": {
+   "chain": [
+    [
+     "velocity",
+     {
+      "$mini": "[1 .98 .92 .83 .71 .56 .38 .2]"
+     }
+    ]
+   ]
+  },
+  "fadeIn": {
+   "chain": [
+    [
+     "velocity",
+     {
+      "$mini": "[.2 .38 .56 .71 .83 .92 .98 1]"
+     }
+    ]
+   ]
+  },
+  "throw": {
+   "params": {
+    "fb": {
+     "min": 0,
+     "max": 0.8,
+     "default": 0.55
+    }
+   },
+   "chain": [
+    [
+     "delay",
+     0.6
+    ],
+    [
+     "delaytime",
+     0.375
+    ],
+    [
+     "delayfeedback",
+     {
+      "$param": "fb"
+     }
+    ]
+   ]
+  },
+  "tailHold": {
+   "chain": [
+    [
+     "release",
+     1.6
+    ]
+   ]
+  },
+  "duckUnder": {
+   "params": {
+    "depth": {
+     "min": 0,
+     "max": 1,
+     "default": 0.7
+    }
+   },
+   "chain": [
+    [
+     "wire",
+     "gain",
+     "hit:env",
+     {
+      "range": [
+       1,
+       {
+        "$expr": "1-depth"
+       }
+      ],
+      "op": "mul",
+      "r": 0.6
+     }
+    ]
+   ]
+  }
+ }
+}

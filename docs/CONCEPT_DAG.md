@@ -102,6 +102,13 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | project-time-model (R5: project@1, tempo map, markers, DAWproject export) | strip-meters, take-lanes | issued | #99 |
 | summing-groups + delay-compensation (R6: `.group`, strip latency) | mixer-read-model | issued | #100 |
 | transactional-undo (R7: one undo stack over model ops) | project-time-model | issued | #101 |
+| groove (`pat.groove`: MPC swing, push/pull, seeded humanize, drift; stdlib `groove-*` presets; docs/CONVENTIONS.md 4) | hooks-core, rack-standard | built (critic pending) | #109 |
+| concept-framework (`tools/concepts/families/*.json` -> pack ingredients, plain catalog recipes, Syntax section, audit targets; add-a-concept checklist) | pack-spec, atoms-core, rack-standard | built (critic pending) | #110 |
+| hiphop-trap-hyphy components + forms (racks-hiphop, `hh.` atoms and form gates) | concept-framework, groove | built (critic pending) | #111 |
+| dovetailing (`dt.` pickup / rise / hit / tail gates, masks, equal-power fades, moves fadeOut, fadeIn, throw, tailHold, duckUnder) | concept-framework, hooks-core, lanes-events | built (critic pending) | #111 |
+| feel-templates (slots drums/top/bass/harmony/fx/groove as atoms@1 ingredients; pick = one import, override = one bind) | hiphop-trap-hyphy components + forms, groove, pack-kind-atoms | built (critic pending) | #112 |
+| more concept families (drill, jersey club, footwork, dancehall, amapiano log drums, lo-fi; groove templates extracted from audio) | concept-framework | unexplored | - |
+| groove-from-audio (onset offsets of a reference stem -> a groove table / preset) | groove, motifs analysis | unexplored | - |
 | wam-plugin-hosting (WAM 2 effects on returns) | summing-groups + delay-compensation | unexplored | - |
 | glitch-free-text-diff (unchanged lanes keep sounding through an edit, Glicol-style) | audio-engine-measurements | unexplored | - |
 
@@ -118,3 +125,4 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 - atoms (#61-#64): build order #61, then #62 and #63 on disjoint files, then UI #64 via ui-designer. The pack-ingredient box of #63 follows docs/PACK_SPEC.md 5.1 (kind `atoms`). Design: docs/ATOMS.md.
 - content packs (#65-#71): build order #65, then #67 and #68 in parallel (site files vs CLI repo, disjoint), then #69 (needs #66 and, for vox, owner approval), #70 after #65 with examples from #69, #71 after #67. Design: docs/PACK_SPEC.md.
 - lanes (#74-#78): build order #74, then #75, then #76; #77 alongside from #74 on; UI #78 via ui-designer last. First box of #75 to settle: the bus reader seam (docs/LANES.md open question 1). Design: docs/LANES.md.
+- feels (#109-#112): build order #109 (engine) and #110 (builder) -> #111 (content) -> #112 (feel templates); a new family or feel follows docs/CONVENTIONS.md section 7 and needs no code.

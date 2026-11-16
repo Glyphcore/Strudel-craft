@@ -1,0 +1,207 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"Boom-bap pocket\" (86-94 bpm): swing 57 on 16ths, snare and keys a little behind, vinyl bed. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/phonk:feel-boombap\", { as: \"feel\" }).",
+ "atoms": {
+  "a5qlu1j": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "kick pattern",
+   "hash": "sha256:b128547ab09ad6e9d613dcb93bf44de2c79b0f4c8a228b1fde3473b25edbe62b"
+  },
+  "am60foq": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "aj2n1ts": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "bbKick | groove-pocket(1)",
+   "doc": "kick rack and groove",
+   "hash": "sha256:1b777d1964678998f64e7dab9c3a7942dd9c153b9a677d22021b506b34e8277a"
+  },
+  "a5q3cgu": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "snare pattern",
+   "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
+  },
+  "ale1lbl": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "asu74n1": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "clap | groove-pocket(2) | groove-push(4)",
+   "doc": "snare rack and groove",
+   "hash": "sha256:c061cbc4072f8cc634f6b9980c99b8de3306adcf07eeb9aa3a04fbd84e8b402c"
+  },
+  "aw3a4lp": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "perc pattern",
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "ad7464g": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "perc accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "avhsysa": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-pocket(3)",
+   "doc": "perc rack and groove",
+   "hash": "sha256:a82389aa0ea10739c39750f62be58190d5d95cf27a22439a75d9942cd83ceb3e"
+  },
+  "arhdx5n": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x",
+   "doc": "hats pattern",
+   "hash": "sha256:055047f96adbeefbf60dc6bb9275bfcab7802266bb1fc08c607a47c4f194411b"
+  },
+  "aytnj7y": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[1 .6]*8",
+   "doc": "hats accents (velocity)",
+   "hash": "sha256:4c5f5254119a1ada31b0ba334eb1f560fd4ff3e7ef603e72b804e9f06c16e622"
+  },
+  "amx4fsk": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "hat(0.04) | groove-pocket(4)",
+   "doc": "hats rack and groove",
+   "hash": "sha256:cb692e8def8a758038b43077a65c64ec175a014a23a417be341fc20b475be1e8"
+  },
+  "aevegg4": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "top pattern",
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "a8zit33": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "aobkclr": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-pocket(5)",
+   "doc": "top rack and groove",
+   "hash": "sha256:522025998fcd9fc03279c245bfa1bd22b97ad73d098c0e65b121ec3d4f145e8a"
+  },
+  "a5erg1u": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~",
+   "doc": "bass pattern",
+   "hash": "sha256:6d3f7579036f97f7782290954d057f657326466e43a8498e90e41f992259bdce"
+  },
+  "axpk5sl": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "bass accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a9a0t9d": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "bbBass | groove-pocket(6) | groove-push(3)",
+   "doc": "bass rack and groove",
+   "hash": "sha256:2c3340f38514e516eade3da776d12e9336edfba1f232b5b66c64d5789194ecd3"
+  },
+  "ae5hl3d": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>",
+   "doc": "harmony pattern",
+   "hash": "sha256:6c7fb99033f92c749dab049d0538c23f2b21b92f277b1d91c77ce1859509ee43"
+  },
+  "a4wewxo": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "aczqtvq": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "rhodes | groove-pocket(7) | groove-push(6)",
+   "doc": "harmony rack and groove",
+   "hash": "sha256:a7789f511076e3c8fa06acf0b659950392c516316cc11c76d9153a5b4386c40c"
+  },
+  "atpb8uj": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "x",
+   "doc": "fx pattern",
+   "hash": "sha256:857b6b1c9bbefde11ebf65bcc7763f81dbb7ffac3ab6a7cb7b65e74c6a468988"
+  },
+  "ac5btha": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "adu1b38": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "vinyl",
+   "doc": "fx rack and groove",
+   "hash": "sha256:7d514af99e4cb541f16315adbe7cca5a8cfa8b87163701c42eaf9b539cbc0d51"
+  },
+  "a91i38j": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-pocket(0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "hash": "sha256:4364494c030fca6422aa9bb9b85501a462c25c3ff9fb3da3d23155a3c94f5edd"
+  }
+ }
+}

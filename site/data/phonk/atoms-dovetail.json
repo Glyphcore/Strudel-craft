@@ -1,0 +1,157 @@
+{
+ "format": "atoms@1",
+ "name": "dt",
+ "doc": "glyphcore/phonk dovetail atoms (dt.): gate atoms with a point param for pickups, rises, hits and tails; masks for call-and-response handoffs; equal-power fade tables; a turnaround. Import with atoms.import(\"pack:glyphcore/phonk:atoms-dovetail\").",
+ "atoms": {
+  "a8fqmtf": {
+   "name": "dt.pickup",
+   "type": "gate",
+   "rev": 1,
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "5b"
+    }
+   },
+   "body": "${at}-0.25b..${at}",
+   "doc": "the last beat before a point: fills, 808 pickups, throws",
+   "hash": "sha256:0c120436cb0cf49465f88a38776d2d2150137dceeba54bb33be57846dca47da0"
+  },
+  "a5wo0b0": {
+   "name": "dt.pickupBar",
+   "type": "gate",
+   "rev": 1,
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "5b"
+    }
+   },
+   "body": "${at}-1b..${at}",
+   "doc": "the bar before a point",
+   "hash": "sha256:a906b045989df5955534e88456fbb075e753ba317c6c9b8305e9fe09a67be2cd"
+  },
+  "ah9x4ri": {
+   "name": "dt.rise",
+   "type": "gate",
+   "rev": 1,
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "5b"
+    },
+    "len": {
+     "shape": "number",
+     "min": 0.25,
+     "max": 16,
+     "default": 2,
+     "unit": "bars"
+    }
+   },
+   "body": "${at}-${len}b..${at}",
+   "doc": "a riser window that ends exactly on the point",
+   "hash": "sha256:b3eb12b3efd14a6e7ddae3a67535405e095231fb85e7c9fa15632b8365192d9e"
+  },
+  "aiethjw": {
+   "name": "dt.hit",
+   "type": "gate",
+   "rev": 1,
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "5b"
+    }
+   },
+   "body": "${at}..${at}+1b",
+   "doc": "the bar that starts on the point: impact, downlifter, duck",
+   "hash": "sha256:a6b158bf10c945f0c7976a1e30b4ca3269f11ae99c16c80576cfee7bd8707717"
+  },
+  "af2znpt": {
+   "name": "dt.tail",
+   "type": "gate",
+   "rev": 1,
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "5b"
+    },
+    "len": {
+     "shape": "number",
+     "min": 0.25,
+     "max": 8,
+     "default": 1,
+     "unit": "bars"
+    }
+   },
+   "body": "${at}..${at}+${len}b",
+   "doc": "where an outgoing part may keep ringing after the point",
+   "hash": "sha256:793467d1bc399bbecc266933ee55c5d2c005c40ce1c770d6e692c5cdff504d8e"
+  },
+  "adesyzr": {
+   "name": "dt.callMask",
+   "type": "mini",
+   "rev": 1,
+   "body": "1 0",
+   "doc": "call: first half of each bar",
+   "hash": "sha256:256caa6532369b6f13ef97f7627a750a8f7405995fd41ab116c951ce89467cd5"
+  },
+  "ayj1rah": {
+   "name": "dt.answerMask",
+   "type": "mini",
+   "rev": 1,
+   "body": "0 1",
+   "doc": "response: second half of each bar",
+   "hash": "sha256:425240f37e3038252d37e990f45743bcade8f186bd7090f32a0615d3e71cee25"
+  },
+  "auf4esc": {
+   "name": "dt.callBar",
+   "type": "mini",
+   "rev": 1,
+   "body": "<1 0>",
+   "doc": "call on odd bars",
+   "hash": "sha256:df9e10eef08ac819979e30b6078ee906e6cecd6ed441438908f11e2fa83210da"
+  },
+  "ag194be": {
+   "name": "dt.answerBar",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0 1>",
+   "doc": "response on even bars",
+   "hash": "sha256:30bbee5e1ba3b59c9931a6c03ea562e628699cad5cff851ef07472e0f8105e7a"
+  },
+  "av78yft": {
+   "name": "dt.xfadeOut",
+   "type": "mini",
+   "rev": 1,
+   "body": "[1 .98 .92 .83 .71 .56 .38 .2]",
+   "doc": "equal-power fade-out, 8 steps (cos)",
+   "hash": "sha256:c27b79f02b011b056ed015b0e46df9e99ce1a887054422881652bf6217338533"
+  },
+  "agc5zvw": {
+   "name": "dt.xfadeIn",
+   "type": "mini",
+   "rev": 1,
+   "body": "[.2 .38 .56 .71 .83 .92 .98 1]",
+   "doc": "equal-power fade-in, 8 steps (sin)",
+   "hash": "sha256:2191f39b5fd4acd2a40eb64dea45d1b5ecae624dfded91c0e695f9b7eb2bcea9"
+  },
+  "a70eoqp": {
+   "name": "dt.turnaround",
+   "type": "mini",
+   "rev": 1,
+   "params": {
+    "a": {
+     "shape": "mini",
+     "default": "c3"
+    },
+    "b": {
+     "shape": "mini",
+     "default": "g2"
+    }
+   },
+   "body": "<[${a}]!3 [${b}]>",
+   "doc": "three bars of the loop, then a turnaround bar that leads back in",
+   "hash": "sha256:17503ca8a55066026d94e05e850568891e5f3ce6f1c8d2f11c6850acb27dadc0"
+  }
+ }
+}

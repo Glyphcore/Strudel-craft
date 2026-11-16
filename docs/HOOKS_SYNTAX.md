@@ -141,9 +141,18 @@ so a later `hooks.def` of the same name takes over an existing pattern; params t
 `hooks.set` values do not split it: use a slot for a move that changes over time). In a def it is a chain step: `["hook", "hygiene-pad"]`.
 Errors: a non-string -> `E_BAD_ARG`; an unknown name -> `E_UNKNOWN_HOOK` diagnostic and the pattern passes through.
 
-The runtime ships a **standard library** of defs (`site/engine/hygiene.js`: the band-scope racks `hygiene-<class>` of docs/RACK_STANDARD.md).
+The runtime ships a **standard library** of defs (`site/engine/hygiene.js`: the band-scope racks `hygiene-<class>` of docs/RACK_STANDARD.md; `site/engine/groove.js`: the `groove-*` presets, 4.2c).
 A name resolves to the program's def first, then to the library; library defs are not part of `hooks.toJSON()`, `plan` or the model, and
 `hooks.reset()` does not remove them. `install(S, { stdlib: false })` leaves the library out; `{ stdlib: { name: def } }` adds to it.
+
+### 4.2c Groove (#109)
+`pat.groove(swing, push, jitter, vel, drift, seed, grid)` or `pat.groove({ swing, push, ... })` moves haps slightly off the grid: swing in
+MPC percent (50-75, a monotone time map inside each pair of steps), push / jitter / drift in percent of a 16th (1/16 cycle; + = late),
+`vel` scales velocity down by up to that fraction, `seed` picks the random stream. Every offset is a hash of (seed, exact onset), so the
+result is independent of the query span (chunked render = live = re-render). Built into the runtime next to the standard library, with
+presets as standard-library defs: `groove-straight`, `-pocket`, `-lazy`, `-bounce`, `-rolling`, `-cloud` (param `seed`), `groove-swing(pct, grid)`,
+`groove-push(pct)`, `groove-human(jitter, vel, seed)`. In a def it is a chain step: `["groove", { "swing": 57, "seed": { "$param": "seed" } }]`.
+Ranges, units and the plain-Strudel lowering: docs/CONVENTIONS.md section 4. Unknown param or a non-number: `E_BAD_ARG`.
 
 ### 4.3 Bindings and gates
 `hooks.bind(slotRef, hook, gate?, opts?)` returns a binding id (`"b1"`, `"b2"`, ... in bind order, stable across runs).

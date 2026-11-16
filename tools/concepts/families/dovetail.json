@@ -1,0 +1,504 @@
+{
+ "family": "dovetail",
+ "title": "Dovetailing: how sections, loops and hooks interlock",
+ "doc": "Transitions as data: gate atoms with a point param say where (pickup, rise, hit, tail), mini atoms say how (masks for handoffs, equal-power fade tables), move racks say what happens (fade, throw, hold, duck). The hooks split rule does the rest: a note that starts before a gate boundary rings through it, so tails overlap by construction.",
+ "racksIngredient": "racks-hiphop",
+ "atomsIngredient": {
+  "id": "atoms-dovetail",
+  "ns": "dt",
+  "title": "Dovetail atoms",
+  "doc": "glyphcore/phonk dovetail atoms (dt.): gate atoms with a point param for pickups, rises, hits and tails; masks for call-and-response handoffs; equal-power fade tables; a turnaround. Import with atoms.import(\"pack:glyphcore/phonk:atoms-dovetail\")."
+ },
+ "racks": {
+  "fadeOut": {
+   "class": "move",
+   "doc": "equal-power fade-out over one cycle (velocity table dt.xfadeOut); bind it for the transition bar",
+   "chain": [
+    [
+     "velocity",
+     {
+      "$atomBody": "xfadeOut"
+     }
+    ]
+   ]
+  },
+  "fadeIn": {
+   "class": "move",
+   "doc": "equal-power fade-in over one cycle (dt.xfadeIn)",
+   "chain": [
+    [
+     "velocity",
+     {
+      "$atomBody": "xfadeIn"
+     }
+    ]
+   ]
+  },
+  "throw": {
+   "class": "move",
+   "doc": "delay throw: the gated notes go to a dotted-8th delay that rings into the next section",
+   "params": {
+    "fb": {
+     "min": 0,
+     "max": 0.8,
+     "default": 0.55
+    }
+   },
+   "chain": [
+    [
+     "delay",
+     0.6
+    ],
+    [
+     "delaytime",
+     0.375
+    ],
+    [
+     "delayfeedback",
+     {
+      "$param": "fb"
+     }
+    ]
+   ]
+  },
+  "tailHold": {
+   "class": "move",
+   "doc": "long release so the last notes of a section overlap the next one; for a reverb tail send to a scoped return (ret(\"verb\").hpf(200)), so the low end stays mono",
+   "chain": [
+    [
+     "release",
+     1.6
+    ]
+   ]
+  },
+  "duckUnder": {
+   "class": "move",
+   "doc": "duck the bed under the impact (needs a tap named hit on the impact lane)",
+   "params": {
+    "depth": {
+     "min": 0,
+     "max": 1,
+     "default": 0.7
+    }
+   },
+   "chain": [
+    [
+     "wire",
+     "gain",
+     "hit:env",
+     {
+      "range": [
+       1,
+       {
+        "$expr": "1-depth"
+       }
+      ],
+      "op": "mul",
+      "r": 0.6
+     }
+    ]
+   ],
+   "target": {
+    "skip": "needs a hit tap in the program; covered by the Syntax example"
+   }
+  }
+ },
+ "atoms": {
+  "pickup": {
+   "type": "gate",
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "5b"
+    }
+   },
+   "body": "${at}-0.25b..${at}",
+   "doc": "the last beat before a point: fills, 808 pickups, throws"
+  },
+  "pickupBar": {
+   "type": "gate",
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "5b"
+    }
+   },
+   "body": "${at}-1b..${at}",
+   "doc": "the bar before a point"
+  },
+  "rise": {
+   "type": "gate",
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "5b"
+    },
+    "len": {
+     "shape": "number",
+     "min": 0.25,
+     "max": 16,
+     "default": 2,
+     "unit": "bars"
+    }
+   },
+   "body": "${at}-${len}b..${at}",
+   "doc": "a riser window that ends exactly on the point"
+  },
+  "hit": {
+   "type": "gate",
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "5b"
+    }
+   },
+   "body": "${at}..${at}+1b",
+   "doc": "the bar that starts on the point: impact, downlifter, duck"
+  },
+  "tail": {
+   "type": "gate",
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "5b"
+    },
+    "len": {
+     "shape": "number",
+     "min": 0.25,
+     "max": 8,
+     "default": 1,
+     "unit": "bars"
+    }
+   },
+   "body": "${at}..${at}+${len}b",
+   "doc": "where an outgoing part may keep ringing after the point"
+  },
+  "callMask": {
+   "type": "mini",
+   "body": "1 0",
+   "doc": "call: first half of each bar"
+  },
+  "answerMask": {
+   "type": "mini",
+   "body": "0 1",
+   "doc": "response: second half of each bar"
+  },
+  "callBar": {
+   "type": "mini",
+   "body": "<1 0>",
+   "doc": "call on odd bars"
+  },
+  "answerBar": {
+   "type": "mini",
+   "body": "<0 1>",
+   "doc": "response on even bars"
+  },
+  "xfadeOut": {
+   "type": "mini",
+   "body": "[1 .98 .92 .83 .71 .56 .38 .2]",
+   "doc": "equal-power fade-out, 8 steps (cos)"
+  },
+  "xfadeIn": {
+   "type": "mini",
+   "body": "[.2 .38 .56 .71 .83 .92 .98 1]",
+   "doc": "equal-power fade-in, 8 steps (sin)"
+  },
+  "turnaround": {
+   "type": "mini",
+   "params": {
+    "a": {
+     "shape": "mini",
+     "default": "c3"
+    },
+    "b": {
+     "shape": "mini",
+     "default": "g2"
+    }
+   },
+   "body": "<[${a}]!3 [${b}]>",
+   "doc": "three bars of the loop, then a turnaround bar that leads back in"
+  }
+ },
+ "recipes": [
+  {
+   "id": "dovetail-pickup-fill",
+   "title": "Pickup fill into the next section",
+   "intent": "Three bars of beat; in the fourth, a clap roll on beat 4 leads into the downbeat.",
+   "labels": [
+    "dovetail",
+    "transition",
+    "build"
+   ],
+   "class": "demo",
+   "cpm": 90,
+   "bars": 4,
+   "notes": "With hooks the fill is gated by dt.pickup({ at: \"5b\" }) (the last beat before bar 5) on a slot whose else is silence.",
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@hh:boomKick",
+     "rack": "bbKick",
+     "more": ".mask(\"<1 1 1 [1 1 1 0]>\")"
+    },
+    {
+     "src": "s",
+     "pat": "@hh:boomSnare",
+     "rack": "clap",
+     "more": ".mask(\"<1 1 1 [1 1 1 0]>\")"
+    },
+    {
+     "src": "s",
+     "pat": "<~ ~ ~ [~ ~ ~ [x x x x]]>",
+     "rack": "clap",
+     "more": ".velocity(\"<1 1 1 [1 1 1 [.4 .6 .8 1]]>\")"
+    }
+   ]
+  },
+  {
+   "id": "dovetail-808-pickup",
+   "title": "808 pickup",
+   "intent": "The 808 plays a two-note pickup in the last beat of every 4th bar, so the next downbeat feels caught.",
+   "labels": [
+    "dovetail",
+    "low-end",
+    "trap"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@hh:trapKick",
+     "rack": "knock808"
+    },
+    {
+     "src": "note",
+     "pat": "<[c2@10 c2@6]!3 [c2@10 c2@4 g1 bb1]>",
+     "rack": "sub808",
+     "vel": "0.6"
+    }
+   ]
+  },
+  {
+   "id": "dovetail-overlapping-tail",
+   "title": "Overlapping tail",
+   "intent": "The pad section ends after bar 2 but its release and room ring into bar 3, where the keys enter: no hole between sections.",
+   "labels": [
+    "dovetail",
+    "transition",
+    "reverb-big"
+   ],
+   "class": "demo",
+   "cpm": 80,
+   "bars": 4,
+   "notes": "The hooks split rule gives the same overlap: a note that starts before a gate boundary rings through it.",
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@hh:cloudChords",
+     "rack": "airPad",
+     "move": "tailHold",
+     "more": ".room(0.5).mask(\"<1 1 0 0>\")"
+    },
+    {
+     "src": "note",
+     "pat": "@hh:boomChords",
+     "rack": "rhodes",
+     "more": ".mask(\"<0 0 1 1>\")"
+    }
+   ]
+  },
+  {
+   "id": "dovetail-call-response",
+   "title": "Call and response handoff",
+   "intent": "The lead calls in the first half of each bar, the keys answer in the second: two parts share one space.",
+   "labels": [
+    "dovetail",
+    "call-response",
+    "motif"
+   ],
+   "class": "demo",
+   "cpm": 100,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@hh:hyphyLead",
+     "rack": "hyphyLead",
+     "more": ".mask(\"@callMask\")"
+    },
+    {
+     "src": "note",
+     "pat": "@hh:chops",
+     "rack": "chopStab",
+     "more": ".mask(\"@answerMask\")"
+    }
+   ]
+  },
+  {
+   "id": "dovetail-crossfade",
+   "title": "Equal-power crossfade between sections",
+   "intent": "Over bar 4 the pad fades out on a cos table while the keys fade in on a sin table: constant loudness through the change.",
+   "labels": [
+    "dovetail",
+    "transition",
+    "fade-out"
+   ],
+   "class": "demo",
+   "cpm": 90,
+   "bars": 5,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@hh:cloudChords",
+     "rack": "airPad",
+     "more": ".velocity(\"<1 1 1 @xfadeOut 0>\")"
+    },
+    {
+     "src": "note",
+     "pat": "[c3,eb3,g3,bb3]*4",
+     "rack": "rhodes",
+     "more": ".velocity(\"<0 0 0 @xfadeIn 1>\")"
+    }
+   ]
+  },
+  {
+   "id": "dovetail-riser-impact",
+   "title": "Riser, impact, downlifter",
+   "intent": "A two-bar riser ends exactly on the downbeat, the impact lands on the one, the downlifter falls after it.",
+   "labels": [
+    "dovetail",
+    "riser",
+    "build-drop"
+   ],
+   "class": "demo",
+   "cpm": 90,
+   "bars": 4,
+   "notes": "With hooks: dt.rise({ at: \"5b\", len: 2 }), dt.hit({ at: \"5b\" }).",
+   "voices": [
+    {
+     "src": "s",
+     "pat": "<~ ~ x ~>",
+     "rack": "riser",
+     "more": ".attack(4.5).lpattack(5)"
+    },
+    {
+     "src": "s",
+     "pat": "<x ~ ~ ~>",
+     "rack": "impact",
+     "more": ".hpf(35)"
+    },
+    {
+     "src": "s",
+     "pat": "<x ~ ~ ~>",
+     "rack": "downlifter"
+    }
+   ]
+  },
+  {
+   "id": "dovetail-ducked-transition",
+   "title": "Ducked transition",
+   "intent": "The pad bed ducks under the impact on the one and breathes back over a bar.",
+   "labels": [
+    "dovetail",
+    "sidechain",
+    "transition"
+   ],
+   "class": "demo",
+   "cpm": 90,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@hh:cloudChords",
+     "rack": "airPad",
+     "more": ".orbit(2)"
+    },
+    {
+     "src": "s",
+     "pat": "<x ~>",
+     "rack": "impact",
+     "more": ".hpf(35).duckorbit(2).duckattack(0.6).duckdepth(0.8)"
+    }
+   ]
+  },
+  {
+   "id": "dovetail-delay-throw",
+   "title": "Delay throw",
+   "intent": "The last hit of every 4th bar is thrown into a dotted-8th delay that rings into the next bar.",
+   "labels": [
+    "dovetail",
+    "delay-echo",
+    "transition"
+   ],
+   "class": "demo",
+   "cpm": 90,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@hh:boomSnare",
+     "rack": "clap",
+     "more": ".delay(\"<0 0 0 [0 0 0 .6]>\").delaytime(0.375).delayfeedback(0.55)"
+    },
+    {
+     "src": "s",
+     "pat": "@hh:boomKick",
+     "rack": "bbKick"
+    }
+   ]
+  },
+  {
+   "id": "dovetail-turnaround",
+   "title": "Turnaround bar",
+   "intent": "Three bars of the loop, then a turnaround bar on the V that pulls back into bar 1.",
+   "labels": [
+    "dovetail",
+    "chord-progression",
+    "arrangement"
+   ],
+   "class": "demo",
+   "cpm": 90,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "<[c3,eb3,g3,bb3]!3 [g2,b2,d3,f3]>",
+     "rack": "rhodes"
+    },
+    {
+     "src": "note",
+     "pat": "<c2!3 g1>",
+     "rack": "bbBass"
+    }
+   ]
+  }
+ ],
+ "syntax": [
+  {
+   "title": "Pickup fill on a gate atom (dt.pickup)",
+   "explain": "the fill slot is silent except in the last beat before bar 5 (quant: 0 keeps the sub-bar gate exact)",
+   "bars": 6,
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\"); atoms.import(\"pack:glyphcore/phonk:atoms-dovetail\")\nhooks.bind(\"kick\", \"bbKick\"); hooks.bind(\"snare\", \"clap\")\nhooks.bind(\"fill\", \"clap\", atoms.dt.pickup({ at: \"5b\" }))\nkick: s(atoms.hh.boomKick).use(\"kick\")\nsnare: s(atoms.hh.boomSnare).use(\"snare\")\nfill: s(\"x*16\").use(\"fill\", { else: \"silence\", quant: 0 }).velocity(\"[.4 .6 .8 1]*4\")"
+  },
+  {
+   "title": "Crossfade two sections with gated fade racks",
+   "explain": "fadeOut and fadeIn bound for bar 4 only; lanes muted outside their section",
+   "bars": 6,
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\nhooks.bind(\"pad\", \"airPad\"); hooks.bind(\"keys\", \"rhodes\")\nhooks.bind(\"pad\", \"fadeOut\", \"4b..5b\"); hooks.bind(\"keys\", \"fadeIn\", \"4b..5b\")\npad: note(atoms.hh.cloudChords).use(\"pad\").tags(\"a\")\nkeys: note(\"[c3,eb3,g3,bb3]*4\").use(\"keys\").tags(\"b\")\ntagged(\"a\").mute(\"@5b\")\ntagged(\"b\").mute(\"<4b\")"
+  },
+  {
+   "title": "Riser into the drop, impact on the one, bed ducked under it",
+   "explain": "dt.rise and dt.hit place the fx; duckUnder wires the pad gain to the impact's envelope tap",
+   "bars": 6,
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\"); atoms.import(\"pack:glyphcore/phonk:atoms-dovetail\")\nhooks.bind(\"rise\", \"riser\", atoms.dt.rise({ at: \"5b\", len: 2 })); hooks.bind(\"hit\", \"impact\", atoms.dt.hit({ at: \"5b\" }))\nhooks.bind(\"pad\", \"airPad\"); hooks.bind(\"duck\", \"duckUnder(0.8)\")\nrise: s(\"x/2\").use(\"rise\", { else: \"silence\" })\nhit: s(\"x\").use(\"hit\", { else: \"silence\" }).hpf(35).tap(\"hit\", { export: true })\npad: note(atoms.hh.cloudChords).use(\"pad\").use(\"duck\")"
+  },
+  {
+   "title": "Call and response with mask atoms",
+   "explain": "dt.callMask and dt.answerMask split each bar between two parts",
+   "bars": 2,
+   "code": "setcpm(100/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\"); atoms.import(\"pack:glyphcore/phonk:atoms-dovetail\")\nhooks.bind(\"lead\", \"hyphyLead\"); hooks.bind(\"chop\", \"chopStab\")\ncall: note(atoms.hh.hyphyLead).use(\"lead\").mask(atoms.dt.callMask)\nanswer: note(atoms.hh.chops).use(\"chop\").mask(atoms.dt.answerMask)"
+  }
+ ]
+}

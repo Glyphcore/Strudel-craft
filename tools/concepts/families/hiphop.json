@@ -1,0 +1,1297 @@
+{
+ "family": "hiphop",
+ "title": "Hip-hop backdrops, trap and hyphy: components and forms",
+ "doc": "C minor throughout so components mix with each other. One cycle = one bar of 4/4 on a 16-step grid. Racks follow docs/RACK_STANDARD.md (hygiene head, class band, gain staging); patterns and form gates are atoms under hh.",
+ "racksIngredient": "racks-hiphop",
+ "atomsIngredient": {
+  "id": "atoms-hiphop",
+  "ns": "hh",
+  "title": "Hip-hop atoms",
+  "doc": "glyphcore/phonk hip-hop atoms (hh.): boom-bap, trap and hyphy drum patterns, hats and rolls, 808 and bass lines, chords, chops, tags; song-form gates (intro, verse, hook, bridge, outro, drop-in, drop bar, last-beat drop, beat switch, bounce, stomp). Import with atoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")."
+ },
+ "racks": {
+  "bbKick": {
+   "class": "kick",
+   "doc": "boom-bap kick: round sine boom, short pitch knock, light drive",
+   "chain": [
+    [
+     "hook",
+     "hygiene-kick"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "freq",
+     50
+    ],
+    [
+     "hpf",
+     40
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "penv",
+     30
+    ],
+    [
+     "pdecay",
+     0.05
+    ],
+    [
+     "decay",
+     0.32
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "shape",
+     0.3
+    ],
+    [
+     "lpf",
+     3000
+    ],
+    [
+     "gain",
+     0.75
+    ]
+   ]
+  },
+  "knock808": {
+   "class": "kick",
+   "doc": "the phonk kick808 with a 40 Hz scope: at trap tempos (several kicks per bar) its pitch-envelope bursts otherwise leak under 20 Hz",
+   "chain": [
+    [
+     "hook",
+     "hygiene-kick"
+    ],
+    [
+     "hook",
+     "kick808"
+    ],
+    [
+     "hpf",
+     40
+    ]
+   ]
+  },
+  "clap": {
+   "class": "snare",
+   "doc": "clap: band-passed noise burst around 1.2 kHz",
+   "chain": [
+    [
+     "hook",
+     "hygiene-snare"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "bpf",
+     1200
+    ],
+    [
+     "bpq",
+     1.2
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "decay",
+     0.14
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.9
+    ]
+   ]
+  },
+  "snap": {
+   "class": "perc",
+   "doc": "finger snap: short, narrow noise at 2.4 kHz, top rolled off at 5 kHz",
+   "chain": [
+    [
+     "hook",
+     "hygiene-perc"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "bpf",
+     2400
+    ],
+    [
+     "bpq",
+     2
+    ],
+    [
+     "lpf",
+     5000
+    ],
+    [
+     "decay",
+     0.05
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.8
+    ]
+   ]
+  },
+  "openHat": {
+   "class": "hat",
+   "doc": "open hat: long noise decay above 7 kHz",
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     7000
+    ],
+    [
+     "decay",
+     0.22
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "bbBass": {
+   "class": "bass",
+   "doc": "boom-bap bass: dark triangle, soft attack, mono",
+   "chain": [
+    [
+     "hook",
+     "hygiene-bass"
+    ],
+    [
+     "s",
+     "triangle"
+    ],
+    [
+     "lpf",
+     700
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "decay",
+     0.3
+    ],
+    [
+     "sustain",
+     0.4
+    ],
+    [
+     "release",
+     0.12
+    ],
+    [
+     "gain",
+     0.5
+    ]
+   ]
+  },
+  "rhodes": {
+   "class": "keys",
+   "doc": "electric-piano keys: FM sine, ratio 1, decaying index",
+   "chain": [
+    [
+     "hook",
+     "hygiene-keys"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "fm",
+     1.2
+    ],
+    [
+     "fmh",
+     1
+    ],
+    [
+     "attack",
+     0.01
+    ],
+    [
+     "decay",
+     0.9
+    ],
+    [
+     "sustain",
+     0.3
+    ],
+    [
+     "release",
+     0.5
+    ],
+    [
+     "lpf",
+     3500
+    ],
+    [
+     "gain",
+     0.22
+    ]
+   ]
+  },
+  "trapBell": {
+   "class": "bell",
+   "doc": "trap bell: FM sine, harmonic ratio 4, no sustain",
+   "chain": [
+    [
+     "hook",
+     "hygiene-bell"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "fm",
+     1.5
+    ],
+    [
+     "fmh",
+     4
+    ],
+    [
+     "decay",
+     0.5
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "airPad": {
+   "class": "pad",
+   "doc": "cloud pad: triangle, slow attack, low end left to the bass",
+   "chain": [
+    [
+     "hook",
+     "hygiene-pad"
+    ],
+    [
+     "s",
+     "triangle"
+    ],
+    [
+     "attack",
+     1.2
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     2.5
+    ],
+    [
+     "lpf",
+     1800
+    ],
+    [
+     "gain",
+     0.16
+    ]
+   ]
+  },
+  "hyphyLead": {
+   "class": "lead",
+   "doc": "hyphy lead: bright square, quick vibrato, short notes",
+   "chain": [
+    [
+     "hook",
+     "hygiene-lead"
+    ],
+    [
+     "s",
+     "square"
+    ],
+    [
+     "lpf",
+     2800
+    ],
+    [
+     "lpenv",
+     1
+    ],
+    [
+     "attack",
+     0.01
+    ],
+    [
+     "decay",
+     0.2
+    ],
+    [
+     "sustain",
+     0.5
+    ],
+    [
+     "release",
+     0.15
+    ],
+    [
+     "vib",
+     6
+    ],
+    [
+     "vibmod",
+     0.15
+    ],
+    [
+     "gain",
+     0.26
+    ]
+   ]
+  },
+  "chopStab": {
+   "class": "stab",
+   "doc": "chop: short saw chord stab with a filter blip (an MPC-style chopped chord without a sample)",
+   "chain": [
+    [
+     "hook",
+     "hygiene-stab"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "attack",
+     0.003
+    ],
+    [
+     "decay",
+     0.14
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "lpf",
+     1600
+    ],
+    [
+     "lpenv",
+     2.5
+    ],
+    [
+     "lpdecay",
+     0.12
+    ],
+    [
+     "gain",
+     0.2
+    ]
+   ]
+  },
+  "voxTag": {
+   "class": "vox",
+   "doc": "vox tag without samples: a short vowel-filtered saw 'hey' (use word() or a vox bank for real tags)",
+   "chain": [
+    [
+     "hook",
+     "hygiene-vox"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "vowel",
+     "o"
+    ],
+    [
+     "attack",
+     0.01
+    ],
+    [
+     "decay",
+     0.25
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "lpf",
+     3000
+    ],
+    [
+     "gain",
+     0.35
+    ]
+   ],
+   "target": {
+    "phrase": "note(\"<c4 g4>\")",
+    "noalias": true
+   }
+  },
+  "vinyl": {
+   "class": "texture",
+   "doc": "vinyl hiss bed: pink noise, band-limited, very low",
+   "chain": [
+    [
+     "hook",
+     "hygiene-texture"
+    ],
+    [
+     "s",
+     "pink"
+    ],
+    [
+     "hpf",
+     1500
+    ],
+    [
+     "lpf",
+     8000
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "gain",
+     0.06
+    ]
+   ]
+  },
+  "downlifter": {
+   "class": "sweep",
+   "doc": "downlifter: noise whose low-pass falls from about 9.6 kHz to 1.2 kHz over two seconds",
+   "chain": [
+    [
+     "hook",
+     "hygiene-sweep"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     400
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "decay",
+     2
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "lpf",
+     1200
+    ],
+    [
+     "lpenv",
+     3
+    ],
+    [
+     "lpattack",
+     0.001
+    ],
+    [
+     "lpdecay",
+     2
+    ],
+    [
+     "lpsustain",
+     0
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  }
+ },
+ "atoms": {
+  "boomKick": {
+   "type": "mini",
+   "body": "x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "boom-bap kick: 1, the a of 2, the and of 3"
+  },
+  "boomSnare": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "backbeat on 2 and 4"
+  },
+  "boomHats": {
+   "type": "mini",
+   "body": "x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x",
+   "doc": "8ths with a 16th pickup into the next bar"
+  },
+  "trapKick": {
+   "type": "mini",
+   "body": "<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>",
+   "doc": "trap kick over two bars, half-time"
+  },
+  "trapClap": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
+   "doc": "half-time clap on 3"
+  },
+  "trapHats": {
+   "type": "mini",
+   "body": "<[x*16] [x x x x x x x x x x x x [x x x] [x x x] [x x x x] [x x x x x x]]>",
+   "doc": "16th hats, every second bar ends in triplet, 32nd and 64th-triplet rolls"
+  },
+  "rollVel": {
+   "type": "mini",
+   "body": "[1 .55 .8 .55]*4",
+   "doc": "hat accent: downbeats strong, 16ths soft (velocity)"
+  },
+  "trap808": {
+   "type": "mini",
+   "body": "<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>",
+   "doc": "808 line that follows the trap kick, each note held to the next (legato, as an 808 rings); C2 root for small speakers and no short bursts below 20 Hz"
+  },
+  "hyphyKick": {
+   "type": "mini",
+   "body": "x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ x ~ ~",
+   "doc": "hyphy bounce kick: 3+3+4+3+3"
+  },
+  "hyphyClap": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "clap on 2 and 4"
+  },
+  "hyphySnap": {
+   "type": "mini",
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "snaps on every and"
+  },
+  "stompKick": {
+   "type": "mini",
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "stomp: kick on every beat"
+  },
+  "stompClap": {
+   "type": "mini",
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "stomp: clap with every kick"
+  },
+  "hyphyLead": {
+   "type": "mini",
+   "body": "c5 ~ ~ eb5 ~ ~ g5 ~ f5 ~ eb5 ~ c5 ~ ~ ~",
+   "doc": "hyphy lead riff on the bounce"
+  },
+  "boomBass": {
+   "type": "mini",
+   "body": "c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~",
+   "doc": "bass with the boom-bap kick"
+  },
+  "boomChords": {
+   "type": "mini",
+   "body": "<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>",
+   "doc": "Cm7 to Abmaj7, one bar each"
+  },
+  "trapChords": {
+   "type": "mini",
+   "body": "<[c4,eb4,g4] [ab3,c4,eb4] [bb3,d4,f4] [g3,b3,d4]>",
+   "doc": "i VI VII V in C minor"
+  },
+  "trapBell": {
+   "type": "mini",
+   "body": "c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~",
+   "doc": "bell melody over the trap chords"
+  },
+  "chops": {
+   "type": "mini",
+   "body": "[c4,eb4,g4] ~ ~ [c4,eb4,g4] ~ ~ [bb3,d4,f4] ~ ~ ~ [ab3,c4,eb4] ~ [ab3,c4,eb4] ~ ~ ~",
+   "doc": "chopped chord rhythm (3+3+4+2+4)"
+  },
+  "cloudChords": {
+   "type": "mini",
+   "body": "<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>",
+   "doc": "Ebmaj7 Cm7 Abmaj7 Bbmaj7: slow cloud loop"
+  },
+  "tag": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ <c4 g4> ~",
+   "doc": "a tag at the end of the bar"
+  },
+  "fx": {
+   "type": "mini",
+   "body": "<~ ~ ~ x>",
+   "doc": "an fx hit at the top of every 4th bar"
+  },
+  "intro": {
+   "type": "gate",
+   "body": "<5b",
+   "doc": "intro: bars 1-4 (form: intro 4, verse 16, hook 8, verse 16, hook 8, bridge 4, hook 8, outro 4 = 68 bars)"
+  },
+  "drop": {
+   "type": "gate",
+   "body": "@5b",
+   "doc": "drop-in: the beat enters after the intro"
+  },
+  "verse": {
+   "type": "gate",
+   "body": "5b..21b, 29b..45b",
+   "doc": "verses 1 and 2"
+  },
+  "hook": {
+   "type": "gate",
+   "body": "21b..29b, 45b..53b, 57b..65b",
+   "doc": "hooks 1-3"
+  },
+  "bridge": {
+   "type": "gate",
+   "body": "53b..57b",
+   "doc": "bridge"
+  },
+  "outro": {
+   "type": "gate",
+   "body": "@65b",
+   "doc": "outro"
+  },
+  "dropBar": {
+   "type": "gate",
+   "body": "20b..21b, 44b..45b, 56b..57b",
+   "doc": "drums out for the bar before each hook"
+  },
+  "lastBeat": {
+   "type": "gate",
+   "body": "20.4b..21b, 44.4b..45b, 56.4b..57b",
+   "doc": "drop the beat for the last beat before each hook"
+  },
+  "switch": {
+   "type": "gate",
+   "body": "@29b",
+   "doc": "beat switch: the second verse changes kit and feel"
+  },
+  "bounce": {
+   "type": "gate",
+   "body": "21b..25b, 57b..61b",
+   "doc": "hyphy bounce: first half of hooks 1 and 3"
+  },
+  "stomp": {
+   "type": "gate",
+   "body": "25b..29b, 61b..65b",
+   "doc": "hyphy stomp: second half of hooks 1 and 3, kick and clap on every beat"
+  }
+ },
+ "recipes": [
+  {
+   "id": "boom-bap-kick",
+   "title": "Boom-bap kick",
+   "intent": "Round, knocking kick on 1, the a of 2 and the and of 3.",
+   "labels": [
+    "hip-hop",
+    "boom-bap",
+    "syncopated"
+   ],
+   "class": "kick",
+   "cpm": 90,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@boomKick",
+     "rack": "bbKick"
+    }
+   ]
+  },
+  {
+   "id": "clap-backbeat",
+   "title": "Clap backbeat",
+   "intent": "Band-passed noise clap on 2 and 4.",
+   "labels": [
+    "hip-hop",
+    "accents"
+   ],
+   "class": "snare",
+   "cpm": 90,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@boomSnare",
+     "rack": "clap"
+    }
+   ]
+  },
+  {
+   "id": "trap-hats-rolls",
+   "title": "Trap hats with rolls",
+   "intent": "16th hats with accents; every second bar ends in triplet, 32nd and 64th-triplet rolls.",
+   "labels": [
+    "trap",
+    "hip-hop",
+    "driving"
+   ],
+   "class": "hat",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@trapHats",
+     "rack": "hat",
+     "args": "(0.03)",
+     "more": ".velocity(\"@rollVel\")"
+    }
+   ]
+  },
+  {
+   "id": "open-hat-offbeat",
+   "title": "Open hat on the offbeat",
+   "intent": "Long open hat between the beats.",
+   "labels": [
+    "hip-hop",
+    "offbeat"
+   ],
+   "class": "hat",
+   "cpm": 90,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "~ x ~ x",
+     "rack": "openHat"
+    }
+   ]
+  },
+  {
+   "id": "finger-snaps",
+   "title": "Finger snaps",
+   "intent": "Short narrow snaps on every and (hyphy and West Coast).",
+   "labels": [
+    "hyphy",
+    "hip-hop",
+    "offbeat"
+   ],
+   "class": "perc",
+   "cpm": 100,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@hyphySnap",
+     "rack": "snap"
+    }
+   ]
+  },
+  {
+   "id": "trap-808-line",
+   "title": "Trap 808 line",
+   "intent": "Sine 808 that follows the trap kick, soft attack, drive for small speakers.",
+   "labels": [
+    "trap",
+    "low-end",
+    "bass"
+   ],
+   "class": "sub",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@trap808",
+     "rack": "sub808"
+    }
+   ]
+  },
+  {
+   "id": "boom-bap-bass",
+   "title": "Boom-bap bass",
+   "intent": "Dark triangle bass locked to the boom-bap kick.",
+   "labels": [
+    "boom-bap",
+    "bass"
+   ],
+   "class": "bass",
+   "cpm": 90,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@boomBass",
+     "rack": "bbBass"
+    }
+   ]
+  },
+  {
+   "id": "rhodes-keys",
+   "title": "Electric-piano keys",
+   "intent": "Cm7 to Abmaj7 on FM keys.",
+   "labels": [
+    "hip-hop",
+    "chord-progression",
+    "voicing"
+   ],
+   "class": "keys",
+   "cpm": 90,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@boomChords",
+     "rack": "rhodes"
+    }
+   ]
+  },
+  {
+   "id": "trap-bell-melody",
+   "title": "Trap bell melody",
+   "intent": "Bell line over i VI VII V.",
+   "labels": [
+    "trap",
+    "bell-like",
+    "motif"
+   ],
+   "class": "bell",
+   "cpm": 140,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@trapBell",
+     "rack": "trapBell"
+    }
+   ]
+  },
+  {
+   "id": "cloud-pad",
+   "title": "Cloud pad",
+   "intent": "Slow major-seventh pad, low end left to the bass.",
+   "labels": [
+    "cloud",
+    "pad",
+    "floaty"
+   ],
+   "class": "pad",
+   "cpm": 70,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@cloudChords",
+     "rack": "airPad"
+    }
+   ]
+  },
+  {
+   "id": "chopped-chords",
+   "title": "Chopped chord stabs",
+   "intent": "MPC-style chopped chord rhythm (3+3+4+2+4) as saw stabs.",
+   "labels": [
+    "hip-hop",
+    "syncopated",
+    "pluck"
+   ],
+   "class": "stab",
+   "cpm": 90,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@chops",
+     "rack": "chopStab"
+    }
+   ]
+  },
+  {
+   "id": "hyphy-lead",
+   "title": "Hyphy lead riff",
+   "intent": "Bright square riff with quick vibrato on the bounce.",
+   "labels": [
+    "hyphy",
+    "motif"
+   ],
+   "class": "lead",
+   "cpm": 100,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@hyphyLead",
+     "rack": "hyphyLead"
+    }
+   ]
+  },
+  {
+   "id": "vox-tag-synth",
+   "title": "Vox tag (no samples)",
+   "intent": "A vowel-filtered saw 'hey' at the end of the bar, for a producer-tag slot.",
+   "labels": [
+    "hip-hop",
+    "formant",
+    "texture-vocal-like"
+   ],
+   "class": "demo",
+   "cpm": 90,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@tag",
+     "rack": "voxTag"
+    }
+   ]
+  },
+  {
+   "id": "vinyl-bed",
+   "title": "Vinyl hiss bed",
+   "intent": "Quiet band-limited pink-noise bed under a beat.",
+   "labels": [
+    "lofi",
+    "hip-hop"
+   ],
+   "class": "texture",
+   "cpm": 90,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "x",
+     "rack": "vinyl"
+    }
+   ]
+  },
+  {
+   "id": "downlifter",
+   "title": "Downlifter",
+   "intent": "Falling noise sweep after an impact.",
+   "labels": [
+    "riser",
+    "filter-sweep"
+   ],
+   "class": "sweep",
+   "cpm": 90,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "x ~",
+     "rack": "downlifter"
+    }
+   ]
+  },
+  {
+   "id": "boom-bap-beat",
+   "title": "Boom-bap beat",
+   "intent": "Kick, clap, hats, bass and keys in the pocket.",
+   "labels": [
+    "boom-bap",
+    "hip-hop",
+    "syncopated"
+   ],
+   "class": "demo",
+   "cpm": 90,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@boomKick",
+     "rack": "bbKick"
+    },
+    {
+     "src": "s",
+     "pat": "@boomSnare",
+     "rack": "clap"
+    },
+    {
+     "src": "s",
+     "pat": "@boomHats",
+     "rack": "hat"
+    },
+    {
+     "src": "note",
+     "pat": "@boomBass",
+     "rack": "bbBass"
+    },
+    {
+     "src": "note",
+     "pat": "@boomChords",
+     "rack": "rhodes"
+    }
+   ]
+  },
+  {
+   "id": "trap-beat",
+   "title": "Trap beat",
+   "intent": "Half-time clap, rolling hats, 808, bells.",
+   "labels": [
+    "trap",
+    "hip-hop",
+    "half-time"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@trapKick",
+     "rack": "knock808"
+    },
+    {
+     "src": "s",
+     "pat": "@trapClap",
+     "rack": "clap"
+    },
+    {
+     "src": "s",
+     "pat": "@trapHats",
+     "rack": "hat",
+     "args": "(0.03)",
+     "more": ".velocity(\"@rollVel\")"
+    },
+    {
+     "src": "note",
+     "pat": "@trap808",
+     "rack": "sub808",
+     "vel": "0.6"
+    },
+    {
+     "src": "note",
+     "pat": "@trapBell",
+     "rack": "trapBell"
+    }
+   ]
+  },
+  {
+   "id": "hyphy-bounce-stomp",
+   "title": "Hyphy bounce into stomp",
+   "intent": "Two bars of bounce (3+3+4+3+3 kick, claps, snaps), two bars of stomp (kick and clap on every beat).",
+   "labels": [
+    "hyphy",
+    "sections",
+    "driving"
+   ],
+   "class": "demo",
+   "cpm": 100,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "<@hyphyKick!2 @stompKick!2>",
+     "rack": "bbKick"
+    },
+    {
+     "src": "s",
+     "pat": "<@hyphyClap!2 @stompClap!2>",
+     "rack": "clap"
+    },
+    {
+     "src": "s",
+     "pat": "@hyphySnap",
+     "rack": "snap",
+     "more": ".mask(\"<1 1 0 0>\")"
+    },
+    {
+     "src": "note",
+     "pat": "@hyphyLead",
+     "rack": "hyphyLead"
+    }
+   ]
+  },
+  {
+   "id": "hook-drop-bar",
+   "title": "Drop bar before the hook",
+   "intent": "Drums play three bars and drop out for the fourth, so the hook lands on an empty bar's pickup.",
+   "labels": [
+    "sections",
+    "breakdown",
+    "hip-hop"
+   ],
+   "class": "demo",
+   "cpm": 90,
+   "bars": 4,
+   "notes": "Plain Strudel uses .mask(\"<1 1 1 0>\"); with hooks the same form is the gate atom hh.dropBar (tagged(\"drums\").mute(atoms.hh.dropBar)).",
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@boomKick",
+     "rack": "bbKick",
+     "more": ".mask(\"<1 1 1 0>\")"
+    },
+    {
+     "src": "s",
+     "pat": "@boomSnare",
+     "rack": "clap",
+     "more": ".mask(\"<1 1 1 0>\")"
+    },
+    {
+     "src": "note",
+     "pat": "@boomChords",
+     "rack": "rhodes"
+    }
+   ]
+  },
+  {
+   "id": "drop-last-beat",
+   "title": "Drop the beat on beat 4",
+   "intent": "Every 4th bar the drums stop for the last beat: a gap that pulls into the next section.",
+   "labels": [
+    "sections",
+    "accents",
+    "hip-hop"
+   ],
+   "class": "demo",
+   "cpm": 90,
+   "bars": 4,
+   "notes": "Plain Strudel masks the last quarter of every 4th bar; with hooks it is the gate atom hh.lastBeat (bar.beat points, 20.4b..21b).",
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@boomKick",
+     "rack": "bbKick",
+     "more": ".mask(\"<1 1 1 [1 1 1 0]>\")"
+    },
+    {
+     "src": "s",
+     "pat": "@boomSnare",
+     "rack": "clap",
+     "more": ".mask(\"<1 1 1 [1 1 1 0]>\")"
+    },
+    {
+     "src": "note",
+     "pat": "@boomBass",
+     "rack": "bbBass"
+    }
+   ]
+  },
+  {
+   "id": "beat-switch",
+   "title": "Beat switch",
+   "intent": "Two bars boom-bap, then the same harmony over a trap kit: the beat switches, the song does not.",
+   "labels": [
+    "sections",
+    "trap",
+    "boom-bap"
+   ],
+   "class": "demo",
+   "cpm": 90,
+   "bars": 4,
+   "notes": "Plain Strudel alternates kits with masks; with hooks: hooks.bind(\"kick\", \"bbKick\", \"<29b\") and hooks.bind(\"kick\", \"knock808\", atoms.hh.switch).",
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@boomKick",
+     "rack": "bbKick",
+     "more": ".mask(\"<1 1 0 0>\")"
+    },
+    {
+     "src": "s",
+     "pat": "@boomSnare",
+     "rack": "clap",
+     "more": ".mask(\"<1 1 0 0>\")"
+    },
+    {
+     "src": "s",
+     "pat": "@trapKick",
+     "rack": "knock808",
+     "more": ".mask(\"<0 0 1 1>\")"
+    },
+    {
+     "src": "s",
+     "pat": "@trapClap",
+     "rack": "clap",
+     "more": ".mask(\"<0 0 1 1>\")"
+    },
+    {
+     "src": "s",
+     "pat": "@trapHats",
+     "rack": "hat",
+     "args": "(0.03)",
+     "more": ".mask(\"<0 0 1 1>\")"
+    },
+    {
+     "src": "note",
+     "pat": "@boomChords",
+     "rack": "rhodes"
+    }
+   ]
+  },
+  {
+   "id": "switch-up",
+   "title": "Switch-up (same kit, new pattern)",
+   "intent": "Kit and harmony stay; kick and bass flip to the bounce pattern every 4 bars.",
+   "labels": [
+    "sections",
+    "syncopated",
+    "hyphy"
+   ],
+   "class": "demo",
+   "cpm": 95,
+   "bars": 8,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "<@boomKick!4 @hyphyKick!4>",
+     "rack": "bbKick"
+    },
+    {
+     "src": "s",
+     "pat": "@boomSnare",
+     "rack": "clap"
+    },
+    {
+     "src": "note",
+     "pat": "<@boomBass!4 [c2 ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~ ~ c2 ~ ~]!4>",
+     "rack": "bbBass"
+    }
+   ]
+  }
+ ],
+ "syntax": [
+  {
+   "title": "Song form as gates (intro, verse, hook, bridge, outro)",
+   "explain": "hh.* gates from the pack; lanes are muted by gate, never copied",
+   "bars": 24,
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\nhooks.bind(\"kick\", \"bbKick\"); hooks.bind(\"snare\", \"clap\"); hooks.bind(\"keys\", \"rhodes\"); hooks.bind(\"hat\", \"hat\")\nkick: s(atoms.hh.boomKick).use(\"kick\").tags(\"drums\")\nsnare: s(atoms.hh.boomSnare).use(\"snare\").tags(\"drums\")\nhats: s(atoms.hh.boomHats).use(\"hat\").tags(\"drums\", \"hook\")\nkeys: note(atoms.hh.boomChords).use(\"keys\")\ntagged(\"drums\").mute(atoms.hh.intro)\ntagged(\"drums\").mute(atoms.hh.dropBar)\ntagged(\"hook\").mute(atoms.hh.verse)"
+  },
+  {
+   "title": "Beat switch with gated racks",
+   "explain": "one slot, two racks, the gate atom hh.switch decides",
+   "bars": 4,
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\nhooks.bind(\"kick\", \"bbKick\", \"<3b\"); hooks.bind(\"kick\", \"knock808\", \"@3b\"); hooks.bind(\"clap\", \"clap\")\nboom: s(atoms.hh.boomKick).use(\"kick\").tags(\"boom\")\ntrap: s(atoms.hh.trapKick).use(\"kick\").tags(\"trap\")\nclap: s(atoms.hh.boomSnare).use(\"clap\")\ntagged(\"boom\").mute(\"@3b\")\ntagged(\"trap\").mute(\"<3b\")"
+  }
+ ]
+}

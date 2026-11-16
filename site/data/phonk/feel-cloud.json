@@ -1,0 +1,207 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"Cloud / wave\" (60-75 bpm): loose and floating: swing 56, everything a little late, slow drift, big pad. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/phonk:feel-cloud\", { as: \"feel\" }).",
+ "atoms": {
+  "agp5eq6": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>",
+   "doc": "kick pattern",
+   "hash": "sha256:f3d32a15b80c7e2ef192f8c3c55a9114f23a83d2e804c028e4da579e6623a382"
+  },
+  "aj7wrc1": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "antguul": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "knock808 | groove-cloud(1)",
+   "doc": "kick rack and groove",
+   "hash": "sha256:eea0fa025a1c77b2e73641f5f3855de334a8bf23731fbca01b5d753d79d71f2a"
+  },
+  "a8cm7d9": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
+   "doc": "snare pattern",
+   "hash": "sha256:525fd0444781900288d0ac6c5358b9391d694346d05e7bca8b3001885e70932c"
+  },
+  "as4iwhs": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a4r0ire": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "clap | groove-cloud(2) | groove-push(6)",
+   "doc": "snare rack and groove",
+   "hash": "sha256:2c62f33acfb0f4d30101fab9056258e66ae67c49ddd4307fbdfe9ec019ee3729"
+  },
+  "ag56pws": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "perc pattern",
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "aq7piqv": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "perc accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a1bwvbb": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-cloud(3)",
+   "doc": "perc rack and groove",
+   "hash": "sha256:3defd9986a71ad243cc1423e0627c462a6fd0d6ae2db2823871b83b37880503d"
+  },
+  "a3vuhgq": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*8",
+   "doc": "hats pattern",
+   "hash": "sha256:c2845fc5d1dfae91f61227e9f77fbff665ea294e5367dbd32a4f511e758525ec"
+  },
+  "a394ph9": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[.9 .5]*4",
+   "doc": "hats accents (velocity)",
+   "hash": "sha256:11623d4eb26872ea247a07212e139fc7c7323817349ebc310d154e8ce28da473"
+  },
+  "aik77mh": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "hat(0.04) | groove-cloud(4)",
+   "doc": "hats rack and groove",
+   "hash": "sha256:bb955c35104c540d0b051f4f0fb0b5d931b382f1c6206a0f14b55c3ba0432112"
+  },
+  "apnnhy3": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~",
+   "doc": "top pattern",
+   "hash": "sha256:614d5953a33774642c2c76496006851dc0b80f1c6b46d23e4c135f8bb3b26807"
+  },
+  "a06ydu6": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "aai71uc": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "trapBell | groove-cloud(5) | groove-push(6)",
+   "doc": "top rack and groove",
+   "hash": "sha256:521425599fe5495980160f74528a01a4a0ad483c88869e44ca2e88ead1f0b42d"
+  },
+  "aqot3xf": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>",
+   "doc": "bass pattern",
+   "hash": "sha256:edc3e5a93ab9b050764d4f48a04439c29394844c262efdfe47ad7d9b32e30798"
+  },
+  "a8goifq": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "0.6",
+   "doc": "bass accents (velocity)",
+   "hash": "sha256:1532f1aff42451a18dac7878102031a20fc1e75a0842a8e1cb4f37e7bc0e37c9"
+  },
+  "alg144s": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "sub808 | groove-cloud(6)",
+   "doc": "bass rack and groove",
+   "hash": "sha256:367069f3fd84df9cfd4d6dceddd4b85e9f4177962afbcd27effcff5d05ca80ab"
+  },
+  "aqj1opi": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>",
+   "doc": "harmony pattern",
+   "hash": "sha256:b7f2f3f1904ebc6af68a72b04b707539fa10621279e9d33ce86840be7c4cfd26"
+  },
+  "akac19l": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a35kx8l": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "airPad | groove-cloud(7) | groove-push(10)",
+   "doc": "harmony rack and groove",
+   "hash": "sha256:264dcac98e15216c62e9472533a5ef7282b41ddf831042ac2cf9e82e0d252dfa"
+  },
+  "aaotl6m": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "x",
+   "doc": "fx pattern",
+   "hash": "sha256:857b6b1c9bbefde11ebf65bcc7763f81dbb7ffac3ab6a7cb7b65e74c6a468988"
+  },
+  "adfuo7l": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "acwz8v1": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "vinyl",
+   "doc": "fx rack and groove",
+   "hash": "sha256:7d514af99e4cb541f16315adbe7cca5a8cfa8b87163701c42eaf9b539cbc0d51"
+  },
+  "agibw72": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-cloud(0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "hash": "sha256:f2ab8e4ac96586928e0919c278e957e230a9ad21ba4a8ea95d9ce3751e684708"
+  }
+ }
+}

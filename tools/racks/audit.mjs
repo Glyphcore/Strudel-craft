@@ -83,7 +83,7 @@ export function judge(m, cls, extra = {}) {
 }
 
 // ---------- items ----------
-const hooksFiles = optAll('--hooks').length ? optAll('--hooks') : ['site/data/racks/hygiene.json', 'site/data/phonk/racks.json', 'site/data/phonk/racks-v2.json'].map((f) => path.join(ROOT, f)).filter((f) => fs.existsSync(f));
+const hooksFiles = optAll('--hooks').length ? optAll('--hooks') : ['site/data/racks/hygiene.json', 'site/data/phonk/racks.json', 'site/data/phonk/racks-v2.json', 'site/data/phonk/racks-hiphop.json'].map((f) => path.join(ROOT, f)).filter((f) => fs.existsSync(f));
 const merged = { model: 1, defs: {} }; for (const f of hooksFiles) Object.assign(merged.defs, JSON.parse(fs.readFileSync(f, 'utf8')).defs || {});
 const items = [];
 if (only.includes('racks')) for (const [name, def] of Object.entries(merged.defs)) {

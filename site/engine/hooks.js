@@ -12,6 +12,7 @@ const GATEKEYS = ['from', 'until', 'windows', 'period', 'when', 'latch', 'quant'
 const NUMRE = '\\d+(?:\\.\\d+)?(?:/\\d+)?';
 const TAPREF = /^(?:((?:[\w-]+:)?[\w$*-]+)\/)?([A-Za-z][\w-]*)(?::([A-Za-z]\w*))?$/;
 import { HYGIENE } from './hygiene.js';
+import { GROOVES, installGroove } from './groove.js';
 const METHODS = ['use', 'wrap', 'ns', 'tap', 'wire', 'hook'];
 
 // Rewrite double-quoted string literals that sit directly in the argument list of hooks.*(...), .use/.wrap/.ns/.tap/.wire/.hook(...) and
@@ -45,6 +46,7 @@ export function install(S, opts = {}) {
   if (!Pattern || !signal || !reify || !stack || !Fraction) throw code('E_BAD_ARG', 'install needs { Pattern, stack, silence, reify, signal, Fraction }');
   const proto = Pattern.prototype;
   for (const m of METHODS) if (proto[m] && !proto[m].__hooks) throw code('E_NAME_COLLISION', `Pattern.prototype.${m} already exists in the loaded Strudel`);
+  installGroove(S); // pat.groove(...) (groove.js, docs/HOOKS_SYNTAX.md 4.2c)
   const useGlobal = opts.global !== false;
   if (useGlobal) for (const g of ['hooks', 'tap']) if (g in globalThis && !globalThis[g]?.__hooks && !(typeof Element !== 'undefined' && globalThis[g] instanceof Element)) throw code('E_NAME_COLLISION', `global ${g} already exists`);
 
@@ -64,7 +66,7 @@ export function install(S, opts = {}) {
   const diag = []; const seen = new Set();
   const memo = new Map(); const built = new WeakMap(); const builtHook = new WeakMap(); const astCache = new Map();
   // standard-library defs (hygiene racks, docs/RACK_STANDARD.md): resolvable everywhere, shadowed by hooks.def, never serialised
-  const STDLIB = new Map(Object.entries(opts.stdlib === false ? {} : { ...HYGIENE, ...(opts.stdlib || {}) })); const defOf = (name) => R.defs.get(name) || STDLIB.get(name);
+  const STDLIB = new Map(Object.entries(opts.stdlib === false ? {} : { ...HYGIENE, ...GROOVES, ...(opts.stdlib || {}) })); const defOf = (name) => R.defs.get(name) || STDLIB.get(name);
   let frozen = false; let version = 0; let tapGen = 0; let effCache = null; let bid = 0; let seq = 0; let sid = 0; const active = new Set();
   function clear() { R.markers = new Map(); R.scopes = new Map(); R.slots = new Map(); R.declared = new Set(); R.defs = new Map(); R.bindings = []; R.vars = new Map(); R.sets = []; R.wires = []; R.taps = new Map(); R.reads = new Set(); R.laneMode = 'open'; }
   clear();

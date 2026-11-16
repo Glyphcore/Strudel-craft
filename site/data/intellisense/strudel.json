@@ -269,6 +269,13 @@
    "category": "time"
   },
   {
+   "label": "groove",
+   "method": true,
+   "detail": "groove(swing, push, jitter, vel, drift, seed, grid)",
+   "info": "Off-grid feel, seeded and deterministic: MPC swing 50-75, push / jitter / drift in % of a 16th, velocity spread (Strudel-craft hooks runtime; docs/CONVENTIONS.md 4)",
+   "category": "time"
+  },
+  {
    "label": "rev",
    "method": true,
    "detail": "rev()",
@@ -1707,7 +1714,13 @@
    {
     "name": "bank",
     "shape": "enum",
-    "options": ["demo", "call-me-baby", "ljspeech", "vocalset", "sung"]
+    "options": [
+     "demo",
+     "call-me-baby",
+     "ljspeech",
+     "vocalset",
+     "sung"
+    ]
    }
   ],
   "tags": [
@@ -1821,6 +1834,78 @@
    {
     "name": "gate",
     "shape": "gate"
+   }
+  ],
+  "groove": [
+   {
+    "name": "swing",
+    "shape": "number",
+    "min": 50,
+    "max": 75,
+    "default": 50,
+    "unit": "%",
+    "control": "knob",
+    "clamp": "hard"
+   },
+   {
+    "name": "push",
+    "shape": "number",
+    "min": -50,
+    "max": 50,
+    "default": 0,
+    "unit": "% of a 16th",
+    "control": "knob",
+    "clamp": "hard"
+   },
+   {
+    "name": "jitter",
+    "shape": "number",
+    "min": 0,
+    "max": 25,
+    "default": 0,
+    "unit": "% of a 16th",
+    "control": "knob",
+    "clamp": "hard"
+   },
+   {
+    "name": "vel",
+    "shape": "number",
+    "min": 0,
+    "max": 0.5,
+    "default": 0,
+    "control": "knob",
+    "clamp": "hard"
+   },
+   {
+    "name": "drift",
+    "shape": "number",
+    "min": 0,
+    "max": 20,
+    "default": 0,
+    "unit": "% of a 16th",
+    "control": "knob",
+    "clamp": "hard"
+   },
+   {
+    "name": "seed",
+    "shape": "number",
+    "min": 0,
+    "max": 65535,
+    "step": 1,
+    "default": 0,
+    "control": "knob",
+    "clamp": "hard"
+   },
+   {
+    "name": "grid",
+    "shape": "number",
+    "min": 2,
+    "max": 64,
+    "step": 1,
+    "default": 16,
+    "unit": "steps / cycle",
+    "control": "knob",
+    "clamp": "hard"
    }
   ]
  },

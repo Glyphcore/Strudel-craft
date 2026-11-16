@@ -51,4 +51,6 @@ ok('every catalog recipe id from origin/main is still a catalog id', () => {
   const before = JSON.parse(execSync('git show origin/main:site/data/catalog.json', { cwd: new URL('../../', import.meta.url).pathname, maxBuffer: 1 << 26 }).toString()).recipes.map((r) => r.id);
   const now = new Set(rd('site/data/catalog.json').recipes.map((r) => r.id)); for (const id of before) assert.ok(now.has(id), id);
 });
+{ const H = await import('../../site/packs-hooks.js'); const allow = new Set(['hpf']); const good = H.validate({ model: 1, defs: { a: { chain: [['hpf', 40]], folder: 'racks/drums', tags: ['drums', 'rack'], aliases: ['old-a'] } } }, allow); const bad = H.validate({ model: 1, defs: { a: { chain: [['hpf', 40]], folder: 'Bad Path' } } }, allow);
+  assert.ok(!(good && (good.errors || good).length), JSON.stringify(good)); assert.ok(bad && (bad.errors || bad).length, 'bad folder must be reported'); n++; console.log('ok   packs-hooks validate: folder/tags/aliases accepted, bad folder refused'); }
 console.log(`${n} checks passed`);

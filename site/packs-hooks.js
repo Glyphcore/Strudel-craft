@@ -14,7 +14,7 @@ const NAME = /^[A-Za-z][A-Za-z0-9_-]*$/, STEP = /^[A-Za-z][A-Za-z0-9]*$/;
 const RESERVED = new Set([...Object.getOwnPropertyNames(Object.prototype), ...Object.getOwnPropertyNames(Function.prototype), '__proto__', 'prototype', 'constructor']);
 // Pattern methods that run a function or re-enter the query machinery: never chainable from data, even when Strudel registers them.
 const NEVER = new Set(['apply', 'fmap', 'bind', 'innerBind', 'outerBind', 'squeezeBind', 'resetBind', 'restartBind', 'withValue', 'withValues', 'withHap', 'withHaps', 'withQuerySpan', 'withQueryTime', 'withQueryState', 'withHapSpan', 'withHapTime', 'query', 'queryArc', 'eval', 'Function']);
-const DEF_KEYS = new Set(['chain', 'params', 'decorator', 'doc', 'description']);
+const DEF_KEYS = new Set(['chain', 'params', 'decorator', 'doc', 'description', 'folder', 'tags', 'aliases']); // folder, tags, aliases: filing data (PACK_SPEC 5.3), validated below; the runtime ignores them
 export const safeName = (n) => typeof n === 'string' && n.length <= 64 && NAME.test(n) && !RESERVED.has(n);
 // allowlist source: Strudel's own registry of chainable methods = the enumerable function properties `register()` and the controls put on Pattern.prototype (class
 // methods such as `constructor` / inherited Object members are not enumerable own properties), plus the hooks engine's methods; minus NEVER and every reserved name.
@@ -47,6 +47,8 @@ export function validate(d, allow) {
     if (!safeName(k)) { bad(k, `def name "${k}" is not allowed`); continue; }
     if (isCodeDef(v)) continue; // code-bearing: handled by the grant rule, never installed
     for (const x of Object.keys(v)) if (!DEF_KEYS.has(x)) bad(k, `def "${k}": key "${x}" is not allowed`);
+    if (v.folder != null && !(typeof v.folder === 'string' && /^[a-z0-9][a-z0-9-]*(\/[a-z0-9][a-z0-9-]*){0,7}$/.test(v.folder) && v.folder.length <= 80)) bad(k, `def "${k}": folder is not a valid slash path`);
+    for (const f of ['tags', 'aliases']) if (v[f] != null && !(Array.isArray(v[f]) && v[f].length <= 24 && v[f].every((s) => typeof s === 'string' && s.length <= 64 && /^[A-Za-z0-9][\w.-]*$/.test(s)))) bad(k, `def "${k}": ${f} must be up to 24 short names`);
     if (v.chain != null) {
       if (!Array.isArray(v.chain) || v.chain.length > LIM.chain) { bad(k, `def "${k}": chain must be an array of at most ${LIM.chain} steps`); continue; }
       v.chain.forEach((st, i) => {

@@ -88,10 +88,10 @@ voxlP: note("<[g4@4 bb4@4 d5@8] [c5@4 a4@4 f#4@4 ~@4]>").hpf(150).lpf(8000).s("s
 riser: s("x").slow(16).hpf(150).lpf(12500).ftype("24db").s("white").attack(22.07).sustain(1).release(0.2).hpf(300).lpf(700).lpenv(4).lpattack(22.07).lpsustain(1).gain(0.28).orbit(5).mask(on('17-32')).dry(0).send("master", 1)
 riser2: s("x").slow(8).hpf(150).lpf(12500).ftype("24db").s("white").attack(11.03).sustain(1).release(0.2).hpf(300).lpf(700).lpenv(4).lpattack(11.03).lpsustain(1).gain(0.28).orbit(5).mask(on('89-96')).dry(0).send("master", 1)
 pitchUp: s("x").slow(8).hpf(150).lpf(12500).ftype("24db").s("sawtooth").note("c4").penv(24).pattack(11.03).panchor(0).attack(2).sustain(1).release(0.1).lpf(4000).gain(0.16).orbit(5).mask(on('89-96')).dry(0).send("master", 1)
-rev: s("x").hpf(200).lpf(12000).ftype("24db").s("white").attack(1.38).sustain(1).release(0.02).hpf(1500).lpf(9000).gain(0.28).orbit(5).mask(on(16, 64, 96, 128, 144)).dry(0).send("master", 1)
+rev: s("x").hpf(200).lpf(12000).ftype("24db").s("white").attack(1.38).sustain(1).release(0.02).hpf(1500).lpf(9000).gain(0.28).orbit(5).postgain(0.5).mask(on(16, 64, 96, 128, 144)).dry(0).send("master", 1)
 impact: s("x").hpf(25).lpf(5000).s("sine").note("c1").penv(24).pdecay(0.25).decay(2.2).sustain(0).shape(0.25).lpf(3000).gain(0.7).orbit(5).postgain(0.1).mask(on(33, 97)).dry(0).send("master", 1)
-crash: s("x").hpf(5000).lpf(14500).ftype("24db").s("white").hpf(5000).decay(1.6).sustain(0).gain(0.22).orbit(5).postgain(0.15).mask(on(33, 49, 97, 129)).dry(0).send("master", 1)
-down: s("x").hpf(150).lpf(12500).ftype("24db").s("white").attack(0.005).decay(2).sustain(0).hpf(300).lpf(1000).lpenv(3.5).lpattack(0.001).lpdecay(1.8).lpsustain(0).gain(0.3).orbit(5).postgain(0.5).mask(on(65, 89, 129, 145)).dry(0).send("master", 1)
+crash: s("x").hpf(5000).lpf(14500).ftype("24db").s("white").hpf(5000).decay(1.6).sustain(0).gain(0.22).orbit(5).postgain(0.15).mask(on(33, 49, 97)).dry(0).send("master", 1)
+down: s("x").hpf(150).lpf(12500).ftype("24db").s("white").attack(0.005).decay(2).sustain(0).hpf(300).lpf(1000).lpenv(3.5).lpattack(0.001).lpdecay(1.8).lpsustain(0).gain(0.3).orbit(5).postgain(0.3).mask(on(65, 89, 129, 145)).dry(0).send("master", 1)
 // == the track's own bus stage (no limiter on the file): two returns, each a compressor ==
 // `master` takes every lane on orbits 1, 3, 4, 5 (drums, music, snare room, fx), sent whole (dry 0). `bus2` takes the bass lanes (sub, snarl) and sits on orbit 2,
 // so the kick's orbit duck (duckorbit "2:3") still reaches them: a bus bypasses the orbit gain, a return on the orbit does not (a single master bus lost the duck).

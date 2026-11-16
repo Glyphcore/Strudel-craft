@@ -153,10 +153,10 @@ voxlP: note(atoms.vs.leadP).use("vlead").orbit(3).room(0.5).roomsize(5).postgain
 riser: s("x").slow(16).hook("noiseRiser(22.07)").orbit(5).mask(on('17-32')).dry(0).send("master", 1)
 riser2: s("x").slow(8).hook("noiseRiser(11.03)").orbit(5).mask(on('89-96')).dry(0).send("master", 1)
 pitchUp: s("x").slow(8).hook("pitchRiser(11.03)").orbit(5).mask(on('89-96')).dry(0).send("master", 1)
-rev: s("x").hook("reverseSwell(1.38)").orbit(5).mask(on(16, 64, 96, 128, 144)).dry(0).send("master", 1)
+rev: s("x").hook("reverseSwell(1.38)").orbit(5).postgain(0.5).mask(on(16, 64, 96, 128, 144)).dry(0).send("master", 1)
 impact: s("x").hook("impactBoom").orbit(5).postgain(0.1).mask(on(33, 97)).dry(0).send("master", 1)
-crash: s("x").hook("crash").orbit(5).postgain(0.15).mask(on(33, 49, 97, 129)).dry(0).send("master", 1)
-down: s("x").hook("downSweep").orbit(5).postgain(0.5).mask(on(65, 89, 129, 145)).dry(0).send("master", 1)
+crash: s("x").hook("crash").orbit(5).postgain(0.15).mask(on(33, 49, 97)).dry(0).send("master", 1)
+down: s("x").hook("downSweep").orbit(5).postgain(0.3).mask(on(65, 89, 129, 145)).dry(0).send("master", 1)
 
 // == the track's own bus stage (no limiter on the file): two returns, each a compressor ==
 // `master` takes every lane on orbits 1, 3, 4, 5 (drums, music, snare room, fx), sent whole (dry 0). `bus2` takes the bass lanes (sub, snarl) and sits on orbit 2,

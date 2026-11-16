@@ -344,4 +344,13 @@ The envelope range metric is computed for every item (`env_range_db` in report.j
 Measured results of the first audit of the new items are in the table below (same standard, the audit run of #122).
 
 <!-- dnb-electro-audit:start -->
+Audit of every new item (`node tools/racks/audit.mjs --item <the 113 dnb-electro racks, recipes, feels and Syntax examples>`, 2026-11-16):
+racks 38 pass / 0 fail, catalog 46 pass / 0 fail, Syntax 14 pass / 0 fail / 1 skipped (the sampled-break example needs a sample bank).
+Fixes on the way there (same thresholds; first failing value -> passing value): kick sub20 in the demos (-37..-39 dB -> under -40: 3 ms attack and an own
+38 Hz high-pass on every kick), `rollingBass` below -29.3 -> pass (6 ms attack), `electroBass` below -26.3 -> pass (12 ms attack, longer release),
+`jumpWobble` below -15.3 -> pass (own 130 Hz high-pass, the wobble line moved up to F2 and a sub plays it an octave down), `rumble` below -24.3 -> pass
+(30 ms attack, own 32 Hz high-pass), `pluck` above -24.1 -> pass (2-octave envelope from 1.6 kHz), `filterBass` above -21.2 -> pass (q 6, 2.5 octaves),
+`sawStab` / `bigChords` side<120 -18.9 / -19.1 -> pass (own 180 Hz high-pass, the supersaw rule of section 2), `dnbSub` sub20 in the feel switch -34.8 -> pass
+(8 ms attack, 30 Hz high-pass). One flake: `feel-techno` measured sub20 -24.2 / DC -32.6 once and passed on the next run with unchanged code (#115 class of
+non-determinism, UNVERIFIED cause).
 <!-- dnb-electro-audit:end -->

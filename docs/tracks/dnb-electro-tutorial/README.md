@@ -77,7 +77,16 @@ Arrangement map (bars, 1-based; a gate `a..b` is half-open, `25b..57b` = bars 25
 | 49-56 | house outro | the house groove again |
 A club track uses 16 / 32-bar blocks: `atoms.hs.mapIntro` .. `mapOutro` (160 bars) and `hs.phrase8` give the gates.
 
-## 4. Render, master, score (measured numbers in #124)
+## 4. Render, master, score (measured, 2026-11-16)
+| program | length | master | true peak | crest | LRA | centroid | low end < 150 Hz | onsets / bar | section span | genre score |
+|---|---|---|---|---|---|---|---|---|---|---|
+| DnB tutorial (`--preset dnb`, docs/genres/dnb.json) | 176.6 s | -8.0 LUFS | -1.02 dBTP | 8.0 dB | 2.6 LU (miss, min 3) | 2321 Hz | 0.58 | 6.4 | 3.7 dB | 8 / 9 |
+| electro (`--preset electro`) | 75.0 s | -9.5 | -1.01 | 9.5 | 1.6 (miss, min 2) | 3248 | 0.70 (miss, max 0.65) | 12.0 | 2.8 | 7 / 9 |
+| house / techno / trance (`--preset house`) | 105.0 s | -9.1 | -1.01 | 8.8 | 1.9 (miss, min 2) | 3462 (miss, max 3200) | 0.69 | 12.4 | 5.1 | 7 / 9 |
+Tempo 174 / 128 / 128 bpm passed with `--bpm`. Standalone and pack versions give identical `strudel events` (6087 / 2531 / 3445 events, same hash).
+The LRA misses come from the master limiter (the DnB mix measures 6.9 LU before it); targets marked (G) in the genre files are guesses. mp3s:
+suno-track-lab `audio/dnb-electro-tutorial/` (dnb_tutorial_master, electro_master, house_master).
+
 ```
 docs/tracks/dnb-electro-tutorial/render.sh /tmp/dnb track standalone     # chunked CLI render, master --preset dnb, genre score vs docs/genres/dnb.json
 docs/tracks/dnb-electro-tutorial/render.sh /tmp/el electro standalone

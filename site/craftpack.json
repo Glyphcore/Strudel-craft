@@ -12,9 +12,9 @@
       "format": "recipes@1",
       "version": "1.0.0",
       "path": "data/catalog.json",
-      "hash": "sha256:1d42e080cb849525b13017d6ce957b608c264f9506cfb7930d0d3bdd7cb8ba96",
+      "hash": "sha256:ea16f6c79500fd2f655964502842765d4b4d29e6aec632129182d11ec244612a",
       "load": "eager",
-      "bytes": 282500
+      "bytes": 283699
     },
     {
       "id": "strudel-docs",
@@ -72,9 +72,9 @@
       "format": "syntax@1",
       "version": "1.0.0",
       "path": "data/syntax.json",
-      "hash": "sha256:1397ae5ac566266e9b4d32227f2531bcc4d7aa0dbdb97532862ed4b4c56aa3ae",
+      "hash": "sha256:92388128c26b6d271e9050528c07ec688b6c6d4345777347af2ca4ed90187c80",
       "load": "eager",
-      "bytes": 181360
+      "bytes": 181586
     },
     {
       "id": "composition",
@@ -139,17 +139,20 @@
       "texture": {
         "title": "Texture"
       },
+      "feel": {
+        "title": "Feel",
+        "description": "groove and attitude: boom-bap, trap, hyphy, cloud, lazy"
+      },
       "genre": {
         "title": "Genre",
         "description": "genre family the entry belongs to"
       },
+      "rhythm": {
+        "title": "Rhythm"
+      },
       "mood": {
         "title": "Mood",
         "description": "emotional tint"
-      },
-      "feel": {
-        "title": "Feel",
-        "description": "groove and attitude: boom-bap, trap, hyphy, cloud, lazy"
       },
       "dynamics": {
         "title": "Dynamics"
@@ -192,11 +195,11 @@
       "pad": {
         "title": "Pad"
       },
-      "rhythm": {
-        "title": "Rhythm"
-      },
       "space": {
         "title": "Space"
+      },
+      "sound": {
+        "title": "Sound"
       },
       "synth": {
         "title": "Synth"
@@ -247,6 +250,9 @@
       "bell-like": {
         "group": "texture"
       },
+      "big-room": {
+        "group": "feel"
+      },
       "boom-bap": {
         "group": "genre",
         "description": "dusty knock and pocket",
@@ -255,6 +261,9 @@
           "icon": "genre",
           "pattern": "dots"
         }
+      },
+      "breakbeat": {
+        "group": "rhythm"
       },
       "breakdown": {
         "group": "arrangement"
@@ -293,6 +302,9 @@
       "delay-echo": {
         "group": "technique"
       },
+      "dnb": {
+        "group": "feel"
+      },
       "dovetail": {
         "group": "dovetail",
         "description": "how sections interlock"
@@ -317,6 +329,9 @@
         "group": "dynamics"
       },
       "edm": {
+        "group": "feel"
+      },
+      "electro": {
         "group": "feel"
       },
       "euclid": {
@@ -365,9 +380,15 @@
       "half-time": {
         "group": "tempo"
       },
+      "hats": {
+        "group": "rhythm"
+      },
       "hip-hop": {
         "group": "genre",
         "description": "hip-hop family"
+      },
+      "house": {
+        "group": "feel"
       },
       "human-feel": {
         "group": "technique"
@@ -390,6 +411,9 @@
       "intro-reveal": {
         "group": "arrangement"
       },
+      "jump-up": {
+        "group": "feel"
+      },
       "keys": {
         "group": "keys",
         "description": "chords, stabs and chops"
@@ -400,6 +424,9 @@
       "lead": {
         "group": "lead",
         "description": "melody, bells, plucks"
+      },
+      "liquid": {
+        "group": "feel"
       },
       "lofi": {
         "group": "texture"
@@ -426,6 +453,9 @@
       "needs-samples": {
         "group": "status",
         "description": "needs a sample bank (network)"
+      },
+      "neuro": {
+        "group": "feel"
       },
       "offbeat": {
         "group": "tempo"
@@ -476,6 +506,9 @@
       "sparse": {
         "group": "mood"
       },
+      "stabs": {
+        "group": "sound"
+      },
       "stereo": {
         "group": "technique"
       },
@@ -491,6 +524,9 @@
       "syncopated": {
         "group": "tempo"
       },
+      "techno": {
+        "group": "feel"
+      },
       "tense": {
         "group": "mood"
       },
@@ -499,6 +535,9 @@
       },
       "texture-vocal-like": {
         "group": "texture"
+      },
+      "trance": {
+        "group": "feel"
       },
       "transition": {
         "group": "technique"
@@ -537,8 +576,17 @@
       }
     },
     "folders": {
+      "dnb": {
+        "description": "Drum and bass: two-step, breaks and chops, sub and reese / neuro layers, liquid harmony"
+      },
+      "dnb-electro": {
+        "description": "Feel templates and tracks of glyphcore/dnb-electro"
+      },
       "dovetail": {
         "description": "How sections interlock"
+      },
+      "electro": {
+        "description": "Electro-funk and electro house"
       },
       "groove": {
         "description": "Timing feel"
@@ -557,6 +605,9 @@
       },
       "hiphop/trap": {
         "description": "Trap: rolling hats, half-time, held 808"
+      },
+      "house": {
+        "description": "House, techno, trance and big room"
       },
       "strudel": {
         "description": "Plain Strudel recipes"

@@ -374,6 +374,9 @@
   },
   "roomLead": {
    "class": "lead"
+  },
+  "lfoPump": {
+   "class": "move"
   }
  },
  "catalog": {

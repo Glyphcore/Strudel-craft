@@ -12,7 +12,7 @@
    hint, else the page tempo knob. API: window.strudelCraft.quickplay = { press(btn, spec), play(spec), stop(how), sync(), state, stats } */
 const sc = (window.strudelCraft = window.strudelCraft || {});
 import * as RL from './record-length.js';
-const QP_ORBIT = 13, LEVEL_MIX = 0.6, LEVEL_ALONE = 0.9, MAX_S = RL.MAX_MIN * 60, FADE_FAST = 0.025, FADE_END = 0.12, TAIL_MS = 380;
+const QP_ORBIT = 13, LEVEL_MIX = 0.6, LEVEL_ALONE = 0.9, MAX_S = RL.MAX_MIN * 60, /* quickplay.maxS overrides it (tests use a short one) */ FADE_FAST = 0.025, FADE_END = 0.12, TAIL_MS = 380;
 const S0 = () => window.__sc;
 const lsGet = (k, d) => { try { const v = localStorage.getItem('sc.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
 const lsSet = (k, v) => { try { localStorage.setItem('sc.' + k, JSON.stringify(v)); } catch (e) { /* private mode */ } };
@@ -65,7 +65,7 @@ function mkTray() {
 }
 function paintTray() {
   const on = state.phase !== 'idle'; if (!on && !tray) return; const t = mkTray(); t.hidden = !on; if (!on) return;
-  t.querySelector('.qp-tt').textContent = (state.phase === 'loading' ? 'Loading ' : 'Auditioning ') + state.title;
+  t.querySelector('.qp-tt').textContent = (state.phase === 'loading' ? (S0() && S0().Engine.repl ? 'Loading ' + state.title : 'Loading audio engine') : 'Auditioning ' + state.title);
   const m = t.querySelector('.qp-mode'); m.textContent = state.mode === 'end' ? 'End' : state.mode === 'loop' ? 'Loop' : state.bars + ' bars'; m.setAttribute('aria-pressed', String(state.mode !== 'end')); t.querySelector('.qp-step').hidden = state.mode !== 'bars'; t.querySelector('.qp-pos').textContent = state.pos;
   t.querySelector('.qp-solo').setAttribute('aria-pressed', String(state.solo));
 }
@@ -109,6 +109,11 @@ function resolveLen(R, code, cps) {
   } catch (e) { return { cycles: null, rule: 'none', note: 'end not readable: loops until stopped' }; }
 }
 function applyMode(r = run) { if (!r) return; r.endC = state.mode === 'bars' ? state.bars : state.mode === 'loop' ? null : r.found ? r.found.cycles : null; if (r.tail && (r.endC == null || (r.cyc || 0) < r.endC)) { /* a stop already scheduled stays */ } }
+/* one cleanup for every exit (error, failed prepare, blocked, switch, Stop, page hide): Solo off and the program's orbits back to 1, the bus muted again if we unmuted it */
+function release(r) {
+  const was = state.solo; state.solo = false; if (was) applySolo();
+  const Q = S0(); if (r && r.mutedBus && Q && !Q.S.playing) { try { Q.muteBus(); } catch (e) { /* no bus */ } r.mutedBus = false; }
+}
 /* ---- run ---- */
 function withTempo(code, spec) {
   const Q = S0(); if (Q.hasOwnTempo(code)) return code;
@@ -129,7 +134,7 @@ export async function play(spec) {
     if (ctx.state !== 'running') { toast('Audio is blocked by the browser: tap the play button again to allow sound', 'error'); throw Object.assign(new Error('blocked'), { silent: true }); }
     if (!Q.S.playing && Q.Bus.muted) { Q.unmuteBus(); r.mutedBus = true; }
     await Q.ensureCode(code); const prot = Q.protectCode(code);
-    const R = await getRepl(); if (me !== token) { if (r.mutedBus && !Q.S.playing) Q.muteBus(); return; }
+    const R = await getRepl(); if (me !== token) { release(r); return; }
     R.state.evalError = undefined; run = r;
     await R.evaluate(prot, true); restoreGlobals();
     if (R.state.evalError) throw R.state.evalError;
@@ -139,7 +144,7 @@ export async function play(spec) {
   } catch (e) {
     if (me !== token) return;
     run = null; state.phase = 'idle'; state.key = null; state.error = e && e.message || String(e); sync(); restoreGlobals();
-    if (r.mutedBus && !Q.S.playing) Q.muteBus();
+    release(r);
     try { repl && repl.scheduler.stop(); } catch (er) { /* idle */ }
     if (!(e && e.silent)) toast(`Quick play: ${spec.title || 'example'} did not play: ${state.error}`, 'error');
   }
@@ -155,9 +160,8 @@ async function endRun(r, fade, hard) {
   if (o) { try { o.disconnect(); } catch (e) { /* gone */ } const c = ctrl(); if (c && c.nodes && c.nodes[QP_ORBIT] === o) delete c.nodes[QP_ORBIT]; }
   if (run === r) run = null;
   if (!hard) {
-    stopLoops(); const wasSolo = state.solo; state.solo = false; if (wasSolo) applySolo();
+    stopLoops(); release(r); const Q = S0(); if (Q && !Q.S.playing) { try { Q.muteBus(); } catch (e) { /* no bus */ } }
     state.phase = 'idle'; state.key = null; sync();
-    const Q = S0(); if (Q && !Q.S.playing) { try { Q.muteBus(); } catch (e) { /* no bus */ } }
     restoreGlobals();
   }
 }
@@ -183,7 +187,7 @@ function startLoops() {
     const r = run; if (!r || state.phase !== 'playing' || r.ending) return;
     let cyc = 0; try { cyc = repl.scheduler.now() - r.start; } catch (e) { return; }
     const el = window.getAudioContext().currentTime - r.t0a;
-    if (el > MAX_S && !r.tail) { r.tail = true; toast(`Audition stopped after ${RL.MAX_MIN} minutes (the safety limit)`, 'info'); endRun(r, FADE_FAST, false); return; }
+    if (el > (sc.quickplay.maxS || MAX_S) && !r.tail) { r.tail = true; toast(`Audition stopped after ${RL.MAX_MIN} minutes (the safety limit)`, 'info'); endRun(r, FADE_FAST, false); return; }
     if (r.endC && cyc >= r.endC && !r.tail) { r.tail = true; try { repl.scheduler.stop(); } catch (e) { /* idle */ } setTimeout(() => { if (run === r) endRun(r, FADE_END, false); }, TAIL_MS); }
     if (state.solo) applySolo();
   }, 40);
@@ -196,5 +200,27 @@ export async function press(btn, spec) {
   const s = spec(); if (s && s.why) { toast(s.why, 'info'); return; }
   btn.dataset.title = s.title || ''; await play(s);
 }
+/* ---- lazy wiring (this module is loaded after the first frame, so the eager shell carries none of it) ---- */
+const cssReady = new Promise((ok) => { const l = Object.assign(document.createElement('link'), { rel: 'stylesheet', href: new URL('./quickplay.css', import.meta.url).href, onload: ok, onerror: ok }); document.head.append(l); });
+const recipe = (id) => { const A = S0(); return A && A.S.recipes.find((r) => r.id === id); };
+function rowButtons() {
+  const list = document.getElementById('list'); if (!list) return;
+  for (const li of list.querySelectorAll('li[data-id]')) {
+    if (li.querySelector('.qp')) continue; const r = recipe(li.dataset.id); if (!r) continue;
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'qp'; b.dataset.qp = 'recipe:' + r.id; b.dataset.title = r.title; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-label', 'Quick play ' + r.title); b.title = 'Quick play: audition here, nothing is loaded or opened';
+    b.innerHTML = '<i class="qp-i" aria-hidden="true"></i>'; li.insertBefore(b, li.querySelector('.add'));
+  }
+  sync();
+}
+cssReady.then(() => {
+  const list = document.getElementById('list'); if (!list) return; rowButtons();
+  new MutationObserver(() => rowButtons()).observe(list, { childList: true });
+  list.addEventListener('click', (e) => { const qb = e.target.closest('.qp'); if (!qb) return; e.stopImmediatePropagation(); const r = recipe(qb.dataset.qp.slice(7)); if (r) press(qb, () => ({ key: qb.dataset.qp, title: r.title, code: S0().S.edits[r.id] != null ? S0().S.edits[r.id] : r.code, bpm: r.bpm_hint, samples: !!r.needs_samples })); }, true);
+  /* warm the engine while idle so the first tap does not pay the cold start (Strudel from the CDN, hooks, perform glue, worklets) */
+  const warm = () => { const A = S0(); if (A && A.Engine && !A.Engine.repl) A.Engine.prepare('', false, () => {}).catch(() => {}); };
+  setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(warm, { timeout: 5000 }) : warm()), 1500);
+});
+
+window.addEventListener('pagehide', () => { stop('fast'); });
 sc.quickplay = { press, play, stop, sync, state, stats, QP_ORBIT, LEVEL_MIX, LEVEL_ALONE, get run() { return run; } };
 sync();

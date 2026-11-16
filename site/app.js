@@ -620,13 +620,11 @@ function renderList(keepId) {
         el('span', { class: 'tt' }, el('span', { class: 't' }, r.title), e.folder || (e.tags || []).length ? el('span', { class: 'sub' }, [e.folder, (e.tags || []).filter((x) => !['verified', 'unverified'].includes(x) && !(e.folder || '').split('/').includes(x)).slice(0, 2).join(' ')].filter(Boolean).join(' · ')) : null),
         el('span', { class: foreign.has(r.pack) ? 'pk ns' : 'ns own', title: 'Pack ' + (r.pack || 'glyphcore/shim') }, foreign.has(r.pack) ? r.pack : (r.pack || 'glyphcore/shim').replace(/^glyphcore\//, '')),
         el('span', { class: 'k' + (r.verified ? ' ok' : '') }, r.verified ? 'ok' : r.needs_samples ? 'smp' : '·')),
-      el('button', { type: 'button', class: 'qp', 'data-qp': 'recipe:' + r.id, 'aria-pressed': 'false', 'aria-label': 'Quick play ' + r.title, title: 'Quick play: audition here, nothing is loaded or opened' }, el('i', { class: 'qp-i', 'aria-hidden': 'true' })),
       el('button', { type: 'button', class: 'add', 'data-add': r.id, 'aria-pressed': inStack ? 'true' : 'false', disabled: !r.expr, 'aria-label': (inStack ? 'Remove ' : 'Add ') + r.title + (inStack ? ' from stack' : ' to stack'), title: r.expr ? 'Stack (A)' : 'Uses top-level statements: solo only' }, inStack ? '−' : '+'));
   }));
   $('#count').textContent = `${S.filtered.length} / ${S.recipes.length} recipes`;
   const n = S.chips.size + (S.vonly ? 1 : 0); $('#filterCount').textContent = n ? String(n) : '';
   renderSelection(false);
-  try { window.strudelCraft.quickplay && window.strudelCraft.quickplay.sync(); } catch (e) { /* optional */ }
 }
 function select(i, { scroll = true, audition = true } = {}) {
   if (!S.filtered.length) return;
@@ -894,7 +892,6 @@ async function boot() {
   $('#themeBtn').addEventListener('click', toggleTheme); $('#helpBtn').addEventListener('click', openHelp); $('#helpClose').addEventListener('click', () => $('#help').close());
   $('#help').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); });
   $('#list').addEventListener('click', (e) => {
-    const qb = e.target.closest('.qp'); if (qb) { const r = byId(qb.dataset.qp.slice(7)); if (r) import('./quickplay.js').then((m) => m.press(qb, () => ({ key: qb.dataset.qp, title: r.title, code: recipeCode(r), bpm: r.bpm_hint, samples: !!r.needs_samples }))).catch((err) => say('Quick play could not load: ' + err.message, true)); return; }
     const add = e.target.closest('.add'); if (add) { toggleStack(add.dataset.add); return; }
     const row = e.target.closest('.row'); if (row) { const i = +row.dataset.i; if (i === S.sel && !S.playing) play(); else select(i, { scroll: false }); }
   });

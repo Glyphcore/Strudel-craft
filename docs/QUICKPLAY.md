@@ -12,11 +12,15 @@ A play button on every Syntax example, every Syntax section header (plays its fi
 - Not playable alone (disabled play, reason in the tooltip and in a toast on tap): examples with an action or `noplay`, page-API scripts (`strudelCraft.` calls change your settings), and bare `tap()/wire()` readers with no `.tap()` writer in the same code.
 - Button states: idle, loading (spinner), playing (stop square, progress bar under it, glow with the level). A tray (Solo, Loop, Stop, 44px targets) shows while it plays.
 
+## Loading
+Nothing of Quick play is in the eager shell: `quickplay.js` is in the index.html LATER set (loaded after the first frame) and brings `quickplay.css`; it injects the Recipes row buttons itself (a MutationObserver on `#list`, a capture click handler that never selects the row) and warms the engine in `requestIdleCallback` (`Engine.prepare('')`, 1.5 s after load) so the first tap skips most of the cold start. While the engine is still cold the tray says "Loading audio engine". Exits (error, failed prepare, blocked, switch, Stop, page hide) share one `release()`: Solo off, the program's orbits back to 1, the bus muted again if the audition had unmuted it. The 20-minute limit can be shortened for tests with `strudelCraft.quickplay.maxS` (seconds).
+
 ## How (site/quickplay.js, lazy module)
 - Its own `webaudioRepl` (own scheduler and pattern); the main program, scheduler and editor text are never replaced.
 - Every note goes to superdough orbit 13; its output node carries the level and the fade, and is disposed on stop (fresh delay/reverb next time).
 - A repl evaluation rebinds core globals (time, cps, trigger, current pattern, started flag); they are restored to the main repl's after every evaluate and stop.
+- Known limit: the hooks registry (gates, markers, binds) is global, so an audition's `hooks.bind/marker` lands in the program's registry until it re-evaluates (the program's own pattern reads gates at query time).
 - Known limit: the globals `all/hush/setcpm/d1..` stay bound to the audition repl until the program's next evaluation (the program re-binds them itself on every evaluate).
 
 ## Measured (tests/site/quickplay.mjs, 390px touch, loaded machine)
-Warm press to first sound: 115 ms (scheduled time), first analyser sample above the floor 130 to 290 ms. End-resolved entry stops within a bar of its end; a looping entry runs past 8 cycles until stopped. Cold (engine, banks, worklets): 3.3 s.
+Warm press to first sound: 115 ms (scheduled time), first analyser sample above the floor 130 to 290 ms. End-resolved entry stops within a bar of its end; a looping entry runs past 8 cycles until stopped. Cold: 3.3 s before the idle warm-up, 1.7 s after (touch, loaded machine).

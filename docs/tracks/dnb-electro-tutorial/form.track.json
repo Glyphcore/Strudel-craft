@@ -1,0 +1,42 @@
+[
+ {
+  "section": "intro",
+  "bars": 16,
+  "type": "intro"
+ },
+ {
+  "section": "build1",
+  "bars": 8,
+  "type": "build"
+ },
+ {
+  "section": "drop1",
+  "bars": 32,
+  "type": "drop"
+ },
+ {
+  "section": "breakdown",
+  "bars": 16,
+  "type": "break"
+ },
+ {
+  "section": "build2",
+  "bars": 8,
+  "type": "build"
+ },
+ {
+  "section": "drop2",
+  "bars": 32,
+  "type": "drop"
+ },
+ {
+  "section": "halftime",
+  "bars": 8,
+  "type": "drop"
+ },
+ {
+  "section": "outro",
+  "bars": 8,
+  "type": "outro"
+ }
+]

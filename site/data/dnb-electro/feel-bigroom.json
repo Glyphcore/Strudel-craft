@@ -1,0 +1,390 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"Big room\" (126-130 bpm): stripped drop: a big kick, a clap, an offbeat hat and one lead motif. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/dnb-electro:feel-bigroom\", { as: \"feel\" }).",
+ "atoms": {
+  "ax213om": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "kick pattern",
+   "folder": "feels/bigroom/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "bigroom",
+    "pattern"
+   ],
+   "hash": "sha256:0217ca393e7b9e240d8b3ffed67e975f3934d9a9f1303a227193b90afe293ac5"
+  },
+  "a97t1mh": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "folder": "feels/bigroom/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "bigroom",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a3yl385": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "bigKick | groove-human(0.5, 0.05, 1)",
+   "doc": "kick rack and groove",
+   "folder": "feels/bigroom/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "bigroom",
+    "rack-slot"
+   ],
+   "hash": "sha256:b1460d252626d6e04e91d9924dd8ce9faaaa4b408dcc20f893685a0ca4be229a"
+  },
+  "aybxhp1": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "snare pattern",
+   "folder": "feels/bigroom/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "bigroom",
+    "pattern"
+   ],
+   "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
+  },
+  "a843tt4": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "folder": "feels/bigroom/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "bigroom",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "apeyr76": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "houseClap | groove-human(0.5, 0.05, 2)",
+   "doc": "snare rack and groove",
+   "folder": "feels/bigroom/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "bigroom",
+    "rack-slot"
+   ],
+   "hash": "sha256:3627d491e8596bc96f1ca0b7e8828bfcb25a63e557e70ca9acce111eede09a58"
+  },
+  "a4lhvdg": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "perc pattern",
+   "folder": "feels/bigroom/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "bigroom",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "ath9exb": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "perc accents (velocity)",
+   "folder": "feels/bigroom/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "bigroom",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a3jpkwv": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.5, 0.05, 3)",
+   "doc": "perc rack and groove",
+   "folder": "feels/bigroom/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "bigroom",
+    "rack-slot"
+   ],
+   "hash": "sha256:0249ad7e4fa6577da9795f84f8f5e40fcb28d69a7ae54ae15960a62b725c08c6"
+  },
+  "an7r70i": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "hats pattern",
+   "folder": "feels/bigroom/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "bigroom",
+    "pattern"
+   ],
+   "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
+  },
+  "a6rcbdh": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "hats accents (velocity)",
+   "folder": "feels/bigroom/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "bigroom",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "afu7qox": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "offHat | groove-human(0.5, 0.05, 4)",
+   "doc": "hats rack and groove",
+   "folder": "feels/bigroom/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "bigroom",
+    "rack-slot"
+   ],
+   "hash": "sha256:ce314071d34069c22f3e37b99f021211f3005d721c5a1e2801443a0d6758ccb7"
+  },
+  "alom14z": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f4 ~ f4 ~ ab4 ~ f4 ~ c5 ~ ~ ~ ab4 ~ g4 ~] [f4 ~ f4 ~ ab4 ~ f4 ~ db5 ~ ~ ~ c5 ~ ab4 ~]>",
+   "doc": "top pattern",
+   "folder": "feels/bigroom/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "bigroom",
+    "pattern"
+   ],
+   "hash": "sha256:533d78e802addf0fb74b4f32beb955f3b21c7c17e55ecb16e007b35884f67309"
+  },
+  "a9i78dy": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "folder": "feels/bigroom/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "bigroom",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a1lu3vw": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "roomLead | groove-human(0.5, 0.05, 5)",
+   "doc": "top rack and groove",
+   "folder": "feels/bigroom/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "bigroom",
+    "rack-slot"
+   ],
+   "hash": "sha256:069c427185066b84a58ad8cd7e8c007e275e9a31998532b4f593a1e45bc2fae4"
+  },
+  "at11o7f": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "bass pattern",
+   "folder": "feels/bigroom/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "bigroom",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "a50f0hq": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "bass accents (velocity)",
+   "folder": "feels/bigroom/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "bigroom",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a5ccbb8": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.5, 0.05, 6)",
+   "doc": "bass rack and groove",
+   "folder": "feels/bigroom/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "bigroom",
+    "rack-slot"
+   ],
+   "hash": "sha256:f58e0181fbb2ba20c840e23b6060fdbed23dcd4b0a7c1b3996d5b3a42593271c"
+  },
+  "a8x7lum": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "harmony pattern",
+   "folder": "feels/bigroom/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "bigroom",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "amxxewh": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "folder": "feels/bigroom/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "bigroom",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ahb2fgd": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.5, 0.05, 7)",
+   "doc": "harmony rack and groove",
+   "folder": "feels/bigroom/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "bigroom",
+    "rack-slot"
+   ],
+   "hash": "sha256:76267bac01dbada94ddf6629c936dfe5c087fec87154aea3fe003c64ac6da869"
+  },
+  "ar2pwae": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "fx pattern",
+   "folder": "feels/bigroom/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "bigroom",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "atz26tl": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "folder": "feels/bigroom/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "bigroom",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ayot78l": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.5, 0.05, 8)",
+   "doc": "fx rack and groove",
+   "folder": "feels/bigroom/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "bigroom",
+    "rack-slot"
+   ],
+   "hash": "sha256:219ccd614c85ee1ea91becf9eca7d6846ae9bd6da0bc33b43ebd0aa214649d34"
+  },
+  "ao1a6di": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.5, 0.05, 0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "folder": "feels/bigroom/groove",
+   "tags": [
+    "groove",
+    "feel",
+    "bigroom",
+    "rack-slot"
+   ],
+   "hash": "sha256:ed3ab28ff2d571caafb5612d034391520550a57cb6f472ed0d1e6d8d3beb5aef"
+  }
+ }
+}

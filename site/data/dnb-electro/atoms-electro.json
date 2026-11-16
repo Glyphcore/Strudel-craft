@@ -1,0 +1,329 @@
+{
+ "format": "atoms@1",
+ "name": "el",
+ "doc": "glyphcore/dnb-electro electro atoms (el.): electro-funk 808 kick, clap, hats and cowbell, synth bass, robot lead line and vowels, stab rhythm and chords; electro house kick, clap, offbeat hat, filtered bass line, stab rhythm, clap build and its velocity ramp; gates of the 40-bar electro form (intro, build, drop, break, drop2). Import with atoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\").",
+ "atoms": {
+  "az1afs6": {
+   "name": "el.kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ x ~ ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "electro-funk kick: 1, the and of 2... (an electro-funk style, not a transcription)",
+   "folder": "electro/drums",
+   "tags": [
+    "drums",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:39cf0dc144ce6b0b8df85a6bc3a47d7e1bc832cc1d26e86138766f1dff4cb567"
+  },
+  "avoosjq": {
+   "name": "el.clap",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "clap on 2 and 4",
+   "folder": "electro/drums",
+   "tags": [
+    "drums",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
+  },
+  "ao84l36": {
+   "name": "el.hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*16",
+   "doc": "16th hats",
+   "folder": "electro/drums",
+   "tags": [
+    "drums",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:bc74a3b9e12ebc0770e636fb859180836145824d453b6c0c08e954bc49f4cdaf"
+  },
+  "a3k7lg8": {
+   "name": "el.hatVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[1 .45 .7 .45]*4",
+   "doc": "hat accents",
+   "folder": "electro/drums",
+   "tags": [
+    "drums",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:d30c5f47f2c7dd54085bd5195aa2d7b9d9aaaa5cda45ed4c2ddbbd62a2c09fbc"
+  },
+  "ae34jda": {
+   "name": "el.cowbell",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[~ ~ x ~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~] [~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]>",
+   "doc": "cowbell over two bars (play with .note(\"[c#5,g#5]\"))",
+   "folder": "electro/drums",
+   "tags": [
+    "drums",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:dc65d94b80cdb2be4d6bf0fa569f3df31388f28ee6f92484e49d5cdb9d4d3ba4"
+  },
+  "au1f2a3": {
+   "name": "el.bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f1 ~ ~ f1 ~ ~ f2 ~ ~ f1 ~ ~ ab1 ~ c2 ~] [db2 ~ ~ db2 ~ ~ db1 ~ ~ eb2 ~ ~ eb1 ~ c2 ~]>",
+   "doc": "syncopated electro-funk bass",
+   "folder": "electro/bass",
+   "tags": [
+    "bass",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:c05b8b0c02cb749a9a4c214deeab9b6d4775494c27f598e15935ec21dfe8e418"
+  },
+  "a86eioe": {
+   "name": "el.lead",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f4 ~ ab4 ~ c5 ~ ab4 ~ ~ ~ ~ ~ eb4 ~ f4 ~] [~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~]>",
+   "doc": "robot lead call (bar 1) and space (bar 2)",
+   "folder": "electro/lead",
+   "tags": [
+    "lead",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:1f25e03cea7591a71f945e909d70438d335f752e67f20bea59fca55bcf983b66"
+  },
+  "ag996rj": {
+   "name": "el.leadVowel",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[a e i o] [o]>",
+   "doc": "lead vowel sweep, one vowel per beat",
+   "folder": "electro/lead",
+   "tags": [
+    "lead",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:5fc8869957fb0d6f938c46584bcc1aa271160f62e12fdf2c66355a9f36aa7a40"
+  },
+  "afhjeor": {
+   "name": "el.chords",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [eb3,g3,bb3,eb4] [c3,eb3,g3,c4]>",
+   "doc": "electro chords, one per bar: Fm, Db, Eb, Cm (i, VI, VII, v)",
+   "folder": "electro/keys",
+   "tags": [
+    "keys",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:6cbaa7f32fdfebd9aca6d35018c37b1852eeb09fbbaabbb8b47caaaf3f2718bc"
+  },
+  "alo5jm9": {
+   "name": "el.stabs",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~",
+   "doc": "stab rhythm (struct over el.chords): offbeats and a push into the next bar",
+   "folder": "electro/keys",
+   "tags": [
+    "keys",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:4ed52c2b6ae48c6a181e353a1b15449b588e05e883660c4e72c49fc9e4672314"
+  },
+  "aztvd7b": {
+   "name": "el.ehKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "electro house four-on-the-floor",
+   "folder": "electro/drums",
+   "tags": [
+    "drums",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:0217ca393e7b9e240d8b3ffed67e975f3934d9a9f1303a227193b90afe293ac5"
+  },
+  "a8ff03f": {
+   "name": "el.ehClap",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "electro house clap on 2 and 4",
+   "folder": "electro/drums",
+   "tags": [
+    "drums",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
+  },
+  "afrnxii": {
+   "name": "el.ehHat",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "offbeat open hat",
+   "folder": "electro/drums",
+   "tags": [
+    "drums",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
+  },
+  "a6iqkoy": {
+   "name": "el.ehBass",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f2 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>",
+   "doc": "electro house bass on the offbeat 8ths (the kick's gaps)",
+   "folder": "electro/bass",
+   "tags": [
+    "bass",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:0f3c6ac0817e477dff1f4df58d28df7db337e46b428fdfba03d49dc14373fb07"
+  },
+  "afkp75a": {
+   "name": "el.ehStabs",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "stabs on the offbeats, where the pump has let go",
+   "folder": "electro/keys",
+   "tags": [
+    "keys",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
+  },
+  "ajm5tpu": {
+   "name": "el.intro",
+   "type": "gate",
+   "rev": 1,
+   "body": "<9b",
+   "doc": "intro (electro-funk): bars 1-8 (form: intro 8, build 8, drop 8, break 8, drop 2 8 = 40 bars = 75 s at 128 bpm)",
+   "folder": "electro/form",
+   "tags": [
+    "form",
+    "electro",
+    "gate"
+   ],
+   "hash": "sha256:682b3ed43b8fee4e7d78096fb5a20f11794c51be308eca61f576be2f3ed74611"
+  },
+  "agfnx00": {
+   "name": "el.build",
+   "type": "gate",
+   "rev": 1,
+   "body": "9b..17b",
+   "doc": "build: bars 9-16",
+   "folder": "electro/form",
+   "tags": [
+    "form",
+    "electro",
+    "gate"
+   ],
+   "hash": "sha256:aa0305afd10ee27dfcc6697b7de6b51e1fc03d26b846d76ba7a1b74ca8d95527"
+  },
+  "as3vmm5": {
+   "name": "el.drop",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..25b",
+   "doc": "drop (electro house): bars 17-24",
+   "folder": "electro/form",
+   "tags": [
+    "form",
+    "electro",
+    "gate"
+   ],
+   "hash": "sha256:e67adbd7795bc1c1f3791c53d05bf0d02a7d534c9cbc1129aefcd96ca4a33de1"
+  },
+  "aoxnunj": {
+   "name": "el.break",
+   "type": "gate",
+   "rev": 1,
+   "body": "25b..33b",
+   "doc": "break: bars 25-32",
+   "folder": "electro/form",
+   "tags": [
+    "form",
+    "electro",
+    "gate"
+   ],
+   "hash": "sha256:ea8541ea2cf91679ff0443ad8b4e8369bf4540db6b851780c02185a53a4ff351"
+  },
+  "ajczr8d": {
+   "name": "el.drop2",
+   "type": "gate",
+   "rev": 1,
+   "body": "@33b",
+   "doc": "drop 2: bars 33-40",
+   "folder": "electro/form",
+   "tags": [
+    "form",
+    "electro",
+    "gate"
+   ],
+   "hash": "sha256:38722fcb6bb7a1b6f088c730837a2b9c1de79a01ab3d66a4657f7e430a64b86e"
+  },
+  "a1t6nyi": {
+   "name": "el.drops",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..25b, @33b",
+   "doc": "both drops",
+   "folder": "electro/form",
+   "tags": [
+    "form",
+    "electro",
+    "gate"
+   ],
+   "hash": "sha256:9ff6ae7655df360dad0d3b82ef4e410e2bcf72df9f226c074eae2d54d75f1f64"
+  },
+  "aaz6vzy": {
+   "name": "el.funk",
+   "type": "gate",
+   "rev": 1,
+   "body": "<9b, 25b..33b",
+   "doc": "the electro-funk parts (intro and break)",
+   "folder": "electro/form",
+   "tags": [
+    "form",
+    "electro",
+    "gate"
+   ],
+   "hash": "sha256:c55fc9732c685578bd6fb2b1e2d6e58e03808ab499911293d334ae47f72d6614"
+  },
+  "aieqcvn": {
+   "name": "el.vacuum",
+   "type": "gate",
+   "rev": 1,
+   "body": "16.3b..17b, 32.3b..33b",
+   "doc": "the last half bar before each drop",
+   "folder": "electro/form",
+   "tags": [
+    "form",
+    "electro",
+    "gate"
+   ],
+   "hash": "sha256:cd87ba73352f6b188b59fb9672d537d769e4856a5d5e3c76bdc14e4588272a4b"
+  }
+ }
+}

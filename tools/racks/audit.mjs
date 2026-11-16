@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Rack quality audit (docs/RACK_STANDARD.md): renders a standard test phrase per instrument class through every rack with the headless
 // strudel CLI, measures the spectrum and levels, and reports pass or fail against tools/racks/standard.json.
-//   node tools/racks/audit.mjs [--only racks,catalog,syntax] [--item NAME] [--out DIR] [--baseline REPORT.json] [--no-structure] [--samples-dir KIT]
+//   node tools/racks/audit.mjs [--only racks,catalog,syntax] [--item NAME[,NAME...]] [--out DIR] [--baseline REPORT.json] [--no-structure] [--samples-dir KIT]
 //                              [--hooks FILE]... [--catalog FILE] [--syntax FILE] [--jobs N] [--keep] [--quiet]
 // Writes OUT/report.json and OUT/report.md (default OUT = tools/racks/out, gitignored). Exit 0 = no failure, 1 = failures, 2 = usage / CLI missing.
 // Sources audited: hook defs of the given hooks files (default: site/data/racks/hygiene.json, site/data/phonk/racks*.json, racks*.json of every other pack in site/data),
@@ -60,6 +60,11 @@ export function measure(wav, band) {
     corr: sll > 1e-20 && srr > 1e-20 ? Math.round(slr / Math.sqrt(sll * srr) * 1000) / 1000 : null,
     side_low_db: r1(db10(sum(S, 2, lowHz) / total)) };
   let c = 0, w = 0; for (let k = 1; k < P.length; k++) { c += k * BIN * P[k]; w += P[k]; } o.centroid_hz = Math.round(c / (w || 1));
+  // envelope range (gate class, #122): 10 ms RMS windows between the first and last window within 60 dB of the loudest; p95 - p10 in dB. A trance gate
+  // must open and close (a sustained pad measures a few dB; a 16-step gate with a 40 ms release measures 20+)
+  { const w10 = Math.round(SR * 0.01); const lv = []; for (let i = 0; i + w10 <= n; i += w10) { let s2 = 0; for (let j = i; j < i + w10; j++) s2 += (L[j] * L[j] + R[j] * R[j]) / 2; lv.push(db10(s2 / w10)); }
+    const tp = Math.max(...lv); let a0 = lv.findIndex((x) => x > tp - 60), a1 = lv.length - 1; while (a1 > a0 && lv[a1] <= tp - 60) a1--; const act2 = lv.slice(Math.max(0, a0), a1 + 1).sort((x, y) => x - y);
+    o.env_range_db = act2.length > 10 ? r1(act2[Math.floor(0.95 * (act2.length - 1))] - act2[Math.floor(0.1 * (act2.length - 1))]) : null; }
   if (band) { const inb = sum(P, band[0], band[1]) || 1e-30; o.below_db = r1(db10(sum(P, 2, band[0] - BIN) / inb)); o.above_db = r1(db10(sum(P, band[1] + BIN, nyq) / inb)); o.inband_pct = r1(100 * inb / total); }
   return o;
 }
@@ -77,6 +82,7 @@ export function judge(m, cls, extra = {}) {
   if (C.band) { max('below', m.below_db, C.below_max_db); max('above', m.above_db, C.above_max_db); }
   max('sub20', m.sub20_db, C.sub20_max_db); max('ultra', m.ultra_db, C.ultra_max_db); max('dc', m.dc_db, C.dc_max_db); max('clip', m.clip, C.clip_max);
   max('peak', m.peak_db, C.peak_max_db); min('level', m.peak_db, C.peak_min_db); min('crest', m.crest_db, C.crest_min_db);
+  if (C.env_range_min_db != null) min('envrange', m.env_range_db, C.env_range_min_db);
   if (m.corr != null) min('corr', m.corr, C.corr_min); if (m.side_low_db != null) max('lowmono', m.side_low_db, C.side_low_max_db);
   if (C.alias && m.alias_db != null) max('alias', m.alias_db, C.alias.max_db);
   if (extra.head != null) add('head', extra.head.found, extra.head.want, extra.head.found === extra.head.want);
@@ -106,7 +112,7 @@ if (only.includes('catalog')) for (const r of JSON.parse(fs.readFileSync(opt('--
 if (only.includes('syntax')) for (const sec of JSON.parse(fs.readFileSync(opt('--syntax', path.join(ROOT, 'site/data/syntax.json')), 'utf8')).sections) for (const ex of sec.examples || []) {
   const id = `${sec.id}/${ex.title}`; const t = TGT.syntax[id] || {}; items.push({ kind: 'syntax', id, cls: t.class || 'demo', code: ex.code, bars: t.bars || 2, skip: typeof ex.code !== 'string' ? 'no code (UI walkthrough)' : t.skip, site: true });
 }
-const todo = items.filter((i) => !one || i.id === one);
+const ones = one ? new Set(one.split(',')) : null; const todo = items.filter((i) => !ones || ones.has(i.id)); // --item a,b,c audits several items
 
 // ---------- render ----------
 fs.mkdirSync(OUT, { recursive: true }); const work = fs.mkdtempSync(path.join(os.tmpdir(), 'rack-audit-')); const hooksPath = path.join(work, 'hooks.json'); fs.writeFileSync(hooksPath, JSON.stringify(merged));

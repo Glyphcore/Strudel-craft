@@ -523,6 +523,16 @@ does; `hooks.bind("fx", "x", "@3b")` is rewritten to single quotes). Design: `do
   `docs/tracks/edm-dubstep-tutorial/`. New rack classes reese, growl, screech (docs/RACK_STANDARD.md). Other EDM packs (glyphcore/dnb-electro) build on edm-core.
 - A family recipe may be a whole program (`"program": "docs/tracks/.../track.strudel.js"`, `"standalone": "..."`): the builder lowers it to plain Strudel (the Strudel tab) and writes
   the standalone copy, so the paste-ready file is generated, never hand-kept.
+- Pack `glyphcore/dnb-electro` 1.0.0 (`data/dnb-electro/`, CC0-1.0, pinned by `shim.py`; #121-#124, docs/CONVENTIONS.md 9-11, sources docs/DNB_ELECTRO_REFERENCES.md):
+  `racks-dnb-electro` (hooks@1: dnbKick, dnbSnare, ghostSnare, breakKick, breakSnare, ride, dnbShaker, dnbHat, dnbSub, reese, neuroBass, rollingBass, jumpWobble,
+  liquidRhodes, liquidPad, strings, vocalChop; boom808, clap808, hat808, open808, cowbell808, electroBass, vocoLead, robotStab, filterBass, sawStab; houseKick, bigKick,
+  houseClap, offHat, closedHat, houseBass, rumble, pluck, bigChords, gatePad, roomLead), `atoms-dnb` (`dnb.` two-step,
+  ghosts, amen / think-style breaks, chop orders, sub / reese / neuro / rolling / wobble lines, liquid chords, 128-bar form gates), `atoms-electro` (`el.`), `atoms-house` (`hs.`,
+  with a 160-bar club map), seven feel templates (`feel-liquid`, `-neuro`, `-jumpup`, `-electrohouse`, `-techno`, `-trance`, `-bigroom`; grooves composed from the standard presets, e.g. liquid = `groove-swing(54) | groove-human(2.5, 0.15, seed)`) and `presets` (recipes@1: the three
+  track demos). It uses the EDM foundations of `glyphcore/edm` (sidechain / ducked, risers, impacts, roll and filter-build atoms) and never redefines them. Syntax sections
+  **DnB, electro, house / techno / trance** and **Track demos: DnB, electro, house / techno / trance**; catalog recipes (labels dnb, liquid, neuro, jump-up, breakbeat,
+  electro, house, techno, trance, big-room) carry both forms. Breaks are synthesised (no sampled break ships); chop any break with `.bite(16, atoms.dnb.chops)`.
+  Track sources: docs/tracks/dnb-electro-tutorial (pack versions; `node tools/packs/dnb_electro.mjs` writes the standalone programs and `presets.json`).
 
 ## Mixer read model (`engine/mixer-model.js`, #95; docs/REFACTOR_PLAN.md phase R1)
 `channels(graph)` turns the lane graph (`engine/lanes.js` `compile(src).graph`) into channel strips: one per lane (`kind: "lane"`), one per `ret(name)` lane (`kind: "return"`, with its

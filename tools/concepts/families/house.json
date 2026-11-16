@@ -1,0 +1,952 @@
+{
+ "family": "house",
+ "title": "House, techno, trance and big room: four-on-the-floor, rolling bass, plucks, supersaw chords, trance gate, arrangement maps",
+ "doc": "F minor, 122-140 bpm, one cycle = one bar on 16 steps. Kick on every beat, open hat on every offbeat, clap on 2 and 4; rolling bass in the kick's gaps; plucks and supersaw chords on i - VI - III - VII; a trance gate is a 16-step struct with a short envelope on a sustained supersaw; arrangement maps are gate atoms on 8-bar sections and on a 160-bar club map of 32-bar blocks.",
+ "pack": "glyphcore/dnb-electro",
+ "section": {
+  "id": "dnb-electro",
+  "title": "DnB, electro, house / techno / trance: kits, forms, feels",
+  "explain": "Pack glyphcore/dnb-electro (docs/CONVENTIONS.md 8-11, sources in docs/DNB_ELECTRO_REFERENCES.md). F minor throughout, one cycle = one bar of 4/4 on 16 steps. Components are racks (band-scoped, docs/RACK_STANDARD.md; per-role classes reese, neuro, break, gate) and pattern atoms (dnb. drum-and-bass, el. electro, hs. house / techno / trance / big room, tn. tension and release); forms are gate atoms (dnb.intro .. dnb.outro on a 128-bar DnB form, el.* and hs.* on 8-bar sections, hs.map* on a 160-bar club map of 32-bar blocks); breaks are synthesised and chopped by re-sequencing the 16 slices of a bar (.bite(16, atoms.dnb.chops)); sidechain is first-class (kickPump moves the superdough duck onto the bass, chord and pad orbits; kickDuck wires a gain to kick:env). Seven feel templates (feel-liquid, -neuro, -jumpup, -electrohouse, -techno, -trance, -bigroom) fill the same slots as the phonk feels; their grooves are compositions of the standard presets (groove-swing | groove-push | groove-human with the voice seed).",
+  "needs": "hooks"
+ },
+ "taxonomy": {
+  "folder": "house",
+  "genres": [
+   "house",
+   "techno",
+   "trance",
+   "big-room"
+  ]
+ },
+ "atomsIngredient": {
+  "id": "atoms-house",
+  "ns": "hs",
+  "title": "House / techno / trance atoms",
+  "doc": "glyphcore/dnb-electro house, techno, trance and big-room atoms (hs.): four-on-the-floor kick, offbeat open hat, 16th hats and accents, clap, rolling and offbeat bass, rumble, pluck arp, chords, trance gate, big-room lead motif; gates of the 56-bar house example (intro, groove, breakdown, build, drop, drop2, outro) and of a 160-bar club map in 32-bar blocks (mapIntro .. mapOutro, phrase8 ends). Import with atoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")."
+ },
+ "racks": {
+  "houseKick": {
+   "class": "kick",
+   "doc": "house / techno kick: sine at 55 Hz, 26-semitone knock, 0.28 s, light drive",
+   "chain": [
+    [
+     "hook",
+     "hygiene-kick"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "freq",
+     55
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "penv",
+     26
+    ],
+    [
+     "pdecay",
+     0.04
+    ],
+    [
+     "decay",
+     0.28
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "shape",
+     0.3
+    ],
+    [
+     "lpf",
+     6000
+    ],
+    [
+     "gain",
+     0.8
+    ]
+   ]
+  },
+  "bigKick": {
+   "class": "kick",
+   "doc": "big-room kick: deeper (50 Hz), longer knock and tail, more drive",
+   "chain": [
+    [
+     "hook",
+     "hygiene-kick"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "freq",
+     50
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "penv",
+     32
+    ],
+    [
+     "pdecay",
+     0.06
+    ],
+    [
+     "decay",
+     0.4
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "shape",
+     0.45
+    ],
+    [
+     "lpf",
+     5000
+    ],
+    [
+     "gain",
+     0.78
+    ]
+   ]
+  },
+  "houseClap": {
+   "class": "snare",
+   "doc": "house clap: band-passed noise at 1.5 kHz",
+   "chain": [
+    [
+     "hook",
+     "hygiene-snare"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "bpf",
+     1500
+    ],
+    [
+     "bpq",
+     1
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "decay",
+     0.16
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.9
+    ]
+   ]
+  },
+  "offHat": {
+   "class": "hat",
+   "doc": "offbeat open hat: 0.12 s noise above 7.5 kHz",
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     7500
+    ],
+    [
+     "decay",
+     0.12
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "closedHat": {
+   "class": "hat",
+   "doc": "closed hat for 16ths",
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     8500
+    ],
+    [
+     "decay",
+     0.025
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "houseBass": {
+   "class": "bass",
+   "doc": "house / trance offbeat bass: saw, low-pass 450 Hz with a blip",
+   "chain": [
+    [
+     "hook",
+     "hygiene-bass"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "attack",
+     0.004
+    ],
+    [
+     "decay",
+     0.15
+    ],
+    [
+     "sustain",
+     0.2
+    ],
+    [
+     "release",
+     0.05
+    ],
+    [
+     "lpf",
+     450
+    ],
+    [
+     "lpenv",
+     1.5
+    ],
+    [
+     "lpdecay",
+     0.1
+    ],
+    [
+     "gain",
+     0.4
+    ]
+   ]
+  },
+  "rumble": {
+   "class": "sub",
+   "doc": "techno rumble: mono sine on the kick's off-16ths, slow 20 ms attack, low-passed at 160 Hz (the dry stand-in for a reverbed kick: reverb would put side energy under 120 Hz)",
+   "chain": [
+    [
+     "hook",
+     "hygiene-sub"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "attack",
+     0.02
+    ],
+    [
+     "decay",
+     0.12
+    ],
+    [
+     "sustain",
+     0.4
+    ],
+    [
+     "release",
+     0.06
+    ],
+    [
+     "lpf",
+     160
+    ],
+    [
+     "gain",
+     0.42
+    ]
+   ]
+  },
+  "pluck": {
+   "class": "pluck",
+   "doc": "trance pluck: saw, 3-octave filter envelope, 0.22 s decay",
+   "chain": [
+    [
+     "hook",
+     "hygiene-pluck"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "decay",
+     0.22
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "lpf",
+     1800
+    ],
+    [
+     "lpenv",
+     3
+    ],
+    [
+     "lpdecay",
+     0.18
+    ],
+    [
+     "gain",
+     0.26
+    ]
+   ]
+  },
+  "bigChords": {
+   "class": "supersaw",
+   "doc": "supersaw chords: unison 7, detune 0.3, spread 0.7, sustained",
+   "chain": [
+    [
+     "hook",
+     "hygiene-supersaw"
+    ],
+    [
+     "s",
+     "supersaw"
+    ],
+    [
+     "unison",
+     7
+    ],
+    [
+     "detune",
+     0.3
+    ],
+    [
+     "spread",
+     0.7
+    ],
+    [
+     "attack",
+     0.02
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     0.6
+    ],
+    [
+     "lpf",
+     6000
+    ],
+    [
+     "gain",
+     0.11
+    ]
+   ]
+  },
+  "gatePad": {
+   "class": "gate",
+   "doc": "trance-gated supersaw: a 16-step struct (hs.gate) re-triggers the chord with a 90 ms decay and a short release, so the pad opens and closes on 16ths",
+   "chain": [
+    [
+     "hook",
+     "hygiene-gate"
+    ],
+    [
+     "struct",
+     {
+      "$atomBody": "gate"
+     }
+    ],
+    [
+     "s",
+     "supersaw"
+    ],
+    [
+     "unison",
+     5
+    ],
+    [
+     "detune",
+     0.3
+    ],
+    [
+     "spread",
+     0.6
+    ],
+    [
+     "attack",
+     0.003
+    ],
+    [
+     "decay",
+     0.09
+    ],
+    [
+     "sustain",
+     0.1
+    ],
+    [
+     "release",
+     0.04
+    ],
+    [
+     "lpf",
+     4500
+    ],
+    [
+     "gain",
+     0.15
+    ]
+   ]
+  },
+  "roomLead": {
+   "class": "lead",
+   "doc": "big-room lead: three slightly detuned saws, bright, short sustain",
+   "chain": [
+    [
+     "hook",
+     "hygiene-lead"
+    ],
+    [
+     "s",
+     "supersaw"
+    ],
+    [
+     "unison",
+     3
+    ],
+    [
+     "detune",
+     0.12
+    ],
+    [
+     "spread",
+     0.3
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "decay",
+     0.3
+    ],
+    [
+     "sustain",
+     0.4
+    ],
+    [
+     "release",
+     0.1
+    ],
+    [
+     "lpf",
+     4500
+    ],
+    [
+     "gain",
+     0.16
+    ]
+   ]
+  }
+ },
+ "atoms": {
+  "kick": {
+   "type": "mini",
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "four-on-the-floor"
+  },
+  "offHat": {
+   "type": "mini",
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "open hat on every offbeat 8th"
+  },
+  "hats": {
+   "type": "mini",
+   "body": "x*16",
+   "doc": "16th closed hats"
+  },
+  "hatVel": {
+   "type": "mini",
+   "body": "[.5 .3 .8 .3]*4",
+   "doc": "16th hat accents (offbeat strong)"
+  },
+  "clap": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "clap on 2 and 4"
+  },
+  "bass": {
+   "type": "mini",
+   "body": "<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ ab1 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>",
+   "doc": "offbeat house bass"
+  },
+  "rolling": {
+   "type": "mini",
+   "body": "~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f2",
+   "doc": "techno rolling bass: every 16th the kick leaves free"
+  },
+  "rumble": {
+   "type": "mini",
+   "body": "~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1",
+   "doc": "rumble notes in the kick's gaps"
+  },
+  "arp": {
+   "type": "mini",
+   "body": "<[f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5] [f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5] [eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5] [eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4]>",
+   "doc": "trance pluck arp, 16ths, following the chords"
+  },
+  "chords": {
+   "type": "mini",
+   "body": "<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>",
+   "doc": "chords, one per bar: Fm, Db, Ab, Eb (i - VI - III - VII)"
+  },
+  "gate": {
+   "type": "mini",
+   "body": "x ~ x x x ~ x x x ~ x x x ~ x x",
+   "doc": "trance gate: 16 steps, a 3-against-4 grouping"
+  },
+  "lead": {
+   "type": "mini",
+   "body": "<[f4 ~ f4 ~ ab4 ~ f4 ~ c5 ~ ~ ~ ab4 ~ g4 ~] [f4 ~ f4 ~ ab4 ~ f4 ~ db5 ~ ~ ~ c5 ~ ab4 ~]>",
+   "doc": "big-room lead motif: short, repeated, one hook"
+  },
+  "intro": {
+   "type": "gate",
+   "body": "<9b",
+   "doc": "intro (house groove): bars 1-8 (form: intro 8, groove 8, breakdown 8, build 8, drop 8, drop 2 8, outro 8 = 56 bars = 105 s at 128 bpm)"
+  },
+  "groove": {
+   "type": "gate",
+   "body": "9b..17b",
+   "doc": "techno groove: bars 9-16 (rumble, rolling bass, 16th hats)"
+  },
+  "breakdown": {
+   "type": "gate",
+   "body": "17b..25b",
+   "doc": "trance breakdown: bars 17-24 (no kick)"
+  },
+  "build": {
+   "type": "gate",
+   "body": "25b..33b",
+   "doc": "uplifting build: bars 25-32"
+  },
+  "drop": {
+   "type": "gate",
+   "body": "33b..41b",
+   "doc": "trance drop: bars 33-40"
+  },
+  "drop2": {
+   "type": "gate",
+   "body": "41b..49b",
+   "doc": "big-room drop: bars 41-48 (stripped: kick, clap, lead)"
+  },
+  "outro": {
+   "type": "gate",
+   "body": "@49b",
+   "doc": "outro (house groove): bars 49-56"
+  },
+  "noKick": {
+   "type": "gate",
+   "body": "17b..33b",
+   "doc": "kick out: breakdown and build"
+  },
+  "vacuum": {
+   "type": "gate",
+   "body": "32.3b..33b",
+   "doc": "the last half bar before the drop"
+  },
+  "mapIntro": {
+   "type": "gate",
+   "body": "<33b",
+   "doc": "club map (160 bars, 32-bar blocks): intro, bars 1-32 (DJ mix-in)"
+  },
+  "mapDrop1": {
+   "type": "gate",
+   "body": "33b..65b",
+   "doc": "club map: first drop / main groove, bars 33-64"
+  },
+  "mapBreak": {
+   "type": "gate",
+   "body": "65b..81b",
+   "doc": "club map: breakdown, bars 65-80"
+  },
+  "mapBuild": {
+   "type": "gate",
+   "body": "81b..97b",
+   "doc": "club map: build, bars 81-96"
+  },
+  "mapDrop2": {
+   "type": "gate",
+   "body": "97b..129b",
+   "doc": "club map: second drop, bars 97-128"
+  },
+  "mapOutro": {
+   "type": "gate",
+   "body": "@129b",
+   "doc": "club map: outro, bars 129-160 (DJ mix-out)"
+  },
+  "phrase8": {
+   "type": "gate",
+   "body": "8b..9b, 16b..17b, 24b..25b, 32b..33b, 40b..41b, 48b..49b, 56b..57b, 64b..65b, 72b..73b, 80b..81b, 88b..89b, 96b..97b, 104b..105b, 112b..113b, 120b..121b, 128b..129b, 136b..137b, 144b..145b, 152b..153b, 160b..161b",
+   "doc": "the last bar of every 8-bar phrase (bars 8, 16, ... 160): turnarounds and fills"
+  }
+ },
+ "recipes": [
+  {
+   "id": "house-four-on-the-floor",
+   "title": "Four-on-the-floor house groove",
+   "intent": "Kick on every beat, open hat on every offbeat, clap on 2 and 4, 16th closed hats with accents.",
+   "labels": [
+    "house",
+    "drums",
+    "four-floor"
+   ],
+   "class": "demo",
+   "cpm": 124,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@kick",
+     "rack": "houseKick"
+    },
+    {
+     "src": "s",
+     "pat": "@offHat",
+     "rack": "offHat"
+    },
+    {
+     "src": "s",
+     "pat": "@clap",
+     "rack": "houseClap"
+    },
+    {
+     "src": "s",
+     "pat": "@hats",
+     "rack": "closedHat",
+     "vel": "@hatVel"
+    }
+   ]
+  },
+  {
+   "id": "offbeat-open-hat",
+   "title": "Offbeat open hat",
+   "intent": "The open hat on every offbeat 8th: the house lift.",
+   "labels": [
+    "house",
+    "hats"
+   ],
+   "class": "hat",
+   "cpm": 124,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@offHat",
+     "rack": "offHat"
+    }
+   ]
+  },
+  {
+   "id": "house-swing-groove",
+   "title": "House shuffle",
+   "intent": "The same groove with the house shuffle on the hats and clap: 16ths at 56 % swing (groove-swing(56)) and a small timing and velocity spread (groove-human(1, 0.1)).",
+   "labels": [
+    "house",
+    "swing",
+    "human-feel"
+   ],
+   "class": "demo",
+   "cpm": 122,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@kick",
+     "rack": "houseKick"
+    },
+    {
+     "src": "s",
+     "pat": "@offHat",
+     "rack": "offHat",
+     "groove": "groove-swing(56) | groove-human(1, 0.1, 1)"
+    },
+    {
+     "src": "s",
+     "pat": "@clap",
+     "rack": "houseClap",
+     "groove": "groove-swing(56) | groove-human(1, 0.1, 2)"
+    },
+    {
+     "src": "s",
+     "pat": "@hats",
+     "rack": "closedHat",
+     "vel": "@hatVel",
+     "groove": "groove-swing(56) | groove-human(1, 0.1, 3)"
+    }
+   ]
+  },
+  {
+   "id": "house-bass",
+   "title": "Offbeat house bass",
+   "intent": "Saw bass on the offbeat 8ths between the kicks.",
+   "labels": [
+    "house",
+    "bass"
+   ],
+   "class": "bass",
+   "cpm": 124,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@bass",
+     "rack": "houseBass"
+    }
+   ]
+  },
+  {
+   "id": "techno-rolling-bass",
+   "title": "Techno rolling bass",
+   "intent": "Every 16th the kick leaves free, under a four-on-the-floor kick.",
+   "labels": [
+    "techno",
+    "bass",
+    "four-floor"
+   ],
+   "class": "demo",
+   "cpm": 132,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@kick",
+     "rack": "houseKick"
+    },
+    {
+     "src": "note",
+     "pat": "@rolling",
+     "rack": "houseBass",
+     "groove": "groove-human(0.8, 0.08, 2)"
+    }
+   ]
+  },
+  {
+   "id": "techno-rumble",
+   "title": "Techno rumble",
+   "intent": "Mono sine rumble in the kick's gaps, slow attack, low-passed at 160 Hz.",
+   "labels": [
+    "techno",
+    "bass"
+   ],
+   "class": "sub",
+   "cpm": 132,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@rumble",
+     "rack": "rumble"
+    }
+   ]
+  },
+  {
+   "id": "trance-pluck",
+   "title": "Trance pluck arp",
+   "intent": "Saw pluck with a 3-octave filter envelope on a 16th arp that follows Fm - Db - Ab - Eb, with a dotted-8th echo.",
+   "labels": [
+    "trance",
+    "arpeggio"
+   ],
+   "class": "pluck",
+   "cpm": 138,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@arp",
+     "rack": "pluck",
+     "more": ".delay(0.3).delaytime(0.326).delayfeedback(0.35)"
+    }
+   ],
+   "bars": 4
+  },
+  {
+   "id": "supersaw-chords",
+   "title": "Supersaw chords",
+   "intent": "Unison-7 supersaw chords, one per bar: i - VI - III - VII.",
+   "labels": [
+    "trance",
+    "chord-progression"
+   ],
+   "class": "supersaw",
+   "cpm": 138,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@chords",
+     "rack": "bigChords"
+    }
+   ],
+   "bars": 4
+  },
+  {
+   "id": "trance-gate",
+   "title": "Trance gate",
+   "intent": "A sustained supersaw chord opened and closed by a 16-step gate (struct + 90 ms decay): the gate is the rhythm.",
+   "labels": [
+    "trance",
+    "syncopated"
+   ],
+   "class": "gate",
+   "cpm": 138,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@chords",
+     "rack": "gatePad"
+    }
+   ],
+   "bars": 4
+  },
+  {
+   "id": "big-room-drop",
+   "title": "Big-room drop",
+   "intent": "Stripped: a big kick, a clap and one lead motif, the lead ducked by the kick (orbit 5).",
+   "labels": [
+    "big-room",
+    "build-drop",
+    "sidechain"
+   ],
+   "class": "demo",
+   "cpm": 128,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@kick",
+     "rack": "bigKick",
+     "move": "sidechain(5, 0.6, 0.16)"
+    },
+    {
+     "src": "s",
+     "pat": "@clap",
+     "rack": "houseClap"
+    },
+    {
+     "src": "note",
+     "pat": "@lead",
+     "rack": "roomLead",
+     "move": "ducked(5)"
+    }
+   ],
+   "bars": 2
+  },
+  {
+   "id": "trance-drop",
+   "title": "Uplifting trance drop",
+   "intent": "Four-on-the-floor, offbeat bass, gated supersaw chords and the pluck arp, all ducked by the kick on orbit 3.",
+   "labels": [
+    "trance",
+    "build-drop",
+    "sidechain"
+   ],
+   "class": "demo",
+   "cpm": 138,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@kick",
+     "rack": "houseKick",
+     "move": "sidechain(3, 0.5, 0.14)"
+    },
+    {
+     "src": "s",
+     "pat": "@offHat",
+     "rack": "offHat"
+    },
+    {
+     "src": "note",
+     "pat": "@bass",
+     "rack": "houseBass",
+     "move": "ducked(3)"
+    },
+    {
+     "src": "note",
+     "pat": "@chords",
+     "rack": "gatePad",
+     "move": "ducked(3)"
+    },
+    {
+     "src": "note",
+     "pat": "@arp",
+     "rack": "pluck",
+     "move": "ducked(3)"
+    }
+   ],
+   "bars": 4
+  }
+ ],
+ "syntax": [
+  {
+   "title": "Uplifting build on the shared grammar: roll, filter build, riser, gap, impact",
+   "bars": 10,
+   "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\nhooks.bind(\"rise\", \"noiseRiser(13.9)\", atoms.ec.rise8({ at: \"9b\" })); hooks.bind(\"hit\", \"impactBoom\", atoms.ec.hit({ at: \"9b\" }))\nroll: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook(\"houseClap\").tags(\"build\")\nchords: note(atoms.hs.chords).hook(\"bigChords | filterBuild\").tags(\"build\")\ngate: note(atoms.hs.chords).hook(\"gatePad\").tags(\"drop\")\nkick: s(atoms.hs.kick).hook(\"houseKick\").tags(\"drop\")\nrise: s(\"x\").use(\"rise\", { else: \"silence\" })\nhit: s(\"x\").use(\"hit\", { else: \"silence\" })\ntagged(\"build\").mute(\"@9b\"); tagged(\"drop\").mute(\"<9b\")\ntagged(\"build\").mute(\"8.3b..9b\")   // the gap: half a bar of nothing before the drop"
+  },
+  {
+   "title": "Trance gate: a 16-step struct on a sustained supersaw",
+   "bars": 2,
+   "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.chords).hook(\"gatePad\")                         // the gate is inside the rack (struct hs.gate)\n$: note(atoms.hs.chords).struct(\"x*16\").hook(\"bigChords\").decay(0.08).sustain(0).velocity(0.5)   // the same idea written out: every 16th"
+  },
+  {
+   "title": "Club map: 32-bar blocks as gates",
+   "bars": 2,
+   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\nhooks.bind(\"kick\", \"houseKick\"); hooks.bind(\"hat\", \"offHat\"); hooks.bind(\"pad\", \"bigChords\")\nkick: s(atoms.hs.kick).use(\"kick\").tags(\"drums\")\nhat: s(atoms.hs.offHat).use(\"hat\").tags(\"drums\")\npad: note(atoms.hs.chords).use(\"pad\").tags(\"pad\")\ntagged(\"drums\").mute(atoms.hs.mapBreak)          // breakdown 65-80: no drums\ntagged(\"pad\").mute(atoms.hs.mapIntro)            // the intro is DJ-friendly: drums only\ntagged(\"drums\").mute(atoms.hs.phrase8).mute(\"<0b\")   // a turnaround idea: thin the last bar of each phrase (shown off here)"
+  }
+ ]
+}

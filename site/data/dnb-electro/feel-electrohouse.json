@@ -1,0 +1,390 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"Electro house\" (126-130 bpm): four-on-the-floor, offbeat hat, filtered saw bass and supersaw stabs on the offbeats. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/dnb-electro:feel-electrohouse\", { as: \"feel\" }).",
+ "atoms": {
+  "a8dl67l": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "kick pattern",
+   "folder": "feels/electrohouse/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "electrohouse",
+    "pattern"
+   ],
+   "hash": "sha256:0217ca393e7b9e240d8b3ffed67e975f3934d9a9f1303a227193b90afe293ac5"
+  },
+  "arlq3wk": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "folder": "feels/electrohouse/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "electrohouse",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "abri4da": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "houseKick | groove-human(0.5, 0.05, 1)",
+   "doc": "kick rack and groove",
+   "folder": "feels/electrohouse/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "electrohouse",
+    "rack-slot"
+   ],
+   "hash": "sha256:ddb0e41507158c47f6c17cf8d6de37f2199889f8eb1c0b4b6f6ce7f4ee963e03"
+  },
+  "a8lbebo": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "snare pattern",
+   "folder": "feels/electrohouse/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "electrohouse",
+    "pattern"
+   ],
+   "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
+  },
+  "a6h4ugv": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "folder": "feels/electrohouse/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "electrohouse",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a76g633": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "clap808 | groove-human(0.5, 0.05, 2)",
+   "doc": "snare rack and groove",
+   "folder": "feels/electrohouse/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "electrohouse",
+    "rack-slot"
+   ],
+   "hash": "sha256:357e6e12e2229674c69866624f453249020ab0d58ecee8f49ea10fee45a37558"
+  },
+  "a572q6r": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "perc pattern",
+   "folder": "feels/electrohouse/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "electrohouse",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "azemocm": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "perc accents (velocity)",
+   "folder": "feels/electrohouse/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "electrohouse",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "afannss": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.5, 0.05, 3)",
+   "doc": "perc rack and groove",
+   "folder": "feels/electrohouse/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "electrohouse",
+    "rack-slot"
+   ],
+   "hash": "sha256:0249ad7e4fa6577da9795f84f8f5e40fcb28d69a7ae54ae15960a62b725c08c6"
+  },
+  "au6er9p": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "hats pattern",
+   "folder": "feels/electrohouse/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "electrohouse",
+    "pattern"
+   ],
+   "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
+  },
+  "afwhz28": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "hats accents (velocity)",
+   "folder": "feels/electrohouse/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "electrohouse",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ajsci8q": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "offHat | groove-human(0.5, 0.05, 4)",
+   "doc": "hats rack and groove",
+   "folder": "feels/electrohouse/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "electrohouse",
+    "rack-slot"
+   ],
+   "hash": "sha256:ce314071d34069c22f3e37b99f021211f3005d721c5a1e2801443a0d6758ccb7"
+  },
+  "avgexfe": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "top pattern",
+   "folder": "feels/electrohouse/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "electrohouse",
+    "pattern"
+   ],
+   "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
+  },
+  "a3p5qj1": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "folder": "feels/electrohouse/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "electrohouse",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ahzjhgp": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "sawStab | groove-human(0.5, 0.05, 5)",
+   "doc": "top rack and groove",
+   "folder": "feels/electrohouse/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "electrohouse",
+    "rack-slot"
+   ],
+   "hash": "sha256:ba17f8d0fe742a0fb5dd2d75c1087a387fab426d819dd34cf6e1d33c1ebaed29"
+  },
+  "aezf890": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f2 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>",
+   "doc": "bass pattern",
+   "folder": "feels/electrohouse/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "electrohouse",
+    "pattern"
+   ],
+   "hash": "sha256:0f3c6ac0817e477dff1f4df58d28df7db337e46b428fdfba03d49dc14373fb07"
+  },
+  "an5ugzj": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "bass accents (velocity)",
+   "folder": "feels/electrohouse/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "electrohouse",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "aags4xb": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "filterBass | groove-human(0.5, 0.05, 6)",
+   "doc": "bass rack and groove",
+   "folder": "feels/electrohouse/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "electrohouse",
+    "rack-slot"
+   ],
+   "hash": "sha256:a2bfea9c2ccc93d00878d757d39f568a88d4cf52b4c94d54f4de3b9f30d28e5a"
+  },
+  "arkce5b": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "harmony pattern",
+   "folder": "feels/electrohouse/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "electrohouse",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "awhoihe": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "folder": "feels/electrohouse/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "electrohouse",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "adhhnx4": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.5, 0.05, 7)",
+   "doc": "harmony rack and groove",
+   "folder": "feels/electrohouse/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "electrohouse",
+    "rack-slot"
+   ],
+   "hash": "sha256:76267bac01dbada94ddf6629c936dfe5c087fec87154aea3fe003c64ac6da869"
+  },
+  "a2z7l7p": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "fx pattern",
+   "folder": "feels/electrohouse/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "electrohouse",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "aackjp4": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "folder": "feels/electrohouse/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "electrohouse",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "aw5k8v6": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.5, 0.05, 8)",
+   "doc": "fx rack and groove",
+   "folder": "feels/electrohouse/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "electrohouse",
+    "rack-slot"
+   ],
+   "hash": "sha256:219ccd614c85ee1ea91becf9eca7d6846ae9bd6da0bc33b43ebd0aa214649d34"
+  },
+  "axwwf9x": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.5, 0.05, 0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "folder": "feels/electrohouse/groove",
+   "tags": [
+    "groove",
+    "feel",
+    "electrohouse",
+    "rack-slot"
+   ],
+   "hash": "sha256:ed3ab28ff2d571caafb5612d034391520550a57cb6f472ed0d1e6d8d3beb5aef"
+  }
+ }
+}

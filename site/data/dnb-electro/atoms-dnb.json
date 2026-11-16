@@ -1,0 +1,595 @@
+{
+ "format": "atoms@1",
+ "name": "dnb",
+ "doc": "glyphcore/dnb-electro drum-and-bass atoms (dnb.): two-step kick and snare, ghost notes and accents, amen-style and think-style breaks, chop orders for .bite(16, ...), shaker and ride, sub, reese, neuro, rolling and wobble lines, liquid chords, strings and vocal chops; gates of the 128-bar DnB form (intro, build, drop1, breakdown, build2, drop2, halftime, outro, drops, builds, vacuum). Import with atoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\").",
+ "atoms": {
+  "ac6qjk3": {
+   "name": "dnb.kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "two-step kick: 1 and the and of 3",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:de06729586e457eea6ecbfade8323300f60d93d4dc29d6160834b42c3eb44211"
+  },
+  "atab6aq": {
+   "name": "dnb.snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "backbeat on 2 and 4 (at 174 bpm: the snare every 0.69 s)",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
+  },
+  "av1f0w5": {
+   "name": "dnb.ghosts",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~",
+   "doc": "liquid ghost snares on beat 2.5 and 4.5",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:1c90100bacf8865037135144d89853893d48a8a0407d03eb9716fb6fc9b5683f"
+  },
+  "axp6vni": {
+   "name": "dnb.ghostsRoll",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~ ~ x x",
+   "doc": "rolling ghost snares (neuro / jump-up): around the backbeat, a pair into the next bar",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:b06e822bc4dcf4c31bbf946c985c7bd1fe7d8f06070f56006f877af2bc0846d3"
+  },
+  "a4k64z3": {
+   "name": "dnb.ghostVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[.55 .4 .6 .45]*4",
+   "doc": "ghost accent table (a 16-step velocity; ghosts sit 10-15 dB under the backbeat)",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:b30cc94d875f55c154e0e49b678d6fa2a790c8b889a672666fda6c9e8bcd8dd5"
+  },
+  "aitcl3q": {
+   "name": "dnb.halfKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~",
+   "doc": "halftime kick: 1 only",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:d0f80ff33ec6e1db3872b32285cdcb291e1347b4a0b23d477b59a3d5131165dc"
+  },
+  "a6plkit": {
+   "name": "dnb.halfSnare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
+   "doc": "halftime snare on beat 3 (the 87 bpm feel inside 174)",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:525fd0444781900288d0ac6c5358b9391d694346d05e7bca8b3001885e70932c"
+  },
+  "apjn5nz": {
+   "name": "dnb.hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~",
+   "doc": "8th hats",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:eea614f257dc29afdd2e10dc9b45a7edd4ce711ed02575f0725a31692898c0a8"
+  },
+  "a4xa641": {
+   "name": "dnb.shaker",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*16",
+   "doc": "16th shaker",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:bc74a3b9e12ebc0770e636fb859180836145824d453b6c0c08e954bc49f4cdaf"
+  },
+  "ae5dres": {
+   "name": "dnb.shakerVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[.35 .2 .6 .2]*4",
+   "doc": "shaker accents on the offbeat 8ths",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:cd2d81d4f98a74797f9c759c6bc0ffa201637d68bf8714f63c3b732d4b55fb69"
+  },
+  "a868wc6": {
+   "name": "dnb.rideVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[1 .55]*4",
+   "doc": "ride accents: on-beat strong",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:f77c236a1a254eecdbcf4976f44b5b01d5f6aa633ce54230729f37d31ab8112f"
+  },
+  "anheise": {
+   "name": "dnb.amenKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[x ~ x ~ ~ ~ ~ ~ ~ ~ x x ~ ~ ~ ~]!2 [x ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [~ ~ x x ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~]>",
+   "doc": "amen-style kick over 4 bars (bars 1-2 as commonly transcribed; bars 3-4 a variation, UNVERIFIED against the recording)",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:350689b3a4889ba4575620de38de66b768c1789a000b89586542aefa77b4d2f2"
+  },
+  "aav5np9": {
+   "name": "dnb.amenSnare",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[~ ~ ~ ~ x ~ ~ x ~ x ~ ~ x ~ ~ x]!2 [~ ~ ~ ~ x ~ ~ x ~ x ~ ~ ~ ~ x ~] [~ x ~ ~ x ~ ~ x ~ x ~ ~ ~ ~ x ~]>",
+   "doc": "amen-style snare over 4 bars (2, the a of 2, the e of 3, 4, the a of 4)",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:21be821ab2675f8cd4dd2abff3c5e2593d4b6c4c8dee90f3f1e59802f4607c7a"
+  },
+  "ayxs87v": {
+   "name": "dnb.amenVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[.35 .5 .35 .35 1 .35 .35 .55 .35 .5 .35 .35 1 .35 .45 .55]",
+   "doc": "amen accent table: backbeats full, the in-between snares as ghosts",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:d3594bf766ce5424f409b9b9cfe641d2453d550704acf40b04c072281c86611d"
+  },
+  "abje779": {
+   "name": "dnb.thinkKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "think-style kick (a style, not a transcription)",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:afc31853eb60c8132acc8f05d7b4cf215fafee12b4547534042282e9129c389e"
+  },
+  "asqp9xc": {
+   "name": "dnb.thinkSnare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ x ~ x ~",
+   "doc": "think-style snare",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:47f380cea78f8113dfa069591cb653ea3ba037a3277aa116b0527f0e89288b1d"
+  },
+  "avfapa8": {
+   "name": "dnb.thinkHat",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*16",
+   "doc": "think-style 16th hats",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:bc74a3b9e12ebc0770e636fb859180836145824d453b6c0c08e954bc49f4cdaf"
+  },
+  "amt6o6a": {
+   "name": "dnb.chops",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 2 3 4 5 6 7 0 1 2 3 12 13 14 15] [0 1 2 3 8 9 10 11 4 5 6 7 12 13 14 15] [0 1 2 3 4 5 6 7 8 9 10 11 [12 12] [12 12] [14 14 14] [15 15 15 15]]>",
+   "doc": "chop order for .bite(16, ...): bar 1 as played, bar 2 repeats beat 1 on beat 3, bar 3 swaps beats 2 and 3, bar 4 ends in a stutter roll",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:bc9b8f90a857b422e0bdb71db1597e43ce6a438086cf4e171f0101a28a7eec91"
+  },
+  "aa9g22i": {
+   "name": "dnb.chopsWild",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 0 1 4 5 6 7 8 8 10 11 12 13 [14 15] [14 15]] [15 14 13 12 4 5 6 7 8 9 10 11 0 1 2 3] [0 0 2 2 4 [4 4] 6 7 [8 8 8] 9 10 11 [12 12 12 12] [13 13] [14 14 14] [15 15 15 15]]>",
+   "doc": "busier jungle chop order: doubled slices, a reversed beat, a closing roll",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:2524cb3e49899bcd09f74ca12fd76623eb059bdaf39b4f45b4a34f4cb0cdd8ba"
+  },
+  "aimrgxl": {
+   "name": "dnb.sub",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f1@10 f1@6]!2 [db2@10 db2@6]!2 [bb1@10 bb1@6]!2 [c2@10 c2@6]!2>",
+   "doc": "sub line: one note per bar, held (F1, Db2, Bb1, C2: 44-69 Hz), the second note on the kick at the and of 3",
+   "folder": "dnb/bass",
+   "tags": [
+    "bass",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:9ea5039794c5d4c9ccc2748e7d842a5788eb1c7738bd1e5df1a20e5bf624c8d9"
+  },
+  "aq26i1k": {
+   "name": "dnb.neuro",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f1 ~ f1 f1 ~ f1 ~ ~ f2 ~ f1 ~ ab1 ~ f1 ~] [f1 ~ ~ f1 ~ ~ f1 ~ eb2 ~ ~ f1 c2 ~ f1 ~]>",
+   "doc": "neuro 16th riff over two bars, octave jumps",
+   "folder": "dnb/bass",
+   "tags": [
+    "bass",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:6f8dab96026adc2fae83f385c0d9fc1a6352ee244fec8b2dd5a7bc559e7ecbd7"
+  },
+  "awwjrl2": {
+   "name": "dnb.rolling",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f1 ~ f1 ~ ~ f1 ~ f2 ~ f1 ~ ~ f1 ~ ab1 ~]!2 [db2 ~ db2 ~ ~ db2 ~ ab1 ~ db2 ~ ~ db2 ~ c2 ~]!2 [bb1 ~ bb1 ~ ~ bb1 ~ f2 ~ bb1 ~ ~ bb1 ~ db2 ~]!2 [c2 ~ c2 ~ ~ c2 ~ g1 ~ c2 ~ ~ c2 ~ bb1 ~]!2>",
+   "doc": "rolling bass: offbeat 16ths that roll into the next kick, following the liquid chords (two bars each)",
+   "folder": "dnb/drums",
+   "tags": [
+    "drums",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:d410f9e79370424270dce390ea3d207dd0778ea7065cbea942daa324a57cd37a"
+  },
+  "agy5nxw": {
+   "name": "dnb.wobble",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f1@3 f1@3 f1@2 f2@3 f1@3 ab1@2] [f1@3 f1@3 f1@2 c2@3 bb1@3 ab1@2]>",
+   "doc": "jump-up wobble: 3+3+2 per half bar, octave jumps; each note re-opens the filter",
+   "folder": "dnb/bass",
+   "tags": [
+    "bass",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:4080fcd45a301f118d86f188635aee90d9257741e98d6456e09f4c69cd60e08b"
+  },
+  "aqtlddi": {
+   "name": "dnb.chords",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f3,ab3,c4,eb4,g4]!2 [db3,f3,ab3,c4,eb4]!2 [bb2,db3,f3,ab3,c4]!2 [c3,eb3,g3,bb3]!2>",
+   "doc": "liquid chords, one per two bars: Fm9, Dbmaj9, Bbm9, Cm7 (i, VI, iv, v)",
+   "folder": "dnb/keys",
+   "tags": [
+    "keys",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:35c590372926d0eaf9e991b6bec13fc2132dc1103a1bff331dac1dcb5a4bc370"
+  },
+  "a78e66m": {
+   "name": "dnb.comp",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "Rhodes comp rhythm (struct over dnb.chords)",
+   "folder": "dnb/keys",
+   "tags": [
+    "keys",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:d551b3037aa1b325fcbd5da3cb3b39a4b591f05581845b7c24510657ddaf7d03"
+  },
+  "an71gj9": {
+   "name": "dnb.strings",
+   "type": "mini",
+   "rev": 1,
+   "body": "<g4 ab4 f4 ab4 f4 db5 eb4 g4>",
+   "doc": "string top line, one note per bar (the 9th / 3rd / 5th of each chord)",
+   "folder": "dnb/pad",
+   "tags": [
+    "pad",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:289dbdfe41c24ab8ea0f1e3f832edf7e10238ff12ae483dd4811d648be28a05d"
+  },
+  "aerd4th": {
+   "name": "dnb.chop",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[~ ~ c5 ~ ~ ~ ab4 ~ ~ ~ ~ ~ c5 ~ eb5 ~] [~ ~ f4 ~ ~ ~ ab4 ~ ~ ~ ~ ~ g4 ~ f4 ~]>",
+   "doc": "vocal chop rhythm and notes",
+   "folder": "dnb/lead",
+   "tags": [
+    "lead",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:307d66e96584c2a5895a6cfbbfc84343d481538fad3d09ca38b746bfd9814b27"
+  },
+  "axl1b1i": {
+   "name": "dnb.chopVowel",
+   "type": "mini",
+   "rev": 1,
+   "body": "<a o e o>",
+   "doc": "vowel per chop bar",
+   "folder": "dnb/lead",
+   "tags": [
+    "lead",
+    "dnb",
+    "pattern"
+   ],
+   "hash": "sha256:e280309e2878c9b0dd490701c7aca661110b011b3137d78c3175c3ad679d2436"
+  },
+  "apbh5kd": {
+   "name": "dnb.intro",
+   "type": "gate",
+   "rev": 1,
+   "body": "<17b",
+   "doc": "intro: bars 1-16 (form: intro 16, build 8, drop 1 32, breakdown 16, build 8, drop 2 32, halftime 8, outro 8 = 128 bars = 2:56.6 at 174 bpm)",
+   "folder": "dnb/form",
+   "tags": [
+    "form",
+    "dnb",
+    "gate"
+   ],
+   "hash": "sha256:7899d3c492854887c3fdad9846e9da19a702658be71a97b741dd1484affa2343"
+  },
+  "a55zfy7": {
+   "name": "dnb.build",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..25b",
+   "doc": "build 1: bars 17-24",
+   "folder": "dnb/form",
+   "tags": [
+    "form",
+    "dnb",
+    "gate"
+   ],
+   "hash": "sha256:e67adbd7795bc1c1f3791c53d05bf0d02a7d534c9cbc1129aefcd96ca4a33de1"
+  },
+  "ayntxx7": {
+   "name": "dnb.drop1",
+   "type": "gate",
+   "rev": 1,
+   "body": "25b..57b",
+   "doc": "drop 1 (liquid): bars 25-56",
+   "folder": "dnb/form",
+   "tags": [
+    "form",
+    "dnb",
+    "gate"
+   ],
+   "hash": "sha256:5814a1bd41c591ded41f3a06484a4d0890955dd66a141e2ba9af32c4606dcba9"
+  },
+  "ap5f1w0": {
+   "name": "dnb.breakdown",
+   "type": "gate",
+   "rev": 1,
+   "body": "57b..73b",
+   "doc": "breakdown: bars 57-72, no drums",
+   "folder": "dnb/form",
+   "tags": [
+    "form",
+    "dnb",
+    "gate"
+   ],
+   "hash": "sha256:6ebc15924d5c2d481a5b7e0e23174149b19b273e5c91934c2ff180f779b29bac"
+  },
+  "ap5n2gn": {
+   "name": "dnb.build2",
+   "type": "gate",
+   "rev": 1,
+   "body": "73b..81b",
+   "doc": "build 2: bars 73-80",
+   "folder": "dnb/form",
+   "tags": [
+    "form",
+    "dnb",
+    "gate"
+   ],
+   "hash": "sha256:90b4fea2e8005907a69b0114a1c9eef9e53186fb7da4d25cb520da650296ac91"
+  },
+  "ayxtjm6": {
+   "name": "dnb.drop2",
+   "type": "gate",
+   "rev": 1,
+   "body": "81b..113b",
+   "doc": "drop 2 (neuro): bars 81-112",
+   "folder": "dnb/form",
+   "tags": [
+    "form",
+    "dnb",
+    "gate"
+   ],
+   "hash": "sha256:bbf4057cc5a11d9f9f490c5d1ac089cd9d2e4761d825032797cf10f7c43e5a13"
+  },
+  "alr17jd": {
+   "name": "dnb.halftime",
+   "type": "gate",
+   "rev": 1,
+   "body": "113b..121b",
+   "doc": "halftime switch: bars 113-120",
+   "folder": "dnb/form",
+   "tags": [
+    "form",
+    "dnb",
+    "gate"
+   ],
+   "hash": "sha256:af75b057bc038248d2b0ac83cdd5f08c99825f6b2364e25cd9abd3737cff6d52"
+  },
+  "adnblik": {
+   "name": "dnb.outro",
+   "type": "gate",
+   "rev": 1,
+   "body": "@121b",
+   "doc": "outro: bars 121-128",
+   "folder": "dnb/form",
+   "tags": [
+    "form",
+    "dnb",
+    "gate"
+   ],
+   "hash": "sha256:ac7653c90ff67157fa9bdbaaf6c5ce1fb5a2aa16a4a13ad88a182371586c4cb2"
+  },
+  "ahgikwx": {
+   "name": "dnb.drops",
+   "type": "gate",
+   "rev": 1,
+   "body": "25b..57b, 81b..113b",
+   "doc": "both drops",
+   "folder": "dnb/form",
+   "tags": [
+    "form",
+    "dnb",
+    "gate"
+   ],
+   "hash": "sha256:7dc695e2900f8c310979b0f282f6c615d4685c44e528ae5ede2c0216a5b49103"
+  },
+  "a74cwdg": {
+   "name": "dnb.builds",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..25b, 73b..81b",
+   "doc": "both builds",
+   "folder": "dnb/form",
+   "tags": [
+    "form",
+    "dnb",
+    "gate"
+   ],
+   "hash": "sha256:b77dc25b8d0a5dc6ef41857606997fa602aff6dd9fc056228a0b29345922ded3"
+  },
+  "aidk9qb": {
+   "name": "dnb.noDrums",
+   "type": "gate",
+   "rev": 1,
+   "body": "<9b, 57b..73b",
+   "doc": "drums out: first half of the intro and the breakdown",
+   "folder": "dnb/form",
+   "tags": [
+    "form",
+    "dnb",
+    "gate"
+   ],
+   "hash": "sha256:74cffbf15bb98f3dcc4e83c7937baf96c35a486f56d991251d47618f9d19539e"
+  },
+  "alrpxdq": {
+   "name": "dnb.vacuum",
+   "type": "gate",
+   "rev": 1,
+   "body": "24.3b..25b, 80.3b..81b",
+   "doc": "the last half bar before each drop: everything but the riser tail out",
+   "folder": "dnb/form",
+   "tags": [
+    "form",
+    "dnb",
+    "gate"
+   ],
+   "hash": "sha256:873ec7d3851c4357b5fbd08dfc7133036af45405a490a74cbb74a8ba27eb954d"
+  },
+  "a9kk3fc": {
+   "name": "dnb.liquidPart",
+   "type": "gate",
+   "rev": 1,
+   "body": "<73b",
+   "doc": "the liquid half of the form (intro to the breakdown)",
+   "folder": "dnb/form",
+   "tags": [
+    "form",
+    "dnb",
+    "gate"
+   ],
+   "hash": "sha256:02b591db5cb2a150fb2f98ed467368120ef404166cf122db00f7cd970eafad40"
+  },
+  "a9120k5": {
+   "name": "dnb.neuroPart",
+   "type": "gate",
+   "rev": 1,
+   "body": "@73b",
+   "doc": "the neuro half (build 2 to the end)",
+   "folder": "dnb/form",
+   "tags": [
+    "form",
+    "dnb",
+    "gate"
+   ],
+   "hash": "sha256:46847e92fa07b8abc853ad57cf8700671702e5b59dffc61353564b7db0b2ae99"
+  }
+ }
+}

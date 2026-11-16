@@ -1,0 +1,800 @@
+{
+ "family": "electro",
+ "title": "Electro: electro-funk / breakbeat electro (808, robot leads) and electro house (filtered saw bass, pumped supersaw stabs, clap builds)",
+ "doc": "F minor, 120-130 bpm, one cycle = one bar on 16 steps. Electro-funk: 808-style kick, clap and cowbell, syncopated synth bass, formant (vocoder-style) leads and stabs. Electro house: four-on-the-floor, a resonant filtered saw bass, supersaw stabs pumped by the kick (kickPump), clap builds.",
+ "pack": "glyphcore/dnb-electro",
+ "section": {
+  "id": "dnb-electro",
+  "title": "DnB, electro, house / techno / trance: kits, forms, feels",
+  "explain": "Pack glyphcore/dnb-electro (docs/CONVENTIONS.md 8-11, sources in docs/DNB_ELECTRO_REFERENCES.md). F minor throughout, one cycle = one bar of 4/4 on 16 steps. Components are racks (band-scoped, docs/RACK_STANDARD.md; per-role classes reese, neuro, break, gate) and pattern atoms (dnb. drum-and-bass, el. electro, hs. house / techno / trance / big room, tn. tension and release); forms are gate atoms (dnb.intro .. dnb.outro on a 128-bar DnB form, el.* and hs.* on 8-bar sections, hs.map* on a 160-bar club map of 32-bar blocks); breaks are synthesised and chopped by re-sequencing the 16 slices of a bar (.bite(16, atoms.dnb.chops)); sidechain is first-class (kickPump moves the superdough duck onto the bass, chord and pad orbits; kickDuck wires a gain to kick:env). Seven feel templates (feel-liquid, -neuro, -jumpup, -electrohouse, -techno, -trance, -bigroom) fill the same slots as the phonk feels; their grooves are compositions of the standard presets (groove-swing | groove-push | groove-human with the voice seed).",
+  "needs": "hooks"
+ },
+ "taxonomy": {
+  "folder": "electro",
+  "genres": [
+   "electro"
+  ]
+ },
+ "atomsIngredient": {
+  "id": "atoms-electro",
+  "ns": "el",
+  "title": "Electro atoms",
+  "doc": "glyphcore/dnb-electro electro atoms (el.): electro-funk 808 kick, clap, hats and cowbell, synth bass, robot lead line and vowels, stab rhythm and chords; electro house kick, clap, offbeat hat, filtered bass line, stab rhythm, clap build and its velocity ramp; gates of the 40-bar electro form (intro, build, drop, break, drop2). Import with atoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")."
+ },
+ "racks": {
+  "boom808": {
+   "class": "kick",
+   "doc": "808-style kick: long sine boom at 47 Hz, gentle pitch drop",
+   "chain": [
+    [
+     "hook",
+     "hygiene-kick"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "freq",
+     47
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "penv",
+     14
+    ],
+    [
+     "pdecay",
+     0.06
+    ],
+    [
+     "decay",
+     0.7
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "shape",
+     0.2
+    ],
+    [
+     "lpf",
+     3000
+    ],
+    [
+     "gain",
+     0.8
+    ]
+   ]
+  },
+  "clap808": {
+   "class": "snare",
+   "doc": "808-style clap: band-passed noise at 1.1 kHz, 0.2 s tail",
+   "chain": [
+    [
+     "hook",
+     "hygiene-snare"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "bpf",
+     1100
+    ],
+    [
+     "bpq",
+     1.5
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "decay",
+     0.2
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.95
+    ]
+   ]
+  },
+  "hat808": {
+   "class": "hat",
+   "doc": "808-style closed hat",
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     8000
+    ],
+    [
+     "decay",
+     0.03
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.35
+    ]
+   ]
+  },
+  "open808": {
+   "class": "hat",
+   "doc": "808-style open hat",
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     7500
+    ],
+    [
+     "decay",
+     0.25
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.22
+    ]
+   ]
+  },
+  "cowbell808": {
+   "class": "bell",
+   "doc": "808-style cowbell: two squares a fifth apart (play [c#5,g#5]), band-passed at 900 Hz",
+   "chain": [
+    [
+     "hook",
+     "hygiene-bell"
+    ],
+    [
+     "s",
+     "square"
+    ],
+    [
+     "bpf",
+     900
+    ],
+    [
+     "bpq",
+     1.2
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.22
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.18
+    ]
+   ]
+  },
+  "electroBass": {
+   "class": "bass",
+   "doc": "electro-funk synth bass: square, resonant low-pass blip, short",
+   "chain": [
+    [
+     "hook",
+     "hygiene-bass"
+    ],
+    [
+     "s",
+     "square"
+    ],
+    [
+     "attack",
+     0.003
+    ],
+    [
+     "decay",
+     0.18
+    ],
+    [
+     "sustain",
+     0.2
+    ],
+    [
+     "release",
+     0.05
+    ],
+    [
+     "lpf",
+     600
+    ],
+    [
+     "lpq",
+     5
+    ],
+    [
+     "lpenv",
+     2.5
+    ],
+    [
+     "lpdecay",
+     0.12
+    ],
+    [
+     "gain",
+     0.38
+    ]
+   ]
+  },
+  "vocoLead": {
+   "class": "lead",
+   "doc": "vocoder-style robot lead: saw through a vowel formant (vary .vowel per note); a formant filter, not a carrier/modulator vocoder",
+   "chain": [
+    [
+     "hook",
+     "hygiene-lead"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "vowel",
+     "a"
+    ],
+    [
+     "attack",
+     0.01
+    ],
+    [
+     "sustain",
+     0.7
+    ],
+    [
+     "release",
+     0.1
+    ],
+    [
+     "lpf",
+     3200
+    ],
+    [
+     "vib",
+     5
+    ],
+    [
+     "vibmod",
+     0.04
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "robotStab": {
+   "class": "stab",
+   "doc": "robot stab: square chord, vowel formant, filter blip",
+   "chain": [
+    [
+     "hook",
+     "hygiene-stab"
+    ],
+    [
+     "s",
+     "square"
+    ],
+    [
+     "vowel",
+     "e"
+    ],
+    [
+     "attack",
+     0.003
+    ],
+    [
+     "decay",
+     0.15
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "lpf",
+     2400
+    ],
+    [
+     "lpenv",
+     2
+    ],
+    [
+     "lpdecay",
+     0.1
+    ],
+    [
+     "gain",
+     0.16
+    ]
+   ]
+  },
+  "filterBass": {
+   "class": "bass",
+   "doc": "electro house filtered saw bass: resonant low-pass with a 3-octave envelope, then drive",
+   "chain": [
+    [
+     "hook",
+     "hygiene-bass"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "attack",
+     0.004
+    ],
+    [
+     "sustain",
+     0.5
+    ],
+    [
+     "release",
+     0.08
+    ],
+    [
+     "lpf",
+     500
+    ],
+    [
+     "lpq",
+     8
+    ],
+    [
+     "lpenv",
+     3
+    ],
+    [
+     "lpdecay",
+     0.15
+    ],
+    [
+     "distort",
+     0.3
+    ],
+    [
+     "gain",
+     0.28
+    ]
+   ]
+  },
+  "sawStab": {
+   "class": "supersaw",
+   "doc": "supersaw stab: unison 7, detune 0.35, spread 0.6, no sustain, filter blip (duck it from the kick: glyphcore/edm sidechain on the kick, ducked(3) here)",
+   "chain": [
+    [
+     "hook",
+     "hygiene-supersaw"
+    ],
+    [
+     "s",
+     "supersaw"
+    ],
+    [
+     "unison",
+     7
+    ],
+    [
+     "detune",
+     0.35
+    ],
+    [
+     "spread",
+     0.6
+    ],
+    [
+     "attack",
+     0.003
+    ],
+    [
+     "decay",
+     0.28
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "lpf",
+     5000
+    ],
+    [
+     "lpenv",
+     1
+    ],
+    [
+     "lpdecay",
+     0.2
+    ],
+    [
+     "gain",
+     0.13
+    ]
+   ]
+  }
+ },
+ "atoms": {
+  "kick": {
+   "type": "mini",
+   "body": "x ~ ~ ~ ~ ~ x ~ ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "electro-funk kick: 1, the and of 2... (an electro-funk style, not a transcription)"
+  },
+  "clap": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "clap on 2 and 4"
+  },
+  "hats": {
+   "type": "mini",
+   "body": "x*16",
+   "doc": "16th hats"
+  },
+  "hatVel": {
+   "type": "mini",
+   "body": "[1 .45 .7 .45]*4",
+   "doc": "hat accents"
+  },
+  "cowbell": {
+   "type": "mini",
+   "body": "<[~ ~ x ~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~] [~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]>",
+   "doc": "cowbell over two bars (play with .note(\"[c#5,g#5]\"))"
+  },
+  "bass": {
+   "type": "mini",
+   "body": "<[f1 ~ ~ f1 ~ ~ f2 ~ ~ f1 ~ ~ ab1 ~ c2 ~] [db2 ~ ~ db2 ~ ~ db1 ~ ~ eb2 ~ ~ eb1 ~ c2 ~]>",
+   "doc": "syncopated electro-funk bass"
+  },
+  "lead": {
+   "type": "mini",
+   "body": "<[f4 ~ ab4 ~ c5 ~ ab4 ~ ~ ~ ~ ~ eb4 ~ f4 ~] [~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~]>",
+   "doc": "robot lead call (bar 1) and space (bar 2)"
+  },
+  "leadVowel": {
+   "type": "mini",
+   "body": "<[a e i o] [o]>",
+   "doc": "lead vowel sweep, one vowel per beat"
+  },
+  "chords": {
+   "type": "mini",
+   "body": "<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [eb3,g3,bb3,eb4] [c3,eb3,g3,c4]>",
+   "doc": "electro chords, one per bar: Fm, Db, Eb, Cm (i, VI, VII, v)"
+  },
+  "stabs": {
+   "type": "mini",
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~",
+   "doc": "stab rhythm (struct over el.chords): offbeats and a push into the next bar"
+  },
+  "ehKick": {
+   "type": "mini",
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "electro house four-on-the-floor"
+  },
+  "ehClap": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "electro house clap on 2 and 4"
+  },
+  "ehHat": {
+   "type": "mini",
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "offbeat open hat"
+  },
+  "ehBass": {
+   "type": "mini",
+   "body": "<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f2 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>",
+   "doc": "electro house bass on the offbeat 8ths (the kick's gaps)"
+  },
+  "ehStabs": {
+   "type": "mini",
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "stabs on the offbeats, where the pump has let go"
+  },
+  "intro": {
+   "type": "gate",
+   "body": "<9b",
+   "doc": "intro (electro-funk): bars 1-8 (form: intro 8, build 8, drop 8, break 8, drop 2 8 = 40 bars = 75 s at 128 bpm)"
+  },
+  "build": {
+   "type": "gate",
+   "body": "9b..17b",
+   "doc": "build: bars 9-16"
+  },
+  "drop": {
+   "type": "gate",
+   "body": "17b..25b",
+   "doc": "drop (electro house): bars 17-24"
+  },
+  "break": {
+   "type": "gate",
+   "body": "25b..33b",
+   "doc": "break: bars 25-32"
+  },
+  "drop2": {
+   "type": "gate",
+   "body": "@33b",
+   "doc": "drop 2: bars 33-40"
+  },
+  "drops": {
+   "type": "gate",
+   "body": "17b..25b, @33b",
+   "doc": "both drops"
+  },
+  "funk": {
+   "type": "gate",
+   "body": "<9b, 25b..33b",
+   "doc": "the electro-funk parts (intro and break)"
+  },
+  "vacuum": {
+   "type": "gate",
+   "body": "16.3b..17b, 32.3b..33b",
+   "doc": "the last half bar before each drop"
+  }
+ },
+ "recipes": [
+  {
+   "id": "electro-808-beat",
+   "title": "Electro-funk 808 beat",
+   "intent": "Long 808 boom, clap on 2 and 4, 16th hats with accents and a two-bar cowbell: breakbeat electro.",
+   "labels": [
+    "electro",
+    "drums",
+    "syncopated"
+   ],
+   "class": "demo",
+   "cpm": 124,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@kick",
+     "rack": "boom808"
+    },
+    {
+     "src": "s",
+     "pat": "@clap",
+     "rack": "clap808"
+    },
+    {
+     "src": "s",
+     "pat": "@hats",
+     "rack": "hat808",
+     "vel": "@hatVel"
+    },
+    {
+     "src": "s",
+     "pat": "@cowbell",
+     "rack": "cowbell808",
+     "more": ".note(\"[c#5,g#5]\")"
+    }
+   ]
+  },
+  {
+   "id": "electro-808-kick",
+   "title": "808-style kick",
+   "intent": "A long sine boom with a gentle pitch drop on the electro-funk kick pattern.",
+   "labels": [
+    "electro",
+    "drums"
+   ],
+   "class": "kick",
+   "cpm": 124,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@kick",
+     "rack": "boom808"
+    }
+   ]
+  },
+  {
+   "id": "electro-cowbell",
+   "title": "808-style cowbell",
+   "intent": "Two squares a fifth apart through a band-pass, on a two-bar pattern.",
+   "labels": [
+    "electro",
+    "drums"
+   ],
+   "class": "bell",
+   "cpm": 124,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@cowbell",
+     "rack": "cowbell808",
+     "more": ".note(\"[c#5,g#5]\")"
+    }
+   ]
+  },
+  {
+   "id": "electro-funk-bass",
+   "title": "Electro-funk bass",
+   "intent": "Square bass with a resonant filter blip on a syncopated line.",
+   "labels": [
+    "electro",
+    "bass",
+    "syncopated"
+   ],
+   "class": "bass",
+   "cpm": 124,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@bass",
+     "rack": "electroBass"
+    }
+   ]
+  },
+  {
+   "id": "vocoder-lead",
+   "title": "Vocoder-style robot lead",
+   "intent": "Saw through a vowel formant that changes every beat (a, e, i, o): a robot voice without a vocoder.",
+   "labels": [
+    "electro",
+    "lead",
+    "texture-vocal-like"
+   ],
+   "class": "lead",
+   "cpm": 124,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@lead",
+     "rack": "vocoLead",
+     "more": ".vowel(\"@leadVowel\")"
+    }
+   ]
+  },
+  {
+   "id": "robot-stabs",
+   "title": "Robot stabs",
+   "intent": "Square chords through a vowel formant on an offbeat stab rhythm.",
+   "labels": [
+    "electro",
+    "stabs"
+   ],
+   "class": "stab",
+   "cpm": 124,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@chords",
+     "rack": "robotStab",
+     "more": ".struct(\"@stabs\")"
+    }
+   ],
+   "bars": 4
+  },
+  {
+   "id": "electro-house-bass",
+   "title": "Electro house filtered bass",
+   "intent": "Resonant saw bass with a 3-octave filter envelope and drive on the offbeat 8ths.",
+   "labels": [
+    "electro",
+    "house",
+    "bass"
+   ],
+   "class": "bass",
+   "cpm": 128,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@ehBass",
+     "rack": "filterBass"
+    }
+   ]
+  },
+  {
+   "id": "sidechain-supersaw-stabs",
+   "title": "Sidechained supersaw stabs",
+   "intent": "A four-on-the-floor kick ducks the supersaw stabs and the bass on orbit 3 (glyphcore/edm sidechain on the kick, ducked on the targets: superdough duckorbit), so the stabs land where the pump lets go.",
+   "labels": [
+    "electro",
+    "sidechain",
+    "stabs"
+   ],
+   "class": "demo",
+   "cpm": 128,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@ehKick",
+     "rack": "houseKick",
+     "move": "sidechain(3, 0.8, 0.18)"
+    },
+    {
+     "src": "note",
+     "pat": "@chords",
+     "rack": "sawStab",
+     "move": "ducked(3)",
+     "more": ".struct(\"@ehStabs\")"
+    },
+    {
+     "src": "note",
+     "pat": "@ehBass",
+     "rack": "filterBass",
+     "move": "ducked(3)"
+    }
+   ],
+   "bars": 4
+  },
+  {
+   "id": "clap-build",
+   "title": "Clap build (8 bars)",
+   "intent": "Electro house clap build on the shared roll grammar: density doubles toward the drop (glyphcore/edm ec.roll8) while the velocity ramps up (ec.rollVel8).",
+   "labels": [
+    "electro",
+    "build",
+    "drums"
+   ],
+   "class": "snare",
+   "cpm": 128,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@ec:roll8",
+     "rack": "clap808",
+     "vel": "@ec:rollVel8"
+    }
+   ],
+   "bars": 8
+  }
+ ],
+ "syntax": [
+  {
+   "title": "Sidechain pump: kick ducks the stabs and the bass (audio rate)",
+   "bars": 4,
+   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n// racks: pack:glyphcore/edm:racks-edm-core (sidechain, ducked)\n$: s(atoms.el.ehKick).hook(\"houseKick | sidechain(3, 0.8, 0.18)\")   // the duck sits on the kick voice: orbit 3 ducks\n$: note(atoms.el.chords).struct(atoms.el.ehStabs).hook(\"sawStab | ducked(3)\")\n$: note(atoms.el.ehBass).hook(\"filterBass | ducked(3)\")"
+  },
+  {
+   "title": "Pattern-level duck from a kick tap (.wire)",
+   "bars": 2,
+   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\nkick: s(atoms.el.ehKick).hook(\"houseKick\").tap(\"kick\")\npad: note(atoms.el.chords).hook(\"bigChords\").wire(\"gain\", \"kick:env\", { range: [1, 0.3], op: \"mul\", r: 0.16 })   // the pad follows the kick envelope, no orbit needed"
+  },
+  {
+   "title": "Electro-funk: 808 kit, robot lead, vocoder-style vowels",
+   "bars": 2,
+   "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: s(atoms.el.kick).hook(\"boom808\")\n$: s(atoms.el.clap).hook(\"clap808\")\n$: s(atoms.el.hats).velocity(atoms.el.hatVel).hook(\"hat808\")\n$: note(atoms.el.bass).hook(\"electroBass\")\n$: note(atoms.el.lead).vowel(atoms.el.leadVowel).hook(\"vocoLead\")"
+  }
+ ]
+}

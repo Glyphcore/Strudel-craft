@@ -1,0 +1,390 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"Uplifting trance\" (136-140 bpm): four-on-the-floor, offbeat bass, pluck arp and trance-gated supersaw chords. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/dnb-electro:feel-trance\", { as: \"feel\" }).",
+ "atoms": {
+  "apgcpia": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "kick pattern",
+   "folder": "feels/trance/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "trance",
+    "pattern"
+   ],
+   "hash": "sha256:0217ca393e7b9e240d8b3ffed67e975f3934d9a9f1303a227193b90afe293ac5"
+  },
+  "aihkw51": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "folder": "feels/trance/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "trance",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "abk5g3l": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "houseKick | groove-human(0.5, 0.05, 1)",
+   "doc": "kick rack and groove",
+   "folder": "feels/trance/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "trance",
+    "rack-slot"
+   ],
+   "hash": "sha256:ddb0e41507158c47f6c17cf8d6de37f2199889f8eb1c0b4b6f6ce7f4ee963e03"
+  },
+  "ahzl4nt": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "snare pattern",
+   "folder": "feels/trance/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "trance",
+    "pattern"
+   ],
+   "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
+  },
+  "abci9cc": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "folder": "feels/trance/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "trance",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a768lh2": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "houseClap | groove-human(0.5, 0.05, 2)",
+   "doc": "snare rack and groove",
+   "folder": "feels/trance/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "trance",
+    "rack-slot"
+   ],
+   "hash": "sha256:3627d491e8596bc96f1ca0b7e8828bfcb25a63e557e70ca9acce111eede09a58"
+  },
+  "ajranvs": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "perc pattern",
+   "folder": "feels/trance/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "trance",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "au7dnkj": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "perc accents (velocity)",
+   "folder": "feels/trance/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "trance",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ajprgsz": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.5, 0.05, 3)",
+   "doc": "perc rack and groove",
+   "folder": "feels/trance/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "trance",
+    "rack-slot"
+   ],
+   "hash": "sha256:0249ad7e4fa6577da9795f84f8f5e40fcb28d69a7ae54ae15960a62b725c08c6"
+  },
+  "aipegnq": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "hats pattern",
+   "folder": "feels/trance/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "trance",
+    "pattern"
+   ],
+   "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
+  },
+  "a4058mh": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "hats accents (velocity)",
+   "folder": "feels/trance/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "trance",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ai9i4bp": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "offHat | groove-human(0.5, 0.05, 4)",
+   "doc": "hats rack and groove",
+   "folder": "feels/trance/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "trance",
+    "rack-slot"
+   ],
+   "hash": "sha256:ce314071d34069c22f3e37b99f021211f3005d721c5a1e2801443a0d6758ccb7"
+  },
+  "anxbzvb": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5] [f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5] [eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5] [eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4]>",
+   "doc": "top pattern",
+   "folder": "feels/trance/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "trance",
+    "pattern"
+   ],
+   "hash": "sha256:247ef5de42cf540190023b79a01c06ec5ca63ca5d33b407cb03cb9195503133b"
+  },
+  "ad4gxuy": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "folder": "feels/trance/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "trance",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "akksi1s": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "pluck | groove-human(0.5, 0.05, 5)",
+   "doc": "top rack and groove",
+   "folder": "feels/trance/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "trance",
+    "rack-slot"
+   ],
+   "hash": "sha256:065603c04dba2045a00e64b2892f64d8dd295f6b84ea81e2fa4c6c49b4e77e88"
+  },
+  "aiulg0n": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ ab1 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>",
+   "doc": "bass pattern",
+   "folder": "feels/trance/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "trance",
+    "pattern"
+   ],
+   "hash": "sha256:93a77c483172a84a711dfc359188287af08450933ae5f4f9c90aa020be8c6263"
+  },
+  "a4gulii": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "bass accents (velocity)",
+   "folder": "feels/trance/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "trance",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a4pa6bk": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "houseBass | groove-human(0.5, 0.05, 6)",
+   "doc": "bass rack and groove",
+   "folder": "feels/trance/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "trance",
+    "rack-slot"
+   ],
+   "hash": "sha256:7d20a83433bd55e1bb57d07a83d05e8d732a816ee40b56e7b19091e79f48cd1f"
+  },
+  "acqb77u": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>",
+   "doc": "harmony pattern",
+   "folder": "feels/trance/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "trance",
+    "pattern"
+   ],
+   "hash": "sha256:3f4509a0972eb5a2550472442466f6f1830067cf842c1350323f7a31cd915b7c"
+  },
+  "a1kwj6l": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "folder": "feels/trance/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "trance",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "avtgti1": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "gatePad | groove-human(0.5, 0.05, 7)",
+   "doc": "harmony rack and groove",
+   "folder": "feels/trance/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "trance",
+    "rack-slot"
+   ],
+   "hash": "sha256:4de3bec2615f33e6ad0f6cd613ae1adef8f725aa5eca32f07ed30f969efb543d"
+  },
+  "awffvd6": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "fx pattern",
+   "folder": "feels/trance/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "trance",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "a4oh74t": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "folder": "feels/trance/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "trance",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a1is66x": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.5, 0.05, 8)",
+   "doc": "fx rack and groove",
+   "folder": "feels/trance/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "trance",
+    "rack-slot"
+   ],
+   "hash": "sha256:219ccd614c85ee1ea91becf9eca7d6846ae9bd6da0bc33b43ebd0aa214649d34"
+  },
+  "ag5k916": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.5, 0.05, 0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "folder": "feels/trance/groove",
+   "tags": [
+    "groove",
+    "feel",
+    "trance",
+    "rack-slot"
+   ],
+   "hash": "sha256:ed3ab28ff2d571caafb5612d034391520550a57cb6f472ed0d1e6d8d3beb5aef"
+  }
+ }
+}

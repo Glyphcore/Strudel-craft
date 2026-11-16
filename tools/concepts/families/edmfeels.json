@@ -1,0 +1,335 @@
+{
+ "family": "edmfeels",
+ "title": "Feel templates: liquid, neuro, jump-up, electro house, techno, trance, big room",
+ "doc": "Seven feel templates on template v1 (tools/concepts/families/feels.json): the same 25 atom names as the phonk feels, so one atoms.import line picks a feel. Grooves are compositions of the standard presets: liquid groove-swing(54) | groove-human(2.5, 0.15), tight groove-human(0.5, 0.05), jump groove-swing(52) | groove-push(-2) | groove-human(1, 0.12), drive groove-human(0.8, 0.08), house groove-swing(56) | groove-human(1, 0.1).",
+ "pack": "glyphcore/dnb-electro",
+ "section": {
+  "id": "dnb-electro",
+  "title": "DnB, electro, house / techno / trance: kits, forms, feels",
+  "explain": "Pack glyphcore/dnb-electro (docs/CONVENTIONS.md 8-11, sources in docs/DNB_ELECTRO_REFERENCES.md). F minor throughout, one cycle = one bar of 4/4 on 16 steps. Components are racks (band-scoped, docs/RACK_STANDARD.md; per-role classes reese, neuro, break, gate) and pattern atoms (dnb. drum-and-bass, el. electro, hs. house / techno / trance / big room, tn. tension and release); forms are gate atoms (dnb.intro .. dnb.outro on a 128-bar DnB form, el.* and hs.* on 8-bar sections, hs.map* on a 160-bar club map of 32-bar blocks); breaks are synthesised and chopped by re-sequencing the 16 slices of a bar (.bite(16, atoms.dnb.chops)); sidechain is first-class (kickPump moves the superdough duck onto the bass, chord and pad orbits; kickDuck wires a gain to kick:env). Seven feel templates (feel-liquid, -neuro, -jumpup, -electrohouse, -techno, -trance, -bigroom) fill the same slots as the phonk feels; their grooves are compositions of the standard presets (groove-swing | groove-push | groove-human with the voice seed).",
+  "needs": "hooks"
+ },
+ "taxonomy": {
+  "folder": "dnb-electro",
+  "genres": [
+   "edm"
+  ]
+ },
+ "feels": {
+  "liquid": {
+   "title": "Liquid DnB",
+   "tempo": "172-176 bpm",
+   "cpm": 174,
+   "groove": "groove-swing(54) | groove-human(2.5, 0.15, $seed)",
+   "doc": "rolling two-step with ghost notes behind the beat, shaker, held sub, liquid pad and vocal chops",
+   "labels": [
+    "dnb",
+    "liquid"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@dnb:kick",
+     "rack": "dnbKick"
+    },
+    "snare": {
+     "pat": "@dnb:snare",
+     "rack": "dnbSnare"
+    },
+    "perc": {
+     "pat": "@dnb:ghosts",
+     "rack": "ghostSnare",
+     "vel": "@dnb:ghostVel",
+     "push": 3
+    },
+    "hats": {
+     "pat": "@dnb:shaker",
+     "rack": "dnbShaker",
+     "vel": "@dnb:shakerVel"
+    },
+    "top": {
+     "pat": "@dnb:chop",
+     "rack": "vocalChop"
+    },
+    "bass": {
+     "pat": "@dnb:sub",
+     "rack": "dnbSub",
+     "groove": "groove-human(0.5, 0.05, $seed)"
+    },
+    "harmony": {
+     "pat": "@dnb:chords",
+     "rack": "liquidPad",
+     "groove": "groove-human(0.5, 0.05, $seed)"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  },
+  "neuro": {
+   "title": "Neurofunk",
+   "tempo": "172-176 bpm",
+   "cpm": 174,
+   "groove": "groove-human(0.5, 0.05, $seed)",
+   "doc": "machine-tight two-step, rolling ghosts, 8th hats and a 16th neuro riff (add a sub lane on atoms.feel.bass with dnbSub)",
+   "labels": [
+    "dnb",
+    "neuro"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@dnb:kick",
+     "rack": "dnbKick"
+    },
+    "snare": {
+     "pat": "@dnb:snare",
+     "rack": "dnbSnare"
+    },
+    "perc": {
+     "pat": "@dnb:ghostsRoll",
+     "rack": "ghostSnare",
+     "vel": "@dnb:ghostVel"
+    },
+    "hats": {
+     "pat": "@dnb:hats",
+     "rack": "dnbHat"
+    },
+    "top": {
+     "pat": "~"
+    },
+    "bass": {
+     "pat": "@dnb:neuro",
+     "rack": "neuroBass"
+    },
+    "harmony": {
+     "pat": "~"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  },
+  "jumpup": {
+   "title": "Jump-up",
+   "tempo": "172-176 bpm",
+   "cpm": 174,
+   "groove": "groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, $seed)",
+   "doc": "bouncy two-step pushed slightly forward, a wobble bass with octave jumps",
+   "labels": [
+    "dnb",
+    "jump-up"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@dnb:kick",
+     "rack": "dnbKick"
+    },
+    "snare": {
+     "pat": "@dnb:snare",
+     "rack": "dnbSnare"
+    },
+    "perc": {
+     "pat": "@dnb:ghosts",
+     "rack": "ghostSnare",
+     "vel": "@dnb:ghostVel"
+    },
+    "hats": {
+     "pat": "@dnb:hats",
+     "rack": "dnbHat"
+    },
+    "top": {
+     "pat": "~"
+    },
+    "bass": {
+     "pat": "@dnb:wobble",
+     "rack": "jumpWobble"
+    },
+    "harmony": {
+     "pat": "~"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  },
+  "electrohouse": {
+   "title": "Electro house",
+   "tempo": "126-130 bpm",
+   "cpm": 128,
+   "groove": "groove-human(0.5, 0.05, $seed)",
+   "doc": "four-on-the-floor, offbeat hat, filtered saw bass and supersaw stabs on the offbeats",
+   "labels": [
+    "electro",
+    "house"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@el:ehKick",
+     "rack": "houseKick"
+    },
+    "snare": {
+     "pat": "@el:ehClap",
+     "rack": "clap808"
+    },
+    "perc": {
+     "pat": "~"
+    },
+    "hats": {
+     "pat": "@el:ehHat",
+     "rack": "offHat"
+    },
+    "top": {
+     "pat": "@el:ehStabs",
+     "rack": "sawStab"
+    },
+    "bass": {
+     "pat": "@el:ehBass",
+     "rack": "filterBass"
+    },
+    "harmony": {
+     "pat": "~"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  },
+  "techno": {
+   "title": "Driving techno",
+   "tempo": "128-135 bpm",
+   "cpm": 132,
+   "groove": "groove-human(0.8, 0.08, $seed)",
+   "doc": "four-on-the-floor, offbeat ride, 16th hats with accents, rolling bass in the kick's gaps",
+   "labels": [
+    "techno",
+    "four-floor"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@hs:kick",
+     "rack": "houseKick"
+    },
+    "snare": {
+     "pat": "~"
+    },
+    "perc": {
+     "pat": "@hs:offHat",
+     "rack": "ride"
+    },
+    "hats": {
+     "pat": "@hs:hats",
+     "rack": "closedHat",
+     "vel": "@hs:hatVel"
+    },
+    "top": {
+     "pat": "~"
+    },
+    "bass": {
+     "pat": "@hs:rolling",
+     "rack": "houseBass"
+    },
+    "harmony": {
+     "pat": "~"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  },
+  "trance": {
+   "title": "Uplifting trance",
+   "tempo": "136-140 bpm",
+   "cpm": 138,
+   "groove": "groove-human(0.5, 0.05, $seed)",
+   "doc": "four-on-the-floor, offbeat bass, pluck arp and trance-gated supersaw chords",
+   "labels": [
+    "trance",
+    "four-floor"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@hs:kick",
+     "rack": "houseKick"
+    },
+    "snare": {
+     "pat": "@hs:clap",
+     "rack": "houseClap"
+    },
+    "perc": {
+     "pat": "~"
+    },
+    "hats": {
+     "pat": "@hs:offHat",
+     "rack": "offHat"
+    },
+    "top": {
+     "pat": "@hs:arp",
+     "rack": "pluck"
+    },
+    "bass": {
+     "pat": "@hs:bass",
+     "rack": "houseBass"
+    },
+    "harmony": {
+     "pat": "@hs:chords",
+     "rack": "gatePad"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  },
+  "bigroom": {
+   "title": "Big room",
+   "tempo": "126-130 bpm",
+   "cpm": 128,
+   "groove": "groove-human(0.5, 0.05, $seed)",
+   "doc": "stripped drop: a big kick, a clap, an offbeat hat and one lead motif",
+   "labels": [
+    "big-room",
+    "four-floor"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@hs:kick",
+     "rack": "bigKick"
+    },
+    "snare": {
+     "pat": "@hs:clap",
+     "rack": "houseClap"
+    },
+    "perc": {
+     "pat": "~"
+    },
+    "hats": {
+     "pat": "@hs:offHat",
+     "rack": "offHat"
+    },
+    "top": {
+     "pat": "@hs:lead",
+     "rack": "roomLead"
+    },
+    "bass": {
+     "pat": "~"
+    },
+    "harmony": {
+     "pat": "~"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  }
+ },
+ "syntax": [
+  {
+   "title": "Pick a DnB / EDM feel (one import line)",
+   "bars": 2,
+   "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:feel-liquid\", { as: \"feel\" })   // or feel-neuro, -jumpup, -electrohouse, -techno, -trance, -bigroom (set the tempo too)\nhooks.bind(\"kick\", atoms.feel.kickRack)\nhooks.bind(\"snare\", atoms.feel.snareRack)\nhooks.bind(\"perc\", atoms.feel.percRack)\nhooks.bind(\"hats\", atoms.feel.hatsRack)\nhooks.bind(\"top\", atoms.feel.topRack)\nhooks.bind(\"bass\", atoms.feel.bassRack)\nhooks.bind(\"harmony\", atoms.feel.harmonyRack)\nhooks.bind(\"fx\", atoms.feel.fxRack)\nkick: s(atoms.feel.kick).velocity(atoms.feel.kickVel).use(\"kick\", { mode: \"swap\" })\nsnare: s(atoms.feel.snare).velocity(atoms.feel.snareVel).use(\"snare\", { mode: \"swap\" })\nperc: s(atoms.feel.perc).velocity(atoms.feel.percVel).use(\"perc\", { mode: \"swap\" })\nhats: s(atoms.feel.hats).velocity(atoms.feel.hatsVel).use(\"hats\", { mode: \"swap\" })\ntop: note(atoms.feel.top).velocity(atoms.feel.topVel).use(\"top\", { mode: \"swap\" })\nbass: note(atoms.feel.bass).velocity(atoms.feel.bassVel).use(\"bass\", { mode: \"swap\" })\nharmony: note(atoms.feel.harmony).velocity(atoms.feel.harmonyVel).use(\"harmony\", { mode: \"swap\" })\nfx: s(atoms.feel.fx).velocity(atoms.feel.fxVel).use(\"fx\", { mode: \"swap\" })"
+  },
+  {
+   "title": "Feel switch: liquid to neuro at bar 3, sub layer kept",
+   "bars": 4,
+   "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:feel-liquid\", { as: \"a\" }); atoms.import(\"pack:glyphcore/dnb-electro:feel-neuro\", { as: \"b\" })\nhooks.bind(\"a/kick\", atoms.a.kickRack)\nhooks.bind(\"a/snare\", atoms.a.snareRack)\nhooks.bind(\"a/perc\", atoms.a.percRack)\nhooks.bind(\"a/hats\", atoms.a.hatsRack)\nhooks.bind(\"a/bass\", atoms.a.bassRack)\nhooks.bind(\"b/kick\", atoms.b.kickRack)\nhooks.bind(\"b/snare\", atoms.b.snareRack)\nhooks.bind(\"b/perc\", atoms.b.percRack)\nhooks.bind(\"b/hats\", atoms.b.hatsRack)\nhooks.bind(\"b/bass\", atoms.b.bassRack)\na_kick: s(atoms.a.kick).velocity(atoms.a.kickVel).use(\"a/kick\", { mode: \"swap\" }).tags(\"a\")\na_snare: s(atoms.a.snare).velocity(atoms.a.snareVel).use(\"a/snare\", { mode: \"swap\" }).tags(\"a\")\na_perc: s(atoms.a.perc).velocity(atoms.a.percVel).use(\"a/perc\", { mode: \"swap\" }).tags(\"a\")\na_hats: s(atoms.a.hats).velocity(atoms.a.hatsVel).use(\"a/hats\", { mode: \"swap\" }).tags(\"a\")\na_bass: note(atoms.a.bass).velocity(atoms.a.bassVel).use(\"a/bass\", { mode: \"swap\" }).tags(\"a\")\nb_kick: s(atoms.b.kick).velocity(atoms.b.kickVel).use(\"b/kick\", { mode: \"swap\" }).tags(\"b\")\nb_snare: s(atoms.b.snare).velocity(atoms.b.snareVel).use(\"b/snare\", { mode: \"swap\" }).tags(\"b\")\nb_perc: s(atoms.b.perc).velocity(atoms.b.percVel).use(\"b/perc\", { mode: \"swap\" }).tags(\"b\")\nb_hats: s(atoms.b.hats).velocity(atoms.b.hatsVel).use(\"b/hats\", { mode: \"swap\" }).tags(\"b\")\nb_bass: note(atoms.b.bass).velocity(atoms.b.bassVel).use(\"b/bass\", { mode: \"swap\" }).tags(\"b\")\nsub: note(atoms.b.bass).hook(\"dnbSub\").tags(\"b\")   // multiband by layers: the neuro riff's notes on a mono sine sub\ntagged(\"a\").mute(\"@3b\")\ntagged(\"b\").mute(\"<3b\")"
+  }
+ ]
+}

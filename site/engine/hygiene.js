@@ -30,5 +30,9 @@ export const HYGIENE = Object.freeze({
   'hygiene-impact': scope(25, 5000),
   'hygiene-texture': scope(200, 12500, steep),
   'hygiene-vox': scope(150, 8000),
+  // per-role classes for glyphcore/dnb-electro (#122, docs/RACK_STANDARD.md 4): a break is a whole kit on one bus; a gate pad is a supersaw
+  // that a 16-step gate opens and closes (reese and growl come with the EDM foundations)
+  'hygiene-break': scope(30, 14000),
+  'hygiene-gate': scope(120, 9000),
 });
 export const HYGIENE_DOC = { model: 1, meta: { id: 'glyphcore/core:hygiene', doc: 'Band-scope racks per instrument class (docs/RACK_STANDARD.md). Standard-library hook defs: use as .hook("hygiene-<class>") or as the first chain step of a rack.' }, defs: HYGIENE };

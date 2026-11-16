@@ -71,12 +71,12 @@ No plain form, by reason:
 ## 7. Pipeline (after a concept or Syntax change)
 ```
 node tools/concepts/build.mjs --render        # writes code (Craft) + lowered for the concept recipes
-python3 tools/packs/packs.py hash site/data/phonk --write
+python3 tools/packs/packs.py hash site/data/phonk --write        # and every other pack the builder wrote (site/data/dnb-electro, ...)
 python3 tools/packs/shim.py
 node tools/lowering/build.mjs                 # annotates syntax.json, verifies, writes lowered_check
 python3 tools/packs/shim.py; node tools/pwa/precache.mjs
 ```
-`tools/racks/audit.mjs` renders `lowered || code` of each catalog recipe (the audit has no pack imports).
+`tools/racks/audit.mjs` renders `lowered || code` of each catalog recipe (the audit has no pack imports). The lowering reads the hooks@1 defs and atoms@1 imports of every content pack under `site/data/*/craftpack.json` (glyphcore/phonk, glyphcore/edm, glyphcore/dnb-electro); a def name defined by two packs resolves first-come in directory order, as the site installer.
 
 ## 8. Adding a feature
 A new piece of Craft syntax needs (1) a rule in `tools/lowering/lower.mjs` (a lowering, or a `BLOCKERS` entry with its reason), (2) a row in section 3,

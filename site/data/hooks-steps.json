@@ -225,6 +225,12 @@
    ],
    "from": "shipped"
   },
+  "fmdecay": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
   "fmh": {
    "args": [
     "scalar"
@@ -238,12 +244,24 @@
    ],
    "from": "shipped"
   },
+  "fmsustain": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
   "freq": {
    "args": [
     "scalar"
    ],
    "from": "shipped",
    "wire": true
+  },
+  "ftype": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
   },
   "gain": {
    "args": [
@@ -516,11 +534,18 @@
    ],
    "from": "shipped"
   },
-  "struct": {
+  "spread": {
    "args": [
     "scalar"
    ],
-   "from": "documented"
+   "from": "shipped"
+  },
+  "struct": {
+   "args": [
+    "scalar",
+    "mini"
+   ],
+   "from": "shipped"
   },
   "sustain": {
    "args": [

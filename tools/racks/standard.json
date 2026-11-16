@@ -333,6 +333,34 @@
    "bars": 2,
    "vox": true
   },
+  "break": {
+   "band": [
+    30,
+    14000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -20,
+   "peak_max_db": -3,
+   "phrase": "s(\"x ~ x ~\")",
+   "bars": 2
+  },
+  "gate": {
+   "band": [
+    100,
+    12000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -30,
+   "peak_max_db": -6,
+   "side_low_max_db": -24,
+   "env_range_min_db": 15,
+   "alias": {
+    "note": "c6",
+    "max_db": -34
+   },
+   "phrase": "note(\"<[f3,ab3,c4,eb4] [db3,f3,ab3,c4]>\")",
+   "bars": 2
+  },
   "move": {
    "doc": "FX-only racks (filter moves, drive, ducking, level): rendered over a band-scoped saw chord; global safety checks only",
    "peak_max_db": -1,

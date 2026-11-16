@@ -1,0 +1,37 @@
+[
+ {
+  "section": "intro",
+  "bars": 8,
+  "type": "intro"
+ },
+ {
+  "section": "groove",
+  "bars": 8,
+  "type": "drop"
+ },
+ {
+  "section": "breakdown",
+  "bars": 8,
+  "type": "break"
+ },
+ {
+  "section": "build",
+  "bars": 8,
+  "type": "build"
+ },
+ {
+  "section": "drop1",
+  "bars": 8,
+  "type": "drop"
+ },
+ {
+  "section": "drop2",
+  "bars": 8,
+  "type": "drop"
+ },
+ {
+  "section": "outro",
+  "bars": 8,
+  "type": "outro"
+ }
+]

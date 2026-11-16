@@ -1,0 +1,390 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"Driving techno\" (128-135 bpm): four-on-the-floor, offbeat ride, 16th hats with accents, rolling bass in the kick's gaps. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/dnb-electro:feel-techno\", { as: \"feel\" }).",
+ "atoms": {
+  "a337pbc": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "kick pattern",
+   "folder": "feels/techno/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "techno",
+    "pattern"
+   ],
+   "hash": "sha256:0217ca393e7b9e240d8b3ffed67e975f3934d9a9f1303a227193b90afe293ac5"
+  },
+  "awapl3n": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "folder": "feels/techno/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "techno",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ahl4prn": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "houseKick | groove-human(0.8, 0.08, 1)",
+   "doc": "kick rack and groove",
+   "folder": "feels/techno/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "techno",
+    "rack-slot"
+   ],
+   "hash": "sha256:7addbec97d414202ee5a2abae0e194c08fc2b9ebf01882d2d6b4badf56928b8a"
+  },
+  "ax98apf": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "snare pattern",
+   "folder": "feels/techno/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "techno",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "ahjgpwm": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "folder": "feels/techno/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "techno",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "adoxuqk": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.8, 0.08, 2)",
+   "doc": "snare rack and groove",
+   "folder": "feels/techno/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "techno",
+    "rack-slot"
+   ],
+   "hash": "sha256:a5c922a7280b102e65c3213ca49e4061aa166ba0b22ab5ff684c2f57cad97510"
+  },
+  "aoea2qy": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "perc pattern",
+   "folder": "feels/techno/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "techno",
+    "pattern"
+   ],
+   "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
+  },
+  "a1dvxq5": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "perc accents (velocity)",
+   "folder": "feels/techno/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "techno",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "afh1vax": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "ride | groove-human(0.8, 0.08, 3)",
+   "doc": "perc rack and groove",
+   "folder": "feels/techno/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "techno",
+    "rack-slot"
+   ],
+   "hash": "sha256:c6e1c440e40d4d9617f69755c5260c8aa398328ed0479b71ab94c02a261c4145"
+  },
+  "ahjexss": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*16",
+   "doc": "hats pattern",
+   "folder": "feels/techno/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "techno",
+    "pattern"
+   ],
+   "hash": "sha256:bc74a3b9e12ebc0770e636fb859180836145824d453b6c0c08e954bc49f4cdaf"
+  },
+  "abwia3b": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[.5 .3 .8 .3]*4",
+   "doc": "hats accents (velocity)",
+   "folder": "feels/techno/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "techno",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:cc3444ebdd1bfc6f4bd2aa650e7fd5abeb21dd2f703a1a7ef1174154e324c091"
+  },
+  "arn6ovr": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "closedHat | groove-human(0.8, 0.08, 4)",
+   "doc": "hats rack and groove",
+   "folder": "feels/techno/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "techno",
+    "rack-slot"
+   ],
+   "hash": "sha256:8c11f9ce9272bf8e2d5788f1f4ea7c9957a342cccfb7ce24f31db7ee2faecfe6"
+  },
+  "a5ymmyh": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "top pattern",
+   "folder": "feels/techno/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "techno",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "ar1week": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "folder": "feels/techno/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "techno",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "abnsmpi": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.8, 0.08, 5)",
+   "doc": "top rack and groove",
+   "folder": "feels/techno/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "techno",
+    "rack-slot"
+   ],
+   "hash": "sha256:a38386ab1f82dc45202b33bf206576d51063941f24c570d5634f6bb86f89670c"
+  },
+  "a7f50j9": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f2",
+   "doc": "bass pattern",
+   "folder": "feels/techno/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "techno",
+    "pattern"
+   ],
+   "hash": "sha256:e7227b366022afe2164239fbfd599cc9f6fe7503776322cde4cd3fc7a18e6917"
+  },
+  "alicl54": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "bass accents (velocity)",
+   "folder": "feels/techno/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "techno",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "af8v8b6": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "houseBass | groove-human(0.8, 0.08, 6)",
+   "doc": "bass rack and groove",
+   "folder": "feels/techno/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "techno",
+    "rack-slot"
+   ],
+   "hash": "sha256:6ecfb72d73d3aa2d7e36a11c67d1a61e9d0ecda49c1ee6a0b759a3f233340220"
+  },
+  "avokk70": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "harmony pattern",
+   "folder": "feels/techno/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "techno",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "ari4jg7": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "folder": "feels/techno/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "techno",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "af8q4dz": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.8, 0.08, 7)",
+   "doc": "harmony rack and groove",
+   "folder": "feels/techno/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "techno",
+    "rack-slot"
+   ],
+   "hash": "sha256:b6a74089f5aa59b294fbde752923bd08eec9968dbb1366b437e2425a38fa92e9"
+  },
+  "a3970n4": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "fx pattern",
+   "folder": "feels/techno/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "techno",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "a4sycsr": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "folder": "feels/techno/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "techno",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a9fexy3": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.8, 0.08, 8)",
+   "doc": "fx rack and groove",
+   "folder": "feels/techno/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "techno",
+    "rack-slot"
+   ],
+   "hash": "sha256:d1c2e96025f4b84111cf169f065c06e5589574207841e853fe06c4d7c1d2be0a"
+  },
+  "auyrps8": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.8, 0.08, 0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "folder": "feels/techno/groove",
+   "tags": [
+    "groove",
+    "feel",
+    "techno",
+    "rack-slot"
+   ],
+   "hash": "sha256:d3b3ba594f46a16fdc5fde238f4b4b892006a5a0977436e5b323876c6324c42d"
+  }
+ }
+}

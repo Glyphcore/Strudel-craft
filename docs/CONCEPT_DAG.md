@@ -119,7 +119,12 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | composer-skill (workflow + design-choice checks, both repos) | composer-tools, composition-catalog | built (critic pending) | #147 |
 | composition-research pass 2 (open SOS Inside Track, Point Blank, Ableton, Hooktheory, OMT, Reddit threads) | composition-research | unexplored | - |
 | composer: audio motif ledger from stems (engine/motifs motifs.json -> ledger), groove-from-audio presets | composer-tools, groove-from-audio | scouted | - |
-| more concept families (drill, jersey club, footwork, dancehall, amapiano log drums, lo-fi; groove templates extracted from audio) | concept-framework | unexplored | - |
+| dnb-electro references + genre targets (docs/DNB_ELECTRO_REFERENCES.md; suno-track-lab docs/genres dnb / electro / house.json, master presets dnb / electro / house) | edm-core references | built (critic pending) | #121 |
+| dnb / electro / house-techno-trance-big-room components, forms, tension grammar (pack glyphcore/dnb-electro: racks-dnb-electro, `dnb.` `el.` `hs.` atoms; per-role classes break, gate; multi-pack builder) | concept-framework, edm-core foundations, rack-standard | built (critic pending) | #122 |
+| breakbeat chops (synthesised amen / think-style kits; slice orders for `.bite(16, ...)`, same order as `.slice` on a sample) | dnb components | built (critic pending) | #122 |
+| feel templates liquid, neuro, jump-up, electro-house, techno, trance, big-room (pack grooves groove-liquid, -tight, -jump, -drive, -house) | feel-templates, dnb / electro / house components | built (critic pending) | #123 |
+| dnb-electro tutorial track + electro and house examples (lesson per section, standalone + pack versions, master + genre score) | dnb / electro / house components, feel templates | built (critic pending) | #124 |
+| more concept families (drill, jersey club, footwork, dancehall, amapiano log drums, lo-fi, garage / 2-step, breakcore, psytrance; groove templates extracted from audio) | concept-framework | unexplored | - |
 | groove-from-audio (onset offsets of a reference stem -> a groove table / preset) | groove, motifs analysis | unexplored | - |
 | wam-plugin-hosting (WAM 2 effects on returns) | summing-groups + delay-compensation | unexplored | - |
 | glitch-free-text-diff (unchanged lanes keep sounding through an edit, Glicol-style) | audio-engine-measurements | unexplored | - |

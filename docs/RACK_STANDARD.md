@@ -116,6 +116,10 @@ high note, power away from the harmonics (outside 2 % of each, at least 6 bins) 
 | impact | 25-6000 | -30 | -30 | -30 | -45 | -3 | -50 | - | `s("x/2")` |
 | texture | 200-14000 | -24 | -20 | -40 | -30 | -18 | -30 | - | `s("pink, brown")` |
 | vox | 150-9000 | -30 | -30 | -40 | -45 | -6 | -30 | - | `s("<vs_o_pp vs_a_pp>").note("<g4 d4>")` |
+| reese | 30-5000 | -30 | -24 | -40 | -45 | -6 | -50 | c4 -34 | `note("c2 ~ c2 eb2 ~ g1 bb1 c2")` (EDM foundations) |
+| growl | 60-10000 | -24 | -20 | -40 | -35 | -6 | -40 | - | `note("c2*4 [c2 c2] eb2 g1*2")` (EDM foundations) |
+| break | 30-14000 | -30 | -20 | -40 | -45 | -3 | -30 | - | `s("x ~ x ~")` (catalog breaks; #122) |
+| gate | 100-12000 | -30 | -30 | -40 | -45 | -6 | -24 | c6 -34 | `note("<[f3,ab3,c4,eb4] [db3,f3,ab3,c4]>")`, plus envelope range >= 15 dB (#122) |
 
 Global limits (every class unless the table says otherwise): DC <= -60 dBFS, sub20 <= -40, >18k <= -45, no sample at or above 0.999,
 peak between -36 and -3 dBFS, crest >= 3 dB, L/R correlation >= -0.1, side<120 <= -30.
@@ -147,7 +151,7 @@ there by physics; the 25 Hz high-pass is for the DC step, not for those.
 ```
 node tools/racks/audit.mjs                       # racks + catalog recipes + Syntax examples -> tools/racks/out/report.json, report.md; exit 1 on a failure
 node tools/racks/audit.mjs --only racks          # the standing test (tests/smoke.sh runs it)
-node tools/racks/audit.mjs --item hazePad --keep # one item, keep the WAVs
+node tools/racks/audit.mjs --item hazePad --keep # one item, keep the WAVs (a comma list audits several: --item reese,neuroBass)
 node tools/racks/audit.mjs --baseline OLD/report.json   # before -> after columns in report.md
 ```
 For a rack it writes a program (`setcpm(30)`, `hooks.bind("x", rack)`, the class phrase from standard.json through `.use("x")`), renders it
@@ -316,3 +320,20 @@ masters at -6 to -8 LUFS.
 `PLAYWRIGHT_MODULES`, `CHROMIUM_PATH`), then `node tools/racks/measure.mjs --bpm 128.8 --score docs/genres/electro.json OUT.wav`. Numbers only:
 `docs/genres/examples/night-phonk-demo.measure.json`. None of the seven genre files is phonk; electro (125-135 BPM, 808 drum machine) is the closest
 fit and is used with that caveat. The take is post site master (-6 dB default gain). Duck depth was skipped here (no stems); see the duck method and its known limit above.
+
+## 8. Per-role classes for drum and bass, electro and house (#122)
+Pack `glyphcore/dnb-electro` adds two classes and uses two of the EDM foundations (`glyphcore/edm`, docs/EDM_REFERENCES.md); no existing
+threshold changed (`git diff tools/racks/standard.json` only adds entries).
+
+| class | used by | hygiene rack | why a class of its own |
+|---|---|---|---|
+| `reese` (EDM foundations) | `reese` | `hygiene-reese` 30-5000 | detuned-saw bass; ours adds its own 100 Hz high-pass at 24 dB/oct after the hook (the sub owns the fundamental), so it sits far inside the band |
+| `growl` (EDM foundations) | `neuroBass`, `jumpWobble` | `hygiene-growl` 70-9000 | mid-bass layer over a separate sub whose drive (shape, distort) runs after the scope: harmonics above the low-pass are the sound, so `above` is -20 and `>18k` -35 |
+| `break` | catalog breaks (`amen-style-break`, `amen-chops`, `jungle-chops`, `think-style-break`) | `hygiene-break` 30-14000 | a whole kit on one bus (kick, snare, ride): the kick's low end and the ride's top octave are both the sound, so the band is wide; `above` -20 as for hats; peak -3 as for drums |
+| `gate` | `gatePad` (`trance-gate`) | `hygiene-gate` 120-9000 | a supersaw that a 16-step gate opens and closes: the supersaw limits (side<120 -24, alias c6 -34) plus a new check, **envelope range** = p95 - p10 of 10 ms RMS levels over the active span (dB); a gate must open and close by at least 15 dB (a sustained supersaw pad measures a few dB) |
+
+The envelope range metric is computed for every item (`env_range_db` in report.json) and checked only where a class sets `env_range_min_db`.
+Measured results of the first audit of the new items are in the table below (same standard, the audit run of #122).
+
+<!-- dnb-electro-audit:start -->
+<!-- dnb-electro-audit:end -->

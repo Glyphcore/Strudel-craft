@@ -1,0 +1,390 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"Liquid DnB\" (172-176 bpm): rolling two-step with ghost notes behind the beat, shaker, held sub, liquid pad and vocal chops. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/dnb-electro:feel-liquid\", { as: \"feel\" }).",
+ "atoms": {
+  "adldwmt": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "kick pattern",
+   "folder": "feels/liquid/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "liquid",
+    "pattern"
+   ],
+   "hash": "sha256:de06729586e457eea6ecbfade8323300f60d93d4dc29d6160834b42c3eb44211"
+  },
+  "au5bk3s": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "folder": "feels/liquid/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "liquid",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "amk37n6": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "dnbKick | groove-swing(54) | groove-human(2.5, 0.15, 1)",
+   "doc": "kick rack and groove",
+   "folder": "feels/liquid/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "liquid",
+    "rack-slot"
+   ],
+   "hash": "sha256:5061fc254ea5bf902795df65c2b57ff3a267f5f22242f6403fc5eaee6c65138a"
+  },
+  "amhljb4": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "snare pattern",
+   "folder": "feels/liquid/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "liquid",
+    "pattern"
+   ],
+   "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
+  },
+  "aqjvjgr": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "folder": "feels/liquid/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "liquid",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a6nyh4r": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "dnbSnare | groove-swing(54) | groove-human(2.5, 0.15, 2)",
+   "doc": "snare rack and groove",
+   "folder": "feels/liquid/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "liquid",
+    "rack-slot"
+   ],
+   "hash": "sha256:d39c076ff082ea09e8eb9bf35940d1b0ffc76ab3f27ec37d320aee4143897cdf"
+  },
+  "a8mdjvj": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~",
+   "doc": "perc pattern",
+   "folder": "feels/liquid/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "liquid",
+    "pattern"
+   ],
+   "hash": "sha256:1c90100bacf8865037135144d89853893d48a8a0407d03eb9716fb6fc9b5683f"
+  },
+  "a4xpmmq": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[.55 .4 .6 .45]*4",
+   "doc": "perc accents (velocity)",
+   "folder": "feels/liquid/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "liquid",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:b30cc94d875f55c154e0e49b678d6fa2a790c8b889a672666fda6c9e8bcd8dd5"
+  },
+  "a4vtz20": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "ghostSnare | groove-swing(54) | groove-human(2.5, 0.15, 3) | groove-push(3)",
+   "doc": "perc rack and groove",
+   "folder": "feels/liquid/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "liquid",
+    "rack-slot"
+   ],
+   "hash": "sha256:ea935ecae3224648f9026fc98bd10daec87884fe04e7f4eb7be1189cd360e4f9"
+  },
+  "ai81b0p": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*16",
+   "doc": "hats pattern",
+   "folder": "feels/liquid/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "liquid",
+    "pattern"
+   ],
+   "hash": "sha256:bc74a3b9e12ebc0770e636fb859180836145824d453b6c0c08e954bc49f4cdaf"
+  },
+  "adju69o": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[.35 .2 .6 .2]*4",
+   "doc": "hats accents (velocity)",
+   "folder": "feels/liquid/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "liquid",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:cd2d81d4f98a74797f9c759c6bc0ffa201637d68bf8714f63c3b732d4b55fb69"
+  },
+  "adbd89y": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "dnbShaker | groove-swing(54) | groove-human(2.5, 0.15, 4)",
+   "doc": "hats rack and groove",
+   "folder": "feels/liquid/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "liquid",
+    "rack-slot"
+   ],
+   "hash": "sha256:9a50b059feee93c2562426538cd92a5a1450f083a09320d205276978dee04a31"
+  },
+  "ajqo1uu": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[~ ~ c5 ~ ~ ~ ab4 ~ ~ ~ ~ ~ c5 ~ eb5 ~] [~ ~ f4 ~ ~ ~ ab4 ~ ~ ~ ~ ~ g4 ~ f4 ~]>",
+   "doc": "top pattern",
+   "folder": "feels/liquid/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "liquid",
+    "pattern"
+   ],
+   "hash": "sha256:307d66e96584c2a5895a6cfbbfc84343d481538fad3d09ca38b746bfd9814b27"
+  },
+  "ajljnqx": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "folder": "feels/liquid/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "liquid",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "aoev14l": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "vocalChop | groove-swing(54) | groove-human(2.5, 0.15, 5)",
+   "doc": "top rack and groove",
+   "folder": "feels/liquid/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "liquid",
+    "rack-slot"
+   ],
+   "hash": "sha256:39e0bb5269bc4eb4744cd94abaf26d62e8cc067c9c9d3c7008a7bfc093bbcc29"
+  },
+  "a0gx97s": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f1@10 f1@6]!2 [db2@10 db2@6]!2 [bb1@10 bb1@6]!2 [c2@10 c2@6]!2>",
+   "doc": "bass pattern",
+   "folder": "feels/liquid/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "liquid",
+    "pattern"
+   ],
+   "hash": "sha256:9ea5039794c5d4c9ccc2748e7d842a5788eb1c7738bd1e5df1a20e5bf624c8d9"
+  },
+  "auiiiab": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "bass accents (velocity)",
+   "folder": "feels/liquid/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "liquid",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "aka3mj7": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "dnbSub | groove-human(0.5, 0.05, 6)",
+   "doc": "bass rack and groove",
+   "folder": "feels/liquid/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "liquid",
+    "rack-slot"
+   ],
+   "hash": "sha256:ffefab36c3a4e0226edddd138fb5abd5434f888a95482782760e17841c1e7f63"
+  },
+  "a7l882b": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f3,ab3,c4,eb4,g4]!2 [db3,f3,ab3,c4,eb4]!2 [bb2,db3,f3,ab3,c4]!2 [c3,eb3,g3,bb3]!2>",
+   "doc": "harmony pattern",
+   "folder": "feels/liquid/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "liquid",
+    "pattern"
+   ],
+   "hash": "sha256:35c590372926d0eaf9e991b6bec13fc2132dc1103a1bff331dac1dcb5a4bc370"
+  },
+  "ae96z5y": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "folder": "feels/liquid/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "liquid",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "aadl00s": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "liquidPad | groove-human(0.5, 0.05, 7)",
+   "doc": "harmony rack and groove",
+   "folder": "feels/liquid/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "liquid",
+    "rack-slot"
+   ],
+   "hash": "sha256:bb46427e0f0267ba9cc7afdaf168d28aa811fed666aa4009ec6c10d99ef5d912"
+  },
+  "a2yyh0x": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "fx pattern",
+   "folder": "feels/liquid/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "liquid",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "ahg2lok": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "folder": "feels/liquid/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "liquid",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a9679ku": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-swing(54) | groove-human(2.5, 0.15, 8)",
+   "doc": "fx rack and groove",
+   "folder": "feels/liquid/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "liquid",
+    "rack-slot"
+   ],
+   "hash": "sha256:a949982370ed56dc1f1777345c515d510ba8082e5288ed28a64ddc1bfa2aaeeb"
+  },
+  "a2av6kx": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-swing(54) | groove-human(2.5, 0.15, 0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "folder": "feels/liquid/groove",
+   "tags": [
+    "groove",
+    "feel",
+    "liquid",
+    "rack-slot"
+   ],
+   "hash": "sha256:c48daf1c46fb8606ea4a632b6813928f5cfb8d002670d8f794e294907d87ac93"
+  }
+ }
+}

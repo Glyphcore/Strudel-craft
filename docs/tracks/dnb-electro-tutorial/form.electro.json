@@ -1,0 +1,27 @@
+[
+ {
+  "section": "intro",
+  "bars": 8,
+  "type": "intro"
+ },
+ {
+  "section": "build",
+  "bars": 8,
+  "type": "build"
+ },
+ {
+  "section": "drop1",
+  "bars": 8,
+  "type": "drop"
+ },
+ {
+  "section": "break",
+  "bars": 8,
+  "type": "break"
+ },
+ {
+  "section": "drop2",
+  "bars": 8,
+  "type": "drop"
+ }
+]

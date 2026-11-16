@@ -27,8 +27,9 @@ export function roleOfLabels(id, labels) {
   if (has('riser', 'filter-sweep', 'phaser', 'tremolo', 'reverb-big', 'dry-tight', 'delay-echo', 'stereo', 'space')) return 'fx';
   if (has('bass', 'low-end') && !has('four-floor')) return 'bass';
   if (has('pad', 'drone')) return 'pad';
-  if (has('bell-like', 'motif', 'arpeggio', 'pluck', 'fm')) return 'lead';
-  if (has('chord-progression', 'voicing')) return 'keys';
+  if (has('bell-like', 'motif', 'arpeggio', 'pluck', 'fm', 'lead')) return 'lead';
+  if (has('chord-progression', 'voicing', 'stabs')) return 'keys';
+  if (has('drums', 'hats', 'breakbeat')) return 'drums';
   if (has('four-floor', 'offbeat', 'euclid', 'half-time', 'syncopated', 'polyrhythm', 'probability', 'hyphy', 'boom-bap', 'trap', 'accents')) return 'drums';
   if (has('dynamics', 'crescendo', 'fade-out', 'sidechain', 'movement', 'build')) return 'fx';
   return null;

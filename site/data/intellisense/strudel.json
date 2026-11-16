@@ -272,7 +272,7 @@
    "label": "groove",
    "method": true,
    "detail": "groove(swing, push, jitter, vel, drift, seed, grid)",
-   "info": "Off-grid feel, seeded and deterministic: MPC swing 50-75, push / jitter / drift in % of a 16th, velocity spread (Strudel-craft hooks runtime; docs/CONVENTIONS.md 4)",
+   "info": "Off-grid feel, seeded and deterministic: MPC swing 50-75, push / jitter / drift in % of a 16th, velocity spread (Strudel-craft hooks runtime; docs/CONVENTIONS.md 4; feel grooves compose the presets: groove-swing(54) | groove-human(2.5, 0.15, seed) = liquid DnB, docs/CONVENTIONS.md 10)",
    "category": "time"
   },
   {
@@ -1149,6 +1149,27 @@
    "detail": "panchor(0|1)",
    "info": "Pitch envelope anchor: 0 starts at the note, 1 ends on it",
    "category": "synth"
+  },
+  {
+   "label": "bite",
+   "method": true,
+   "detail": "bite(n, \"0 1 2 3 ...\")",
+   "info": "Cut each cycle into n slices and play them in the order of an index pattern: chop and re-sequence a break (atoms.dnb.chops with n = 16 keeps every lane of a kit in step)",
+   "category": "structure"
+  },
+  {
+   "label": "slice",
+   "method": true,
+   "detail": "slice(n, \"0 1 2 3 ...\")",
+   "info": "Cut a sample into n slices and trigger them by a pattern of slice numbers (a sampled break; needs a sample bank)",
+   "category": "sample"
+  },
+  {
+   "label": "fit",
+   "method": true,
+   "detail": "fit()",
+   "info": "Stretch a sample to its event length (drum breaks)",
+   "category": "sample"
   }
  ],
  "params": {
@@ -2455,6 +2476,39 @@
     "control": "number",
     "clamp": "hard",
     "step": 1
+   }
+  ],
+  "bite": [
+   {
+    "name": "n",
+    "shape": "number",
+    "min": 1,
+    "max": 64,
+    "default": 16
+   },
+   {
+    "name": "order",
+    "shape": "mini",
+    "examples": [
+     "0 1 2 3 4 5 6 7 0 1 2 3 12 13 14 15",
+     "<0 1 2 3>"
+    ]
+   }
+  ],
+  "slice": [
+   {
+    "name": "n",
+    "shape": "number",
+    "min": 1,
+    "max": 64,
+    "default": 16
+   },
+   {
+    "name": "order",
+    "shape": "mini",
+    "examples": [
+     "0 1 2 3 4 5 6 7"
+    ]
    }
   ]
  },

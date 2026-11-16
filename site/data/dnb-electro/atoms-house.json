@@ -1,0 +1,399 @@
+{
+ "format": "atoms@1",
+ "name": "hs",
+ "doc": "glyphcore/dnb-electro house, techno, trance and big-room atoms (hs.): four-on-the-floor kick, offbeat open hat, 16th hats and accents, clap, rolling and offbeat bass, rumble, pluck arp, chords, trance gate, big-room lead motif; gates of the 56-bar house example (intro, groove, breakdown, build, drop, drop2, outro) and of a 160-bar club map in 32-bar blocks (mapIntro .. mapOutro, phrase8 ends). Import with atoms.import(\"pack:glyphcore/dnb-electro:atoms-house\").",
+ "atoms": {
+  "a0blr4i": {
+   "name": "hs.kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "four-on-the-floor",
+   "folder": "house/drums",
+   "tags": [
+    "drums",
+    "house",
+    "pattern"
+   ],
+   "hash": "sha256:0217ca393e7b9e240d8b3ffed67e975f3934d9a9f1303a227193b90afe293ac5"
+  },
+  "acrd4qu": {
+   "name": "hs.offHat",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "open hat on every offbeat 8th",
+   "folder": "house/drums",
+   "tags": [
+    "drums",
+    "house",
+    "pattern"
+   ],
+   "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
+  },
+  "al1sm4m": {
+   "name": "hs.hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*16",
+   "doc": "16th closed hats",
+   "folder": "house/drums",
+   "tags": [
+    "drums",
+    "house",
+    "pattern"
+   ],
+   "hash": "sha256:bc74a3b9e12ebc0770e636fb859180836145824d453b6c0c08e954bc49f4cdaf"
+  },
+  "argiwpw": {
+   "name": "hs.hatVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[.5 .3 .8 .3]*4",
+   "doc": "16th hat accents (offbeat strong)",
+   "folder": "house/drums",
+   "tags": [
+    "drums",
+    "house",
+    "pattern"
+   ],
+   "hash": "sha256:cc3444ebdd1bfc6f4bd2aa650e7fd5abeb21dd2f703a1a7ef1174154e324c091"
+  },
+  "amgp422": {
+   "name": "hs.clap",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "clap on 2 and 4",
+   "folder": "house/drums",
+   "tags": [
+    "drums",
+    "house",
+    "pattern"
+   ],
+   "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
+  },
+  "a2idttz": {
+   "name": "hs.bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ ab1 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>",
+   "doc": "offbeat house bass",
+   "folder": "house/bass",
+   "tags": [
+    "bass",
+    "house",
+    "pattern"
+   ],
+   "hash": "sha256:93a77c483172a84a711dfc359188287af08450933ae5f4f9c90aa020be8c6263"
+  },
+  "akndq69": {
+   "name": "hs.rolling",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f2",
+   "doc": "techno rolling bass: every 16th the kick leaves free",
+   "folder": "house/drums",
+   "tags": [
+    "drums",
+    "house",
+    "pattern"
+   ],
+   "hash": "sha256:e7227b366022afe2164239fbfd599cc9f6fe7503776322cde4cd3fc7a18e6917"
+  },
+  "a0tfytl": {
+   "name": "hs.rumble",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1",
+   "doc": "rumble notes in the kick's gaps",
+   "folder": "house/bass",
+   "tags": [
+    "bass",
+    "house",
+    "pattern"
+   ],
+   "hash": "sha256:54efce5efd5be1721a33f8dece962e381129e43f2ea897a2260295d0ab7206d2"
+  },
+  "afnaphh": {
+   "name": "hs.arp",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5] [f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5] [eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5] [eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4]>",
+   "doc": "trance pluck arp, 16ths, following the chords",
+   "folder": "house/lead",
+   "tags": [
+    "lead",
+    "house",
+    "pattern"
+   ],
+   "hash": "sha256:247ef5de42cf540190023b79a01c06ec5ca63ca5d33b407cb03cb9195503133b"
+  },
+  "aq54vyv": {
+   "name": "hs.chords",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>",
+   "doc": "chords, one per bar: Fm, Db, Ab, Eb (i - VI - III - VII)",
+   "folder": "house/keys",
+   "tags": [
+    "keys",
+    "house",
+    "pattern"
+   ],
+   "hash": "sha256:3f4509a0972eb5a2550472442466f6f1830067cf842c1350323f7a31cd915b7c"
+  },
+  "a2d7axv": {
+   "name": "hs.gate",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ x x x ~ x x x ~ x x x ~ x x",
+   "doc": "trance gate: 16 steps, a 3-against-4 grouping",
+   "folder": "house/drums",
+   "tags": [
+    "drums",
+    "house",
+    "pattern"
+   ],
+   "hash": "sha256:fc9284ad8be639f602a1965c4b0443045764adc28f604fae191e374cf1532bba"
+  },
+  "aw70kyq": {
+   "name": "hs.lead",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[f4 ~ f4 ~ ab4 ~ f4 ~ c5 ~ ~ ~ ab4 ~ g4 ~] [f4 ~ f4 ~ ab4 ~ f4 ~ db5 ~ ~ ~ c5 ~ ab4 ~]>",
+   "doc": "big-room lead motif: short, repeated, one hook",
+   "folder": "house/lead",
+   "tags": [
+    "lead",
+    "house",
+    "pattern"
+   ],
+   "hash": "sha256:533d78e802addf0fb74b4f32beb955f3b21c7c17e55ecb16e007b35884f67309"
+  },
+  "a00twbi": {
+   "name": "hs.intro",
+   "type": "gate",
+   "rev": 1,
+   "body": "<9b",
+   "doc": "intro (house groove): bars 1-8 (form: intro 8, groove 8, breakdown 8, build 8, drop 8, drop 2 8, outro 8 = 56 bars = 105 s at 128 bpm)",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:682b3ed43b8fee4e7d78096fb5a20f11794c51be308eca61f576be2f3ed74611"
+  },
+  "ahae61u": {
+   "name": "hs.groove",
+   "type": "gate",
+   "rev": 1,
+   "body": "9b..17b",
+   "doc": "techno groove: bars 9-16 (rumble, rolling bass, 16th hats)",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:aa0305afd10ee27dfcc6697b7de6b51e1fc03d26b846d76ba7a1b74ca8d95527"
+  },
+  "akx0mdj": {
+   "name": "hs.breakdown",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..25b",
+   "doc": "trance breakdown: bars 17-24 (no kick)",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:e67adbd7795bc1c1f3791c53d05bf0d02a7d534c9cbc1129aefcd96ca4a33de1"
+  },
+  "a02v2ks": {
+   "name": "hs.build",
+   "type": "gate",
+   "rev": 1,
+   "body": "25b..33b",
+   "doc": "uplifting build: bars 25-32",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:ea8541ea2cf91679ff0443ad8b4e8369bf4540db6b851780c02185a53a4ff351"
+  },
+  "abumld5": {
+   "name": "hs.drop",
+   "type": "gate",
+   "rev": 1,
+   "body": "33b..41b",
+   "doc": "trance drop: bars 33-40",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:617023ebca66e9349d1bcd979a75157982955f16401d2efa4c3ecfc446faae91"
+  },
+  "a6gj6rl": {
+   "name": "hs.drop2",
+   "type": "gate",
+   "rev": 1,
+   "body": "41b..49b",
+   "doc": "big-room drop: bars 41-48 (stripped: kick, clap, lead)",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:8c50af24bfda6019715596b38fd6bad553543348ee71e372c72f582173f23ac1"
+  },
+  "a5abhbf": {
+   "name": "hs.outro",
+   "type": "gate",
+   "rev": 1,
+   "body": "@49b",
+   "doc": "outro (house groove): bars 49-56",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:bd0565a0799dff7881e91e435848121d33dd6ac7a4213d888d65da43489ede8c"
+  },
+  "av7so95": {
+   "name": "hs.noKick",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..33b",
+   "doc": "kick out: breakdown and build",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:c33f20398486d2f9485b281c74da91992318b0af0f9836c4688b99a5fe618dc4"
+  },
+  "afhsi7j": {
+   "name": "hs.vacuum",
+   "type": "gate",
+   "rev": 1,
+   "body": "32.3b..33b",
+   "doc": "the last half bar before the drop",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:bf832a931acb7c7fbe6897f50642b883a06d4b4f2a95ded3a3ec0a02559d8020"
+  },
+  "am6hq9o": {
+   "name": "hs.mapIntro",
+   "type": "gate",
+   "rev": 1,
+   "body": "<33b",
+   "doc": "club map (160 bars, 32-bar blocks): intro, bars 1-32 (DJ mix-in)",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:45890aa0d7554039653a454f1ce4c4aa1c2e2bac099a8b42cae887cece77e7d5"
+  },
+  "ap3au3m": {
+   "name": "hs.mapDrop1",
+   "type": "gate",
+   "rev": 1,
+   "body": "33b..65b",
+   "doc": "club map: first drop / main groove, bars 33-64",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:3a688c2f7a2c93ae1c92692b851276e27244c929e507d3481ae180a34671726a"
+  },
+  "ab2l6pl": {
+   "name": "hs.mapBreak",
+   "type": "gate",
+   "rev": 1,
+   "body": "65b..81b",
+   "doc": "club map: breakdown, bars 65-80",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:10c568896adbd7decf45a992b8f020f32044752ffacb8ce0dee3ce326f362b85"
+  },
+  "a78q3u2": {
+   "name": "hs.mapBuild",
+   "type": "gate",
+   "rev": 1,
+   "body": "81b..97b",
+   "doc": "club map: build, bars 81-96",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:e76c9a97ec9876b32f37c9e7c90c41b6a7fd4c00eea30d9e8fd0a95738318a6b"
+  },
+  "aotb8en": {
+   "name": "hs.mapDrop2",
+   "type": "gate",
+   "rev": 1,
+   "body": "97b..129b",
+   "doc": "club map: second drop, bars 97-128",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:d92d3951a80489abcf7c4d942028b3c4932223a2269d8a5d3c9306f4facd4054"
+  },
+  "aqhznl5": {
+   "name": "hs.mapOutro",
+   "type": "gate",
+   "rev": 1,
+   "body": "@129b",
+   "doc": "club map: outro, bars 129-160 (DJ mix-out)",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:4f822c5fd60ec55a65faff8d67aea979d1ad8f8b0b8b46f259bb781306a789d6"
+  },
+  "ajqpfgr": {
+   "name": "hs.phrase8",
+   "type": "gate",
+   "rev": 1,
+   "body": "8b..9b, 16b..17b, 24b..25b, 32b..33b, 40b..41b, 48b..49b, 56b..57b, 64b..65b, 72b..73b, 80b..81b, 88b..89b, 96b..97b, 104b..105b, 112b..113b, 120b..121b, 128b..129b, 136b..137b, 144b..145b, 152b..153b, 160b..161b",
+   "doc": "the last bar of every 8-bar phrase (bars 8, 16, ... 160): turnarounds and fills",
+   "folder": "house/form",
+   "tags": [
+    "form",
+    "house",
+    "gate"
+   ],
+   "hash": "sha256:ed143e94c44e92e1dfe1d6729768afb76975ef1629de8879c8b9e598a2e85e66"
+  }
+ }
+}

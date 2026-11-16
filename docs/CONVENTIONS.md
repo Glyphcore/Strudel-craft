@@ -136,11 +136,12 @@ by default (HOOKS_SYNTAX 4.3). Lane selections (`tagged(...).mute(gate)`) are al
 6. A feel: add to `feels` in feels.json (`title`, `tempo`, `cpm`, `groove` preset, `doc`, `labels`, `voices` for every template voice).
    A new template voice is one entry in `template.voices` / `template.src`, and every feel must then fill it (silence is `{ "pat": "~" }`).
 7. Folder and tags are derived, not written: `tools/concepts/taxonomy.mjs` gives every recipe, atom and rack a folder (family, genre, role: `hiphop/trap/drums`, `dovetail/pickup`, `feels/trap/bass`) and tags (role, genre, feel, tempo-feel, mood, technique, status). A new concept needs only its family, labels and role word; to add a role, genre or technique word extend the lists at the top of that file and rerun. The hand-written phonk files and the pack `taxonomy` are filled by `node tools/packs/taxonomy_fill.mjs` (run it after the build, then hash). docs/PACKAGES.md section 4.
-8. Run `node tools/concepts/build.mjs --render` (every recipe must come back `verified`), `python3 tools/packs/packs.py hash site/data/<pack> --write`,
+8. Run `node tools/concepts/build.mjs --render` (every recipe must come back `verified`), `python3 tools/packs/packs.py hash site/data/<pack dir> --write` (each pack you touched),
    `python3 tools/packs/shim.py`, `node tools/lowering/build.mjs` (verifies Craft = Strudel events, annotates the Syntax examples; docs/LOWERING.md),
    `node tools/packs/taxonomy_fill.mjs` (then hash and shim again), `python3 tools/packs/shim.py`, `node tools/pwa/precache.mjs`, then `node tools/racks/audit.mjs` (0 failures),
    `node tools/concepts/build.mjs --check` and `node tools/packs/taxonomy_fill.mjs --check` (exit 0), and `python3 tools/packs/audit.py --write-doc` (docs/PACKAGES.md numbers).
 9. Docs follow code: this file (tables above), docs/LOWERING.md, docs/PACKAGES.md, site/README.md, docs/CONCEPT_DAG.md, the #56 tracker.
+10. A new pack: create `site/data/<name>/craftpack.json` (id, version, title, description, licence) and `LICENSE.md`, set `pack` on the family (section 9); `tools/packs/shim.py` pins every `site/data/*/craftpack.json` by itself.
 
 ## 8. EDM families: edm-core and dubstep (pack glyphcore/edm, #127 #128 #129)
 Sources, what each taught and the shared rules: docs/EDM_REFERENCES.md. C minor, one cycle = one bar, 140 bpm unless the recipe says 128 (house tempo demos).
@@ -163,3 +164,74 @@ Forms: the 104-bar map (EDM_REFERENCES section 3) as gates `ec.intro`, `build`, 
 a track that must open on strudel.cc uses the masks (`.mask(atoms.ec.mDropA)`), a Craft track may use the gates (`tagged("bass").mute(atoms.ec.notDrops)`).
 Dovetails: call / response basses `ds.bassA` / `ds.bassB`, the drop fill `ds.lastOf4` / `ds.notLastOf4`, the gap before a drop, a reverse swell that stops on the downbeat,
 a downlifter after it. Feels: `feel-halftime`, `feel-ukf`, `feel-riddim`, `feel-brostep` (template of section 5; `atoms.import("pack:glyphcore/edm:feel-ukf", { as: "feel" })`).
+
+## 9. More packs: one family, one pack (#122, with the EDM foundations #127)
+A family names its pack with `"pack": "author/name"` (default `glyphcore/phonk`); its files go to `site/data/<name>/`, whose `craftpack.json` must exist
+(metadata kept, the ingredient list written by the builder). `"section": { id, title, explain }` puts the family's Syntax examples in their own section
+(families that share a section id share one section, examples in family order); `"labels"` adds catalog labels; `"source"` sets the catalog `source`;
+`"taxonomy": { folder, genres }` gives the family's recipes, atoms and racks their folder root and genre tags (tools/concepts/taxonomy.mjs); a Syntax entry
+may read its code from a file (`"codeFile"`, the dnb-electro track demos) and may carry `"skip"` (the audit reason, e.g. needs a sample bank). A pack's
+racks go into one hooks@1 ingredient (`racksIngredient`, `racksTitle`, `racksDoc`); a recipe whose racks come from a pack it imports no atoms from gets a
+`// racks: pack:<pack>:<ingredient>` comment, because the site installs a pack's hook defs when the program text names the pack (#91). A feel's `groove`
+is a preset name (the voice seed is appended) or an expression with `$seed` (`"groove-swing(54) | groove-human(2.5, 0.15, $seed)"`). `--jobs N` renders
+N recipes at a time. Self-containment rule: a feel template only names racks of its own pack, so `atoms.import("pack:P:feel-x", { as: "feel" })` alone
+brings every def it needs. A pack hook def may only use the chain steps listed in `site/data/hooks-steps.json` (PACK_SPEC 5.2); dnb-electro added
+`fmdecay`, `fmsustain`, `ftype`, `spread` (scalars) and the `mini` shape on `struct` (the trance gate).
+
+## 10. Drum and bass, electro, house / techno / trance / big room (pack `glyphcore/dnb-electro`, #122)
+Sources and what each taught: docs/DNB_ELECTRO_REFERENCES.md. F minor throughout (F1 = 43.7 Hz), one cycle = one bar on 16 steps, tempo by
+`setcpm(bpm/4)`. The shared EDM foundations of `glyphcore/edm` (docs/EDM_REFERENCES.md: `sidechain(orbit, depth, release)` on the kick and
+`ducked(orbit)` on its targets, `noiseRiser(len)`, `impactBoom`, `crash`, `downSweep`, `filterBuild`, `thinBuild`, `ott`, `wobble`, atoms `ec.roll8`,
+`ec.rollVel8`, `ec.roll4`, `ec.open8`, `ec.thin8`, gates `ec.rise4/8/16`, `ec.hit`) are used, never redefined.
+
+| component | atoms | rack (class) | note |
+|---|---|---|---|
+| two-step drums | `dnb.kick`, `dnb.snare` | `dnbKick` (kick), `dnbSnare` (snare) | kick 1 and the and of 3, snare 2 and 4 |
+| ghost notes | `dnb.ghosts` (2.5, 4.5), `dnb.ghostsRoll`, `dnb.ghostVel` | `ghostSnare` (snare) | the snare shorter, darker, about 0.35 of its gain; accents are a 16-step velocity atom |
+| halftime | `dnb.halfKick`, `dnb.halfSnare` | `dnbKick`, `dnbSnare` | snare on beat 3 at the same tempo |
+| breaks | `dnb.amenKick`, `amenSnare`, `amenVel`; `dnb.thinkKick`, `thinkSnare`, `thinkHat` | `breakKick`, `breakSnare` (kick, snare), `ride` (hat) | synthesised amen-style / think-style kits, no samples (LICENSE.md) |
+| chops | `dnb.chops`, `dnb.chopsWild` | - | slice orders for `.bite(16, ...)` on every lane of the break (same order on a sample: `.slice(16, ...)`) |
+| hats | `dnb.hats`, `dnb.shaker`, `dnb.shakerVel`, `dnb.rideVel` | `dnbHat`, `dnbShaker`, `ride` (hat) | |
+| sub | `dnb.sub` (F1, Db2, Bb1, C2) | `dnbSub` (sub) | mono sine, 5 ms attack, held |
+| reese | `dnb.sub` (the same notes) | `reese` (reese) | unison 2, `spread 0`, own 100 Hz high-pass at 24 dB/oct: the sub keeps the fundamental |
+| neuro | `dnb.neuro` | `neuroBass` (growl) | FM saw (`fmh 0.5`), resonant snap, vowel, then shape into distort (serial drive) |
+| rolling bass | `dnb.rolling` | `rollingBass` (bass) | offbeat 16ths following the chords |
+| jump-up wobble | `dnb.wobble` | `jumpWobble` (growl) | 3+3+2 notes that re-open the filter envelope; edm `wobble(sync)` is the LFO alternative |
+| liquid harmony | `dnb.chords`, `dnb.comp`, `dnb.strings` | `liquidRhodes` (keys), `liquidPad`, `strings` (pad) | Fm9 Dbmaj9 Bbm9 Cm7, two bars each |
+| vocal chops | `dnb.chop`, `dnb.chopVowel` | `vocalChop` (vox) | vowel saw chops; real chops use `word()` / vox banks |
+| electro-funk kit | `el.kick`, `el.clap`, `el.hats`, `el.hatVel`, `el.cowbell` | `boom808` (kick), `clap808` (snare), `hat808`, `open808` (hat), `cowbell808` (bell) | 808-style, cowbell played as `[c#5,g#5]` |
+| electro bass and robot voice | `el.bass`, `el.lead`, `el.leadVowel`, `el.chords`, `el.stabs` | `electroBass` (bass), `vocoLead` (lead), `robotStab` (stab) | vocoder-style = a vowel formant per beat, not a carrier / modulator vocoder |
+| electro house | `el.ehKick`, `el.ehClap`, `el.ehHat`, `el.ehBass`, `el.ehStabs` | `houseKick`, `clap808`, `offHat`, `filterBass` (bass), `sawStab` (supersaw) | stabs and bass `ducked(3)` under the kick's `sidechain(3, ...)`; clap build = `ec.roll8` on `clap808` |
+| house / techno | `hs.kick`, `hs.offHat`, `hs.hats`, `hs.hatVel`, `hs.clap`, `hs.bass`, `hs.rolling`, `hs.rumble` | `houseKick`, `bigKick` (kick), `houseClap` (snare), `offHat`, `closedHat` (hat), `houseBass` (bass), `rumble` (sub) | rolling bass on every 16th the kick leaves free |
+| trance / big room | `hs.arp`, `hs.chords`, `hs.gate`, `hs.lead` | `pluck` (pluck), `bigChords` (supersaw), `gatePad` (gate), `roomLead` (lead) | the trance gate is a `struct` of `hs.gate` inside the rack plus a 90 ms decay |
+
+Forms (gate atoms): DnB 128 bars `dnb.intro` `<17b`, `build`, `drop1` 25-56, `breakdown` 57-72, `build2`, `drop2` 81-112, `halftime` 113-120, `outro`,
+plus `drops`, `builds`, `noDrums`, `vacuum` (the last half bar before each drop: `24.3b..25b, 80.3b..81b`), `liquidPart`, `neuroPart`; electro 40 bars
+(`el.intro` .. `el.drop2`, `el.funk`, `el.vacuum`); house 56 bars (`hs.intro`, `groove`, `breakdown`, `build`, `drop`, `drop2`, `outro`, `noKick`, `vacuum`) and a
+160-bar club map of 32-bar blocks (`hs.mapIntro` 1-32, `mapDrop1` 33-64, `mapBreak` 65-80, `mapBuild` 81-96, `mapDrop2` 97-128, `mapOutro` 129-160, `hs.phrase8`
+the last bar of every 8-bar phrase). Tension and release grammar (with the edm atoms): a build thins the low end (`thinBuild` on a `tone` slot), the
+roll doubles (`ec.roll8`), the riser is one note as long as the build (`s("x/8").use("rise")` with `noiseRiser(len)` bound on the build gate), the gap
+mutes everything but the riser (`tagged("!rise").mute(atoms.dnb.vacuum)`), the drop starts with `impactBoom` and `crash` on one-bar gates; release =
+a `downSweep` and the filters closing on the breakdown gate.
+
+## 11. Feel templates of glyphcore/dnb-electro (#123)
+Same template v1 and the same 25 atom names as section 5. Grooves are compositions of the standard presets (section 4) with the voice
+seed, so the engine and the stdlib stay as they are: liquid `groove-swing(54) | groove-human(2.5, 0.15, seed)`, tight `groove-human(0.5, 0.05, seed)`,
+jump `groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, seed)`, drive `groove-human(0.8, 0.08, seed)`, house shuffle
+`groove-swing(56) | groove-human(1, 0.1, seed)` (push / jitter in % of a 16th: at 174 bpm 2.5 % = 2.2 ms).
+
+| feel | tempo | groove | voices |
+|---|---|---|---|
+| `feel-liquid` | 172-176 | liquid (sub and pad tight) | two-step, ghosts pushed 3 %, shaker, vocal chops, sub, liquid pad |
+| `feel-neuro` | 172-176 | tight | two-step, rolling ghosts, 8th hats, neuro riff (add a sub lane on `atoms.feel.bass` with `dnbSub`) |
+| `feel-jumpup` | 172-176 | jump | two-step, ghosts, hats, jump-up wobble |
+| `feel-electrohouse` | 126-130 | tight | four-on-the-floor, clap, offbeat hat, supersaw stabs, filtered bass |
+| `feel-techno` | 128-135 | drive | four-on-the-floor, offbeat ride, 16th hats, rolling bass |
+| `feel-trance` | 136-140 | tight | four-on-the-floor, clap, offbeat hat, pluck arp, offbeat bass, gated supersaw |
+| `feel-bigroom` | 126-130 | tight | big kick, clap, offbeat hat, lead motif |
+
+Pick one: `atoms.import("pack:glyphcore/dnb-electro:feel-liquid", { as: "feel" })` and the same binds and lanes as section 5 (Syntax "Pick a DnB / EDM
+feel"); set the tempo with it. Switch liquid -> neuro: two imports and lane tags (Syntax "Feel switch").
+Rejected: new stdlib presets in `site/engine/groove.js` for genre grooves (engine change for content); pack hook defs with a `groove` step (the first
+draft; a composition of existing presets needs no new def); DnB swing above 55 % (reads as UK garage). Drift is not used (groove-human has none; 1.5 % was the
+first draft for liquid).

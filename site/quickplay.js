@@ -7,16 +7,17 @@
    - the page master bus (meter, master level, mute on Stop) is shared: that is what "mixes with the program" means.
    Mix choice: the audition never replaces anything. While the program plays it mixes at LEVEL_MIX (0.6, -4.4 dB); alone it plays at LEVEL_ALONE (0.9).
    Solo (tray chip) mutes every other orbit (the main program) until the audition stops, then restores them.
-   Loop: 4 cycles by default then a short fade; the Loop chip (persisted) repeats until stopped. One audition at a time: another play = switch.
+   Length chip (persisted): End (default, record-length.js resolver, else continuous), Loop, or N bars; 20 min safety stop. One audition at a time: another play = switch.
    Stop: the transport Stop calls stop('fast') (25 ms fade); every ending fades, so no click. Tempo: the entry's own setcpm/setbpm/setcps, else the entry's bpm
    hint, else the page tempo knob. API: window.strudelCraft.quickplay = { press(btn, spec), play(spec), stop(how), sync(), state, stats } */
 const sc = (window.strudelCraft = window.strudelCraft || {});
-const QP_ORBIT = 13, LEVEL_MIX = 0.6, LEVEL_ALONE = 0.9, CYCLES = 4, FADE_FAST = 0.025, FADE_END = 0.12, TAIL_MS = 380;
+import * as RL from './record-length.js';
+const QP_ORBIT = 13, LEVEL_MIX = 0.6, LEVEL_ALONE = 0.9, MAX_S = RL.MAX_MIN * 60, FADE_FAST = 0.025, FADE_END = 0.12, TAIL_MS = 380;
 const S0 = () => window.__sc;
 const lsGet = (k, d) => { try { const v = localStorage.getItem('sc.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
 const lsSet = (k, v) => { try { localStorage.setItem('sc.' + k, JSON.stringify(v)); } catch (e) { /* private mode */ } };
 const toast = (m, kind = 'info') => { try { sc.ui && sc.ui.toast(m, { kind }); } catch (e) { /* no ui */ } };
-const state = { key: null, phase: 'idle', title: '', loop: lsGet('qp.loop', false) === true, solo: false, error: '' };
+const state = { key: null, phase: 'idle', title: '', mode: ['end', 'loop', 'bars'].includes(lsGet('qp.mode', 'end')) ? lsGet('qp.mode', 'end') : 'end', bars: Math.max(1, Math.min(256, +lsGet('qp.bars', 8) || 8)), pos: '', solo: false, error: '' };
 const stats = { pressToSoundMs: null, lastPeak: 0, plays: 0 };
 let repl = null, run = null, token = 0, tray = null, raf = 0, poll = 0;
 
@@ -53,10 +54,11 @@ export function sync() {
 function mkTray() {
   if (tray) return tray;
   tray = document.createElement('div'); tray.className = 'qp-tray'; tray.id = 'qptray'; tray.hidden = true; tray.setAttribute('role', 'group'); tray.setAttribute('aria-label', 'Quick play audition');
-  tray.innerHTML = '<span class="qp-tt" role="status" aria-live="polite"></span><button type="button" class="qp-solo" aria-pressed="false" title="Solo: mute the program until this audition stops">Solo</button><button type="button" class="qp-loop" aria-pressed="false" title="Loop until stopped (off: ' + CYCLES + ' cycles, then stop)">Loop</button><button type="button" class="qp-stop" aria-label="Stop the audition" title="Stop the audition"><i class="qp-i" aria-hidden="true"></i></button>';
+  tray.innerHTML = '<span class="qp-tt" role="status" aria-live="polite"></span><span class="qp-pos"></span><button type="button" class="qp-solo" aria-pressed="false" title="Solo: mute the program until this audition stops">Solo</button><button type="button" class="qp-mode" title="Length: End plays to the end of the entry (loops when it has none), Loop never stops, N bars stops after N bars"></button><span class="qp-step" hidden><button type="button" class="qp-dn" aria-label="Fewer bars">-</button><button type="button" class="qp-up" aria-label="More bars">+</button></span><button type="button" class="qp-stop" aria-label="Stop the audition" title="Stop the audition"><i class="qp-i" aria-hidden="true"></i></button>';
   tray.addEventListener('click', (e) => {
     if (e.target.closest('.qp-stop')) stop('fast');
-    else if (e.target.closest('.qp-loop')) { state.loop = !state.loop; lsSet('qp.loop', state.loop); paintTray(); }
+    else if (e.target.closest('.qp-mode')) { state.mode = state.mode === 'end' ? 'loop' : state.mode === 'loop' ? 'bars' : 'end'; lsSet('qp.mode', state.mode); applyMode(); paintTray(); }
+    else if (e.target.closest('.qp-dn, .qp-up')) { state.bars = Math.max(1, Math.min(256, state.bars + (e.target.closest('.qp-up') ? (state.bars >= 16 ? 4 : 1) : -(state.bars > 16 ? 4 : 1)))); lsSet('qp.bars', state.bars); applyMode(); paintTray(); }
     else if (e.target.closest('.qp-solo')) setSolo(!state.solo);
   });
   document.body.append(tray); return tray;
@@ -64,7 +66,8 @@ function mkTray() {
 function paintTray() {
   const on = state.phase !== 'idle'; if (!on && !tray) return; const t = mkTray(); t.hidden = !on; if (!on) return;
   t.querySelector('.qp-tt').textContent = (state.phase === 'loading' ? 'Loading ' : 'Auditioning ') + state.title;
-  t.querySelector('.qp-loop').setAttribute('aria-pressed', String(state.loop)); t.querySelector('.qp-solo').setAttribute('aria-pressed', String(state.solo));
+  const m = t.querySelector('.qp-mode'); m.textContent = state.mode === 'end' ? 'End' : state.mode === 'loop' ? 'Loop' : state.bars + ' bars'; m.setAttribute('aria-pressed', String(state.mode !== 'end')); t.querySelector('.qp-step').hidden = state.mode !== 'bars'; t.querySelector('.qp-pos').textContent = state.pos;
+  t.querySelector('.qp-solo').setAttribute('aria-pressed', String(state.solo));
 }
 
 /* ---- solo: every orbit but ours goes to 0 and comes back ---- */
@@ -96,6 +99,16 @@ function fixOrbit() {
   if (state.solo) applySolo();
 }
 
+/* ---- length: the Record 'To end of track' resolver (record-length.js: gates, hooks.marker('end'), @daw bars header, arrange period); no finite end = continuous ---- */
+function resolveLen(R, code, cps) {
+  try {
+    let plan = null, markers = null; const H = sc.hooks; if (H && H.plan) { plan = H.plan({ horizon: 1024 }); markers = plan.markers || null; }
+    const e = RL.resolveEnd({ plan, horizon: 1024, markers, code, cps });
+    const finite = e.rule !== 'period' || RL.arrangeBars(code) != null; /* a plain looping pattern (or a bare <a b c> alternation) has no end */
+    return finite && e.cycle > 0 ? { cycles: e.cycle, rule: e.rule, note: e.note } : { cycles: null, rule: 'none', note: 'no finite end: loops until stopped' };
+  } catch (e) { return { cycles: null, rule: 'none', note: 'end not readable: loops until stopped' }; }
+}
+function applyMode(r = run) { if (!r) return; r.endC = state.mode === 'bars' ? state.bars : state.mode === 'loop' ? null : r.found ? r.found.cycles : null; if (r.tail && (r.endC == null || (r.cyc || 0) < r.endC)) { /* a stop already scheduled stays */ } }
 /* ---- run ---- */
 function withTempo(code, spec) {
   const Q = S0(); if (Q.hasOwnTempo(code)) return code;
@@ -107,7 +120,7 @@ export async function play(spec) {
   const me = ++token; const prev = run; const t0 = performance.now();
   state.key = spec.key; state.title = spec.title || ''; state.phase = 'loading'; state.error = ''; stats.firstAt = null; stats.pressToSoundMs = null; sync();
   if (prev) await endRun(prev, FADE_FAST, true);
-  const Q = S0(); const r = { key: spec.key, t0, me, mutedBus: false, cycles: CYCLES };
+  const Q = S0(); const r = { key: spec.key, t0, me, mutedBus: false };
   try {
     const code = withTempo(spec.code, spec);
     await Q.Engine.prepare(code, !!spec.samples, () => {});
@@ -121,7 +134,8 @@ export async function play(spec) {
     await R.evaluate(prot, true); restoreGlobals();
     if (R.state.evalError) throw R.state.evalError;
     if (me !== token) return;
-    r.start = R.scheduler.now(); state.phase = 'playing'; stats.plays++; sync(); startLoops();
+    r.start = R.scheduler.now(); r.t0a = ctx.currentTime; r.cps = R.scheduler.cps || 0.5; r.found = resolveLen(R, prot, r.cps); applyMode(r);
+    state.phase = 'playing'; stats.plays++; sync(); startLoops();
   } catch (e) {
     if (me !== token) return;
     run = null; state.phase = 'idle'; state.key = null; state.error = e && e.message || String(e); sync(); restoreGlobals();
@@ -158,8 +172,9 @@ function startLoops() {
   const frame = () => {
     raf = requestAnimationFrame(frame); const r = run; if (!r || state.phase !== 'playing') return;
     let lv = 0; if (r.an) { r.an.getFloatTimeDomainData(r.buf); for (let i = 0; i < r.buf.length; i++) { const v = Math.abs(r.buf[i]); if (v > lv) lv = v; } stats.lastPeak = Math.max(stats.lastPeak, lv); }
-    let cyc = 0; try { cyc = repl.scheduler.now() - r.start; } catch (e) { /* stopped */ }
-    const p = state.loop ? (((cyc % CYCLES) + CYCLES) % CYCLES) / CYCLES : Math.min(1, cyc / CYCLES);
+    let cyc = 0; try { cyc = repl.scheduler.now() - r.start; } catch (e) { /* stopped */ } r.cyc = cyc;
+    const p = r.endC ? Math.min(1, cyc / r.endC) : ((cyc % 1) + 1) % 1;
+    const el = Math.max(0, window.getAudioContext().currentTime - r.t0a); state.pos = (r.endC ? `bar ${Math.min(r.endC, Math.floor(cyc) + 1)} / ${+r.endC.toFixed(2)}` : `bar ${Math.floor(cyc) + 1}`) + ' · ' + RL.mmss(el).replace(/\.\d$/, ''); const pe = tray && tray.querySelector('.qp-pos'); if (pe) pe.textContent = state.pos;
     for (const b of btns(r.key)) { b.style.setProperty('--qp-p', p.toFixed(3)); b.style.setProperty('--qp-lv', Math.min(1, lv * 2.2).toFixed(3)); }
     if (tray) { tray.style.setProperty('--qp-p', p.toFixed(3)); tray.style.setProperty('--qp-lv', Math.min(1, lv * 2.2).toFixed(3)); }
   };
@@ -167,7 +182,9 @@ function startLoops() {
   poll = setInterval(() => {
     const r = run; if (!r || state.phase !== 'playing' || r.ending) return;
     let cyc = 0; try { cyc = repl.scheduler.now() - r.start; } catch (e) { return; }
-    if (!state.loop && cyc >= CYCLES && !r.tail) { r.tail = true; try { repl.scheduler.stop(); } catch (e) { /* idle */ } setTimeout(() => { if (run === r) endRun(r, FADE_END, false); }, TAIL_MS); }
+    const el = window.getAudioContext().currentTime - r.t0a;
+    if (el > MAX_S && !r.tail) { r.tail = true; toast(`Audition stopped after ${RL.MAX_MIN} minutes (the safety limit)`, 'info'); endRun(r, FADE_FAST, false); return; }
+    if (r.endC && cyc >= r.endC && !r.tail) { r.tail = true; try { repl.scheduler.stop(); } catch (e) { /* idle */ } setTimeout(() => { if (run === r) endRun(r, FADE_END, false); }, TAIL_MS); }
     if (state.solo) applySolo();
   }, 40);
 }
@@ -179,5 +196,5 @@ export async function press(btn, spec) {
   const s = spec(); if (s && s.why) { toast(s.why, 'info'); return; }
   btn.dataset.title = s.title || ''; await play(s);
 }
-sc.quickplay = { press, play, stop, sync, state, stats, QP_ORBIT, LEVEL_MIX, LEVEL_ALONE, CYCLES };
+sc.quickplay = { press, play, stop, sync, state, stats, QP_ORBIT, LEVEL_MIX, LEVEL_ALONE, get run() { return run; } };
 sync();

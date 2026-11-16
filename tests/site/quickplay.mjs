@@ -30,7 +30,7 @@ try {
   const pr = await peak(1500); check('recipe audition: master peak > 0 while playing', pr.pk > 0.005, 'peak ' + pr.pk.toFixed(3));
   const mid = await snap();
   check('no navigation, editor text/scroll/focus and main program untouched', mid.code === before.code && mid.st === before.st && mid.view === 'rack' && mid.playing === false && mid.sel === before.sel && mid.ae === before.ae, JSON.stringify({ a: mid.ae, b: before.ae, v: mid.view, p: mid.playing }));
-  check('tray shows with Solo, Loop and Stop (44px)', await page.evaluate(() => { const t = document.getElementById('qptray'); return !t.hidden && [...t.querySelectorAll('button')].every((b) => b.getBoundingClientRect().height >= 44); }));
+  check('tray shows with Solo, Loop and Stop (44px)', await page.evaluate(() => { const t = document.getElementById('qptray'); return !t.hidden && [...t.querySelectorAll('button')].filter((b) => b.offsetParent).every((b) => b.getBoundingClientRect().height >= 44); }));
   // switch to another row
   const row2 = page.locator('#list li .qp').nth(3); await row2.scrollIntoViewIfNeeded(); await tap(row2);
   await page.waitForFunction(() => { const b = document.querySelectorAll('#list .qp'); return b[3].dataset.state === 'playing' && b[2].dataset.state === 'idle'; }, null, { timeout: 60000 });
@@ -45,10 +45,20 @@ try {
   await tap(row2); await page.waitForFunction(() => document.querySelector('.qp[data-state="playing"]'), null, { timeout: 30000 });
   await page.evaluate(() => window.__sc.stop()); await page.waitForFunction(() => !document.querySelector('.qp[data-state="playing"]'), null, { timeout: 3000 });
   check('transport Stop stops the audition', true);
-  // 4 cycles then stop
-  await tap(row2); await page.waitForFunction(() => document.querySelector('.qp[data-state="playing"]'), null, { timeout: 30000 });
-  const t2 = Date.now(); await page.waitForFunction(() => !document.querySelector('.qp[data-state="playing"]'), null, { timeout: 40000 }); nums.runMs = Date.now() - t2;
-  check('stops itself after 4 cycles', nums.runMs > 1000, nums.runMs + ' ms left after the first sound');
+  // length: End (default) resolves the entry's end; a plain loop never stops; N bars is opt-in; choice persisted
+  const A = await snap();
+  const run = (code) => page.evaluate((code) => window.strudelCraft.quickplay.play({ key: 't:' + Math.random(), title: 'T', code }), code);
+  await run('// @daw bars=2\nsetcpm(240/4)\n$: s("bd*2")'); await page.waitForFunction(() => window.strudelCraft.quickplay.state.phase === 'playing', null, { timeout: 60000 });
+  const t2 = Date.now(); check('default mode is End and the tray shows bar position', await page.evaluate(() => window.strudelCraft.quickplay.state.mode) === 'end' && /bar \d+ \/ 2/.test(await page.locator('.qp-pos').innerText()), await page.locator('.qp-pos').innerText());
+  await page.waitForFunction(() => window.strudelCraft.quickplay.state.phase === 'idle', null, { timeout: 15000 }); nums.endMs = Date.now() - t2;
+  check('an end-resolved entry (@daw bars=2) stops at its end (within a bar)', nums.endMs < 4500, nums.endMs + ' ms');
+  await run('setcpm(240/4)\n$: s("bd hh")'); await page.waitForFunction(() => window.strudelCraft.quickplay.state.phase === 'playing', null, { timeout: 30000 });
+  await page.waitForTimeout(9500); const still = await page.evaluate(() => ({ ph: window.strudelCraft.quickplay.state.phase, c: window.strudelCraft.quickplay.run && window.strudelCraft.quickplay.run.cyc }));
+  check('a looping entry keeps playing past 8 cycles until stopped', still.ph === 'playing' && still.c > 8, JSON.stringify(still));
+  await page.locator('#qptray .qp-mode').tap(); await page.locator('#qptray .qp-mode').tap();
+  check('mode chip cycles End > Loop > N bars and is remembered', (await page.evaluate(() => localStorage.getItem('sc.qp.mode'))) === '"bars"' && /bars/i.test(await page.locator('#qptray .qp-mode').innerText()), (await page.evaluate(() => localStorage.getItem('sc.qp.mode'))) + ' ' + await page.locator('#qptray .qp-mode').innerText());
+  await page.locator('#qptray .qp-mode').tap(); await page.locator('#qptray .qp-stop').tap(); await page.waitForFunction(() => window.strudelCraft.quickplay.state.phase === 'idle', null, { timeout: 5000 });
+  const B = await snap(); check('no editor, scroll or view change from the length runs', B.code === A.code && B.st === A.st && B.view === 'rack');
   // ---- Syntax ----
   await page.evaluate(() => window.__sc.setView('syntax')); await page.waitForSelector('#syntax .sx-groups', { state: 'attached' });
   await page.evaluate(() => window.strudelCraft.syntax.go('copy')); await page.waitForSelector('#sx-copy .sx-ex');

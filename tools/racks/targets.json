@@ -260,6 +260,120 @@
   },
   "vowelChop": {
    "class": "vox"
+  },
+  "dnbKick": {
+   "class": "kick"
+  },
+  "dnbSnare": {
+   "class": "snare"
+  },
+  "ghostSnare": {
+   "class": "snare"
+  },
+  "breakKick": {
+   "class": "kick"
+  },
+  "breakSnare": {
+   "class": "snare"
+  },
+  "ride": {
+   "class": "hat"
+  },
+  "dnbShaker": {
+   "class": "hat"
+  },
+  "dnbHat": {
+   "class": "hat"
+  },
+  "dnbSub": {
+   "class": "sub"
+  },
+  "reese": {
+   "class": "reese"
+  },
+  "neuroBass": {
+   "class": "growl"
+  },
+  "rollingBass": {
+   "class": "bass"
+  },
+  "jumpWobble": {
+   "class": "growl"
+  },
+  "liquidRhodes": {
+   "class": "keys"
+  },
+  "liquidPad": {
+   "class": "pad"
+  },
+  "strings": {
+   "class": "pad"
+  },
+  "vocalChop": {
+   "class": "vox"
+  },
+  "boom808": {
+   "class": "kick"
+  },
+  "clap808": {
+   "class": "snare"
+  },
+  "hat808": {
+   "class": "hat"
+  },
+  "open808": {
+   "class": "hat"
+  },
+  "cowbell808": {
+   "class": "bell"
+  },
+  "electroBass": {
+   "class": "bass"
+  },
+  "vocoLead": {
+   "class": "lead"
+  },
+  "robotStab": {
+   "class": "stab"
+  },
+  "filterBass": {
+   "class": "bass"
+  },
+  "sawStab": {
+   "class": "supersaw"
+  },
+  "houseKick": {
+   "class": "kick"
+  },
+  "bigKick": {
+   "class": "kick"
+  },
+  "houseClap": {
+   "class": "snare"
+  },
+  "offHat": {
+   "class": "hat"
+  },
+  "closedHat": {
+   "class": "hat"
+  },
+  "houseBass": {
+   "class": "bass"
+  },
+  "rumble": {
+   "class": "sub"
+  },
+  "pluck": {
+   "class": "pluck"
+  },
+  "bigChords": {
+   "class": "supersaw"
+  },
+  "gatePad": {
+   "class": "gate"
+  },
+  "roomLead": {
+   "class": "lead"
   }
  },
  "catalog": {
@@ -638,6 +752,165 @@
   "feel-brostep": {
    "class": "demo",
    "bars": 2
+  },
+  "dnb-two-step": {
+   "class": "demo"
+  },
+  "dnb-ghost-notes": {
+   "class": "demo"
+  },
+  "amen-style-break": {
+   "class": "break",
+   "bars": 4
+  },
+  "amen-chops": {
+   "class": "break",
+   "bars": 4
+  },
+  "jungle-chops": {
+   "class": "break",
+   "bars": 4
+  },
+  "think-style-break": {
+   "class": "break"
+  },
+  "dnb-sub": {
+   "class": "sub",
+   "bars": 8
+  },
+  "reese-bass": {
+   "class": "reese",
+   "bars": 4
+  },
+  "neuro-bass": {
+   "class": "neuro"
+  },
+  "rolling-bass-dnb": {
+   "class": "bass"
+  },
+  "jumpup-wobble": {
+   "class": "neuro"
+  },
+  "liquid-rhodes": {
+   "class": "keys",
+   "bars": 8
+  },
+  "liquid-pad": {
+   "class": "pad",
+   "bars": 8
+  },
+  "liquid-strings": {
+   "class": "pad",
+   "bars": 8
+  },
+  "dnb-vocal-chops": {
+   "class": "vox"
+  },
+  "dnb-halftime": {
+   "class": "demo"
+  },
+  "dnb-sub-reese-split": {
+   "class": "demo",
+   "bars": 4
+  },
+  "dnb-shaker": {
+   "class": "hat"
+  },
+  "feel-liquid": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-neuro": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-jumpup": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-electrohouse": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-techno": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-trance": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-bigroom": {
+   "class": "demo",
+   "bars": 2
+  },
+  "electro-808-beat": {
+   "class": "demo"
+  },
+  "electro-808-kick": {
+   "class": "kick"
+  },
+  "electro-cowbell": {
+   "class": "bell"
+  },
+  "electro-funk-bass": {
+   "class": "bass"
+  },
+  "vocoder-lead": {
+   "class": "lead"
+  },
+  "robot-stabs": {
+   "class": "stab",
+   "bars": 4
+  },
+  "electro-house-bass": {
+   "class": "bass"
+  },
+  "sidechain-supersaw-stabs": {
+   "class": "demo",
+   "bars": 2
+  },
+  "clap-build": {
+   "class": "snare",
+   "bars": 8
+  },
+  "house-four-on-the-floor": {
+   "class": "demo"
+  },
+  "offbeat-open-hat": {
+   "class": "hat"
+  },
+  "house-swing-groove": {
+   "class": "demo"
+  },
+  "house-bass": {
+   "class": "bass"
+  },
+  "techno-rolling-bass": {
+   "class": "demo"
+  },
+  "techno-rumble": {
+   "class": "sub"
+  },
+  "trance-pluck": {
+   "class": "pluck",
+   "bars": 4
+  },
+  "supersaw-chords": {
+   "class": "supersaw",
+   "bars": 2
+  },
+  "trance-gate": {
+   "class": "gate",
+   "bars": 2
+  },
+  "big-room-drop": {
+   "class": "demo",
+   "bars": 2
+  },
+  "trance-drop": {
+   "class": "demo",
+   "bars": 2
   }
  },
  "syntax": {
@@ -815,6 +1088,67 @@
   },
   "atoms/Migrate: extract (toolkit and `strudel atoms extract` CLI)": {
    "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "dnb-electro/DnB form as gates (intro, build, drop, vacuum)": {
+   "class": "demo",
+   "bars": 26
+  },
+  "dnb-electro/Amen chops: one chop order on every lane (.bite)": {
+   "class": "demo",
+   "bars": 4
+  },
+  "dnb-electro/Multiband by layers: sub + reese + neuro on a glued bass bus": {
+   "class": "demo",
+   "bars": 4
+  },
+  "dnb-electro/Chop a real break (needs a break sample)": {
+   "class": "demo",
+   "bars": 4,
+   "skip": "needs a sample bank (dirt-samples breaks) not rendered offline"
+  },
+  "tracks-dnb-electro/Track demo: DnB tutorial (liquid to neuro, 2:57)": {
+   "class": "demo",
+   "bars": 16
+  },
+  "tracks-dnb-electro/Track demo: electro (electro-funk to electro house, 75 s)": {
+   "class": "demo",
+   "bars": 16
+  },
+  "tracks-dnb-electro/Track demo: house, techno, trance, big room (105 s)": {
+   "class": "demo",
+   "bars": 16
+  },
+  "dnb-electro/Pick a DnB / EDM feel (one import line)": {
+   "class": "demo",
+   "bars": 2
+  },
+  "dnb-electro/Feel switch: liquid to neuro at bar 3, sub layer kept": {
+   "class": "demo",
+   "bars": 4
+  },
+  "dnb-electro/Sidechain pump: kick ducks the stabs and the bass (audio rate)": {
+   "class": "demo",
+   "bars": 4
+  },
+  "dnb-electro/Pattern-level duck from a kick tap (.wire)": {
+   "class": "demo",
+   "bars": 2
+  },
+  "dnb-electro/Electro-funk: 808 kit, robot lead, vocoder-style vowels": {
+   "class": "demo",
+   "bars": 2
+  },
+  "dnb-electro/Uplifting build on the shared grammar: roll, filter build, riser, gap, impact": {
+   "class": "demo",
+   "bars": 10
+  },
+  "dnb-electro/Trance gate: a 16-step struct on a sustained supersaw": {
+   "class": "demo",
+   "bars": 2
+  },
+  "dnb-electro/Club map: 32-bar blocks as gates": {
+   "class": "demo",
+   "bars": 2
   }
  }
 }

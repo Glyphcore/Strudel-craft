@@ -12,9 +12,9 @@
       "format": "recipes@1",
       "version": "1.0.0",
       "path": "data/catalog.json",
-      "hash": "sha256:6598c9737df5e0f7383d7c5f63cef37e73dc016d155e6c682e420832c184e850",
+      "hash": "sha256:d2e3eec449e7817d8704cf7fed8f753b2f25cb74f53121f1973f8aff48af6b8c",
       "load": "eager",
-      "bytes": 200239
+      "bytes": 274457
     },
     {
       "id": "strudel-docs",
@@ -22,9 +22,9 @@
       "format": "intellisense@1",
       "version": "1.0.0",
       "path": "data/intellisense/strudel.json",
-      "hash": "sha256:fb16301228259ae43cdce8787e4f331b23b805360eb74397e597545537baf7f9",
+      "hash": "sha256:697db76a042dbed365eed2d4a5545d36b242c673f0446b6b7c1bd3bc09ba2eee",
       "load": "eager",
-      "bytes": 61129
+      "bytes": 62418
     },
     {
       "id": "params",
@@ -32,9 +32,9 @@
       "format": "param-shapes@1",
       "version": "1.0.0",
       "path": "data/intellisense/strudel.json",
-      "hash": "sha256:fb16301228259ae43cdce8787e4f331b23b805360eb74397e597545537baf7f9",
+      "hash": "sha256:697db76a042dbed365eed2d4a5545d36b242c673f0446b6b7c1bd3bc09ba2eee",
       "load": "eager",
-      "bytes": 61129
+      "bytes": 62418
     },
     {
       "id": "ranges",
@@ -52,9 +52,9 @@
       "format": "param-editors@1",
       "version": "1.0.0",
       "path": "data/intellisense/strudel.json",
-      "hash": "sha256:fb16301228259ae43cdce8787e4f331b23b805360eb74397e597545537baf7f9",
+      "hash": "sha256:697db76a042dbed365eed2d4a5545d36b242c673f0446b6b7c1bd3bc09ba2eee",
       "load": "eager",
-      "bytes": 61129
+      "bytes": 62418
     },
     {
       "id": "controls",
@@ -72,9 +72,9 @@
       "format": "syntax@1",
       "version": "1.0.0",
       "path": "data/syntax.json",
-      "hash": "sha256:82f6524306a8aff88a1a129a187692ca0e57fd47d26cc831e54750e5c30660ec",
+      "hash": "sha256:7f29ae849ed2bc2126302ada1f15cc1274ec93564373356bfda1384490705bed",
       "load": "eager",
-      "bytes": 121335
+      "bytes": 171795
     },
     {
       "id": "composition",

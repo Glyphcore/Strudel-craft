@@ -112,7 +112,7 @@ if (only.includes('catalog')) for (const r of JSON.parse(fs.readFileSync(opt('--
 if (only.includes('syntax')) for (const sec of JSON.parse(fs.readFileSync(opt('--syntax', path.join(ROOT, 'site/data/syntax.json')), 'utf8')).sections) for (const ex of sec.examples || []) {
   const id = `${sec.id}/${ex.title}`; const t = TGT.syntax[id] || {}; items.push({ kind: 'syntax', id, cls: t.class || 'demo', code: ex.code, bars: t.bars || 2, skip: typeof ex.code !== 'string' ? 'no code (UI walkthrough)' : t.skip, site: true });
 }
-const ones = one ? new Set(one.split(',')) : null; const todo = items.filter((i) => !ones || ones.has(i.id)); // --item a,b,c audits several items
+const ones = one ? new Set(one.split(/,(?! )/)) : null; const todo = items.filter((i) => !ones || ones.has(i.id)); // --item a,b,c audits several items (a comma followed by a space stays inside a title)
 
 // ---------- render ----------
 fs.mkdirSync(OUT, { recursive: true }); const work = fs.mkdtempSync(path.join(os.tmpdir(), 'rack-audit-')); const hooksPath = path.join(work, 'hooks.json'); fs.writeFileSync(hooksPath, JSON.stringify(merged));

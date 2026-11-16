@@ -16,8 +16,8 @@
       "title": "DnB, electro and house track demos",
       "description": "Track demos: DnB tutorial, electro, house / techno / trance / big room (the paste-ready standalone programs)",
       "load": "manual",
-      "hash": "sha256:28f988ec5e01c95abd1b0f9553ff8b0e40ed02e82330875f63f150f6bc5dff0a",
-      "bytes": 41088
+      "hash": "sha256:39317a25b5ef3542572a8249ac27cca4ceafe0c7089fce21d76d95c74d55b592",
+      "bytes": 41721
     },
     {
       "id": "racks-dnb-electro",
@@ -28,8 +28,8 @@
       "title": "DnB, electro and house racks",
       "description": "Chain-only hook defs: dnbKick, dnbSnare, ghostSnare, breakKick, breakSnare, ride, dnbShaker, dnbHat, dnbSub, reese, neuroBass, rollingBass, jumpWobble, liquidRhodes, liquidPad, strings, vocalChop, boom808, clap808, hat808, open808, cowbell808, electroBass, vocoLead, robotStab, filterBass, sawStab, houseKick, bigKick, houseClap, offHat, closedHat, houseBass, rumble, pluck, bigChords and 2 more",
       "load": "manual",
-      "hash": "sha256:326ccee636241039ff4bbac89a5d7de65e5294fc61ab9791da173a432c7f18c2",
-      "bytes": 18968
+      "hash": "sha256:42c33dc6c8ca5c53a46229a91302f59f5d391d54ba2377b64432442504c5de61",
+      "bytes": 18673
     },
     {
       "id": "atoms-dnb",
@@ -52,8 +52,8 @@
       "title": "Electro atoms",
       "description": "glyphcore/dnb-electro electro atoms (el.): electro-funk 808 kick, clap, hats and cowbell, synth bass, robot lead line and vowels, stab rhythm and chords; electro house kick, clap, offbeat hat, filtered bass line, stab rhythm, clap build and its velocity ramp; gates of the 40-bar electro form (intro, build, drop, break, drop2).",
       "load": "eager",
-      "hash": "sha256:ca8d1150efac85d3553d19b1a3306e68a9bd245245a04d3192c929e49af1af2e",
-      "bytes": 8422
+      "hash": "sha256:a5259ceaff907f662757ce68e3214376a2bb6be1bff37dba96720de492c0e654",
+      "bytes": 9180
     },
     {
       "id": "atoms-house",
@@ -112,8 +112,8 @@
       "title": "Feel: Electro house",
       "description": "Feel template \"Electro house\" (126-130 bpm): four-on-the-floor, offbeat hat, filtered saw bass and supersaw stabs on the offbeats. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove).",
       "load": "eager",
-      "hash": "sha256:224dd84ef25f8c9eef99f3af7fcae469a9e5b2ad56e26c63ba8b32e0bf1558fa",
-      "bytes": 9132
+      "hash": "sha256:599d7d582a21da03cd60800026a1fac39642a72d86fc8f31d30a6de9c30b7923",
+      "bytes": 9462
     },
     {
       "id": "feel-techno",

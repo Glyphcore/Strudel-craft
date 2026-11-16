@@ -4867,19 +4867,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -23.7,
+   "centroid_hz": 6587,
+   "peak": 0.4155,
+   "error": null,
    "folder": "dnb/drums",
    "tags": [
     "drums",
     "dnb",
     "syncopated",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 56,
+    "hash": "f1df2b9d01"
+   }
   },
   {
    "id": "dnb-ghost-notes",
@@ -4900,19 +4906,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -29.9,
+   "centroid_hz": 3241,
+   "peak": 0.2317,
+   "error": null,
    "folder": "dnb/drums",
    "tags": [
     "drums",
     "dnb",
     "accents",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
+    "hash": "8c3e3d7c7e"
+   }
   },
   {
    "id": "amen-style-break",
@@ -4933,19 +4946,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -22.5,
+   "centroid_hz": 6275,
+   "peak": 0.325,
+   "error": null,
    "folder": "dnb/drums",
    "tags": [
     "drums",
     "dnb",
     "breakbeat",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 65,
+    "hash": "ae394e2bdf"
+   }
   },
   {
    "id": "amen-chops",
@@ -4966,20 +4985,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -22.4,
+   "centroid_hz": 6317,
+   "peak": 0.325,
+   "error": null,
    "folder": "dnb/drums",
    "tags": [
     "drums",
     "dnb",
     "breakbeat",
     "movement",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 71,
+    "hash": "403aca468d"
+   }
   },
   {
    "id": "jungle-chops",
@@ -5000,20 +5025,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 170.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -22.3,
+   "centroid_hz": 6555,
+   "peak": 0.3468,
+   "error": null,
    "folder": "dnb/drums",
    "tags": [
     "drums",
     "dnb",
     "breakbeat",
     "movement",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 81,
+    "hash": "4eb3633eef"
+   }
   },
   {
    "id": "think-style-break",
@@ -5034,19 +5065,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -22.2,
+   "centroid_hz": 4905,
+   "peak": 0.326,
+   "error": null,
    "folder": "dnb/drums",
    "tags": [
     "drums",
     "dnb",
     "breakbeat",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 92,
+    "hash": "b2292c4775"
+   }
   },
   {
    "id": "dnb-sub",
@@ -5066,18 +5103,24 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -21.1,
+   "centroid_hz": 60,
+   "peak": 0.2359,
+   "error": null,
    "folder": "dnb/bass",
    "tags": [
     "bass",
     "dnb",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 8,
+    "hash": "b9e060419d"
+   }
   },
   {
    "id": "reese-bass",
@@ -5098,19 +5141,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -26.9,
+   "centroid_hz": 532,
+   "peak": 0.3395,
+   "error": null,
    "folder": "dnb/bass",
    "tags": [
     "bass",
     "dnb",
     "neuro",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "f3bda1e553"
+   }
   },
   {
    "id": "neuro-bass",
@@ -5131,19 +5180,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -35.4,
+   "centroid_hz": 732,
+   "peak": 0.0908,
+   "error": null,
    "folder": "dnb/bass",
    "tags": [
     "bass",
     "dnb",
     "neuro",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 30,
+    "hash": "66f9db8e90"
+   }
   },
   {
    "id": "rolling-bass-dnb",
@@ -5164,19 +5219,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -28.3,
+   "centroid_hz": 453,
+   "peak": 0.2216,
+   "error": null,
    "folder": "dnb/bass",
    "tags": [
     "bass",
     "dnb",
     "liquid",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 28,
+    "hash": "33575a9311"
+   }
   },
   {
    "id": "jumpup-wobble",
@@ -5197,19 +5258,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -29.0,
+   "centroid_hz": 868,
+   "peak": 0.2519,
+   "error": null,
    "folder": "dnb/bass",
    "tags": [
     "bass",
     "dnb",
     "jump-up",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 24,
+    "hash": "402b0930d1"
+   }
   },
   {
    "id": "liquid-rhodes",
@@ -5230,20 +5297,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -20.6,
+   "centroid_hz": 299,
+   "peak": 0.4718,
+   "error": null,
    "folder": "dnb/keys",
    "tags": [
     "keys",
     "dnb",
     "liquid",
     "chord-progression",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 80,
+    "hash": "4f0acc72e3"
+   }
   },
   {
    "id": "liquid-pad",
@@ -5264,19 +5337,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -27.6,
+   "centroid_hz": 1020,
+   "peak": 0.2192,
+   "error": null,
    "folder": "dnb/pad",
    "tags": [
     "pad",
     "dnb",
     "liquid",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 20,
+    "hash": "3471030f88"
+   }
   },
   {
    "id": "liquid-strings",
@@ -5297,20 +5376,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -34.9,
+   "centroid_hz": 1530,
+   "peak": 0.0856,
+   "error": null,
    "folder": "dnb/lead",
    "tags": [
     "lead",
     "dnb",
     "liquid",
     "motif",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 4,
+    "hash": "0950f81af2"
+   }
   },
   {
    "id": "dnb-vocal-chops",
@@ -5331,20 +5416,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -35.4,
+   "centroid_hz": 676,
+   "peak": 0.1923,
+   "error": null,
    "folder": "dnb/vox",
    "tags": [
     "vox",
     "dnb",
     "liquid",
     "texture-vocal-like",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "6fdaaed588"
+   }
   },
   {
    "id": "dnb-halftime",
@@ -5365,19 +5456,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -20.0,
+   "centroid_hz": 5100,
+   "peak": 0.3765,
+   "error": null,
    "folder": "dnb/drums",
    "tags": [
     "drums",
     "dnb",
     "half-time",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 80,
+    "hash": "afeddc82cf"
+   }
   },
   {
    "id": "dnb-sub-reese-split",
@@ -5398,19 +5495,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -20.0,
+   "centroid_hz": 373,
+   "peak": 0.4265,
+   "error": null,
    "folder": "dnb/bass",
    "tags": [
     "bass",
     "dnb",
     "neuro",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 24,
+    "hash": "e0fa5644c3"
+   }
   },
   {
    "id": "dnb-shaker",
@@ -5430,19 +5533,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -36.2,
+   "centroid_hz": 10393,
+   "peak": 0.1135,
+   "error": null,
    "folder": "dnb/drums",
    "tags": [
     "drums",
     "dnb",
     "hats",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (96 Craft, 95 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "a01864906c"
+   }
   },
   {
    "id": "dubstep-halftime-drums",
@@ -6410,18 +6520,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -19.3,
+   "centroid_hz": 3802,
+   "peak": 0.4449,
+   "error": null,
    "folder": "dnb-electro/misc",
    "tags": [
     "dnb",
     "liquid",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (131 Craft, 133 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "dc351a1179"
+   }
   },
   {
    "id": "feel-neuro",
@@ -6441,18 +6558,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -23.7,
+   "centroid_hz": 5757,
+   "peak": 0.3806,
+   "error": null,
    "folder": "dnb-electro/misc",
    "tags": [
     "dnb",
     "neuro",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (97 Craft, 99 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "49d5b5f01a"
+   }
   },
   {
    "id": "feel-jumpup",
@@ -6472,18 +6596,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -23.8,
+   "centroid_hz": 4625,
+   "peak": 0.3706,
+   "error": null,
    "folder": "dnb-electro/misc",
    "tags": [
     "dnb",
     "jump-up",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
+    "hash": "bb11c3aa64"
+   }
   },
   {
    "id": "feel-electrohouse",
@@ -6503,18 +6634,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 128.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -22.1,
+   "centroid_hz": 4589,
+   "peak": 0.3205,
+   "error": null,
    "folder": "dnb-electro/misc",
    "tags": [
     "electro",
     "house",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
+    "hash": "b6079a0384"
+   }
   },
   {
    "id": "feel-techno",
@@ -6534,19 +6672,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 132.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -21.2,
+   "centroid_hz": 4614,
+   "peak": 0.3315,
+   "error": null,
    "folder": "dnb-electro/drums",
    "tags": [
     "drums",
     "techno",
     "four-floor",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (144 Craft, 145 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "799c33f881"
+   }
   },
   {
    "id": "feel-trance",
@@ -6566,19 +6711,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 138.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -21.0,
+   "centroid_hz": 4472,
+   "peak": 0.4037,
+   "error": null,
    "folder": "dnb-electro/drums",
    "tags": [
     "drums",
     "trance",
     "four-floor",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (313 Craft, 312 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "156d6349a3"
+   }
   },
   {
    "id": "feel-bigroom",
@@ -6598,19 +6750,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 128.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -21.9,
+   "centroid_hz": 4738,
+   "peak": 0.3436,
+   "error": null,
    "folder": "dnb-electro/drums",
    "tags": [
     "drums",
     "big-room",
     "four-floor",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (69 Craft, 68 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "f0bfd3208f"
+   }
   },
   {
    "id": "electro-808-beat",
@@ -6631,19 +6790,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 124.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -21.7,
+   "centroid_hz": 6546,
+   "peak": 0.3939,
+   "error": null,
    "folder": "electro/drums",
    "tags": [
     "drums",
     "electro",
     "syncopated",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 116,
+    "hash": "159c757929"
+   }
   },
   {
    "id": "electro-808-kick",
@@ -6663,18 +6828,24 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 124.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -22.1,
+   "centroid_hz": 104,
+   "peak": 0.2797,
+   "error": null,
    "folder": "electro/drums",
    "tags": [
     "drums",
     "electro",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 12,
+    "hash": "cdc7540d42"
+   }
   },
   {
    "id": "electro-cowbell",
@@ -6694,18 +6865,24 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 124.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -33.9,
+   "centroid_hz": 1315,
+   "peak": 0.1161,
+   "error": null,
    "folder": "electro/drums",
    "tags": [
     "drums",
     "electro",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 32,
+    "hash": "ba240032dc"
+   }
   },
   {
    "id": "electro-funk-bass",
@@ -6726,19 +6903,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 124.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -25.7,
+   "centroid_hz": 709,
+   "peak": 0.3031,
+   "error": null,
    "folder": "electro/bass",
    "tags": [
     "bass",
     "electro",
     "syncopated",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 24,
+    "hash": "dc347fb7ed"
+   }
   },
   {
    "id": "vocoder-lead",
@@ -6759,20 +6942,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 124.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -42.8,
+   "centroid_hz": 817,
+   "peak": 0.0658,
+   "error": null,
    "folder": "electro/vox",
    "tags": [
     "vox",
     "electro",
     "lead",
     "texture-vocal-like",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 12,
+    "hash": "8858a435ea"
+   }
   },
   {
    "id": "robot-stabs",
@@ -6792,19 +6981,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 124.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -44.5,
+   "centroid_hz": 1101,
+   "peak": 0.0546,
+   "error": null,
    "folder": "electro/keys",
    "tags": [
     "keys",
     "electro",
     "stabs",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 64,
+    "hash": "06c723ce42"
+   }
   },
   {
    "id": "electro-house-bass",
@@ -6825,19 +7020,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 128.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -37.5,
+   "centroid_hz": 966,
+   "peak": 0.1105,
+   "error": null,
    "folder": "electro/bass",
    "tags": [
     "bass",
     "electro",
     "house",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "d46c1a8cfc"
+   }
   },
   {
    "id": "sidechain-supersaw-stabs",
@@ -6858,20 +7059,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 128.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -23.2,
+   "centroid_hz": 1064,
+   "peak": 0.265,
+   "error": null,
    "folder": "electro/keys",
    "tags": [
     "keys",
     "electro",
     "sidechain",
     "stabs",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 96,
+    "hash": "5494e25a56"
+   }
   },
   {
    "id": "clap-build",
@@ -6892,19 +7099,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 128.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -36.5,
+   "centroid_hz": 1861,
+   "peak": 0.1137,
+   "error": null,
    "folder": "electro/drums",
    "tags": [
     "drums",
     "electro",
     "build",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 24,
+    "hash": "f4d80d11ec"
+   }
   },
   {
    "id": "house-four-on-the-floor",
@@ -6925,19 +7138,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 124.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -22.1,
+   "centroid_hz": 6641,
+   "peak": 0.334,
+   "error": null,
    "folder": "house/drums",
    "tags": [
     "drums",
     "house",
     "four-floor",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 104,
+    "hash": "99578a09be"
+   }
   },
   {
    "id": "offbeat-open-hat",
@@ -6957,19 +7176,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 124.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -37.3,
+   "centroid_hz": 10668,
+   "peak": 0.1545,
+   "error": null,
    "folder": "house/drums",
    "tags": [
     "drums",
     "house",
     "hats",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "f329e7f380"
+   }
   },
   {
    "id": "house-swing-groove",
@@ -6990,20 +7215,27 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 122.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -22.2,
+   "centroid_hz": 6536,
+   "peak": 0.3682,
+   "error": null,
    "folder": "house/groove",
    "tags": [
     "groove",
     "house",
     "swing",
     "human-feel",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (104 Craft, 103 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "8ae86964ca"
+   }
   },
   {
    "id": "house-bass",
@@ -7023,18 +7255,24 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 124.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -32.2,
+   "centroid_hz": 411,
+   "peak": 0.2186,
+   "error": null,
    "folder": "house/bass",
    "tags": [
     "bass",
     "house",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "828a9ea4ba"
+   }
   },
   {
    "id": "techno-rolling-bass",
@@ -7055,20 +7293,27 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 132.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -21.0,
+   "centroid_hz": 312,
+   "peak": 0.2914,
+   "error": null,
    "folder": "house/drums",
    "tags": [
     "drums",
     "techno",
     "bass",
     "four-floor",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 1 differs); with the groove taken out of both forms the events are identical",
+    "hash": "b2f629fce8"
+   }
   },
   {
    "id": "techno-rumble",
@@ -7088,18 +7333,24 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 132.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -21.8,
+   "centroid_hz": 50,
+   "peak": 0.1953,
+   "error": null,
    "folder": "house/bass",
    "tags": [
     "bass",
     "techno",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 48,
+    "hash": "f3a95a1bb5"
+   }
   },
   {
    "id": "trance-pluck",
@@ -7119,19 +7370,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 138.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -30.1,
+   "centroid_hz": 3308,
+   "peak": 0.1255,
+   "error": null,
    "folder": "house/lead",
    "tags": [
     "lead",
     "trance",
     "arpeggio",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 64,
+    "hash": "414432e8a3"
+   }
   },
   {
    "id": "supersaw-chords",
@@ -7151,19 +7408,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 138.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -32.3,
+   "centroid_hz": 2453,
+   "peak": 0.1234,
+   "error": null,
    "folder": "house/keys",
    "tags": [
     "keys",
     "trance",
     "chord-progression",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "29ef551809"
+   }
   },
   {
    "id": "trance-gate",
@@ -7183,19 +7446,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 138.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -33.6,
+   "centroid_hz": 1869,
+   "peak": 0.2044,
+   "error": null,
    "folder": "house/drums",
    "tags": [
     "drums",
     "trance",
     "syncopated",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 192,
+    "hash": "a2dd9210eb"
+   }
   },
   {
    "id": "big-room-drop",
@@ -7216,20 +7485,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 128.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -23.0,
+   "centroid_hz": 1214,
+   "peak": 0.3418,
+   "error": null,
    "folder": "house/form",
    "tags": [
     "form",
     "big-room",
     "build-drop",
     "sidechain",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 52,
+    "hash": "58316f18b8"
+   }
   },
   {
    "id": "trance-drop",
@@ -7250,20 +7525,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 138.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
+   "verified": true,
+   "rms_dbfs": -21.8,
+   "centroid_hz": 4738,
+   "peak": 0.4033,
+   "error": null,
    "folder": "house/form",
    "tags": [
     "form",
     "trance",
     "build-drop",
     "sidechain",
-    "unverified",
+    "verified",
     "lowered"
-   ]
+   ],
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 304,
+    "hash": "e11f77e15b"
+   }
   }
  ]
 }

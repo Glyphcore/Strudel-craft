@@ -11,7 +11,8 @@ glyphcore/vox `vocalset`). Everything below is **UNLISTENED**: nobody has heard 
 | `form.json` | the form for the section measurement (`measure_sections.mjs`) |
 | `build.mjs` | the arrangement table `ON` (lane -> bars), writes the gates block of the Craft form and the standalone through `tools/lowering/lower.mjs` |
 | `measure_sections.mjs` | static gain to -14 LUFS, whole-track and bar-aligned per-section measurement (ffmpeg + `tools/racks/measure.mjs`) |
-| `measure.json` | committed measurements of the final render, with the three refinement rounds |
+| `measure.json` | committed measurements of the delivered v2 render, the standalone render and the spread |
+| `build.mjs --check` | fails when the committed standalone differs from a fresh build |
 
 ## Build, render, measure
 ```
@@ -20,22 +21,22 @@ node tools/racks/render_track.cjs docs/tracks/sirocco-foundry/track.strudel.js O
 node docs/tracks/sirocco-foundry/measure_sections.mjs OUT.wav measure.json --workdir DIR
 node tools/racks/measure.mjs --bpm 140 --score docs/genres/house.json DIR/s_drop1.wav
 ```
-The full 128 bars plus 4 tail bars render in **one pass** (about 2.5 to 3 minutes, 0 failed events, 7330 haps); no per-section joins. The static gain is
-one `volume=` per file (about +6.7 dB) with no limiter and no compression after the render; the MP3 is 256 kbit/s from the normalised float WAV
-(decoded: -14.0 LUFS, -1.33 dBTP). Audio is not committed.
+The full 128 bars plus 4 tail bars render in **one pass** (about 2.5 to 3 minutes, 0 failed events, 7308 haps); no per-section joins. The static gain is
+one `volume=` per file (about +10.6 dB) with no limiter and no compression after the render; the MP3 is 256 kbit/s from the normalised float WAV
+(decoded: -14.0 LUFS, -1.22 dBTP). Audio is not committed.
 
 ## Arrangement as built (bars 1-based, one cycle = one bar)
 | bars | section | content | transition out |
 |---|---|---|---|
 | 1-16 | intro | `disco` (offbeat-syncopated 3+3+2 chord stabs, high-pass opens 2600 -> 140 Hz over 16 bars), hats from 1, open hat and kick from 9, vowel-chop teaser 13-16 | snare roll (`ec.roll4`) 13-16 and `reverseSwell` in bar 16 |
-| 17-32 | build 1 | four-on-floor from 17 (kick out in bar 32), clap, seed house bass (low-passed, ducked) from 17 and sine sub from 25, stabs with `ec.open8` / `ec.thin8` filter opening, pad, formant vox pad from 25, 16-bar `noiseRiser(27.43)`, 8-bar roll with the last beat gapped | 1-bar kick drop-out (32), `impactBoom` + crash on 33 |
-| 33-56 | drop 1 (house) | kick, clap, hats, off-beat open hat, air noise, ducked bass + sub, pad; stabs enter at 37, vowel hook at 41 (the 8-bar block 33-40 is quieter: `velocity` arc 0.72 / 0.88 / 1); variation at 49: stab rhythm B, hook B (embellished, an octave of reach), `ukfArp`, crash | bars 48 and 56 snare fill; bar 56 stabs close (`isaw` low-pass); bar 57 `downSweep` + long wet `metalHit` tail |
+| 17-32 | build 1 | thinned on purpose so the drop pays off: four-on-floor from 17 with the kick thinned in the last bars (velocity .75 then .6 and a rising high-pass 120 -> 250 Hz in bars 29-31, out in 32), clap from 25, the seed house bass with a rising high-pass (`seedB`, 150 -> 620 Hz, no sub), stabs with `ec.open8` / `ec.thin8` filter opening, pad, formant vox pad from 25, 16-bar `noiseRiser(27.43)`, 8-bar roll with the last beat gapped | 1-bar kick drop-out (32), `impactBoom` + crash on 33 |
+| 33-56 | drop 1 (house) | the payoff: kick, clap, hats (explicit `.swingBy`), off-beat open hat, air noise, ducked bass + sine sub (the sub only enters here), pad, stabs from 33, vowel hook at 41 (33-40 is the full groove without the hook; bars 41-48 `velocity` .94); variation at 49: stab rhythm B, hook B (embellished), `ukfArp`, crash | bars 48 and 56 snare fill; bar 56 stabs close (`isaw` low-pass); bar 57 `downSweep` + long wet `metalHit` tail |
 | 57-72 | breakdown | no kick: pad, formant vox pad, sparse industrial `metalHit` percussion entering from 61 (orbit 4, own reverb), noise texture, `ukfArp` from 65, hook echo 69-72 | halftime roll (65-72, last beat gapped), `hpBuild` + `pitchRiser` 69-72 ending 1 beat early (`clip`), the gap |
-| 73-96 | drop 2 (industrial halftime) | halftime kick/snare/ghosts, 8th hats (16ths from 89), the seed growl (serial `shape` + `distort` + `crush`, bar 4 of each 4 pulls to Db), sine sub, wet metal hits, noise texture, pedal pad with a Db pull, vowel-chop answers in beat 4; switch-up at 89: growl at double rate with a `vowel("<a o e i>")` sweep, `lpsync 8`, `screechLead` in the gaps | `reverseSwell` + fill in bar 96 |
+| 73-96 | drop 2 (industrial halftime) | three 8-bar steps: 73-80 sparse (kick, snare, sub, the seed growl with a half-bar gap in bar 4 of each 4, pedal pad), 81-88 adds hats, wet metal hits, vowel-chop answers in beat 4 and a high noise layer (`airD`), fills in 80 and 88, then a **1-bar hole in bar 88** (only the reverse swell, a snare fill and the texture); switch-up at 89: a new growl voice (`sfSwitch` rhythm variation: seed motif at double rate, then a displaced bar, with a filter that steps 900 -> 3400 Hz per bar and a `vowel` sweep a o e i, `lpsync 8`), impact, 16th hats, `screechLead` in the gaps, drop 2 sections measure 15.3 / 12.9 / 12.0 LUFS per 8 bars | `reverseSwell` + fill in bar 96 |
 | 97-112 | drop 3 (both worlds) | house groove, stabs up an octave, hooks A and B, arp; the growl answers in bar 4 of every 4 (`ds.lastOf4`) while the house bass and stabs rest (`ds.notLastOf4`) | bar 112 stabs close; kick continues |
 | 113-128 | outro | elements leave in reverse order of the intro: bass and clap go at 117, kick at 121, the disco loop with the high-pass closing (117-124), hats to 124, pad and vox pad and a last hook echo (121-124) with a wet tail, velocity fade to silence | - |
 
-Energy curve (normalised LUFS per section, final render): intro -16.4, build -12.8, drop 1 -13.5, breakdown -19.9, drop 2 -13.3, drop 3 -13.3, outro -14.4.
+Energy curve (normalised LUFS per section, delivered v2 render): intro -16.5, build -15.8, drop 1 -12.8, breakdown -19.4, drop 2 -13.3, drop 3 -12.7, outro -13.8; the build ends 2.2 LU under the first 8 bars of drop 1 (-15.7 vs -13.4).
 
 ## Harmony, motif, voices
 - **Key and loop.** C minor. House loop of 8 bars: Cm - Ab - Eb - Bb - Cm - Ab - Fm - G (the G pulls into the Cm of the next pass); voicings move by step
@@ -57,36 +58,34 @@ Not used, with the reason: `.tap`/`.wire`, `.send`/`ret` buses and the `dt.*` do
 and the issue wants a paste-ready standalone with matching haps; dovetails are therefore written as lanes (tail, pickup, reverse, impact) with masks. The `tagged(...).mute` gates
 and the vox sample lanes are Craft-only and are lowered to masks and synthesised twins (`vowelChop`, a saw pad) in the standalone (marked `//@craft` / `//@plain` in the source).
 
-## Measurements (final render; `measure.json`)
-Whole track after one static gain to -14 LUFS: **-14.0 LUFS, true peak -1.30 dBTP, 0 clipped samples, DC -96.8 dBFS, below 120 Hz correlation 0.999 and side/mid -34.3 dB.**
+## Measurements (delivered v2 render; `measure.json`)
+Whole track after one static gain (+10.6 dB, no limiter, no compression): **-14.0 LUFS, true peak -1.21 dBTP (decoded MP3 -1.22), 0 clipped samples, DC -92 dBFS, below 120 Hz correlation 0.999 and side/mid -34.9 dB.**
 | section | bars | LUFS | dBTP | centroid Hz |
 |---|---|---|---|---|
-| intro | 1-16 | -16.35 | -1.57 | 1395 |
-| build 1 | 17-32 | -12.81 | -1.72 | 1755 |
-| drop 1 | 33-56 | -13.47 | -2.07 | 1275 |
-| breakdown | 57-72 | -19.94 | -5.23 | 1366 |
-| drop 2 | 73-96 | -13.32 | -1.30 | 1349 |
-| drop 3 | 97-112 | -13.26 | -1.43 | 1539 |
-| outro | 113-128 | -14.35 | -1.67 | 1745 |
+| intro | 1-16 | -16.53 | -1.82 | 1115 |
+| build 1 | 17-32 | -15.76 | -3.33 | 1106 |
+| drop 1 | 33-56 | -12.84 | -1.21 | 1179 |
+| breakdown | 57-72 | -19.48 | -3.46 | 1455 |
+| drop 2 | 73-96 | -13.20 | -1.41 | 1351 |
+| drop 3 | 97-112 | -12.68 | -1.32 | 1154 |
+| outro | 113-128 | -13.82 | -2.01 | 1473 |
 
-Drops over the breakdown: drop 1 +6.47 LU, drop 2 +6.62 LU, drop 3 +6.68 LU (each at least 6).
-Genre scores (slices of the normalised render): drop 1 vs `house.json` 9 pass, 3 miss, 1 unreliable: **misses** tempo 140 (range 120-128, designed deviation: one grid for the seed's filter sync and every dovetail), PLR 11.4 (8-11), loudness range 2.06 (3-6);
-duck 8.46 dB is "unreliable, not scored" (the true duck is about 1 to 2 dB deeper). Drop 2 vs `dubstep.json` 10 pass, 2 miss, 1 skip: **misses** PLR 12.0 (7-10) and loudness range 0.75 (3-8); tempo, loudness, true peak, low share, tilt, onsets, mono low end pass.
-Sidechain (drop 1, bars 41-48, kick stem and bass stem renders): duck depth **8.46 dB over 31 kicks**, flag: unreliable for an exponential release (reads 1 to 2 dB shallow, RACK_STANDARD section 8; designed depth 0.35 = -7.7 dB).
-**Tolerance of the render:** the same program rendered repeatedly (supersaw voices draw their phases outside any seed, #115) moved the whole true peak by about 1.3 dB (+0.5 to -1.3 dBTP at one gain staging) and a section's LUFS by up to 0.4 LU. The final level staging
-was therefore trimmed until the delivered render sat at -1.3 dBTP with the lone spikes listed by bar and beat (`over.mjs`-style scan of samples above the target) cut lane by lane. A re-render can land 0.5 to 1 dB either way.
-Standalone vs Craft hap parity: Craft 7330 haps, standalone 7333 (difference 3, from the approximate lowering of `.groove`; LOWERING.md section 4), 0 failed events in both, both render with no pack loaded for the standalone. Level parity is not claimed: the synthesised vowel twin and the masks are not the same sound as the vox samples (standalone drop 2 measured 0.8 LU quieter, peak +0.5 dBTP in drop 1, not re-trimmed).
-`tools/racks/audit.mjs`: **not run**: it needs the strudel CLI (`/home/user/suno-track-lab/engine/strudel-cli`), which is not present in this sandbox (exit 2 by design). The racks used are the landed `glyphcore/edm` racks (audited by their own issues) plus the local `seedGrowl`, `seedHouse`, `metalHit`, `voxChop`, `voxPad`, which start their chain with the `hygiene-*` hook of their class.
+Drops over the breakdown: +6.64 / +6.28 / +6.80 LU (each at least 6). Per 8 bars (LUFS / centroid Hz): build 17-24 -15.85 / 822, 25-32 -15.66 / 1471; drop 1 33-40 -13.43 / 1134, 41-48 -12.71 / 1177, 49-56 -12.41 / 1209; drop 2 73-80 **-15.32 / 338**, 81-88 **-12.91 / 1487**, 89-96 **-12.02 / 1950**.
+Genre scores (slices of the normalised render): drop 1 vs `house.json` 7 pass, **5 misses**: tempo 140 (designed), PLR 11.6 (8-11), loudness range 1.41 (3-6), low-band share 64.8 % (40-60), delivery loudness -12.84 (window -15 to -13; 0.16 LU over); kick-bass duck 7.46 dB over 31 kicks is printed "unreliable, not scored" (exponential release reads 1 to 2 dB shallow; designed depth 0.35 = -7.7 dB).
+Drop 2 vs `dubstep.json` 11 pass, **1 miss**: PLR 11.8 (7-10); its loudness range now passes (it was 0.75 in v1).
+**True-peak margin (not reached: -2.0 dBTP).** Renders of the committed program are not identical (supersaw voices draw their phases outside any seed, #115): two Craft renders gave -1.21 (delivered) and -1.56 dBTP, two standalone renders -1.15 and -1.12; with the intermediate level stagings the Craft spread was -0.81 to -1.28 and the standalone's +0.57 to -1.04. The target -2.0 was not reached because of arithmetic of the brief, not for lack of trying: the file is normalised to -14 LUFS integrated, the build must sit 2 LU and the breakdown 6 LU under the drops, so the drops land near -12.7 LUFS and a true peak of -2.0 would need a drop crest (PLR) of 10.7 dB; the drops measure 11.4 to 11.8. The peaks were reduced by mix only (lane by lane from a list of samples above the target by bar and beat, a per-hap compressor on the growl and house bass lanes, the seed retrigger and stab/hat coincidences moved), never by a limiter on the file. A re-render can land 0.4 dB either way, so all five of the last renders met -1.0 but none -2.0.
+Standalone vs Craft: **hap parity 7308 = 7308** over bars 1-128 plus tail, 0 failed events in both, the standalone renders with no pack loaded. The v1 difference of 3 haps was the `.groove` lowering on the hats lane (jittered `.late(rand...segment(16))`); the hats lane now states `.swingBy(0.14, 8)` in both forms, so no groove lowering is involved (`ohat` and `perc` keep `.groove` and were equal 284/284 and 81/81 in the critic's check). The standalone render itself: -14.0 LUFS, -1.12 dBTP, 0 clipped, contrast drop 1 +8.3 / drop 2 +8.1 / drop 3 +8.2 LU, drop 2 low-band share 69.3 to 70.1 % (Craft 66.8 %), breakdown centroid 2200 Hz (Craft 1450): the synthesised vowel twins are a different sound from the vox samples; level parity is by measurement, tone is not.
+`node docs/tracks/sirocco-foundry/build.mjs --check` exits 1 when the committed standalone (or the gates block) differs from a fresh build; run it after every edit of `track.strudel.js` (the v1 standalone had gone stale).
+`tools/racks/audit.mjs`: **not run**: it needs the strudel CLI (`/home/user/suno-track-lab/engine/strudel-cli`), which is not present in this sandbox (exit 2 by design).
 
-## Three refinement rounds (renders measured before and after; whole-track numbers are one render each, see the tolerance above)
-Baseline before any round: level staging by stem (`render_track.cjs --solo`): the vox sample lanes were 15 dB too loud (a note-first pattern fix and gain), the growl and pad lanes dominated, hats were the most crest-heavy lane.
-
+## Refinement rounds 1 to 3 (v1, see the history in measure.json of commit a43583d) and round 4 (after the critic's reject)
 | round | weakest section / bars and why | change | before | after |
 |---|---|---|---|---|
-| 1 | drop 1, bars 33-56: flat (loudness range 0.83 LU vs 3-6 for house) and every layer from bar 33 | entries staggered (stabs at 37, vowel hook at 41), duck depth 0.45 -> 0.35, `air` noise lane (hpf 6.5 kHz, ducked) | LRA 0.83, centroid 440 Hz, low share 68.5 %, duck 8.65 dB | LRA 1.14, centroid 727 Hz, low share 67.2 %, whole tp -0.92 |
-| 2 | drop 1, bars 33-56: low-band share 67.2 % (house 40-60), centroid 727 Hz: the sub and kick carried the section | `subH` x0.65, `subD` x0.85, `kick` x0.9, `air` x1.4 | low share 67.2 %, centroid 727 Hz | low share 58.6 %, centroid 1090 Hz |
-| 3 | drop 1 bars 33-48 still too even (LRA 1.33) and isolated spikes at bar 97 (impact + kick + bass + stabs at beat 1.8) and in the 4th-of-4 growl bars | `velocity` arc on clap, hats, open hat, bass, air (0.72 / 0.88 / 1 per 8 bars), `impact` x0.6, `crash` x0.7, growl x0.85, stab rhythms moved off beat 0.75 and 2.5, then the peak-margin trims | LRA 1.33, whole tp -0.02 (bar 97 at 0.85 beats: -5.4 dBFS raw) | LRA 2.06, whole tp -1.30, no raw sample above -7.6 dBFS |
-Rounds 2 and 3 also moved other sections slightly (build 1, outro, intro) which is why the final table differs from the round 3 "after" numbers of the first render of that round; the table above is the delivered render.
+| 1 | drop 1, bars 33-56: flat (loudness range 0.83 LU) | entries staggered, duck depth 0.45 -> 0.35, `air` noise lane | LRA 0.83, centroid 440 Hz, low share 68.5 % | LRA 1.14, centroid 727 Hz, low share 67.2 % |
+| 2 | drop 1: low-band share 67.2 % (house 40-60) | sub x0.65, kick x0.9, air up | low share 67.2 %, centroid 727 Hz | 58.6 %, 1090 Hz |
+| 3 | drop 1 too even; spikes at bar 97 | velocity arc, impact x0.6, peak trims | LRA 1.33, tp -0.02 | LRA 2.06, tp -1.30 |
+| 4 | the critic's three: (1) build 1 louder than drop 1, (2) standalone stale and a different mix, (3) drop 2 flat with a switch-up 10 dB under the first growl | (1) build thinned (kick velocity .75 / .6 and high-pass 120 -> 250 Hz in 29-31, no sub before 33, rising high-pass on the build bass, stabs, riser and roll down 20 %, clap from 25, `air` only in drops), stabs from 33; (2) hats lowered by explicit `.swingBy`, standalone regenerated and `build.mjs --check`, twin levels set from stem renders; (3) drop 2: arc `velocity` .85 / .93 / 1 over 8-bar steps, sparse first 8 bars, chop answers and metal hits enter at 75-81, hole in bar 88, fills at 80 and 88, new growl voice (`sfSwitch`, filter steps, vowel sweep, about +8 dB over v1) | v1: build 17-32 -12.81 vs drop 1 -13.47 LUFS; drop 2 per 8 bars flat (loudness range 0.75), growl2 -35.4 vs -25.2 LUFS solo; standalone -0.50 dBTP, drop 2 low share 75.9 %; haps 7330 / 7333 | build 25-32 **-15.66** vs drop 1 33-40 **-13.43** (2.2 LU), drop 2 per 8 bars **-15.3 / -12.9 / -12.0** (loudness range now passes), centroid 338 -> 1487 -> 1950 Hz, growl2 solo -34.0 vs first growl -30.3 LUFS (3.7 dB apart, v1 10 dB), about 8 dB louder than v1, standalone -1.12 dBTP, drop 2 low share 69.3 to 70.1 %, haps 7308 / 7308 |
+Rounds 2 to 4 moved other sections slightly; the table above is the delivered render.
 
 ## What to listen for (all unlistened)
 - Intro: the high-pass opening on the disco stabs over 16 bars, hook teaser 13-16 (is it audible but not stated?), roll and reverse into 17.

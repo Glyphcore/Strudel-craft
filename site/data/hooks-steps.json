@@ -10,7 +10,8 @@
   "scalar": "finite number, string (limits.str), boolean or null",
   "param": "{\"$param\": \"<param name>\"} substituted by the hooks engine from the def params",
   "mini": "{\"$mini\": \"<mini-notation string>\"} parsed as mini-notation by the hooks engine, never evaluated as code",
-  "wire-opts": "{range?: [a, b], op?: \"<word>\", r?: number}; a and b are numbers or {\"$expr\": \"<arithmetic over params: digits . + - * / ( ) and param names>\"}"
+  "wire-opts": "{range?: [a, b], op?: \"<word>\", r?: number}; a and b are numbers or {\"$expr\": \"<arithmetic over params: digits . + - * / ( ) and param names>\"}",
+  "groove-opts": "{swing?, push?, jitter?, vel?, drift?, seed?, grid?}: each a finite number or {\"$param\": \"<param name>\"}; the engine (site/engine/groove.js) clamps to the documented range. Declarative: .groove is a pure timing/velocity map of haps, no code runs"
  },
  "methods": {
   "attack": {
@@ -249,6 +250,13 @@
    ],
    "from": "shipped",
    "wire": true
+  },
+  "groove": {
+   "args": [
+    "scalar",
+    "groove-opts"
+   ],
+   "from": "shipped"
   },
   "hook": {
    "args": [

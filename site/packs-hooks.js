@@ -17,7 +17,8 @@ const RESERVED = new Set([...Object.getOwnPropertyNames(Object.prototype), ...Ob
 const NEVER = new Set(['apply', 'fmap', 'bind', 'innerBind', 'outerBind', 'squeezeBind', 'resetBind', 'restartBind', 'withValue', 'withValues', 'withHap', 'withHaps', 'withQuerySpan', 'withQueryTime', 'withQueryState', 'withHapSpan', 'withHapTime', 'query', 'queryArc', 'eval', 'Function']);
 const DEF_KEYS = new Set(['chain', 'params', 'decorator', 'doc', 'description', 'folder', 'tags', 'aliases']); // folder, tags, aliases: filing data (PACK_SPEC 5.3), validated below; the runtime ignores them
 export const safeName = (n) => typeof n === 'string' && n.length <= 64 && NAME.test(n) && !RESERVED.has(n);
-const SHAPES = new Set(['scalar', 'param', 'mini', 'wire-opts']);
+const SHAPES = new Set(['scalar', 'param', 'mini', 'wire-opts', 'groove-opts']);
+const GROOVE_KEYS = new Set(['swing', 'push', 'jitter', 'vel', 'drift', 'seed', 'grid']); // site/engine/groove.js GROOVE_PARAMS: numbers only, clamped there
 export async function loadSteps(url = new URL('./data/hooks-steps.json', import.meta.url)) { const r = await fetch(url); if (!r.ok) throw new Error('hooks-steps.json: HTTP ' + r.status); return r.json(); }
 // allowlist = the methods named in the data file `doc` that ALSO exist as own enumerable functions on Pattern.prototype (what register() and the controls put there) and are not reserved / NEVER.
 // Returns { has(name), args(name) -> shapes[], limits, size }. Never widens the runtime; an entry with an unknown shape name is dropped.
@@ -55,6 +56,10 @@ function arg(v, shapes, lim, params, path) {
   const has = (p) => Object.prototype.hasOwnProperty.call(params, p);
   if (shapes.includes('param') && ks.length === 1 && ks[0] === '$param') return typeof v.$param === 'string' && IDENT.test(v.$param) && !RESERVED.has(v.$param) && has(v.$param) ? null : `${path}: $param must name a param of this def`;
   if (shapes.includes('mini') && ks.length === 1 && ks[0] === '$mini') return typeof v.$mini === 'string' && v.$mini.length <= lim.str ? null : `${path}: $mini must be a string of at most ${lim.str} characters`;
+  if (shapes.includes('groove-opts') && ks.length && ks.length <= GROOVE_KEYS.size && ks.every((k) => GROOVE_KEYS.has(k))) { // declarative: named numbers or {$param}, never code
+    for (const k of ks) { const x = v[k]; if (typeof x === 'number' && Number.isFinite(x)) continue; if (plain(x) && Object.keys(x).length === 1 && typeof x.$param === 'string' && IDENT.test(x.$param) && !RESERVED.has(x.$param) && has(x.$param)) continue; return `${path}.${k}: must be a finite number or {"$param": "<param of this def>"}`; }
+    return null;
+  }
   if (shapes.includes('wire-opts') && ks.every((k) => k === 'range' || k === 'op' || k === 'r')) {
     const num = (x) => (typeof x === 'number' && Number.isFinite(x)) || (plain(x) && Object.keys(x).length === 1 && typeof x.$expr === 'string' && x.$expr.length <= lim.expr && EXPR.test(x.$expr) && (x.$expr.match(/[A-Za-z_]\w*/g) || []).every((n) => !RESERVED.has(n) && has(n)));
     if (v.range !== undefined && !(Array.isArray(v.range) && v.range.length === 2 && v.range.every(num))) return `${path}: range must be [a, b] of numbers or {"$expr"} over the def params`;
@@ -95,7 +100,7 @@ export function validate(d, allow) {
   for (const m of ['slots', 'markers', 'scopes']) {
     if (d[m] == null) continue;
     if (!isObj(d[m])) { bad(null, `${m} must be an object`); continue; }
-    for (const [k, v] of Object.entries(d[m])) { if (!/^[A-Za-z][\w-]*$/.test(k) || RESERVED.has(k)) bad(k, `${m} name "${k}" is not allowed`); const e = json(v, b, 0, `${m} ${k}`); if (e) bad(k, e); }
+    for (const [k, v] of Object.entries(d[m])) { if (!/^[A-Za-z][\w-]*$/.test(k) || RESERVED.has(k)) bad(null, `${m} name "${k}" is not allowed`); const e = json(v, b, 0, `${m} ${k}`); if (e) bad(null, e); }
   }
   return errs;
 }
@@ -108,13 +113,17 @@ export function install(H, entries, st, info = {}, notify = () => {}, opts = {})
   st.told ||= new Set();
   for (const e of entries) {
     const d = isObj(e.data) ? e.data : {}, q = `${e.pack}:${e.ingredient}`, bad = [];
-    const errors = validate(d, opts.allow); // atomic per ingredient: one bad def installs nothing of this ingredient
+    const errors = validate(d, opts.allow); // granular: an invalid def is skipped (named in a notice) and the other valid defs load; an ingredient-level error (null def: too many defs, bad slots / markers / scopes) refuses the whole ingredient
+    const whole = errors.some((x) => x.def == null), badDefs = new Set(errors.filter((x) => x.def != null).map((x) => x.def));
     if (errors.length) {
-      invalid.push({ ingredient: q, code: 'E_PACK_HOOKS_INVALID', errors });
-      const key = q + '!' + errors[0].message; if (!st.told.has(key)) { st.told.add(key); notify(`${q}: hooks ingredient not loaded (E_PACK_HOOKS_INVALID: ${errors[0].message}${errors.length > 1 ? `; ${errors.length - 1} more` : ''})`); }
+      invalid.push({ ingredient: q, code: 'E_PACK_HOOKS_INVALID', errors, skipped: whole ? undefined : [...badDefs] });
+      const key = q + '!' + errors[0].message;
+      if (!st.told.has(key)) { st.told.add(key); notify(whole ? `${q}: hooks ingredient not loaded (E_PACK_HOOKS_INVALID: ${errors[0].message}${errors.length > 1 ? `; ${errors.length - 1} more` : ''})` : `${q}: ${badDefs.size} hook def${badDefs.size > 1 ? 's' : ''} skipped (E_PACK_HOOKS_INVALID: ${errors[0].message}${errors.length > 1 ? `; ${errors.length - 1} more` : ''}; skipped: ${[...badDefs].slice(0, 6).join(', ')}${badDefs.size > 6 ? ', ...' : ''}); the other defs are loaded`); }
+    }
+    if (whole) {
       for (const [k, v] of Object.entries(d.defs || {})) if (isCodeDef(v)) bad.push(k);
     } else {
-      for (const [k, v] of Object.entries(d.defs || {})) { if (isCodeDef(v)) bad.push(k); else if (!defs.has(k)) defs.set(k, v); }
+      for (const [k, v] of Object.entries(d.defs || {})) { if (isCodeDef(v)) bad.push(k); else if (!badDefs.has(k) && !defs.has(k)) defs.set(k, v); }
       for (const [m, into] of [['slots', slots], ['markers', markers], ['scopes', scopes]]) for (const [k, v] of Object.entries(d[m] || {})) if (!into.has(k)) into.set(k, v);
     }
     if (bad.length) {

@@ -21,6 +21,28 @@ LIST_ITEMS = {"recipes": ("recipes", "id"), "control-types": ("types", "id"), "l
               "palette-actions": ("actions", "id"), "visuals": ("visuals", "id")}
 
 
+SITE_ALLOW = None  # set by `validate --site-allowlist [FILE]`: the site hooks step allowlist (site/data/hooks-steps.json)
+SITE_ALLOW_DEFAULT = Path(__file__).resolve().parents[2] / "site" / "data" / "hooks-steps.json"
+
+
+def check_site_allowlist(data, ing, E):
+    """E_PACK_HOOKS_STEP for every hooks def step whose method is not in the site allowlist (the site refuses such a def at load time)"""
+    if SITE_ALLOW is None or not isinstance(data, dict):
+        return
+    for name, d in (data.get("defs") or {}).items():
+        if not isinstance(d, dict) or d.get("opaque") is True:
+            continue
+        for i, st in enumerate(d.get("chain") or []):
+            m = st[0] if isinstance(st, list) and st and isinstance(st[0], str) else None
+            if m is None or m not in SITE_ALLOW:
+                E.append(("E_PACK_HOOKS_STEP", f"{ing['path']}#{name}", f"step {i} {m!r} is not in the site hooks allowlist (site/data/hooks-steps.json): the site skips this def"))
+            else:
+                shapes = SITE_ALLOW[m].get("args") or ["scalar"]
+                for a in st[1:]:
+                    if isinstance(a, (dict, list)) and not (isinstance(a, dict) and (set(shapes) - {"scalar"})):
+                        E.append(("E_PACK_HOOKS_STEP", f"{ing['path']}#{name}", f"step {i} {m!r} takes a structured argument its allowlist entry does not declare"))
+
+
 class Diag(Exception):
     def __init__(self, code, msg, where=""):
         super().__init__(f"{code} {where}: {msg}")
@@ -353,6 +375,8 @@ def validate_entry(root, ing, b, raw, kinds, items, E, W, newer):
             continue
         E.append((schema_code(ptr, msg), f"{ing['path']}#{ptr or '/'}", msg))
     check_entry_taxonomy(kind, data, ing, E, W)
+    if kind == "hooks":
+        check_site_allowlist(data, ing, E)
     if kind in LIST_ITEMS and isinstance(data, dict):
         key, idk = LIST_ITEMS[kind]
         for it in data.get(key) or []:
@@ -707,6 +731,7 @@ def main(argv):
     ap = argparse.ArgumentParser(prog="packs", description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
     v = sub.add_parser("validate"); v.add_argument("target"); v.add_argument("--strict", action="store_true")
+    v.add_argument("--site-allowlist", nargs="?", const=str(SITE_ALLOW_DEFAULT), metavar="HOOKS_STEPS_JSON", help="also fail when a hooks def step is missing from the site allowlist (default site/data/hooks-steps.json)")
     h = sub.add_parser("hash"); h.add_argument("dir"); h.add_argument("--write", action="store_true"); h.add_argument("--check", action="store_true")
     lk = sub.add_parser("lock"); lk.add_argument("request", nargs="?", default="packs.json"); lk.add_argument("-o", dest="out")
     lk.add_argument("--update", action="append", default=[]); lk.add_argument("--frozen", action="store_true")
@@ -715,6 +740,9 @@ def main(argv):
     a = ap.parse_args(argv)
     try:
         if a.cmd == "validate":
+            if a.site_allowlist:
+                global SITE_ALLOW
+                SITE_ALLOW = read_json(Path(a.site_allowlist)).get("methods") or {}
             t = Path(a.target)
             d = t.parent if t.name == "craftpack.json" else t
             if (d / "craftpack.json").is_file():

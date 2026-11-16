@@ -6,7 +6,7 @@ validate | hash | lock | registry build | registry check | --api` are **built** 
 behaviour, error codes and exit statuses; this file stays runnable on its own with Python 3 + `jsonschema` (set `STRUDEL_CRAFT` for the CLI).
 
 ```
-python3 tools/packs/packs.py validate DIR|craftpack.json [--strict]
+python3 tools/packs/packs.py validate DIR|craftpack.json [--strict] [--site-allowlist [site/data/hooks-steps.json]]
 python3 tools/packs/packs.py hash DIR [--write] [--check]
 python3 tools/packs/packs.py lock [packs.json] [-o packs.lock.json] [--update ID] [--frozen]
 python3 tools/packs/packs.py registry build DIR -o index.json [--github OWNER/REPO@COMMIT]

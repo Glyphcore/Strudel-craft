@@ -138,7 +138,12 @@ between runs, the pairs do not). Per played minute.
   The determinism row of record_offline.mjs passes since. Still open: even so, whole-take host renders differ by -16..-18 dB (uniform over the take, mostly 120-2000 Hz, source not found;
   per-voice re-seeding of Math.random did not change it).
   Live take flag: the "no false negative" judge counts missing onsets by the soft rule (strict alone misses 17-23 % of a clean take).
-  Open: the reference render attached to a take made under x4 throttling scores 0.68-0.75 on the above-120 Hz 5 ms-hop level (gate 0.85), unthrottled renders 0.87-0.89; not explained.
+  Product behaviour (#108): a render made under a busy main thread is off (attached render under x4: 0.66-0.70 on the above-120 Hz 5 ms-hop level, `rerender` of the same recipe
+  afterwards 0.88). Renders attached to a take (record, rerender) therefore wait until the main thread is calm (longest gap between 10 ms timer ticks over 500 ms <= 45 ms), at most
+  about 10 s; then they render anyway and the take gets `outputs.render.underLoad {gapMs, waitedMs}`, an "under load" chip and a "Rendered under load ... Re-render offline" row. Cancel
+  works while waiting, the transport is untouched. record_offline.mjs asserts: attached render waited and matches, or is flagged underLoad (after >= 9 s wait).
+  Tracked follow-up: #115 (per-hap render diff, twice each, x1 and x4, to find the remaining -16..-18 dB between whole-take renders, 120-2000 Hz; candidates reverb IR, worklet
+  envelope/LFO port messages, node pooling, `hcutoff:25` second-run hang, bus compressor). When it is fixed the wait and flag can go.
 
 - Offline renders repeat: two renders of the same recipe in the render host are within 1.5 dB on 99 % of 10 ms blocks (92 % before the
   worklet seed and the noise prefill).

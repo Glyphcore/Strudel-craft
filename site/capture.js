@@ -319,9 +319,9 @@ async function finish(why) {
     if (audio && includes.code && (exact || (flagged && opts.autoFix))) {
       st.phase = 'idle'; sync();
       if (FLAG_REC === 'inline') { if (sc.transport.playing) sc.transport.stop(); await new Promise((r) => setTimeout(r, 500)); } /* inline: let live voices end before the offline swap; the host needs neither */
-      const out = await renderRecipe(recipe, { sr: rate });
+      const out = await renderRecipe(recipe, { sr: rate, calm: true });
       if (out && flagged) rec.replaced = { at: new Date().toISOString(), why: check.why };
-      if (out) { rec.audio.render = { L: out.L, R: out.R, sr: out.sr }; recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr) }; await store.put(rec); }
+      if (out) { rec.audio.render = { L: out.L, R: out.R, sr: out.sr }; recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr), ...(out.underLoad ? { underLoad: out.underLoad } : {}) }; await store.put(rec); }
     }
     if (flagged && !rec.replaced) toast(`Live take "${recipe.name}" is flagged: ${check.why}. ${includes.code ? 'Tap to replace it with an offline render' : 'Tick Code-state to allow an offline re-render'}`, { kind: 'error', sticky: includes.code, onClick: includes.code ? () => rerender(recipe.id) : null });
     else if (flagged) toast(`Live take "${recipe.name}" was flagged (${check.why}); it now plays its offline render`, { kind: 'info', ms: 8000 });
@@ -355,8 +355,27 @@ async function renderRecipe(recipe, o = {}) {
   if (HOST) return renderRecipe0(recipe, o);
   const own = !o.signal, ac = own ? new AbortController() : null, inner = o.onProgress;
   if (own) st.progAbort = ac; setProg(0);
-  try { return await renderRecipe0(recipe, { ...o, signal: own ? ac.signal : o.signal, onProgress: (p) => { setProg(p); inner && inner(p); } }); }
+  try {
+    const sig = own ? ac.signal : o.signal; let load = null;
+    if (o.calm) { const cm = await waitCalm(sig); if (!cm.calm) load = { gapMs: cm.gapMs, waitedMs: cm.waitedMs }; }
+    const out = await renderRecipe0(recipe, { ...o, signal: sig, onProgress: (p) => { setProg(p); inner && inner(p); } });
+    if (out && load) out.underLoad = load;
+    return out;
+  }
   finally { if (own && st.progAbort === ac) st.progAbort = null; setProg(null); }
+}
+/* A render made while the main thread is slow (CPU throttled, a busy page) came out different from one made on a calm thread (#108: above-120 Hz level match 0.66-0.70 under x4
+   against 0.88 after, same recipe). Renders attached to a take wait until the main thread is calm: the longest gap between 10 ms timer ticks over 500 ms is <= CALM_GAP_MS.
+   At most CALM_MAX_MS; then it renders anyway and the take is marked outputs.render.underLoad (chip + Re-render offline). Cancel works while waiting; the transport is not touched. */
+const CALM_GAP_MS = 45, CALM_MAX_MS = 10000;
+async function waitCalm(signal) {
+  const t0 = performance.now(); let gap = 0;
+  for (;;) {
+    gap = await new Promise((res) => { let last = performance.now(), worst = 0, n = 0; const iv = setInterval(() => { const t = performance.now(); worst = Math.max(worst, t - last); last = t; if (++n >= 50) { clearInterval(iv); res(worst); } }, 10); });
+    if (signal && signal.aborted) throw abortErr();
+    if (gap <= CALM_GAP_MS) return { calm: true, gapMs: Math.round(gap), waitedMs: Math.round(performance.now() - t0) };
+    if (performance.now() - t0 >= CALM_MAX_MS) return { calm: false, gapMs: Math.round(gap), waitedMs: Math.round(performance.now() - t0) };
+  }
 }
 async function renderRecipe0(recipe, o = {}) {
   const pageHook = [...beforeHooks].some((f) => !hostHooks.has(f));
@@ -572,8 +591,8 @@ async function recordOffline(ru) {
 async function rerender(id) {
   const rec = await store.get(id); if (!rec || !rec.recipe.state) { toast('This take has no code-state, so it cannot be re-rendered', { kind: 'error' }); return null; }
   try {
-    const out = await renderRecipe(rec.recipe, { sr: rec.recipe.outputs.capture && rec.recipe.outputs.capture.sr });
-    rec.audio.render = { L: out.L, R: out.R, sr: out.sr }; rec.recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr) };
+    const out = await renderRecipe(rec.recipe, { sr: rec.recipe.outputs.capture && rec.recipe.outputs.capture.sr, calm: true });
+    rec.audio.render = { L: out.L, R: out.R, sr: out.sr }; rec.recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr), ...(out.underLoad ? { underLoad: out.underLoad } : {}) };
     rec.replaced = { at: new Date().toISOString(), why: rec.recipe.outputs.capture && rec.recipe.outputs.capture.check ? rec.recipe.outputs.capture.check.why : 'manual' };
     await store.put(rec); renderTakes(); toast(`"${rec.recipe.name}" now plays its offline render`, { kind: 'ok' }); return rec;
   } catch (e) { failToast('Re-render', e); return null; }
@@ -824,15 +843,17 @@ async function renderTakes() {
   el.takes.innerHTML = list.length ? list.map(({ recipe: r, audio, remake: rm, imported, replaced }) => {
     const hasAudio = !!(audio.render || audio.capture || audio.remake);
     const ck = r.outputs && r.outputs.capture && r.outputs.capture.check;
+    const ul = r.outputs && r.outputs.render && r.outputs.render.underLoad;
     const chips = ['audio', 'events', 'code'].filter((k) => r.includes[k]).map((k) => `<i class="cap-badge" data-type="${k}">${k === 'code' ? 'code' : k}</i>`).join('')
-      + (r.timing.mode === 'offline' ? '<i class="cap-badge" data-type="ok">offline</i>' : '') + (ck && !ck.ok ? `<i class="cap-badge" data-type="bad" title="${esc(ck.why)}">${replaced ? "replaced" : "flagged"}</i>` : '');
+      + (r.timing.mode === 'offline' ? '<i class="cap-badge" data-type="ok">offline</i>' : '') + (ul ? '<i class="cap-badge" data-type="bad" title="rendered while the main thread was busy; re-render offline recommended">under load</i>' : '') + (ck && !ck.ok ? `<i class="cap-badge" data-type="bad" title="${esc(ck.why)}">${replaced ? "replaced" : "flagged"}</i>` : '');
     const ver = rm ? (rm.match === 'tolerance' ? '<i class="cap-badge" data-type="ok">remake ~ok</i>' : rm.match === true ? '<i class="cap-badge" data-type="ok">remake ok</i>' : rm.match === false ? '<i class="cap-badge" data-type="bad">differs</i>' : '') : imported ? '<i class="cap-badge" data-type="inert">inert</i>' : '';
+    const loadRow = ul ? `<p class="cap-flag" role="note"><b>Rendered under load</b> the main thread was busy (${ul.gapMs} ms gaps after waiting ${Math.round(ul.waitedMs / 1000)} s), so this render may differ from a calm one. <button type="button" data-act="rerender">Re-render offline</button></p>` : '';
     const flagRow = ck && !ck.ok ? `<p class="cap-flag" role="note"><b>${replaced ? 'Replaced' : 'Dropouts'}</b> ${esc(ck.why)}${replaced ? '. This take plays its offline render.' : '. The live capture may have gaps or timing jumps.'}${!replaced && r.includes.code ? ' <button type="button" data-act="rerender">Re-render offline</button>' : ''}</p>` : '';
     const deps = r.deps.packs.length + r.deps.samples.length + r.deps.vox.length + 1;
     return `<li data-id="${r.id}" class="cap-tk"${ck && !ck.ok ? ' data-flag="1"' : ''}>
     <canvas class="cap-wave" aria-hidden="true"></canvas>
     <div class="cap-tk-info"><b class="cap-tk-name">${chips}${ver}<span class="cap-tk-label">${esc(r.name)}</span></b><span class="cap-tk-sub">${N.cyc(r.timing.cycles)}c · ${N.fix(r.timing.cps, 3)} cps · c${N.cyc(r.timing.start)}-${N.cyc(r.timing.stop)}${r.meta && r.meta.from ? ' · from ' + esc(r.meta.from) : ''} · ${deps} dep${deps > 1 ? 's' : ''}${r.outputs.render ? ' · ' + short(r.outputs.render.sha256) : ''}</span></div>
-    ${flagRow}
+    ${flagRow}${loadRow}
     <div class="cap-tk-acts">
       <button type="button" class="ghost icon" data-act="play" aria-label="Play ${esc(r.name)}" aria-pressed="false"${hasAudio ? '' : ' disabled'}>${ICON.play}</button>
       <button type="button" class="ghost icon" data-act="remake" aria-label="Remake ${esc(r.name)}"${r.includes.code ? '' : ' disabled'}>${ICON.remake}</button>

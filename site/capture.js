@@ -126,9 +126,13 @@ async function waitTicking(ms = 4000) {
    - live -> offline: a hap whose pooled node belongs to the live context throws InvalidAccessError; the failed call consumed (popped) that
      stale node, so the hap is retried (up to 64 times) until the pool hands out a fresh offline node. */
 function collectNodes(ctx) {
-  const prev = AudioNode.prototype.connect, seen = new Set();
+  const prev = AudioNode.prototype.connect, prevD = AudioNode.prototype.disconnect, seen = new Set();
   AudioNode.prototype.connect = function (dest, ...rest) { if (this.context === ctx) seen.add(this); if (dest instanceof AudioNode && dest.context === ctx) seen.add(dest); return prev.call(this, dest, ...rest); };
-  return { seen, restore() { if (AudioNode.prototype.connect !== prev) AudioNode.prototype.connect = prev; } };
+  /* superdough tears a voice down from an `ended` callback (Chain.releaseNodes -> disconnect) that runs on the main thread some time after the render passed the voice's end:
+     a ringing tail (the vowel filters: five bandpass biquads, Q 40-140) was cut at a load-dependent instant, so renders differed by -22 dB. Offline nodes keep their connections
+     until the render is over (the context is discarded), which makes the tail, and the render, independent of main-thread speed (#108). */
+  AudioNode.prototype.disconnect = function (...a) { if (this.context === ctx) return undefined; return prevD.apply(this, a); };
+  return { seen, restore() { if (AudioNode.prototype.connect !== prev) AudioNode.prototype.connect = prev; if (AudioNode.prototype.disconnect !== prevD) AudioNode.prototype.disconnect = prevD; } };
 }
 function unpool(nodes) { let n = 0; for (const node of nodes) for (const sym of Object.getOwnPropertySymbols(node)) { try { delete node[sym]; n++; } catch (e) { /* frozen */ } } return n; }
 

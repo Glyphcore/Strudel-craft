@@ -132,6 +132,11 @@ between runs, the pairs do not). Per played minute.
   render +0.5 dB louder (that level gap is gone with the pin). A synthetic OfflineAudioContext test (4 runs, half with a 30 ms busy loop per voice) is bit-identical for sine,
   sine + shape, sawtooth, pink, room, vib, lpenv, and differs for supersaw (random phases) and for `vowel` (-22 dB residual, not explained). With the pin, two unthrottled host
   renders still differ by -16..-19 dB (not bit-identical; unidentified, vowel and the high-pass worklet are the suspects) and 5 ms-hop level matches are 0.87-0.89.
+  Cause found for `vowel` (and any voice whose tail outlives its gain envelope): superdough tears a voice down from an `ended` callback (disconnect) on the main thread, some time
+  after the render has passed the voice's end, so a ringing tail (five bandpass biquads, Q 40-140) was cut at a load-dependent instant; synthetic vowel runs differed by -22..-28 dB
+  and are -146 dB (bit-identical) once offline nodes keep their connections until the render ends (`collectNodes` in capture.js now no-ops `disconnect` for the render's context).
+  The determinism row of record_offline.mjs passes since. Still open: even so, whole-take host renders differ by -16..-18 dB (uniform over the take, mostly 120-2000 Hz, source not found;
+  per-voice re-seeding of Math.random did not change it).
   Live take flag: the "no false negative" judge counts missing onsets by the soft rule (strict alone misses 17-23 % of a clean take).
   Open: the reference render attached to a take made under x4 throttling scores 0.68-0.75 on the above-120 Hz 5 ms-hop level (gate 0.85), unthrottled renders 0.87-0.89; not explained.
 

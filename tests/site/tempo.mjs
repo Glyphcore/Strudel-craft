@@ -13,6 +13,7 @@ const browser = await chromium.launch(); const page = await (await browser.newCo
 page.on('pageerror', (e) => errors.push(e.message.slice(0, 200)));
 await page.route(/api\.github\.com/, (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
 await page.goto(BASE); await page.waitForFunction(() => window.__sc && document.querySelector('#tempoKnob, .tp-knobs .knob'), null, { timeout: 60000 });
+await page.waitForSelector('#list li[data-id]', { timeout: 60000 }); await page.waitForFunction(() => window.__sc.currentSource(), null, { timeout: 60000 });
 const knob = () => page.evaluate(() => document.querySelector('.tp-knobs .knob').getAttribute('aria-valuenow'));
 const src = () => page.evaluate(() => window.__sc.currentSource().code);
 const load = (code) => page.evaluate((c) => { window.__sc.setView('rack'); const ta = document.getElementById('code'); ta.value = c; ta.dispatchEvent(new Event('input')); }, code);

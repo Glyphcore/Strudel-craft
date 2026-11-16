@@ -3,6 +3,7 @@
 //   node tools/racks/measure.mjs FILE.wav [--bpm N] [--beats-per-bar 4] [--kick K.wav --bass B.wav]
 //   node tools/racks/measure.mjs --score docs/genres/GENRE.json [--strict] FILE.wav [same options]
 // Prints one JSON object of numbers (the measurement), or with --score one line per criterion plus a summary.
+// Duck depth: Hilbert envelope of the bass; exact for held ducks, reads an instantaneous-attack exponential-release duck 1 to 2 dB shallow, so --score does not score it.
 // Method: integrated loudness and gating per ITU-R BS.1770 (K-weighting, 400 ms blocks, 75 % overlap, -70 LUFS absolute gate, -10 LU relative
 // gate); loudness range per EBU Tech 3342 (3 s blocks, -70 absolute, -20 LU relative, 10th to 95th percentile); true peak by 4x oversampling
 // (windowed-sinc polyphase, 12 taps per side). Exit: 0 all pass, 1 a miss (a `convention` miss only counts with --strict), 2 usage.
@@ -106,13 +107,23 @@ export function onsets(wav, hop = 512, fr = 1024) { // spectral-flux peak pickin
   return out;
 }
 function rmsEnv(x, sr, hopMs, winMs) { const h = Math.max(1, Math.round(sr * hopMs / 1000)), w = Math.round(sr * winMs / 1000), c = new Float64Array(x.length + 1); for (let i = 0; i < x.length; i++) c[i + 1] = c[i] + x[i] * x[i]; const out = []; for (let i = w; i <= x.length; i += h) out.push(Math.sqrt((c[i] - c[i - w]) / w)); return { env: out, dt: h / sr, lag: w / sr }; } // sliding RMS: every point is the level over the last winMs
-export function duckDepth(kick, bass) { // median over kicks of the ratio (dB) of the bass RMS level before the kick to its lowest RMS level within 250 ms after; both stems are used as mono sums
-  const mono = (w) => Float64Array.from(w.L, (v, i) => (v + w.R[i]) / 2), km = mono(kick), bm = mono(bass), ke = rmsEnv(km, kick.sr, 2, 8), kmax = Math.max(...ke.env); if (!(kmax > 0)) return null;
-  const hits = []; let last = -1; for (let i = 1; i < ke.env.length; i++) if (ke.env[i] > kmax * 0.2 && ke.env[i - 1] <= kmax * 0.2 && (last < 0 || (i - last) * ke.dt > 0.2)) { hits.push((i + 1) * ke.dt - ke.lag); last = i; }
-  const bz = (() => { let z = 0; for (let i = 1; i < bm.length; i++) if ((bm[i - 1] < 0) !== (bm[i] < 0)) z++; const f0 = z / 2 / (bm.length / bass.sr); return Math.min(30, Math.max(8, 1000 / Math.max(f0, 1))); })(), be = rmsEnv(bm, bass.sr, 1, bz), at = (t) => Math.round((t + be.lag) / be.dt) - 1, depths = []; // be.env[at(t)] is the RMS over [t, t + one bass period) (period from the zero-crossing rate, 8 to 30 ms): no ripple, so the level is the real one; a duck shorter than that period reads shallower
-  for (const t of hits) { const i0 = at(t), pre = at(t - 0.15), post = at(t + 0.25); if (pre < 0 || post >= be.env.length) continue; let before = 0; for (let i = pre; i <= at(t - bz / 1000); i++) before = Math.max(before, be.env[i]); const after = Math.min(...be.env.slice(i0, post)); if (before > 1e-6) depths.push(db20(before) - db20(Math.max(after, 1e-9))); }
-  if (!depths.length) return null; depths.sort((x, y) => x - y); return depths[Math.floor(depths.length / 2)];
-}
+function hilbertEnv(x) { // magnitude of the analytic signal (FFT, negative frequencies zeroed, positive doubled): the amplitude envelope of a tonal signal with no per-period ripple
+  let N = 1; while (N < x.length) N <<= 1; const re = new Float64Array(N), im = new Float64Array(N); re.set(x); fft(re, im);
+  for (let k = 1; k < N / 2; k++) { re[k] *= 2; im[k] *= 2; } for (let k = N / 2 + 1; k < N; k++) { re[k] = 0; im[k] = 0; }
+  for (let k = 0; k < N; k++) im[k] = -im[k]; fft(re, im); const out = new Float64Array(x.length); for (let i = 0; i < x.length; i++) out[i] = Math.hypot(re[i], im[i]) / N; return out; } // inverse FFT by conjugation (magnitude is unaffected by the final conjugate)
+export function duckDepth(kick, bass) { // -> { depth_db, kicks, reason }; depth_db is null (with a reason) when fewer than 4 kick intervals are usable
+  const mono = (w) => Float64Array.from(w.L, (v, i) => (v + w.R[i]) / 2), km = mono(kick), bm = mono(bass), ke = rmsEnv(km, kick.sr, 2, 8), kmax = Math.max(...ke.env); if (!(kmax > 0)) return { depth_db: null, kicks: 0, reason: 'kick stem is silent' };
+  const hits = []; let last = -1; for (let i = 1; i < ke.env.length; i++) if (ke.env[i] > kmax * 0.2 && ke.env[i - 1] <= kmax * 0.2 && (last < 0 || (i - last) * ke.dt > 0.2)) { hits.push((i + 1) * ke.dt - ke.lag); last = i; } // kick onsets: the kick stem's 8 ms RMS crosses 20 % of its maximum
+  if (hits.length < 4) return { depth_db: null, kicks: 0, reason: 'fewer than 4 kicks found in the kick stem' };
+  const sr = bass.sr, h = hilbertEnv(bm), w = Math.max(1, Math.round(0.005 * sr)), c = new Float64Array(h.length + 1); for (let i = 0; i < h.length; i++) c[i + 1] = c[i] + h[i]; // c: running sum for the 5 ms smoothing
+  const env = (i) => { const a = Math.max(0, i - (w >> 1)), b = Math.min(h.length, a + w); return (c[b] - c[a]) / (b - a); }, gaps = hits.slice(1).map((t, i) => t - hits[i]).sort((a, b) => a - b), med = gaps[gaps.length >> 1];
+  let top = 0; for (let i = 0; i < h.length; i += 16) if (h[i] > top) top = h[i]; const floor = top * 1e-3, depths = [];
+  for (let k = 0; k < hits.length; k++) { const t0 = hits[k], t1 = k + 1 < hits.length ? hits[k + 1] : t0 + med, i0 = Math.round(t0 * sr), i1 = Math.round(t1 * sr), id = Math.min(i1, i0 + Math.round(0.15 * sr)); if (i1 > h.length || i1 - i0 < 0.05 * sr) continue;
+    let dk = Infinity; for (let i = Math.max(0, i0 - Math.round(0.01 * sr)); i < id; i++) dk = Math.min(dk, env(i)); const all = []; for (let i = i0; i < i1; i += 4) all.push(env(i)); all.sort((a, b) => a - b); const up = all[Math.min(all.length - 1, Math.floor(0.9 * all.length))];
+    if (!(up > floor) || !(dk > 0)) continue; depths.push(db20(up / dk)); } // bass silent or absent in this interval: skipped
+  if (depths.length < 4) return { depth_db: null, kicks: depths.length, reason: 'fewer than 4 usable kick intervals (bass silent or absent in the others)' };
+  depths.sort((x, y) => x - y); return { depth_db: depths[depths.length >> 1], kicks: depths.length, reason: null }; }
+
 
 // ---------- the measurement ----------
 export function measure(wav, opt = {}) {
@@ -126,7 +137,7 @@ export function measure(wav, opt = {}) {
   if (opt.bpm) { const bpb = opt.beatsPerBar || 4, barS = bpb * 60 / opt.bpm, bars = n / sr / barS; o.tempo_bpm = opt.bpm; o.bars = rnd(bars, 2); o.onsets_per_bar = rnd(onsets(wav).length / bars, 1);
     const bn = Math.round(barS * sr), span = 8 * bn; if (n >= span + bn) { let best = 0, bs = 0; for (let st = 0; st + span <= n; st += bn) { let e = 0; for (let i = st; i < st + span; i += 8) e += L[i] * L[i] + R[i] * R[i]; if (e > best) { best = e; bs = st; } }
       o.spectral_centroid_densest_8_bars_hz = rnd(centroid(ltas(L, R, bs, bs + span), sr), 0); o.densest_8_bars_start_bar = Math.round(bs / bn); } }
-  if (opt.kick && opt.bass) o.duck_depth_db = rnd(duckDepth(opt.kick, opt.bass));
+  if (opt.kick && opt.bass) { const d = duckDepth(opt.kick, opt.bass); o.duck_depth_db = rnd(d.depth_db); o.duck_kicks_used = d.kicks; if (d.reason) o.duck_unavailable = d.reason; }
   return o;
 }
 
@@ -135,12 +146,13 @@ export function score(m, genre, strict = false) {
   const rows = []; let fail = false;
   for (const c of genre.criteria) { const v = m[c.metric];
     if (v == null) { rows.push({ id: c.id, status: 'skip', value: null, min: c.min ?? null, max: c.max ?? null, basis: c.basis, why: 'not measured (needs ' + (c.needs || c.metric) + ')' }); continue; }
+    if (c.metric === 'duck_depth_db') { rows.push({ id: c.id, status: 'unreliable', value: v, min: c.min ?? null, max: c.max ?? null, basis: c.basis, why: 'unreliable, not scored: reads an exponential-release duck 1 to 2 dB shallow (docs/RACK_STANDARD.md section 8)' }); continue; }
     const ok = (c.min == null || v >= c.min) && (c.max == null || v <= c.max), prov = c.basis === 'convention';
     rows.push({ id: c.id, status: ok ? 'pass' : 'miss', value: v, min: c.min ?? null, max: c.max ?? null, basis: c.basis, provisional: prov && !ok ? true : undefined, confidence: c.confidence });
     if (!ok && (!prov || strict)) fail = true; }
   return { rows, fail };
 }
-export const fmtRow = (r) => `${r.status.toUpperCase().padEnd(4)} ${r.id.padEnd(28)} value ${r.value == null ? 'n/a' : r.value}  range [${r.min ?? '-inf'}, ${r.max ?? 'inf'}]  basis ${r.basis}${r.provisional ? ' (provisional)' : ''}${r.why ? '  ' + r.why : ''}`;
+export const fmtRow = (r) => `${(r.status === 'unreliable' ? 'UNREL' : r.status.toUpperCase()).padEnd(4)} ${r.id.padEnd(28)} value ${r.value == null ? 'n/a' : r.value}  range [${r.min ?? '-inf'}, ${r.max ?? 'inf'}]  basis ${r.basis}${r.provisional ? ' (provisional)' : ''}${r.why ? '  ' + r.why : ''}`;
 
 // ---------- CLI ----------
 if (process.argv[1] && fileURLToPath(import.meta.url) === fs.realpathSync(process.argv[1])) {
@@ -151,6 +163,6 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === fs.realpathSync(proces
     const m = measure(readWav(file), opt);
     if (!genreFile) console.log(JSON.stringify(m, null, 2));
     else { const g = JSON.parse(fs.readFileSync(genreFile, 'utf8')); const r = score(m, g, strict); console.log(`${g.genre}: ${file}`); for (const row of r.rows) console.log(fmtRow(row));
-      const c = (s) => r.rows.filter((x) => x.status === s).length; console.log(`pass ${c('pass')}  miss ${c('miss')}  skip ${c('skip')}${strict ? '  (strict)' : ''} -> ${r.fail ? 'FAIL' : 'OK'}`); process.exit(r.fail ? 1 : 0); }
+      const c = (s) => r.rows.filter((x) => x.status === s).length; console.log(`pass ${c('pass')}  miss ${c('miss')}  skip ${c('skip')}  unreliable ${c('unreliable')}${strict ? '  (strict)' : ''} -> ${r.fail ? 'FAIL' : 'OK'}`); process.exit(r.fail ? 1 : 0); }
   } catch (e) { console.error(e.message); process.exit(2); }
 }

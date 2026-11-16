@@ -27,4 +27,5 @@ Result of the first pass: docs/RACK_STANDARD.md section 7.
 
 Measure and score a render (no CLI needed, plain Node): `node tools/racks/measure.mjs [--bpm N] [--kick K.wav --bass B.wav] FILE.wav`,
 add `--score docs/genres/dubstep.json [--strict]` for pass or miss per criterion (exit 1 on a miss; `convention` misses only with `--strict`).
+Duck depth (`--kick` and `--bass` stems): kick onsets from the kick stem; bass envelope = analytic-signal (Hilbert) magnitude smoothed 5 ms; per kick interval the minimum from 10 ms before the onset to 150 ms after against the 90th percentile of the whole interval; median in dB over kicks (`duck_kicks_used`); null with `duck_unavailable` under 4 usable intervals. Held ducks read within 0.3 dB; an exponential release (tau 40 ms) starting at full depth reads 1 to 2 dB shallow (2.5 / 4.8 / 6.8 for true 3 / 6 / 9 dB), so `--score` prints duck as "unreliable, not scored". Same text as RACK_STANDARD.md section 8.
 Test: `node tests/racks/measure.mjs` (synthetic conformance signals, genre files against `docs/genres/genre.schema.json`).

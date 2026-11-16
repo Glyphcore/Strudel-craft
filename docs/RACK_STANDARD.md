@@ -273,7 +273,7 @@ rule above (-1.0 dBTP) stays; a render that is louder than -14 LUFS should meet 
 100 Hz to 10 kHz in 1/3-octave bands, pink = -3), `spectral_centroid_hz`, `lr_correlation_below_120` and `side_to_mid_db_below_120`
 (4th-order low-pass at 120 Hz; -200 stands for minus infinity). With `--bpm N` (`--beats-per-bar`, default 4): `tempo_bpm` (declared, not
 detected), `bars`, `onsets_per_bar` (spectral-flux peaks of the whole mix), `spectral_centroid_densest_8_bars_hz`. With `--kick` and `--bass`
-stems: `duck_depth_db` (median over kicks of the bass peak level before the kick minus its minimum in the next 200 ms).
+stems: `duck_depth_db` with `duck_kicks_used`. Method: kick onsets from the kick stem (its 8 ms RMS crossing 20 % of its maximum); the bass envelope is the magnitude of the analytic signal (Hilbert transform via FFT) smoothed over 5 ms; per kick interval, ducked level = minimum of that envelope from 10 ms before the onset to 150 ms after (bounded by the interval), unducked level = its 90th percentile over the whole interval; depth = 20 log10(unducked / ducked), median over kicks. Intervals where the bass is silent are skipped; with fewer than 4 usable intervals the value is null and `duck_unavailable` gives the reason. Accuracy (synthetic, `tests/racks/measure.mjs`): a held duck (60 ms hold) reads within 0.3 dB at 3, 6 and 9 dB; no duck reads 0; a 1.3 Hz tremolo of +-1 dB unrelated to the kick reads 0.99 dB. Known limit: an exponential release (tau 40 ms) that starts at full depth reads about 2.5, 4.8 and 6.8 dB for true 3, 6 and 9 dB (the envelope of a 55 Hz tone cannot follow a drop faster than about a quarter period). So `--score` prints the duck criterion as "unreliable, not scored", never pass or miss.
 
 ### Genres (all `convention`, `confidence: low`, provisional)
 Every file also carries the delivery rule (platform) and the mono low end (side-to-mid at or below -20 dB and correlation at or above 0.95
@@ -308,5 +308,4 @@ masters at -6 to -8 LUFS.
 `node tools/racks/render_demo.cjs OUT.wav` renders the demo with the site's offline recorder (needs Playwright, Chromium, network; env
 `PLAYWRIGHT_MODULES`, `CHROMIUM_PATH`), then `node tools/racks/measure.mjs --bpm 128.8 --score docs/genres/electro.json OUT.wav`. Numbers only:
 `docs/genres/examples/night-phonk-demo.measure.json`. None of the seven genre files is phonk; electro (125-135 BPM, 808 drum machine) is the closest
-fit and is used with that caveat. The take is post site master (-6 dB default gain). Duck depth: the RMS method reads a 6.02 dB duck as 6.04 dB;
-a duck shorter than one bass period reads shallower.
+fit and is used with that caveat. The take is post site master (-6 dB default gain). Duck depth was skipped here (no stems); see the duck method and its known limit above.

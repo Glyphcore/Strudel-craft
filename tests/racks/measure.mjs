@@ -40,10 +40,24 @@ near('anti-phase: correlation -1', anti.lr_correlation_below_120, -1, 0.001);
 // 5. onsets per bar and duck depth (tempo-aware): clicks on 16ths at 120 BPM (4/4: a bar is 2 s, 16 onsets per bar)
 const bpm = 120, secs = 16, click = new Float64Array(SR * secs); for (let i = 0; i < 16 * secs / 2; i++) { const s = Math.round(i * 0.125 * SR); for (let j = 0; j < 400 && s + j < click.length; j++) click[s + j] = 0.5 * Math.exp(-j / 60) * Math.sin(j * 0.9); }
 const cm = measure(stereo(click), { bpm }); near('16 clicks per bar at 120 BPM: onsets per bar', cm.onsets_per_bar, 16, 1.5);
-const kk = new Float64Array(SR * 4), bb = new Float64Array(SR * 4); for (let i = 0; i < bb.length; i++) bb[i] = 0.5 * Math.sin(2 * Math.PI * 55 * i / SR);
-// true duck: bass gain 0.5 (-6.02 dB) held 60 ms while the kick sounds, then released over about 100 ms
-for (let b = 0; b < 8; b++) { const s = Math.round((0.25 + b * 0.5) * SR); for (let j = 0; j < 2400; j++) kk[s + j] = 0.8 * Math.exp(-j / 800) * Math.sin(2 * Math.PI * 50 * j / SR); for (let j = 0; j < 12000 && s + j < bb.length; j++) bb[s + j] *= j < 2646 ? 0.5 : 1 - 0.5 * Math.exp(-(j - 2646) / 4800); }
-const dd = measure(stereo(click.subarray(0, SR * 4)), { kick: stereo(kk), bass: stereo(bb) }).duck_depth_db; near('duck depth: bass ducked 6.02 dB at each kick reads within 0.3 dB', dd, 6.02, 0.3);
+// duck fixtures: kick every 0.5 s (10 kicks), 55 Hz bass of amplitude 0.5. shape 'exp': gain drops to the true depth at the kick and releases with tau 40 ms;
+// 'held': gain held 60 ms, then released with tau 100 ms (the original 6.02 dB fixture uses a 4800-sample = 100 ms tau). tremolo: slow gain wobble unrelated to the kick.
+let lastStems = null;
+function duckFixture(depthDb, shape, trem = 0) { const n = SR * 5, kk = new Float64Array(n), bb = new Float64Array(n), G = amp(-depthDb);
+  for (let i = 0; i < n; i++) bb[i] = 0.5 * Math.sin(2 * Math.PI * 55 * i / SR) * (1 + trem * Math.sin(2 * Math.PI * 1.3 * i / SR + 0.7));
+  if (depthDb > 0) for (let b = 0; b < 9; b++) { const s = Math.round((0.25 + b * 0.5) * SR); for (let j = 0; j < 2400; j++) kk[s + j] = 0.8 * Math.exp(-j / 800) * Math.sin(2 * Math.PI * 50 * j / SR);
+    for (let j = 0; j < 12000 && s + j < n; j++) bb[s + j] *= shape === 'exp' ? 1 - (1 - G) * Math.exp(-j / (0.04 * SR)) : j < 2880 ? G : 1 - (1 - G) * Math.exp(-(j - 2880) / 4800); }
+  else for (let b = 0; b < 9; b++) { const s = Math.round((0.25 + b * 0.5) * SR); for (let j = 0; j < 2400; j++) kk[s + j] = 0.8 * Math.exp(-j / 800) * Math.sin(2 * Math.PI * 50 * j / SR); }
+  lastStems = { kk, bb }; return measure(stereo(click.subarray(0, SR * 4)), { kick: stereo(kk), bass: stereo(bb) }); }
+// KNOWN LIMIT (not a pass): an exponential release that starts at full depth is smeared by the analytic-signal envelope over about a quarter of a 55 Hz period, so the dip is read after
+// it has partly recovered. Readings (3/6/9 dB true, tau 40 ms) are about 2.5 / 4.8 / 6.8 dB, outside the 0.5 dB target; the check below only pins that the bias stays shallow-side and under 2.5 dB, and --score therefore does not score duck depth.
+for (const d of [3, 6, 9]) { const r = duckFixture(d, 'exp'); const e = d - r.duck_depth_db; console.log(`KNOWN-LIMIT duck depth: exponential release (tau 40 ms), true ${d} dB reads ${r.duck_depth_db} (error ${e.toFixed(2)} dB; target 0.5 not met)`); check(`duck depth: exponential-release ${d} dB reads shallow by 0 to 2.5 dB (known limit)`, e >= 0 && e <= 2.5, `got ${r.duck_depth_db}`); }
+for (const d of [3, 6, 9]) { const r = duckFixture(d, 'held'); near(`duck depth: 60 ms hold then release, true ${d} dB, within 0.3 dB`, r.duck_depth_db, d, 0.3); }
+const nd = duckFixture(0, 'exp'); check('duck depth: no duck reads below 0.5 dB', nd.duck_depth_db < 0.5, `got ${nd.duck_depth_db}`);
+const tr = duckFixture(0, 'exp', 0.12); check('duck depth: 1.3 Hz tremolo (+-1 dB) unrelated to the kick reads no more than 1 dB', tr.duck_depth_db <= 1, `got ${tr.duck_depth_db}`);
+const few = measure(stereo(click.subarray(0, SR)), { kick: stereo(new Float64Array(SR)), bass: stereo(sine(1, 55, -6)) }); check('duck depth: silent kick stem reads null with a reason', few.duck_depth_db == null && !!few.duck_unavailable, JSON.stringify(few.duck_unavailable));
+const x6 = duckFixture(6.02, 'held');
+near('duck depth: bass ducked 6.02 dB at each kick (existing fixture, 60 ms hold) reads within 0.3 dB', x6.duck_depth_db, 6.02, 0.3); console.log('  duck kicks used:', x6.duck_kicks_used);
 
 // 6. docs/genres: every file valid against the schema; every criterion has basis, source, confidence; standard/platform need a source
 const GD = path.join(ROOT, 'docs', 'genres'); const schema = JSON.parse(fs.readFileSync(path.join(GD, 'genre.schema.json'), 'utf8'));
@@ -72,5 +86,7 @@ const r1 = run('--score', gj, ok); check('--score: only convention misses -> exi
 const r2 = run('--score', gj, '--strict', ok); check('--score --strict: convention misses fail -> exit 1', r2.status === 1, `status ${r2.status}`);
 const r3 = run('--score', gj, loud); check('--score: a platform miss (loud render) -> exit 1', r3.status === 1 && /MISS\s+delivery-loudness/.test(r3.stdout), `status ${r3.status}`);
 const r4 = run(ok); let j = null; try { j = JSON.parse(r4.stdout); } catch {} check('plain run prints JSON with the measurement keys', !!j && ['lufs_integrated', 'lra_lu', 'true_peak_dbtp', 'sample_peak_dbfs', 'plr_db', 'crest_db', 'dc_offset_dbfs', 'clipped_samples', 'low_share_pct', 'spectral_tilt_db_oct', 'spectral_centroid_hz', 'lr_correlation_below_120', 'side_to_mid_db_below_120'].every((k) => k in j), r4.stderr.slice(0, 100));
+{ const ks = path.join(dir, 'k.wav'), bs = path.join(dir, 'b.wav'); duckFixture(6, 'exp'); writeWav(ks, SR, lastStems.kk, lastStems.kk); writeWav(bs, SR, lastStems.bb, lastStems.bb);
+  const r5 = run('--score', gj, '--bpm', '120', '--kick', ks, '--bass', bs, ok); check('--score: duck criterion is reported unreliable, never pass or miss', /UNREL\s+kick-bass-duck.*unreliable, not scored/.test(r5.stdout) && !/(PASS|MISS)\s+kick-bass-duck/.test(r5.stdout), r5.stdout.split('\n').filter((l) => /duck/.test(l)).join('|').slice(0, 120)); }
 fs.rmSync(dir, { recursive: true, force: true });
 console.log(bad ? `FAILED ${bad}` : 'ALL PASS'); process.exit(bad ? 1 : 0);

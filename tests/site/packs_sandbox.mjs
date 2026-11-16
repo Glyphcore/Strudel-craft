@@ -74,6 +74,9 @@ await new Promise((r) => server.listen(0, '127.0.0.1', r)); PORT = server.addres
 const BASE = `http://127.0.0.1:${PORT}/`;
 const exfil = () => hits.filter((h) => h.startsWith('/__exfil/'));
 
+const EXPECTED = 30; // every isolation check must run; an abort or a shortfall is a failure, never a quiet pass
+const abort = (e) => { console.log(`FAIL  ABORTED at step '${STEP}' after ${results.length} checks (${EXPECTED - results.length} not run): ${e && e.message || e}`); process.exit(1); };
+process.on('uncaughtException', abort); process.on('unhandledRejection', abort);
 const results = []; const check = (name, ok, detail = '') => { results.push(ok); console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? '  -- ' + detail : ''}`); };
 const entry = (dir, extra = {}) => { const b = fs.readFileSync(path.join(GEN, dir, 'craftpack.json')); const m = JSON.parse(b);
   return { id: m.id, version: m.version, source: `https://fixtures.test/fx/${dir}/`, mirrors: [`./fx/${dir}/`], manifest: sha(b), priority: 0, allowCode: ['prov'], ...extra }; };
@@ -213,7 +216,7 @@ STEP = 'consent';
   const v2 = entry('goodv2'); await page.evaluate((l) => localStorage.setItem('sc.packs.lock', l), userLock(v2)); const fetched0 = hits.filter((h) => h.endsWith('/goodv2/prov.js')).length;
   await page.reload(); await page.waitForFunction(() => window.strudelCraft && window.strudelCraft.packs && window.strudelCraft.intellisense); await page.evaluate(() => window.strudelCraft.packs.ready);
   await page.evaluate(() => { window.__comp = async (t = 'zz') => (await window.strudelCraft.intellisense.completeFrom({ text: t, doc: t, pos: t.length, explicit: true })).flatMap((x) => x.options.map((o) => o.label)); });
-  const bump = await page.evaluate(async () => { const p = window.strudelCraft.packs, i = p.list()[1].ingredients.find((x) => x.id === 'prov'); return { st: i.state, code: i.reason && i.reason.code, items: await window.__comp(), info: p.codeInfo('testco/good:prov') }; });
+  const bump = await page.evaluate(async () => { const p = window.strudelCraft.packs, pk = p.list().find((x) => x.id === 'testco/good'); if (!pk) throw new Error('precondition: pack testco/good missing from packs.list()'); const i = pk.ingredients.find((x) => x.id === 'prov'); if (!i) throw new Error('precondition: ingredient prov missing'); return { st: i.state, code: i.reason && i.reason.code, items: await window.__comp(), info: p.codeInfo('testco/good:prov') }; });
   check('hash-bound: a changed module (new manifest hash) puts the ingredient back to blocked (E_PACK_CODE_TRUST), nothing runs, the dialog data lists the changed module path', bump.st === 'blocked' && bump.code === 'E_PACK_CODE_TRUST' && bump.items.length === 0 && bump.info.hadTrust && bump.info.changed.join() === 'prov.js' && bump.info.trusted === false && hits.filter((h) => h.endsWith('/goodv2/prov.js')).length === fetched0, JSON.stringify({ ...bump, info: undefined, changed: bump.info.changed }));
   const dlg = await page.evaluate(async () => { const m = await import('./packs-ui.js'); await m.sheet.open(); await new Promise((r) => setTimeout(r, 700));
     const btn = [...document.querySelectorAll('[data-pack="testco/good"] button')].find((b) => /Grant code/.test(b.textContent)); if (!btn) return null; btn.click(); await new Promise((r) => setTimeout(r, 300));
@@ -250,7 +253,7 @@ STEP = 'consent';
 {
   mkProvMain();
   const { ctx, page } = await open({ lock: userLock({ ...entry('mainrealm'), allowCode: ['pre'] }), errors: errs });
-  const r = await page.evaluate(() => { const i = window.strudelCraft.packs.list()[1].ingredients[0]; return { st: i.state, code: i.reason && i.reason.code, canary: typeof window.__canary2, errs: window.strudelCraft.packs.report().errors.map((e) => e.code) }; });
+  const r = await page.evaluate(() => { const pk = window.strudelCraft.packs.list().find((x) => x.id === 'testco/mainrealm'); if (!pk || !pk.ingredients[0]) throw new Error('precondition: pack testco/mainrealm missing from packs.list()'); const i = pk.ingredients[0]; return { st: i.state, code: i.reason && i.reason.code, canary: typeof window.__canary2, errs: window.strudelCraft.packs.report().errors.map((e) => e.code) }; });
   check('main-realm prelude from the user tier: E_PACK_CODE_REALM, canary global absent, frame count 0', r.errs.includes('E_PACK_CODE_REALM') && r.canary === 'undefined' && (await frames(page)) === 0, JSON.stringify(r));
   await ctx.close();
 }
@@ -261,4 +264,5 @@ function mkProvMain() {
 
 check('no unexpected page or console errors across the run', errs.length === 0, errs.slice(0, 3).join(' | ') + ' ' + [...new Set(octet)].slice(0, 5).join(' '));
 await browser.close(); server.close();
-const failed = results.filter((x) => !x).length; console.log(`${results.length} checks, ${failed} failed`); process.exit(failed ? 1 : 0);
+const failed = results.filter((x) => !x).length; const short = results.length !== EXPECTED; if (short) console.log(`FAIL  ran ${results.length} checks, expected ${EXPECTED}`);
+console.log(`${results.length} checks, ${failed} failed`); process.exit(failed || short ? 1 : 0);

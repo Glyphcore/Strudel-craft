@@ -103,8 +103,8 @@ CPU x4 gave 127 skipped queries and 25 dropped haps; a 2.5 s main-thread stall g
 - Measured on night phonk v1/v2 at 360 px with CPU throttling (`tests/site/engine_perf.mjs`, `tests/site/engine_perf_matrix.sh`): the
   main thread was saturated by pattern queries, mostly visuals.js re-querying four cycles on every animation frame; stalls longer than
   the lookahead re-anchor the clock (heard as tempo jumps) and late haps are dropped by superdough (dropouts, also in bus readers).
-- Flags (`?k=v` or `localStorage sc.flag.k`, also in the audio dot's sheet): `vis=cache|requery` (visuals and highlights from a
-  per-cycle hap cache, default cache), `sched=strudel|batch` (scheduler query windows of 0.05 s or 0.2 s), `rec=host|inline`
+- Flags (`?k=v` or `localStorage sc.flag.k`, also in the audio dot's sheet): `vis=cache|every|requery` (visuals and highlights from a
+  per-cycle hap cache run under a frame budget (2 % of the time while the page is stressed), default cache; `every` runs each frame), `sched=strudel|batch` (scheduler query windows of 0.05 s or 0.2 s), `rec=host|inline`
   (offline renders in the render host page or in the page itself, default host). The numbers before and after are in docs/AUDIO_ENGINE.md.
 - Render host: `index.html?host=render` loaded in a hidden iframe renders every offline take (Record's default Offline render,
   Render exact, reference renders, Remake, lane captures) with its own Strudel and superdough, so the live transport keeps playing.

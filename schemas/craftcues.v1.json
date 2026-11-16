@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftcues.v1.json",
+  "title": "CraftCues score annotations, version 1 (canonical JSON)",
+  "description": "Timed score annotations in bars, scoped to the track, a section, layers or relations between layers, pointing to the KB by id. The text form (.craftcues, inline //@ comments) and this JSON are equivalent: text -> JSON -> text is exact on canonical text. Design: docs/CRAFTCUES.md; engine site/engine/cues.js; issue #162.",
+  "type": "object",
+  "required": ["format", "header", "cues"],
+  "additionalProperties": false,
+  "$defs": {
+    "time": { "type": "string", "description": "17 | 17-24 (inclusive bars) | 17.3-18.1 (bar.beat, inclusive beats) | 12.5s-20s | 0:12.5-0:20 (seconds) | * (whole track) | sec:<section>", "pattern": "^(\\*|sec:[a-z0-9][\\w-]*|(\\d+(\\.\\d+)?s|\\d+:\\d{1,2}(\\.\\d+)?|\\d+(\\.\\d+)?)(-(\\d+(\\.\\d+)?s|\\d+:\\d{1,2}(\\.\\d+)?|\\d+(\\.\\d+)?))?)$" },
+    "span": { "description": "derived [from, to) in 1-based bar positions (bar 17 = [17, 18)); null when the time cannot be placed (seconds without bpm, unknown section); to null for an open whole-track span", "oneOf": [{ "type": "null" }, { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": ["number", "null"] } }] },
+    "cue": {
+      "type": "object",
+      "required": ["id", "at", "kind", "scope", "body", "refs", "rel", "meta"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[A-Za-z_][\\w.-]*$" },
+        "at": { "$ref": "#/$defs/time" },
+        "pair": { "$ref": "#/$defs/time", "description": "the second span of a cross-bar cue (foreshadow -> payoff, motif callback M9@17 -> M9@49)" },
+        "kind": { "enum": ["section", "layer-role", "concept", "motif", "tension", "release", "transition", "dovetail", "call-response", "clash", "resolution", "density", "feel", "mix-note", "todo", "lesson", "foreshadow", "callback", "note"] },
+        "scope": { "type": "string", "description": "track | sec:<name> | lane | lane,lane | lane->lane | lane+lane | lane~lane | tag:<tag> | bus:<bus> (no leading @)", "pattern": "^(track|sec:[\\w-]+|((tag:|bus:)?[A-Za-z_$][\\w$.-]*)((,|->|\\+|~)(tag:|bus:)?[A-Za-z_$][\\w$.-]*)*)$" },
+        "body": { "type": "string", "description": "terse text (lint warns past 140 chars); *word* is emphasis; newlines allowed in the sidecar form" },
+        "refs": { "type": "array", "items": { "type": "string", "pattern": "^\\S+$" }, "description": "KB ids: FAMILY-NN (composer catalog), syntax:<id>, hook: atom: lane: slot: bus: tap: control: vox: import: pack: (Resources ids), genre:<id>, fb-<16 hex> (form bank), form:<role>, http(s) URLs" },
+        "rel": { "type": "array", "items": { "type": "object", "required": ["type", "target"], "additionalProperties": false, "properties": { "type": { "enum": ["resolves", "echoes", "prepares", "contrasts", "answers", "varies"] }, "target": { "type": "string" } } } },
+        "meta": { "type": "object", "properties": { "conf": { "type": "number", "minimum": 0, "maximum": 1 }, "src": { "enum": ["author", "inferred", "analysis"] }, "method": { "type": "string" }, "tool": { "type": "string" }, "motif": { "type": "string" }, "more": { "type": "string" } }, "additionalProperties": { "type": "string" } },
+        "span": { "$ref": "#/$defs/span" },
+        "pspan": { "$ref": "#/$defs/span" }
+      }
+    }
+  },
+  "properties": {
+    "format": { "const": "craftcues@1" },
+    "header": { "type": "object", "properties": {
+      "track": { "type": "string" }, "title": { "type": "string" }, "program": { "type": "string" },
+      "bars": { "type": "number", "minimum": 0 }, "bpm": { "type": "number", "exclusiveMinimum": 0 }, "beats": { "type": "number", "exclusiveMinimum": 0 }, "offset": { "type": "number", "description": "seconds of bar 1 in the audio" },
+      "sections": { "type": "array", "items": { "type": "object", "required": ["name", "from", "to"], "properties": { "name": { "type": "string" }, "from": { "type": "number" }, "to": { "type": "number" } } } }
+    }, "additionalProperties": { "type": ["string", "number"] } },
+    "notes": { "type": "array", "items": { "type": "string" } },
+    "cues": { "type": "array", "items": { "$ref": "#/$defs/cue" } }
+  }
+}

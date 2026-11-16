@@ -25,6 +25,12 @@ const inRange = (es, lo, hi) => es.every((h) => +h.whole.begin >= lo && +h.whole
   const tr = ev(g.tap('kick').s('bd'), 0, 4); assert.equal(tr.length, 1, 'one onset on press'); assert.equal(+tr[0].whole.begin, 1);
   const gate = g.tap('kick:gate').queryArc(2, 2, { _cps: 1 }); assert.equal(gate[0].value, 1); assert.equal(g.tap('kick:gate').queryArc(3.5, 3.5, { _cps: 1 })[0].value, 0);
 }
+// the pad reader marks its haps (context.padTap = ref) in every form: the site's live catch-up fires exactly the haps a press caused (#119)
+{
+  const mark = (p) => ev(p, 0, 4).every((h) => h.context && h.context.padTap === 'kick');
+  assert.ok(mark(bd().gain(g.tap('kick'))) && mark(bd().mask(g.tap('kick'))) && mark(g.tap('kick').s('bd')), 'padTap marker survives gain / mask / trigger forms');
+  assert.ok(ev(bd(), 0, 4).every((h) => !(h.context && h.context.padTap)), 'unrelated haps carry no marker');
+}
 // still held (no release yet): open-ended window; then a second hit
 {
   hooks.journal.length = 0; hooks.journal.push(J(1, 'pad:tap'));

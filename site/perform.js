@@ -87,13 +87,9 @@ function toHooks(e) {
   if (e.op === 'bind' && e.args.slot) return { ...b, op: 'bind', args: [e.args.slot, e.args.hook] };
   if (e.op === 'unbind' && e.args.slot) return { ...b, op: 'unbind', args: [e.args.slot] };
   if (e.op === 'let' && e.args.value !== undefined) return { ...b, op: 'let', args: [e.args.name, e.args.value] };
-  if (e.op === 'tap' || e.op === 'tap-end') { // bare tap("x") readers: held windows by ref; shifted by the scheduler lookahead live, or the onset is already in the past
-    const lead = !playing() ? 0 : PAD_LEAD_S * padCps();
-    return { ...b, cycle: lead ? T.toFrac(frac(e.cycle) + lead) : e.cycle, op: 'pad:' + e.op, args: [e.target.ref] };
-  }
+  if (e.op === 'tap' || e.op === 'tap-end') return { ...b, op: 'pad:' + e.op, args: [e.target.ref] }; // bare tap("x") readers: held windows by ref; the live press sounds through catchUp() below
   return { ...b, op: 'pad:' + e.op, args: [] };
 }
-const PAD_LEAD_S = 0.3; const padCps = () => { try { return sc.engineState().scheduler.cps || 0.5; } catch (e) { return 0.5; } };
 function bridge(j = sc.perform && sc.perform.journal) {
   const H = sc.hooks; if (!H || !j) return;
   H.padRefs = new Set(Object.values(M.banks).flatMap((b) => b.pads).filter((p) => p.target && p.target.kind === 'tap').map((p) => p.target.ref));
@@ -354,9 +350,25 @@ function renderBank(host, bank) {
   grid.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.pp-pad')) { e.preventDefault(); e.stopPropagation(); const pos = e.target.closest('.pp-pad').dataset.pos; if (M.perform && bank.pads.find((p) => p.pos === pos)) { press(bank, pos); release(bank, pos); } else padSheet(bank, pos); } });
   host.append(grid);
 }
+/* Live tap-pad reader latency (#119). The scheduler has already queried and scheduled ~0.25 s ahead of the sound, so a press written to the journal at
+   "now" is behind its query window and the old fix (shift the journal cycle by 0.3 s) made the reader sound 0.3 s late. Now the journal keeps the real
+   press cycle (renders replay it exactly) and bgplay.catchUp() queries [press, scheduled horizon) once and triggers the haps the press caused
+   (marked context.padTap = ref by the reader): the hap that starts at the press at now + 30 ms, mask/gain notes at their normal time. After a release
+   the haps the scheduler already played while the window was still open (up to the horizon) are remembered so a quick re-press does not play them twice. */
+const padHorizon = {};
+function padNow(bank, pos, op) {
+  const pad = bank.pads.find((p) => p.pos === pos); if (!pad || !pad.target || pad.target.kind !== 'tap' || !playing() || !sc.bg || !sc.bg.catchUp) return;
+  const ref = pad.target.ref; const addr = `${bank.id}/${pos}`; const st = sc.engineState().scheduler; const horizon = +st.lastEnd || 0;
+  if (op === 'tap-end') { padHorizon[ref] = horizon; return; }
+  const e = [...(sc.perform.journal || [])].reverse().find((x) => x.pad === addr && x.op === 'tap'); if (!e) return; const c = +frac(e.cycle);
+  if (c >= horizon) return; // quantised beyond the scheduled horizon: the scheduler reaches it in time (the journal cycle is also rounded to 1/96 cycle)
+  const near = (h) => Math.abs(+h.whole.begin - c) < 1e-6; const now = nowCycle(); const pressed = c <= now + 0.02;
+  const r = sc.bg.catchUp(Math.min(c, now), (h) => h.context && h.context.padTap === ref && (near(h) || +h.whole.begin >= (padHorizon[ref] || 0)), { atPress: (h) => pressed && near(h) });
+  sc.perform.lastCatch = r;
+}
 const lat = [], work = []; // ms: pointerdown event time -> journal entry written; pointerdown handler start -> journal entry written (main-thread work)
-function press(bank, pos, vel, t0) { const w0 = performance.now(); if (!bank.pads.find((p) => p.pos === pos)) return; warnOrphan(bank, pos); { const pd = bank.pads.find((p) => p.pos === pos); const v = auditionOn && auditionOf(bank, pd); if (v) player.play(v, vel, t0 != null ? t0 : w0); } pads.press(`${bank.id}/${pos}`, nowCycle(), vel); journalChanged(); if (t0 != null) { const t1 = performance.now(); lat.push(t1 - t0); work.push(t1 - w0); if (lat.length > 500) { lat.shift(); work.shift(); } } }
-function release(bank, pos) { if (!bank.pads.find((p) => p.pos === pos)) return; pads.release(`${bank.id}/${pos}`, nowCycle()); journalChanged(); }
+function press(bank, pos, vel, t0) { const w0 = performance.now(); if (!bank.pads.find((p) => p.pos === pos)) return; warnOrphan(bank, pos); { const pd = bank.pads.find((p) => p.pos === pos); const v = auditionOn && auditionOf(bank, pd); if (v) player.play(v, vel, t0 != null ? t0 : w0); } pads.press(`${bank.id}/${pos}`, nowCycle(), vel); journalChanged(); padNow(bank, pos, 'tap'); if (t0 != null) { const t1 = performance.now(); lat.push(t1 - t0); work.push(t1 - w0); if (lat.length > 500) { lat.shift(); work.shift(); } } }
+function release(bank, pos) { if (!bank.pads.find((p) => p.pos === pos)) return; pads.release(`${bank.id}/${pos}`, nowCycle()); journalChanged(); padNow(bank, pos, 'tap-end'); }
 let jT = 0; function journalChanged() { const j = pads.resolve(); sc.perform.journal = j; bridge(j); window.dispatchEvent(new CustomEvent('pads:journal', { detail: j })); cancelAnimationFrame(jT); jT = requestAnimationFrame(renderPadsOnly); }
 function renderPadsOnly() { const t = curTab(); if (t.kind !== 'bank') return; const host = $('#pfBody'); if (!host) return; host.querySelectorAll('.pp-pad').forEach((b) => { const st = padState(M.banks[t.id], b.dataset.pos); if (b.dataset.state === st.state && st.state !== 'queued') return; b.dataset.state = st.state; b.querySelector('.pp-mark').textContent = STATE_MARK[st.state]; let bt = b.querySelector('.pp-beats'); if (st.state === 'queued') { if (!bt) { bt = h('span', { class: 'pp-beats' }); b.append(bt); } bt.textContent = st.beats + ' beats'; } else if (bt) bt.remove(); const pad = st.pad; b.setAttribute('aria-label', `Pad ${b.dataset.pos} ${pad ? (pad.label || pad.target.ref) : 'empty'}, ${st.state}${st.beats ? ', ' + st.beats + ' beats' : ''}`); }); }
 

@@ -172,7 +172,29 @@ function install(S) {
   const wasStarted = S.started; if (wasStarted) S.clock.pause();
   S.__scBg = { strudelClock: S.clock }; S.clock = makeClock(S, getTime, onTrigger, S.latency != null ? S.latency : 0.1);
   if (wasStarted) S.clock.start();
+  B.fire = { onTrigger, getTime, latency: S.latency != null ? S.latency : 0.1 };
   B.installed = true; note('install', { clock: B.clockKind }); return true;
+}
+
+/* Immediate catch-up (#119): the scheduler has already queried and scheduled everything up to S.lastEnd (about 0.25 s of music ahead of the
+   sound it is about to make), so a hap caused by a live press (a Perform tap pad read by the program) would only sound ~0.3 s later. The
+   caller has written the press into the journal; this queries [from, lastEnd) once (flagged like a scheduler query, so lane captures see it)
+   and triggers the onset haps the filter accepts: a hap that starts at the press (`atPress`) at now + lead, any other at its normal time (never
+   earlier than now + lead). The scheduler's own next window starts at lastEnd, where these haps have no onset, so nothing sounds twice. */
+function catchUp(from, accept, o = {}) {
+  const S = sched(), F = B.fire; if (!S || !S.started || !F || !B.installed) return { fired: 0, reason: 'not running' };
+  const t = F.getTime(), lead = o.lead != null ? o.lead : 0.03; const A = +from; let x = +S.lastEnd; if (!(x > A)) x = A + 1e-4;
+  const hs = S.pattern.queryArc(A, x, { _cps: S.cps, cyclist: 'cyclist' }).filter((h) => h.hasOnset() && accept(h));
+  const out = [];
+  for (const h of hs) {
+    const natural = (h.whole.begin - S.num_cycles_at_cps_change) / S.cps + S.seconds_at_cps_change + F.latency;
+    const at = o.atPress && o.atPress(h) ? t + lead : Math.max(natural, t + lead);
+    const d = h.duration / S.cps; B.stats.haps++; if (B.trace) B.trace.push([+h.whole.begin, +at.toFixed(5)]);
+    VF.push(at + d + 0.25); if (VF.length > 4096) VF.splice(0, 2048);
+    try { const pr = F.onTrigger(h, at - t, d, S.cps, at); if (pr && typeof pr.catch === 'function') pr.catch(() => {}); } catch (e) { (window.errorLogger || console.warn)(e); }
+    out.push({ cycle: +h.whole.begin, in: +(at - t).toFixed(4) });
+  }
+  return { fired: out.length, haps: out, horizon: x, at: t };
 }
 
 /* ---------- transport hooks (app.js calls these) ---------- */
@@ -272,6 +294,6 @@ function openDiagnostics() {
 
 bindLifecycle();
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addHelpSettings); else addHelpSettings();
-sc.bg = { install, onPlay, onStop, stats, segments, gapsBetween, events: () => B.log.slice(), setPolicy, setWake, openDiagnostics, POLICIES, LOOKAHEAD,
+sc.bg = { install, catchUp, onPlay, onStop, stats, segments, gapsBetween, events: () => B.log.slice(), setPolicy, setWake, openDiagnostics, POLICIES, LOOKAHEAD,
   get installed() { return B.installed; }, get played() { return B.played; }, get paused() { return stats().pausedSec; }, get policy() { return B.policy; },
   set trace(on) { B.trace = on ? [] : null; }, get trace() { return B.trace; } };

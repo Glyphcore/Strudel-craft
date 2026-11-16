@@ -631,7 +631,7 @@ export function install(S, opts = {}) {
         const t = t0 === PAD_OPEN ? F(Math.max(+s.add(1), Math.ceil(+e) + 0)) : t0;
         const zero = b.equals ? b.equals(e) : +b === +e;
         if (zero ? !(s.lte(b) && b.lt(t)) : !(s.lt(e) && t.gt(b))) continue;
-        out.push(new padHap.Hap(new padHap.Span(s, t), new padHap.Span(s.gt(b) ? s : b, t.lt(e) ? t : e), 1, {}));
+        out.push(new padHap.Hap(new padHap.Span(s, t), new padHap.Span(s.gt(b) ? s : b, t.lt(e) ? t : e), 1, { padTap: name }));
       }
       return out;
     });

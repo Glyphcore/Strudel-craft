@@ -68,7 +68,7 @@ atom("vs.arp", { type: "mini", body: "<[eb5 c5 ab4 g4]*4!2 [eb5 c5 ab4 f4]*4!2 [
 atom("vs.tickF", { type: "mini", body: "<x*4!3 x*8>" })
 
 // == racks (hooks.def; every chain starts at a hygiene class) bound into slots ==
-hooks.def("velvetKick", { chain: [["hook", "hygiene-kick"], ["s", "sine"], ["freq", 50], ["attack", 0.001], ["penv", 34], ["pdecay", 0.045], ["decay", 0.26], ["sustain", 0], ["shape", 0.7], ["lpf", 3200], ["gain", 0.22]] })
+hooks.def("velvetKick", { chain: [["hook", "hygiene-kick"], ["s", "sine"], ["freq", 50], ["attack", 0.001], ["penv", 34], ["pdecay", 0.045], ["decay", 0.26], ["sustain", 0], ["shape", 0.7], ["lpf", 3200], ["gain", 0.3]] })
 hooks.def("velvetHeart", { chain: [["hook", "hygiene-kick"], ["s", "sine"], ["freq", 46], ["attack", 0.004], ["penv", 24], ["pdecay", 0.07], ["decay", 0.34], ["sustain", 0], ["shape", 0.4], ["lpf", 1500], ["gain", 0.3]] })
 hooks.def("velvetSnare", { chain: [["hook", "hygiene-snare"], ["s", { $mini: "triangle, white" }], ["note", "f3"], ["attack", 0.001], ["decay", 0.14], ["sustain", 0], ["hpf", 170], ["lpf", 8500], ["shape", 0.6], ["gain", 0.05]] })
 hooks.def("velvetSnareF", { chain: [["hook", "hygiene-snare"], ["s", { $mini: "triangle, white" }], ["note", "d3"], ["attack", 0.002], ["decay", 0.3], ["sustain", 0], ["hpf", 150], ["lpf", 6500], ["gain", 0.19]] })
@@ -79,7 +79,7 @@ hooks.def("velvetRim", { chain: [["hook", "hygiene-perc"], ["s", "white"], ["bpf
 hooks.def("velvetSub", { chain: [["hook", "hygiene-sub"], ["s", "sine"], ["attack", 0.006], ["decay", 0.3], ["sustain", 0.85], ["release", 0.09], ["shape", 0.4], ["lpf", 200], ["gain", 0.42]] })
 hooks.def("velvetSub808", { chain: [["hook", "hygiene-sub"], ["s", "sine"], ["attack", 0.01], ["decay", 0.5], ["sustain", 0.8], ["release", 0.3], ["shape", 0.2], ["lpf", 180], ["gain", 0.33]] })
 // the owner's seed voice (supersaw + FM + vowel + synced low-pass + distortion), band-limited to roughly 150-900 Hz
-hooks.def("velvetSnarl", { chain: [["hook", "hygiene-growl"], ["s", "supersaw"], ["fm", 2.57], ["fmh", 7.82], ["vowel", "a"], ["hpf", 150], ["lpf", 900], ["lpsync", 4], ["lpdepth", 1.02], ["attack", 0.005], ["sustain", 0.63], ["release", 0.258], ["distort", 1.37], ["distortvol", 0.665], ["gain", 0.6]] })
+hooks.def("velvetSnarl", { chain: [["hook", "hygiene-growl"], ["s", "supersaw"], ["fm", 2.57], ["fmh", 7.82], ["vowel", "a"], ["hpf", 150], ["lpf", 900], ["lpsync", 4], ["lpdepth", 1.02], ["attack", 0.005], ["sustain", 0.63], ["release", 0.258], ["distort", 1.37], ["distortvol", 0.665], ["gain", 0.85]] })
 hooks.def("velvetPad", { chain: [["hook", "hygiene-pad"], ["s", "supersaw"], ["unison", 5], ["detune", 0.2], ["spread", 0.9], ["attack", 0.35], ["sustain", 0.85], ["release", 1.2], ["lpf", 2600], ["shape", 0.4], ["gain", 0.21]] })
 hooks.def("cloudPad", { chain: [["hook", "hygiene-pad"], ["s", "supersaw"], ["unison", 6], ["detune", 0.3], ["spread", 1], ["attack", 1.2], ["sustain", 0.9], ["release", 2.8], ["lpf", 1700], ["shape", 0.08], ["gain", 0.095]] })
 hooks.def("silkLead", { chain: [["hook", "hygiene-lead"], ["s", "supersaw"], ["unison", 3], ["detune", 0.12], ["spread", 0.4], ["attack", 0.012], ["sustain", 0.75], ["release", 0.35], ["lpf", 3200], ["lpenv", 1.2], ["lpdecay", 0.3], ["vib", 5], ["vibmod", 0.12], ["gain", 0.38], ["shape", 0.4]] })
@@ -95,11 +95,11 @@ hooks.bind("snarl", "velvetSnarl"); hooks.bind("pad", "velvetPad"); hooks.bind("
 hooks.bind("chop", "velvetChop"); hooks.bind("ooh", "oohPad"); hooks.bind("keys", "velvetKeys"); hooks.bind("arp", "velvetArp"); hooks.bind("tex", "hiss")
 
 // == drums (orbit 1, never ducked; the kick is the sidechain trigger for orbits 2 and 3) ==
-kick: s(atoms.vs.kick).use("kick").orbit(1).duckorbit("2:3").duckdepth("0.2:0.08").duckattack("0.12:0.2").mask(on('drop1', 'drop2', '93-96')).mask(H)
+kick: s(atoms.vs.kick).use("kick").orbit(1).duckorbit("2:3").duckdepth("0.2:0.08").duckattack("0.12:0.2").mask(on('33-48', '93-96')).mask(H)
 kickB: s(atoms.vs.kickB).use("kick").orbit(1).duckorbit("2:3").duckdepth("0.2:0.08").duckattack("0.12:0.2").mask(on('49-64', '97-128')).mask(H)
 kickG: s(atoms.vs.kickG).use("kick").velocity(0.4).orbit(1).mask(on('drop1', 'drop2')).mask(H)
 heart: s(atoms.ph2.heart).use("heart").orbit(1).duckorbit("2:3").duckdepth("0.2:0.06").duckattack("0.2:0.3").mask(on('9-32', 'float', '89-92', '137-144')).mask(H)
-snare: s(atoms.vs.snare).use("snare").orbit(4).room(0.2).roomsize(2).mask(on('drop1', 'drop2', '93-96')).mask(H)
+snare: s(atoms.vs.snare).use("snare").orbit(4).room(0.2).roomsize(2).mask(on('33-48', '93-96')).mask(H)
 snareF: s(atoms.vs.snareF).use("snareF").orbit(4).room(0.45).roomsize(2).mask(on('13-16', '25-32', 'float', '89-92', '137-144')).mask(H)
 ghost: s(atoms.vs.sgA).use("ghost").velocity(rand.range(0.2, 0.42)).orbit(4).room(0.15).roomsize(2).groove({ swing: 56, jitter: 4, vel: 0.2, seed: 5 }).mask(on('drop1')).mask(H)
 ghost2: s(atoms.vs.sgB).use("ghost").velocity(rand.range(0.25, 0.5)).orbit(4).room(0.15).roomsize(2).groove({ swing: 56, jitter: 4, vel: 0.2, seed: 6 }).postgain(0.8).mask(on('drop2'))

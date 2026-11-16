@@ -166,6 +166,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     STRUDEL_MODULES=... node tests/lanes/l4.mjs  # lanes L4: model schema, round trip, completion, atom types, ids, bus numbers, invariants (#77); needs core, mini, transpiler
     node tests/site/lanes_data.mjs     # lanes L4: graph() data (lane cards, buses, selection chips, split fan, capture node, E_LANE_CROSS fixes), no runtime needed
     node tests/site/hooks_pack.mjs     # hooks kind (#91): pack track vs standalone haps over 80 bars, offline levels, removal
+    node tests/site/hooks_pack_v2.mjs  # hooks kind (#91): night phonk v2 pack version on the site = strudel CLI events (cycles 0-20), plays with a master peak
     node tests/packs/hooks_kind.mjs    # hooks adapter units (needs STRUDEL_MODULES)
     node tests/hooks/p3.mjs            # model round trip (#49); the `strudel` CLI checks print SKIP without it
     node tests/hooks/p4.mjs            # component library, instances, lib: fragments (#50)

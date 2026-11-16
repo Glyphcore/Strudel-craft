@@ -41,7 +41,7 @@ Every instrument rack starts with the band scope of its class (`["hook", "hygien
 ## Pack version and racks
 `node tools/packs/phonk.mjs` regenerates `track.strudel.js`, the pack files in `site/data/phonk/` and the Syntax entry from the standalone file
 (`--check` exits 1 when stale). Both versions give the same `strudel events --cycles 80` output. The site loads the pack's atoms and presets;
-its `hooks` ingredients (`racks`, `racks-v2`) are installed on every evaluation because the program names `glyphcore/phonk` (#91), so the pack version plays on the site with the same events as the standalone (`node tests/site/hooks_pack.mjs`); the CLI passes the racks
+its `hooks` ingredients (`racks`, `racks-v2`) are installed on every evaluation because the program names `glyphcore/phonk` (#91), so the pack version plays on the site with the same events as the standalone (`node tests/site/hooks_pack.mjs`); the v2 pack version (`track.v2.strudel.js`) gives the same 969 onset events as the strudel CLI over cycles 0-20 and plays on the site from drop A with a master peak above 0.01 (`node tests/site/hooks_pack_v2.mjs`); the CLI passes the racks
 ingredient as hooks config (`--hooks site/data/phonk/racks.json`, done by `render.sh pack`).
 
 ## Render and checks

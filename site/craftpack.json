@@ -53,8 +53,8 @@
       "version": "1.0.0",
       "path": "data/recipes/dubstep.json",
       "load": "lazy",
-      "hash": "sha256:d43ffdcb1873cb78b229c01135ac5c6dd43f72887fe0aa020735c254ef63edd2",
-      "bytes": 39993
+      "hash": "sha256:01fe87f725a2796dcf8b4fba152ef133c924b00f9db93fc8ffa37758c38ffb31",
+      "bytes": 41815
     },
     {
       "id": "bodies-edm-core",

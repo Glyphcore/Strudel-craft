@@ -64,10 +64,10 @@ An **orphan** is an entry outside every pack manifest. Columns folder and tags c
 | groove | 9 | `site/engine/groove.js GROOVES (standard library)` | none | - | - | no | 0 | 0 | engine built-in, kept for --no-packs; every def is also in glyphcore/phonk:grooves (parity tested) |
 | perform preset | 4 | `site/data/perform/presets.json` | none | - | - | **yes** | 0 | 0 | pack kind perform-presets is coming (PACK_SPEC 5); no adapter yet |
 | layout | 4 | `site/workspace.js DEFAULTS` | none | - | - | **yes** | 0 | 0 | kind layouts has an adapter; content moves with P4 (#69) |
-| syntax example | 131 | `site/data/syntax.json` | `glyphcore/shim` | 1.0.0 | LicenseRef-undecided | no | 0 | 0 | kind syntax |
+| syntax example | 133 | `site/data/syntax.json` | `glyphcore/shim` | 1.0.0 | LicenseRef-undecided | no | 0 | 0 | kind syntax |
 | control type | 16 | `site/data/controls/types.json` | `glyphcore/shim` | 1.0.0 | LicenseRef-undecided | no | 0 | 0 | kind control-types |
 
-Totals: 1131 entries; 273 in the real pack `glyphcore/phonk` (CC0-1.0); 517 in other real packs under site/data (glyphcore/edm, ...; CC0-1.0); 324 in the provisional `glyphcore/shim` pack (licence undecided, #66; replaced by `glyphcore/core` in P4, #69); 9 engine built-ins (groove standard library, duplicated in `glyphcore/phonk:grooves`); **8 orphans** outside every pack; 967 with a folder and 967 with tags in the pack data.
+Totals: 1133 entries; 273 in the real pack `glyphcore/phonk` (CC0-1.0); 517 in other real packs under site/data (glyphcore/edm, ...; CC0-1.0); 326 in the provisional `glyphcore/shim` pack (licence undecided, #66; replaced by `glyphcore/core` in P4, #69); 9 engine built-ins (groove standard library, duplicated in `glyphcore/phonk:grooves`); **8 orphans** outside every pack; 967 with a folder and 967 with tags in the pack data.
 <!-- audit:end -->
 
 Reading the table:

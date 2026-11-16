@@ -18,14 +18,14 @@ Gates and masks are the edm-core 104-bar map (`ec.intro` .. `ec.outro`, masks `e
 | bars | section | lesson | lanes | technique taught |
 |---|---|---|---|---|
 | 1-16 | intro | 1, 2 | pad; shaker and kick on the 1 from bar 9; vowel chops bars 13-16 | key first; filter automation as data (`.lpf("<500 .. 1700>")`); rhythm before weight |
-| 17-24 | build | 3 | 8-bar snare roll (`ec.roll8`, `ec.rollVel8`), chord stabs with `ec.open8` / `ec.thin8`, `noiseRiser(13.71)`, gap on the last beat | tension = density + brightness + level, then the breath |
+| 17-24 | build | 3 | 8-bar snare roll (`ec.roll8`, `ec.rollVel8`), chord stabs with `ec.open8` / `ec.thin8`, `noiseRiser(13.71)`, gap on the last beat | tension = density (roll: 4, 4, 8, 8, 16, 16, 16, 32 hits per bar) + brightness + level, then the breath; kick pulse, shaker and a filtered growl pre-echo (bars 21-24) add layers |
 | 25 | drop A lands | 4 | `impactBoom`, `crash`, the kit | mark the downbeat in three bands |
 | 25-40 | drop A | 5, 6 | half-time kick / snare / ghosts / 8th hats; `subSine` + `growlBass` / `talkBass` call and response (`ds.bassA` / `ds.bassB`); `laserZap` in every 4th bar | sidechain (`duckorbit("2:3")`, depth 0.36 / 0.5 = -8 / -10.7 dB); band split by layering |
 | 41-56 | breakdown | 7 | `downSweep`; `ukfChord` pumped by a ghost trigger (silent kick, `duckorbit(3)`); `ukfArp`; `ukfLead` from 49; chops 49-56 | contrast; pump with no audible trigger; melody |
 | 57-64 | build 2 | 8 | roll + filter stabs again; `hpBuild(13.71)` + `pitchRiser(13.71)`; `reverseSwell(1.71)` into bar 65 | build differently the second time |
 | 65-76 | drop B | 9 | `wobbleBass` with `lpsync` as a pattern (`ds.wobbleSync`), 16th hats, ducked `ukfChord` | the second drop changes something: synced filter LFO |
 | 77-88 | switch-up | 10 | `riddimBass` (3 + 3 + 2), `screechLead` in the gaps, crash on 77 | same kit, new idea |
-| 89-104 | outro | 11 | drums for 8 bars, then pad and shaker; 8-bar fade as velocity data; `downSweep` on 89 | leave 16 bars for the next DJ; master last |
+| 89-104 | outro | 11 | drums for 8 bars, then pad and shaker; 8-bar fade as velocity data; `downSweep` on 89 | leave 16 bars for the next DJ: drums and shaker fade as data (postgain) over 89-96, then the pad fades; filtered growl / talk callbacks; master last |
 
 Render budget: the track is written to render headless in reasonable time. Measured per bar (RACK_STANDARD section 9) the AudioWorklet
 stages cost 15-45x a native voice in the CLI, so the chord, pad and lead lanes use `WIDE` (three native saws 0.15 semitone apart, panned:
@@ -45,34 +45,43 @@ node tools/racks/measure.mjs --score docs/genres/dubstep.json --bpm 140 OUT/mast
 ```
 Published listenable copy: `suno-track-lab/audio/edm-dubstep-tutorial/` (mp3 + index.json).
 
-## Measured (final render, 2026-11-16; numbers from the files, not asserted)
-Render: `chunk_render.py` 4 chunks of 26 bars, pre-roll 2, 178.3 s, raw mix peak 0.84 (-1.5 dBFS), about 6 minutes on an idle 4-core host.
-The plain form gives the same events as the Craft form over all 104 cycles: `node tools/lowering/verify_file.mjs ... --cycles 104` ->
-equal, 4781 events.
 
-Club master (`master.py --preset dubstep`, suno-track-lab `tracks/edm-dubstep-tutorial/master_report.json`): -17.6 -> -8.1 LUFS, true
-peak -1.01 dBTP, limiter gain reduction up to 12.7 dB. Genre score vs suno-track-lab `docs/genres/dubstep-ukf.json`: 10 of 13
-(76.9 %): bpm 140, LUFS -8.13, crest 9.0 dB, LRA 3.9 LU, low-end ratio 0.40,
-section level span 5.4 dB pass; misses: whole-track spectral centroid 3029 Hz (target <= 2800; the
-builds and outro are bright), onsets per bar in the builds (2.9, target >= 6) and breakdown
-(0.06, target >= 2): the librosa onset detector does not separate the roll and the arp from the chords
-at these levels. The targets are guesses (G) in that file; the misses are reported, not tuned away.
-Streaming master (`--target-lufs -14`): -14.0 LUFS, -1.08 dBTP; `node tools/racks/measure.mjs --score docs/genres/dubstep.json`: 10 pass,
-2 miss (PLR 12.9 dB vs 7-10, loudness range 11.1 LU vs 3-8: at -14 LUFS the master is barely limited), 1 skipped (duck depth needs stems).
+## Measured (polish render #161, 2026-11-16; numbers from the files, not asserted)
+Render: `chunk_render.py` 4 chunks of 26 bars, pre-roll 2, 178.3 s, under `engine/load/gate.sh heavy`. Hap equality of the two forms over
+104 cycles: `node tools/lowering/verify_file.mjs ... --cycles 104`.
+
+Club master (`master.py --preset dubstep --ceiling -2.0`): -8.67 LUFS, -2.01 dBTP. The ceiling is -2.0, not -1.0,
+because lossy encoding raises inter-sample peaks: at -1.0 the decoded 112 kbit/s mp3 measured +1.8 dBTP; with -2.0 and 192 kbit/s
+(`MP3_BITRATE=192k engine/audio/publish_audio.sh`) the decoded club mp3 is -1.40 dBTP and -8.93 LUFS (publish_audio.sh now decodes every
+mp3 and warns above -1.0 dBTP; numbers in `audio/edm-dubstep-tutorial/index.json`). Genre score vs suno-track-lab
+`docs/genres/dubstep-ukf.json`, WAV and decoded mp3 alike: 10 of 13. Misses: loudness range 2.95 LU (target >= 3), whole-track
+centroid 3490 Hz (target <= 2800; the shaker added under drop A for density raised it), breakdown onsets 0.06 / bar.
+Streaming master (-14.0 LUFS, -1.10 dBTP; decoded mp3 -1.26 dBTP) against `docs/genres/dubstep.json` (`tools/racks/measure.mjs --score`):
+10 pass, 2 miss (PLR 12.9 dB vs 7-10, loudness range 11.4 LU vs 3-8: at -14 LUFS the master is barely limited), 1 skipped.
 
 | section | bars | RMS dB (club master) | onsets / bar | centroid Hz | energy < 150 Hz |
 |---|---|---|---|---|---|
-| intro | 16 | -12.6 | 8.0 | 1249 | 0.11 |
-| build | 8 | -11.0 | 5.8 | 1462 | 0.05 |
-| drop1 | 16 | -8.3 | 9.7 | 436 | 0.77 |
-| break | 16 | -9.9 | 0.1 | 433 | 0.02 |
-| build2 | 8 | -10.4 | 0.1 | 2388 | 0.04 |
-| drop2 | 12 | -8.9 | 14.1 | 387 | 0.37 |
-| switch | 12 | -8.8 | 14.5 | 529 | 0.78 |
-| outro | 16 | -13.7 | 7.3 | 1887 | 0.26 |
+| intro | 16 | -12.7 | 7.3 | 1312 | 0.10 |
+| build | 8 | -11.5 | 13.6 | 1935 | 0.10 |
+| drop1 | 16 | -9.5 | 14.4 | 848 | 0.70 |
+| break | 16 | -10.6 | 0.1 | 431 | 0.03 |
+| build2 | 8 | -11.3 | 0.4 | 2679 | 0.03 |
+| drop2 | 12 | -9.8 | 14.2 | 396 | 0.37 |
+| switch | 12 | -9.0 | 14.5 | 481 | 0.80 |
+| outro | 16 | -13.9 | 7.3 | 1181 | 0.17 |
 
-Mix passes these numbers drove (each one a measured problem, not taste): `.shape(undefined)` silenced whole lanes (kick, sub, impact:
-drop A had 0 % energy under 60 Hz) -> `.withValue(dry)`; an inline comment swallowed the sub's `.mask`, so the sub ran through the intro
-and breakdown (intro 70 % of its energy at 32.7 Hz) -> fixed; the sub was 84 % of the drop energy and the growl 2 % -> sub velocity 0.55,
-growl / talk / riddim postgain 1.6-1.8; build chords and the intro kick were louder than drop A -> lowered.
+Onsets: the numbers are librosa onset detection on the mixed master (`score.py`), not event counts. The breakdown has 16th arps and
+chops in the program, but under the pumped chords and the room their attacks do not rise above the detector's threshold (0.1 / bar);
+build 2 (0.4 / bar) has its roll under a white-noise build at full level. The program's own event counts are in the composer density
+report (layers per bar, below). The score is kept as measured.
+
+Composer checks (`engine/composer/run.sh all`, before -> after the #161 polish): motifs that never return 8 -> 2 (14 -> 15 motifs);
+mean layers build 3.0 -> 5.5 (target 5-10), drop A 6.4 -> 8.4 (8-14), build 2 4.1 -> 5.6, drop B 7.4 -> 8.4, outro 3.1 -> 3.6; growl motif
+pre-echo FAIL -> PASS (filtered in bars 21-24) and callback FAIL -> PASS (bars 89-92); talk callback PASS (93-96; its pre-echo is in build 2,
+after the first drop, so it still reads FAIL); the breakdown lead motifs return in drop B. Changes: growl / talk echoes (filtered, velocity
+0.45), kick pulse through build 1, shaker in build 1, drop A and build 2, ukf chords under drop A, the lead back in drop B, reverse swells
+into bars 9 and 17, drum fade written as data in the outro.
+
+Earlier mix passes driven by measurement (#129): `.shape(undefined)` silenced whole lanes -> `.withValue(dry)`; an inline comment swallowed
+the sub's `.mask`; the sub was 84 % of the drop energy and the growl 2 % -> sub velocity 0.55, bass postgain 1.6-1.8.
 Listen: suno-track-lab `audio/edm-dubstep-tutorial/edm_dubstep_tutorial_master.mp3` (club) and `..._stream_master.mp3` (-14 LUFS).

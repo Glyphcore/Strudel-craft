@@ -7,7 +7,7 @@
       "id": "glyphcore/shim",
       "version": "1.0.0",
       "source": "file:.",
-      "manifest": "sha256:b53bfaf6fc17428249df2086452fb62c8e17b591d804b067c1aec665ad45afb6",
+      "manifest": "sha256:473b7bf607d8a0d76a6be095422643f5c0253859f899ef59d2978bcd70b284a2",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}
@@ -43,7 +43,7 @@
       "id": "glyphcore/dnb-electro",
       "version": "1.0.0",
       "source": "file:data/dnb-electro",
-      "manifest": "sha256:377539acbff87b2d075cc6e487ee7b8f6bf82cbfde58d2df621593e3892cc175",
+      "manifest": "sha256:978079fae2dd2c0b5e9cc299ae0fc031769bc5b569f1b7a81c6b96d21b1092cb",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}

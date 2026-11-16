@@ -12,9 +12,9 @@
       "format": "recipes@1",
       "version": "1.0.0",
       "path": "data/catalog.json",
-      "hash": "sha256:7b8b38dd099d15120c7d6e9b46ad3b2b62798777c3ab14f81640428d1b1305d5",
+      "hash": "sha256:f28f056473c3a4c42b20a7219f418caa329d1625472ead086e373bc6b1b9fe73",
       "load": "eager",
-      "bytes": 122716
+      "bytes": 122778
     },
     {
       "id": "bodies-base",
@@ -33,8 +33,8 @@
       "version": "1.0.0",
       "path": "data/recipes/dnb.json",
       "load": "lazy",
-      "hash": "sha256:3cb94f899a01797fd74afa27e4570b2c8c63b2620641391f6677079c43472d78",
-      "bytes": 17878
+      "hash": "sha256:14d2330ad37ba3e040b65da6c1236e009e0944a686be52e6fba4bde738f07a38",
+      "bytes": 17774
     },
     {
       "id": "bodies-dovetail",
@@ -73,8 +73,8 @@
       "version": "1.0.0",
       "path": "data/recipes/edmfeels.json",
       "load": "lazy",
-      "hash": "sha256:d4da4d6361fc79a2c63d64d9d01ea6d9e78e620278e4ec1de6b5a0a1bca382bd",
-      "bytes": 20506
+      "hash": "sha256:9eb66e703b501d70ebe936edef29540c68e142520d0e96c8c5f6980270f09c07",
+      "bytes": 20122
     },
     {
       "id": "bodies-electro",
@@ -182,9 +182,9 @@
       "format": "syntax@1",
       "version": "1.0.0",
       "path": "data/syntax.json",
-      "hash": "sha256:a86f2fbe69c67279651ec7602a9b783f7323950a70b20cf358ce57832574a8c0",
+      "hash": "sha256:93e9f7efb279cb3fe41758e84166aed2a4fd1221c141716e3a51222c58e27310",
       "load": "eager",
-      "bytes": 184051
+      "bytes": 184059
     },
     {
       "id": "composition",

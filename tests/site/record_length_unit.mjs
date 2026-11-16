@@ -31,7 +31,9 @@ const gates = (rows) => ({ slots: { fx: { scopes: { '*global*': rows } } } });
 { const plan = gates([{ from: '0', until: '8', bindings: ['b1'] }, { from: '8', until: '24', bindings: ['b2'] }, { from: '24', until: '1024', bindings: ['else:bypass'] }]);
   const e = RL.resolveEnd({ plan, markers: { end: '99b' }, cpb: 1 }); ok('the last gate end wins over a marker (rule order)', e.cycle === 24 && e.rule === 'gates'); }
 { const e = RL.resolveEnd({ plan: null, markers: { end: '33b' }, loop: { on: true, end: 8 }, code: '', cpb: 1 }); ok('no gates: marker "end" = bar 33', e.rule === 'marker' && e.bar === 33, JSON.stringify(e)); }
-{ const e = RL.resolveEnd({ loop: { on: true, end: 8 }, code: '$: s("bd")', cpb: 1 }); ok('no gates or marker: Loop range end 8 = bar 9', e.rule === 'loop' && e.bar === 9); }
+{ const e = RL.resolveEnd({ markers: { end: '9b' }, code: '// @daw bars=7\n$: s("bd")', cpb: 1 }); ok('marker ranks before the @daw header', e.rule === 'marker' && e.bar === 9);
+  const h = RL.resolveEnd({ loop: { on: true, end: 8 }, code: '// @daw bars=7\n$: s("bd")', cpb: 1 }); ok('@daw bars=7 ranks before Loop: end bar 8', h.rule === 'header' && h.bar === 8, JSON.stringify(h));
+  const e2 = RL.resolveEnd({ loop: { on: true, end: 8 }, code: '$: s("bd")', cpb: 1 }); ok('no gates or marker: Loop range end 8 = bar 9', e2.rule === 'loop' && e.bar === 9); }
 { const e = RL.resolveEnd({ loop: { on: false, end: 8 }, code: '$: s("bd")\n$: arrange([4, s("hh")], [4, s("cp")])\n$: note("<a b c>")', cpb: 1 }); ok('else the longest lane period (arrange 8 cycles) = bar 9', e.rule === 'period' && e.cycle === 8, JSON.stringify(e)); }
 { const e = RL.resolveEnd({ code: 'note("c e").slow(3)', cpb: 1 }); ok('period of .slow(3) is 3 cycles', e.cycle === 3 && e.rule === 'period'); const f = RL.resolveEnd({ code: 's("bd")' }); ok('plain loop: 1 bar fallback, never prompts', f.cycle === 1); }
 { const cps = 0.5, end = { cycle: 16, bar: 17, rule: 'gates' }, p = RL.plan({ unit: 'bars', value: 4, toEnd: true, end, cps, cpb: 1 }); ok('to end from bar 1 = 16 bars, bars 1 to 17', p.ok && p.bars === 16 && p.endBar === 17, JSON.stringify(p));

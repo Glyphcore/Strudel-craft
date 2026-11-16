@@ -40,7 +40,7 @@
         "cpb": { "type": "number", "exclusiveMinimum": 0, "description": "Optional. Cycles per bar (default 1)" },
         "unit": { "enum": ["bars", "cycles", "seconds"], "description": "Optional. The unit the length was typed in" },
         "toEnd": { "type": "boolean", "description": "Optional. The take ran from start to the resolved end of track" },
-        "endRule": { "enum": ["gates", "marker", "loop", "period"], "description": "Optional, with toEnd: which rule resolved the end (docs/CAPTURE.md Length)" },
+        "endRule": { "enum": ["gates", "marker", "header", "loop", "period"], "description": "Optional, with toEnd: which rule resolved the end (docs/CAPTURE.md Length)" },
         "segments": { "type": "array", "description": "Pauses or interruptions while a realtime take was recording (background playback, #56): kind, cycle where it began, audio time from the take start (s), length (s). Absent when the take ran without a gap; Remake and exact renders ignore it.", "items": { "type": "object", "required": ["kind", "cycle", "seconds"], "properties": { "kind": { "enum": ["paused", "interrupted"] }, "cycle": { "type": "number" }, "audio": { "type": "number" }, "seconds": { "type": "number", "minimum": 0 } } } }
       }
     },

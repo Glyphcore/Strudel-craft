@@ -211,6 +211,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/site/record_offline.mjs --ref REF/mix.wav   # offline Record while playing vs the CLI render, determinism, Cancel, live self-check (#104); REF from tests/site/ref_render.sh REF v2 16 8
     node tests/site/engine_perf.mjs --prog v2 --throttle 4  # audio engine measurements: long tasks, LoAF sources, profile, scheduler lateness, late haps (#102); matrix: tests/site/engine_perf_matrix.sh OUT
     node tests/site/record_length_unit.mjs  # Record length model: bars/cycles/seconds, end of track, clamp, recipe compat (#139)
+    node tests/site/record_length_parity.mjs  # end-of-track parity, site resolver vs CLI --to-end (#139)
     node tests/site/record_length.mjs  # Record Length UI at 390px: typed 12 bars exact frames, To end resolves a gate, old recipe replays (#139)
     node tests/site/record.mjs         # Record panel + recipes at 360px: record, download, clean-profile Remake hash match, tamper refused (#72)
     node tests/site/audio.mjs          # sound + visuals after Play at 360px DPR 3 touch: fresh profile and stale service worker (master peak, scope pixels, widgets, Stack typed program)

@@ -18,6 +18,7 @@ await p.goto(BASE); await p.waitForSelector('#list li[data-id]');
 await p.click('#list li[data-id] .row').catch(() => {});
 await p.evaluate((c) => { const ta = document.getElementById('code'); ta.value = c; ta.dispatchEvent(new Event('input', { bubbles: true })); document.activeElement.blur(); }, CODE);
 await p.evaluate(() => window.__sc.play()); await p.waitForFunction(() => window.__sc.S.playing, null, { timeout: 90000 });
+await p.waitForFunction(() => { const q = window.strudelCraft.capture && window.strudelCraft.capture.plan(); return q && q.env && Math.abs(q.env.cps - 128.8 / 240) < 1e-4; }, null, { timeout: 240000 }); /* the program's setcpm has reached the scheduler */
 await p.click('#capBtn'); await p.waitForSelector('#capSheet:not([hidden])');
 const C = (fn, a) => p.evaluate(fn, a);
 ok('default unit is Bars', await C(() => document.querySelector('input[name="cap-unit"]:checked').value === 'bars'));
@@ -45,17 +46,52 @@ await p.screenshot({ path: path.join(REPO, 'docs/screens/phone-390-record-length
 // typed 12 bars -> offline take, exact frames, no editor scroll
 await p.click('#capLen', { clickCount: 3 }); await p.keyboard.type('12'); await p.keyboard.press('Tab');
 await C(() => window.strudelCraft.capture.configure({ source: 'offline', name: 'twelve' }));
-const sy0 = await C(() => window.scrollY); await p.click('#capRec');
+await p.waitForTimeout(500); const sy0 = await C(() => window.scrollY); await p.click('#capRec'); await p.waitForTimeout(150);
 const t0 = Date.now(); let rec = null; while (Date.now() - t0 < 240000 && !rec) { rec = await C(async () => { const l = await window.strudelCraft.capture.list(); const t = l.find((x) => x.name.startsWith('twelve')); return t && t.outputs.render ? t : null; }); if (!rec) await p.waitForTimeout(500); }
 ok('typed 12 bars -> offline take', !!rec); if (rec) {
   const t = rec.timing; ok('timing: cycles 12, bars 12, startBar 1, unit bars, cpb 1, bpb 4', t.cycles === 12 && t.bars === 12 && t.startBar === 1 && t.unit === 'bars' && t.cpb === 1 && t.bpb === 4, JSON.stringify(t));
   ok('frames = round(12 / cps * sr) exactly', rec.outputs.render.frames === Math.round(12 / t.cps * rec.outputs.render.sr) && Math.abs(t.cps - 128.8 / 240) < 1e-4, `${rec.outputs.render.frames} cps ${t.cps}`);
-  ok('pressing Record did not scroll the page', (await C(() => window.scrollY)) === sy0);
+  { const sy1 = await C(() => window.scrollY); ok('pressing Record did not scroll the page', sy1 === sy0, sy0 + ' -> ' + sy1); }
   const o = await C(async (id) => { const m = await import('./recipe.js'); const full = await window.strudelCraft.capture.get(id); const r = JSON.parse(JSON.stringify(full.recipe)); for (const k of ['bars', 'startBar', 'bpb', 'cpb', 'unit', 'toEnd', 'endRule']) delete r.timing[k]; r.id = 'old-cycle-recipe'; r.name = 'old-cycle';
     let valid = true; try { m.validate(r); } catch (e) { valid = e.message; } await window.strudelCraft.capture.putTake({ id: r.id, recipe: r, audio: full.audio }); const rm = await window.strudelCraft.capture.remake(r.id, { silent: true });
     return { valid, match: rm && rm.match, sha: rm && rm.sha256, want: r.outputs.render.sha256 }; }, rec.id);
   ok('old cycle-only recipe validates and Remakes to the same audio hash', o.valid === true && (o.match === true || o.sha === o.want), JSON.stringify(o)); }
 const bad = await C(async () => { const m = await import('./recipe.js'); const full = await window.strudelCraft.capture.list(); const r = JSON.parse(JSON.stringify(full[0])); delete r.remake; delete r.imported; delete r.audio; r.timing.bars = 99; try { m.validate(r); return 'accepted'; } catch (e) { return e.message; } });
 ok('a recipe whose bars disagree with cycles is refused', /disagrees/.test(bad), bad);
+
+/* critic repro (#139): type in the field and, without leaving it, tap a chip once; real CDP touch and real mouse; then the Start bar row */
+async function tapRepro(page, how) {
+  const C2 = (fn, a) => page.evaluate(fn, a);
+  const tap = async (sel) => { const b = await page.locator(sel).boundingBox(); const x = b.x + b.width / 2, y = b.y + b.height / 2; if (how === 'touch') await page.touchscreen.tap(x, y); else await page.mouse.click(x, y); };
+  await C2(() => window.strudelCraft.capture.configure({ unit: 'bars', len: 4, toEnd: false, startBar: '', endBar: '' }));
+  await tap('#capLen'); await page.keyboard.press('Control+A'); await page.keyboard.type('12');
+  const focused = await C2(() => document.activeElement && document.activeElement.id);
+  await tap('.cap-chip[data-chip="16"]');
+  const a = await C2(() => ({ v: document.getElementById('capLen').value, o: window.strudelCraft.capture.opts.len, d: document.getElementById('capDerive').textContent }));
+  ok(`${how}: type 12 then ONE tap on chip 16 sets 16 (focus was in ${focused})`, a.v === '16' && a.o === 16 && /^16 bars/.test(a.d), JSON.stringify(a));
+  await tap('#capStart'); await page.keyboard.type('5');
+  const vis = await C2(() => { const r = document.getElementById('capStart').getBoundingClientRect(), s = document.getElementById('capSheet').getBoundingClientRect(); return { top: r.top >= s.top - 1, bottom: r.bottom <= s.bottom + 1, h: r.height }; });
+  ok(`${how}: Start bar field reachable inside the sheet, 44px`, vis.top && vis.bottom && vis.h >= 44, JSON.stringify(vis));
+  await tap('.cap-chip[data-chip="8"]');
+  const b = await C2(() => ({ s: document.getElementById('capStart').value, v: document.getElementById('capLen').value, d: document.getElementById('capDerive').textContent }));
+  ok(`${how}: with Start bar still focused one tap on chip 8 keeps start 5 and sets 8 bars`, b.s === '5' && b.v === '8' && /^8 bars .* bar 5 to 13/.test(b.d), JSON.stringify(b));
+  await C2(() => window.strudelCraft.capture.configure({ len: 4, startBar: '' }));
+}
+{
+  const viewports = [[390, 844], [360, 740]];
+  for (const [w, h] of viewports) { await p.setViewportSize({ width: w, height: h }); await p.waitForTimeout(300); await tapRepro(p, 'touch'); await tapRepro(p, 'mouse');
+    const fit = await p.evaluate(() => { const s = document.getElementById('capSheet').getBoundingClientRect(); return { right: s.right, sw: document.documentElement.scrollWidth }; }); ok(`${w}x${h}: sheet fits the width`, fit.right <= w && fit.sw <= w, JSON.stringify(fit)); }
+  await p.setViewportSize({ width: 390, height: 780 });
+  // configure({toEnd}) wins over a typed invalid length; readout follows a tempo edit
+  await p.click('#capLen', { clickCount: 3 }); await p.keyboard.type('abc');
+  await C(() => window.strudelCraft.capture.configure({ toEnd: true }));
+  ok('configure({toEnd:true}) is honoured while the typed length is invalid (no error, field restored)', await C(() => document.getElementById('capLenErr').hidden && /^16 bars/.test(document.getElementById('capDerive').textContent) && !isNaN(+document.getElementById('capLen').value)), await C(() => document.getElementById('capLenErr').textContent + '|' + document.getElementById('capDerive').textContent));
+  await C(() => window.strudelCraft.capture.configure({ toEnd: false, len: 8 }));
+  const d0 = await C(() => document.getElementById('capDerive').textContent);
+  await C((c) => { const ta = document.getElementById('code'); ta.value = c; ta.dispatchEvent(new Event('input', { bubbles: true })); }, CODE.replace('128.8 / 4', '100 / 4'));
+  await p.waitForFunction((d) => document.getElementById('capDerive').textContent !== d, d0, { timeout: 5000 }).catch(() => {});
+  const d1 = await C(() => document.getElementById('capDerive').textContent);
+  ok('readout refreshes after a code edit that changes the tempo (8 bars 14.9 s -> 19.2 s)', d0 !== d1 && /00:19\./.test(d1), `${d0} -> ${d1}`);
+}
 ok('no console errors', !errs.length, errs.join(' | ').slice(0, 300));
 await browser.close(); server.close(); process.exit(fail ? 1 : 0);

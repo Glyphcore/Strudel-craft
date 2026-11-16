@@ -834,8 +834,6 @@ function build() {
     <label class="switch"><input id="capInc_code" type="checkbox"${opts.code ? ' checked' : ''}><span>Code-state</span></label>
   </fieldset>
   <div class="cap-opts">
-    ${seg('source', 'Source', [['offline', 'Offline render'], ['live', 'Live capture']], opts.source)}
-    ${seg('mode', 'Arm', [['free', 'Free'], ['cycles', 'Cycles'], ['until', 'Until stop']], opts.mode)}
     <div class="cap-len">
       ${seg('unit', 'Length', [['bars', 'Bars'], ['cycles', 'Cycles'], ['seconds', 'Seconds']], opts.unit)}
       <div class="cap-lenrow">
@@ -844,14 +842,16 @@ function build() {
         <button type="button" class="ghost cap-stepb" data-step="1" aria-label="Longer">+</button>
         <button type="button" class="ghost cap-endchip" id="capToEnd" aria-pressed="${opts.toEnd}">To end of track</button>
       </div>
-      <div class="cap-chips" id="capChips" role="group" aria-label="Quick lengths"></div>
       <div class="cap-lenrow cap-fromto">
-        <label class="cap-sel"><span class="cap-lab">Start bar</span><input id="capStart" class="cap-in" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="done" placeholder="transport start" aria-describedby="capLenErr" value="${esc(opts.startBar)}"></label>
-        <label class="cap-sel" id="capEndLab"><span class="cap-lab">End bar (to end)</span><input id="capEnd" class="cap-in" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="done" placeholder="auto" aria-describedby="capLenErr" value="${esc(opts.endBar)}"></label>
+        <div class="cap-chips" id="capChips" role="group" aria-label="Quick lengths"></div>
+        <label class="cap-sel cap-startl"><span class="cap-lab">Start bar</span><input id="capStart" class="cap-in" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="done" placeholder="transport" aria-describedby="capLenErr" value="${esc(opts.startBar)}"></label>
       </div>
+      <label class="cap-sel" id="capEndLab" hidden><span class="cap-lab">End bar (to end of track; blank = resolved)</span><input id="capEnd" class="cap-in" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="done" placeholder="auto" aria-describedby="capLenErr" value="${esc(opts.endBar)}"></label>
       <p class="cap-derive" id="capDerive" aria-live="polite"></p>
       <p class="cap-err" id="capLenErr" role="alert" hidden></p>
     </div>
+    ${seg('source', 'Source', [['offline', 'Offline render'], ['live', 'Live capture']], opts.source)}
+    ${seg('mode', 'Arm', [['free', 'Free'], ['cycles', 'Cycles'], ['until', 'Until stop']], opts.mode)}
     <label class="cap-sel"><span class="cap-lab">Count-in</span><select id="capCount">${[0, 1, 2, 4].map((v) => `<option value="${v}"${v === opts.countIn ? ' selected' : ''}>${v ? v + ' cyc' : 'Off'}</option>`).join('')}</select></label>
     <label class="cap-sel"><span class="cap-lab">Pre-roll</span><select id="capPre">${[0, 0.5, 1, 2, 4].map((v) => `<option value="${v}"${v === opts.preRoll ? ' selected' : ''}>${v ? v + ' s' : 'Off'}</option>`).join('')}</select></label>
     <label class="cap-name"><span class="cap-lab">Name</span><input id="capName" type="text" autocomplete="off" spellcheck="false" enterkeyhint="done" maxlength="60" value="${esc(opts.name)}"></label>
@@ -884,6 +884,8 @@ function build() {
     if (e.target.closest('#capToEnd')) { configure({ toEnd: !opts.toEnd }); return; }
     const b = e.target.closest('[data-act]'); if (!b) return; const li = b.closest('[data-id]'); if (li) takeAct(b.dataset.act, li.dataset.id, b);
   });
+  w.addEventListener('focusin', (e) => { if (!e.target.classList || !e.target.classList.contains('cap-in') || w.scrollHeight <= w.clientHeight) return; /* scroll the sheet only, never the page */
+    const r = e.target.getBoundingClientRect(), b = w.getBoundingClientRect(), head = ($('.cap-head', w) || { offsetHeight: 0 }).offsetHeight; if (r.top < b.top + head + 4) w.scrollTop -= b.top + head + 4 - r.top; else if (r.bottom > b.bottom - 4) w.scrollTop += r.bottom - b.bottom + 8; });
   w.addEventListener('input', (e) => { const t = e.target; if (t.id === 'capLen' || t.id === 'capStart' || t.id === 'capEnd') typing(t); });
   w.addEventListener('keydown', (e) => { if (e.key === 'Escape' && (st.rendering || st.phase === 'rendering')) { e.stopPropagation(); cancelRender(); return; }
     if (e.key === 'Escape' && !w.closest('.ws-body')) { e.stopPropagation(); close(); } });
@@ -899,7 +901,7 @@ function typing(t) {
   else if (t.id === 'capStart') { opts.startBar = t.value.trim(); set('startBar', opts.startBar); } else { opts.endBar = t.value.trim(); set('endBar', opts.endBar); }
   updateLen(t);
 }
-function commitLen() { const t = $('#capLen'), r = RL.parseLen(t.value, opts.unit); if (r.ok) configure({ len: r.value, toEnd: false }); else showErr(r.error, t); }
+function commitLen() { if (opts.toEnd) return; const t = $('#capLen'), r = RL.parseLen(t.value, opts.unit); if (r.ok) configure({ len: r.value, toEnd: false }); else showErr(r.error, t); }
 function setUnit(u) {
   const env = lenEnv(), c = RL.toCycles(opts.len, opts.unit, env), v = u === 'bars' ? c / env.cpb : u === 'seconds' ? c / env.cps : c;
   configure({ unit: u, len: +v.toFixed(u === 'seconds' ? 1 : 2) || 1 });
@@ -908,19 +910,24 @@ function showErr(msg, field) { const e = $('#capLenErr'); if (!e) return; e.text
 function updateLen(active) {
   if (!el.w) return;
   const p = takePlan(), busy = st.phase !== 'idle';
-  const inp = $('#capLen'); if (inp && inp !== active && inp !== document.activeElement) inp.value = String(+(+opts.len).toFixed(3));
+  const inp = $('#capLen'); if (inp && inp !== active && (opts.toEnd || inp !== document.activeElement)) inp.value = String(+(+opts.len).toFixed(3));
   for (const [id, v] of [['capStart', opts.startBar], ['capEnd', opts.endBar]]) { const i = $('#' + id); if (i && i !== active && i !== document.activeElement) i.value = v; }
   $('#capEndLab').hidden = !opts.toEnd; $('#capToEnd').setAttribute('aria-pressed', String(opts.toEnd)); inp.disabled = opts.toEnd || busy;
-  $('#capChips').innerHTML = RL.CHIPS[opts.unit].map((v) => `<button type="button" class="ghost cap-chip" data-chip="${v}" aria-pressed="${!opts.toEnd && +opts.len === v}"${busy ? ' disabled' : ''}>${v}</button>`).join('');
+  /* chips are built once per unit and updated in place: replacing them on blur/change swallowed the first tap after typing (#139 critic) */
+  const cc = $('#capChips'); if (cc.dataset.unit !== opts.unit) { cc.dataset.unit = opts.unit; cc.innerHTML = RL.CHIPS[opts.unit].map((v) => `<button type="button" class="ghost cap-chip" data-chip="${v}" aria-pressed="false">${v}</button>`).join(''); }
+  for (const b of cc.children) { b.setAttribute('aria-pressed', String(!opts.toEnd && +opts.len === +b.dataset.chip)); b.disabled = busy; }
   for (const b of el.w.querySelectorAll('.cap-stepb')) b.disabled = busy || opts.toEnd;
   const d = $('#capDerive'), x = $('#capExactN');
   if (p.ok) {
-    const how = p.toEnd && p.end ? (opts.endBar ? 'typed end' : { gates: 'last gate section', marker: 'marker "end"', loop: 'Loop range end', period: 'longest lane period' }[p.end.rule]) : '';
+    const how = p.toEnd && p.end ? (opts.endBar ? 'typed end' : { gates: 'last gate section', marker: 'marker "end"', header: '@daw bars header', loop: 'Loop range end', period: 'longest lane period' }[p.end.rule]) : '';
     d.textContent = `${fx(p.bars)} bars \u00b7 ${fx(p.cycles)} cycles \u00b7 ${N.clock(p.seconds, { tenths: true })} \u00b7 bar ${fx(p.startBar)} to ${fx(p.endBar)} (last bar ${fx(p.endBar - 1)})${how ? ' \u00b7 end: ' + how : ''}`;
     x.textContent = p.toEnd ? `to end (bar ${fx(p.endBar)})` : `${fx(opts.unit === 'bars' ? p.bars : opts.unit === 'cycles' ? p.cycles : p.seconds)} ${opts.unit}`;
     showErr('');
   } else { d.textContent = ''; x.textContent = '-'; showErr(p.error, p.field === 'start' ? $('#capStart') : p.field === 'end' ? $('#capEnd') : inp); }
 }
+/* the readout follows the program: a code edit that changes the tempo, the gates or the Loop range refreshes it without a click */
+let lenKey = '';
+setInterval(() => { if (!el.w || el.w.hidden || st.phase !== 'idle') return; let k = ''; try { const s = sc.transport && sc.transport.source && sc.transport.source(); const r = sc.range && sc.range.state; k = [(s && s.code) || '', lenEnv().cps, r && r.start, r && r.end, r && r.loop, r && r.extra].join('|'); } catch (e) { return; } if (k !== lenKey) { lenKey = k; updateLen(); } }, 400);
 function sync() {
   if (!el.w) return;
   const busy = st.phase !== 'idle';

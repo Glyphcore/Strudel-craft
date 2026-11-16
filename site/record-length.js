@@ -6,8 +6,9 @@
      1 gates     the end of the last gate window of any hooks binding (a finite until, e.g. "9b..17b" -> bar 17); when the last window is open
                  ended ("@17b") the last section is assumed as long as the one before it (bar 17 + (17 - previous boundary))
      2 marker    a hooks marker named "end" (hooks.marker("end", "33b"))
-     3 loop      the transport Loop range end, when Loop is on
-     4 period    the longest lane pattern period (arrange([n, pat], ...) totals, <a b c> alternations, .slow(n)), at least 1 bar
+     3 header    "// @daw bars=N" in the program (the DAW export header): N bars -> end bar N+1
+     4 loop      the transport Loop range end, when Loop is on (site only)
+     5 period    the longest lane pattern period (arrange([n, pat], ...) totals, <a b c> alternations, .slow(n)), at least 1 bar
    The result is an exclusive end bar ("33" = the take stops where bar 33 begins, so bar 32 is the last bar). Typing a value overrides it. */
 import { blankComments } from './engine/comments.js';
 export const MAX_MIN = 20;
@@ -98,12 +99,13 @@ export function lanePeriod(code) {
   return p;
 }
 
-/* -> { cycle, bar, rule: 'gates'|'marker'|'loop'|'period', note } (bar = exclusive end bar, 1-based) */
+/* -> { cycle, bar, rule: 'gates'|'marker'|'header'|'loop'|'period', note } (bar = exclusive end bar, 1-based) */
 export function resolveEnd({ plan = null, horizon = 1024, markers = null, loop = null, code = '', cpb = 1, bpb = 4, cps = 0 } = {}) {
   const mk = (cycle, rule, note) => ({ cycle, bar: cycleToBar(cycle, cpb), rule, note });
   const g = gateEnd(plan, horizon); if (g != null && g > 0) return mk(g, 'gates', 'end of the last gate section');
   const mv = markers && (markers.end != null ? markers.end : null);
   if (mv != null) { const c = pointToCycle(mv, { cpb, bpb, cps }); if (c != null && c > 0) return mk(c, 'marker', 'marker "end"'); }
+  const hd = /@daw[^\n]*\bbars=(\d+(?:\.\d+)?)/.exec(String(code || '')); if (hd && +hd[1] > 0) return mk(+hd[1] * cpb, 'header', '"// @daw bars=N" header');
   if (loop && loop.on && loop.end > 0) return mk(loop.end, 'loop', 'Loop range end');
   return mk(lanePeriod(code) * 1, 'period', 'longest lane pattern period');
 }

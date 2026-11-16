@@ -706,7 +706,7 @@ async function loadJSON(name) { const P = await packsReady; return name === 'cat
 /* ---------- views + routing ---------- */
 const VIEWS = ['rack', 'stack', 'ref', 'practice', 'perform', 'syntax', 'graph'];
 let syntaxLoad = null; function loadSyntax() { if (!syntaxLoad) syntaxLoad = import('./syntax.js').catch((e) => { syntaxLoad = null; say('Syntax view failed to load: ' + e.message, true); }); return syntaxLoad; }
-let performLoad = null; function loadPerform() { if (!performLoad) performLoad = import('./perform.js').catch((e) => { performLoad = null; say('Perform tools failed to load: ' + e.message, true); }); return performLoad; }
+let performLoad = null; function loadPerform() { if (!performLoad) performLoad = Promise.resolve(window.strudelCraft.booted).then(() => import('./perform.js')).catch((e) => { performLoad = null; say('Perform tools failed to load: ' + e.message, true); }); return performLoad; }
 window.addEventListener('strudel:ready', () => loadPerform());
 let graphLoad = null; function loadGraph() { if (!graphLoad) graphLoad = import('./graph.js').catch((e) => { graphLoad = null; say('Graph view failed to load: ' + e.message, true); }); return graphLoad; }
 /* mod RANGE table for wire()/taps (mirror of the CLI's lib/mod.mjs): ranges + canonical param names */
@@ -896,5 +896,5 @@ window.strudelCraft.transport = { play: () => play(), stop: () => stop(), toggle
   async ensureSamples(code) { await Engine.load(); if (needsSamplesFor(code) && !Engine.samplesLoaded) await loadSampleMaps(); },
   async warm() { await Engine.load(); try { if (!window.strudelCraft.hooks && window.strudelCraft.installHooks) window.strudelCraft.installHooks(); await applyRanges(); await loadPerform(); } catch (e) { /* optional */ } } };
 window.strudelCraft.engineState = () => ({ ...Engine.state, scheduler: Engine.scheduler, playing: S.playing, srcView: S.srcView || 'rack' });
-window.__sc = { S, Engine, Bus, currentSource, programTempo, play, stop, select, setView, History, toggleStack, holdLink: () => { S.linkHold = true; }, audio: { resume: resumeAudio, get state() { const c = audioCtx(); return c ? c.state : 'none'; }, get peak() { return AudioSt.lastPeak; }, needsSamplesFor } };
+window.__sc = { S, Engine, Bus, unmuteBus, currentSource, programTempo, play, stop, select, setView, History, toggleStack, holdLink: () => { S.linkHold = true; }, audio: { resume: resumeAudio, get state() { const c = audioCtx(); return c ? c.state : 'none'; }, get peak() { return AudioSt.lastPeak; }, needsSamplesFor } };
 document.addEventListener('DOMContentLoaded', boot);

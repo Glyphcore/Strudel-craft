@@ -36,7 +36,7 @@ try {
   await page.locator('.pp-pad[data-pos="0,0"]').click({ delay: 150 }); await page.waitForTimeout(300);
   const ent = await page.evaluate(() => window.strudelCraft.hooks.journal.filter((e) => e.pad === 'A/0,0').map((e) => e.op));
   check('one tap-pad hit = exactly 2 journal entries (pad:tap, pad:tap-end)', ent.length === 2 && ent[0] === 'pad:tap' && ent[1] === 'pad:tap-end' && j0 === 0, JSON.stringify(ent));
-  check('orphan tap pad is marked and toasts once what the 2 hits are', await page.locator('.pp-pad[data-pos="0,0"] .pp-orph').count() === 1 && /2 hits per press/.test(await page.locator('.toast, #toasts, [role=status]').allInnerTexts().then((a) => a.join(' '))));
+  check('orphan tap pad is marked and labelled with the voice it plays (no toast over the pads)', await page.locator('.pp-pad[data-pos="0,0"] .pp-orph').count() === 1 && /^♪ \w+/.test(await page.locator('.pp-pad[data-pos="0,0"] .pp-ref').innerText()) && await page.locator('.toast').count() === 0);
   check('a tap pad whose code line exists is not marked', await page.locator('.pp-pad[data-pos="0,1"] .pp-orph').count() === 0);
   const sum = await page.locator('#pfOutputs summary').innerText();
   check('Outputs lists the pads and counts the unread ones', /\(3, 2 not read/.test(sum), sum);

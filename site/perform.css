@@ -127,3 +127,4 @@
 .pf-o-line{display:block;font-family:var(--mono);font-size:.74rem;overflow-wrap:anywhere;margin-bottom:6px}.pf-o-line.none{color:var(--warn)}
 .pf-graph-glow{outline:2px solid var(--sig-2);outline-offset:2px}
 @media (prefers-reduced-motion:no-preference){.pf-graph-glow{transition:outline-color .2s}}
+.pp-pad .pp-ref{color:var(--text)}.pp-orph{position:absolute;top:6px;right:8px;font-size:.8rem;opacity:.7}

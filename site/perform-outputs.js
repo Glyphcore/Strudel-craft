@@ -19,9 +19,9 @@ export function findSource(target, texts) {
 }
 
 /* one line: what the pad does when pressed, without jargon */
-export function explainPad(pad, src) {
+export function explainPad(pad, src, voice) {
   const t = pad.target, k = t.kind, mode = pad.mode || (k === 'tap' ? 'gate' : 'toggle');
-  if (k === 'tap') return `Tap pad: one hit is 2 journal entries (tap on press, tap-end on release). ${src ? 'The code reads it at the line shown.' : `No code reads tap "${t.ref}" yet, so a hit is recorded but nothing sounds; add .tap("${t.ref}") or bounce a take to code.`}`;
+  if (k === 'tap') return `Tap pad: one hit is 2 journal entries (tap on press, tap-end on release). ${src ? 'The code reads it at the line shown.' : voice ? `No code reads tap "${t.ref}", so a press plays the built-in ${voice} voice (audition) and is journaled; add tap("${t.ref}") to give it a reader.` : `No code reads tap "${t.ref}" yet, so a hit is recorded but nothing sounds; add tap("${t.ref}") or bounce a take to code.`}`;
   if (k === 'hook') return `Hook pad: ${mode === 'gate' ? 'holds' : 'toggles'} the "${base(t.ref)}" hook in slot "${t.slot || '?'}". ${src ? '' : 'No hooks.bind line names it, so the press only edits the journal.'}`.trim();
   if (k === 'var') return `Variable pad: ${mode === 'gate' ? 'holds' : 'toggles'} ${t.ref}${t.value != null ? ' = ' + t.value : ''}. ${src ? '' : 'No code reads this variable.'}`.trim();
   if (k === 'component') return `Component pad: opens the instance "${t.ref}" (hooks.inst).`;
@@ -30,3 +30,5 @@ export function explainPad(pad, src) {
   return `Action pad: runs "${t.ref}".`;
 }
 export const isOrphan = (pad, src) => !src && ['tap', 'hook', 'var'].includes(pad.target.kind);
+/* a tap pad is read only by a bare tap("x") / wire(..., "x") call; the lane writer .tap("x") (night-phonk-demo) does not read pad presses */
+export { readsTap } from './perform-audition.js';

@@ -382,6 +382,7 @@
   "packs.json",
   "packs.lock.json",
   "palette.js",
+  "perform-audition.js",
   "perform-outputs.js",
   "perform-presets.js",
   "perform.css",

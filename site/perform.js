@@ -7,6 +7,7 @@
 import * as N from './numfmt.js';
 import * as PP from './perform-presets.js';
 import * as PO from './perform-outputs.js';
+import * as PA from './perform-audition.js';
 const sc = window.strudelCraft;
 const $ = (s, r = document) => r.querySelector(s);
 const h = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (v == null || v === false) continue; if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? '' : v); } e.append(...kids.flat().filter((x) => x != null)); return e; };
@@ -309,10 +310,18 @@ function padState(bank, pos) {
   if (Tk.rec && c >= Tk.rec.from && on) return { state: 'recording', pad };
   return { state: on ? 'on' : 'loaded', pad };
 }
-const orphanPad = (pad) => PO.isOrphan(pad, PO.findSource(pad.target, codeTexts()));
-const warned = new Set(); // one toast per orphan pad per session, never while the pad is held
-function warnOrphan(bank, pos) { const pad = bank.pads.find((p) => p.pos === pos); const k = bank.id + '/' + pos; if (!pad || warned.has(k) || !orphanPad(pad)) return; warned.add(k); ui().toast(`${pad.label || pad.target.ref}: ${pad.target.kind === 'tap' ? '2 hits per press (on, off)' : 'press recorded'}, no code reads it (see Outputs)`, { kind: 'info', ms: 3500 }); }
+const orphanPad = (pad) => pad.target.kind === 'tap' ? !PA.readsTap(pad.target.ref, codeTexts()) : PO.isOrphan(pad, PO.findSource(pad.target, codeTexts()));
+/* #116: a pad nothing reads auditions a built-in voice (perform-audition.js), chosen by ref name / pad.audition / pad index; a read pad stays silent here */
+const padIndex = (bank, pad) => { const [r, c] = pad.pos.split(',').map(Number); return r * bank.cols + c; };
+const auditionOf = (bank, pad) => (pad && orphanPad(pad) ? PA.voiceFor(pad, padIndex(bank, pad)) : null);
+const player = PA.createPlayer({ sd: () => window.superdough, ctx: () => { try { return window.getAudioContext ? window.getAudioContext() : null; } catch (e) { return null; } },
+  load: () => window.__sc.Engine.load(), unmute: () => { try { if (window.__sc.Bus.muted) window.__sc.unmuteBus(); } catch (e) { /* bus not up yet */ } },
+  worklets: async () => { const wc = window.getAudioContext && window.getAudioContext(); if (wc && window.loadWorklets && !wc.__scWorklets) wc.__scWorklets = window.loadWorklets().catch(() => { wc.__scWorklets = null; }); if (wc && wc.__scWorklets) await wc.__scWorklets; } });
+let auditionOn = true;
+// no toast: a toast sits over the pad rows on a phone and swallowed the taps (#116); the pad label (♪ voice), the ∅ mark and Outputs say it instead
+function warnOrphan() { /* kept as a hook; see above */ }
 function renderBank(host, bank) {
+  if (auditionOn && M.perform && bank.pads.some((p) => auditionOf(bank, p))) (window.requestIdleCallback || setTimeout)(() => player.prewarm()); // load the engine ahead of the first tap (no sound, no gesture needed)
   const scenes = bank.scenes === 'row' || bank.scenes === 'col' ? bank.scenes : null;
   const grid = h('div', { class: 'pp-grid', style: `--cols:${bank.cols + (scenes === 'row' ? 1 : 0)}`, role: 'grid', 'aria-label': 'Pads ' + bank.id });
   const sceneBtn = (n, what) => h('button', { type: 'button', class: 'pp-scene', 'data-scene': n, 'aria-label': `Launch scene ${n + 1} (${what} ${n + 1})` }, h('span', { 'aria-hidden': 'true' }, '▶'), h('span', {}, 'S' + (n + 1)));
@@ -324,7 +333,7 @@ function renderBank(host, bank) {
         'aria-label': `Pad ${pos} ${pad ? (pad.label || pad.target.ref) : 'empty'}, ${st.state}${st.beats ? ', ' + st.beats + ' beats' : ''}` },
         h('span', { class: 'pp-mark', 'aria-hidden': 'true' }, STATE_MARK[st.state]),
         h('span', { class: 'pp-label' }, pad ? (pad.label || pad.target.ref) : ''),
-        h('span', { class: 'pp-ref' }, pad ? `${pad.target.kind}:${pad.target.ref}` : '+'), pad && orphanPad(pad) ? h('span', { class: 'pp-orph', title: 'No code reads this pad: see Outputs below', 'aria-hidden': 'true' }, '∅') : null,
+        h('span', { class: 'pp-ref' }, pad ? (auditionOf(bank, pad) ? `♪ ${auditionOf(bank, pad)}` : `${pad.target.kind}:${pad.target.ref}`) : '+'), pad && orphanPad(pad) ? h('span', { class: 'pp-orph', title: `No code reads this pad, so a press plays the built-in ${auditionOf(bank, pad)} voice (see Outputs below)`, 'aria-hidden': 'true' }, '∅') : null,
         st.state === 'queued' ? h('span', { class: 'pp-beats' }, st.beats + ' beats') : null);
       row.append(b);
     }
@@ -340,7 +349,7 @@ function renderBank(host, bank) {
   host.append(grid);
 }
 const lat = [], work = []; // ms: pointerdown event time -> journal entry written; pointerdown handler start -> journal entry written (main-thread work)
-function press(bank, pos, vel, t0) { const w0 = performance.now(); if (!bank.pads.find((p) => p.pos === pos)) return; warnOrphan(bank, pos); pads.press(`${bank.id}/${pos}`, nowCycle(), vel); journalChanged(); if (t0 != null) { const t1 = performance.now(); lat.push(t1 - t0); work.push(t1 - w0); if (lat.length > 500) { lat.shift(); work.shift(); } } }
+function press(bank, pos, vel, t0) { const w0 = performance.now(); if (!bank.pads.find((p) => p.pos === pos)) return; warnOrphan(bank, pos); { const pd = bank.pads.find((p) => p.pos === pos); const v = auditionOn && auditionOf(bank, pd); if (v) player.play(v, vel, t0 != null ? t0 : w0); } pads.press(`${bank.id}/${pos}`, nowCycle(), vel); journalChanged(); if (t0 != null) { const t1 = performance.now(); lat.push(t1 - t0); work.push(t1 - w0); if (lat.length > 500) { lat.shift(); work.shift(); } } }
 function release(bank, pos) { if (!bank.pads.find((p) => p.pos === pos)) return; pads.release(`${bank.id}/${pos}`, nowCycle()); journalChanged(); }
 let jT = 0; function journalChanged() { const j = pads.resolve(); sc.perform.journal = j; bridge(j); window.dispatchEvent(new CustomEvent('pads:journal', { detail: j })); cancelAnimationFrame(jT); jT = requestAnimationFrame(renderPadsOnly); }
 function renderPadsOnly() { const t = curTab(); if (t.kind !== 'bank') return; const host = $('#pfBody'); if (!host) return; host.querySelectorAll('.pp-pad').forEach((b) => { const st = padState(M.banks[t.id], b.dataset.pos); if (b.dataset.state === st.state && st.state !== 'queued') return; b.dataset.state = st.state; b.querySelector('.pp-mark').textContent = STATE_MARK[st.state]; let bt = b.querySelector('.pp-beats'); if (st.state === 'queued') { if (!bt) { bt = h('span', { class: 'pp-beats' }); b.append(bt); } bt.textContent = st.beats + ' beats'; } else if (bt) bt.remove(); const pad = st.pad; b.setAttribute('aria-label', `Pad ${b.dataset.pos} ${pad ? (pad.label || pad.target.ref) : 'empty'}, ${st.state}${st.beats ? ', ' + st.beats + ' beats' : ''}`); }); }
@@ -632,7 +641,7 @@ function outputsOf(t) {
   const texts = codeTexts(); const out = [];
   if (t.kind === 'bank') for (const pad of M.banks[t.id].pads) {
     const src = PO.findSource(pad.target, texts); const label = pad.label || pad.target.ref;
-    out.push({ key: `${t.id}/${pad.pos}`, name: label, tag: `${pad.pos} · ${pad.target.kind}:${pad.target.ref}`, src, orphan: PO.isOrphan(pad, src), note: PO.explainPad(pad, src), graph: pad.target.ref });
+    out.push({ key: `${t.id}/${pad.pos}`, name: label, tag: `${pad.pos} · ${pad.target.kind}:${pad.target.ref}`, src, orphan: orphanPad(pad), note: PO.explainPad(pad, orphanPad(pad) ? null : src, auditionOf(M.banks[t.id], pad)), graph: pad.target.ref });
   }
   else for (const n of boardNames(M.boards[t.id])) {
     try { const id = controls.resolve(n); const s = controls.declare(id); const site = [...(SITES.rack || []), ...(SITES.stack || [])].find((x) => x.id === id); const maps = controls.maps().filter((m) => m.control.split(':')[0] === id).map((m) => m.dest);
@@ -724,6 +733,7 @@ setInterval(() => {
 rebuildPads();
 sc.perform = { model: () => M, render, renderInline, controls, sites: (v) => SITES[v] || [], pads: () => pads, journal: [], latency: lat, work, glue: bindStrudel, looper: () => Tk.looper, take: Tk, lanes: A, applyLane, applyTake,
   capturing: (e) => isPerformView() && !e.ctrlKey && !e.metaKey && !e.altKey && ('kbd:' + e.code) in keyMap() && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) && !e.target.isContentEditable };
+sc.perform.audition = { player, voices: PA.voiceNames, voiceFor: PA.voiceFor, set enabled(v) { auditionOn = !!v; }, get enabled() { return auditionOn; } };
 sc.perform.presets = { list: () => allPresets().map(({ id, title, about, builtin }) => ({ id, title, about, builtin: !!builtin })), apply: (p) => applyPreset(typeof p === 'string' ? allPresets().find((x) => x.id === p) || { id: p } : p),
   save: (title) => { const p = snapshot(String(title)); PP.store.put(p); M.preset = p.id; save(); return p; }, exportJSON: () => JSON.stringify(PP.exportDoc(PP.store.list()), null, 1),
   importJSON: (text) => { const r = PP.parseImport(text, new Set(allPresets().map((x) => x.id))); r.presets.forEach((p) => PP.store.put(p)); return r; }, open: openPresets };

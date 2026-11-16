@@ -72,6 +72,7 @@
       "examples": [
         { "title": "Open Perform", "action": "perform" },
         { "title": "Apply a preset from code", "code": "strudelCraft.perform.presets.apply('beatpad-4x4')\n$: s(\"bd*4, hh*8\").bank(\"RolandTR909\")" },
+        { "title": "Pads with no reader play an audition voice (kick, snare ... by pad)", "code": "strudelCraft.perform.audition.voices()\n// give a pad a reader instead:\n$: s(\"bd*2\").tap(\"kick\")\nconst r = tap(\"kick\")" },
         { "title": "Save and export your presets", "code": "strudelCraft.perform.presets.save('My pads')\nconsole.log(strudelCraft.perform.presets.exportJSON())\n$: s(\"bd ~ sd ~\")" }
       ]
     },

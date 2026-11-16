@@ -7,6 +7,7 @@ Checks every rack against the rack standard (docs/RACK_STANDARD.md, issue #94).
 | `audit.mjs` | renders a test phrase per class through each rack with the strudel CLI, measures, judges, writes `out/report.json` and `out/report.md` |
 | `standard.json` | classes: target band, thresholds, test phrase; global limits |
 | `measure.mjs` | measures one WAV (loudness BS.1770, LRA Tech 3342, true peak, spectral, mono low end, onsets per bar, duck depth) and scores it against `docs/genres/*.json` (issue #125, RACK_STANDARD.md section 8) |
+| `render_demo.cjs` | renders the night phonk demo to a float WAV through the site's offline recorder (Playwright; env `PLAYWRIGHT_MODULES`, `CHROMIUM_PATH`); example: `docs/genres/examples/night-phonk-demo.measure.json` |
 | `targets.json` | the class of every audited item: racks (hook def name), catalog recipes (id), Syntax examples (`section/title`); unlisted catalog and Syntax items are class `demo` |
 
 ```

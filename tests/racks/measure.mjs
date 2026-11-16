@@ -41,8 +41,9 @@ near('anti-phase: correlation -1', anti.lr_correlation_below_120, -1, 0.001);
 const bpm = 120, secs = 16, click = new Float64Array(SR * secs); for (let i = 0; i < 16 * secs / 2; i++) { const s = Math.round(i * 0.125 * SR); for (let j = 0; j < 400 && s + j < click.length; j++) click[s + j] = 0.5 * Math.exp(-j / 60) * Math.sin(j * 0.9); }
 const cm = measure(stereo(click), { bpm }); near('16 clicks per bar at 120 BPM: onsets per bar', cm.onsets_per_bar, 16, 1.5);
 const kk = new Float64Array(SR * 4), bb = new Float64Array(SR * 4); for (let i = 0; i < bb.length; i++) bb[i] = 0.5 * Math.sin(2 * Math.PI * 55 * i / SR);
-for (let b = 0; b < 8; b++) { const s = Math.round((0.25 + b * 0.5) * SR); for (let j = 0; j < 2400; j++) kk[s + j] = 0.8 * Math.exp(-j / 800) * Math.sin(2 * Math.PI * 50 * j / SR); for (let j = 0; j < 12000 && s + j < bb.length; j++) bb[s + j] *= 1 - 0.5 * Math.exp(-j / 4800); }
-const dd = measure(stereo(click.subarray(0, SR * 4)), { kick: stereo(kk), bass: stereo(bb) }).duck_depth_db; near('duck depth: bass dips about 6 dB at each kick', dd, 6, 1.5);
+// true duck: bass gain 0.5 (-6.02 dB) held 60 ms while the kick sounds, then released over about 100 ms
+for (let b = 0; b < 8; b++) { const s = Math.round((0.25 + b * 0.5) * SR); for (let j = 0; j < 2400; j++) kk[s + j] = 0.8 * Math.exp(-j / 800) * Math.sin(2 * Math.PI * 50 * j / SR); for (let j = 0; j < 12000 && s + j < bb.length; j++) bb[s + j] *= j < 2646 ? 0.5 : 1 - 0.5 * Math.exp(-(j - 2646) / 4800); }
+const dd = measure(stereo(click.subarray(0, SR * 4)), { kick: stereo(kk), bass: stereo(bb) }).duck_depth_db; near('duck depth: bass ducked 6.02 dB at each kick reads within 0.3 dB', dd, 6.02, 0.3);
 
 // 6. docs/genres: every file valid against the schema; every criterion has basis, source, confidence; standard/platform need a source
 const GD = path.join(ROOT, 'docs', 'genres'); const schema = JSON.parse(fs.readFileSync(path.join(GD, 'genre.schema.json'), 'utf8'));

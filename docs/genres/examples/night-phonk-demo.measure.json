@@ -1,0 +1,20 @@
+{
+  "file_seconds": 14.907,
+  "sample_rate": 44100,
+  "lufs_integrated": -12.55,
+  "lra_lu": 0.63,
+  "true_peak_dbtp": 0.01,
+  "sample_peak_dbfs": 0,
+  "plr_db": 12.57,
+  "crest_db": 12.67,
+  "dc_offset_dbfs": -50.31,
+  "clipped_samples": 1,
+  "low_share_pct": 74.6,
+  "spectral_tilt_db_oct": -6.68,
+  "spectral_centroid_hz": 230,
+  "lr_correlation_below_120": 1,
+  "side_to_mid_db_below_120": -45.5,
+  "tempo_bpm": 128.8,
+  "bars": 8,
+  "onsets_per_bar": 16.1
+}

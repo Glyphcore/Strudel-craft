@@ -105,13 +105,12 @@ export function onsets(wav, hop = 512, fr = 1024) { // spectral-flux peak pickin
   for (let i = 0; i < flux.length; i++) { let ok = flux[i] > 0.1 * mx; for (let j = Math.max(0, i - 4); j <= Math.min(flux.length - 1, i + 4) && ok; j++) if (j !== i && (flux[j] > flux[i] || (flux[j] === flux[i] && j < i))) ok = false; if (ok) out.push((i * hop + fr / 2) / wav.sr); }
   return out;
 }
-function envelope(x, sr, hopMs = 2, winMs = 12) { const h = Math.round(sr * hopMs / 1000), w = Math.round(sr * winMs / 1000), out = []; for (let i = w; i <= x.length; i += h) { let m = 0; for (let j = i - w; j < i; j++) { const a = Math.abs(x[j]); if (a > m) m = a; } out.push(m); } return { env: out, dt: h / sr }; } // sliding peak envelope: a 12 ms window always holds a peak of a bass note down to about 40 Hz
-export function duckDepth(kick, bass) { // median over kicks of (bass level just before the kick minus its minimum within 200 ms after), dB; both stems are used as mono sums
-  const mono = (w) => Float64Array.from(w.L, (v, i) => (v + w.R[i]) / 2); const k = envelope(mono(kick), kick.sr), b = envelope(mono(bass), bass.sr);
-  const kmax = Math.max(...k.env); if (!(kmax > 0)) return null; const hits = []; let last = -1;
-  for (let i = 1; i < k.env.length; i++) if (k.env[i] > kmax * 0.2 && k.env[i - 1] <= kmax * 0.2 && (last < 0 || (i - last) * k.dt > 0.2)) { hits.push(i); last = i; }
-  const pre = Math.round(0.08 / b.dt), post = Math.round(0.2 / b.dt), depths = [];
-  for (const h0 of hits) { const h = Math.round(h0 * k.dt / b.dt); if (h - pre < 0 || h + post >= b.env.length) continue; const before = Math.max(...b.env.slice(h - pre, h)), after = Math.min(...b.env.slice(h, h + post)); if (before > 1e-6) depths.push(db20(before) - db20(Math.max(after, 1e-9))); }
+function rmsEnv(x, sr, hopMs, winMs) { const h = Math.max(1, Math.round(sr * hopMs / 1000)), w = Math.round(sr * winMs / 1000), c = new Float64Array(x.length + 1); for (let i = 0; i < x.length; i++) c[i + 1] = c[i] + x[i] * x[i]; const out = []; for (let i = w; i <= x.length; i += h) out.push(Math.sqrt((c[i] - c[i - w]) / w)); return { env: out, dt: h / sr, lag: w / sr }; } // sliding RMS: every point is the level over the last winMs
+export function duckDepth(kick, bass) { // median over kicks of the ratio (dB) of the bass RMS level before the kick to its lowest RMS level within 250 ms after; both stems are used as mono sums
+  const mono = (w) => Float64Array.from(w.L, (v, i) => (v + w.R[i]) / 2), km = mono(kick), bm = mono(bass), ke = rmsEnv(km, kick.sr, 2, 8), kmax = Math.max(...ke.env); if (!(kmax > 0)) return null;
+  const hits = []; let last = -1; for (let i = 1; i < ke.env.length; i++) if (ke.env[i] > kmax * 0.2 && ke.env[i - 1] <= kmax * 0.2 && (last < 0 || (i - last) * ke.dt > 0.2)) { hits.push((i + 1) * ke.dt - ke.lag); last = i; }
+  const bz = (() => { let z = 0; for (let i = 1; i < bm.length; i++) if ((bm[i - 1] < 0) !== (bm[i] < 0)) z++; const f0 = z / 2 / (bm.length / bass.sr); return Math.min(30, Math.max(8, 1000 / Math.max(f0, 1))); })(), be = rmsEnv(bm, bass.sr, 1, bz), at = (t) => Math.round((t + be.lag) / be.dt) - 1, depths = []; // be.env[at(t)] is the RMS over [t, t + one bass period) (period from the zero-crossing rate, 8 to 30 ms): no ripple, so the level is the real one; a duck shorter than that period reads shallower
+  for (const t of hits) { const i0 = at(t), pre = at(t - 0.15), post = at(t + 0.25); if (pre < 0 || post >= be.env.length) continue; let before = 0; for (let i = pre; i <= at(t - bz / 1000); i++) before = Math.max(before, be.env[i]); const after = Math.min(...be.env.slice(i0, post)); if (before > 1e-6) depths.push(db20(before) - db20(Math.max(after, 1e-9))); }
   if (!depths.length) return null; depths.sort((x, y) => x - y); return depths[Math.floor(depths.length / 2)];
 }
 

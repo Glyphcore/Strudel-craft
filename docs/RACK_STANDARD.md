@@ -264,6 +264,9 @@ A finished track render is normalised to -14 LUFS integrated, tolerance 1 LU, tr
 normalization", fetched 2026-11-16). Everything else uses gain-independent measures (PLR, LRA, shares, tilt, onsets), so a quiet render is not
 mistaken for a dynamic one.
 
+The same Spotify page adds: when the master is louder than -14 LUFS, keep true peak below -2 dBTP. Our delivery is normalised to -14, so the
+rule above (-1.0 dBTP) stays; a render that is louder than -14 LUFS should meet -2 dBTP instead.
+
 ### Measured keys (measure.mjs output)
 `lufs_integrated`, `lra_lu`, `true_peak_dbtp`, `sample_peak_dbfs`, `plr_db` (true peak minus LUFS), `crest_db` (sample peak minus RMS),
 `dc_offset_dbfs`, `clipped_samples` (at or above 0.999), `low_share_pct` (20-250 Hz of 20 Hz to Nyquist power), `spectral_tilt_db_oct` (PSD slope
@@ -300,3 +303,10 @@ FX return, master. A per-role `--score` file is not built yet (coming); only the
 No example measurement is committed yet: the night phonk demo needs the strudel CLI (suno-track-lab `engine/strudel-cli`), which was absent in
 the sandbox that built this. Rejected: one loudness target per genre from blog tables, six-band target curves per genre, matching commercial
 masters at -6 to -8 LUFS.
+
+### Example measurement: night phonk demo (issue #125)
+`node tools/racks/render_demo.cjs OUT.wav` renders the demo with the site's offline recorder (needs Playwright, Chromium, network; env
+`PLAYWRIGHT_MODULES`, `CHROMIUM_PATH`), then `node tools/racks/measure.mjs --bpm 128.8 --score docs/genres/electro.json OUT.wav`. Numbers only:
+`docs/genres/examples/night-phonk-demo.measure.json`. None of the seven genre files is phonk; electro (125-135 BPM, 808 drum machine) is the closest
+fit and is used with that caveat. The take is post site master (-6 dB default gain). Duck depth: the RMS method reads a 6.02 dB duck as 6.04 dB;
+a duck shorter than one bass period reads shallower.

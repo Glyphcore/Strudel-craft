@@ -13,7 +13,7 @@ const cssReady = new Promise((ok) => { if (document.querySelector('link[data-cu]
 const ls = { get: (k) => { try { return localStorage.getItem('sc.cues.' + k); } catch (e) { return null; } }, set: (k, v) => { try { if (v == null) localStorage.removeItem('sc.cues.' + k); else localStorage.setItem('sc.cues.' + k, v); } catch (e) { /* private mode */ } } };
 const off = () => { try { return localStorage.getItem('sc.cuesOff') === '1'; } catch (e) { return false; } };
 const hash = (s) => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h.toString(36); };
-const st = { doc: null, key: null, code: null, sides: [], kbP: null, strip: null, shown: '', hot: [], clock: 'main', quick: null, raf: 0, sheet: null, filt: { kind: 'all', lane: '', ref: '' }, p: 1 };
+const st = { doc: null, key: null, code: null, sides: [], kbP: null, strip: null, shown: null, hot: [], clock: 'main', quick: null, raf: 0, sheet: null, filt: { kind: 'all', lane: '', ref: '' }, p: 1 };
 
 /* ---------------- sources ---------------- */
 const activeTa = () => document.getElementById(window.__sc && window.__sc.S && window.__sc.S.view === 'stack' ? 'stackCode' : 'code');
@@ -26,14 +26,17 @@ async function sidecars(s) {
   return Promise.all(hits.map((x) => { if (!sideCache.has(x.file)) sideCache.set(x.file, fetch(new URL('data/cues/' + x.file, document.baseURI)).then((r) => (r.ok ? r.text() : '')).catch(() => '')); return sideCache.get(x.file); }));
 }
 /* load(s) -> the merged doc of a program; cached until the code changes */
+let loadSeq = 0;
 export async function load(s = source(), force = false) {
   if (!force && st.doc && st.code === s.code) return st.doc;
+  const my = ++loadSeq; /* only the latest load commits: a slow earlier load (another program) never overwrites a newer one */
   const inline = C.extract(s.code || ''); inline.doc.cues.forEach((c) => { c._origin = 'inline'; });
   const side = (await sidecars(s)).filter(Boolean).map((t) => C.parse(t).doc);
   const key = keyOf(s); const mine = ls.get(key); const local = mine ? C.parse(mine).doc : null; if (local) local.cues.forEach((c) => { c._origin = 'local'; });
   const doc = C.merge(local, inline.doc, ...side); doc.header = { ...side.reduce((a, d) => ({ ...a, ...d.header }), {}), ...inline.doc.header, ...(local ? local.header : {}) };
   for (const c of doc.cues) if (!c._origin) c._origin = 'sidecar';
-  st.doc = doc; st.code = s.code; st.key = key; st.problems = inline.problems; return doc;
+  if (my !== loadSeq) return doc;
+  st.doc = doc; st.code = s.code; st.key = key; st.problems = inline.problems; tl = null; st.shown = null; return doc;
 }
 export const current = () => st.doc;
 function saveLocal(fn) { const mine = ls.get(st.key); const d = mine ? C.parse(mine).doc : { format: 'craftcues@1', header: {}, notes: [], cues: [] }; fn(d); ls.set(st.key, d.cues.length || d.notes.length ? C.print(d) : null); st.code = null; }
@@ -81,7 +84,7 @@ function hot(lanes) {
 let tl = null;
 function frame() {
   st.raf = requestAnimationFrame(frame); const p = position(); const el = st.strip;
-  if (p == null || off() || !st.doc || !st.doc.cues.length) { if (el && !el.hidden) { el.hidden = true; hot([]); st.shown = ''; } if (p == null && st.clock === 'quick') { st.clock = 'main'; st.code = null; } maybeReload(); return; }
+  if (p == null || off() || !st.doc || !st.doc.cues.length) { if (el && !el.hidden) { el.hidden = true; hot([]); st.shown = null; } if (p == null && st.clock === 'quick') { st.clock = 'main'; st.code = null; } maybeReload(); return; }
   maybeReload(); if (!el) return; if (el.hidden) { el.hidden = false; place(); }
   st.p = p; const b = Math.floor(p + 1e-9); const bb = el.querySelector('.cu-bar b'); if (bb.textContent !== String(b)) bb.textContent = String(b);
   if (!tl || tl.doc !== st.doc) { const t = timeline(st.doc); tl = { doc: st.doc, N: t.N }; el.querySelector('.cu-tl').innerHTML = t.svg; }
@@ -92,9 +95,9 @@ function frame() {
   hot([...new Set(act.flatMap((c) => C.scopeLanes(c.scope)))]);
 }
 let reloading = false, lastCheck = 0;
-function maybeReload() { const now = performance.now(); if (reloading || now - lastCheck < 400) return; lastCheck = now; if (st.clock === 'quick') return; const s = source(); if (s.code === st.code) return; reloading = true; load(s).then(() => { tl = null; st.shown = ''; }).finally(() => { reloading = false; }); }
+function maybeReload() { const now = performance.now(); if (reloading || now - lastCheck < 400) return; lastCheck = now; if (st.clock === 'quick') return; const s = source(); if (s.code === st.code) return; reloading = true; load(s).then(() => { tl = null; st.shown = null; }).finally(() => { reloading = false; }); }
 export async function attach() { await cssReady; strip(); await load(); if (!st.raf) frame(); }
-export async function attachQuick(d) { await cssReady; strip(); const r = C.extract(d.code); r.doc.cues.forEach((c) => { c._origin = 'quick'; }); st.doc = r.doc; st.code = null; st.clock = 'quick'; st.quick = d; tl = null; st.shown = ''; if (!st.raf) frame(); }
+export async function attachQuick(d) { await cssReady; strip(); const r = C.extract(d.code); r.doc.cues.forEach((c) => { c._origin = 'quick'; }); st.doc = r.doc; st.code = null; st.clock = 'quick'; st.quick = d; tl = null; st.shown = null; if (!st.raf) frame(); }
 export function toggleCaptions(on) { const v = on === undefined ? off() : on; try { localStorage.setItem('sc.cuesOff', v ? '0' : '1'); } catch (e) { /* private */ } if (sc.ui) sc.ui.toast(v ? 'Captions on' : 'Captions off (Ctrl+K: Captions on / off)'); if (v) attach(); }
 
 /* ---------------- editor: deliberate go to code, inline edits as one change ---------------- */

@@ -47,3 +47,4 @@ dialog.cu-sheet[open]{display:flex}
 .cu-form{display:grid;gap:8px}.cu-form label{display:grid;gap:4px;font-size:.78rem;color:var(--dim)}
 .cu-form input,.cu-form select,.cu-form textarea{min-height:44px;background:var(--panel-2);color:var(--text);border:1px solid var(--line-2);border-radius:var(--r1);font:inherit;padding:4px 8px}
 .rs-cues{margin:10px 0}.rs-cues h3{font-family:var(--mono);font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
+@media (max-width:700px){.cu-strip{padding-right:76px}} /* the round menu button floats at the bottom right on phones: keep the strip close button clear of it */

@@ -145,3 +145,5 @@
   .pf-body{gap:8px}
   .pp-grid{gap:6px}.pp-row{gap:6px}
 }
+/* the palette FAB sat over the lower-right of the last pad on phones: hidden in the Perform view (palette stays on Ctrl/Cmd+K and in the other views) */
+@media (max-width:760px){body:has(#main[data-view="perform"]) .pal-fab{display:none}}

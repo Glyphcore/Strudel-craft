@@ -346,7 +346,7 @@ dialog.scm{width:min(420px,calc(100vw - 24px))}
 .toast-x{min-width:44px;min-height:44px;border:0;background:transparent;color:var(--dim);font-size:1.2rem}
 .toast.out{opacity:0;transition:opacity .2s}
 /* only toasts a person must act on take pointer events; status toasts never swallow a tap (#118) */
-.toast.error,.toast.sticky,.toast.act{pointer-events:auto}.toast:not(.error):not(.sticky):not(.act) .toast-x{display:none}
+.toast.error,.toast[data-live]{pointer-events:auto}.toast:not(.error):not([data-live]) .toast-x{display:none}
 @keyframes toastIn{from{opacity:0;transform:translateY(8px)}}
 @media (prefers-reduced-motion:reduce){.toast{animation:none}}
 .scm-ok:not(.danger){background:var(--sig-2);color:var(--sig-ink,#000);border-color:var(--sig-2)}

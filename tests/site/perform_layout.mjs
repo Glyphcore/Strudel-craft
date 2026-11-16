@@ -30,12 +30,12 @@ for (const [W, H] of [[390, 844], [360, 740]]) {
     await page.evaluate((id) => window.strudelCraft.perform.presets.apply(id), id); await page.waitForSelector('#perform .pp-pad');
     const r = await page.evaluate(() => {
       const pads = [...document.querySelectorAll('#perform .pp-pad:not([data-state=empty])')]; const bad = []; let minSide = 1e9, maxBottom = 0, minTop = 1e9, maxRight = 0;
-      pads.forEach((p) => { const b = p.getBoundingClientRect(); const e = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2); if (!e || e.closest('.pp-pad') !== p) bad.push((p.dataset.pos) + ':' + (e && (e.className || e.tagName))); minSide = Math.min(minSide, b.width, b.height); maxBottom = Math.max(maxBottom, b.bottom); maxRight = Math.max(maxRight, b.right); minTop = Math.min(minTop, b.top); });
+      pads.forEach((p) => { const b = p.getBoundingClientRect(); for (const [fx, fy] of [[0.5, 0.5], [0.1, 0.1], [0.9, 0.1], [0.1, 0.9], [0.9, 0.9]]) { const e = document.elementFromPoint(b.x + b.width * fx, b.y + b.height * fy); if (!e || e.closest('.pp-pad') !== p) bad.push(p.dataset.pos + '@' + fx + ',' + fy + ':' + (e && (e.className || e.tagName))); } minSide = Math.min(minSide, b.width, b.height); maxBottom = Math.max(maxBottom, b.bottom); maxRight = Math.max(maxRight, b.right); minTop = Math.min(minTop, b.top); });
       const toast = document.querySelector('.toast'); const tp = document.querySelector('footer.transport').getBoundingClientRect().top; return { tp, maxRight, innerW: innerWidth, n: pads.length, bad, minSide, maxBottom, minTop, innerH: innerHeight, scrollY, toast: toast ? toast.textContent : null, over: document.documentElement.scrollWidth > innerWidth };
     });
     nums[`${W}x${H}/${id}`] = { pads: r.n, gridTop: Math.round(r.minTop), gridBottom: Math.round(r.maxBottom), minSide: Math.round(r.minSide) };
     check(`${W}x${H} ${id}: all ${r.n} pads fully on screen with no scrolling (bottom ${Math.round(r.maxBottom)} <= transport top ${Math.round(r.tp)}, right ${Math.round(r.maxRight)} <= ${r.innerW})`, r.n > 0 && r.maxBottom <= r.tp && r.maxRight <= r.innerW && r.scrollY === 0);
-    check(`${W}x${H} ${id}: elementFromPoint hits every pad centre right after applying the preset (no toast over pads)`, r.bad.length === 0, r.bad.join(',') + (r.toast ? ' toast=' + r.toast : ''));
+    check(`${W}x${H} ${id}: elementFromPoint hits every pad centre and all four corners (palette FAB, toasts) right after applying the preset (no toast over pads)`, r.bad.length === 0, r.bad.join(',') + (r.toast ? ' toast=' + r.toast : ''));
     check(`${W}x${H} ${id}: pad targets >= 44 px`, r.minSide >= 44, String(r.minSide));
     check(`${W}x${H} ${id}: no horizontal overflow`, !r.over);
     if (shots) await page.screenshot({ path: path.join(shots, `${W}x${H}-${id}.png`) });

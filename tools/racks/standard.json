@@ -354,10 +354,6 @@
    "peak_max_db": -6,
    "side_low_max_db": -24,
    "env_range_min_db": 15,
-   "alias": {
-    "note": "c6",
-    "max_db": -34
-   },
    "phrase": "note(\"<[f3,ab3,c4,eb4] [db3,f3,ab3,c4]>\")",
    "bars": 2
   },

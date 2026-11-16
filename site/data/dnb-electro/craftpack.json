@@ -16,8 +16,8 @@
       "title": "DnB, electro and house track demos",
       "description": "Track demos: DnB tutorial, electro, house / techno / trance / big room (the paste-ready standalone programs)",
       "load": "manual",
-      "hash": "sha256:39317a25b5ef3542572a8249ac27cca4ceafe0c7089fce21d76d95c74d55b592",
-      "bytes": 41721
+      "hash": "sha256:35ab4492e3834d989e742193cd78c0743311e12bbcc66209e1e0de233767441d",
+      "bytes": 42043
     },
     {
       "id": "racks-dnb-electro",
@@ -28,8 +28,8 @@
       "title": "DnB, electro and house racks",
       "description": "Chain-only hook defs: dnbKick, dnbSnare, ghostSnare, breakKick, breakSnare, ride, dnbShaker, dnbHat, dnbSub, reese, neuroBass, rollingBass, jumpWobble, liquidRhodes, liquidPad, strings, vocalChop, boom808, clap808, hat808, open808, cowbell808, electroBass, vocoLead, robotStab, filterBass, sawStab, houseKick, bigKick, houseClap, offHat, closedHat, houseBass, rumble, pluck, bigChords and 2 more",
       "load": "manual",
-      "hash": "sha256:42c33dc6c8ca5c53a46229a91302f59f5d391d54ba2377b64432442504c5de61",
-      "bytes": 18673
+      "hash": "sha256:ce242393a838cce0c07c3e0d9f6085414fd55dd572d5c7c13cf4862985fd49ea",
+      "bytes": 18973
     },
     {
       "id": "atoms-dnb",
@@ -40,8 +40,8 @@
       "title": "DnB atoms",
       "description": "glyphcore/dnb-electro drum-and-bass atoms (dnb.): two-step kick and snare, ghost notes and accents, amen-style and think-style breaks, chop orders for .bite(16, ...), shaker and ride, sub, reese, neuro, rolling and wobble lines, liquid chords, strings and vocal chops; gates of the 128-bar DnB form (intro, build, drop1, breakdown, build2, drop2, halftime, outro, drops, builds, vacuum).",
       "load": "eager",
-      "hash": "sha256:ae1383be5b66f36575c78d6b9551583afe605750cdb91ea9babb3a55111a718d",
-      "bytes": 15751
+      "hash": "sha256:862bedaf8d9bdcf8fd81e0823221ce58d879b78fdb849a558ee7f830413da21c",
+      "bytes": 15805
     },
     {
       "id": "atoms-electro",
@@ -52,8 +52,8 @@
       "title": "Electro atoms",
       "description": "glyphcore/dnb-electro electro atoms (el.): electro-funk 808 kick, clap, hats and cowbell, synth bass, robot lead line and vowels, stab rhythm and chords; electro house kick, clap, offbeat hat, filtered bass line, stab rhythm, clap build and its velocity ramp; gates of the 40-bar electro form (intro, build, drop, break, drop2).",
       "load": "eager",
-      "hash": "sha256:a5259ceaff907f662757ce68e3214376a2bb6be1bff37dba96720de492c0e654",
-      "bytes": 9180
+      "hash": "sha256:ac20c5c0e83be0eeef21bc747f3b2d39d9e167f121e22af9092ab39a1a8e2205",
+      "bytes": 9207
     },
     {
       "id": "atoms-house",
@@ -100,7 +100,7 @@
       "title": "Feel: Jump-up",
       "description": "Feel template \"Jump-up\" (172-176 bpm): bouncy two-step pushed slightly forward, a wobble bass with octave jumps. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove).",
       "load": "eager",
-      "hash": "sha256:125decc15f74bc0de3f07ec830cfe7c0ea297225e9df8d46da1956fac9a067ed",
+      "hash": "sha256:fe4c0882208709813741adebfc917cae02036e9cacc31f7f1b1e4d1bea2be5eb",
       "bytes": 9279
     },
     {

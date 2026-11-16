@@ -119,7 +119,7 @@ high note, power away from the harmonics (outside 2 % of each, at least 6 bins) 
 | reese | 30-5000 | -30 | -24 | -40 | -45 | -6 | -50 | c4 -34 | `note("c2 ~ c2 eb2 ~ g1 bb1 c2")` (EDM foundations) |
 | growl | 60-10000 | -24 | -20 | -40 | -35 | -6 | -40 | - | `note("c2*4 [c2 c2] eb2 g1*2")` (EDM foundations) |
 | break | 30-14000 | -30 | -20 | -40 | -45 | -3 | -30 | - | `s("x ~ x ~")` (catalog breaks; #122) |
-| gate | 100-12000 | -30 | -30 | -40 | -45 | -6 | -24 | c6 -34 | `note("<[f3,ab3,c4,eb4] [db3,f3,ab3,c4]>")`, plus envelope range >= 15 dB (#122) |
+| gate | 100-12000 | -30 | -30 | -40 | -45 | -6 | -24 | - | `note("<[f3,ab3,c4,eb4] [db3,f3,ab3,c4]>")`, plus envelope range >= 15 dB (#122) |
 
 Global limits (every class unless the table says otherwise): DC <= -60 dBFS, sub20 <= -40, >18k <= -45, no sample at or above 0.999,
 peak between -36 and -3 dBFS, crest >= 3 dB, L/R correlation >= -0.1, side<120 <= -30.
@@ -330,7 +330,7 @@ threshold changed (`git diff tools/racks/standard.json` only adds entries).
 | `reese` (EDM foundations) | `reese` | `hygiene-reese` 30-5000 | detuned-saw bass; ours adds its own 100 Hz high-pass at 24 dB/oct after the hook (the sub owns the fundamental), so it sits far inside the band |
 | `growl` (EDM foundations) | `neuroBass`, `jumpWobble` | `hygiene-growl` 70-9000 | mid-bass layer over a separate sub whose drive (shape, distort) runs after the scope: harmonics above the low-pass are the sound, so `above` is -20 and `>18k` -35 |
 | `break` | catalog breaks (`amen-style-break`, `amen-chops`, `jungle-chops`, `think-style-break`) | `hygiene-break` 30-14000 | a whole kit on one bus (kick, snare, ride): the kick's low end and the ride's top octave are both the sound, so the band is wide; `above` -20 as for hats; peak -3 as for drums |
-| `gate` | `gatePad` (`trance-gate`) | `hygiene-gate` 120-9000 | a supersaw that a 16-step gate opens and closes: the supersaw limits (side<120 -24, alias c6 -34) plus a new check, **envelope range** = p95 - p10 of 10 ms RMS levels over the active span (dB); a gate must open and close by at least 15 dB (a sustained supersaw pad measures a few dB) |
+| `gate` | `gatePad` (`trance-gate`) | `hygiene-gate` 120-9000 | a supersaw that a 16-step gate opens and closes: the supersaw limits (side<120 -24) without the alias check (the estimate needs a steady note: a gated note re-triggers 12 times a bar and its onsets are broadband by design, measured -11.9 dB) plus a new check, **envelope range** = p95 - p10 of 10 ms RMS levels over the active span (dB); a gate must open and close by at least 15 dB (a sustained supersaw pad measures a few dB) |
 
 Render cost (measured, headless CLI, host load 80-93 on 4 cores; #140): 16 kicks in one bar render in 2.3 s as a plain sine and in 585 s with
 `shape(0.25)`; a five-note chord renders in 2.1 s as `sawtooth` and in 86 s as `supersaw` (unison 1). `shape`, `distort` and `supersaw` run as

@@ -41,7 +41,7 @@
     ],
     [
      "attack",
-     0.002
+     0.003
     ],
     [
      "penv",
@@ -58,6 +58,10 @@
     [
      "sustain",
      0
+    ],
+    [
+     "hpf",
+     38
     ],
     [
      "lpf",
@@ -219,19 +223,19 @@
     ],
     [
      "attack",
-     0.003
+     0.008
     ],
     [
      "decay",
-     0.18
+     0.25
     ],
     [
      "sustain",
-     0.2
+     0.3
     ],
     [
      "release",
-     0.05
+     0.08
     ],
     [
      "lpf",
@@ -349,7 +353,7 @@
   },
   "filterBass": {
    "class": "bass",
-   "doc": "electro house filtered saw bass: resonant low-pass with a 3-octave envelope (add glyphcore/edm drive(amt) for grit)",
+   "doc": "electro house filtered saw bass: resonant low-pass with a 2.5-octave envelope (add glyphcore/edm drive(amt) for grit)",
    "chain": [
     [
      "hook",
@@ -377,11 +381,11 @@
     ],
     [
      "lpq",
-     8
+     6
     ],
     [
      "lpenv",
-     3
+     2.5
     ],
     [
      "lpdecay",
@@ -395,7 +399,7 @@
   },
   "sawStab": {
    "class": "supersaw",
-   "doc": "supersaw stab: unison 7, detune 0.35, spread 0.6, no sustain, filter blip (duck it from the kick: glyphcore/edm sidechain on the kick, ducked(3) here)",
+   "doc": "supersaw stab (high-pass 180 Hz: spread stays out of the low end): unison 7, detune 0.35, spread 0.6, no sustain, filter blip (duck it from the kick: glyphcore/edm sidechain on the kick, ducked(3) here)",
    "chain": [
     [
      "hook",
@@ -404,6 +408,10 @@
     [
      "s",
      "supersaw"
+    ],
+    [
+     "hpf",
+     180
     ],
     [
      "unison",
@@ -521,8 +529,8 @@
   },
   "ehStabs": {
    "type": "mini",
-   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
-   "doc": "stabs on the offbeats, where the pump has let go"
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~",
+   "doc": "stabs on the offbeats, where the pump has let go, the last one a 16th early"
   },
   "ehStabLine": {
    "type": "mini",

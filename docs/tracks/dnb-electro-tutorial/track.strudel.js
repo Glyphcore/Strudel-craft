@@ -15,6 +15,7 @@ hooks.bind("gfeel", "groove-swing(54) | groove-human(2.5, 0.15, 3) | groove-push
 hooks.bind("tone", [["lpf", 700]], atoms.dnb.intro); hooks.bind("tone", "thinBuild", atoms.dnb.builds)
 hooks.bind("btone", [["hpf", 700]], "<17b"); hooks.bind("btone", [["lpf", 1800]], "69b..73b"); hooks.bind("btone", [["hpf", 260]], atoms.dnb.drop2)
 hooks.bind("rtone", "filterBuild", atoms.dnb.build2)                               // the reese opens over build 2
+hooks.bind("tone", [["postgain", 0.5]], "<17b, 57b..73b")                          // level move: intro and breakdown sit 6 dB under the drops (release)
 
 // == chops: one chop order on every break lane, chosen by section ==
 hooks.bind("chop", [["bite", 16, { $mini: atoms.dnb.chops }]], "69b..73b, 89b..113b"); hooks.bind("chop", [["bite", 16, { $mini: atoms.dnb.chopsWild }]], atoms.dnb.build2)
@@ -44,7 +45,7 @@ brkR: s(atoms.dnb.hats).velocity(atoms.dnb.rideVel).hook("ride").use("chop").use
 // == low end: a mono sine sub owns 40-120 Hz; mid layers start at 70-100 Hz and share a glued bus (multiband by layers) ==
 sub: note(atoms.dnb.sub).hook("dnbSub").orbit(3).tags("low")
 subN: note(atoms.dnb.neuro).hook("dnbSub").orbit(3).tags("lowN")
-subW: note(atoms.dnb.wobble).hook("dnbSub").orbit(3).tags("lowW")
+subW: note(atoms.dnb.wobble).add(note(-12)).hook("dnbSub").orbit(3).tags("lowW")
 rolling: note(atoms.dnb.rolling).hook("rollingBass").velocity(0.8).orbit(2).tags("mid")
 reese: note(atoms.dnb.sub).add(note("0,0.18")).hook("reese").use("rtone").orbit(2).tags("mid")   // the reese is a pair of saws 18 cents apart
 neuro: note(atoms.dnb.neuro).hook("neuroBass").orbit(2).tags("mid")
@@ -54,7 +55,7 @@ wobble: note(atoms.dnb.wobble).hook("jumpWobble").orbit(2).tags("mid")
 keys: note(atoms.dnb.chords).struct(atoms.dnb.comp).hook("liquidRhodes").use("tone").orbit(2).tags("wet")
 pad: note(atoms.dnb.chords).hook("liquidPad").use("tone").orbit(2).tags("wet")
 strings: note(atoms.dnb.strings).hook("strings").use("tone").orbit(2).tags("wet")
-chops: note(atoms.dnb.chop).vowel(atoms.dnb.chopVowel).hook("vocalChop").delay(0.3).delaytime(0.259).delayfeedback(0.35).orbit(2).tags("wet")
+chops: note(atoms.dnb.chop).vowel(atoms.dnb.chopVowel).hook("vocalChop").use("tone").delay(0.3).delaytime(0.259).delayfeedback(0.35).orbit(2).tags("wet")
 
 // == fx ==
 rise: s("x/8").use("rise", { else: "silence" }).tags("rise")

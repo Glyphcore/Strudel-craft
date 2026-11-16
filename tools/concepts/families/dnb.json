@@ -133,7 +133,7 @@
     ],
     [
      "attack",
-     0.001
+     0.003
     ],
     [
      "penv",
@@ -150,6 +150,10 @@
     [
      "sustain",
      0
+    ],
+    [
+     "hpf",
+     38
     ],
     [
      "lpf",
@@ -271,7 +275,7 @@
     ],
     [
      "attack",
-     0.001
+     0.003
     ],
     [
      "penv",
@@ -288,6 +292,10 @@
     [
      "sustain",
      0
+    ],
+    [
+     "hpf",
+     38
     ],
     [
      "hpf",
@@ -445,7 +453,7 @@
   },
   "dnbSub": {
    "class": "sub",
-   "doc": "DnB sub: mono sine, 5 ms attack, held, low-passed at 250 Hz",
+   "doc": "DnB sub: mono sine, 8 ms attack, held, low-passed at 250 Hz",
    "chain": [
     [
      "hook",
@@ -457,7 +465,7 @@
     ],
     [
      "attack",
-     0.005
+     0.008
     ],
     [
      "decay",
@@ -469,7 +477,7 @@
     ],
     [
      "release",
-     0.08
+     0.12
     ],
     [
      "lpf",
@@ -607,7 +615,7 @@
     ],
     [
      "attack",
-     0.004
+     0.006
     ],
     [
      "decay",
@@ -641,7 +649,7 @@
   },
   "jumpWobble": {
    "class": "growl",
-   "doc": "jump-up envelope wobble: resonant saw whose filter envelope re-opens on every note, so a 3+3+2 rhythm wobbles",
+   "doc": "jump-up envelope wobble (a mid layer from 90 Hz over a sub): resonant saw whose filter envelope re-opens on every note, so a 3+3+2 rhythm wobbles",
    "chain": [
     [
      "hook",
@@ -650,6 +658,10 @@
     [
      "s",
      "sawtooth"
+    ],
+    [
+     "hpf",
+     90
     ],
     [
      "attack",
@@ -995,8 +1007,8 @@
   },
   "wobble": {
    "type": "mini",
-   "body": "<[f1@3 f1@3 f1@2 f2@3 f1@3 ab1@2] [f1@3 f1@3 f1@2 c2@3 bb1@3 ab1@2]>",
-   "doc": "jump-up wobble: 3+3+2 per half bar, octave jumps; each note re-opens the filter"
+   "body": "<[f2@3 f2@3 f2@2 f3@3 f2@3 ab2@2] [f2@3 f2@3 f2@2 c3@3 bb2@3 ab2@2]>",
+   "doc": "jump-up wobble (a mid layer, F2 up: the sub plays it an octave down): 3+3+2 per half bar, octave jumps; each note re-opens the filter"
   },
   "chords": {
    "type": "mini",

@@ -4853,7 +4853,7 @@
    "title": "DnB two-step",
    "intent": "Kick on 1 and the and of 3, snare on 2 and 4, ghosts on 2.5 and 4.5, 8th hats: the basic drum-and-bass bar.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: s(atoms.dnb.kick).hook(\"dnbKick\")\n$: s(atoms.dnb.snare).hook(\"dnbSnare\")\n$: s(atoms.dnb.ghosts).velocity(atoms.dnb.ghostVel).hook(\"ghostSnare\")\n$: s(atoms.dnb.hats).hook(\"dnbHat\")",
-   "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(24).pdecay(0.035).decay(0.2).sustain(0).lpf(5000).gain(0.8)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85)\n$: s(\"~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~\").velocity(\"[.55 .4 .6 .45]*4\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.6).attack(0.002).decay(0.07).sustain(0).hpf(200).lpf(6000).gain(0.3)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.35)",
+   "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.003).penv(24).pdecay(0.035).decay(0.2).sustain(0).hpf(38).lpf(5000).gain(0.8)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85)\n$: s(\"~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~\").velocity(\"[.55 .4 .6 .45]*4\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.6).attack(0.002).decay(0.07).sustain(0).hpf(200).lpf(6000).gain(0.3)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.35)",
    "notes": "",
    "labels": [
     "dnb",
@@ -4867,25 +4867,19 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": true,
-   "rms_dbfs": -23.7,
-   "centroid_hz": 6587,
-   "peak": 0.4155,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb/drums",
    "tags": [
     "drums",
     "dnb",
     "syncopated",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 56,
-    "hash": "f1df2b9d01"
-   }
+   ]
   },
   {
    "id": "dnb-ghost-notes",
@@ -4893,6 +4887,13 @@
    "intent": "The backbeat full, ghost snares 10-15 dB under it in a rolling pattern; the accent table is a 16-step velocity.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: s(atoms.dnb.snare).hook(\"dnbSnare\")\n$: s(atoms.dnb.ghostsRoll).velocity(atoms.dnb.ghostVel).hook(\"ghostSnare | groove-swing(54) | groove-human(2.5, 0.15, 2)\")",
    "lowered": "setcpm(174/4)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85)\n$: s(\"~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~ ~ x x\").velocity(\"[.55 .4 .6 .45]*4\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.6).attack(0.002).decay(0.07).sustain(0).hpf(200).lpf(6000).gain(0.3).swingBy(0.08, 8).mul(velocity(rand.late(2.37).range(0.85, 1))).late(rand.late(2).range(0, 0.003125).segment(16)).early(0.001563)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
+    "hash": "8c3e3d7c7e"
+   },
    "notes": "",
    "labels": [
     "dnb",
@@ -4917,22 +4918,15 @@
     "dnb",
     "accents",
     "verified",
-    "lowered"
-   ],
-   "lowered_check": {
-    "equal": false,
-    "approx": true,
-    "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
-    "hash": "8c3e3d7c7e"
-   }
+    "approx"
+   ]
   },
   {
    "id": "amen-style-break",
    "title": "Amen-style break (synthesised)",
    "intent": "A four-bar amen-style break from a kick, a crackier snare with ghost accents and an 8th ride; no sample.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: s(atoms.dnb.amenKick).hook(\"breakKick\")\n$: s(atoms.dnb.amenSnare).velocity(atoms.dnb.amenVel).hook(\"breakSnare\")\n$: s(atoms.dnb.hats).velocity(atoms.dnb.rideVel).hook(\"ride\")",
-   "lowered": "setcpm(174/4)\n$: s(\"<[x ~ x ~ ~ ~ ~ ~ ~ ~ x x ~ ~ ~ ~]!2 [x ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [~ ~ x x ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~]>\").hpf(30).lpf(7000).s(\"sine\").freq(62).attack(0.001).penv(18).pdecay(0.03).decay(0.15).sustain(0).hpf(45).lpf(6000).gain(0.75)\n$: s(\"<[~ ~ ~ ~ x ~ ~ x ~ x ~ ~ x ~ ~ x]!2 [~ ~ ~ ~ x ~ ~ x ~ x ~ ~ ~ ~ x ~] [~ x ~ ~ x ~ ~ x ~ x ~ ~ ~ ~ x ~]>\").velocity(\"[.35 .5 .35 .35 1 .35 .35 .55 .35 .5 .35 .35 1 .35 .45 .55]\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"a3\").noise(0.65).attack(0.001).decay(0.12).sustain(0).hpf(200).lpf(9000).gain(0.8)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.3).sustain(0).gain(0.16)",
+   "lowered": "setcpm(174/4)\n$: s(\"<[x ~ x ~ ~ ~ ~ ~ ~ ~ x x ~ ~ ~ ~]!2 [x ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [~ ~ x x ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~]>\").hpf(30).lpf(7000).s(\"sine\").freq(62).attack(0.003).penv(18).pdecay(0.03).decay(0.15).sustain(0).hpf(38).hpf(45).lpf(6000).gain(0.75)\n$: s(\"<[~ ~ ~ ~ x ~ ~ x ~ x ~ ~ x ~ ~ x]!2 [~ ~ ~ ~ x ~ ~ x ~ x ~ ~ ~ ~ x ~] [~ x ~ ~ x ~ ~ x ~ x ~ ~ ~ ~ x ~]>\").velocity(\"[.35 .5 .35 .35 1 .35 .35 .55 .35 .5 .35 .35 1 .35 .45 .55]\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"a3\").noise(0.65).attack(0.001).decay(0.12).sustain(0).hpf(200).lpf(9000).gain(0.8)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.3).sustain(0).gain(0.16)",
    "notes": "",
    "labels": [
     "dnb",
@@ -4946,32 +4940,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": true,
-   "rms_dbfs": -22.5,
-   "centroid_hz": 6275,
-   "peak": 0.325,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb/drums",
    "tags": [
     "drums",
     "dnb",
     "breakbeat",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 65,
-    "hash": "ae394e2bdf"
-   }
+   ]
   },
   {
    "id": "amen-chops",
    "title": "Amen chops (slice re-sequencing)",
    "intent": "The same break chopped: every lane is cut into the bar's 16 slices and re-sequenced by one chop order (.bite(16, ...)), so kick, snare and ride stay in step.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: s(atoms.dnb.amenKick).hook(\"breakKick\").bite(16, atoms.dnb.chops)\n$: s(atoms.dnb.amenSnare).velocity(atoms.dnb.amenVel).hook(\"breakSnare\").bite(16, atoms.dnb.chops)\n$: s(atoms.dnb.hats).velocity(atoms.dnb.rideVel).hook(\"ride\").bite(16, atoms.dnb.chops)",
-   "lowered": "setcpm(174/4)\n$: s(\"<[x ~ x ~ ~ ~ ~ ~ ~ ~ x x ~ ~ ~ ~]!2 [x ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [~ ~ x x ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~]>\").hpf(30).lpf(7000).s(\"sine\").freq(62).attack(0.001).penv(18).pdecay(0.03).decay(0.15).sustain(0).hpf(45).lpf(6000).gain(0.75).bite(16, \"<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 2 3 4 5 6 7 0 1 2 3 12 13 14 15] [0 1 2 3 8 9 10 11 4 5 6 7 12 13 14 15] [0 1 2 3 4 5 6 7 8 9 10 11 [12 12] [12 12] [14 14 14] [15 15 15 15]]>\")\n$: s(\"<[~ ~ ~ ~ x ~ ~ x ~ x ~ ~ x ~ ~ x]!2 [~ ~ ~ ~ x ~ ~ x ~ x ~ ~ ~ ~ x ~] [~ x ~ ~ x ~ ~ x ~ x ~ ~ ~ ~ x ~]>\").velocity(\"[.35 .5 .35 .35 1 .35 .35 .55 .35 .5 .35 .35 1 .35 .45 .55]\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"a3\").noise(0.65).attack(0.001).decay(0.12).sustain(0).hpf(200).lpf(9000).gain(0.8).bite(16, \"<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 2 3 4 5 6 7 0 1 2 3 12 13 14 15] [0 1 2 3 8 9 10 11 4 5 6 7 12 13 14 15] [0 1 2 3 4 5 6 7 8 9 10 11 [12 12] [12 12] [14 14 14] [15 15 15 15]]>\")\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.3).sustain(0).gain(0.16).bite(16, \"<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 2 3 4 5 6 7 0 1 2 3 12 13 14 15] [0 1 2 3 8 9 10 11 4 5 6 7 12 13 14 15] [0 1 2 3 4 5 6 7 8 9 10 11 [12 12] [12 12] [14 14 14] [15 15 15 15]]>\")",
+   "lowered": "setcpm(174/4)\n$: s(\"<[x ~ x ~ ~ ~ ~ ~ ~ ~ x x ~ ~ ~ ~]!2 [x ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [~ ~ x x ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~]>\").hpf(30).lpf(7000).s(\"sine\").freq(62).attack(0.003).penv(18).pdecay(0.03).decay(0.15).sustain(0).hpf(38).hpf(45).lpf(6000).gain(0.75).bite(16, \"<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 2 3 4 5 6 7 0 1 2 3 12 13 14 15] [0 1 2 3 8 9 10 11 4 5 6 7 12 13 14 15] [0 1 2 3 4 5 6 7 8 9 10 11 [12 12] [12 12] [14 14 14] [15 15 15 15]]>\")\n$: s(\"<[~ ~ ~ ~ x ~ ~ x ~ x ~ ~ x ~ ~ x]!2 [~ ~ ~ ~ x ~ ~ x ~ x ~ ~ ~ ~ x ~] [~ x ~ ~ x ~ ~ x ~ x ~ ~ ~ ~ x ~]>\").velocity(\"[.35 .5 .35 .35 1 .35 .35 .55 .35 .5 .35 .35 1 .35 .45 .55]\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"a3\").noise(0.65).attack(0.001).decay(0.12).sustain(0).hpf(200).lpf(9000).gain(0.8).bite(16, \"<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 2 3 4 5 6 7 0 1 2 3 12 13 14 15] [0 1 2 3 8 9 10 11 4 5 6 7 12 13 14 15] [0 1 2 3 4 5 6 7 8 9 10 11 [12 12] [12 12] [14 14 14] [15 15 15 15]]>\")\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.3).sustain(0).gain(0.16).bite(16, \"<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 2 3 4 5 6 7 0 1 2 3 12 13 14 15] [0 1 2 3 8 9 10 11 4 5 6 7 12 13 14 15] [0 1 2 3 4 5 6 7 8 9 10 11 [12 12] [12 12] [14 14 14] [15 15 15 15]]>\")",
    "notes": "",
    "labels": [
     "dnb",
@@ -4985,33 +4973,27 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": true,
-   "rms_dbfs": -22.4,
-   "centroid_hz": 6317,
-   "peak": 0.325,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb/drums",
    "tags": [
     "drums",
     "dnb",
     "breakbeat",
     "movement",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 71,
-    "hash": "403aca468d"
-   }
+   ]
   },
   {
    "id": "jungle-chops",
    "title": "Jungle chops (busier order)",
    "intent": "Doubled slices, a reversed beat and a closing roll from a second chop order.",
    "code": "setcpm(170/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: s(atoms.dnb.amenKick).hook(\"breakKick\").bite(16, atoms.dnb.chopsWild)\n$: s(atoms.dnb.amenSnare).velocity(atoms.dnb.amenVel).hook(\"breakSnare\").bite(16, atoms.dnb.chopsWild)\n$: s(atoms.dnb.hats).velocity(atoms.dnb.rideVel).hook(\"ride\").bite(16, atoms.dnb.chopsWild)",
-   "lowered": "setcpm(170/4)\n$: s(\"<[x ~ x ~ ~ ~ ~ ~ ~ ~ x x ~ ~ ~ ~]!2 [x ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [~ ~ x x ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~]>\").hpf(30).lpf(7000).s(\"sine\").freq(62).attack(0.001).penv(18).pdecay(0.03).decay(0.15).sustain(0).hpf(45).lpf(6000).gain(0.75).bite(16, \"<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 0 1 4 5 6 7 8 8 10 11 12 13 [14 15] [14 15]] [15 14 13 12 4 5 6 7 8 9 10 11 0 1 2 3] [0 0 2 2 4 [4 4] 6 7 [8 8 8] 9 10 11 [12 12 12 12] [13 13] [14 14 14] [15 15 15 15]]>\")\n$: s(\"<[~ ~ ~ ~ x ~ ~ x ~ x ~ ~ x ~ ~ x]!2 [~ ~ ~ ~ x ~ ~ x ~ x ~ ~ ~ ~ x ~] [~ x ~ ~ x ~ ~ x ~ x ~ ~ ~ ~ x ~]>\").velocity(\"[.35 .5 .35 .35 1 .35 .35 .55 .35 .5 .35 .35 1 .35 .45 .55]\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"a3\").noise(0.65).attack(0.001).decay(0.12).sustain(0).hpf(200).lpf(9000).gain(0.8).bite(16, \"<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 0 1 4 5 6 7 8 8 10 11 12 13 [14 15] [14 15]] [15 14 13 12 4 5 6 7 8 9 10 11 0 1 2 3] [0 0 2 2 4 [4 4] 6 7 [8 8 8] 9 10 11 [12 12 12 12] [13 13] [14 14 14] [15 15 15 15]]>\")\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.3).sustain(0).gain(0.16).bite(16, \"<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 0 1 4 5 6 7 8 8 10 11 12 13 [14 15] [14 15]] [15 14 13 12 4 5 6 7 8 9 10 11 0 1 2 3] [0 0 2 2 4 [4 4] 6 7 [8 8 8] 9 10 11 [12 12 12 12] [13 13] [14 14 14] [15 15 15 15]]>\")",
+   "lowered": "setcpm(170/4)\n$: s(\"<[x ~ x ~ ~ ~ ~ ~ ~ ~ x x ~ ~ ~ ~]!2 [x ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [~ ~ x x ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~]>\").hpf(30).lpf(7000).s(\"sine\").freq(62).attack(0.003).penv(18).pdecay(0.03).decay(0.15).sustain(0).hpf(38).hpf(45).lpf(6000).gain(0.75).bite(16, \"<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 0 1 4 5 6 7 8 8 10 11 12 13 [14 15] [14 15]] [15 14 13 12 4 5 6 7 8 9 10 11 0 1 2 3] [0 0 2 2 4 [4 4] 6 7 [8 8 8] 9 10 11 [12 12 12 12] [13 13] [14 14 14] [15 15 15 15]]>\")\n$: s(\"<[~ ~ ~ ~ x ~ ~ x ~ x ~ ~ x ~ ~ x]!2 [~ ~ ~ ~ x ~ ~ x ~ x ~ ~ ~ ~ x ~] [~ x ~ ~ x ~ ~ x ~ x ~ ~ ~ ~ x ~]>\").velocity(\"[.35 .5 .35 .35 1 .35 .35 .55 .35 .5 .35 .35 1 .35 .45 .55]\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"a3\").noise(0.65).attack(0.001).decay(0.12).sustain(0).hpf(200).lpf(9000).gain(0.8).bite(16, \"<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 0 1 4 5 6 7 8 8 10 11 12 13 [14 15] [14 15]] [15 14 13 12 4 5 6 7 8 9 10 11 0 1 2 3] [0 0 2 2 4 [4 4] 6 7 [8 8 8] 9 10 11 [12 12 12 12] [13 13] [14 14 14] [15 15 15 15]]>\")\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.3).sustain(0).gain(0.16).bite(16, \"<[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15] [0 1 0 1 4 5 6 7 8 8 10 11 12 13 [14 15] [14 15]] [15 14 13 12 4 5 6 7 8 9 10 11 0 1 2 3] [0 0 2 2 4 [4 4] 6 7 [8 8 8] 9 10 11 [12 12 12 12] [13 13] [14 14 14] [15 15 15 15]]>\")",
    "notes": "",
    "labels": [
     "dnb",
@@ -5025,33 +5007,27 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 170.0,
-   "verified": true,
-   "rms_dbfs": -22.3,
-   "centroid_hz": 6555,
-   "peak": 0.3468,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb/drums",
    "tags": [
     "drums",
     "dnb",
     "breakbeat",
     "movement",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 81,
-    "hash": "4eb3633eef"
-   }
+   ]
   },
   {
    "id": "think-style-break",
    "title": "Think-style break (synthesised)",
    "intent": "A think-style pattern: kick on 1 and the a of 1, snare on 2, the a of 2, 4 and the and of 4, 16th hats with accents.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: s(atoms.dnb.thinkKick).hook(\"breakKick\")\n$: s(atoms.dnb.thinkSnare).hook(\"breakSnare\")\n$: s(atoms.dnb.thinkHat).velocity(atoms.dnb.shakerVel).hook(\"dnbHat\")",
-   "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(62).attack(0.001).penv(18).pdecay(0.03).decay(0.15).sustain(0).hpf(45).lpf(6000).gain(0.75)\n$: s(\"~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ x ~ x ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"a3\").noise(0.65).attack(0.001).decay(0.12).sustain(0).hpf(200).lpf(9000).gain(0.8)\n$: s(\"x*16\").velocity(\"[.35 .2 .6 .2]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.35)",
+   "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(62).attack(0.003).penv(18).pdecay(0.03).decay(0.15).sustain(0).hpf(38).hpf(45).lpf(6000).gain(0.75)\n$: s(\"~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ x ~ x ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"a3\").noise(0.65).attack(0.001).decay(0.12).sustain(0).hpf(200).lpf(9000).gain(0.8)\n$: s(\"x*16\").velocity(\"[.35 .2 .6 .2]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.35)",
    "notes": "",
    "labels": [
     "dnb",
@@ -5065,32 +5041,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": true,
-   "rms_dbfs": -22.2,
-   "centroid_hz": 4905,
-   "peak": 0.326,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb/drums",
    "tags": [
     "drums",
     "dnb",
     "breakbeat",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 92,
-    "hash": "b2292c4775"
-   }
+   ]
   },
   {
    "id": "dnb-sub",
    "title": "DnB sub",
    "intent": "Mono sine sub, one held note per bar on F1 / Db2 / Bb1 / C2, retriggered with the kick.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: note(atoms.dnb.sub).hook(\"dnbSub\")",
-   "lowered": "setcpm(174/4)\n$: note(\"<[f1@10 f1@6]!2 [db2@10 db2@6]!2 [bb1@10 bb1@6]!2 [c2@10 c2@6]!2>\").hpf(25).s(\"sine\").attack(0.005).decay(0.4).sustain(0.85).release(0.08).lpf(250).gain(0.5).postgain(0.8)",
+   "lowered": "setcpm(174/4)\n$: note(\"<[f1@10 f1@6]!2 [db2@10 db2@6]!2 [bb1@10 bb1@6]!2 [c2@10 c2@6]!2>\").hpf(25).s(\"sine\").attack(0.008).decay(0.4).sustain(0.85).release(0.12).lpf(250).gain(0.5).postgain(0.8)",
    "notes": "",
    "labels": [
     "dnb",
@@ -5103,24 +5073,18 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": true,
-   "rms_dbfs": -21.1,
-   "centroid_hz": 60,
-   "peak": 0.2359,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb/bass",
    "tags": [
     "bass",
     "dnb",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 8,
-    "hash": "b9e060419d"
-   }
+   ]
   },
   {
    "id": "reese-bass",
@@ -5128,6 +5092,12 @@
    "intent": "Two detuned saws on the sub's notes from 100 Hz up: the slow beating of the pair is the movement.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: note(atoms.dnb.sub).hook(\"reese\").add(note(\"0,0.18\"))",
    "lowered": "setcpm(174/4)\n$: note(\"<[f1@10 f1@6]!2 [db2@10 db2@6]!2 [bb1@10 bb1@6]!2 [c2@10 c2@6]!2>\").hpf(30).lpf(5000).s(\"sawtooth\").hpf(100).ftype(\"24db\").attack(0.005).sustain(0.85).release(0.1).lpf(900).lpenv(1.2).lpdecay(0.3).gain(0.3).add(note(\"0,0.18\"))",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "f3bda1e553"
+   },
    "notes": "",
    "labels": [
     "dnb",
@@ -5153,13 +5123,7 @@
     "neuro",
     "verified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 16,
-    "hash": "f3bda1e553"
-   }
+   ]
   },
   {
    "id": "neuro-bass",
@@ -5167,6 +5131,12 @@
    "intent": "FM saw with a sub-octave modulator, resonant snap and vowel formant on a 16th neuro riff (serial drive is the edm drive move on top).",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: note(atoms.dnb.neuro).hook(\"neuroBass\")",
    "lowered": "setcpm(174/4)\n$: note(\"<[f1 ~ f1 f1 ~ f1 ~ ~ f2 ~ f1 ~ ab1 ~ f1 ~] [f1 ~ ~ f1 ~ ~ f1 ~ eb2 ~ ~ f1 c2 ~ f1 ~]>\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2.5).fmh(0.5).attack(0.004).sustain(0.6).release(0.06).lpf(1400).lpq(8).lpenv(2.5).lpdecay(0.18).vowel(\"o\").gain(0.6)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 30,
+    "hash": "66f9db8e90"
+   },
    "notes": "",
    "labels": [
     "dnb",
@@ -5192,20 +5162,14 @@
     "neuro",
     "verified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 30,
-    "hash": "66f9db8e90"
-   }
+   ]
   },
   {
    "id": "rolling-bass-dnb",
    "title": "Rolling bass",
    "intent": "A dark saw on offbeat 16ths that roll into the next kick.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: note(atoms.dnb.rolling).hook(\"rollingBass\")",
-   "lowered": "setcpm(174/4)\n$: note(\"<[f1 ~ f1 ~ ~ f1 ~ f2 ~ f1 ~ ~ f1 ~ ab1 ~]!2 [db2 ~ db2 ~ ~ db2 ~ ab1 ~ db2 ~ ~ db2 ~ c2 ~]!2 [bb1 ~ bb1 ~ ~ bb1 ~ f2 ~ bb1 ~ ~ bb1 ~ db2 ~]!2 [c2 ~ c2 ~ ~ c2 ~ g1 ~ c2 ~ ~ c2 ~ bb1 ~]!2>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.3).release(0.05).lpf(380).lpenv(2).lpdecay(0.1).gain(0.4)",
+   "lowered": "setcpm(174/4)\n$: note(\"<[f1 ~ f1 ~ ~ f1 ~ f2 ~ f1 ~ ~ f1 ~ ab1 ~]!2 [db2 ~ db2 ~ ~ db2 ~ ab1 ~ db2 ~ ~ db2 ~ c2 ~]!2 [bb1 ~ bb1 ~ ~ bb1 ~ f2 ~ bb1 ~ ~ bb1 ~ db2 ~]!2 [c2 ~ c2 ~ ~ c2 ~ g1 ~ c2 ~ ~ c2 ~ bb1 ~]!2>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.006).decay(0.15).sustain(0.3).release(0.05).lpf(380).lpenv(2).lpdecay(0.1).gain(0.4)",
    "notes": "",
    "labels": [
     "dnb",
@@ -5219,32 +5183,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": true,
-   "rms_dbfs": -28.3,
-   "centroid_hz": 453,
-   "peak": 0.2216,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb/bass",
    "tags": [
     "bass",
     "dnb",
     "liquid",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 28,
-    "hash": "33575a9311"
-   }
+   ]
   },
   {
    "id": "jumpup-wobble",
    "title": "Jump-up wobble",
    "intent": "Resonant saw whose filter re-opens on every note of a 3+3+2 rhythm with octave jumps.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: note(atoms.dnb.wobble).hook(\"jumpWobble\")",
-   "lowered": "setcpm(174/4)\n$: note(\"<[f1@3 f1@3 f1@2 f2@3 f1@3 ab1@2] [f1@3 f1@3 f1@2 c2@3 bb1@3 ab1@2]>\").hpf(70).lpf(9000).s(\"sawtooth\").attack(0.004).sustain(0.8).release(0.05).lpf(300).lpq(10).lpenv(4).lpattack(0.05).lpdecay(0.12).lpsustain(0).gain(0.28)",
+   "lowered": "setcpm(174/4)\n$: note(\"<[f2@3 f2@3 f2@2 f3@3 f2@3 ab2@2] [f2@3 f2@3 f2@2 c3@3 bb2@3 ab2@2]>\").hpf(70).lpf(9000).s(\"sawtooth\").hpf(90).attack(0.004).sustain(0.8).release(0.05).lpf(300).lpq(10).lpenv(4).lpattack(0.05).lpdecay(0.12).lpsustain(0).gain(0.28)",
    "notes": "",
    "labels": [
     "dnb",
@@ -5258,25 +5216,19 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": true,
-   "rms_dbfs": -29.0,
-   "centroid_hz": 868,
-   "peak": 0.2519,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb/bass",
    "tags": [
     "bass",
     "dnb",
     "jump-up",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 24,
-    "hash": "402b0930d1"
-   }
+   ]
   },
   {
    "id": "liquid-rhodes",
@@ -5284,6 +5236,12 @@
    "intent": "FM Rhodes playing Fm9 - Dbmaj9 - Bbm9 - Cm7, one chord per two bars, in a syncopated comp.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: note(atoms.dnb.chords).hook(\"liquidRhodes\").struct(atoms.dnb.comp)",
    "lowered": "setcpm(174/4)\n$: note(\"<[f3,ab3,c4,eb4,g4]!2 [db3,f3,ab3,c4,eb4]!2 [bb2,db3,f3,ab3,c4]!2 [c3,eb3,g3,bb3]!2>\").hpf(80).lpf(7000).s(\"sine\").fm(1.8).fmh(1).fmdecay(0.5).fmsustain(0.1).attack(0.005).decay(1.2).sustain(0.25).release(0.6).hpf(120).lpf(4000).gain(0.2).struct(\"x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ ~ ~ ~\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 80,
+    "hash": "4f0acc72e3"
+   },
    "notes": "",
    "labels": [
     "dnb",
@@ -5310,13 +5268,7 @@
     "chord-progression",
     "verified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 80,
-    "hash": "4f0acc72e3"
-   }
+   ]
   },
   {
    "id": "liquid-pad",
@@ -5324,6 +5276,12 @@
    "intent": "Supersaw pad swelling over the liquid chords, low end left to the bass.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: note(atoms.dnb.chords).hook(\"liquidPad\")",
    "lowered": "setcpm(174/4)\n$: note(\"<[f3,ab3,c4,eb4,g4]!2 [db3,f3,ab3,c4,eb4]!2 [bb2,db3,f3,ab3,c4]!2 [c3,eb3,g3,bb3]!2>\").hpf(180).lpf(6000).s(\"sawtooth\").vib(5).vibmod(0.04).attack(1.2).sustain(0.8).release(2.5).lpf(1600).lpenv(1).lpattack(2).gain(0.14)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 20,
+    "hash": "3471030f88"
+   },
    "notes": "",
    "labels": [
     "dnb",
@@ -5349,13 +5307,7 @@
     "liquid",
     "verified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 20,
-    "hash": "3471030f88"
-   }
+   ]
   },
   {
    "id": "liquid-strings",
@@ -5363,6 +5315,12 @@
    "intent": "A slow string line, one note per bar, on the 9th / 3rd / 5th of each chord.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: note(atoms.dnb.strings).hook(\"strings\")",
    "lowered": "setcpm(174/4)\n$: note(\"<g4 ab4 f4 ab4 f4 db5 eb4 g4>\").hpf(180).lpf(6000).s(\"sawtooth\").attack(0.5).sustain(0.85).release(1.8).lpf(2600).vib(5).vibmod(0.06).gain(0.12)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 4,
+    "hash": "0950f81af2"
+   },
    "notes": "",
    "labels": [
     "dnb",
@@ -5389,13 +5347,7 @@
     "motif",
     "verified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 4,
-    "hash": "0950f81af2"
-   }
+   ]
   },
   {
    "id": "dnb-vocal-chops",
@@ -5403,6 +5355,12 @@
    "intent": "Short vowel-filtered saw chops on an offbeat rhythm, the vowel changing every bar.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: note(atoms.dnb.chop).hook(\"vocalChop\").vowel(atoms.dnb.chopVowel)",
    "lowered": "setcpm(174/4)\n$: note(\"<[~ ~ c5 ~ ~ ~ ab4 ~ ~ ~ ~ ~ c5 ~ eb5 ~] [~ ~ f4 ~ ~ ~ ab4 ~ ~ ~ ~ ~ g4 ~ f4 ~]>\").hpf(150).lpf(8000).s(\"sawtooth\").vowel(\"a\").attack(0.005).decay(0.12).sustain(0).lpf(3500).gain(0.3).vowel(\"<a o e o>\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "6fdaaed588"
+   },
    "notes": "",
    "labels": [
     "dnb",
@@ -5429,20 +5387,14 @@
     "texture-vocal-like",
     "verified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 16,
-    "hash": "6fdaaed588"
-   }
+   ]
   },
   {
    "id": "dnb-halftime",
    "title": "Halftime DnB",
    "intent": "Same tempo, kick on 1 and snare on 3: the 87 bpm feel, while the shaker and the bass keep running at 174.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: s(atoms.dnb.halfKick).hook(\"dnbKick\")\n$: s(atoms.dnb.halfSnare).hook(\"dnbSnare\")\n$: s(atoms.dnb.shaker).velocity(atoms.dnb.shakerVel).hook(\"dnbShaker\")\n$: note(atoms.dnb.sub).hook(\"dnbSub\")",
-   "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(24).pdecay(0.035).decay(0.2).sustain(0).lpf(5000).gain(0.8)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85)\n$: s(\"x*16\").velocity(\"[.35 .2 .6 .2]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(6000).attack(0.008).decay(0.05).sustain(0).gain(0.3)\n$: note(\"<[f1@10 f1@6]!2 [db2@10 db2@6]!2 [bb1@10 bb1@6]!2 [c2@10 c2@6]!2>\").hpf(25).s(\"sine\").attack(0.005).decay(0.4).sustain(0.85).release(0.08).lpf(250).gain(0.5).postgain(0.8)",
+   "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.003).penv(24).pdecay(0.035).decay(0.2).sustain(0).hpf(38).lpf(5000).gain(0.8)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85)\n$: s(\"x*16\").velocity(\"[.35 .2 .6 .2]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(6000).attack(0.008).decay(0.05).sustain(0).gain(0.3)\n$: note(\"<[f1@10 f1@6]!2 [db2@10 db2@6]!2 [bb1@10 bb1@6]!2 [c2@10 c2@6]!2>\").hpf(25).s(\"sine\").attack(0.008).decay(0.4).sustain(0.85).release(0.12).lpf(250).gain(0.5).postgain(0.8)",
    "notes": "",
    "labels": [
     "dnb",
@@ -5456,32 +5408,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": true,
-   "rms_dbfs": -20.0,
-   "centroid_hz": 5100,
-   "peak": 0.3765,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb/drums",
    "tags": [
     "drums",
     "dnb",
     "half-time",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 80,
-    "hash": "afeddc82cf"
-   }
+   ]
   },
   {
    "id": "dnb-sub-reese-split",
    "title": "Multiband by layers: sub + reese",
    "intent": "The low end in two layers: a mono sine sub owns 40-120 Hz, the reese plays the same notes from 100 Hz up, so the movement never smears the sub.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: note(atoms.dnb.sub).hook(\"dnbSub\")\n$: note(atoms.dnb.sub).hook(\"reese\").add(note(\"0,0.18\"))",
-   "lowered": "setcpm(174/4)\n$: note(\"<[f1@10 f1@6]!2 [db2@10 db2@6]!2 [bb1@10 bb1@6]!2 [c2@10 c2@6]!2>\").hpf(25).s(\"sine\").attack(0.005).decay(0.4).sustain(0.85).release(0.08).lpf(250).gain(0.5).postgain(0.8)\n$: note(\"<[f1@10 f1@6]!2 [db2@10 db2@6]!2 [bb1@10 bb1@6]!2 [c2@10 c2@6]!2>\").hpf(30).lpf(5000).s(\"sawtooth\").hpf(100).ftype(\"24db\").attack(0.005).sustain(0.85).release(0.1).lpf(900).lpenv(1.2).lpdecay(0.3).gain(0.3).add(note(\"0,0.18\"))",
+   "lowered": "setcpm(174/4)\n$: note(\"<[f1@10 f1@6]!2 [db2@10 db2@6]!2 [bb1@10 bb1@6]!2 [c2@10 c2@6]!2>\").hpf(25).s(\"sine\").attack(0.008).decay(0.4).sustain(0.85).release(0.12).lpf(250).gain(0.5).postgain(0.8)\n$: note(\"<[f1@10 f1@6]!2 [db2@10 db2@6]!2 [bb1@10 bb1@6]!2 [c2@10 c2@6]!2>\").hpf(30).lpf(5000).s(\"sawtooth\").hpf(100).ftype(\"24db\").attack(0.005).sustain(0.85).release(0.1).lpf(900).lpenv(1.2).lpdecay(0.3).gain(0.3).add(note(\"0,0.18\"))",
    "notes": "",
    "labels": [
     "dnb",
@@ -5495,25 +5441,19 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": true,
-   "rms_dbfs": -20.0,
-   "centroid_hz": 373,
-   "peak": 0.4265,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb/bass",
    "tags": [
     "bass",
     "dnb",
     "neuro",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 24,
-    "hash": "e0fa5644c3"
-   }
+   ]
   },
   {
    "id": "dnb-shaker",
@@ -5521,6 +5461,13 @@
    "intent": "16th shaker accented on the offbeat 8ths, an 8th ride on top.",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: s(atoms.dnb.shaker).velocity(atoms.dnb.shakerVel).hook(\"dnbShaker | groove-swing(54) | groove-human(2.5, 0.15, 3)\")\n$: s(atoms.dnb.hats).velocity(atoms.dnb.rideVel).hook(\"ride\")",
    "lowered": "setcpm(174/4)\n$: s(\"x*16\").velocity(\"[.35 .2 .6 .2]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(6000).attack(0.008).decay(0.05).sustain(0).gain(0.3).swingBy(0.08, 8).mul(velocity(rand.late(3.37).range(0.85, 1))).late(rand.late(3).range(0, 0.003125).segment(16)).early(0.001563)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.3).sustain(0).gain(0.16)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (96 Craft, 95 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "a01864906c"
+   },
    "notes": "",
    "labels": [
     "dnb",
@@ -5544,15 +5491,8 @@
     "dnb",
     "hats",
     "verified",
-    "lowered"
-   ],
-   "lowered_check": {
-    "equal": false,
-    "approx": true,
-    "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (96 Craft, 95 Strudel)); with the groove taken out of both forms the events are identical",
-    "hash": "a01864906c"
-   }
+    "approx"
+   ]
   },
   {
    "id": "dubstep-halftime-drums",
@@ -6507,7 +6447,7 @@
    "title": "Feel: liquid dnb",
    "intent": "rolling two-step with ghost notes behind the beat, shaker, held sub, liquid pad and vocal chops (172-176 bpm).",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: s(atoms.dnb.kick).hook(\"dnbKick | groove-swing(54) | groove-human(2.5, 0.15, 1)\")\n$: s(atoms.dnb.snare).hook(\"dnbSnare | groove-swing(54) | groove-human(2.5, 0.15, 2)\")\n$: s(atoms.dnb.ghosts).velocity(atoms.dnb.ghostVel).hook(\"ghostSnare | groove-swing(54) | groove-human(2.5, 0.15, 3) | groove-push(3)\")\n$: s(atoms.dnb.shaker).velocity(atoms.dnb.shakerVel).hook(\"dnbShaker | groove-swing(54) | groove-human(2.5, 0.15, 4)\")\n$: note(atoms.dnb.chop).hook(\"vocalChop | groove-swing(54) | groove-human(2.5, 0.15, 5)\")\n$: note(atoms.dnb.sub).hook(\"dnbSub | groove-human(0.5, 0.05, 6)\")\n$: note(atoms.dnb.chords).hook(\"liquidPad | groove-human(0.5, 0.05, 7)\")",
-   "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(24).pdecay(0.035).decay(0.2).sustain(0).lpf(5000).gain(0.8).swingBy(0.08, 8).mul(velocity(rand.late(1.37).range(0.85, 1))).late(rand.late(1).range(0, 0.003125).segment(16)).early(0.001563)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85).swingBy(0.08, 8).mul(velocity(rand.late(2.37).range(0.85, 1))).late(rand.late(2).range(0, 0.003125).segment(16)).early(0.001563)\n$: s(\"~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~\").velocity(\"[.55 .4 .6 .45]*4\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.6).attack(0.002).decay(0.07).sustain(0).hpf(200).lpf(6000).gain(0.3).swingBy(0.08, 8).mul(velocity(rand.late(3.37).range(0.85, 1))).late(rand.late(3).range(0, 0.003125).segment(16)).early(0.001563).late(0.001875)\n$: s(\"x*16\").velocity(\"[.35 .2 .6 .2]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(6000).attack(0.008).decay(0.05).sustain(0).gain(0.3).swingBy(0.08, 8).mul(velocity(rand.late(4.37).range(0.85, 1))).late(rand.late(4).range(0, 0.003125).segment(16)).early(0.001563)\n$: note(\"<[~ ~ c5 ~ ~ ~ ab4 ~ ~ ~ ~ ~ c5 ~ eb5 ~] [~ ~ f4 ~ ~ ~ ab4 ~ ~ ~ ~ ~ g4 ~ f4 ~]>\").hpf(150).lpf(8000).s(\"sawtooth\").vowel(\"a\").attack(0.005).decay(0.12).sustain(0).lpf(3500).gain(0.3).swingBy(0.08, 8).mul(velocity(rand.late(5.37).range(0.85, 1))).late(rand.late(5).range(0, 0.003125).segment(16)).early(0.001563)\n$: note(\"<[f1@10 f1@6]!2 [db2@10 db2@6]!2 [bb1@10 bb1@6]!2 [c2@10 c2@6]!2>\").hpf(25).s(\"sine\").attack(0.005).decay(0.4).sustain(0.85).release(0.08).lpf(250).gain(0.5).postgain(0.8).mul(velocity(rand.late(6.37).range(0.95, 1))).late(rand.late(6).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f3,ab3,c4,eb4,g4]!2 [db3,f3,ab3,c4,eb4]!2 [bb2,db3,f3,ab3,c4]!2 [c3,eb3,g3,bb3]!2>\").hpf(180).lpf(6000).s(\"sawtooth\").vib(5).vibmod(0.04).attack(1.2).sustain(0.8).release(2.5).lpf(1600).lpenv(1).lpattack(2).gain(0.14).mul(velocity(rand.late(7.37).range(0.95, 1))).late(rand.late(7).range(0, 0.000625).segment(16)).early(0.000313)",
+   "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.003).penv(24).pdecay(0.035).decay(0.2).sustain(0).hpf(38).lpf(5000).gain(0.8).swingBy(0.08, 8).mul(velocity(rand.late(1.37).range(0.85, 1))).late(rand.late(1).range(0, 0.003125).segment(16)).early(0.001563)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85).swingBy(0.08, 8).mul(velocity(rand.late(2.37).range(0.85, 1))).late(rand.late(2).range(0, 0.003125).segment(16)).early(0.001563)\n$: s(\"~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~\").velocity(\"[.55 .4 .6 .45]*4\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.6).attack(0.002).decay(0.07).sustain(0).hpf(200).lpf(6000).gain(0.3).swingBy(0.08, 8).mul(velocity(rand.late(3.37).range(0.85, 1))).late(rand.late(3).range(0, 0.003125).segment(16)).early(0.001563).late(0.001875)\n$: s(\"x*16\").velocity(\"[.35 .2 .6 .2]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(6000).attack(0.008).decay(0.05).sustain(0).gain(0.3).swingBy(0.08, 8).mul(velocity(rand.late(4.37).range(0.85, 1))).late(rand.late(4).range(0, 0.003125).segment(16)).early(0.001563)\n$: note(\"<[~ ~ c5 ~ ~ ~ ab4 ~ ~ ~ ~ ~ c5 ~ eb5 ~] [~ ~ f4 ~ ~ ~ ab4 ~ ~ ~ ~ ~ g4 ~ f4 ~]>\").hpf(150).lpf(8000).s(\"sawtooth\").vowel(\"a\").attack(0.005).decay(0.12).sustain(0).lpf(3500).gain(0.3).swingBy(0.08, 8).mul(velocity(rand.late(5.37).range(0.85, 1))).late(rand.late(5).range(0, 0.003125).segment(16)).early(0.001563)\n$: note(\"<[f1@10 f1@6]!2 [db2@10 db2@6]!2 [bb1@10 bb1@6]!2 [c2@10 c2@6]!2>\").hpf(25).s(\"sine\").attack(0.008).decay(0.4).sustain(0.85).release(0.12).lpf(250).gain(0.5).postgain(0.8).mul(velocity(rand.late(6.37).range(0.95, 1))).late(rand.late(6).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f3,ab3,c4,eb4,g4]!2 [db3,f3,ab3,c4,eb4]!2 [bb2,db3,f3,ab3,c4]!2 [c3,eb3,g3,bb3]!2>\").hpf(180).lpf(6000).s(\"sawtooth\").vib(5).vibmod(0.04).attack(1.2).sustain(0.8).release(2.5).lpf(1600).lpenv(1).lpattack(2).gain(0.14).mul(velocity(rand.late(7.37).range(0.95, 1))).late(rand.late(7).range(0, 0.000625).segment(16)).early(0.000313)",
    "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-liquid (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-liquid\", { as: \"feel\" }).",
    "labels": [
     "dnb",
@@ -6520,32 +6460,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": true,
-   "rms_dbfs": -19.3,
-   "centroid_hz": 3802,
-   "peak": 0.4449,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb-electro/misc",
    "tags": [
     "dnb",
     "liquid",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": false,
-    "approx": true,
-    "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (131 Craft, 133 Strudel)); with the groove taken out of both forms the events are identical",
-    "hash": "dc351a1179"
-   }
+   ]
   },
   {
    "id": "feel-neuro",
    "title": "Feel: neurofunk",
    "intent": "machine-tight two-step, rolling ghosts, 8th hats and a 16th neuro riff (add a sub lane on atoms.feel.bass with dnbSub) (172-176 bpm).",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: s(atoms.dnb.kick).hook(\"dnbKick | groove-human(0.5, 0.05, 1)\")\n$: s(atoms.dnb.snare).hook(\"dnbSnare | groove-human(0.5, 0.05, 2)\")\n$: s(atoms.dnb.ghostsRoll).velocity(atoms.dnb.ghostVel).hook(\"ghostSnare | groove-human(0.5, 0.05, 3)\")\n$: s(atoms.dnb.hats).hook(\"dnbHat | groove-human(0.5, 0.05, 4)\")\n$: note(atoms.dnb.neuro).hook(\"neuroBass | groove-human(0.5, 0.05, 6)\")",
-   "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(24).pdecay(0.035).decay(0.2).sustain(0).lpf(5000).gain(0.8).mul(velocity(rand.late(1.37).range(0.95, 1))).late(rand.late(1).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85).mul(velocity(rand.late(2.37).range(0.95, 1))).late(rand.late(2).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~ ~ x x\").velocity(\"[.55 .4 .6 .45]*4\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.6).attack(0.002).decay(0.07).sustain(0).hpf(200).lpf(6000).gain(0.3).mul(velocity(rand.late(3.37).range(0.95, 1))).late(rand.late(3).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.35).mul(velocity(rand.late(4.37).range(0.95, 1))).late(rand.late(4).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f1 ~ f1 f1 ~ f1 ~ ~ f2 ~ f1 ~ ab1 ~ f1 ~] [f1 ~ ~ f1 ~ ~ f1 ~ eb2 ~ ~ f1 c2 ~ f1 ~]>\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2.5).fmh(0.5).attack(0.004).sustain(0.6).release(0.06).lpf(1400).lpq(8).lpenv(2.5).lpdecay(0.18).vowel(\"o\").gain(0.6).mul(velocity(rand.late(6.37).range(0.95, 1))).late(rand.late(6).range(0, 0.000625).segment(16)).early(0.000313)",
+   "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.003).penv(24).pdecay(0.035).decay(0.2).sustain(0).hpf(38).lpf(5000).gain(0.8).mul(velocity(rand.late(1.37).range(0.95, 1))).late(rand.late(1).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85).mul(velocity(rand.late(2.37).range(0.95, 1))).late(rand.late(2).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~ ~ x x\").velocity(\"[.55 .4 .6 .45]*4\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.6).attack(0.002).decay(0.07).sustain(0).hpf(200).lpf(6000).gain(0.3).mul(velocity(rand.late(3.37).range(0.95, 1))).late(rand.late(3).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.35).mul(velocity(rand.late(4.37).range(0.95, 1))).late(rand.late(4).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f1 ~ f1 f1 ~ f1 ~ ~ f2 ~ f1 ~ ab1 ~ f1 ~] [f1 ~ ~ f1 ~ ~ f1 ~ eb2 ~ ~ f1 c2 ~ f1 ~]>\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2.5).fmh(0.5).attack(0.004).sustain(0.6).release(0.06).lpf(1400).lpq(8).lpenv(2.5).lpdecay(0.18).vowel(\"o\").gain(0.6).mul(velocity(rand.late(6.37).range(0.95, 1))).late(rand.late(6).range(0, 0.000625).segment(16)).early(0.000313)",
    "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-neuro (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-neuro\", { as: \"feel\" }).",
    "labels": [
     "dnb",
@@ -6558,32 +6491,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": true,
-   "rms_dbfs": -23.7,
-   "centroid_hz": 5757,
-   "peak": 0.3806,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb-electro/misc",
    "tags": [
     "dnb",
     "neuro",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": false,
-    "approx": true,
-    "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (97 Craft, 99 Strudel)); with the groove taken out of both forms the events are identical",
-    "hash": "49d5b5f01a"
-   }
+   ]
   },
   {
    "id": "feel-jumpup",
    "title": "Feel: jump-up",
    "intent": "bouncy two-step pushed slightly forward, a wobble bass with octave jumps (172-176 bpm).",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: s(atoms.dnb.kick).hook(\"dnbKick | groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 1)\")\n$: s(atoms.dnb.snare).hook(\"dnbSnare | groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 2)\")\n$: s(atoms.dnb.ghosts).velocity(atoms.dnb.ghostVel).hook(\"ghostSnare | groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 3)\")\n$: s(atoms.dnb.hats).hook(\"dnbHat | groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 4)\")\n$: note(atoms.dnb.wobble).hook(\"jumpWobble | groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 6)\")",
-   "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(24).pdecay(0.035).decay(0.2).sustain(0).lpf(5000).gain(0.8).swingBy(0.04, 8).early(0.00125).mul(velocity(rand.late(1.37).range(0.88, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85).swingBy(0.04, 8).early(0.00125).mul(velocity(rand.late(2.37).range(0.88, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~\").velocity(\"[.55 .4 .6 .45]*4\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.6).attack(0.002).decay(0.07).sustain(0).hpf(200).lpf(6000).gain(0.3).swingBy(0.04, 8).early(0.00125).mul(velocity(rand.late(3.37).range(0.88, 1))).late(rand.late(3).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.35).swingBy(0.04, 8).early(0.00125).mul(velocity(rand.late(4.37).range(0.88, 1))).late(rand.late(4).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"<[f1@3 f1@3 f1@2 f2@3 f1@3 ab1@2] [f1@3 f1@3 f1@2 c2@3 bb1@3 ab1@2]>\").hpf(70).lpf(9000).s(\"sawtooth\").attack(0.004).sustain(0.8).release(0.05).lpf(300).lpq(10).lpenv(4).lpattack(0.05).lpdecay(0.12).lpsustain(0).gain(0.28).swingBy(0.04, 8).early(0.00125).mul(velocity(rand.late(6.37).range(0.88, 1))).late(rand.late(6).range(0, 0.00125).segment(16)).early(0.000625)",
+   "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.003).penv(24).pdecay(0.035).decay(0.2).sustain(0).hpf(38).lpf(5000).gain(0.8).swingBy(0.04, 8).early(0.00125).mul(velocity(rand.late(1.37).range(0.88, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85).swingBy(0.04, 8).early(0.00125).mul(velocity(rand.late(2.37).range(0.88, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~\").velocity(\"[.55 .4 .6 .45]*4\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.6).attack(0.002).decay(0.07).sustain(0).hpf(200).lpf(6000).gain(0.3).swingBy(0.04, 8).early(0.00125).mul(velocity(rand.late(3.37).range(0.88, 1))).late(rand.late(3).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.35).swingBy(0.04, 8).early(0.00125).mul(velocity(rand.late(4.37).range(0.88, 1))).late(rand.late(4).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"<[f2@3 f2@3 f2@2 f3@3 f2@3 ab2@2] [f2@3 f2@3 f2@2 c3@3 bb2@3 ab2@2]>\").hpf(70).lpf(9000).s(\"sawtooth\").hpf(90).attack(0.004).sustain(0.8).release(0.05).lpf(300).lpq(10).lpenv(4).lpattack(0.05).lpdecay(0.12).lpsustain(0).gain(0.28).swingBy(0.04, 8).early(0.00125).mul(velocity(rand.late(6.37).range(0.88, 1))).late(rand.late(6).range(0, 0.00125).segment(16)).early(0.000625)",
    "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-jumpup (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-jumpup\", { as: \"feel\" }).",
    "labels": [
     "dnb",
@@ -6596,32 +6522,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 174.0,
-   "verified": true,
-   "rms_dbfs": -23.8,
-   "centroid_hz": 4625,
-   "peak": 0.3706,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb-electro/misc",
    "tags": [
     "dnb",
     "jump-up",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": false,
-    "approx": true,
-    "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
-    "hash": "bb11c3aa64"
-   }
+   ]
   },
   {
    "id": "feel-electrohouse",
    "title": "Feel: electro house",
    "intent": "four-on-the-floor, offbeat hat, filtered saw bass and supersaw stabs on the offbeats (126-130 bpm).",
    "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: s(atoms.el.ehKick).hook(\"houseKick | groove-human(0.5, 0.05, 1)\")\n$: s(atoms.el.ehClap).hook(\"clap808 | groove-human(0.5, 0.05, 2)\")\n$: s(atoms.el.ehHat).hook(\"offHat | groove-human(0.5, 0.05, 4)\")\n$: note(atoms.el.ehStabLine).hook(\"sawStab | groove-human(0.5, 0.05, 5)\")\n$: note(atoms.el.ehBass).hook(\"filterBass | groove-human(0.5, 0.05, 6)\")",
-   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.001).penv(26).pdecay(0.04).decay(0.28).sustain(0).lpf(6000).gain(0.8).mul(velocity(rand.late(1.37).range(0.95, 1))).late(rand.late(1).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1100).bpq(1.5).attack(0.002).decay(0.2).sustain(0).gain(0.95).mul(velocity(rand.late(2.37).range(0.95, 1))).late(rand.late(2).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3).mul(velocity(rand.late(4.37).range(0.95, 1))).late(rand.late(4).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[~ ~ [f3,ab3,c4,f4] ~ ~ ~ [f3,ab3,c4,f4] ~ ~ ~ [f3,ab3,c4,f4] ~ ~ ~ [f3,ab3,c4,f4] ~] [~ ~ [db3,f3,ab3,db4] ~ ~ ~ [db3,f3,ab3,db4] ~ ~ ~ [db3,f3,ab3,db4] ~ ~ ~ [db3,f3,ab3,db4] ~] [~ ~ [eb3,g3,bb3,eb4] ~ ~ ~ [eb3,g3,bb3,eb4] ~ ~ ~ [eb3,g3,bb3,eb4] ~ ~ ~ [eb3,g3,bb3,eb4] ~] [~ ~ [c3,eb3,g3,c4] ~ ~ ~ [c3,eb3,g3,c4] ~ ~ ~ [c3,eb3,g3,c4] ~ ~ ~ [c3,eb3,g3,c4] ~]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.35).spread(0.6).attack(0.003).decay(0.28).sustain(0).lpf(5000).lpenv(1).lpdecay(0.2).gain(0.13).mul(velocity(rand.late(5.37).range(0.95, 1))).late(rand.late(5).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f2 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).sustain(0.5).release(0.08).lpf(500).lpq(8).lpenv(3).lpdecay(0.15).gain(0.28).mul(velocity(rand.late(6.37).range(0.95, 1))).late(rand.late(6).range(0, 0.000625).segment(16)).early(0.000313)",
+   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8).mul(velocity(rand.late(1.37).range(0.95, 1))).late(rand.late(1).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1100).bpq(1.5).attack(0.002).decay(0.2).sustain(0).gain(0.95).mul(velocity(rand.late(2.37).range(0.95, 1))).late(rand.late(2).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3).mul(velocity(rand.late(4.37).range(0.95, 1))).late(rand.late(4).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[~ ~ [f3,ab3,c4,f4] ~ ~ ~ [f3,ab3,c4,f4] ~ ~ ~ [f3,ab3,c4,f4] ~ ~ ~ [f3,ab3,c4,f4] ~] [~ ~ [db3,f3,ab3,db4] ~ ~ ~ [db3,f3,ab3,db4] ~ ~ ~ [db3,f3,ab3,db4] ~ ~ ~ [db3,f3,ab3,db4] ~] [~ ~ [eb3,g3,bb3,eb4] ~ ~ ~ [eb3,g3,bb3,eb4] ~ ~ ~ [eb3,g3,bb3,eb4] ~ ~ ~ [eb3,g3,bb3,eb4] ~] [~ ~ [c3,eb3,g3,c4] ~ ~ ~ [c3,eb3,g3,c4] ~ ~ ~ [c3,eb3,g3,c4] ~ ~ ~ [c3,eb3,g3,c4] ~]>\").hpf(100).lpf(9000).s(\"supersaw\").hpf(180).unison(7).detune(0.35).spread(0.6).attack(0.003).decay(0.28).sustain(0).lpf(5000).lpenv(1).lpdecay(0.2).gain(0.13).mul(velocity(rand.late(5.37).range(0.95, 1))).late(rand.late(5).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f2 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).sustain(0.5).release(0.08).lpf(500).lpq(6).lpenv(2.5).lpdecay(0.15).gain(0.28).mul(velocity(rand.late(6.37).range(0.95, 1))).late(rand.late(6).range(0, 0.000625).segment(16)).early(0.000313)",
    "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-electrohouse (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-electrohouse\", { as: \"feel\" }).",
    "labels": [
     "electro",
@@ -6634,32 +6553,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 128.0,
-   "verified": true,
-   "rms_dbfs": -22.1,
-   "centroid_hz": 4589,
-   "peak": 0.3205,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb-electro/misc",
    "tags": [
     "electro",
     "house",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": false,
-    "approx": true,
-    "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
-    "hash": "b6079a0384"
-   }
+   ]
   },
   {
    "id": "feel-techno",
    "title": "Feel: driving techno",
    "intent": "four-on-the-floor, offbeat ride, 16th hats with accents, rolling bass in the kick's gaps (128-135 bpm).",
    "code": "setcpm(132/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.kick).hook(\"houseKick | groove-human(0.8, 0.08, 1)\")\n$: s(atoms.hs.offHat).hook(\"ride | groove-human(0.8, 0.08, 3)\")\n$: s(atoms.hs.hats).velocity(atoms.hs.hatVel).hook(\"closedHat | groove-human(0.8, 0.08, 4)\")\n$: note(atoms.hs.rolling).hook(\"houseBass | groove-human(0.8, 0.08, 6)\")",
-   "lowered": "setcpm(132/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.001).penv(26).pdecay(0.04).decay(0.28).sustain(0).lpf(6000).gain(0.8).mul(velocity(rand.late(1.37).range(0.92, 1))).late(rand.late(1).range(0, 0.001).segment(16)).early(0.0005)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.3).sustain(0).gain(0.16).mul(velocity(rand.late(3.37).range(0.92, 1))).late(rand.late(3).range(0, 0.001).segment(16)).early(0.0005)\n$: s(\"x*16\").velocity(\"[.5 .3 .8 .3]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8500).decay(0.025).sustain(0).gain(0.3).mul(velocity(rand.late(4.37).range(0.92, 1))).late(rand.late(4).range(0, 0.001).segment(16)).early(0.0005)\n$: note(\"~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f2\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4).mul(velocity(rand.late(6.37).range(0.92, 1))).late(rand.late(6).range(0, 0.001).segment(16)).early(0.0005)",
+   "lowered": "setcpm(132/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8).mul(velocity(rand.late(1.37).range(0.92, 1))).late(rand.late(1).range(0, 0.001).segment(16)).early(0.0005)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.3).sustain(0).gain(0.16).mul(velocity(rand.late(3.37).range(0.92, 1))).late(rand.late(3).range(0, 0.001).segment(16)).early(0.0005)\n$: s(\"x*16\").velocity(\"[.5 .3 .8 .3]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8500).decay(0.025).sustain(0).gain(0.3).mul(velocity(rand.late(4.37).range(0.92, 1))).late(rand.late(4).range(0, 0.001).segment(16)).early(0.0005)\n$: note(\"~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f2\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4).mul(velocity(rand.late(6.37).range(0.92, 1))).late(rand.late(6).range(0, 0.001).segment(16)).early(0.0005)",
    "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-techno (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-techno\", { as: \"feel\" }).",
    "labels": [
     "techno",
@@ -6672,33 +6584,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 132.0,
-   "verified": true,
-   "rms_dbfs": -21.2,
-   "centroid_hz": 4614,
-   "peak": 0.3315,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb-electro/drums",
    "tags": [
     "drums",
     "techno",
     "four-floor",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": false,
-    "approx": true,
-    "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (144 Craft, 145 Strudel)); with the groove taken out of both forms the events are identical",
-    "hash": "799c33f881"
-   }
+   ]
   },
   {
    "id": "feel-trance",
    "title": "Feel: uplifting trance",
    "intent": "four-on-the-floor, offbeat bass, pluck arp and trance-gated supersaw chords (136-140 bpm).",
    "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.kick).hook(\"houseKick | groove-human(0.5, 0.05, 1)\")\n$: s(atoms.hs.clap).hook(\"houseClap | groove-human(0.5, 0.05, 2)\")\n$: s(atoms.hs.offHat).hook(\"offHat | groove-human(0.5, 0.05, 4)\")\n$: note(atoms.hs.arp).hook(\"pluck | groove-human(0.5, 0.05, 5)\")\n$: note(atoms.hs.bass).hook(\"houseBass | groove-human(0.5, 0.05, 6)\")\n$: note(atoms.hs.chords).hook(\"gatePad | groove-human(0.5, 0.05, 7)\")",
-   "lowered": "setcpm(138/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.001).penv(26).pdecay(0.04).decay(0.28).sustain(0).lpf(6000).gain(0.8).mul(velocity(rand.late(1.37).range(0.95, 1))).late(rand.late(1).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9).mul(velocity(rand.late(2.37).range(0.95, 1))).late(rand.late(2).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3).mul(velocity(rand.late(4.37).range(0.95, 1))).late(rand.late(4).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5] [f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5] [eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5] [eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4]>\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.22).sustain(0).lpf(1800).lpenv(3).lpdecay(0.18).gain(0.26).mul(velocity(rand.late(5.37).range(0.95, 1))).late(rand.late(5).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ ab1 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4).mul(velocity(rand.late(6.37).range(0.95, 1))).late(rand.late(6).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>\").hpf(120).lpf(9000).struct(\"x ~ x x x ~ x x x ~ x x x ~ x x\").s(\"supersaw\").unison(5).detune(0.3).spread(0.6).attack(0.003).decay(0.09).sustain(0.1).release(0.04).lpf(4500).gain(0.15).mul(velocity(rand.late(7.37).range(0.95, 1))).late(rand.late(7).range(0, 0.000625).segment(16)).early(0.000313)",
+   "lowered": "setcpm(138/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8).mul(velocity(rand.late(1.37).range(0.95, 1))).late(rand.late(1).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9).mul(velocity(rand.late(2.37).range(0.95, 1))).late(rand.late(2).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3).mul(velocity(rand.late(4.37).range(0.95, 1))).late(rand.late(4).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5] [f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5] [eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5] [eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4]>\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.22).sustain(0).lpf(1600).lpenv(2).lpdecay(0.18).gain(0.26).mul(velocity(rand.late(5.37).range(0.95, 1))).late(rand.late(5).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ ab1 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4).mul(velocity(rand.late(6.37).range(0.95, 1))).late(rand.late(6).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>\").hpf(120).lpf(9000).struct(\"x ~ x x x ~ x x x ~ x x x ~ x x\").s(\"supersaw\").unison(5).detune(0.3).spread(0.6).attack(0.003).decay(0.09).sustain(0.1).release(0.04).lpf(4500).gain(0.15).mul(velocity(rand.late(7.37).range(0.95, 1))).late(rand.late(7).range(0, 0.000625).segment(16)).early(0.000313)",
    "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-trance (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-trance\", { as: \"feel\" }).",
    "labels": [
     "trance",
@@ -6711,33 +6616,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 138.0,
-   "verified": true,
-   "rms_dbfs": -21.0,
-   "centroid_hz": 4472,
-   "peak": 0.4037,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb-electro/drums",
    "tags": [
     "drums",
     "trance",
     "four-floor",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": false,
-    "approx": true,
-    "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (313 Craft, 312 Strudel)); with the groove taken out of both forms the events are identical",
-    "hash": "156d6349a3"
-   }
+   ]
   },
   {
    "id": "feel-bigroom",
    "title": "Feel: big room",
    "intent": "stripped drop: a big kick, a clap, an offbeat hat and one lead motif (126-130 bpm).",
    "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.kick).hook(\"bigKick | groove-human(0.5, 0.05, 1)\")\n$: s(atoms.hs.clap).hook(\"houseClap | groove-human(0.5, 0.05, 2)\")\n$: s(atoms.hs.offHat).hook(\"offHat | groove-human(0.5, 0.05, 4)\")\n$: note(atoms.hs.lead).hook(\"roomLead | groove-human(0.5, 0.05, 5)\")",
-   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).attack(0.001).penv(32).pdecay(0.06).decay(0.4).sustain(0).lpf(5000).gain(0.78).mul(velocity(rand.late(1.37).range(0.95, 1))).late(rand.late(1).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9).mul(velocity(rand.late(2.37).range(0.95, 1))).late(rand.late(2).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3).mul(velocity(rand.late(4.37).range(0.95, 1))).late(rand.late(4).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f4 ~ f4 ~ ab4 ~ f4 ~ c5 ~ ~ ~ ab4 ~ g4 ~] [f4 ~ f4 ~ ab4 ~ f4 ~ db5 ~ ~ ~ c5 ~ ab4 ~]>\").hpf(150).lpf(8000).s(\"supersaw\").unison(3).detune(0.12).spread(0.3).attack(0.005).decay(0.3).sustain(0.4).release(0.1).lpf(4500).gain(0.16).mul(velocity(rand.late(5.37).range(0.95, 1))).late(rand.late(5).range(0, 0.000625).segment(16)).early(0.000313)",
+   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).attack(0.003).penv(32).pdecay(0.06).decay(0.4).sustain(0).hpf(38).lpf(5000).gain(0.78).mul(velocity(rand.late(1.37).range(0.95, 1))).late(rand.late(1).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9).mul(velocity(rand.late(2.37).range(0.95, 1))).late(rand.late(2).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3).mul(velocity(rand.late(4.37).range(0.95, 1))).late(rand.late(4).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f4 ~ f4 ~ ab4 ~ f4 ~ c5 ~ ~ ~ ab4 ~ g4 ~] [f4 ~ f4 ~ ab4 ~ f4 ~ db5 ~ ~ ~ c5 ~ ab4 ~]>\").hpf(150).lpf(8000).s(\"supersaw\").unison(3).detune(0.12).spread(0.3).attack(0.005).decay(0.3).sustain(0.4).release(0.1).lpf(4500).gain(0.16).mul(velocity(rand.late(5.37).range(0.95, 1))).late(rand.late(5).range(0, 0.000625).segment(16)).early(0.000313)",
    "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-bigroom (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-bigroom\", { as: \"feel\" }).",
    "labels": [
     "big-room",
@@ -6750,33 +6648,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 128.0,
-   "verified": true,
-   "rms_dbfs": -21.9,
-   "centroid_hz": 4738,
-   "peak": 0.3436,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "dnb-electro/drums",
    "tags": [
     "drums",
     "big-room",
     "four-floor",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": false,
-    "approx": true,
-    "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (69 Craft, 68 Strudel)); with the groove taken out of both forms the events are identical",
-    "hash": "f0bfd3208f"
-   }
+   ]
   },
   {
    "id": "electro-808-beat",
    "title": "Electro-funk 808 beat",
    "intent": "Long 808 boom, clap on 2 and 4, 16th hats with accents and a two-bar cowbell: breakbeat electro.",
    "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: s(atoms.el.kick).hook(\"boom808\")\n$: s(atoms.el.clap).hook(\"clap808\")\n$: s(atoms.el.hats).velocity(atoms.el.hatVel).hook(\"hat808\")\n$: s(atoms.el.cowbell).hook(\"cowbell808\").note(\"[c#5,g#5]\")",
-   "lowered": "setcpm(124/4)\n$: s(\"x ~ ~ ~ ~ ~ x ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(47).attack(0.002).penv(14).pdecay(0.06).decay(0.7).sustain(0).lpf(3000).gain(0.8)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1100).bpq(1.5).attack(0.002).decay(0.2).sustain(0).gain(0.95)\n$: s(\"x*16\").velocity(\"[1 .45 .7 .45]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.03).sustain(0).gain(0.35)\n$: s(\"<[~ ~ x ~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~] [~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]>\").hpf(300).lpf(8000).s(\"square\").bpf(900).bpq(1.2).attack(0.001).decay(0.22).sustain(0).gain(0.18).note(\"[c#5,g#5]\")",
+   "lowered": "setcpm(124/4)\n$: s(\"x ~ ~ ~ ~ ~ x ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(47).attack(0.003).penv(14).pdecay(0.06).decay(0.7).sustain(0).hpf(38).lpf(3000).gain(0.8)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1100).bpq(1.5).attack(0.002).decay(0.2).sustain(0).gain(0.95)\n$: s(\"x*16\").velocity(\"[1 .45 .7 .45]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.03).sustain(0).gain(0.35)\n$: s(\"<[~ ~ x ~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~] [~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]>\").hpf(300).lpf(8000).s(\"square\").bpf(900).bpq(1.2).attack(0.001).decay(0.22).sustain(0).gain(0.18).note(\"[c#5,g#5]\")",
    "notes": "",
    "labels": [
     "electro",
@@ -6790,32 +6681,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 124.0,
-   "verified": true,
-   "rms_dbfs": -21.7,
-   "centroid_hz": 6546,
-   "peak": 0.3939,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "electro/drums",
    "tags": [
     "drums",
     "electro",
     "syncopated",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 116,
-    "hash": "159c757929"
-   }
+   ]
   },
   {
    "id": "electro-808-kick",
    "title": "808-style kick",
    "intent": "A long sine boom with a gentle pitch drop on the electro-funk kick pattern.",
    "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: s(atoms.el.kick).hook(\"boom808\")",
-   "lowered": "setcpm(124/4)\n$: s(\"x ~ ~ ~ ~ ~ x ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(47).attack(0.002).penv(14).pdecay(0.06).decay(0.7).sustain(0).lpf(3000).gain(0.8)",
+   "lowered": "setcpm(124/4)\n$: s(\"x ~ ~ ~ ~ ~ x ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(47).attack(0.003).penv(14).pdecay(0.06).decay(0.7).sustain(0).hpf(38).lpf(3000).gain(0.8)",
    "notes": "",
    "labels": [
     "electro",
@@ -6828,24 +6713,18 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 124.0,
-   "verified": true,
-   "rms_dbfs": -22.1,
-   "centroid_hz": 104,
-   "peak": 0.2797,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "electro/drums",
    "tags": [
     "drums",
     "electro",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 12,
-    "hash": "cdc7540d42"
-   }
+   ]
   },
   {
    "id": "electro-cowbell",
@@ -6853,6 +6732,12 @@
    "intent": "Two squares a fifth apart through a band-pass, on a two-bar pattern.",
    "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: s(atoms.el.cowbell).hook(\"cowbell808\").note(\"[c#5,g#5]\")",
    "lowered": "setcpm(124/4)\n$: s(\"<[~ ~ x ~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~] [~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]>\").hpf(300).lpf(8000).s(\"square\").bpf(900).bpq(1.2).attack(0.001).decay(0.22).sustain(0).gain(0.18).note(\"[c#5,g#5]\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 32,
+    "hash": "ba240032dc"
+   },
    "notes": "",
    "labels": [
     "electro",
@@ -6876,20 +6761,14 @@
     "electro",
     "verified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 32,
-    "hash": "ba240032dc"
-   }
+   ]
   },
   {
    "id": "electro-funk-bass",
    "title": "Electro-funk bass",
    "intent": "Square bass with a resonant filter blip on a syncopated line.",
    "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: note(atoms.el.bass).hook(\"electroBass\")",
-   "lowered": "setcpm(124/4)\n$: note(\"<[f1 ~ ~ f1 ~ ~ f2 ~ ~ f1 ~ ~ ab1 ~ c2 ~] [db2 ~ ~ db2 ~ ~ db1 ~ ~ eb2 ~ ~ eb1 ~ c2 ~]>\").hpf(40).lpf(3500).s(\"square\").attack(0.003).decay(0.18).sustain(0.2).release(0.05).lpf(600).lpq(5).lpenv(2.5).lpdecay(0.12).gain(0.38)",
+   "lowered": "setcpm(124/4)\n$: note(\"<[f1 ~ ~ f1 ~ ~ f2 ~ ~ f1 ~ ~ ab1 ~ c2 ~] [db2 ~ ~ db2 ~ ~ db1 ~ ~ eb2 ~ ~ eb1 ~ c2 ~]>\").hpf(40).lpf(3500).s(\"square\").attack(0.008).decay(0.25).sustain(0.3).release(0.08).lpf(600).lpq(5).lpenv(2.5).lpdecay(0.12).gain(0.38)",
    "notes": "",
    "labels": [
     "electro",
@@ -6903,25 +6782,19 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 124.0,
-   "verified": true,
-   "rms_dbfs": -25.7,
-   "centroid_hz": 709,
-   "peak": 0.3031,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "electro/bass",
    "tags": [
     "bass",
     "electro",
     "syncopated",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 24,
-    "hash": "dc347fb7ed"
-   }
+   ]
   },
   {
    "id": "vocoder-lead",
@@ -6929,6 +6802,12 @@
    "intent": "Saw through a vowel formant that changes every beat (a, e, i, o): a robot voice without a vocoder.",
    "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: note(atoms.el.lead).hook(\"vocoLead\").vowel(atoms.el.leadVowel)",
    "lowered": "setcpm(124/4)\n$: note(\"<[f4 ~ ab4 ~ c5 ~ ab4 ~ ~ ~ ~ ~ eb4 ~ f4 ~] [~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~]>\").hpf(150).lpf(8000).s(\"sawtooth\").vowel(\"a\").attack(0.01).sustain(0.7).release(0.1).lpf(3200).vib(5).vibmod(0.04).gain(0.3).vowel(\"<[a e i o] [o]>\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 12,
+    "hash": "8858a435ea"
+   },
    "notes": "",
    "labels": [
     "electro",
@@ -6955,13 +6834,7 @@
     "texture-vocal-like",
     "verified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 12,
-    "hash": "8858a435ea"
-   }
+   ]
   },
   {
    "id": "robot-stabs",
@@ -6969,6 +6842,12 @@
    "intent": "Square chords through a vowel formant on an offbeat stab rhythm.",
    "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: note(atoms.el.chords).hook(\"robotStab\").struct(atoms.el.stabs)",
    "lowered": "setcpm(124/4)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [eb3,g3,bb3,eb4] [c3,eb3,g3,c4]>\").hpf(120).lpf(8000).s(\"square\").vowel(\"e\").attack(0.003).decay(0.15).sustain(0).lpf(2400).lpenv(2).lpdecay(0.1).gain(0.16).struct(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 64,
+    "hash": "06c723ce42"
+   },
    "notes": "",
    "labels": [
     "electro",
@@ -6993,20 +6872,14 @@
     "stabs",
     "verified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 64,
-    "hash": "06c723ce42"
-   }
+   ]
   },
   {
    "id": "electro-house-bass",
    "title": "Electro house filtered bass",
    "intent": "Resonant saw bass with a 3-octave filter envelope and drive on the offbeat 8ths.",
    "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: note(atoms.el.ehBass).hook(\"filterBass\")",
-   "lowered": "setcpm(128/4)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f2 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).sustain(0.5).release(0.08).lpf(500).lpq(8).lpenv(3).lpdecay(0.15).gain(0.28)",
+   "lowered": "setcpm(128/4)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f2 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).sustain(0.5).release(0.08).lpf(500).lpq(6).lpenv(2.5).lpdecay(0.15).gain(0.28)",
    "notes": "",
    "labels": [
     "electro",
@@ -7020,32 +6893,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 128.0,
-   "verified": true,
-   "rms_dbfs": -37.5,
-   "centroid_hz": 966,
-   "peak": 0.1105,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "electro/bass",
    "tags": [
     "bass",
     "electro",
     "house",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 16,
-    "hash": "d46c1a8cfc"
-   }
+   ]
   },
   {
    "id": "sidechain-supersaw-stabs",
    "title": "Sidechained supersaw stabs",
    "intent": "A four-on-the-floor kick ducks the supersaw stabs and the bass on orbit 3 (glyphcore/edm sidechain on the kick, ducked on the targets: superdough duckorbit), so the stabs land where the pump lets go.",
    "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(atoms.el.ehKick).hook(\"houseKick | sidechain(3, 0.8, 0.18)\")\n$: note(atoms.el.chords).hook(\"sawStab | ducked(3)\").struct(atoms.el.ehStabs)\n$: note(atoms.el.ehBass).hook(\"filterBass | ducked(3)\")",
-   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.001).penv(26).pdecay(0.04).decay(0.28).sustain(0).lpf(6000).gain(0.8).duckorbit(3).duckdepth(0.8).duckattack(0.18)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [eb3,g3,bb3,eb4] [c3,eb3,g3,c4]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.35).spread(0.6).attack(0.003).decay(0.28).sustain(0).lpf(5000).lpenv(1).lpdecay(0.2).gain(0.13).orbit(3).struct(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\")\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f2 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).sustain(0.5).release(0.08).lpf(500).lpq(8).lpenv(3).lpdecay(0.15).gain(0.28).orbit(3)",
+   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8).duckorbit(3).duckdepth(0.8).duckattack(0.18)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [eb3,g3,bb3,eb4] [c3,eb3,g3,c4]>\").hpf(100).lpf(9000).s(\"supersaw\").hpf(180).unison(7).detune(0.35).spread(0.6).attack(0.003).decay(0.28).sustain(0).lpf(5000).lpenv(1).lpdecay(0.2).gain(0.13).orbit(3).struct(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~\")\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f2 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).sustain(0.5).release(0.08).lpf(500).lpq(6).lpenv(2.5).lpdecay(0.15).gain(0.28).orbit(3)",
    "notes": "",
    "labels": [
     "electro",
@@ -7059,26 +6926,20 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 128.0,
-   "verified": true,
-   "rms_dbfs": -23.2,
-   "centroid_hz": 1064,
-   "peak": 0.265,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "electro/keys",
    "tags": [
     "keys",
     "electro",
     "sidechain",
     "stabs",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 96,
-    "hash": "5494e25a56"
-   }
+   ]
   },
   {
    "id": "clap-build",
@@ -7086,6 +6947,12 @@
    "intent": "Electro house clap build on the shared roll grammar: density doubles toward the drop (glyphcore/edm ec.roll8) while the velocity ramps up (ec.rollVel8).",
    "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n// racks: pack:glyphcore/dnb-electro:racks-dnb-electro\n$: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook(\"clap808\")",
    "lowered": "setcpm(128/4)\n$: s(\"<x*4!2 x*8!2 x*16!3 x*32>\").velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1100).bpq(1.5).attack(0.002).decay(0.2).sustain(0).gain(0.95)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 24,
+    "hash": "f4d80d11ec"
+   },
    "notes": "",
    "labels": [
     "electro",
@@ -7111,20 +6978,14 @@
     "build",
     "verified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 24,
-    "hash": "f4d80d11ec"
-   }
+   ]
   },
   {
    "id": "house-four-on-the-floor",
    "title": "Four-on-the-floor house groove",
    "intent": "Kick on every beat, open hat on every offbeat, clap on 2 and 4, 16th closed hats with accents.",
    "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.kick).hook(\"houseKick\")\n$: s(atoms.hs.offHat).hook(\"offHat\")\n$: s(atoms.hs.clap).hook(\"houseClap\")\n$: s(atoms.hs.hats).velocity(atoms.hs.hatVel).hook(\"closedHat\")",
-   "lowered": "setcpm(124/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.001).penv(26).pdecay(0.04).decay(0.28).sustain(0).lpf(6000).gain(0.8)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9)\n$: s(\"x*16\").velocity(\"[.5 .3 .8 .3]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8500).decay(0.025).sustain(0).gain(0.3)",
+   "lowered": "setcpm(124/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9)\n$: s(\"x*16\").velocity(\"[.5 .3 .8 .3]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8500).decay(0.025).sustain(0).gain(0.3)",
    "notes": "",
    "labels": [
     "house",
@@ -7138,25 +6999,19 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 124.0,
-   "verified": true,
-   "rms_dbfs": -22.1,
-   "centroid_hz": 6641,
-   "peak": 0.334,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "house/drums",
    "tags": [
     "drums",
     "house",
     "four-floor",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 104,
-    "hash": "99578a09be"
-   }
+   ]
   },
   {
    "id": "offbeat-open-hat",
@@ -7164,6 +7019,12 @@
    "intent": "The open hat on every offbeat 8th: the house lift.",
    "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.offHat).hook(\"offHat\")",
    "lowered": "setcpm(124/4)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "f329e7f380"
+   },
    "notes": "",
    "labels": [
     "house",
@@ -7188,20 +7049,14 @@
     "hats",
     "verified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 16,
-    "hash": "f329e7f380"
-   }
+   ]
   },
   {
    "id": "house-swing-groove",
    "title": "House shuffle",
    "intent": "The same groove with the house shuffle on the hats and clap: 16ths at 56 % swing (groove-swing(56)) and a small timing and velocity spread (groove-human(1, 0.1)).",
    "code": "setcpm(122/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.kick).hook(\"houseKick\")\n$: s(atoms.hs.offHat).hook(\"offHat | groove-swing(56) | groove-human(1, 0.1, 1)\")\n$: s(atoms.hs.clap).hook(\"houseClap | groove-swing(56) | groove-human(1, 0.1, 2)\")\n$: s(atoms.hs.hats).velocity(atoms.hs.hatVel).hook(\"closedHat | groove-swing(56) | groove-human(1, 0.1, 3)\")",
-   "lowered": "setcpm(122/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.001).penv(26).pdecay(0.04).decay(0.28).sustain(0).lpf(6000).gain(0.8)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3).swingBy(0.12, 8).mul(velocity(rand.late(1.37).range(0.9, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9).swingBy(0.12, 8).mul(velocity(rand.late(2.37).range(0.9, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"x*16\").velocity(\"[.5 .3 .8 .3]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8500).decay(0.025).sustain(0).gain(0.3).swingBy(0.12, 8).mul(velocity(rand.late(3.37).range(0.9, 1))).late(rand.late(3).range(0, 0.00125).segment(16)).early(0.000625)",
+   "lowered": "setcpm(122/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3).swingBy(0.12, 8).mul(velocity(rand.late(1.37).range(0.9, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9).swingBy(0.12, 8).mul(velocity(rand.late(2.37).range(0.9, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"x*16\").velocity(\"[.5 .3 .8 .3]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8500).decay(0.025).sustain(0).gain(0.3).swingBy(0.12, 8).mul(velocity(rand.late(3.37).range(0.9, 1))).late(rand.late(3).range(0, 0.00125).segment(16)).early(0.000625)",
    "notes": "",
    "labels": [
     "house",
@@ -7215,27 +7070,20 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 122.0,
-   "verified": true,
-   "rms_dbfs": -22.2,
-   "centroid_hz": 6536,
-   "peak": 0.3682,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "house/groove",
    "tags": [
     "groove",
     "house",
     "swing",
     "human-feel",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": false,
-    "approx": true,
-    "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (104 Craft, 103 Strudel)); with the groove taken out of both forms the events are identical",
-    "hash": "8ae86964ca"
-   }
+   ]
   },
   {
    "id": "house-bass",
@@ -7243,6 +7091,12 @@
    "intent": "Saw bass on the offbeat 8ths between the kicks.",
    "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.bass).hook(\"houseBass\")",
    "lowered": "setcpm(124/4)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ ab1 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "828a9ea4ba"
+   },
    "notes": "",
    "labels": [
     "house",
@@ -7266,20 +7120,14 @@
     "house",
     "verified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 16,
-    "hash": "828a9ea4ba"
-   }
+   ]
   },
   {
    "id": "techno-rolling-bass",
    "title": "Techno rolling bass",
    "intent": "Every 16th the kick leaves free, under a four-on-the-floor kick.",
    "code": "setcpm(132/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.kick).hook(\"houseKick\")\n$: note(atoms.hs.rolling).hook(\"houseBass | groove-human(0.8, 0.08, 2)\")",
-   "lowered": "setcpm(132/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.001).penv(26).pdecay(0.04).decay(0.28).sustain(0).lpf(6000).gain(0.8)\n$: note(\"~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f2\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4).mul(velocity(rand.late(2.37).range(0.92, 1))).late(rand.late(2).range(0, 0.001).segment(16)).early(0.0005)",
+   "lowered": "setcpm(132/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8)\n$: note(\"~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f2\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4).mul(velocity(rand.late(2.37).range(0.92, 1))).late(rand.late(2).range(0, 0.001).segment(16)).early(0.0005)",
    "notes": "",
    "labels": [
     "techno",
@@ -7293,34 +7141,27 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 132.0,
-   "verified": true,
-   "rms_dbfs": -21.0,
-   "centroid_hz": 312,
-   "peak": 0.2914,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "house/drums",
    "tags": [
     "drums",
     "techno",
     "bass",
     "four-floor",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": false,
-    "approx": true,
-    "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 1 differs); with the groove taken out of both forms the events are identical",
-    "hash": "b2f629fce8"
-   }
+   ]
   },
   {
    "id": "techno-rumble",
    "title": "Techno rumble",
    "intent": "Mono sine rumble in the kick's gaps, slow attack, low-passed at 160 Hz.",
    "code": "setcpm(132/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.rumble).hook(\"rumble\")",
-   "lowered": "setcpm(132/4)\n$: note(\"~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1\").hpf(25).s(\"sine\").attack(0.02).decay(0.12).sustain(0.4).release(0.06).lpf(160).gain(0.42)",
+   "lowered": "setcpm(132/4)\n$: note(\"~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1\").hpf(25).s(\"sine\").hpf(32).attack(0.03).decay(0.12).sustain(0.4).release(0.1).lpf(160).gain(0.42)",
    "notes": "",
    "labels": [
     "techno",
@@ -7333,31 +7174,25 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 132.0,
-   "verified": true,
-   "rms_dbfs": -21.8,
-   "centroid_hz": 50,
-   "peak": 0.1953,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "house/bass",
    "tags": [
     "bass",
     "techno",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 48,
-    "hash": "f3a95a1bb5"
-   }
+   ]
   },
   {
    "id": "trance-pluck",
    "title": "Trance pluck arp",
    "intent": "Saw pluck with a 3-octave filter envelope on a 16th arp that follows Fm - Db - Ab - Eb, with a dotted-8th echo.",
    "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.arp).hook(\"pluck\").delay(0.3).delaytime(0.326).delayfeedback(0.35)",
-   "lowered": "setcpm(138/4)\n$: note(\"<[f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5] [f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5] [eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5] [eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4]>\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.22).sustain(0).lpf(1800).lpenv(3).lpdecay(0.18).gain(0.26).delay(0.3).delaytime(0.326).delayfeedback(0.35)",
+   "lowered": "setcpm(138/4)\n$: note(\"<[f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5] [f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5] [eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5] [eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4]>\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.22).sustain(0).lpf(1600).lpenv(2).lpdecay(0.18).gain(0.26).delay(0.3).delaytime(0.326).delayfeedback(0.35)",
    "notes": "",
    "labels": [
     "trance",
@@ -7370,32 +7205,26 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 138.0,
-   "verified": true,
-   "rms_dbfs": -30.1,
-   "centroid_hz": 3308,
-   "peak": 0.1255,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "house/lead",
    "tags": [
     "lead",
     "trance",
     "arpeggio",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 64,
-    "hash": "414432e8a3"
-   }
+   ]
   },
   {
    "id": "supersaw-chords",
    "title": "Supersaw chords",
    "intent": "Unison-7 supersaw chords, one per bar: i - VI - III - VII.",
    "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.chords).hook(\"bigChords\")",
-   "lowered": "setcpm(138/4)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.7).attack(0.02).sustain(0.8).release(0.6).lpf(6000).gain(0.11)",
+   "lowered": "setcpm(138/4)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>\").hpf(100).lpf(9000).s(\"supersaw\").hpf(180).unison(7).detune(0.3).spread(0.7).attack(0.02).sustain(0.8).release(0.6).lpf(6000).gain(0.11)",
    "notes": "",
    "labels": [
     "trance",
@@ -7408,25 +7237,19 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 138.0,
-   "verified": true,
-   "rms_dbfs": -32.3,
-   "centroid_hz": 2453,
-   "peak": 0.1234,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "house/keys",
    "tags": [
     "keys",
     "trance",
     "chord-progression",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 16,
-    "hash": "29ef551809"
-   }
+   ]
   },
   {
    "id": "trance-gate",
@@ -7434,6 +7257,12 @@
    "intent": "A sustained supersaw chord opened and closed by a 16-step gate (struct + 90 ms decay): the gate is the rhythm.",
    "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.chords).hook(\"gatePad\")",
    "lowered": "setcpm(138/4)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>\").hpf(120).lpf(9000).struct(\"x ~ x x x ~ x x x ~ x x x ~ x x\").s(\"supersaw\").unison(5).detune(0.3).spread(0.6).attack(0.003).decay(0.09).sustain(0.1).release(0.04).lpf(4500).gain(0.15)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 192,
+    "hash": "a2dd9210eb"
+   },
    "notes": "",
    "labels": [
     "trance",
@@ -7458,20 +7287,14 @@
     "syncopated",
     "verified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 192,
-    "hash": "a2dd9210eb"
-   }
+   ]
   },
   {
    "id": "big-room-drop",
    "title": "Big-room drop",
    "intent": "Stripped: a big kick, a clap and one lead motif, the lead ducked by the kick (orbit 5).",
    "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(atoms.hs.kick).hook(\"bigKick | sidechain(5, 0.6, 0.16)\")\n$: s(atoms.hs.clap).hook(\"houseClap\")\n$: note(atoms.hs.lead).hook(\"roomLead | ducked(5)\")",
-   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).attack(0.001).penv(32).pdecay(0.06).decay(0.4).sustain(0).lpf(5000).gain(0.78).duckorbit(5).duckdepth(0.6).duckattack(0.16)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9)\n$: note(\"<[f4 ~ f4 ~ ab4 ~ f4 ~ c5 ~ ~ ~ ab4 ~ g4 ~] [f4 ~ f4 ~ ab4 ~ f4 ~ db5 ~ ~ ~ c5 ~ ab4 ~]>\").hpf(150).lpf(8000).s(\"supersaw\").unison(3).detune(0.12).spread(0.3).attack(0.005).decay(0.3).sustain(0.4).release(0.1).lpf(4500).gain(0.16).orbit(5)",
+   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).attack(0.003).penv(32).pdecay(0.06).decay(0.4).sustain(0).hpf(38).lpf(5000).gain(0.78).duckorbit(5).duckdepth(0.6).duckattack(0.16)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9)\n$: note(\"<[f4 ~ f4 ~ ab4 ~ f4 ~ c5 ~ ~ ~ ab4 ~ g4 ~] [f4 ~ f4 ~ ab4 ~ f4 ~ db5 ~ ~ ~ c5 ~ ab4 ~]>\").hpf(150).lpf(8000).s(\"supersaw\").unison(3).detune(0.12).spread(0.3).attack(0.005).decay(0.3).sustain(0.4).release(0.1).lpf(4500).gain(0.16).orbit(5)",
    "notes": "",
    "labels": [
     "big-room",
@@ -7485,33 +7308,27 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 128.0,
-   "verified": true,
-   "rms_dbfs": -23.0,
-   "centroid_hz": 1214,
-   "peak": 0.3418,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "house/form",
    "tags": [
     "form",
     "big-room",
     "build-drop",
     "sidechain",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 52,
-    "hash": "58316f18b8"
-   }
+   ]
   },
   {
    "id": "trance-drop",
    "title": "Uplifting trance drop",
    "intent": "Four-on-the-floor, offbeat bass, gated supersaw chords and the pluck arp, all ducked by the kick on orbit 3.",
    "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(atoms.hs.kick).hook(\"houseKick | sidechain(3, 0.5, 0.14)\")\n$: s(atoms.hs.offHat).hook(\"offHat\")\n$: note(atoms.hs.bass).hook(\"houseBass | ducked(3)\")\n$: note(atoms.hs.chords).hook(\"gatePad | ducked(3)\")\n$: note(atoms.hs.arp).hook(\"pluck | ducked(3)\")",
-   "lowered": "setcpm(138/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.001).penv(26).pdecay(0.04).decay(0.28).sustain(0).lpf(6000).gain(0.8).duckorbit(3).duckdepth(0.5).duckattack(0.14)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ ab1 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4).orbit(3)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>\").hpf(120).lpf(9000).struct(\"x ~ x x x ~ x x x ~ x x x ~ x x\").s(\"supersaw\").unison(5).detune(0.3).spread(0.6).attack(0.003).decay(0.09).sustain(0.1).release(0.04).lpf(4500).gain(0.15).orbit(3)\n$: note(\"<[f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5] [f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5] [eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5] [eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4]>\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.22).sustain(0).lpf(1800).lpenv(3).lpdecay(0.18).gain(0.26).orbit(3)",
+   "lowered": "setcpm(138/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8).duckorbit(3).duckdepth(0.5).duckattack(0.14)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ ab1 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4).orbit(3)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>\").hpf(120).lpf(9000).struct(\"x ~ x x x ~ x x x ~ x x x ~ x x\").s(\"supersaw\").unison(5).detune(0.3).spread(0.6).attack(0.003).decay(0.09).sustain(0.1).release(0.04).lpf(4500).gain(0.15).orbit(3)\n$: note(\"<[f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5] [f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5] [eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5] [eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4]>\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.22).sustain(0).lpf(1600).lpenv(2).lpdecay(0.18).gain(0.26).orbit(3)",
    "notes": "",
    "labels": [
     "trance",
@@ -7525,26 +7342,20 @@
    "needs_samples": false,
    "expr": null,
    "bpm_hint": 138.0,
-   "verified": true,
-   "rms_dbfs": -21.8,
-   "centroid_hz": 4738,
-   "peak": 0.4033,
-   "error": null,
+   "verified": false,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
+   "error": "not rendered",
    "folder": "house/form",
    "tags": [
     "form",
     "trance",
     "build-drop",
     "sidechain",
-    "verified",
+    "unverified",
     "lowered"
-   ],
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 304,
-    "hash": "e11f77e15b"
-   }
+   ]
   }
  ]
 }

@@ -310,15 +310,15 @@
    "name": "dnb.wobble",
    "type": "mini",
    "rev": 1,
-   "body": "<[f1@3 f1@3 f1@2 f2@3 f1@3 ab1@2] [f1@3 f1@3 f1@2 c2@3 bb1@3 ab1@2]>",
-   "doc": "jump-up wobble: 3+3+2 per half bar, octave jumps; each note re-opens the filter",
+   "body": "<[f2@3 f2@3 f2@2 f3@3 f2@3 ab2@2] [f2@3 f2@3 f2@2 c3@3 bb2@3 ab2@2]>",
+   "doc": "jump-up wobble (a mid layer, F2 up: the sub plays it an octave down): 3+3+2 per half bar, octave jumps; each note re-opens the filter",
    "folder": "dnb/bass",
    "tags": [
     "bass",
     "dnb",
     "pattern"
    ],
-   "hash": "sha256:4080fcd45a301f118d86f188635aee90d9257741e98d6456e09f4c69cd60e08b"
+   "hash": "sha256:5345fadc3e2bd2ed4ff71a1394c4c513559b4c80ab5fffcd146fe98c1b0a0ded"
   },
   "aqtlddi": {
    "name": "dnb.chords",

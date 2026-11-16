@@ -202,15 +202,15 @@
    "name": "el.ehStabs",
    "type": "mini",
    "rev": 1,
-   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
-   "doc": "stabs on the offbeats, where the pump has let go",
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~",
+   "doc": "stabs on the offbeats, where the pump has let go, the last one a 16th early",
    "folder": "electro/keys",
    "tags": [
     "keys",
     "electro",
     "pattern"
    ],
-   "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
+   "hash": "sha256:4ed52c2b6ae48c6a181e353a1b15449b588e05e883660c4e72c49fc9e4672314"
   },
   "a0ek7f7": {
    "name": "el.ehStabLine",

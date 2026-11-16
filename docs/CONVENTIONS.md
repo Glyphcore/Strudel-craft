@@ -192,11 +192,11 @@ Sources and what each taught: docs/DNB_ELECTRO_REFERENCES.md. F minor throughout
 | breaks | `dnb.amenKick`, `amenSnare`, `amenVel`; `dnb.thinkKick`, `thinkSnare`, `thinkHat` | `breakKick`, `breakSnare` (kick, snare), `ride` (hat) | synthesised amen-style / think-style kits, no samples (LICENSE.md) |
 | chops | `dnb.chops`, `dnb.chopsWild` | - | slice orders for `.bite(16, ...)` on every lane of the break (same order on a sample: `.slice(16, ...)`) |
 | hats | `dnb.hats`, `dnb.shaker`, `dnb.shakerVel`, `dnb.rideVel` | `dnbHat`, `dnbShaker`, `ride` (hat) | |
-| sub | `dnb.sub` (F1, Db2, Bb1, C2) | `dnbSub` (sub) | mono sine, 5 ms attack, held |
+| sub | `dnb.sub` (F1, Db2, Bb1, C2) | `dnbSub` (sub) | mono sine, 8 ms attack, held |
 | reese | `dnb.sub` (the same notes) | `reese` (reese) | a saw played as a detuned pair (`.add(note("0,0.18"))`, 18 cents), own 100 Hz high-pass at 24 dB/oct: the sub keeps the fundamental |
 | neuro | `dnb.neuro` | `neuroBass` (growl) | FM saw (index 2.5, `fmh 0.5`), resonant snap, vowel; serial drive = edm `drive(amt)` on top (a worklet stage, #140) |
 | rolling bass | `dnb.rolling` | `rollingBass` (bass) | offbeat 16ths following the chords |
-| jump-up wobble | `dnb.wobble` | `jumpWobble` (growl) | 3+3+2 notes that re-open the filter envelope; edm `wobble(sync)` is the LFO alternative |
+| jump-up wobble | `dnb.wobble` (F2 up; a sub plays it an octave down) | `jumpWobble` (growl) | 3+3+2 notes that re-open the filter envelope; edm `wobble(sync)` is the LFO alternative |
 | liquid harmony | `dnb.chords`, `dnb.comp`, `dnb.strings` | `liquidRhodes` (keys), `liquidPad`, `strings` (pad) | Fm9 Dbmaj9 Bbm9 Cm7, two bars each |
 | vocal chops | `dnb.chop`, `dnb.chopVowel` | `vocalChop` (vox) | vowel saw chops; real chops use `word()` / vox banks |
 | electro-funk kit | `el.kick`, `el.clap`, `el.hats`, `el.hatVel`, `el.cowbell` | `boom808` (kick), `clap808` (snare), `hat808`, `open808` (hat), `cowbell808` (bell) | 808-style, cowbell played as `[c#5,g#5]` |

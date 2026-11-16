@@ -1,12 +1,17 @@
 // Relative Lighthouse (mobile, default config, simulated throttling): site/ of several commits,
 // each served from a clean `git archive` by the same static server, runs interleaved.
-// Usage: LIGHTHOUSE_BIN=<path> CHROME_PATH=<chrome> node tests/site/lighthouse_relative.mjs [--runs 5] <commit> <commit> ...
+// Usage: LIGHTHOUSE_BIN=<path> CHROME_PATH=<chrome> node tests/site/lighthouse_relative.mjs [--runs 5] [--keep <dir>] [--legacy-mime] <commit> <commit> ...
 // Prints every individual performance score and the median per commit. Writes nothing into the repo.
+// --keep <dir> copies every Lighthouse JSON (<commit>-<run>.json) there, for diffing transfer size, TBT and LCP.
 import http from 'http'; import fs from 'fs'; import os from 'os'; import path from 'path';
 import { spawn, execFileSync } from 'child_process';
-const argv = process.argv.slice(2); let runs = 5; const commits = [];
-for (let i = 0; i < argv.length; i++) { if (argv[i] === '--runs') runs = +argv[++i]; else commits.push(argv[i]); }
-const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json' };
+const argv = process.argv.slice(2); let runs = 5; let keep = null; let legacy = false; const commits = [];
+for (let i = 0; i < argv.length; i++) { if (argv[i] === '--runs') runs = +argv[++i]; else if (argv[i] === '--keep') keep = argv[++i]; else if (argv[i] === '--legacy-mime') legacy = true; else commits.push(argv[i]); }
+/* .mjs as JavaScript, as GitHub Pages serves it: before 2026-11-16 this table had no .mjs entry, so vendor/acorn-8.19.0.mjs came as
+   application/octet-stream, every module that imports it failed (engine/index.js, atoms, lanes intellisense, refs) and their cost (and the idle
+   compile that needs the engine) never showed in the score. Pass --legacy-mime to reproduce the old numbers. */
+const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json' };
+if (legacy) delete TYPES['.mjs'];
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'lhrel-'));
 const sites = [];
 for (const c of commits) {
@@ -25,6 +30,7 @@ const run = (args) => new Promise((res, rej) => spawn(process.env.LIGHTHOUSE_BIN
 for (let i = 0; i < runs; i++) for (const s of sites) {
   const out = path.join(tmp, `${s.c.replace(/\W/g, '_')}-${i}.json`);
   await run([s.url, '--quiet', '--output=json', `--output-path=${out}`, '--only-categories=performance', '--chrome-flags=--headless=new --no-sandbox']);
+  if (keep) { fs.mkdirSync(keep, { recursive: true }); fs.copyFileSync(out, path.join(keep, path.basename(out))); }
   const lhr = JSON.parse(fs.readFileSync(out, 'utf8')); s.scores.push(Math.round(lhr.categories.performance.score * 100));
   console.error(`run ${i + 1} ${s.c}: ${s.scores.at(-1)} (LCP ${Math.round(lhr.audits['largest-contentful-paint'].numericValue)} ms)`);
 }

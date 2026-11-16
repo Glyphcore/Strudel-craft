@@ -2333,7 +2333,118 @@
    "4b903df": 72,
    "b9b2b1a": 66,
    "5174f96": 69,
-   "first_below_90": "834669f (0e2b16d 91,91,90 -> 834669f 88,88,88)"
+   "first_below_90": "b3133ef (see first_below_90; 834669f was a wrong attribution: its parent b3133ef is already below 90)"
+  },
+  "first_below_90": {
+   "commit": "b3133ef",
+   "subject": "hooks: intellisense providers hooks + model",
+   "parent": "8a01a0d",
+   "run": "2026-11-16, tests/site/lighthouse_relative.mjs --legacy-mime --runs 5 0eeeb9e 8a01a0d b3133ef b9e7024 (the server settings of every earlier record), interleaved",
+   "scores": {
+    "0eeeb9e": [
+     99,
+     99,
+     99,
+     100,
+     99
+    ],
+    "8a01a0d": [
+     90,
+     91,
+     90,
+     91,
+     90
+    ],
+    "b3133ef": [
+     80,
+     86,
+     81,
+     81,
+     81
+    ]
+   },
+   "medians": {
+    "0eeeb9e": 99,
+    "8a01a0d": 90,
+    "b3133ef": 81
+   },
+   "critic_run_2026_11_14": {
+    "8a01a0d": [
+     91,
+     91,
+     91,
+     91,
+     91
+    ],
+    "b3133ef": [
+     80,
+     88,
+     88,
+     81,
+     81
+    ]
+   },
+   "lcp_ms_median": {
+    "8a01a0d": 3312,
+    "b3133ef": 4653
+   },
+   "tbt_ms_median": {
+    "8a01a0d": 0,
+    "b3133ef": 0
+   },
+   "fcp_ms_median": {
+    "8a01a0d": 2143,
+    "b3133ef": 2181
+   },
+   "transfer_kb_median": {
+    "8a01a0d": 465,
+    "b3133ef": 722
+   },
+   "cause": "b3133ef adds hooks-intellisense.js as an eager module script; at startup it imports library.js -> model.js -> vendor/acorn-8.19.0.mjs (229 KB) + library-store.js: 281 KB more that finishes before the observed LCP (~190 ms), so Lantern puts it in the LCP graph: LCP +1.34 s, TBT, FCP and CLS unchanged. The one 86 run is the run where acorn finished after the observed LCP."
+  },
+  "rework_2026_11_16": {
+   "note": "tests/site/lighthouse_relative.mjs served .mjs as application/octet-stream until 2026-11-16, so acorn and every module importing it (engine/index.js, atoms-site, lanes-intellisense, refs) failed to load and the idle compile never loaded @strudel/web. Fixed (served as text/javascript, like Pages); --legacy-mime reproduces the old setting.",
+   "legacy_mime": {
+    "0eeeb9e": [
+     99,
+     99,
+     99,
+     100,
+     99
+    ],
+    "b9e7024 (main)": [
+     86,
+     85,
+     77,
+     86,
+     86
+    ]
+   },
+   "mjs_fixed": {
+    "0eeeb9e": [
+     99,
+     99,
+     100,
+     99,
+     99
+    ],
+    "b9e7024 (main)": [
+     70,
+     72,
+     68,
+     63,
+     69
+    ]
+   },
+   "main_median": {
+    "legacy_mime": 86,
+    "mjs_fixed": 69
+   },
+   "eager_shell_bytes": {
+    "93cea67": "~327 KB (catalog 43,677)",
+    "b9e7024 + rework": 419567,
+    "budget": 430000
+   }
   }
  }
 }

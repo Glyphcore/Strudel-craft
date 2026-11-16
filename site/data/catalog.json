@@ -4027,828 +4027,6 @@
    ]
   },
   {
-   "id": "edm-kick-four-floor",
-   "title": "EDM kick, four on the floor",
-   "intent": "Sine kick with a fast pitch drop on every beat.",
-   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.fourFloor).hook(\"edmKick\")",
-   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(36).pdecay(0.05).decay(0.3).sustain(0).shape(0.35).lpf(4000).hpf(38).gain(0.8)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 16,
-    "hash": "b6c30d0c43"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "four-floor"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 128.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/drums",
-   "tags": [
-    "drums",
-    "edm",
-    "four-floor",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-sub-sine",
-   "title": "Clean sub (sine)",
-   "intent": "A mono sine sub under C minor roots, 5 ms attack, held to the next note.",
-   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<c1 c1 f1 g1>\").hook(\"subSine\")",
-   "lowered": "setcpm(140/4)\n$: note(\"<c1 c1 f1 g1>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 4,
-    "hash": "9240574b29"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "low-end",
-    "sub"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/bass",
-   "tags": [
-    "bass",
-    "edm",
-    "low-end",
-    "sub",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-clap",
-   "title": "EDM clap",
-   "intent": "Band-passed noise clap on 2 and 4.",
-   "code": "setcpm(128/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"~ x ~ x\").hook(\"edmClap\")",
-   "lowered": "setcpm(128/4)\n$: s(\"~ x ~ x\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1.1).attack(0.001).decay(0.17).sustain(0).gain(0.85)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 8,
-    "hash": "90737786ee"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "accents"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 128.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/drums",
-   "tags": [
-    "drums",
-    "edm",
-    "accents",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-hats-offbeat",
-   "title": "Off-beat hats and shaker",
-   "intent": "Open hats on the and of every beat, 16th shaker under them.",
-   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.offHats).hook(\"hatOpen\")\n$: s(atoms.ec.hats16).velocity(atoms.ec.accent16).hook(\"shaker\")",
-   "lowered": "setcpm(128/4)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.2).sustain(0).gain(0.3)\n$: s(\"x*16\").velocity(\"[1 .5 .75 .5]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5500).attack(0.012).decay(0.06).sustain(0).gain(0.3)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 80,
-    "hash": "20a4e0c156"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "driving"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 128.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/misc",
-   "tags": [
-    "edm",
-    "driving",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-crash",
-   "title": "Crash on the downbeat",
-   "intent": "A long noise crash that marks the first beat of a drop.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(\"<x ~>\").hook(\"crash\").mask(atoms.ec.dropMask)",
-   "lowered": "setcpm(140/4)\n$: s(\"<x ~>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5000).decay(1.6).sustain(0).gain(0.22).mask(\"<1!3 [1 1 1 0]>\")",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 2,
-    "hash": "14dc6ac53f"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "build-drop"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/form",
-   "tags": [
-    "form",
-    "edm",
-    "build-drop",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-sidechain-duck",
-   "title": "Sidechain ducking (kick ducks the chords)",
-   "intent": "Every kick ducks the supersaw chords on orbit 2 by depth 0.5 (-10.7 dB); they swell back over 200 ms: the pump.",
-   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.fourFloor).hook(\"edmKick | sidechain(2, 0.5, 0.2)\")\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hook(\"superChord | ducked(2)\")",
-   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(36).pdecay(0.05).decay(0.3).sustain(0).shape(0.35).lpf(4000).hpf(38).gain(0.8).duckorbit(2).duckdepth(0.5).duckattack(0.2)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).orbit(2)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 32,
-    "hash": "657b78c9bd"
-   },
-   "notes": "duckorbit on the kick (the trigger) and orbit on the chords (the target): Strudel's sidechain. One orbit = one delay and one reverb, so keep ducked parts that need different sends on separate orbits.",
-   "labels": [
-    "edm",
-    "sidechain",
-    "pumping"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 128.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/fx",
-   "tags": [
-    "fx",
-    "edm",
-    "sidechain",
-    "pumping",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-pump-shaper",
-   "title": "Pump without a trigger (volume shaper)",
-   "intent": "A beat-synced ramp tremolo dips the held chords on every beat and swells back, with no kick needed.",
-   "code": "setcpm(128/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hook(\"superChord | pump(0.7)\")",
-   "lowered": "setcpm(128/4)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).tremolosync(4).tremolodepth(0.7).tremoloshape(\"ramp\")",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 16,
-    "hash": "02347ad710"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "pumping",
-    "sidechain"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 128.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/fx",
-   "tags": [
-    "fx",
-    "edm",
-    "pumping",
-    "sidechain",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-snare-roll-8",
-   "title": "8-bar snare roll",
-   "intent": "Quarters, eighths, sixteenths, then 32nds in the last bar, velocity rising from 0.35 to 1.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook(\"snareTight\")",
-   "lowered": "setcpm(140/4)\n$: s(\"<x*4!2 x*8!2 x*16!3 x*32>\").velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 48,
-    "hash": "cb4bf4837c"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "build",
-    "snare-roll"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/fx",
-   "tags": [
-    "fx",
-    "edm",
-    "build",
-    "snare-roll",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-noise-riser",
-   "title": "Noise riser (4 bars)",
-   "intent": "White noise fades in over 4 bars at 140 bpm while its low-pass opens four octaves.",
-   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/4\").hook(\"noiseRiser(6.86)\")",
-   "lowered": "setcpm(140/4)\n$: s(\"x/4\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(6.86).sustain(1).release(0.2).hpf(300).lpf(700).lpenv(4).lpattack(6.86).lpsustain(1).gain(0.28)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 1,
-    "hash": "c55895dcae"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "riser",
-    "build"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/fx",
-   "tags": [
-    "fx",
-    "edm",
-    "riser",
-    "build",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-white-noise-build",
-   "title": "White-noise build (high-pass climb)",
-   "intent": "Noise at full level whose high-pass climbs four octaves over 4 bars: it thins and rises.",
-   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/4\").hook(\"hpBuild(6.86)\")",
-   "lowered": "setcpm(140/4)\n$: s(\"x/4\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(1).sustain(1).release(0.2).hpf(200).hpenv(4).hpattack(6.86).hpsustain(1).lpf(11000).gain(0.22)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 1,
-    "hash": "a628646dbc"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "riser",
-    "build"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/fx",
-   "tags": [
-    "fx",
-    "edm",
-    "riser",
-    "build",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-pitch-riser",
-   "title": "Pitch riser",
-   "intent": "A saw that glides up two octaves over 4 bars.",
-   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/4\").hook(\"pitchRiser(6.86)\")",
-   "lowered": "setcpm(140/4)\n$: s(\"x/4\").hpf(150).lpf(12500).ftype(\"24db\").s(\"sawtooth\").note(\"c4\").penv(24).pattack(6.86).panchor(0).attack(2).sustain(1).release(0.1).lpf(4000).gain(0.16)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 1,
-    "hash": "30be3fbffd"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "riser",
-    "build"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/fx",
-   "tags": [
-    "fx",
-    "edm",
-    "riser",
-    "build",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-impact",
-   "title": "Impact boom",
-   "intent": "Sine boom on C1 with a two-octave pitch drop and a 2 s tail.",
-   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/2\").hook(\"impactBoom\")",
-   "lowered": "setcpm(140/4)\n$: s(\"x/2\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(0.25).decay(2.2).sustain(0).shape(0.25).lpf(3000).gain(0.7)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 2,
-    "hash": "7ed8c93455"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "build-drop",
-    "impact"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/form",
-   "tags": [
-    "form",
-    "edm",
-    "build-drop",
-    "impact",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-sub-drop",
-   "title": "Sub drop",
-   "intent": "A clean sine falling from about 130 Hz to C1 over a second.",
-   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/2\").hook(\"subDrop\")",
-   "lowered": "setcpm(140/4)\n$: s(\"x/2\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(1).decay(2.5).sustain(0).lpf(400).gain(0.6)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 2,
-    "hash": "c1964cb860"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "build-drop",
-    "impact"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/form",
-   "tags": [
-    "form",
-    "edm",
-    "build-drop",
-    "impact",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-reverse-swell",
-   "title": "Reverse swell into the downbeat",
-   "intent": "Noise fades in over a bar and stops dead on the next downbeat.",
-   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"<x ~>\").hook(\"reverseSwell(1.71)\")",
-   "lowered": "setcpm(140/4)\n$: s(\"<x ~>\").hpf(200).lpf(12000).ftype(\"24db\").s(\"white\").attack(1.71).sustain(1).release(0.02).hpf(1500).lpf(9000).gain(0.28)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 2,
-    "hash": "9202b8d517"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "riser",
-    "transition"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/fx",
-   "tags": [
-    "fx",
-    "edm",
-    "riser",
-    "transition",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-downlifter",
-   "title": "Downlifter",
-   "intent": "Noise whose low-pass falls from 11 kHz to 1 kHz after the downbeat.",
-   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"<x ~>\").hook(\"downSweep\")",
-   "lowered": "setcpm(140/4)\n$: s(\"<x ~>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(0.005).decay(2).sustain(0).hpf(300).lpf(1000).lpenv(3.5).lpattack(0.001).lpdecay(1.8).lpsustain(0).gain(0.3)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 2,
-    "hash": "f5ef5298ff"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "transition"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/misc",
-   "tags": [
-    "edm",
-    "transition",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-supersaw-chords",
-   "title": "Supersaw chords",
-   "intent": "7-voice supersaw, wide above 180 Hz, C minor to A-flat major.",
-   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<[c3,g3,c4,eb4] [ab2,eb3,ab3,c4]>\").hook(\"superChord\")",
-   "lowered": "setcpm(140/4)\n$: note(\"<[c3,g3,c4,eb4] [ab2,eb3,ab3,c4]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 16,
-    "hash": "908fbfbfbd"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "supersaw",
-    "chord-progression"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/keys",
-   "tags": [
-    "keys",
-    "edm",
-    "supersaw",
-    "chord-progression",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-pluck",
-   "title": "EDM pluck",
-   "intent": "Saw pluck whose filter closes with each note.",
-   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hook(\"edmPluck\")",
-   "lowered": "setcpm(140/4)\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.2).sustain(0).lpf(1500).lpenv(2).lpdecay(0.18).lpsustain(0).gain(0.35)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 32,
-    "hash": "9e63d9f917"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "pluck",
-    "motif"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/lead",
-   "tags": [
-    "lead",
-    "edm",
-    "pluck",
-    "motif",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-pad",
-   "title": "EDM pad",
-   "intent": "Slow supersaw pad whose filter opens over two seconds.",
-   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<[c3,eb3,g3,bb3] [bb2,d3,f3,a3]>\").hook(\"edmPad\")",
-   "lowered": "setcpm(140/4)\n$: note(\"<[c3,eb3,g3,bb3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"supersaw\").unison(4).detune(0.2).attack(1).sustain(0.8).release(2.5).lpf(1600).lpenv(1).lpattack(2).gain(0.18)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 16,
-    "hash": "84947bd309"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "pad"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/pad",
-   "tags": [
-    "pad",
-    "edm",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-ott-squash",
-   "title": "OTT-style squash on a pluck",
-   "intent": "The pluck through deep fast compression with makeup gain: tails and detail come up against the attack.",
-   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hook(\"edmPluck | ott(0.5)\")",
-   "lowered": "setcpm(140/4)\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.2).sustain(0).lpf(1500).lpenv(2).lpdecay(0.18).lpsustain(0).gain(0.35).compressor(-30).compressorRatio(6).compressorKnee(6).compressorAttack(0.003).compressorRelease(0.08).postgain(0.5)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 32,
-    "hash": "321c04b6ff"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "compression"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/misc",
-   "tags": [
-    "edm",
-    "compression",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-filter-build",
-   "title": "8-bar filter build",
-   "intent": "Chords whose low-pass opens bar by bar from 300 Hz to 6 kHz while the high-pass empties the low end.",
-   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"[c3,eb3,g3,bb3]*4\").hook(\"superChord | filterBuild | thinBuild\")",
-   "lowered": "setcpm(140/4)\n$: note(\"[c3,eb3,g3,bb3]*4\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).lpf(\"<300 450 700 1000 1500 2300 3600 6000>\").hpf(\"<30 50 80 130 200 320 500 800>\")",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 64,
-    "hash": "189fbb9bca"
-   },
-   "notes": "",
-   "labels": [
-    "edm",
-    "build",
-    "filter-sweep"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/fx",
-   "tags": [
-    "fx",
-    "edm",
-    "build",
-    "filter-sweep",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-build-grammar",
-   "title": "Build grammar: roll, riser, filter, gap, drop",
-   "intent": "8 bars of build (snare roll, noise riser, filter opening, a silent last beat), then the drop lands with kick, sub and an impact.",
-   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"<x*4!2 x*8!2 x*16!3 x*32 ~ ~>\").hook(\"snareTight\").velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").mask(\"<1!7 [1 1 1 0] 0 0>\")\n$: s(\"<x ~ ~ ~ ~ ~ ~ ~ ~ ~>\").hook(\"noiseRiser(13.3)\")\n$: note(\"[c3,eb3,g3,bb3]*4\").hook(\"superChord\").lpf(\"<300 450 700 1000 1500 2300 3600 6000 6000 6000>\").mask(\"<1!7 [1 1 1 0] 1 1>\")\n$: s(\"<~!8 x ~>\").hook(\"impactBoom\")\n$: s(\"<~!8 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hook(\"edmKick\")\n$: note(\"<~!8 c1 c1>\").hook(\"subSine\")",
-   "lowered": "setcpm(140/4)\n$: s(\"<x*4!2 x*8!2 x*16!3 x*32 ~ ~>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55).velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").mask(\"<1!7 [1 1 1 0] 0 0>\")\n$: s(\"<x ~ ~ ~ ~ ~ ~ ~ ~ ~>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(13.3).sustain(1).release(0.2).hpf(300).lpf(700).lpenv(4).lpattack(13.3).lpsustain(1).gain(0.28)\n$: note(\"[c3,eb3,g3,bb3]*4\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).lpf(\"<300 450 700 1000 1500 2300 3600 6000 6000 6000>\").mask(\"<1!7 [1 1 1 0] 1 1>\")\n$: s(\"<~!8 x ~>\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(0.25).decay(2.2).sustain(0).shape(0.25).lpf(3000).gain(0.7)\n$: s(\"<~!8 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(36).pdecay(0.05).decay(0.3).sustain(0).shape(0.35).lpf(4000).hpf(38).gain(0.8)\n$: note(\"<~!8 c1 c1>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 113,
-    "hash": "7ecb6cef44"
-   },
-   "notes": "With hooks the same build is gates: ec.build, ec.gap, ec.rise8({ at: \"25b\" }), ec.hit({ at: \"25b\" }) (Syntax: EDM foundations).",
-   "labels": [
-    "edm",
-    "build-drop",
-    "arrangement"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "edm-core",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/core/form",
-   "tags": [
-    "form",
-    "edm",
-    "build-drop",
-    "arrangement",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
    "id": "dnb-two-step",
    "title": "DnB two-step",
    "intent": "Kick on 1 and the and of 3, snare on 2 and 4, ghosts on 2.5 and 4.5, 8th hats: the basic drum-and-bass bar.",
@@ -5551,954 +4729,6 @@
     "dnb",
     "hats",
     "verified",
-    "approx"
-   ]
-  },
-  {
-   "id": "dubstep-halftime-drums",
-   "title": "Half-time drums at 140",
-   "intent": "Kick on the 1 and the and of 3, the snare alone on beat 3, 8th hats: the half-time pulse under a 140 bpm meter.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.halfKick2).hook(\"dsKick\")\n$: s(atoms.ds.halfSnare).hook(\"dsSnare\")\n$: s(atoms.ds.dsHats).velocity(atoms.ds.dsHatVel).hook(\"hatClosed\")",
-   "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).gain(0.8)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55)\n$: s(\"x*8\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.4)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 48,
-    "hash": "bec5bcad1a"
-   },
-   "notes": "",
-   "labels": [
-    "dubstep",
-    "half-time",
-    "edm"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/drums",
-   "tags": [
-    "drums",
-    "dubstep",
-    "edm",
-    "half-time",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "dubstep-kick",
-   "title": "Dubstep kick",
-   "intent": "Deep sine kick with a punchy pitch drop on the half-time 1.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.halfKick2).hook(\"dsKick\")",
-   "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).gain(0.8)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 8,
-    "hash": "03bdac072d"
-   },
-   "notes": "",
-   "labels": [
-    "dubstep",
-    "half-time"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/drums",
-   "tags": [
-    "drums",
-    "dubstep",
-    "half-time",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "dubstep-snare",
-   "title": "Half-time snare",
-   "intent": "Triangle body plus noise on beat 3, with ghost snares around it.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.halfSnare).hook(\"dsSnare\")\n$: s(atoms.ds.ghostSnare).velocity(\"0.35\").hook(\"snareTight\")",
-   "lowered": "setcpm(140/4)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55)\n$: s(\"~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x\").velocity(\"0.35\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 24,
-    "hash": "9cc8b14141"
-   },
-   "notes": "",
-   "labels": [
-    "dubstep",
-    "accents"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/drums",
-   "tags": [
-    "drums",
-    "dubstep",
-    "accents",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "dubstep-reese",
-   "title": "Reese bass",
-   "intent": "Two saws 0.3 semitone apart beating against each other, mono, low-passed.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.reeseLine).hook(\"reeseBass\")",
-   "lowered": "setcpm(140/4)\n$: note(\"<c2 [c2@3 eb2] ab1 [bb1@3 g1]>\").hpf(30).lpf(5000).s(\"supersaw\").unison(2).detune(0.3).spread(0).attack(0.005).sustain(1).release(0.08).lpf(900).lpenv(1).lpdecay(0.3).lpsustain(0.5).shape(0.3).gain(0.3)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 6,
-    "hash": "6aaefa2ef9"
-   },
-   "notes": "",
-   "labels": [
-    "dubstep",
-    "reese",
-    "bass"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/bass",
-   "tags": [
-    "bass",
-    "dubstep",
-    "reese",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "dubstep-sub-growl",
-   "title": "Sub + growl (band split by layering)",
-   "intent": "A clean sine sub plays the fundamental, an FM formant growl an octave up starts at 90 Hz: the low end stays clean while the mids snarl.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.growlLine).hook(\"growlBass\")\n$: note(\"[c1 c1] ~ [c1 ~ c1 c1] [eb1 ~ g1 ~]\").hook(\"subSine\")",
-   "lowered": "setcpm(140/4)\n$: note(\"[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2).fmh(1).fmattack(0.005).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").hpf(90).lpf(3200).attack(0.005).sustain(0.8).release(0.05).distort(1.5).distortvol(0.4).gain(0.4)\n$: note(\"[c1 c1] ~ [c1 ~ c1 c1] [eb1 ~ g1 ~]\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 56,
-    "hash": "a7e7423307"
-   },
-   "notes": "",
-   "labels": [
-    "dubstep",
-    "growl",
-    "low-end"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/bass",
-   "tags": [
-    "bass",
-    "dubstep",
-    "growl",
-    "low-end",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "dubstep-growl",
-   "title": "FM formant growl",
-   "intent": "Saw with an FM index that decays, a vowel formant per note and distortion after the filters.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.growlLine).hook(\"growlBass\")",
-   "lowered": "setcpm(140/4)\n$: note(\"[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2).fmh(1).fmattack(0.005).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").hpf(90).lpf(3200).attack(0.005).sustain(0.8).release(0.05).distort(1.5).distortvol(0.4).gain(0.4)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 28,
-    "hash": "6ea462491c"
-   },
-   "notes": "",
-   "labels": [
-    "dubstep",
-    "growl",
-    "fm",
-    "formant"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/vox",
-   "tags": [
-    "vox",
-    "dubstep",
-    "growl",
-    "fm",
-    "formant",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "dubstep-wobble",
-   "title": "Wobble (synced filter LFO)",
-   "intent": "Held roots through a resonant low-pass whose LFO is synced to the bar; the rate changes per bar: quarters, eighths, 16ths, triplets.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.wobbleLine).hook(\"wobbleBass\").lpsync(atoms.ds.wobbleSync)",
-   "lowered": "setcpm(140/4)\n$: note(\"<c2 c2 eb2 [g1 bb1]>\").hpf(70).lpf(9000).s(\"sawtooth, square\").attack(0.005).sustain(1).release(0.05).hpf(80).lpf(500).lpq(6).lpsync(4).lpdepth(1.6).shape(0.45).gain(0.26).lpsync(\"<4 8 [4 16] 6>\")",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 10,
-    "hash": "a4e65d1f3e"
-   },
-   "notes": "",
-   "labels": [
-    "dubstep",
-    "wobble",
-    "filter-sweep"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/fx",
-   "tags": [
-    "fx",
-    "dubstep",
-    "wobble",
-    "filter-sweep",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "dubstep-talk-bass",
-   "title": "Talking bass",
-   "intent": "FM saw through an 'o' formant with a 16th-note filter LFO: the bass seems to speak.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.talkLine).hook(\"talkBass\")",
-   "lowered": "setcpm(140/4)\n$: note(\"[c2@3 c2] [~ eb2] [c2@2 g1@2] ~\").hpf(70).lpf(9000).s(\"sawtooth\").fm(1.5).fmh(2).vowel(\"o\").hpf(90).lpf(2400).lpsync(16).lpdepth(0.9).attack(0.005).sustain(0.9).release(0.05).distort(1.2).distortvol(0.45).gain(0.38)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 20,
-    "hash": "9aad51dadf"
-   },
-   "notes": "",
-   "labels": [
-    "dubstep",
-    "growl",
-    "formant"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/vox",
-   "tags": [
-    "vox",
-    "dubstep",
-    "growl",
-    "formant",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "riddim-bass",
-   "title": "Riddim bass",
-   "intent": "A hollow square with a sub-octave FM modulator in a 3+3+2 pattern; the space between hits is the groove.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.riddimLine).hook(\"riddimBass\")",
-   "lowered": "setcpm(140/4)\n$: note(\"[c2 ~ ~ c2 ~ ~ c2 ~]*2\").hpf(70).lpf(9000).s(\"square\").fm(0.6).fmh(0.5).attack(0.004).decay(0.22).sustain(0.35).release(0.04).hpf(90).lpf(900).lpq(3).shape(0.5).gain(0.3)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 24,
-    "hash": "b2607b2453"
-   },
-   "notes": "",
-   "labels": [
-    "riddim",
-    "dubstep",
-    "growl"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/misc",
-   "tags": [
-    "riddim",
-    "dubstep",
-    "growl",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "dubstep-screech",
-   "title": "Screech lead",
-   "intent": "FM saw at an inharmonic ratio with distortion and fast vibrato, answering in the bass gaps.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.screechLine).hook(\"screechLead\")",
-   "lowered": "setcpm(140/4)\n$: note(\"~ ~ ~ ~ ~ ~ c6 ~ ~ ~ ~ ~ ~ ~ eb6 ~\").hpf(300).lpf(10000).s(\"sawtooth\").fm(3).fmh(3.01).fmdecay(0.3).fmsustain(0.5).hpf(400).lpf(6000).attack(0.005).sustain(0.7).release(0.1).vib(6).vibmod(0.2).distort(2).distortvol(0.35).gain(0.22)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 8,
-    "hash": "478386090e"
-   },
-   "notes": "",
-   "labels": [
-    "dubstep",
-    "brostep",
-    "lead"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/lead",
-   "tags": [
-    "lead",
-    "dubstep",
-    "brostep",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "dubstep-laser",
-   "title": "Laser zap",
-   "intent": "A saw that falls two octaves in 120 ms, once per bar in a gap.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.laserLine).hook(\"laserZap\")",
-   "lowered": "setcpm(140/4)\n$: note(\"~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c6 ~ ~ ~\").hpf(300).lpf(10000).s(\"sawtooth\").penv(24).pdecay(0.12).attack(0.002).decay(0.18).sustain(0).hpf(300).lpf(7000).gain(0.25)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 4,
-    "hash": "e77ac296c0"
-   },
-   "notes": "",
-   "labels": [
-    "dubstep",
-    "brostep"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/misc",
-   "tags": [
-    "dubstep",
-    "brostep",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "ukf-supersaw-chords",
-   "title": "Melodic dubstep chords",
-   "intent": "Cm7 Abmaj7 Ebmaj7 Bb7 on a wide 7-voice supersaw, high-passed at 200 Hz.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.chords).hook(\"ukfChord\")",
-   "lowered": "setcpm(140/4)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.35).spread(0.7).attack(0.02).sustain(0.8).release(0.5).hpf(200).lpf(7000).gain(0.15)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 16,
-    "hash": "8a8f82536f"
-   },
-   "notes": "",
-   "labels": [
-    "melodic-dubstep",
-    "supersaw",
-    "chord-progression"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/keys",
-   "tags": [
-    "keys",
-    "melodic-dubstep",
-    "supersaw",
-    "chord-progression",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "ukf-pluck",
-   "title": "UKF pluck figure",
-   "intent": "Saw + square pluck outlining the chord loop.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.pluckLine).hook(\"ukfPluck\")",
-   "lowered": "setcpm(140/4)\n$: note(\"<[c4 ~ g4 ~ eb4 ~ c5 ~] [ab3 ~ eb4 ~ c4 ~ ab4 ~] [eb4 ~ bb4 ~ g4 ~ eb5 ~] [bb3 ~ f4 ~ d4 ~ bb4 ~]>\").hpf(120).lpf(7000).s(\"sawtooth, square\").attack(0.002).decay(0.25).sustain(0).lpf(2200).lpenv(3).lpdecay(0.2).lpsustain(0).gain(0.24)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 32,
-    "hash": "411eeb91ab"
-   },
-   "notes": "",
-   "labels": [
-    "melodic-dubstep",
-    "pluck"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/lead",
-   "tags": [
-    "lead",
-    "melodic-dubstep",
-    "pluck",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "ukf-arp",
-   "title": "16th arp",
-   "intent": "Triangle arp through the chord loop.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.arp).hook(\"ukfArp\")",
-   "lowered": "setcpm(140/4)\n$: note(\"<[c4 eb4 g4 c5]*4 [ab3 c4 eb4 ab4]*4 [eb4 g4 bb4 eb5]*4 [bb3 d4 f4 bb4]*4>\").hpf(150).lpf(8000).s(\"triangle\").attack(0.003).decay(0.15).sustain(0).lpf(3000).lpenv(2).lpdecay(0.12).gain(0.35)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 64,
-    "hash": "df468bcbca"
-   },
-   "notes": "",
-   "labels": [
-    "melodic-dubstep",
-    "arpeggio"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/lead",
-   "tags": [
-    "lead",
-    "melodic-dubstep",
-    "arpeggio",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "ukf-lead",
-   "title": "Melodic lead",
-   "intent": "3-voice supersaw lead with vibrato over the loop.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.leadLine).hook(\"ukfLead\")",
-   "lowered": "setcpm(140/4)\n$: note(\"<[c5 ~ bb4 g4 ~ g4 bb4 c5] [eb5 ~ d5 c5 ~ bb4 g4 ~] [g5 ~ f5 eb5 ~ d5 eb5 ~] [f5 ~ eb5 d5 ~ bb4 ~ ~]>\").hpf(150).lpf(8000).s(\"supersaw\").unison(3).detune(0.15).spread(0.4).attack(0.015).sustain(0.7).release(0.3).lpf(3500).lpenv(1).lpdecay(0.3).vib(5).vibmod(0.12).gain(0.22)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 20,
-    "hash": "c52d3a230f"
-   },
-   "notes": "",
-   "labels": [
-    "melodic-dubstep",
-    "lead"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/lead",
-   "tags": [
-    "lead",
-    "melodic-dubstep",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "ukf-atmos-pad",
-   "title": "Atmosphere pad",
-   "intent": "Slow supersaw pad for intros and breakdowns.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.chords).hook(\"atmosPad\")",
-   "lowered": "setcpm(140/4)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").hpf(180).lpf(6000).s(\"supersaw\").unison(5).detune(0.25).attack(2).sustain(0.8).release(3).lpf(1200).lpenv(1.5).lpattack(3).gain(0.15)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 16,
-    "hash": "fbe2c67993"
-   },
-   "notes": "",
-   "labels": [
-    "melodic-dubstep",
-    "pad"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/pad",
-   "tags": [
-    "pad",
-    "melodic-dubstep",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "dubstep-vowel-chops",
-   "title": "Vowel chops (synthesised)",
-   "intent": "A saw through a vowel formant that changes per note: a chopped vocal hook without samples.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.chopLine).hook(\"vowelChop\")",
-   "lowered": "setcpm(140/4)\n$: note(\"<[g4 ~ g4 ~ ~ bb4 ~ c5] [~ eb5 ~ d5 c5 ~ ~ ~]>\").hpf(150).lpf(8000).s(\"sawtooth\").vowel(\"<a e o i>\").attack(0.003).decay(0.12).sustain(0).hpf(250).lpf(5000).gain(0.4)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 14,
-    "hash": "78ca1008e2"
-   },
-   "notes": "",
-   "labels": [
-    "dubstep",
-    "melodic-dubstep",
-    "formant"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/vox",
-   "tags": [
-    "vox",
-    "dubstep",
-    "melodic-dubstep",
-    "formant",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "dubstep-call-response",
-   "title": "Call and response basses",
-   "intent": "Bar A is the growl, bar B the talking bass: two basses share the drop without masking each other.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.growlLine).hook(\"growlBass\").mask(atoms.ds.bassA)\n$: note(atoms.ds.talkLine).hook(\"talkBass\").mask(atoms.ds.bassB)\n$: note(atoms.ds.subLine).hook(\"subSine\")",
-   "lowered": "setcpm(140/4)\n$: note(\"[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2).fmh(1).fmattack(0.005).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").hpf(90).lpf(3200).attack(0.005).sustain(0.8).release(0.05).distort(1.5).distortvol(0.4).gain(0.4).mask(\"<1 0>\")\n$: note(\"[c2@3 c2] [~ eb2] [c2@2 g1@2] ~\").hpf(70).lpf(9000).s(\"sawtooth\").fm(1.5).fmh(2).vowel(\"o\").hpf(90).lpf(2400).lpsync(16).lpdepth(0.9).attack(0.005).sustain(0.9).release(0.05).distort(1.2).distortvol(0.45).gain(0.38).mask(\"<0 1>\")\n$: note(\"<c1 c1 ab1 bb1>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 28,
-    "hash": "8f718b4c1b"
-   },
-   "notes": "",
-   "labels": [
-    "dubstep",
-    "call-response",
-    "growl"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/misc",
-   "tags": [
-    "dubstep",
-    "call-response",
-    "growl",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "dubstep-drop-fill",
-   "title": "Drop with a 4th-bar fill",
-   "intent": "Three bars of drop, then a bar where the bass stops and a laser and snare fill lead back to the 1.",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.halfKick2).hook(\"dsKick | sidechain(2, 0.36, 0.15)\")\n$: s(atoms.ds.halfSnare).hook(\"dsSnare\")\n$: note(atoms.ds.growlLine).hook(\"growlBass | ducked(2)\").mask(atoms.ds.notLastOf4)\n$: s(\"x*8\").hook(\"snareTight\").velocity(\"[.3 .4 .5 .6 .7 .8 .9 1]\").mask(atoms.ds.lastOf4)\n$: note(atoms.ds.laserLine).hook(\"laserZap\").mask(atoms.ds.lastOf4)",
-   "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).gain(0.8).duckorbit(2).duckdepth(0.36).duckattack(0.15)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55)\n$: note(\"[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2).fmh(1).fmattack(0.005).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").hpf(90).lpf(3200).attack(0.005).sustain(0.8).release(0.05).distort(1.5).distortvol(0.4).gain(0.4).orbit(2).mask(\"<1 1 1 0>\")\n$: s(\"x*8\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55).velocity(\"[.3 .4 .5 .6 .7 .8 .9 1]\").mask(\"<0 0 0 1>\")\n$: note(\"~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c6 ~ ~ ~\").hpf(300).lpf(10000).s(\"sawtooth\").penv(24).pdecay(0.12).attack(0.002).decay(0.18).sustain(0).hpf(300).lpf(7000).gain(0.25).mask(\"<0 0 0 1>\")",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 54,
-    "hash": "99a72ce3e5"
-   },
-   "notes": "",
-   "labels": [
-    "dubstep",
-    "dovetail",
-    "build-drop"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/dovetail",
-   "tags": [
-    "dovetail",
-    "dubstep",
-    "build-drop",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "edm-dubstep-tutorial",
-   "title": "Dubstep tutorial track (104 bars, 11 lessons)",
-   "intent": "A 3-minute half-time dubstep track that teaches itself: intro, build, drop A, breakdown, build 2, drop B with a switch-up, outro; every section is a lesson in the code comments.",
-   "code": "// Dubstep tutorial track (104 bars, 11 lessons): the annotated program with every lesson is docs/tracks/edm-dubstep-tutorial/track.strudel.js (plain Strudel: docs/tracks/edm-dubstep-tutorial/track.standalone.strudel.js)\nsetcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n\npad: note(atoms.ds.chords).hook(\"atmosPad\").orbit(3).room(0.35).roomsize(4)\n  .lpf(\"<500 580 660 740 820 900 980 1060 1140 1220 1300 1380 1460 1540 1620 1700 1400!88>\")\n  .velocity(\"<1!96 .85 .72 .6 .48 .36 .25 .15 .08>\")          // outro: an 8-bar fade written as data\n  .mask(\"<1!16 0!24 1!16 0!32 1!16>\")                        // intro, breakdown, outro\n\nshaker: s(atoms.ec.hats16).velocity(atoms.ec.accent16).hook(\"shaker\").mask(\"<0!8 1!8 0!72 1!8 0!8>\")\nkickIntro: s(atoms.ds.halfKick).hook(\"dsKick\").velocity(0.8).mask(\"<0!8 1!8 0!88>\")\nchops: note(atoms.ds.chopLine).hook(\"vowelChop\").orbit(3).room(0.35).roomsize(4).velocity(0.8)\n  .mask(\"<0!12 1!4 0!32 1!8 0!48>\")                         // a hint of the hook in bars 13-16, back in the breakdown\n\nroll: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook(\"snareTight\").mask(atoms.ec.mBuilds)\n  .mask(\"<1!23 [1 1 1 0] 1!80>\")                            // the gap: ec.gapMask, here only before drop A\nbuildChords: note(atoms.ds.chords).segment(8).hook(\"superChord\").orbit(3).room(0.35).roomsize(4)\n  .lpf(atoms.ec.open8).hpf(atoms.ec.thin8).mask(atoms.ec.mBuilds).mask(\"<1!23 [1 1 1 0] 1!80>\")\nriser: s(\"x\").slow(8).hook(\"noiseRiser(13.71)\").mask(atoms.ec.mBuild)   // len = 8 bars x 240 / 140 bpm = 13.71 s\n\nimpact: s(\"x\").hook(\"impactBoom\").mask(\"<0!24 1 0!39 1 0!39>\")\ncrash: s(\"x\").hook(\"crash\").mask(\"<0!24 1 0!39 1 0!11 1 0!27>\")\n\nkick: s(atoms.ds.halfKick2).hook(\"dsKick\").duckorbit(\"2:3\").duckdepth(\"0.36:0.5\").duckattack(\"0.15:0.3\")\n  .mask(\"<0!24 1!16 0!24 1!24 1!8 0!8>\")\nsnare: s(atoms.ds.halfSnare).hook(\"dsSnare\").mask(\"<0!24 1!16 0!24 1!24 1!8 0!8>\")\nghost: s(atoms.ds.ghostSnare).hook(\"snareTight\").velocity(0.3).mask(atoms.ec.mDrops)\nhats: s(atoms.ds.dsHats).velocity(atoms.ds.dsHatVel).hook(\"hatClosed\").mask(\"<0!24 1!16 0!48 1!8 0!8>\")\n\nsub: note(atoms.ds.subLine).hook(\"subSine\").orbit(2).mask(atoms.ec.mDrops)\ngrowl: note(atoms.ds.growlLine).hook(\"growlBass\").orbit(2).velocity(0.85).mask(atoms.ec.mDropA).mask(atoms.ds.bassA)\ntalk: note(atoms.ds.talkLine).hook(\"talkBass\").orbit(2).velocity(0.85).mask(atoms.ec.mDropA).mask(atoms.ds.bassB)\nlaser: note(atoms.ds.laserLine).hook(\"laserZap\").mask(atoms.ec.mDrops).mask(atoms.ds.lastOf4)\n\ndown: s(\"x\").hook(\"downSweep\").mask(\"<0!40 1 0!47 1 0!15>\")\nbreakChords: note(atoms.ds.chords).hook(\"ukfChord | pump(0.6)\").orbit(3).room(0.35).roomsize(4).mask(atoms.ec.mBreak)\narp: note(atoms.ds.arp).hook(\"ukfArp\").orbit(3).room(0.35).roomsize(4).velocity(0.8).mask(atoms.ec.mBreak)\nlead: note(atoms.ds.leadLine).hook(\"ukfLead\").orbit(3).room(0.35).roomsize(4).mask(\"<0!48 1!8 0!48>\")\n\nwhiteBuild: s(\"x\").slow(8).hook(\"hpBuild(13.71)\").mask(atoms.ec.mBuild2)\npitchUp: s(\"x\").slow(8).hook(\"pitchRiser(13.71)\").mask(atoms.ec.mBuild2)\nswell: s(\"x\").hook(\"reverseSwell(1.71)\").mask(\"<0!63 1 0!40>\")\n\nwobble: note(atoms.ds.wobbleLine).hook(\"wobbleBass\").lpsync(atoms.ds.wobbleSync).orbit(2).mask(\"<0!64 1!12 0!28>\")\nhats16: s(atoms.ds.hats16).velocity(atoms.ds.hat16Vel).hook(\"hatClosed\").mask(atoms.ec.mDropB)\ndropChords: note(atoms.ds.chords).hook(\"ukfChord\").orbit(3).room(0.35).roomsize(4).velocity(0.7).mask(\"<0!64 1!12 0!28>\")\n\nriddim: note(atoms.ds.riddimLine).hook(\"riddimBass\").orbit(2).mask(atoms.ec.mSwitch)\nscreech: note(atoms.ds.screechLine).hook(\"screechLead\").velocity(0.8).mask(atoms.ec.mSwitch)\n\n",
-   "lowered": "// Dubstep tutorial track (104 bars, 11 lessons): the annotated program with every lesson is docs/tracks/edm-dubstep-tutorial/track.strudel.js (plain Strudel: docs/tracks/edm-dubstep-tutorial/track.standalone.strudel.js)\nsetcpm(140/4)\npad: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").hpf(180).lpf(6000).s(\"supersaw\").unison(5).detune(0.25).attack(2).sustain(0.8).release(3).lpf(1200).lpenv(1.5).lpattack(3).gain(0.15).orbit(3).room(0.35).roomsize(4)\n  .lpf(\"<500 580 660 740 820 900 980 1060 1140 1220 1300 1380 1460 1540 1620 1700 1400!88>\")\n  .velocity(\"<1!96 .85 .72 .6 .48 .36 .25 .15 .08>\")          // outro: an 8-bar fade written as data\n  .mask(\"<1!16 0!24 1!16 0!32 1!16>\")                        // intro, breakdown, outro\nshaker: s(\"x*16\").velocity(\"[1 .5 .75 .5]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5500).attack(0.012).decay(0.06).sustain(0).gain(0.3).mask(\"<0!8 1!8 0!72 1!8 0!8>\")\nkickIntro: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).gain(0.8).velocity(0.8).mask(\"<0!8 1!8 0!88>\")\nchops: note(\"<[g4 ~ g4 ~ ~ bb4 ~ c5] [~ eb5 ~ d5 c5 ~ ~ ~]>\").hpf(150).lpf(8000).s(\"sawtooth\").vowel(\"<a e o i>\").attack(0.003).decay(0.12).sustain(0).hpf(250).lpf(5000).gain(0.4).orbit(3).room(0.35).roomsize(4).velocity(0.8)\n  .mask(\"<0!12 1!4 0!32 1!8 0!48>\")                         // a hint of the hook in bars 13-16, back in the breakdown\nroll: s(\"<x*4!2 x*8!2 x*16!3 x*32>\").velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55).mask(\"<0!16 1!8 0!32 1!8 0!40>\")\n  .mask(\"<1!23 [1 1 1 0] 1!80>\")                            // the gap: ec.gapMask, here only before drop A\nbuildChords: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").segment(8).hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).orbit(3).room(0.35).roomsize(4)\n  .lpf(\"<300 450 700 1000 1500 2300 3600 6000>\").hpf(\"<30 50 80 130 200 320 500 800>\").mask(\"<0!16 1!8 0!32 1!8 0!40>\").mask(\"<1!23 [1 1 1 0] 1!80>\")\nriser: s(\"x\").slow(8).hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(13.71).sustain(1).release(0.2).hpf(300).lpf(700).lpenv(4).lpattack(13.71).lpsustain(1).gain(0.28).mask(\"<0!16 1!8 0!80>\")   // len = 8 bars x 240 / 140 bpm = 13.71 s\nimpact: s(\"x\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(0.25).decay(2.2).sustain(0).shape(0.25).lpf(3000).gain(0.7).mask(\"<0!24 1 0!39 1 0!39>\")\ncrash: s(\"x\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5000).decay(1.6).sustain(0).gain(0.22).mask(\"<0!24 1 0!39 1 0!11 1 0!27>\")\nkick: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).gain(0.8).duckorbit(\"2:3\").duckdepth(\"0.36:0.5\").duckattack(\"0.15:0.3\")\n  .mask(\"<0!24 1!16 0!24 1!24 1!8 0!8>\")\nsnare: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55).mask(\"<0!24 1!16 0!24 1!24 1!8 0!8>\")\nghost: s(\"~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55).velocity(0.3).mask(\"<0!24 1!16 0!24 1!24 0!16>\")\nhats: s(\"x*8\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.4).mask(\"<0!24 1!16 0!48 1!8 0!8>\")\nsub: note(\"<c1 c1 ab1 bb1>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5).orbit(2).mask(\"<0!24 1!16 0!24 1!24 0!16>\")\ngrowl: note(\"[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2).fmh(1).fmattack(0.005).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").hpf(90).lpf(3200).attack(0.005).sustain(0.8).release(0.05).distort(1.5).distortvol(0.4).gain(0.4).orbit(2).velocity(0.85).mask(\"<0!24 1!16 0!64>\").mask(\"<1 0>\")\ntalk: note(\"[c2@3 c2] [~ eb2] [c2@2 g1@2] ~\").hpf(70).lpf(9000).s(\"sawtooth\").fm(1.5).fmh(2).vowel(\"o\").hpf(90).lpf(2400).lpsync(16).lpdepth(0.9).attack(0.005).sustain(0.9).release(0.05).distort(1.2).distortvol(0.45).gain(0.38).orbit(2).velocity(0.85).mask(\"<0!24 1!16 0!64>\").mask(\"<0 1>\")\nlaser: note(\"~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c6 ~ ~ ~\").hpf(300).lpf(10000).s(\"sawtooth\").penv(24).pdecay(0.12).attack(0.002).decay(0.18).sustain(0).hpf(300).lpf(7000).gain(0.25).mask(\"<0!24 1!16 0!24 1!24 0!16>\").mask(\"<0 0 0 1>\")\ndown: s(\"x\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(0.005).decay(2).sustain(0).hpf(300).lpf(1000).lpenv(3.5).lpattack(0.001).lpdecay(1.8).lpsustain(0).gain(0.3).mask(\"<0!40 1 0!47 1 0!15>\")\nbreakChords: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.35).spread(0.7).attack(0.02).sustain(0.8).release(0.5).hpf(200).lpf(7000).gain(0.15).tremolosync(4).tremolodepth(0.6).tremoloshape(\"ramp\").orbit(3).room(0.35).roomsize(4).mask(\"<0!40 1!16 0!48>\")\narp: note(\"<[c4 eb4 g4 c5]*4 [ab3 c4 eb4 ab4]*4 [eb4 g4 bb4 eb5]*4 [bb3 d4 f4 bb4]*4>\").hpf(150).lpf(8000).s(\"triangle\").attack(0.003).decay(0.15).sustain(0).lpf(3000).lpenv(2).lpdecay(0.12).gain(0.35).orbit(3).room(0.35).roomsize(4).velocity(0.8).mask(\"<0!40 1!16 0!48>\")\nlead: note(\"<[c5 ~ bb4 g4 ~ g4 bb4 c5] [eb5 ~ d5 c5 ~ bb4 g4 ~] [g5 ~ f5 eb5 ~ d5 eb5 ~] [f5 ~ eb5 d5 ~ bb4 ~ ~]>\").hpf(150).lpf(8000).s(\"supersaw\").unison(3).detune(0.15).spread(0.4).attack(0.015).sustain(0.7).release(0.3).lpf(3500).lpenv(1).lpdecay(0.3).vib(5).vibmod(0.12).gain(0.22).orbit(3).room(0.35).roomsize(4).mask(\"<0!48 1!8 0!48>\")\nwhiteBuild: s(\"x\").slow(8).hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(1).sustain(1).release(0.2).hpf(200).hpenv(4).hpattack(13.71).hpsustain(1).lpf(11000).gain(0.22).mask(\"<0!56 1!8 0!40>\")\npitchUp: s(\"x\").slow(8).hpf(150).lpf(12500).ftype(\"24db\").s(\"sawtooth\").note(\"c4\").penv(24).pattack(13.71).panchor(0).attack(2).sustain(1).release(0.1).lpf(4000).gain(0.16).mask(\"<0!56 1!8 0!40>\")\nswell: s(\"x\").hpf(200).lpf(12000).ftype(\"24db\").s(\"white\").attack(1.71).sustain(1).release(0.02).hpf(1500).lpf(9000).gain(0.28).mask(\"<0!63 1 0!40>\")\nwobble: note(\"<c2 c2 eb2 [g1 bb1]>\").hpf(70).lpf(9000).s(\"sawtooth, square\").attack(0.005).sustain(1).release(0.05).hpf(80).lpf(500).lpq(6).lpsync(4).lpdepth(1.6).shape(0.45).gain(0.26).lpsync(\"<4 8 [4 16] 6>\").orbit(2).mask(\"<0!64 1!12 0!28>\")\nhats16: s(\"x*16\").velocity(\"[.9 .4 .6 .4]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.4).mask(\"<0!64 1!24 0!16>\")\ndropChords: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.35).spread(0.7).attack(0.02).sustain(0.8).release(0.5).hpf(200).lpf(7000).gain(0.15).orbit(3).room(0.35).roomsize(4).velocity(0.7).mask(\"<0!64 1!12 0!28>\")\nriddim: note(\"[c2 ~ ~ c2 ~ ~ c2 ~]*2\").hpf(70).lpf(9000).s(\"square\").fm(0.6).fmh(0.5).attack(0.004).decay(0.22).sustain(0.35).release(0.04).hpf(90).lpf(900).lpq(3).shape(0.5).gain(0.3).orbit(2).mask(\"<0!76 1!12 0!16>\")\nscreech: note(\"~ ~ ~ ~ ~ ~ c6 ~ ~ ~ ~ ~ ~ ~ eb6 ~\").hpf(300).lpf(10000).s(\"sawtooth\").fm(3).fmh(3.01).fmdecay(0.3).fmsustain(0.5).hpf(400).lpf(6000).attack(0.005).sustain(0.7).release(0.1).vib(6).vibmod(0.2).distort(2).distortvol(0.35).gain(0.22).velocity(0.8).mask(\"<0!76 1!12 0!16>\")\n",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 16,
-    "hash": "c94a1cdf21"
-   },
-   "notes": "The whole track: Craft form (packs, atoms, racks as .hook) and its generated Strudel form (track.standalone.strudel.js, paste-ready). Map, lessons and measured numbers: docs/tracks/edm-dubstep-tutorial/README.md.",
-   "labels": [
-    "dubstep",
-    "melodic-dubstep",
-    "riddim",
-    "arrangement",
-    "build-drop",
-    "sidechain"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/form",
-   "tags": [
-    "form",
-    "dubstep",
-    "melodic-dubstep",
-    "riddim",
-    "arrangement",
-    "build-drop",
-    "sidechain",
-    "unverified",
-    "lowered"
-   ]
-  },
-  {
-   "id": "feel-halftime",
-   "title": "Feel: half-time dubstep",
-   "intent": "kick on the 1 and the and of 3, the snare alone on beat 3, 8th hats in the standard meter, a held sub and a dark pad (138-142 bpm (half-time)).",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.halfKick2).hook(\"dsKick | groove-straight(1)\")\n$: s(atoms.ds.halfSnare).hook(\"dsSnare | groove-straight(2)\")\n$: s(atoms.ds.ghostSnare).velocity(\"0.3\").hook(\"snareTight | groove-rolling(3)\")\n$: s(atoms.ds.dsHats).velocity(atoms.ds.dsHatVel).hook(\"hatClosed | groove-rolling(4)\")\n$: note(atoms.ds.subLine).hook(\"subSine | groove-straight(6)\")\n$: note(atoms.ds.chords).hook(\"atmosPad | groove-straight(7)\")\n$: s(\"<~ ~ ~ x>\").hook(\"downSweep\")",
-   "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).gain(0.8).mul(velocity(rand.late(1.37).range(0.96, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55).mul(velocity(rand.late(2.37).range(0.96, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x\").velocity(\"0.3\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55).mul(velocity(rand.late(3.37).range(0.82, 1))).late(rand.late(3).range(0, 0.001875).segment(16)).early(0.000938)\n$: s(\"x*8\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.4).mul(velocity(rand.late(4.37).range(0.82, 1))).late(rand.late(4).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"<c1 c1 ab1 bb1>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5).mul(velocity(rand.late(6.37).range(0.96, 1))).late(rand.late(6).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").hpf(180).lpf(6000).s(\"supersaw\").unison(5).detune(0.25).attack(2).sustain(0.8).release(3).lpf(1200).lpenv(1.5).lpattack(3).gain(0.15).mul(velocity(rand.late(7.37).range(0.96, 1))).late(rand.late(7).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"<~ ~ ~ x>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(0.005).decay(2).sustain(0).hpf(300).lpf(1000).lpenv(3.5).lpattack(0.001).lpdecay(1.8).lpsustain(0).gain(0.3)",
-   "lowered_check": {
-    "equal": false,
-    "approx": true,
-    "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (84 Craft, 86 Strudel)); with the groove taken out of both forms the events are identical",
-    "hash": "23b47728bd"
-   },
-   "notes": "Craft form of the feel template glyphcore/edm:feel-halftime (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/edm:feel-halftime\", { as: \"feel\" }).",
-   "labels": [
-    "dubstep",
-    "half-time",
-    "edm"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/drums",
-   "tags": [
-    "drums",
-    "dubstep",
-    "edm",
-    "half-time",
-    "unverified",
-    "approx"
-   ]
-  },
-  {
-   "id": "feel-ukf",
-   "title": "Feel: ukf melodic dubstep",
-   "intent": "half-time drums, wide supersaw chords, a melodic lead and a clean sub: emotion over weight (140-150 bpm (half-time)).",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.halfKick2).hook(\"dsKick | groove-straight(1)\")\n$: s(atoms.ds.halfSnare).hook(\"dsSnare | groove-straight(2)\")\n$: s(atoms.ds.dsHats).velocity(atoms.ds.dsHatVel).hook(\"shaker | groove-straight(4)\")\n$: note(atoms.ds.leadLine).hook(\"ukfLead | groove-straight(5)\")\n$: note(atoms.ds.subLine).hook(\"subSine | groove-straight(6)\")\n$: note(atoms.ds.chords).hook(\"ukfChord | groove-straight(7)\")\n$: s(\"<x ~ ~ ~>\").hook(\"crash\")",
-   "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).gain(0.8).mul(velocity(rand.late(1.37).range(0.96, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55).mul(velocity(rand.late(2.37).range(0.96, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"x*8\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5500).attack(0.012).decay(0.06).sustain(0).gain(0.3).mul(velocity(rand.late(4.37).range(0.96, 1))).late(rand.late(4).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"<[c5 ~ bb4 g4 ~ g4 bb4 c5] [eb5 ~ d5 c5 ~ bb4 g4 ~] [g5 ~ f5 eb5 ~ d5 eb5 ~] [f5 ~ eb5 d5 ~ bb4 ~ ~]>\").hpf(150).lpf(8000).s(\"supersaw\").unison(3).detune(0.15).spread(0.4).attack(0.015).sustain(0.7).release(0.3).lpf(3500).lpenv(1).lpdecay(0.3).vib(5).vibmod(0.12).gain(0.22).mul(velocity(rand.late(5.37).range(0.96, 1))).late(rand.late(5).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"<c1 c1 ab1 bb1>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5).mul(velocity(rand.late(6.37).range(0.96, 1))).late(rand.late(6).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.35).spread(0.7).attack(0.02).sustain(0.8).release(0.5).hpf(200).lpf(7000).gain(0.15).mul(velocity(rand.late(7.37).range(0.96, 1))).late(rand.late(7).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"<x ~ ~ ~>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5000).decay(1.6).sustain(0).gain(0.22)",
-   "lowered_check": {
-    "equal": false,
-    "approx": true,
-    "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (88 Craft, 89 Strudel)); with the groove taken out of both forms the events are identical",
-    "hash": "0bfa038575"
-   },
-   "notes": "Craft form of the feel template glyphcore/edm:feel-ukf (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/edm:feel-ukf\", { as: \"feel\" }).",
-   "labels": [
-    "melodic-dubstep",
-    "dubstep",
-    "half-time"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/drums",
-   "tags": [
-    "drums",
-    "melodic-dubstep",
-    "dubstep",
-    "half-time",
-    "unverified",
-    "approx"
-   ]
-  },
-  {
-   "id": "feel-riddim",
-   "title": "Feel: riddim",
-   "intent": "sparse drums, a hollow repetitive bass in 3+3+2 with the gaps as the groove, one laser per bar, no chords (140-150 bpm (half-time)).",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.riddimKick).hook(\"dsKick | groove-straight(1)\")\n$: s(atoms.ds.halfSnare).hook(\"dsSnare | groove-straight(2)\")\n$: s(atoms.ds.dsHats).velocity(atoms.ds.dsHatVel).hook(\"hatClosed | groove-straight(4)\")\n$: note(atoms.ds.laserLine).hook(\"laserZap | groove-straight(5)\")\n$: note(atoms.ds.riddimLine).hook(\"riddimBass | groove-straight(6)\")",
-   "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).gain(0.8).mul(velocity(rand.late(1.37).range(0.96, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55).mul(velocity(rand.late(2.37).range(0.96, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"x*8\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.4).mul(velocity(rand.late(4.37).range(0.96, 1))).late(rand.late(4).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c6 ~ ~ ~\").hpf(300).lpf(10000).s(\"sawtooth\").penv(24).pdecay(0.12).attack(0.002).decay(0.18).sustain(0).hpf(300).lpf(7000).gain(0.25).mul(velocity(rand.late(5.37).range(0.96, 1))).late(rand.late(5).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"[c2 ~ ~ c2 ~ ~ c2 ~]*2\").hpf(70).lpf(9000).s(\"square\").fm(0.6).fmh(0.5).attack(0.004).decay(0.22).sustain(0.35).release(0.04).hpf(90).lpf(900).lpq(3).shape(0.5).gain(0.3).mul(velocity(rand.late(6.37).range(0.96, 1))).late(rand.late(6).range(0, 0.00125).segment(16)).early(0.000625)",
-   "lowered_check": {
-    "equal": false,
-    "approx": true,
-    "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (75 Craft, 77 Strudel)); with the groove taken out of both forms the events are identical",
-    "hash": "53ad8a63d4"
-   },
-   "notes": "Craft form of the feel template glyphcore/edm:feel-riddim (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/edm:feel-riddim\", { as: \"feel\" }).",
-   "labels": [
-    "riddim",
-    "dubstep",
-    "sparse"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/misc",
-   "tags": [
-    "riddim",
-    "dubstep",
-    "sparse",
-    "unverified",
-    "approx"
-   ]
-  },
-  {
-   "id": "feel-brostep",
-   "title": "Feel: brostep",
-   "intent": "busier kicks, 16th hats, an FM formant growl with screech answers in its gaps (140-150 bpm (half-time)).",
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.broKick).hook(\"dsKick | groove-straight(1)\")\n$: s(atoms.ds.halfSnare).hook(\"dsSnare | groove-straight(2)\")\n$: s(atoms.ds.hats16).velocity(atoms.ds.hat16Vel).hook(\"hatClosed | groove-rolling(4)\")\n$: note(atoms.ds.screechLine).hook(\"screechLead | groove-straight(5)\")\n$: note(atoms.ds.growlLine).hook(\"growlBass | groove-straight(6)\")\n$: s(\"<x ~ ~ ~>\").hook(\"impactBoom\")",
-   "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).gain(0.8).mul(velocity(rand.late(1.37).range(0.96, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55).mul(velocity(rand.late(2.37).range(0.96, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"x*16\").velocity(\"[.9 .4 .6 .4]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.4).mul(velocity(rand.late(4.37).range(0.82, 1))).late(rand.late(4).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"~ ~ ~ ~ ~ ~ c6 ~ ~ ~ ~ ~ ~ ~ eb6 ~\").hpf(300).lpf(10000).s(\"sawtooth\").fm(3).fmh(3.01).fmdecay(0.3).fmsustain(0.5).hpf(400).lpf(6000).attack(0.005).sustain(0.7).release(0.1).vib(6).vibmod(0.2).distort(2).distortvol(0.35).gain(0.22).mul(velocity(rand.late(5.37).range(0.96, 1))).late(rand.late(5).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2).fmh(1).fmattack(0.005).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").hpf(90).lpf(3200).attack(0.005).sustain(0.8).release(0.05).distort(1.5).distortvol(0.4).gain(0.4).mul(velocity(rand.late(6.37).range(0.96, 1))).late(rand.late(6).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"<x ~ ~ ~>\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(0.25).decay(2.2).sustain(0).shape(0.25).lpf(3000).gain(0.7)",
-   "lowered_check": {
-    "equal": false,
-    "approx": true,
-    "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (124 Craft, 126 Strudel)); with the groove taken out of both forms the events are identical",
-    "hash": "fbd9f694c7"
-   },
-   "notes": "Craft form of the feel template glyphcore/edm:feel-brostep (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/edm:feel-brostep\", { as: \"feel\" }).",
-   "labels": [
-    "brostep",
-    "dubstep",
-    "driving"
-   ],
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
-   "origin": "concepts",
-   "family": "dubstep",
-   "needs_samples": false,
-   "expr": null,
-   "bpm_hint": 140.0,
-   "verified": false,
-   "rms_dbfs": null,
-   "centroid_hz": null,
-   "peak": 0.0,
-   "error": "not rendered",
-   "folder": "edm/dubstep/misc",
-   "tags": [
-    "brostep",
-    "dubstep",
-    "driving",
-    "unverified",
     "approx"
    ]
   },
@@ -7544,6 +5774,1776 @@
     "sidechain",
     "verified",
     "lowered"
+   ]
+  },
+  {
+   "id": "edm-kick-four-floor",
+   "title": "EDM kick, four on the floor",
+   "intent": "Sine kick with a fast pitch drop on every beat.",
+   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.fourFloor).hook(\"edmKick\")",
+   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(36).pdecay(0.05).decay(0.3).sustain(0).shape(0.35).lpf(4000).hpf(38).gain(0.8)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "b6c30d0c43"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "four-floor"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 128.0,
+   "verified": true,
+   "rms_dbfs": -17.2,
+   "centroid_hz": 188,
+   "peak": 0.4253,
+   "error": null,
+   "folder": "edm/core/drums",
+   "tags": [
+    "drums",
+    "edm",
+    "four-floor",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-sub-sine",
+   "title": "Clean sub (sine)",
+   "intent": "A mono sine sub under C minor roots, 5 ms attack, held to the next note.",
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<c1 c1 f1 g1>\").hook(\"subSine\")",
+   "lowered": "setcpm(140/4)\n$: note(\"<c1 c1 f1 g1>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 4,
+    "hash": "9240574b29"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "low-end",
+    "sub"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -16.0,
+   "centroid_hz": 40,
+   "peak": 0.3897,
+   "error": null,
+   "folder": "edm/core/bass",
+   "tags": [
+    "bass",
+    "edm",
+    "low-end",
+    "sub",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-clap",
+   "title": "EDM clap",
+   "intent": "Band-passed noise clap on 2 and 4.",
+   "code": "setcpm(128/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"~ x ~ x\").hook(\"edmClap\")",
+   "lowered": "setcpm(128/4)\n$: s(\"~ x ~ x\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1.1).attack(0.001).decay(0.17).sustain(0).gain(0.85)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 8,
+    "hash": "90737786ee"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "accents"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 128.0,
+   "verified": true,
+   "rms_dbfs": -41.0,
+   "centroid_hz": 2591,
+   "peak": 0.1044,
+   "error": null,
+   "folder": "edm/core/drums",
+   "tags": [
+    "drums",
+    "edm",
+    "accents",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-hats-offbeat",
+   "title": "Off-beat hats and shaker",
+   "intent": "Open hats on the and of every beat, 16th shaker under them.",
+   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.offHats).hook(\"hatOpen\")\n$: s(atoms.ec.hats16).velocity(atoms.ec.accent16).hook(\"shaker\")",
+   "lowered": "setcpm(128/4)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.2).sustain(0).gain(0.3)\n$: s(\"x*16\").velocity(\"[1 .5 .75 .5]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5500).attack(0.012).decay(0.06).sustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 80,
+    "hash": "20a4e0c156"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "driving"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 128.0,
+   "verified": true,
+   "rms_dbfs": -31.0,
+   "centroid_hz": 10118,
+   "peak": 0.2605,
+   "error": null,
+   "folder": "edm/core/misc",
+   "tags": [
+    "edm",
+    "driving",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-crash",
+   "title": "Crash on the downbeat",
+   "intent": "A long noise crash that marks the first beat of a drop.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(\"<x ~>\").hook(\"crash\").mask(atoms.ec.dropMask)",
+   "lowered": "setcpm(140/4)\n$: s(\"<x ~>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5000).decay(1.6).sustain(0).gain(0.22).mask(\"<1!3 [1 1 1 0]>\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 2,
+    "hash": "14dc6ac53f"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "build-drop"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -35.3,
+   "centroid_hz": 9956,
+   "peak": 0.1581,
+   "error": null,
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "build-drop",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-sidechain-duck",
+   "title": "Sidechain ducking (kick ducks the chords)",
+   "intent": "Every kick ducks the supersaw chords on orbit 2 by depth 0.5 (-10.7 dB); they swell back over 200 ms: the pump.",
+   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.fourFloor).hook(\"edmKick | sidechain(2, 0.5, 0.2)\")\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hook(\"superChord | ducked(2)\")",
+   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(36).pdecay(0.05).decay(0.3).sustain(0).shape(0.35).lpf(4000).hpf(38).gain(0.8).duckorbit(2).duckdepth(0.5).duckattack(0.2)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).orbit(2)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 32,
+    "hash": "657b78c9bd"
+   },
+   "notes": "duckorbit on the kick (the trigger) and orbit on the chords (the target): Strudel's sidechain. One orbit = one delay and one reverb, so keep ducked parts that need different sends on separate orbits.",
+   "labels": [
+    "edm",
+    "sidechain",
+    "pumping"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 128.0,
+   "verified": true,
+   "rms_dbfs": -18.1,
+   "centroid_hz": 1274,
+   "peak": 0.5317,
+   "error": null,
+   "folder": "edm/core/fx",
+   "tags": [
+    "fx",
+    "edm",
+    "sidechain",
+    "pumping",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-pump-shaper",
+   "title": "Pump without a trigger (volume shaper)",
+   "intent": "A beat-synced ramp tremolo dips the held chords on every beat and swells back, with no kick needed.",
+   "code": "setcpm(128/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hook(\"superChord | lfoPump(0.7)\")",
+   "lowered": "setcpm(128/4)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).tremolosync(4).tremolodepth(0.7).tremoloshape(\"ramp\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "46540302fd"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "pumping",
+    "sidechain"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 128.0,
+   "verified": true,
+   "rms_dbfs": -35.0,
+   "centroid_hz": 2268,
+   "peak": 0.1152,
+   "error": null,
+   "folder": "edm/core/fx",
+   "tags": [
+    "fx",
+    "edm",
+    "pumping",
+    "sidechain",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-snare-roll-8",
+   "title": "8-bar snare roll",
+   "intent": "Quarters, eighths, sixteenths, then 32nds in the last bar, velocity rising from 0.35 to 1.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook(\"snareTight\")",
+   "lowered": "setcpm(140/4)\n$: s(\"<x*4!2 x*8!2 x*16!3 x*32>\").velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 48,
+    "hash": "cb4bf4837c"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "build",
+    "snare-roll"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -24.6,
+   "centroid_hz": 4179,
+   "peak": 0.359,
+   "error": null,
+   "folder": "edm/core/fx",
+   "tags": [
+    "fx",
+    "edm",
+    "build",
+    "snare-roll",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-noise-riser",
+   "title": "Noise riser (4 bars)",
+   "intent": "White noise fades in over 4 bars at 140 bpm while its low-pass opens four octaves.",
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/4\").hook(\"noiseRiser(6.86)\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x/4\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(6.86).sustain(1).release(0.2).hpf(300).lpf(700).lpenv(4).lpattack(6.86).lpsustain(1).gain(0.28)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 1,
+    "hash": "c55895dcae"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "riser",
+    "build"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -33.5,
+   "centroid_hz": 4461,
+   "peak": 0.1657,
+   "error": null,
+   "folder": "edm/core/fx",
+   "tags": [
+    "fx",
+    "edm",
+    "riser",
+    "build",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-white-noise-build",
+   "title": "White-noise build (high-pass climb)",
+   "intent": "Noise at full level whose high-pass climbs four octaves over 4 bars: it thins and rises.",
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/4\").hook(\"hpBuild(6.86)\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x/4\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(1).sustain(1).release(0.2).hpf(200).hpenv(4).hpattack(6.86).hpsustain(1).lpf(11000).gain(0.22)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 1,
+    "hash": "a628646dbc"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "riser",
+    "build"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -29.0,
+   "centroid_hz": 7061,
+   "peak": 0.1505,
+   "error": null,
+   "folder": "edm/core/fx",
+   "tags": [
+    "fx",
+    "edm",
+    "riser",
+    "build",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-pitch-riser",
+   "title": "Pitch riser",
+   "intent": "A saw that glides up two octaves over 4 bars.",
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/4\").hook(\"pitchRiser(6.86)\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x/4\").hpf(150).lpf(12500).ftype(\"24db\").s(\"sawtooth\").note(\"c4\").penv(24).pattack(6.86).panchor(0).attack(2).sustain(1).release(0.1).lpf(4000).gain(0.16)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 1,
+    "hash": "30be3fbffd"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "riser",
+    "build"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -32.5,
+   "centroid_hz": 2098,
+   "peak": 0.0908,
+   "error": null,
+   "folder": "edm/core/fx",
+   "tags": [
+    "fx",
+    "edm",
+    "riser",
+    "build",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-impact",
+   "title": "Impact boom",
+   "intent": "Sine boom on C1 with a two-octave pitch drop and a 2 s tail.",
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/2\").hook(\"impactBoom\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x/2\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(0.25).decay(2.2).sustain(0).shape(0.25).lpf(3000).gain(0.7)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 2,
+    "hash": "7ed8c93455"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "build-drop",
+    "impact"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -18.0,
+   "centroid_hz": 45,
+   "peak": 0.3509,
+   "error": null,
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "build-drop",
+    "impact",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-sub-drop",
+   "title": "Sub drop",
+   "intent": "A clean sine falling from about 130 Hz to C1 over a second.",
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/2\").hook(\"subDrop\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x/2\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(1).decay(2.5).sustain(0).lpf(400).gain(0.6)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 2,
+    "hash": "c1964cb860"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "build-drop",
+    "impact"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -22.8,
+   "centroid_hz": 59,
+   "peak": 0.2216,
+   "error": null,
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "build-drop",
+    "impact",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-reverse-swell",
+   "title": "Reverse swell into the downbeat",
+   "intent": "Noise fades in over a bar and stops dead on the next downbeat.",
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"<x ~>\").hook(\"reverseSwell(1.71)\")",
+   "lowered": "setcpm(140/4)\n$: s(\"<x ~>\").hpf(200).lpf(12000).ftype(\"24db\").s(\"white\").attack(1.71).sustain(1).release(0.02).hpf(1500).lpf(9000).gain(0.28)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 2,
+    "hash": "9202b8d517"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "riser",
+    "transition"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -34.6,
+   "centroid_hz": 6095,
+   "peak": 0.1452,
+   "error": null,
+   "folder": "edm/core/fx",
+   "tags": [
+    "fx",
+    "edm",
+    "riser",
+    "transition",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-downlifter",
+   "title": "Downlifter",
+   "intent": "Noise whose low-pass falls from 11 kHz to 1 kHz after the downbeat.",
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"<x ~>\").hook(\"downSweep\")",
+   "lowered": "setcpm(140/4)\n$: s(\"<x ~>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(0.005).decay(2).sustain(0).hpf(300).lpf(1000).lpenv(3.5).lpattack(0.001).lpdecay(1.8).lpsustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 2,
+    "hash": "f5ef5298ff"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "transition"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -35.0,
+   "centroid_hz": 4755,
+   "peak": 0.1796,
+   "error": null,
+   "folder": "edm/core/misc",
+   "tags": [
+    "edm",
+    "transition",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-supersaw-chords",
+   "title": "Supersaw chords",
+   "intent": "7-voice supersaw, wide above 180 Hz, C minor to A-flat major.",
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<[c3,g3,c4,eb4] [ab2,eb3,ab3,c4]>\").hook(\"superChord\")",
+   "lowered": "setcpm(140/4)\n$: note(\"<[c3,g3,c4,eb4] [ab2,eb3,ab3,c4]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "908fbfbfbd"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "supersaw",
+    "chord-progression"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -29.3,
+   "centroid_hz": 2385,
+   "peak": 0.1798,
+   "error": null,
+   "folder": "edm/core/keys",
+   "tags": [
+    "keys",
+    "edm",
+    "supersaw",
+    "chord-progression",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-pluck",
+   "title": "EDM pluck",
+   "intent": "Saw pluck whose filter closes with each note.",
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hook(\"edmPluck\")",
+   "lowered": "setcpm(140/4)\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.2).sustain(0).lpf(1500).lpenv(2).lpdecay(0.18).lpsustain(0).gain(0.35)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 32,
+    "hash": "9e63d9f917"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "pluck",
+    "motif"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -30.4,
+   "centroid_hz": 2030,
+   "peak": 0.1613,
+   "error": null,
+   "folder": "edm/core/lead",
+   "tags": [
+    "lead",
+    "edm",
+    "pluck",
+    "motif",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-pad",
+   "title": "EDM pad",
+   "intent": "Slow supersaw pad whose filter opens over two seconds.",
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<[c3,eb3,g3,bb3] [bb2,d3,f3,a3]>\").hook(\"edmPad\")",
+   "lowered": "setcpm(140/4)\n$: note(\"<[c3,eb3,g3,bb3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"supersaw\").unison(4).detune(0.2).attack(1).sustain(0.8).release(2.5).lpf(1600).lpenv(1).lpattack(2).gain(0.18)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "84947bd309"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "pad"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -28.4,
+   "centroid_hz": 1127,
+   "peak": 0.2237,
+   "error": null,
+   "folder": "edm/core/pad",
+   "tags": [
+    "pad",
+    "edm",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-ott-squash",
+   "title": "OTT-style squash on a pluck",
+   "intent": "The pluck through deep fast compression with makeup gain: tails and detail come up against the attack.",
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hook(\"edmPluck | ott(0.5)\")",
+   "lowered": "setcpm(140/4)\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.2).sustain(0).lpf(1500).lpenv(2).lpdecay(0.18).lpsustain(0).gain(0.35).compressor(-30).compressorRatio(6).compressorKnee(6).compressorAttack(0.003).compressorRelease(0.08).postgain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 32,
+    "hash": "321c04b6ff"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "compression"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -25.8,
+   "centroid_hz": 2021,
+   "peak": 0.2721,
+   "error": null,
+   "folder": "edm/core/misc",
+   "tags": [
+    "edm",
+    "compression",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-filter-build",
+   "title": "8-bar filter build",
+   "intent": "Chords whose low-pass opens bar by bar from 300 Hz to 6 kHz while the high-pass empties the low end.",
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"[c3,eb3,g3,bb3]*4\").hook(\"superChord | filterBuild | thinBuild\")",
+   "lowered": "setcpm(140/4)\n$: note(\"[c3,eb3,g3,bb3]*4\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).lpf(\"<300 450 700 1000 1500 2300 3600 6000>\").hpf(\"<30 50 80 130 200 320 500 800>\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 64,
+    "hash": "189fbb9bca"
+   },
+   "notes": "",
+   "labels": [
+    "edm",
+    "build",
+    "filter-sweep"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -29.6,
+   "centroid_hz": 1275,
+   "peak": 0.2445,
+   "error": null,
+   "folder": "edm/core/fx",
+   "tags": [
+    "fx",
+    "edm",
+    "build",
+    "filter-sweep",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-build-grammar",
+   "title": "Build grammar: roll, riser, filter, gap, drop",
+   "intent": "8 bars of build (snare roll, noise riser, filter opening, a silent last beat), then the drop lands with kick, sub and an impact.",
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"<x*4!2 x*8!2 x*16!3 x*32 ~ ~>\").hook(\"snareTight\").velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").mask(\"<1!7 [1 1 1 0] 0 0>\")\n$: s(\"<x ~ ~ ~ ~ ~ ~ ~ ~ ~>\").hook(\"noiseRiser(13.3)\")\n$: note(\"[c3,eb3,g3,bb3]*4\").hook(\"superChord\").lpf(\"<300 450 700 1000 1500 2300 3600 6000 6000 6000>\").mask(\"<1!7 [1 1 1 0] 1 1>\")\n$: s(\"<~!8 x ~>\").hook(\"impactBoom\")\n$: s(\"<~!8 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hook(\"edmKick\")\n$: note(\"<~!8 c1@2>\").hook(\"subSine\")",
+   "lowered": "setcpm(140/4)\n$: s(\"<x*4!2 x*8!2 x*16!3 x*32 ~ ~>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55).velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").mask(\"<1!7 [1 1 1 0] 0 0>\")\n$: s(\"<x ~ ~ ~ ~ ~ ~ ~ ~ ~>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(13.3).sustain(1).release(0.2).hpf(300).lpf(700).lpenv(4).lpattack(13.3).lpsustain(1).gain(0.28)\n$: note(\"[c3,eb3,g3,bb3]*4\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).lpf(\"<300 450 700 1000 1500 2300 3600 6000 6000 6000>\").mask(\"<1!7 [1 1 1 0] 1 1>\")\n$: s(\"<~!8 x ~>\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(0.25).decay(2.2).sustain(0).shape(0.25).lpf(3000).gain(0.7)\n$: s(\"<~!8 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(36).pdecay(0.05).decay(0.3).sustain(0).shape(0.35).lpf(4000).hpf(38).gain(0.8)\n$: note(\"<~!8 c1@2>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 113,
+    "hash": "87f2448244"
+   },
+   "notes": "With hooks the same build is gates: ec.build, ec.gap, ec.rise8({ at: \"25b\" }), ec.hit({ at: \"25b\" }) (Syntax: EDM foundations).",
+   "labels": [
+    "edm",
+    "build-drop",
+    "arrangement"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "edm-core",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -27.8,
+   "centroid_hz": 2291,
+   "peak": 0.2458,
+   "error": null,
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "build-drop",
+    "arrangement",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "dubstep-halftime-drums",
+   "title": "Half-time drums at 140",
+   "intent": "Kick on the 1 and the and of 3, the snare alone on beat 3, 8th hats: the half-time pulse under a 140 bpm meter.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.halfKick2).hook(\"dsKick\")\n$: s(atoms.ds.halfSnare).hook(\"dsSnare\")\n$: s(atoms.ds.dsHats).velocity(atoms.ds.dsHatVel).hook(\"hatClosed\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).hpf(42).gain(0.8)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55)\n$: s(\"x*8\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.4)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 48,
+    "hash": "46f0417a9b"
+   },
+   "notes": "",
+   "labels": [
+    "dubstep",
+    "half-time",
+    "edm"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -18.4,
+   "centroid_hz": 5960,
+   "peak": 0.6484,
+   "error": null,
+   "folder": "edm/dubstep/drums",
+   "tags": [
+    "drums",
+    "dubstep",
+    "edm",
+    "half-time",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "dubstep-kick",
+   "title": "Dubstep kick",
+   "intent": "Deep sine kick with a punchy pitch drop on the half-time 1.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.halfKick2).hook(\"dsKick\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).hpf(42).gain(0.8)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 8,
+    "hash": "5097a52c0a"
+   },
+   "notes": "",
+   "labels": [
+    "dubstep",
+    "half-time"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -19.0,
+   "centroid_hz": 245,
+   "peak": 0.4679,
+   "error": null,
+   "folder": "edm/dubstep/drums",
+   "tags": [
+    "drums",
+    "dubstep",
+    "half-time",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "dubstep-snare",
+   "title": "Half-time snare",
+   "intent": "Triangle body plus noise on beat 3, with ghost snares around it.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.halfSnare).hook(\"dsSnare\")\n$: s(atoms.ds.ghostSnare).velocity(\"0.35\").hook(\"snareTight\")",
+   "lowered": "setcpm(140/4)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55)\n$: s(\"~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x\").velocity(\"0.35\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 24,
+    "hash": "9cc8b14141"
+   },
+   "notes": "",
+   "labels": [
+    "dubstep",
+    "accents"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -27.0,
+   "centroid_hz": 5182,
+   "peak": 0.556,
+   "error": null,
+   "folder": "edm/dubstep/drums",
+   "tags": [
+    "drums",
+    "dubstep",
+    "accents",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "dubstep-reese",
+   "title": "Reese bass",
+   "intent": "Two saws 0.3 semitone apart beating against each other, mono, low-passed.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.reeseLine).hook(\"reeseBass\")",
+   "lowered": "setcpm(140/4)\n$: note(\"<c2 [c2@3 eb2] ab1 [bb1@3 g1]>\").hpf(30).lpf(5000).s(\"supersaw\").unison(2).detune(0.3).spread(0).attack(0.005).sustain(1).release(0.08).lpf(900).lpenv(1).lpdecay(0.3).lpsustain(0.5).shape(0.3).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 6,
+    "hash": "6aaefa2ef9"
+   },
+   "notes": "",
+   "labels": [
+    "dubstep",
+    "reese",
+    "bass"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -23.0,
+   "centroid_hz": 722,
+   "peak": 0.2753,
+   "error": null,
+   "folder": "edm/dubstep/bass",
+   "tags": [
+    "bass",
+    "dubstep",
+    "reese",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "dubstep-sub-growl",
+   "title": "Sub + growl (band split by layering)",
+   "intent": "A clean sine sub plays the fundamental, an FM formant growl an octave up starts at 90 Hz: the low end stays clean while the mids snarl.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.growlLine).hook(\"growlBass\")\n$: note(atoms.ds.subLine).hook(\"subSine\")",
+   "lowered": "setcpm(140/4)\n$: note(\"[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2).fmh(1).fmattack(0.005).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").hpf(90).lpf(3200).attack(0.005).sustain(0.8).release(0.05).distort(1.5).distortvol(0.4).gain(0.4)\n$: note(\"<c1 c1 ab1 bb1>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 32,
+    "hash": "a6524080d6"
+   },
+   "notes": "",
+   "labels": [
+    "dubstep",
+    "growl",
+    "low-end"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -15.9,
+   "centroid_hz": 279,
+   "peak": 0.4223,
+   "error": null,
+   "folder": "edm/dubstep/bass",
+   "tags": [
+    "bass",
+    "dubstep",
+    "growl",
+    "low-end",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "dubstep-growl",
+   "title": "FM formant growl",
+   "intent": "Saw with an FM index that decays, a vowel formant per note and distortion after the filters.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.growlLine).hook(\"growlBass\")",
+   "lowered": "setcpm(140/4)\n$: note(\"[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2).fmh(1).fmattack(0.005).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").hpf(90).lpf(3200).attack(0.005).sustain(0.8).release(0.05).distort(1.5).distortvol(0.4).gain(0.4)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 28,
+    "hash": "6ea462491c"
+   },
+   "notes": "",
+   "labels": [
+    "dubstep",
+    "growl",
+    "fm",
+    "formant"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -31.6,
+   "centroid_hz": 843,
+   "peak": 0.1359,
+   "error": null,
+   "folder": "edm/dubstep/vox",
+   "tags": [
+    "vox",
+    "dubstep",
+    "growl",
+    "fm",
+    "formant",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "dubstep-wobble",
+   "title": "Wobble (synced filter LFO)",
+   "intent": "Held roots through a resonant low-pass whose LFO is synced to the bar; the rate changes per bar: quarters, eighths, 16ths, triplets.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.wobbleLine).hook(\"wobbleBass\").lpsync(atoms.ds.wobbleSync)",
+   "lowered": "setcpm(140/4)\n$: note(\"<c2 c2 eb2 [g1 bb1]>\").hpf(70).lpf(9000).s(\"sawtooth, square\").attack(0.005).sustain(1).release(0.05).hpf(120).ftype(\"24db\").lpf(500).lpq(6).lpsync(4).lpdepth(1.6).shape(0.3).gain(0.12).lpsync(\"<4 8 [4 16] 6>\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 10,
+    "hash": "896229f4f2"
+   },
+   "notes": "",
+   "labels": [
+    "dubstep",
+    "wobble",
+    "filter-sweep"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -20.5,
+   "centroid_hz": 372,
+   "peak": 0.2885,
+   "error": null,
+   "folder": "edm/dubstep/fx",
+   "tags": [
+    "fx",
+    "dubstep",
+    "wobble",
+    "filter-sweep",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "dubstep-talk-bass",
+   "title": "Talking bass",
+   "intent": "FM saw through an 'o' formant with a 16th-note filter LFO: the bass seems to speak.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.talkLine).hook(\"talkBass\")",
+   "lowered": "setcpm(140/4)\n$: note(\"[c2@3 c2] [~ eb2] [c2@2 g1@2] ~\").hpf(70).lpf(9000).s(\"sawtooth\").fm(1.5).fmh(2).vowel(\"o\").hpf(90).lpf(2400).lpsync(16).lpdepth(0.9).attack(0.005).sustain(0.9).release(0.05).distort(1.2).distortvol(0.45).gain(0.38)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 20,
+    "hash": "9aad51dadf"
+   },
+   "notes": "",
+   "labels": [
+    "dubstep",
+    "growl",
+    "formant"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -29.0,
+   "centroid_hz": 642,
+   "peak": 0.1348,
+   "error": null,
+   "folder": "edm/dubstep/vox",
+   "tags": [
+    "vox",
+    "dubstep",
+    "growl",
+    "formant",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "riddim-bass",
+   "title": "Riddim bass",
+   "intent": "A hollow square with a sub-octave FM modulator in a 3+3+2 pattern; the space between hits is the groove.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.riddimLine).hook(\"riddimBass\")",
+   "lowered": "setcpm(140/4)\n$: note(\"[c2 ~ ~ c2 ~ ~ c2 ~]*2\").hpf(70).lpf(9000).s(\"square\").fm(0.6).fmh(0.5).attack(0.004).decay(0.22).sustain(0.35).release(0.04).hpf(120).ftype(\"24db\").lpf(900).lpq(3).shape(0.5).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 24,
+    "hash": "89636f2329"
+   },
+   "notes": "",
+   "labels": [
+    "riddim",
+    "dubstep",
+    "growl"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -22.5,
+   "centroid_hz": 499,
+   "peak": 0.3802,
+   "error": null,
+   "folder": "edm/dubstep/misc",
+   "tags": [
+    "riddim",
+    "dubstep",
+    "growl",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "dubstep-screech",
+   "title": "Screech lead",
+   "intent": "FM saw at an inharmonic ratio with distortion and fast vibrato, answering in the bass gaps.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.screechLine).hook(\"screechLead\")",
+   "lowered": "setcpm(140/4)\n$: note(\"~ ~ ~ ~ ~ ~ c6 ~ ~ ~ ~ ~ ~ ~ eb6 ~\").hpf(300).lpf(10000).s(\"sawtooth\").fm(3).fmh(3.01).fmdecay(0.3).fmsustain(0.5).hpf(400).lpf(6000).attack(0.01).sustain(0.7).release(0.1).vib(6).vibmod(0.2).distort(1.2).distortvol(0.4).gain(0.22)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 8,
+    "hash": "45d46d46b5"
+   },
+   "notes": "",
+   "labels": [
+    "dubstep",
+    "brostep",
+    "lead"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -40.2,
+   "centroid_hz": 4857,
+   "peak": 0.071,
+   "error": null,
+   "folder": "edm/dubstep/misc",
+   "tags": [
+    "dubstep",
+    "brostep",
+    "lead",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "dubstep-laser",
+   "title": "Laser zap",
+   "intent": "A saw that falls two octaves in 120 ms, once per bar in a gap.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.laserLine).hook(\"laserZap\")",
+   "lowered": "setcpm(140/4)\n$: note(\"~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c6 ~ ~ ~\").hpf(300).lpf(10000).s(\"sawtooth\").penv(24).pdecay(0.12).attack(0.002).decay(0.18).sustain(0).hpf(300).lpf(7000).gain(0.25)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 4,
+    "hash": "e77ac296c0"
+   },
+   "notes": "",
+   "labels": [
+    "dubstep",
+    "brostep"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -43.7,
+   "centroid_hz": 4733,
+   "peak": 0.0598,
+   "error": null,
+   "folder": "edm/dubstep/misc",
+   "tags": [
+    "dubstep",
+    "brostep",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "ukf-supersaw-chords",
+   "title": "Melodic dubstep chords",
+   "intent": "Cm7 Abmaj7 Ebmaj7 Bb7 on a wide 7-voice supersaw, high-passed at 200 Hz.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.chords).hook(\"ukfChord\")",
+   "lowered": "setcpm(140/4)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.35).spread(0.7).attack(0.02).sustain(0.8).release(0.5).hpf(200).lpf(7000).gain(0.15)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "8a8f82536f"
+   },
+   "notes": "",
+   "labels": [
+    "melodic-dubstep",
+    "supersaw",
+    "chord-progression"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -30.7,
+   "centroid_hz": 2472,
+   "peak": 0.1994,
+   "error": null,
+   "folder": "edm/dubstep/keys",
+   "tags": [
+    "keys",
+    "melodic-dubstep",
+    "supersaw",
+    "chord-progression",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "ukf-pluck",
+   "title": "UKF pluck figure",
+   "intent": "Saw + square pluck outlining the chord loop.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.pluckLine).hook(\"ukfPluck\")",
+   "lowered": "setcpm(140/4)\n$: note(\"<[c4 ~ g4 ~ eb4 ~ c5 ~] [ab3 ~ eb4 ~ c4 ~ ab4 ~] [eb4 ~ bb4 ~ g4 ~ eb5 ~] [bb3 ~ f4 ~ d4 ~ bb4 ~]>\").hpf(120).lpf(7000).s(\"sawtooth, square\").attack(0.002).decay(0.25).sustain(0).lpf(1800).lpenv(2).lpdecay(0.2).lpsustain(0).gain(0.24)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 32,
+    "hash": "128383e7f7"
+   },
+   "notes": "",
+   "labels": [
+    "melodic-dubstep",
+    "pluck"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -27.0,
+   "centroid_hz": 1905,
+   "peak": 0.2729,
+   "error": null,
+   "folder": "edm/dubstep/lead",
+   "tags": [
+    "lead",
+    "melodic-dubstep",
+    "pluck",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "ukf-arp",
+   "title": "16th arp",
+   "intent": "Triangle arp through the chord loop.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.arp).hook(\"ukfArp\")",
+   "lowered": "setcpm(140/4)\n$: note(\"<[c4 eb4 g4 c5]*4 [ab3 c4 eb4 ab4]*4 [eb4 g4 bb4 eb5]*4 [bb3 d4 f4 bb4]*4>\").hpf(150).lpf(8000).s(\"triangle\").attack(0.003).decay(0.15).sustain(0).lpf(3000).lpenv(2).lpdecay(0.12).gain(0.35)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 64,
+    "hash": "df468bcbca"
+   },
+   "notes": "",
+   "labels": [
+    "melodic-dubstep",
+    "arpeggio"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -26.5,
+   "centroid_hz": 668,
+   "peak": 0.126,
+   "error": null,
+   "folder": "edm/dubstep/lead",
+   "tags": [
+    "lead",
+    "melodic-dubstep",
+    "arpeggio",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "ukf-lead",
+   "title": "Melodic lead",
+   "intent": "3-voice supersaw lead with vibrato over the loop.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.leadLine).hook(\"ukfLead\")",
+   "lowered": "setcpm(140/4)\n$: note(\"<[c5 ~ bb4 g4 ~ g4 bb4 c5] [eb5 ~ d5 c5 ~ bb4 g4 ~] [g5 ~ f5 eb5 ~ d5 eb5 ~] [f5 ~ eb5 d5 ~ bb4 ~ ~]>\").hpf(150).lpf(8000).s(\"supersaw\").unison(3).detune(0.15).spread(0.4).attack(0.015).sustain(0.7).release(0.3).lpf(3500).lpenv(1).lpdecay(0.3).vib(5).vibmod(0.12).gain(0.22)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 20,
+    "hash": "c52d3a230f"
+   },
+   "notes": "",
+   "labels": [
+    "melodic-dubstep",
+    "lead"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -34.3,
+   "centroid_hz": 2787,
+   "peak": 0.1286,
+   "error": null,
+   "folder": "edm/dubstep/misc",
+   "tags": [
+    "melodic-dubstep",
+    "lead",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "ukf-atmos-pad",
+   "title": "Atmosphere pad",
+   "intent": "Slow supersaw pad for intros and breakdowns.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.chords).hook(\"atmosPad\")",
+   "lowered": "setcpm(140/4)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").hpf(180).lpf(6000).s(\"supersaw\").unison(5).detune(0.25).attack(2).sustain(0.8).release(3).lpf(1200).lpenv(1.5).lpattack(3).gain(0.15)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "fbe2c67993"
+   },
+   "notes": "",
+   "labels": [
+    "melodic-dubstep",
+    "pad"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -32.1,
+   "centroid_hz": 979,
+   "peak": 0.1682,
+   "error": null,
+   "folder": "edm/dubstep/pad",
+   "tags": [
+    "pad",
+    "melodic-dubstep",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "dubstep-vowel-chops",
+   "title": "Vowel chops (synthesised)",
+   "intent": "A saw through a vowel formant that changes per note: a chopped vocal hook without samples.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.chopLine).hook(\"vowelChop\")",
+   "lowered": "setcpm(140/4)\n$: note(\"<[g4 ~ g4 ~ ~ bb4 ~ c5] [~ eb5 ~ d5 c5 ~ ~ ~]>\").hpf(150).lpf(8000).s(\"sawtooth\").vowel(\"<a e o i>\").attack(0.003).decay(0.12).sustain(0).hpf(250).lpf(5000).gain(0.4)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 14,
+    "hash": "78ca1008e2"
+   },
+   "notes": "",
+   "labels": [
+    "dubstep",
+    "melodic-dubstep",
+    "formant"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -47.7,
+   "centroid_hz": 1256,
+   "peak": 0.046,
+   "error": null,
+   "folder": "edm/dubstep/vox",
+   "tags": [
+    "vox",
+    "dubstep",
+    "melodic-dubstep",
+    "formant",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "dubstep-call-response",
+   "title": "Call and response basses",
+   "intent": "Bar A is the growl, bar B the talking bass: two basses share the drop without masking each other.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: note(atoms.ds.growlLine).hook(\"growlBass\").mask(atoms.ds.bassA)\n$: note(atoms.ds.talkLine).hook(\"talkBass\").mask(atoms.ds.bassB)\n$: note(atoms.ds.subLine).hook(\"subSine\")",
+   "lowered": "setcpm(140/4)\n$: note(\"[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2).fmh(1).fmattack(0.005).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").hpf(90).lpf(3200).attack(0.005).sustain(0.8).release(0.05).distort(1.5).distortvol(0.4).gain(0.4).mask(\"<1 0>\")\n$: note(\"[c2@3 c2] [~ eb2] [c2@2 g1@2] ~\").hpf(70).lpf(9000).s(\"sawtooth\").fm(1.5).fmh(2).vowel(\"o\").hpf(90).lpf(2400).lpsync(16).lpdepth(0.9).attack(0.005).sustain(0.9).release(0.05).distort(1.2).distortvol(0.45).gain(0.38).mask(\"<0 1>\")\n$: note(\"<c1 c1 ab1 bb1>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 28,
+    "hash": "8f718b4c1b"
+   },
+   "notes": "",
+   "labels": [
+    "dubstep",
+    "call-response",
+    "growl"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -15.8,
+   "centroid_hz": 262,
+   "peak": 0.4503,
+   "error": null,
+   "folder": "edm/dubstep/misc",
+   "tags": [
+    "dubstep",
+    "call-response",
+    "growl",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "dubstep-drop-fill",
+   "title": "Drop with a 4th-bar fill",
+   "intent": "Three bars of drop, then a bar where the bass stops and a laser and snare fill lead back to the 1.",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.halfKick2).hook(\"dsKick | sidechain(2, 0.36, 0.15)\")\n$: s(atoms.ds.halfSnare).hook(\"dsSnare\")\n$: note(atoms.ds.growlLine).hook(\"growlBass | ducked(2)\").mask(atoms.ds.notLastOf4)\n$: s(\"x*8\").hook(\"snareTight\").velocity(\"[.3 .4 .5 .6 .7 .8 .9 1]\").mask(atoms.ds.lastOf4)\n$: note(atoms.ds.laserLine).hook(\"laserZap\").mask(atoms.ds.lastOf4)",
+   "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).hpf(42).gain(0.8).duckorbit(2).duckdepth(0.36).duckattack(0.15)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55)\n$: note(\"[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2).fmh(1).fmattack(0.005).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").hpf(90).lpf(3200).attack(0.005).sustain(0.8).release(0.05).distort(1.5).distortvol(0.4).gain(0.4).orbit(2).mask(\"<1 1 1 0>\")\n$: s(\"x*8\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55).velocity(\"[.3 .4 .5 .6 .7 .8 .9 1]\").mask(\"<0 0 0 1>\")\n$: note(\"~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c6 ~ ~ ~\").hpf(300).lpf(10000).s(\"sawtooth\").penv(24).pdecay(0.12).attack(0.002).decay(0.18).sustain(0).hpf(300).lpf(7000).gain(0.25).mask(\"<0 0 0 1>\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 54,
+    "hash": "8817b2ca47"
+   },
+   "notes": "",
+   "labels": [
+    "dubstep",
+    "dovetail",
+    "build-drop"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -20.6,
+   "centroid_hz": 3444,
+   "peak": 0.614,
+   "error": null,
+   "folder": "edm/dubstep/dovetail",
+   "tags": [
+    "dovetail",
+    "dubstep",
+    "build-drop",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "edm-dubstep-tutorial",
+   "title": "Dubstep tutorial track (104 bars, 11 lessons)",
+   "intent": "A 3-minute half-time dubstep track that teaches itself: intro, build, drop A, breakdown, build 2, drop B with a switch-up, outro; every section is a lesson in the code comments.",
+   "code": "// Dubstep tutorial track (104 bars, 11 lessons): the annotated program with every lesson is docs/tracks/edm-dubstep-tutorial/track.strudel.js (plain Strudel: docs/tracks/edm-dubstep-tutorial/track.standalone.strudel.js)\nsetcpm(140/4)\nconst dry = (v) => { const o = { ...v }; delete o.shape; delete o.distort; delete o.distortvol; return o }   // drop the worklet drive stages\nconst WIDE = (x) => x.s(\"sawtooth\").layer((v) => v.add(note(-0.15)).pan(0.25), (v) => v, (v) => v.add(note(0.15)).pan(0.75))   // a 3-saw supersaw\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n\npad: WIDE(note(atoms.ds.chords).hook(\"atmosPad\")).gain(0.1).orbit(3).room(0.35).roomsize(4)\n  .lpf(\"<500 580 660 740 820 900 980 1060 1140 1220 1300 1380 1460 1540 1620 1700 1400!88>\")\n  .velocity(\"<1!96 .85 .72 .6 .48 .36 .25 .15 .08>\")          // outro: an 8-bar fade written as data\n  .mask(\"<1!16 0!24 1!16 0!32 1!16>\")                        // intro, breakdown, outro\n\nshaker: s(atoms.ec.hats16).velocity(atoms.ec.accent16).hook(\"shaker\").mask(\"<0!8 1!8 0!72 1!8 0!8>\")\nkickIntro: s(atoms.ds.halfKick).hook(\"dsKick\").withValue(dry).velocity(0.5).mask(\"<0!8 1!8 0!88>\")\nchops: note(atoms.ds.chopLine).hook(\"vowelChop\").orbit(3).room(0.35).roomsize(4).velocity(0.8)\n  .mask(\"<0!12 1!4 0!32 1!8 0!48>\")                         // a hint of the hook in bars 13-16, back in the breakdown\n\nroll: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook(\"snareTight\").postgain(1.8).mask(atoms.ec.mBuilds)\n  .mask(\"<1!23 [1 1 1 0] 1!80>\")                            // the gap: ec.gapMask, here only before drop A\nbuildChords: WIDE(note(atoms.ds.chords).segment(8).hook(\"superChord\")).release(0.15).gain(0.06).orbit(3).room(0.35).roomsize(4)\n  .lpf(atoms.ec.open8).hpf(atoms.ec.thin8).mask(atoms.ec.mBuilds).mask(\"<1!23 [1 1 1 0] 1!80>\")\nriser: s(\"x\").slow(8).hook(\"noiseRiser(13.71)\").mask(atoms.ec.mBuild)   // len = 8 bars x 240 / 140 bpm = 13.71 s\n\nimpact: s(\"x\").hook(\"impactBoom\").withValue(dry).mask(\"<0!24 1 0!39 1 0!39>\")\ncrash: s(\"x\").hook(\"crash\").mask(\"<0!24 1 0!39 1 0!11 1 0!27>\")\n\nkick: s(atoms.ds.halfKick2).hook(\"dsKick\").withValue(dry).duckorbit(\"2:3\").duckdepth(\"0.36:0.5\").duckattack(\"0.15:0.3\")\n  .mask(\"<0!24 1!16 0!24 1!24 1!8 0!8>\")\nsnare: s(atoms.ds.halfSnare).hook(\"dsSnare\").withValue(dry).mask(\"<0!24 1!16 0!24 1!24 1!8 0!8>\")\nghost: s(atoms.ds.ghostSnare).hook(\"snareTight\").velocity(0.3).mask(atoms.ec.mDrops)\nhats: s(atoms.ds.dsHats).velocity(atoms.ds.dsHatVel).hook(\"hatClosed\").mask(\"<0!24 1!16 0!48 1!8 0!8>\")\n\nsub: note(atoms.ds.subLine).hook(\"subSine\").withValue(dry).velocity(0.55).orbit(2).mask(atoms.ec.mDrops)   // mix pass: velocity 0.55, the sub was 84 % of the drop energy\ngrowl: note(atoms.ds.growlLine).hook(\"growlBass\").orbit(2).postgain(1.6).mask(atoms.ec.mDropA).mask(atoms.ds.bassA)\ntalk: note(atoms.ds.talkLine).hook(\"talkBass\").withValue(dry).orbit(2).postgain(1.8).mask(atoms.ec.mDropA).mask(atoms.ds.bassB)\nlaser: note(atoms.ds.laserLine).hook(\"laserZap\").mask(atoms.ec.mDrops).mask(atoms.ds.lastOf4)\n\ndown: s(\"x\").hook(\"downSweep\").mask(\"<0!40 1 0!47 1 0!15>\")\npumpTrig: s(atoms.ec.fourFloor).s(\"sine\").gain(0).duckorbit(3).duckdepth(0.45).duckattack(0.3).mask(atoms.ec.mBreak)   // ducks orbit 3 to -9.6 dB\nbreakChords: WIDE(note(atoms.ds.chords).hook(\"ukfChord\")).gain(0.07).orbit(3).room(0.35).roomsize(4).mask(atoms.ec.mBreak)\narp: note(atoms.ds.arp).hook(\"ukfArp\").orbit(3).room(0.35).roomsize(4).postgain(1.6).mask(atoms.ec.mBreak)\nlead: WIDE(note(atoms.ds.leadLine).hook(\"ukfLead\")).gain(0.12).orbit(3).room(0.35).roomsize(4).mask(\"<0!48 1!8 0!48>\")\n\nwhiteBuild: s(\"x\").slow(8).hook(\"hpBuild(13.71)\").mask(atoms.ec.mBuild2)\npitchUp: s(\"x\").slow(8).hook(\"pitchRiser(13.71)\").mask(atoms.ec.mBuild2)\nswell: s(\"x\").hook(\"reverseSwell(1.71)\").mask(\"<0!63 1 0!40>\")\n\nwobble: note(atoms.ds.wobbleLine).hook(\"wobbleBass\").withValue(dry).postgain(3).lpsync(atoms.ds.wobbleSync).orbit(2).mask(\"<0!64 1!12 0!28>\")\nhats16: s(atoms.ds.hats16).velocity(atoms.ds.hat16Vel).hook(\"hatClosed\").mask(atoms.ec.mDropB)\ndropChords: WIDE(note(atoms.ds.chords).hook(\"ukfChord\")).gain(0.09).orbit(3).room(0.35).roomsize(4).velocity(0.7).mask(\"<0!64 1!12 0!28>\")\n\nriddim: note(atoms.ds.riddimLine).hook(\"riddimBass\").withValue(dry).postgain(1.8).orbit(2).mask(atoms.ec.mSwitch)\nscreech: note(atoms.ds.screechLine).hook(\"screechLead\").velocity(0.8).mask(atoms.ec.mSwitch)\n\n",
+   "lowered": "// Dubstep tutorial track (104 bars, 11 lessons): the annotated program with every lesson is docs/tracks/edm-dubstep-tutorial/track.strudel.js (plain Strudel: docs/tracks/edm-dubstep-tutorial/track.standalone.strudel.js)\nsetcpm(140/4)\nconst dry = (v) => { const o = { ...v }; delete o.shape; delete o.distort; delete o.distortvol; return o }   // drop the worklet drive stages\nconst WIDE = (x) => x.s(\"sawtooth\").layer((v) => v.add(note(-0.15)).pan(0.25), (v) => v, (v) => v.add(note(0.15)).pan(0.75))   // a 3-saw supersaw\npad: WIDE(note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").hpf(180).lpf(6000).s(\"supersaw\").unison(5).detune(0.25).attack(2).sustain(0.8).release(3).lpf(1200).lpenv(1.5).lpattack(3).gain(0.15)).gain(0.1).orbit(3).room(0.35).roomsize(4)\n  .lpf(\"<500 580 660 740 820 900 980 1060 1140 1220 1300 1380 1460 1540 1620 1700 1400!88>\")\n  .velocity(\"<1!96 .85 .72 .6 .48 .36 .25 .15 .08>\")          // outro: an 8-bar fade written as data\n  .mask(\"<1!16 0!24 1!16 0!32 1!16>\")                        // intro, breakdown, outro\nshaker: s(\"x*16\").velocity(\"[1 .5 .75 .5]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5500).attack(0.012).decay(0.06).sustain(0).gain(0.3).mask(\"<0!8 1!8 0!72 1!8 0!8>\")\nkickIntro: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).hpf(42).gain(0.8).withValue(dry).velocity(0.5).mask(\"<0!8 1!8 0!88>\")\nchops: note(\"<[g4 ~ g4 ~ ~ bb4 ~ c5] [~ eb5 ~ d5 c5 ~ ~ ~]>\").hpf(150).lpf(8000).s(\"sawtooth\").vowel(\"<a e o i>\").attack(0.003).decay(0.12).sustain(0).hpf(250).lpf(5000).gain(0.4).orbit(3).room(0.35).roomsize(4).velocity(0.8)\n  .mask(\"<0!12 1!4 0!32 1!8 0!48>\")                         // a hint of the hook in bars 13-16, back in the breakdown\nroll: s(\"<x*4!2 x*8!2 x*16!3 x*32>\").velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55).postgain(1.8).mask(\"<0!16 1!8 0!32 1!8 0!40>\")\n  .mask(\"<1!23 [1 1 1 0] 1!80>\")                            // the gap: ec.gapMask, here only before drop A\nbuildChords: WIDE(note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").segment(8).hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16)).release(0.15).gain(0.06).orbit(3).room(0.35).roomsize(4)\n  .lpf(\"<300 450 700 1000 1500 2300 3600 6000>\").hpf(\"<30 50 80 130 200 320 500 800>\").mask(\"<0!16 1!8 0!32 1!8 0!40>\").mask(\"<1!23 [1 1 1 0] 1!80>\")\nriser: s(\"x\").slow(8).hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(13.71).sustain(1).release(0.2).hpf(300).lpf(700).lpenv(4).lpattack(13.71).lpsustain(1).gain(0.28).mask(\"<0!16 1!8 0!80>\")   // len = 8 bars x 240 / 140 bpm = 13.71 s\nimpact: s(\"x\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(0.25).decay(2.2).sustain(0).shape(0.25).lpf(3000).gain(0.7).withValue(dry).mask(\"<0!24 1 0!39 1 0!39>\")\ncrash: s(\"x\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5000).decay(1.6).sustain(0).gain(0.22).mask(\"<0!24 1 0!39 1 0!11 1 0!27>\")\nkick: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).hpf(42).gain(0.8).withValue(dry).duckorbit(\"2:3\").duckdepth(\"0.36:0.5\").duckattack(\"0.15:0.3\")\n  .mask(\"<0!24 1!16 0!24 1!24 1!8 0!8>\")\nsnare: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55).withValue(dry).mask(\"<0!24 1!16 0!24 1!24 1!8 0!8>\")\nghost: s(\"~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55).velocity(0.3).mask(\"<0!24 1!16 0!24 1!24 0!16>\")\nhats: s(\"x*8\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.4).mask(\"<0!24 1!16 0!48 1!8 0!8>\")\nsub: note(\"<c1 c1 ab1 bb1>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5).withValue(dry).velocity(0.55).orbit(2).mask(\"<0!24 1!16 0!24 1!24 0!16>\")   // mix pass: velocity 0.55, the sub was 84 % of the drop energy\ngrowl: note(\"[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2).fmh(1).fmattack(0.005).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").hpf(90).lpf(3200).attack(0.005).sustain(0.8).release(0.05).distort(1.5).distortvol(0.4).gain(0.4).orbit(2).postgain(1.6).mask(\"<0!24 1!16 0!64>\").mask(\"<1 0>\")\ntalk: note(\"[c2@3 c2] [~ eb2] [c2@2 g1@2] ~\").hpf(70).lpf(9000).s(\"sawtooth\").fm(1.5).fmh(2).vowel(\"o\").hpf(90).lpf(2400).lpsync(16).lpdepth(0.9).attack(0.005).sustain(0.9).release(0.05).distort(1.2).distortvol(0.45).gain(0.38).withValue(dry).orbit(2).postgain(1.8).mask(\"<0!24 1!16 0!64>\").mask(\"<0 1>\")\nlaser: note(\"~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c6 ~ ~ ~\").hpf(300).lpf(10000).s(\"sawtooth\").penv(24).pdecay(0.12).attack(0.002).decay(0.18).sustain(0).hpf(300).lpf(7000).gain(0.25).mask(\"<0!24 1!16 0!24 1!24 0!16>\").mask(\"<0 0 0 1>\")\ndown: s(\"x\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(0.005).decay(2).sustain(0).hpf(300).lpf(1000).lpenv(3.5).lpattack(0.001).lpdecay(1.8).lpsustain(0).gain(0.3).mask(\"<0!40 1 0!47 1 0!15>\")\npumpTrig: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").s(\"sine\").gain(0).duckorbit(3).duckdepth(0.45).duckattack(0.3).mask(\"<0!40 1!16 0!48>\")   // ducks orbit 3 to -9.6 dB\nbreakChords: WIDE(note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.35).spread(0.7).attack(0.02).sustain(0.8).release(0.5).hpf(200).lpf(7000).gain(0.15)).gain(0.07).orbit(3).room(0.35).roomsize(4).mask(\"<0!40 1!16 0!48>\")\narp: note(\"<[c4 eb4 g4 c5]*4 [ab3 c4 eb4 ab4]*4 [eb4 g4 bb4 eb5]*4 [bb3 d4 f4 bb4]*4>\").hpf(150).lpf(8000).s(\"triangle\").attack(0.003).decay(0.15).sustain(0).lpf(3000).lpenv(2).lpdecay(0.12).gain(0.35).orbit(3).room(0.35).roomsize(4).postgain(1.6).mask(\"<0!40 1!16 0!48>\")\nlead: WIDE(note(\"<[c5 ~ bb4 g4 ~ g4 bb4 c5] [eb5 ~ d5 c5 ~ bb4 g4 ~] [g5 ~ f5 eb5 ~ d5 eb5 ~] [f5 ~ eb5 d5 ~ bb4 ~ ~]>\").hpf(150).lpf(8000).s(\"supersaw\").unison(3).detune(0.15).spread(0.4).attack(0.015).sustain(0.7).release(0.3).lpf(3500).lpenv(1).lpdecay(0.3).vib(5).vibmod(0.12).gain(0.22)).gain(0.12).orbit(3).room(0.35).roomsize(4).mask(\"<0!48 1!8 0!48>\")\nwhiteBuild: s(\"x\").slow(8).hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(1).sustain(1).release(0.2).hpf(200).hpenv(4).hpattack(13.71).hpsustain(1).lpf(11000).gain(0.22).mask(\"<0!56 1!8 0!40>\")\npitchUp: s(\"x\").slow(8).hpf(150).lpf(12500).ftype(\"24db\").s(\"sawtooth\").note(\"c4\").penv(24).pattack(13.71).panchor(0).attack(2).sustain(1).release(0.1).lpf(4000).gain(0.16).mask(\"<0!56 1!8 0!40>\")\nswell: s(\"x\").hpf(200).lpf(12000).ftype(\"24db\").s(\"white\").attack(1.71).sustain(1).release(0.02).hpf(1500).lpf(9000).gain(0.28).mask(\"<0!63 1 0!40>\")\nwobble: note(\"<c2 c2 eb2 [g1 bb1]>\").hpf(70).lpf(9000).s(\"sawtooth, square\").attack(0.005).sustain(1).release(0.05).hpf(120).ftype(\"24db\").lpf(500).lpq(6).lpsync(4).lpdepth(1.6).shape(0.3).gain(0.12).withValue(dry).postgain(3).lpsync(\"<4 8 [4 16] 6>\").orbit(2).mask(\"<0!64 1!12 0!28>\")\nhats16: s(\"x*16\").velocity(\"[.9 .4 .6 .4]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.4).mask(\"<0!64 1!24 0!16>\")\ndropChords: WIDE(note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.35).spread(0.7).attack(0.02).sustain(0.8).release(0.5).hpf(200).lpf(7000).gain(0.15)).gain(0.09).orbit(3).room(0.35).roomsize(4).velocity(0.7).mask(\"<0!64 1!12 0!28>\")\nriddim: note(\"[c2 ~ ~ c2 ~ ~ c2 ~]*2\").hpf(70).lpf(9000).s(\"square\").fm(0.6).fmh(0.5).attack(0.004).decay(0.22).sustain(0.35).release(0.04).hpf(120).ftype(\"24db\").lpf(900).lpq(3).shape(0.5).gain(0.3).withValue(dry).postgain(1.8).orbit(2).mask(\"<0!76 1!12 0!16>\")\nscreech: note(\"~ ~ ~ ~ ~ ~ c6 ~ ~ ~ ~ ~ ~ ~ eb6 ~\").hpf(300).lpf(10000).s(\"sawtooth\").fm(3).fmh(3.01).fmdecay(0.3).fmsustain(0.5).hpf(400).lpf(6000).attack(0.01).sustain(0.7).release(0.1).vib(6).vibmod(0.2).distort(1.2).distortvol(0.4).gain(0.22).velocity(0.8).mask(\"<0!76 1!12 0!16>\")\n",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 48,
+    "hash": "c7f85160fd"
+   },
+   "notes": "The whole track: Craft form (packs, atoms, racks as .hook) and its generated Strudel form (track.standalone.strudel.js, paste-ready). Map, lessons and measured numbers: docs/tracks/edm-dubstep-tutorial/README.md.",
+   "labels": [
+    "dubstep",
+    "melodic-dubstep",
+    "riddim",
+    "arrangement",
+    "build-drop",
+    "sidechain"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -30.1,
+   "centroid_hz": 563,
+   "peak": 0.1872,
+   "error": null,
+   "folder": "edm/dubstep/form",
+   "tags": [
+    "form",
+    "dubstep",
+    "melodic-dubstep",
+    "riddim",
+    "arrangement",
+    "build-drop",
+    "sidechain",
+    "verified",
+    "lowered"
+   ]
+  },
+  {
+   "id": "feel-halftime",
+   "title": "Feel: half-time dubstep",
+   "intent": "kick on the 1 and the and of 3, the snare alone on beat 3, 8th hats in the standard meter, a held sub and a dark pad (138-142 bpm (half-time)).",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.halfKick2).hook(\"dsKick | groove-straight(1)\")\n$: s(atoms.ds.halfSnare).hook(\"dsSnare | groove-straight(2)\")\n$: s(atoms.ds.ghostSnare).velocity(\"0.3\").hook(\"snareTight | groove-rolling(3)\")\n$: s(atoms.ds.dsHats).velocity(atoms.ds.dsHatVel).hook(\"hatClosed | groove-rolling(4)\")\n$: note(atoms.ds.subLine).hook(\"subSine | groove-straight(6)\")\n$: note(atoms.ds.chords).hook(\"atmosPad | groove-straight(7)\")\n$: s(\"<~ ~ ~ x>\").hook(\"downSweep\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).hpf(42).gain(0.8).mul(velocity(rand.late(1.37).range(0.96, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55).mul(velocity(rand.late(2.37).range(0.96, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x\").velocity(\"0.3\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55).mul(velocity(rand.late(3.37).range(0.82, 1))).late(rand.late(3).range(0, 0.001875).segment(16)).early(0.000938)\n$: s(\"x*8\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.4).mul(velocity(rand.late(4.37).range(0.82, 1))).late(rand.late(4).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"<c1 c1 ab1 bb1>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5).mul(velocity(rand.late(6.37).range(0.96, 1))).late(rand.late(6).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").hpf(180).lpf(6000).s(\"supersaw\").unison(5).detune(0.25).attack(2).sustain(0.8).release(3).lpf(1200).lpenv(1.5).lpattack(3).gain(0.15).mul(velocity(rand.late(7.37).range(0.96, 1))).late(rand.late(7).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"<~ ~ ~ x>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(0.005).decay(2).sustain(0).hpf(300).lpf(1000).lpenv(3.5).lpattack(0.001).lpdecay(1.8).lpsustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (84 Craft, 86 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "420bb67cb6"
+   },
+   "notes": "Craft form of the feel template glyphcore/edm:feel-halftime (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/edm:feel-halftime\", { as: \"feel\" }).",
+   "labels": [
+    "dubstep",
+    "half-time",
+    "edm"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -14.2,
+   "centroid_hz": 3655,
+   "peak": 0.8506,
+   "error": null,
+   "folder": "edm/dubstep/drums",
+   "tags": [
+    "drums",
+    "dubstep",
+    "edm",
+    "half-time",
+    "verified",
+    "approx"
+   ]
+  },
+  {
+   "id": "feel-ukf",
+   "title": "Feel: ukf melodic dubstep",
+   "intent": "half-time drums, wide supersaw chords, a melodic lead and a clean sub: emotion over weight (140-150 bpm (half-time)).",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.halfKick2).hook(\"dsKick | groove-straight(1)\")\n$: s(atoms.ds.halfSnare).hook(\"dsSnare | groove-straight(2)\")\n$: s(atoms.ds.dsHats).velocity(atoms.ds.dsHatVel).hook(\"shaker | groove-straight(4)\")\n$: note(atoms.ds.leadLine).hook(\"ukfLead | groove-straight(5)\")\n$: note(atoms.ds.subLine).hook(\"subSine | groove-straight(6)\")\n$: note(atoms.ds.chords).hook(\"ukfChord | groove-straight(7)\")\n$: s(\"<x ~ ~ ~>\").hook(\"crash\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).hpf(42).gain(0.8).mul(velocity(rand.late(1.37).range(0.96, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55).mul(velocity(rand.late(2.37).range(0.96, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"x*8\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5500).attack(0.012).decay(0.06).sustain(0).gain(0.3).mul(velocity(rand.late(4.37).range(0.96, 1))).late(rand.late(4).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"<[c5 ~ bb4 g4 ~ g4 bb4 c5] [eb5 ~ d5 c5 ~ bb4 g4 ~] [g5 ~ f5 eb5 ~ d5 eb5 ~] [f5 ~ eb5 d5 ~ bb4 ~ ~]>\").hpf(150).lpf(8000).s(\"supersaw\").unison(3).detune(0.15).spread(0.4).attack(0.015).sustain(0.7).release(0.3).lpf(3500).lpenv(1).lpdecay(0.3).vib(5).vibmod(0.12).gain(0.22).mul(velocity(rand.late(5.37).range(0.96, 1))).late(rand.late(5).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"<c1 c1 ab1 bb1>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5).mul(velocity(rand.late(6.37).range(0.96, 1))).late(rand.late(6).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.35).spread(0.7).attack(0.02).sustain(0.8).release(0.5).hpf(200).lpf(7000).gain(0.15).mul(velocity(rand.late(7.37).range(0.96, 1))).late(rand.late(7).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"<x ~ ~ ~>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5000).decay(1.6).sustain(0).gain(0.22)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (88 Craft, 89 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "d4d56e94ec"
+   },
+   "notes": "Craft form of the feel template glyphcore/edm:feel-ukf (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/edm:feel-ukf\", { as: \"feel\" }).",
+   "labels": [
+    "melodic-dubstep",
+    "dubstep",
+    "half-time"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -14.1,
+   "centroid_hz": 4793,
+   "peak": 0.9508,
+   "error": null,
+   "folder": "edm/dubstep/drums",
+   "tags": [
+    "drums",
+    "melodic-dubstep",
+    "dubstep",
+    "half-time",
+    "verified",
+    "approx"
+   ]
+  },
+  {
+   "id": "feel-riddim",
+   "title": "Feel: riddim",
+   "intent": "sparse drums, a hollow repetitive bass in 3+3+2 with the gaps as the groove, one laser per bar, no chords (140-150 bpm (half-time)).",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.riddimKick).hook(\"dsKick | groove-straight(1)\")\n$: s(atoms.ds.halfSnare).hook(\"dsSnare | groove-straight(2)\")\n$: s(atoms.ds.dsHats).velocity(atoms.ds.dsHatVel).hook(\"hatClosed | groove-straight(4)\")\n$: note(atoms.ds.laserLine).hook(\"laserZap | groove-straight(5)\")\n$: note(atoms.ds.riddimLine).hook(\"riddimBass | groove-straight(6)\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).hpf(42).gain(0.8).mul(velocity(rand.late(1.37).range(0.96, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55).mul(velocity(rand.late(2.37).range(0.96, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"x*8\").velocity(\"[1 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.4).mul(velocity(rand.late(4.37).range(0.96, 1))).late(rand.late(4).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c6 ~ ~ ~\").hpf(300).lpf(10000).s(\"sawtooth\").penv(24).pdecay(0.12).attack(0.002).decay(0.18).sustain(0).hpf(300).lpf(7000).gain(0.25).mul(velocity(rand.late(5.37).range(0.96, 1))).late(rand.late(5).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"[c2 ~ ~ c2 ~ ~ c2 ~]*2\").hpf(70).lpf(9000).s(\"square\").fm(0.6).fmh(0.5).attack(0.004).decay(0.22).sustain(0.35).release(0.04).hpf(120).ftype(\"24db\").lpf(900).lpq(3).shape(0.5).gain(0.3).mul(velocity(rand.late(6.37).range(0.96, 1))).late(rand.late(6).range(0, 0.00125).segment(16)).early(0.000625)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (75 Craft, 77 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "c27601d9ee"
+   },
+   "notes": "Craft form of the feel template glyphcore/edm:feel-riddim (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/edm:feel-riddim\", { as: \"feel\" }).",
+   "labels": [
+    "riddim",
+    "dubstep",
+    "sparse"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -17.1,
+   "centroid_hz": 3298,
+   "peak": 0.7808,
+   "error": null,
+   "folder": "edm/dubstep/misc",
+   "tags": [
+    "riddim",
+    "dubstep",
+    "sparse",
+    "verified",
+    "approx"
+   ]
+  },
+  {
+   "id": "feel-brostep",
+   "title": "Feel: brostep",
+   "intent": "busier kicks, 16th hats, an FM formant growl with screech answers in its gaps (140-150 bpm (half-time)).",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\n$: s(atoms.ds.broKick).hook(\"dsKick | groove-straight(1)\")\n$: s(atoms.ds.halfSnare).hook(\"dsSnare | groove-straight(2)\")\n$: s(atoms.ds.hats16).velocity(atoms.ds.hat16Vel).hook(\"hatClosed | groove-rolling(4)\")\n$: note(atoms.ds.screechLine).hook(\"screechLead | groove-straight(5)\")\n$: note(atoms.ds.growlLine).hook(\"growlBass | groove-straight(6)\")\n$: s(\"<x ~ ~ ~>\").hook(\"impactBoom\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~\").hpf(30).lpf(7000).s(\"sine\").freq(48).attack(0.001).penv(30).pdecay(0.06).decay(0.4).sustain(0).shape(0.4).lpf(3500).hpf(42).gain(0.8).mul(velocity(rand.late(1.37).range(0.96, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.22).sustain(0).hpf(150).lpf(9000).shape(0.25).gain(0.55).mul(velocity(rand.late(2.37).range(0.96, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"x*16\").velocity(\"[.9 .4 .6 .4]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.4).mul(velocity(rand.late(4.37).range(0.82, 1))).late(rand.late(4).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"~ ~ ~ ~ ~ ~ c6 ~ ~ ~ ~ ~ ~ ~ eb6 ~\").hpf(300).lpf(10000).s(\"sawtooth\").fm(3).fmh(3.01).fmdecay(0.3).fmsustain(0.5).hpf(400).lpf(6000).attack(0.01).sustain(0.7).release(0.1).vib(6).vibmod(0.2).distort(1.2).distortvol(0.4).gain(0.22).mul(velocity(rand.late(5.37).range(0.96, 1))).late(rand.late(5).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2).fmh(1).fmattack(0.005).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").hpf(90).lpf(3200).attack(0.005).sustain(0.8).release(0.05).distort(1.5).distortvol(0.4).gain(0.4).mul(velocity(rand.late(6.37).range(0.96, 1))).late(rand.late(6).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"<x ~ ~ ~>\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(0.25).decay(2.2).sustain(0).shape(0.25).lpf(3000).gain(0.7)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (124 Craft, 126 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "fb2bde6ebe"
+   },
+   "notes": "Craft form of the feel template glyphcore/edm:feel-brostep (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/edm:feel-brostep\", { as: \"feel\" }).",
+   "labels": [
+    "brostep",
+    "dubstep",
+    "driving"
+   ],
+   "source": "docs/EDM_REFERENCES.md",
+   "unverified": [],
+   "origin": "concepts",
+   "family": "dubstep",
+   "needs_samples": false,
+   "expr": null,
+   "bpm_hint": 140.0,
+   "verified": true,
+   "rms_dbfs": -13.8,
+   "centroid_hz": 3966,
+   "peak": 0.7383,
+   "error": null,
+   "folder": "edm/dubstep/misc",
+   "tags": [
+    "brostep",
+    "dubstep",
+    "driving",
+    "verified",
+    "approx"
    ]
   }
  ]

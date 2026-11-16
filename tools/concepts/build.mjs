@@ -9,6 +9,7 @@
 //             without it, results of an unchanged recipe code are kept from the current catalog
 //   --changed renders only the recipes whose code changed since the current catalog
 //   --check   writes nothing; exit 1 when any output is stale
+//   --max-bars N  cap the verification render at N bars (worklet-heavy recipes on a loaded host; rms / centroid then describe the first N bars)
 // After a change: node tools/concepts/build.mjs --render, python3 tools/packs/packs.py hash site/data/<pack dir> --write, python3 tools/packs/shim.py,
 // node tools/racks/audit.mjs (hygiene). Families are data only; adding a concept never needs code here (docs/CONVENTIONS.md section 7).
 // Packs: a family ships in glyphcore/phonk unless it says "pack": "author/name" (then site/data/<name>/, whose craftpack.json must exist; the builder
@@ -20,7 +21,7 @@ const imp = (p) => import(pathToFileURL(path.join(ROOT, p)).href);
 const L = await imp('tools/lowering/lower.mjs'); const A = await imp('site/engine/atoms.js'); const AC = await imp('site/engine/atoms-consumers.js'); const { HYGIENE } = await imp('site/engine/hygiene.js'); const G = await imp('site/engine/groove.js');
 A.loadTypes(fs.readFileSync(path.join(ROOT, 'site/data/atoms/types.json'), 'utf8'));
 const argv = process.argv.slice(2); const flag = (n) => argv.includes(n); const opt = (n) => { const i = argv.indexOf(n); return i >= 0 ? argv[i + 1] : null; };
-const CHECK = flag('--check'), RENDER = flag('--render'), CHANGED = flag('--changed'), ONLY = opt('--only') ? new Set(opt('--only').split(',')) : null;
+const CHECK = flag('--check'), RENDER = flag('--render'), CHANGED = flag('--changed'), ONLY = opt('--only') ? new Set(opt('--only').split(',')) : null, MAXBARS = +opt('--max-bars') || 0;
 const CLI = process.env.STRUDEL_CLI || '/home/user/suno-track-lab/engine/strudel-cli';
 const PACK = 'glyphcore/phonk'; const rd = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
 const packOf = (f) => f.pack || PACK; const dirOf = (pk) => pk.split('/')[1]; // glyphcore/edm -> site/data/edm
@@ -41,6 +42,13 @@ const quoted = (s, f, where) => s.replace(/"([^"]*)"/g, (_, x) => JSON.stringify
 
 // ---------- racks: every def a recipe may name ----------
 const own = {}; for (const f of fams) for (const [n, d] of Object.entries(f.racks || {})) { if (own[n]) die(`rack ${n} defined twice`); own[n] = { fam: f, def: d }; }
+{ // a family rack must not shadow a hand-written rack of any pack (pack hooks install first-definition-wins, so the Craft runtime and the lowering would disagree)
+  const generated = new Set(fams.filter((f) => f.racksIngredient).map((f) => `${dirOf(packOf(f))}/${f.racksIngredient}.json`)); generated.add('phonk/racks-hiphop.json'); generated.add('phonk/grooves.json');
+  const DATA = path.join(ROOT, 'site/data');
+  for (const d of fs.readdirSync(DATA).filter((x) => fs.existsSync(path.join(DATA, x, 'craftpack.json'))))
+    for (const f of fs.readdirSync(path.join(DATA, d)).filter((x) => /^racks.*\.json$/.test(x) && !generated.has(`${d}/${x}`))) {
+      let defs = {}; try { defs = rd(path.join(DATA, d, f)).defs || {}; } catch (e) { continue; }
+      for (const n of Object.keys(defs)) if (own[n]) die(`rack ${n} (family ${own[n].fam.family}) shadows ${n} in site/data/${d}/${f}: rename it`); } }
 const resolveDef = (f, def) => JSON.parse(JSON.stringify(def.chain), (k, v) => (v && typeof v === 'object' && '$atomBody' in v ? { $mini: atomBody(famNs(f), v.$atomBody, 'rack') } : v));
 for (const f of fams) TX.registerFamily(f); for (const f of fams) for (const id of Object.keys(f.feels || {})) TX.registerFeel(`feel-${id}`, f);
 const ownDefs = Object.fromEntries(Object.entries(own).map(([n, { fam, def }]) => [n, { ...(def.params ? { params: def.params } : {}), chain: resolveDef(fam, def), ...TX.rackTaxonomy(n, def, def.class, fam.racksIngredient || 'racks-hiphop') }]));
@@ -174,7 +182,7 @@ const JOBS = Math.max(1, +(opt('--jobs') || 1));
 function renderAsync(r, code) {
   return new Promise((resolve) => {
     const d = fs.mkdtempSync(path.join(os.tmpdir(), 'concepts-')); const f = path.join(d, 'in.strudel.js'); fs.writeFileSync(f, code);
-    const p = spawn(path.join(CLI, 'strudel'), ['render', f, d, '--bars', String(r.bars || 2)], { env: { ...process.env, STRUDEL_CRAFT: ROOT } }); let so = '', se = '';
+    const p = spawn(path.join(CLI, 'strudel'), ['render', f, d, '--bars', String(MAXBARS ? Math.min(MAXBARS, r.bars || 2) : r.bars || 2)], { env: { ...process.env, STRUDEL_CRAFT: ROOT } }); let so = '', se = '';
     p.stdout.on('data', (x) => { so += x; }); p.stderr.on('data', (x) => { se += x; });
     p.on('close', (status) => { const wav = path.join(d, 'mix.wav'); let out;
       if (status !== 0 || !fs.existsSync(wav)) out = { verified: false, rms_dbfs: null, centroid_hz: null, peak: 0, error: (se + so).trim().split('\n').filter((l) => /rror/.test(l)).pop() || `exit ${status}` };

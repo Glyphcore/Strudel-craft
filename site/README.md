@@ -515,7 +515,7 @@ does; `hooks.bind("fx", "x", "@3b")` is rewritten to single quotes). Design: `do
   `shim.py`, `tools/pwa/precache.mjs`. Test: `node tests/hooks/p10_groove.mjs`.
 - Pack **`glyphcore/edm`** 1.0.0 (`data/edm/`, CC0-1.0, synthesis only; #127 #128 #129; docs/EDM_REFERENCES.md): `racks-edm-core` (edmKick, subSine, edmClap, snareTight, hats, crash,
   risers `noiseRiser(len)` / `hpBuild(len)` / `pitchRiser(len)`, `reverseSwell(len)`, downSweep, impactBoom, subDrop, superChord, edmPluck, edmPad; moves `sidechain(orbit, depth, release)`
-  (duckorbit; gain 1 - sqrt(depth)), `ducked(orbit)`, `pump(depth)` (beat-synced ramp tremolo), `ott(gain)`, `drive(amt)`, `wobble(sync, depth)` (synced low-pass LFO), filterBuild, thinBuild),
+  (duckorbit; gain 1 - sqrt(depth)), `ducked(orbit)`, `lfoPump(depth)` (beat-synced ramp tremolo), `ott(gain)`, `drive(amt)`, `wobble(sync, depth)` (synced low-pass LFO), filterBuild, thinBuild),
   `atoms-edm-core` (`ec.` roll / filter / gap atoms, riser gates `rise4 / rise8 / rise16 / hit`, the 104-bar form as gates and as masks `mIntro` .. `mOutro`), `racks-dubstep`
   (dsKick, dsSnare, reeseBass, growlBass, wobbleBass(sync), talkBass, riddimBass, screechLead, laserZap, ukfChord, ukfPluck, ukfArp, ukfLead, atmosPad, vowelChop), `atoms-dubstep` (`ds.`) and
   feels `feel-halftime`, `feel-ukf`, `feel-riddim`, `feel-brostep`. Syntax sections **EDM foundations** and **Dubstep**; catalog labels edm, dubstep, melodic-dubstep, riddim, brostep,

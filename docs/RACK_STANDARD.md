@@ -354,3 +354,41 @@ Fixes on the way there (same thresholds; first failing value -> passing value): 
 (8 ms attack, 30 Hz high-pass). One flake: `feel-techno` measured sub20 -24.2 / DC -32.6 once and passed on the next run with unchanged code (#115 class of
 non-determinism, UNVERIFIED cause).
 <!-- dnb-electro-audit:end -->
+
+## 9. EDM classes and the cost of worklet stages (glyphcore/edm, #127 #128)
+New classes for the EDM families (thresholds in the class table of section 4; existing classes unchanged):
+- **reese** 30-5000 Hz, side<120 <= -50 (a Reese is mono: 2-voice supersaw, `spread 0`), alias c4 <= -34 (supersaw-like, the supersaw worklet's
+  phases are not seeded, section 5). hygiene-reese 30 / 5000 Hz.
+- **growl** 60-10000 Hz, below <= -24, above <= -20, >18k <= -35, side<120 <= -40: the growl is the mid layer over a separate sub (band split by
+  layering), and its drive runs after the per-voice filters (superdough order), so its top octave is the sound; hygiene-growl 70 / 9000 Hz pre-drive.
+- **screech** 250-12000 Hz, above <= -20, >18k <= -35: FM and drive leads. hygiene-screech 300 / 10000 Hz.
+
+Measured (rack audit, class test phrases, 2026-11-16; dB as in section 4; all pass):
+
+| rack | class | centroid Hz | below | above | sub20 | >18k | side<120 | peak dBFS | alias |
+|---|---|---|---|---|---|---|---|---|---|
+| reeseBass | reese | 173 | -36.4 | -49.2 | -44.4 | -97.3 | -140 (mono) | -11.5 | -48 |
+| growlBass | growl | 603 | -48.9 | -61.8 | -59.7 | -67.8 | -140 | -19.4 | - |
+| talkBass | growl | 436 | -47.9 | -66.0 | -59.8 | -72.0 | -140 | -14.8 | - |
+| wobbleBass | growl | 287 | -37.9 | -98.0 | -58.6 | -110.6 | -140 | -8.4 | - |
+| riddimBass | growl | 329 | -30.2 | -80.7 | -49.9 | -93.9 | -140 | -7.2 | - |
+| screechLead | screech | 2654 | -41.5 | -33.4 | -43.1 | -50.6 | -140 | -18.6 | - |
+| laserZap | screech | 2359 | -61.3 | -35.6 | -121.2 | -63.2 | -140 | -21.9 | - |
+| dsKick | kick | 71 | -48.2 | -90.0 | -57.8 | -116.4 | -140 | -6.6 | - |
+
+What the audit changed (first run -> fix): dsKick sub20 -31.4 -> -57.8 (high-pass 42 Hz: two kicks a bar at 140 put pitch-envelope sidebands
+under 20 Hz); wobbleBass below -14.8 -> -37.9 and riddimBass -14.5 -> -30.2 (high-pass 120 Hz at 24 dB/oct: the growl layer leaves the
+fundamental to the sub); screechLead sub20 -35.3 -> -43.1 (distort 2 -> 1.2); ukfPluck above -24.4 -> pass (filter envelope 3 -> 2 octaves);
+edmPluck, snareTight above, ott clip, drive DC (section text below), edmKick sub20 (high-pass 38 Hz).
+
+Measured on the audit chord (move class): `ott` (Web Audio compressor -30 dB, 6:1, 3 / 80 ms, then postgain 0.5): +5.2 dB RMS, peak -4.9 dBFS
+(the compressor's own makeup gain is about +11 dB here, so the default trim is 0.5); `drive` (distort 1, output 0.6): DC -48.8 dBFS (distort 2:
+-33.2, over the move limit -40, so the default is 1 and higher amounts want a bus high-pass); `lfoPump(0.7)`: -5.1 dB RMS.
+
+Headless render cost (CLI on node-web-audio-api, 1 bar at 140 bpm, CPU seconds on a loaded 4-core host, 2026-11-16): 8 saw notes 1.6;
+the same 8 notes with `distort` 50, with `shape` 71; a 4-note `supersaw` chord (unison 4) 32, the same chord as three detuned native saws
+(`.s("sawtooth").layer(...)`) 1.6; a ramp `tremolo` on it 28; `room` on it 1.7; a 16th triangle arp 1.4; a vibrato lead 1.4. The AudioWorklet
+stages (supersaw, shape, distort, tremolo, crush, the filter LFO) cost 15-45x a native voice there, and more when the host is loaded (cross-thread
+waits). On the site (Chromium) they are cheap. Consequence for long headless renders: spend worklets where they are the sound and build the rest
+natively (the tutorial track, docs/tracks/edm-dubstep-tutorial/, does this and says so in its lesson 0).
+

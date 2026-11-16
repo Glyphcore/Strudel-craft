@@ -80,7 +80,7 @@
  "racks": {
   "dsKick": {
    "class": "kick",
-   "doc": "dubstep kick: sine body near 48 Hz, 30-semitone drop over 60 ms, 400 ms decay, shape for punch",
+   "doc": "dubstep kick: sine body near 48 Hz, 30-semitone drop over 60 ms, 400 ms decay, shape for punch; high-pass 42 Hz (two kicks a bar put pitch-envelope sidebands under 20 Hz, rack audit)",
    "chain": [
     [
      "hook",
@@ -121,6 +121,10 @@
     [
      "lpf",
      3500
+    ],
+    [
+     "hpf",
+     42
     ],
     [
      "gain",
@@ -312,7 +316,7 @@
   },
   "wobbleBass": {
    "class": "growl",
-   "doc": "wobble: saw + square through a resonant low-pass whose LFO is synced to the bar (`sync` per bar: 4 quarters, 8 eighths, 6 / 12 triplets), shape after it; high-pass 80 Hz",
+   "doc": "wobble: saw + square through a resonant low-pass whose LFO is synced to the bar (`sync` per bar: 4 quarters, 8 eighths, 6 / 12 triplets), shape after it; high-pass 120 Hz at 24 dB/oct (the band split: the sub plays below; at 12 dB/oct a G1 fundamental leaked -20 dB, rack audit)",
    "params": {
     "sync": {
      "min": 0.5,
@@ -345,7 +349,11 @@
     ],
     [
      "hpf",
-     80
+     120
+    ],
+    [
+     "ftype",
+     "24db"
     ],
     [
      "lpf",
@@ -367,11 +375,11 @@
     ],
     [
      "shape",
-     0.45
+     0.3
     ],
     [
      "gain",
-     0.26
+     0.12
     ]
    ]
   },
@@ -479,7 +487,11 @@
     ],
     [
      "hpf",
-     90
+     120
+    ],
+    [
+     "ftype",
+     "24db"
     ],
     [
      "lpf",
@@ -501,7 +513,7 @@
   },
   "screechLead": {
    "class": "screech",
-   "doc": "screech: saw with FM at a slightly inharmonic ratio 3.01 (a beating edge), index decays to 0.5, high-pass 400 Hz, distortion, fast vibrato",
+   "doc": "screech: saw with FM at a slightly inharmonic ratio 3.01 (a beating edge), index decays to 0.5, high-pass 400 Hz, distortion 1.2 (2 put the drive asymmetry under 20 Hz, rack audit), fast vibrato",
    "chain": [
     [
      "hook",
@@ -537,7 +549,7 @@
     ],
     [
      "attack",
-     0.005
+     0.01
     ],
     [
      "sustain",
@@ -557,11 +569,11 @@
     ],
     [
      "distort",
-     2
+     1.2
     ],
     [
      "distortvol",
-     0.35
+     0.4
     ],
     [
      "gain",
@@ -667,7 +679,7 @@
   },
   "ukfPluck": {
    "class": "pluck",
-   "doc": "UKF pluck: saw + square, 250 ms, low-pass 2.2 kHz with a 3-octave envelope",
+   "doc": "UKF pluck: saw + square, 250 ms, low-pass 1.8 kHz with a 2-octave envelope",
    "chain": [
     [
      "hook",
@@ -693,11 +705,11 @@
     ],
     [
      "lpf",
-     2200
+     1800
     ],
     [
      "lpenv",
-     3
+     2
     ],
     [
      "lpdecay",
@@ -1168,7 +1180,7 @@
     },
     {
      "src": "note",
-     "pat": "[c1 c1] ~ [c1 ~ c1 c1] [eb1 ~ g1 ~]",
+     "pat": "@subLine",
      "rack": "subSine"
     }
    ]
@@ -1516,7 +1528,7 @@
   {
    "title": "Wobble rate as a pattern (lpsync)",
    "bars": 4,
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\nwob: note(atoms.ds.wobbleLine).hook(\"wobbleBass\").lpsync(\"<4 8 [4 16] 6>\")   // LFO periods per bar\nsub: note(\"<c1 c1 eb1 [g1 bb1]>\").hook(\"subSine\")"
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\nwob: note(atoms.ds.wobbleLine).hook(\"wobbleBass\").lpsync(\"<4 8 [4 16] 6>\")   // LFO periods per bar\nsub: note(\"<c1 c1 eb1 g1>\").hook(\"subSine\")"
   },
   {
    "title": "Switch-up in drop B (one slot, two basses by gate)",
@@ -1526,7 +1538,7 @@
   {
    "title": "Growl on a bus: band-split drive (.split)",
    "bars": 2,
-   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\ngrowl: note(atoms.ds.growlLine).s(\"sawtooth\").fm(2).fmh(1).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").lpf(3200).attack(0.005).gain(0.4)\n  .split(lo => lo.lpf(100),                                     // fundamental stays clean\n         hi => hi.hpf(100).distort(2.5).postgain(0.45).lpf(9000)) // drive the mids, scope the top after the drive\nsub: note(atoms.ds.subLine).hook(\"subSine\")"
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\ngrowl: note(atoms.ds.growlLine).s(\"sawtooth\").fm(2).fmh(1).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").lpf(3200).attack(0.005).gain(0.4)\n  .split(lo => lo.lpf(100).hpf(30),                             // fundamental stays clean\n         hi => hi.hpf(100).distort(1.2).postgain(0.45).lpf(9000)) // drive the mids, scope the top after the drive\nsub: note(atoms.ds.subLine).hook(\"subSine\")"
   }
  ],
  "feels": {

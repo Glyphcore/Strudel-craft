@@ -15,10 +15,10 @@
       "version": "1.0.0",
       "path": "racks-edm-core.json",
       "title": "EDM foundation racks",
-      "description": "Chain-only hook defs: edmKick, subSine, edmClap, snareTight, hatClosed, hatOpen, shaker, crash, noiseRiser, hpBuild, pitchRiser, downSweep, reverseSwell, impactBoom, subDrop, superChord, edmPluck, edmPad, sidechain, ducked, pump, ott, drive, wobble, filterBuild, thinBuild",
+      "description": "Chain-only hook defs: edmKick, subSine, edmClap, snareTight, hatClosed, hatOpen, shaker, crash, noiseRiser, hpBuild, pitchRiser, downSweep, reverseSwell, impactBoom, subDrop, superChord, edmPluck, edmPad, sidechain, ducked, lfoPump, ott, drive, wobble, filterBuild, thinBuild",
       "load": "manual",
-      "hash": "sha256:2ab73fd441cd1436a4a997e7b5e00f88d7cf2d8d560a2a2cca7f939d44d4e8c1",
-      "bytes": 12439
+      "hash": "sha256:45f42468b046caf4eb4e3737e19b385b9b61190bb24067bdb5aebee29fca97e9",
+      "bytes": 12445
     },
     {
       "id": "racks-dubstep",
@@ -29,8 +29,8 @@
       "title": "Dubstep racks",
       "description": "Chain-only hook defs: dsKick, dsSnare, reeseBass, growlBass, wobbleBass, talkBass, riddimBass, screechLead, laserZap, ukfChord, ukfPluck, ukfArp, ukfLead, atmosPad, vowelChop",
       "load": "manual",
-      "hash": "sha256:8787fd9858ed4da08d0a785656923d02daa864e801330d6fe8a19ee3261102a4",
-      "bytes": 9456
+      "hash": "sha256:1e42b3f4a0e8fb6bbd6fd5c210eb0041bad2565478dd111ad7b813ee4fcc5c7f",
+      "bytes": 9568
     },
     {
       "id": "atoms-edm-core",

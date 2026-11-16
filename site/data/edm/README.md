@@ -6,7 +6,7 @@ docs/EDM_REFERENCES.md; how a concept becomes data: docs/CONVENTIONS.md; rack qu
 
 | ingredient | kind | what |
 |---|---|---|
-| `racks-edm-core` | hooks@1 | shared EDM racks and moves: kick, sub, clap, roll snare, hats, crash, risers (`noiseRiser(len)`, `hpBuild(len)`, `pitchRiser(len)`), `reverseSwell(len)`, `downSweep`, `impactBoom`, `subDrop`, `superChord`, `edmPluck`, `edmPad`; moves `sidechain(orbit, depth, release)`, `ducked(orbit)`, `pump(depth)`, `ott(gain)`, `drive(amt)`, `wobble(sync, depth)`, `filterBuild`, `thinBuild` |
+| `racks-edm-core` | hooks@1 | shared EDM racks and moves: kick, sub, clap, roll snare, hats, crash, risers (`noiseRiser(len)`, `hpBuild(len)`, `pitchRiser(len)`), `reverseSwell(len)`, `downSweep`, `impactBoom`, `subDrop`, `superChord`, `edmPluck`, `edmPad`; moves `sidechain(orbit, depth, release)`, `ducked(orbit)`, `lfoPump(depth)`, `ott(gain)`, `drive(amt)`, `wobble(sync, depth)`, `filterBuild`, `thinBuild` |
 | `atoms-edm-core` (`ec.`) | atoms@1 | four-on-the-floor / off-beat patterns, snare-roll grammars, filter build tables, gap masks, riser gates `rise4 / rise8 / rise16 / hit ({ at })`, the 104-bar form gates |
 | `racks-dubstep` | hooks@1 | `dsKick`, `dsSnare`, `reeseBass`, `growlBass`, `wobbleBass(sync)`, `talkBass`, `riddimBass`, `screechLead`, `laserZap`, `ukfChord`, `ukfPluck`, `ukfArp`, `ukfLead`, `atmosPad`, `vowelChop` |
 | `atoms-dubstep` (`ds.`) | atoms@1 | half-time / brostep / riddim drums, bass lines, the Cm7 Abmaj7 Ebmaj7 Bb7 loop and its lines, call / response and fill masks |

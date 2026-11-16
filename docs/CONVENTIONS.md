@@ -157,7 +157,7 @@ edm-core is the shared layer other EDM families import (`glyphcore/dnb-electro` 
 | supersaw, pluck, arp, lead, pad | `ds.chords` (Cm7 Abmaj7 Ebmaj7 Bb7), `ds.arp`, `ds.pluckLine`, `ds.leadLine` | `superChord`, `ukfChord`, `edmPluck`, `ukfPluck`, `ukfArp`, `ukfLead`, `edmPad`, `atmosPad` | spread only above a 180-200 Hz high-pass |
 | vocal chops | `ds.chopLine` | `vowelChop` | synthesised vowel stabs; sampled chops use the vox racks and banks |
 | risers, builds, impacts | `ec.roll8`, `ec.rollVel8`, `ec.roll4`, `ec.rollVel4`, `ec.open8`, `ec.thin8`, `ec.gapMask`, `ec.dropMask` | `noiseRiser(len)`, `hpBuild(len)`, `pitchRiser(len)`, `reverseSwell(len)`, `downSweep`, `impactBoom`, `subDrop`; moves `filterBuild`, `thinBuild` | `len` in seconds = bars x 240 / bpm |
-| sidechain, pump, bus | `ec.pump16` | moves `sidechain(orbit, depth, release)`, `ducked(orbit)`, `pump(depth)`, `ott(gain)`, `drive(amt)` | duck gain = 1 - sqrt(depth); multiband / band-split = `.split` (Syntax) |
+| sidechain, pump, bus | `ec.pump16` | moves `sidechain(orbit, depth, release)`, `ducked(orbit)`, `lfoPump(depth)`, `ott(gain)`, `drive(amt)` | duck gain = 1 - sqrt(depth); multiband / band-split = `.split` (Syntax) |
 
 Forms: the 104-bar map (EDM_REFERENCES section 3) as gates `ec.intro`, `build`, `dropA`, `breakdown`, `build2`, `dropB`, `switchUp`, `outro`, `drops`, `builds`, `notDrops`,
 `notBuilds`, `gap`, `fillBars`, riser gates `ec.rise4 / rise8 / rise16 / hit ({ at })`, and the same sections as masks for plain Strudel (`ec.mIntro` .. `ec.mOutro`, `mDrops`, `mBuilds`):

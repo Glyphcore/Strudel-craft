@@ -2,7 +2,7 @@
  "model": 1,
  "meta": {
   "id": "glyphcore/edm:racks-edm-core",
-  "doc": "EDM foundation racks (band-scoped, docs/RACK_STANDARD.md): edmKick, subSine, edmClap, snareTight, hats, crash, risers (noiseRiser, hpBuild, pitchRiser), downSweep, reverseSwell, impactBoom, subDrop, superChord, edmPluck, edmPad; moves sidechain(orbit, depth, release), ducked(orbit), pump(depth), ott(gain), drive(amt), wobble(sync, depth), filterBuild, thinBuild. Use: .hook(\"edmKick | sidechain(2)\")."
+  "doc": "EDM foundation racks (band-scoped, docs/RACK_STANDARD.md): edmKick, subSine, edmClap, snareTight, hats, crash, risers (noiseRiser, hpBuild, pitchRiser), downSweep, reverseSwell, impactBoom, subDrop, superChord, edmPluck, edmPad; moves sidechain(orbit, depth, release), ducked(orbit), lfoPump(depth), ott(gain), drive(amt), wobble(sync, depth), filterBuild, thinBuild. Use: .hook(\"edmKick | sidechain(2)\")."
  },
  "defs": {
   "edmKick": {
@@ -961,7 +961,7 @@
     "edm"
    ]
   },
-  "pump": {
+  "lfoPump": {
    "params": {
     "depth": {
      "min": 0,

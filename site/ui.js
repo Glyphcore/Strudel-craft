@@ -3,7 +3,8 @@
                               askYesNo({title, message, okText, danger}) -> Promise<boolean>,
                               form({title, okText, body: Node, collect: () => value, validate: () => errorText|null}) -> Promise<value|null> (custom fields inside the one modal; Enter submits),
                               askLater({title, message, okText, notice}) -> Promise<boolean> (sticky toast first, modal on tap; never blocks Play),
-                              toast(message, {kind: 'info'|'ok'|'error', ms}) } */
+                              toast(message, {kind: 'info'|'ok'|'error', ms, sticky, onClick, action: {label, run}}) }
+   action adds a labelled button (e.g. Retry) next to the message; pressing it runs run() and closes the toast. */
 (() => {
   const sc = (window.strudelCraft = window.strudelCraft || {});
   const h = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (v == null || v === false) continue; if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v); } e.append(...kids); return e; };
@@ -38,11 +39,12 @@
     });
   }
   let stack = null;
-  function toast(message, { kind = 'info', ms, sticky = false, onClick = null } = {}) {
+  function toast(message, { kind = 'info', ms, sticky = false, onClick = null, action = null } = {}) {
     if (!stack) { stack = h('div', { class: 'toasts', role: 'region', 'aria-label': 'Notifications' }); document.body.append(stack); }
-    const t = h('div', { class: 'toast ' + kind, 'data-live': sticky || onClick ? 'on' : null, role: kind === 'error' ? 'alert' : 'status' }, h('span', {}, String(message)), h('button', { type: 'button', class: 'toast-x', 'aria-label': 'Dismiss' }, '×'));
+    const t = h('div', { class: 'toast ' + kind, 'data-live': sticky || onClick || action ? 'on' : null, role: kind === 'error' ? 'alert' : 'status' }, h('span', {}, String(message)), h('button', { type: 'button', class: 'toast-x', 'aria-label': 'Dismiss' }, '×'));
     const kill = () => { t.classList.add('out'); setTimeout(() => t.remove(), 200); };
     t.querySelector('button').addEventListener('click', kill);
+    if (action) { const b = h('button', { type: 'button', class: 'toast-do' }, String(action.label)); t.insertBefore(b, t.lastChild); b.addEventListener('click', () => { kill(); action.run(); }); }
     if (onClick) { const sp = t.querySelector('span'); const b = h('button', { type: 'button', class: 'toast-act' }, String(message)); sp.replaceWith(b); b.addEventListener('click', () => { onClick(); kill(); }); }
     stack.append(t); try { if (!stack.hasAttribute('popover')) stack.setAttribute('popover', 'manual'); if (stack.matches(':popover-open')) stack.hidePopover(); stack.showPopover(); } catch (e) { /* no popover API: plain fixed layer */ }
     while (stack.children.length > 3) stack.firstChild.remove();

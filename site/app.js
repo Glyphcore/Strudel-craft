@@ -582,7 +582,8 @@ function matches(r) {
 }
 /* packs (#67): recipes from a non-core pack carry a pack-id badge; the pack sheet (packs-ui.js) loads on first open */
 function foreignPacks() { const P = window.strudelCraft.packs, out = new Set(); try { for (const p of P ? P.list() : []) if (p.tier !== 'core') out.add(p.id); } catch (e) { /* loader not ready */ } return out; }
-const openPacks = (o) => import('./packs-ui.js').then((m) => m.open(o)).catch((e) => window.strudelCraft.ui.toast('Packs could not open: ' + e.message, { kind: 'error' }));
+let packsUiTries = 0; /* a failed import is retried as a fresh fetch ('?retry=n'), see lazyView */
+const openPacks = (o) => import('./packs-ui.js' + (packsUiTries ? '?retry=' + packsUiTries : '')).then((m) => m.open(o)).catch((e) => { packsUiTries++; console.error('[lazy] packs-ui.js: ' + e.message); window.strudelCraft.ui.toast('The pack sheet could not load (packs-ui.js). Check the connection, then retry.', { kind: 'error', sticky: true, action: { label: 'Retry', run: () => openPacks(o) } }); });
 function renderList(keepId) {
   const prevId = keepId || (cur() && cur().id);
   S.filtered = S.recipes.filter(matches);
@@ -742,10 +743,29 @@ async function loadJSON(name) { const P = await packsReady; return name === 'cat
 
 /* ---------- views + routing ---------- */
 const VIEWS = ['rack', 'stack', 'ref', 'practice', 'perform', 'syntax', 'graph'];
-let syntaxLoad = null; function loadSyntax() { if (!syntaxLoad) syntaxLoad = import('./syntax.js').catch((e) => { syntaxLoad = null; say('Syntax view failed to load: ' + e.message, true); }); return syntaxLoad; }
-let performLoad = null; function loadPerform() { if (!performLoad) performLoad = Promise.resolve(window.strudelCraft.booted).then(() => import('./perform.js')).catch((e) => { performLoad = null; say('Perform tools failed to load: ' + e.message, true); }); return performLoad; }
+/* lazy views (#59): a failed import never leaves a half-open view or a console-only error. The view that could not load hands back to the view it
+   came from, and a toast names the file with Retry. Chromium keeps a failed module URL in its module map, so a retry imports '<file>?retry=<n>'.
+   The promise always resolves (callers such as Play treat the Perform tools as optional). */
+function lazyView(file, label, after) {
+  let p = null, tries = 0;
+  const load = (view) => {
+    if (p) return p;
+    const n = tries;
+    p = Promise.resolve(after && after()).then(() => import('./' + file + (n ? '?retry=' + n : ''))).catch((e) => {
+      p = null; tries = n + 1; console.error('[lazy] ' + file + ': ' + e.message);
+      if (view && S.view === view) setView(S.prevView && S.prevView !== view ? S.prevView : 'rack');
+      if (statusEl) { statusEl.textContent = label + ' could not load'; statusEl.classList.add('err'); }
+      const ui = window.strudelCraft.ui;
+      if (ui) ui.toast(label + ' could not load (' + file + '). Check the connection, then retry.', { kind: 'error', sticky: true, action: { label: 'Retry', run: () => (view ? setView(view) : load()) } });
+    });
+    return p;
+  };
+  return load;
+}
+const loadSyntax = lazyView('syntax.js', 'The Syntax view');
+const loadPerform = lazyView('perform.js', 'The Perform tools', () => window.strudelCraft.booted);
 window.addEventListener('strudel:ready', () => loadPerform());
-let graphLoad = null; function loadGraph() { if (!graphLoad) graphLoad = import('./graph.js').catch((e) => { graphLoad = null; say('Graph view failed to load: ' + e.message, true); }); return graphLoad; }
+const loadGraph = lazyView('graph.js', 'The Graph view');
 /* mod RANGE table for wire()/taps (mirror of the CLI's lib/mod.mjs): ranges + canonical param names */
 let modRangesP = null; /* read on first use (hooks runtime present), not with the shell (#59) */
 const modRanges = () => modRangesP || (modRangesP = packsReady.then((P) => P.paramShapes()).then((p) => (p && p.ranges ? { ranges: p.ranges, canon: p.canon || {} } : null)).catch(() => null));
@@ -753,12 +773,13 @@ function applyRanges() { const h = window.strudelCraft.hooks; if (!h) return fal
 window.addEventListener('strudel:ready', () => { if (!applyRanges()) setTimeout(applyRanges, 200); });
 function setView(v, { push = true } = {}) {
   if (!VIEWS.includes(v)) v = 'rack';
+  if (S.view !== v) S.prevView = S.view;
   S.view = v; $('#main').dataset.view = v;
   $$('.views a').forEach((a) => (a.dataset.view === v ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
   if (v === 'ref' || v === 'practice') ensureDoc(v);
-  if (v === 'perform') loadPerform();
-  if (v === 'syntax') loadSyntax();
-  if (v === 'graph') loadGraph();
+  if (v === 'perform') loadPerform('perform');
+  if (v === 'syntax') loadSyntax('syntax');
+  if (v === 'graph') loadGraph('graph');
   if (push) history.replaceState(null, '', v === 'rack' && cur() ? '#r/' + cur().id : '#' + v);
   syncTransport(); Viz.drawSoon(); onViewChanged(); if (EDIT_VIEWS.includes(v)) liveCode(v);
 }

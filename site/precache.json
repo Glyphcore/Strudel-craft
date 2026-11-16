@@ -19,6 +19,7 @@
   "data/atoms/types.json",
   "data/catalog.json",
   "data/controls/types.json",
+  "data/hooks-steps.json",
   "data/intellisense/strudel.json",
   "data/intellisense/words.json",
   "data/mod_ranges.json",

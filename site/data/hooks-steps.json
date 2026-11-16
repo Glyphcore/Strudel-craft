@@ -1,0 +1,406 @@
+{
+ "version": 1,
+ "_doc": "Positive allowlist of chain steps a hooks pack def may use (site/packs-hooks.js; docs/PACK_SPEC.md 5.2). A method not listed is rejected with E_PACK_HOOKS_INVALID. The file never widens the runtime: the method must also exist on Pattern.prototype. Review rule: a method is listed only if it is (a) a control or structure method that takes numbers or strings, (b) used by a shipped hooks def or documented in site/data/intellisense/strudel.json, and (c) NOT one that compiles or evaluates text (bbexpr, byteBeatExpression, workletSrc, kabel, ...), speaks, draws or adds DOM nodes or window globals (pianoroll, scope, spectrum, punchcard, draw*, ...), loads samples or URLs, registers methods, logs, touches storage / MIDI / OSC / serial, or takes a function (every, off, jux, sometimes, apply, fmap, bind*, with*). To propose a step: add it here with its args shapes in a PR that also names the shipped def or documented use, and the reviewer applies the rule above.",
+ "limits": {
+  "str": 256,
+  "args": 6,
+  "expr": 64
+ },
+ "shapes": {
+  "scalar": "finite number, string (limits.str), boolean or null",
+  "param": "{\"$param\": \"<param name>\"} substituted by the hooks engine from the def params",
+  "mini": "{\"$mini\": \"<mini-notation string>\"} parsed as mini-notation by the hooks engine, never evaluated as code",
+  "wire-opts": "{range?: [a, b], op?: \"<word>\", r?: number}; a and b are numbers or {\"$expr\": \"<arithmetic over params: digits . + - * / ( ) and param names>\"}"
+ },
+ "methods": {
+  "attack": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "bank": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "bpf": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "bpq": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "chop": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "clip": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "crush": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "cutoff": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "decay": {
+   "args": [
+    "scalar",
+    "param"
+   ],
+   "from": "shipped"
+  },
+  "degradeBy": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "delay": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "delayfeedback": {
+   "args": [
+    "scalar",
+    "param"
+   ],
+   "from": "shipped"
+  },
+  "delaytime": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "detune": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "distort": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "duckattack": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "duckdepth": {
+   "args": [
+    "scalar",
+    "param"
+   ],
+   "from": "shipped"
+  },
+  "duckorbit": {
+   "args": [
+    "scalar",
+    "mini"
+   ],
+   "from": "shipped"
+  },
+  "early": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "end": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "euclid": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "fast": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "fm": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "fmh": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "freq": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "gain": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "hook": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "hpf": {
+   "args": [
+    "scalar",
+    "param"
+   ],
+   "from": "shipped"
+  },
+  "late": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "lpattack": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "lpdecay": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "lpenv": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "lpf": {
+   "args": [
+    "scalar",
+    "param",
+    "mini"
+   ],
+   "from": "shipped"
+  },
+  "lpq": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "lpsustain": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "mask": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "n": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "noise": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "note": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "orbit": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "pan": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "pdecay": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "penv": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "postgain": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "range": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "release": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "rev": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "room": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "s": {
+   "args": [
+    "scalar",
+    "mini"
+   ],
+   "from": "shipped"
+  },
+  "segment": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "shape": {
+   "args": [
+    "scalar",
+    "param"
+   ],
+   "from": "shipped"
+  },
+  "size": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "slow": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "sound": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "speed": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "struct": {
+   "args": [
+    "scalar"
+   ],
+   "from": "documented"
+  },
+  "sustain": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "unison": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "velocity": {
+   "args": [
+    "scalar",
+    "mini"
+   ],
+   "from": "shipped"
+  },
+  "vib": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "vibmod": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "vowel": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "wire": {
+   "args": [
+    "scalar",
+    "wire-opts"
+   ],
+   "from": "shipped"
+  }
+ }
+}

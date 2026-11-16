@@ -3,11 +3,13 @@
 import assert from 'node:assert/strict';
 import { bootRuntime } from '../hooks/fixtures/rt.mjs';
 import { KINDS, DEFERRED } from '../../site/packs-kinds.js';
-import { install as rawInstall, chainable } from '../../site/packs-hooks.js';
+import { install as rawInstall, chainable, validate as rawValidate } from '../../site/packs-hooks.js';
 import { resolve, itemIds } from '../../site/engine/packs-core.js';
 const RT = await bootRuntime();
 if (!RT) { console.log('SKIP @strudel/core/@strudel/mini not installed (set STRUDEL_MODULES)'); process.exit(0); }
-const H = RT.hooks; const allow = chainable(RT.core.Pattern); const install = (h, e, s, i, nf) => rawInstall(h, e, s, i, nf, { allow }); let n = 0; const ok = (m) => { n++; console.log('PASS ' + m); };
+import fs from 'node:fs';
+const STEPS = JSON.parse(fs.readFileSync(new URL('../../site/data/hooks-steps.json', import.meta.url), 'utf8'));
+const H = RT.hooks; const allow = chainable(RT.core.Pattern, STEPS); const install = (h, e, s, i, nf) => rawInstall(h, e, s, i, nf, { allow }); let n = 0; const ok = (m) => { n++; console.log('PASS ' + m); };
 const defsOf = () => Object.keys(JSON.parse(H.toJSON()).defs || {}).sort();
 const chain = (...c) => ({ chain: c });
 const A = { model: 1, defs: { kick: chain(['s', 'sine'], ['gain', 0.8]), pad: chain(['s', 'saw'], ['lpf', 800]) } };
@@ -81,5 +83,23 @@ ok('def / slot names: reserved Object.prototype / Function.prototype members and
 { const data = { model: 1, defs: JSON.parse('{"constructor":{"chain":[["gain",1]]},"ok":{"chain":[["gain",1]]}}') }; assert.deepEqual(itemIds('hooks', data), ['ok']);
   const man = { craftpack: '1.0.0', id: 'x/c', version: '1.0.0', license: 'CC0-1.0', ingredients: [] }; const r = resolve([{ name: 'shipped', packs: [{ id: 'x/c', source: 's' }] }], { 'x/c': { manifest: man, ingredients: [{ id: 'racks', kind: 'hooks', data }] } });
   assert.deepEqual(Object.keys(r.resolution.hooks), ['ok']); ok('a def named constructor cannot crash the resolution / report (no claim, null-prototype claims)'); }
-assert.equal(chainable(RT.core.Pattern).has('constructor'), false); assert.equal(chainable(RT.core.Pattern).has('apply'), false); assert.equal(chainable(RT.core.Pattern).has('lpf'), true); assert.equal(chainable(RT.core.Pattern).has('hook'), true); ok('allowlist: controls and hooks methods in, constructor / apply out');
+assert.equal(allow.has('constructor'), false); assert.equal(allow.has('apply'), false); assert.equal(allow.has('lpf'), true); assert.equal(allow.has('hook'), true); ok('allowlist: controls and hooks methods in, constructor / apply out');
+// --- #91 rework 2: positive allowlist (site/data/hooks-steps.json) ---
+const FORBIDDEN = ['bbexpr', 'byteBeatExpression', 'bbst', 'byteBeatStartTime', 'workletSrc', 'workletInputs', 'kabel', 'speak', 'pianoroll', 'punchcard', 'scope', 'spectrum', 'spiral', 'wordfall', 'pitchwheel', 'draw', 'drawLine', 'onPaint', 'markcss', 'samples', 'soundAlias', 'registerSound', 'register', 'log', 'logger', 'midi', 'midichan', 'midicmd', 'osc', 'oschost', 'serial', 'eval', 'Function', 'constructor', '__proto__', 'prototype', 'toString', 'valueOf', 'apply', 'call', 'bind', 'fmap', 'withValue', 'every', 'off', 'jux', 'sometimes', 'hush', 'defineProperty', 'hasOwnProperty'];
+{ const bad = FORBIDDEN.filter((k) => Object.prototype.hasOwnProperty.call(STEPS.methods, k)); assert.deepEqual(bad, []); ok(`the data file lists none of the ${FORBIDDEN.length} forbidden names (string-compiling, speech, visual, loader, storage / MIDI / OSC, prototype members); ${Object.keys(STEPS.methods).length} methods listed`); }
+{ for (const [k, m] of Object.entries(STEPS.methods)) { assert.ok(/^[A-Za-z][A-Za-z0-9]*$/.test(k)); assert.ok(m.args.every((a) => ['scalar', 'param', 'mini', 'wire-opts'].includes(a)), k); } ok('every entry declares known argument shapes only'); }
+{ // parity guard: every step of every shipped hooks ingredient (and the tests/hooks fixtures that carry defs) passes validation with the real allowlist; report non-scalars
+  const files = fs.readdirSync(new URL('../../site/data/phonk/', import.meta.url)).filter((f) => /^racks.*\.json$/.test(f)).map((f) => new URL('../../site/data/phonk/' + f, import.meta.url));
+  files.push(new URL('../hooks/fixtures/h.json', import.meta.url));
+  const used = new Set(), nonscalar = {}; let steps = 0;
+  for (const u of files) { const d = JSON.parse(fs.readFileSync(u, 'utf8')); assert.deepEqual(rawValidate(d, allow), [], u.pathname);
+    for (const v of Object.values(d.defs || {})) for (const st of v.chain || []) { steps++; assert.ok(allow.has(st[0]), 'shipped step not allowlisted: ' + st[0]); used.add(st[0]); for (const a of st.slice(1)) if (a && typeof a === 'object') (nonscalar[st[0]] ||= new Set()).add(Array.isArray(a) ? 'array' : Object.keys(a).join('+')); } }
+  console.log('INFO shipped steps ' + steps + ', distinct methods ' + used.size + '; non-scalar args by method: ' + JSON.stringify(Object.fromEntries(Object.entries(nonscalar).map(([k, v]) => [k, [...v]]))));
+  for (const k of Object.keys(nonscalar)) assert.ok(STEPS.methods[k].args.length > 1, k + ' needs a declared structured shape');
+  ok('every step of every shipped hooks ingredient and fixture is in the allowlist and validates (parity guard)'); }
+{ const mk = (...c) => ({ model: 1, defs: { evil: { chain: c } } }); const rej = (c, re) => { const r = rawValidate(mk(...c), allow); assert.ok(r.length && r.every((x) => x.code === 'E_PACK_HOOKS_INVALID'), JSON.stringify(c)); assert.match(r[0].message, re); };
+  rej([['bbexpr', 't*(t>>8)']], /bbexpr/); rej([['bbexpr', ['t*(t>>8)']]], /bbexpr/); rej([['byteBeatExpression', ['1']]], /byteBeatExpression/); rej([['speak', 'en', 'x']], /speak/); rej([['pianoroll']], /pianoroll/); rej([['_scope']], /_scope/); rej([['samples', 'https://x.test/a.json']], /samples/);
+  rej([['gain', [1]]], /arrays are not accepted/); rej([['gain', { a: 1 }]], /object arguments/); rej([['gain', { $param: 'x' }]], /object arguments/); rej([['s', 'x'.repeat(300)]], /not an accepted/); rej([['gain', NaN]], /not an accepted/); rej([['gain', 1, 2, 3, 4, 5, 6, 7]], /more than/);
+  rej([['s', { $mini: 'a', extra: 1 }]], /object arguments/); rej([['lpf', { $param: 'nope' }]], /\$param/); rej([['wire', 'gain', 'k', { range: [1, { $expr: 'constructor' }] }]], /range/);
+  assert.deepEqual(rawValidate({ model: 1, defs: { ok: { params: { d: { default: 1 } }, chain: [['lpf', { $param: 'd' }], ['s', { $mini: 'a b' }], ['gain', 0.5]] } } }, allow), []); ok('rejected with a structured E_PACK_HOOKS_INVALID naming the method: bbexpr (string and array), byteBeatExpression, speak, a visual, samples; non-scalar and over-limit args; shaped args accepted'); }
 console.log(`${n} checks passed`);

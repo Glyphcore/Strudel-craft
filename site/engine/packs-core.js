@@ -28,6 +28,14 @@ const ALIASES = {
   'hooks': (d) => Object.entries(d.defs || {}).flatMap(([n, x]) => ((x && x.aliases) || []).map((a) => [a, n])),
 };
 export const itemAliases = (kind, data) => (data && ALIASES[kind] ? ALIASES[kind](data) : []);
+// item content (for telling an identical re-definition from a real conflict); kinds not listed compare by their whole entry data
+const CONTENT = {
+  'atoms': (d, id) => Object.values(d.atoms || {}).find((a) => a.name === id),
+  'hooks': (d, id) => (d.defs || {})[id],
+  'recipes': (d, id) => (d.recipes || []).find((r) => r.id === id),
+  'sounds': (d, id) => d[id],
+};
+const contentOf = (kind, data, id) => { try { return JSON.stringify(CONTENT[kind] ? CONTENT[kind](data, id) : data) ?? ''; } catch { return ''; } };
 export const itemIds = (kind, data) => (data && ITEMS[kind] ? ITEMS[kind](data) : []);
 
 export const aliasOf = (packId, key) => `${packId.replace('/', '_').replace(/-/g, '_')}__${key}`;
@@ -35,7 +43,7 @@ const cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 const layerRank = (n) => { const i = LAYER_ORDER.indexOf(n); return i < 0 ? LAYER_ORDER.length : i; };
 
 export function resolve(layers, loaded) {
-  const errors = [], warnings = [];
+  const errors = [], warnings = [], info = [];
   const err = (code, message, extra) => errors.push({ code, message, ...extra });
   // claimants of every pack id, in (layer, entry) order; rule 6
   const accepted = [], seen = new Map();
@@ -63,7 +71,8 @@ export function resolve(layers, loaded) {
     for (const ing of loaded[p.id]?.ingredients || []) {
       for (const item of itemIds(ing.kind, ing.data)) {
         const k = ((claims[ing.kind] ||= Object.create(null))[item] ||= []);
-        k.push({ pack: p.id, ingredient: ing.id, qualified: `${p.id}:${item}`, priority: p.priority, rank: p.rank, seq: p.seq });
+        if (k.some((x) => x.pack === p.id)) continue; // two ingredients of one pack naming the same item (atoms + atoms-v2): one claimant per pack, first ingredient wins
+        k.push({ pack: p.id, ingredient: ing.id, content: contentOf(ing.kind, ing.data, item), qualified: `${p.id}:${item}`, priority: p.priority, rank: p.rank, seq: p.seq });
       }
     }
   }
@@ -86,14 +95,19 @@ export function resolve(layers, loaded) {
       const entry = { winner: c[0].qualified, shadowed: c.slice(1).map((x) => x.qualified) };
       if (kind === 'sounds' || kind === 'vox-bank') entry.aliases = Object.fromEntries(c.map((x) => [aliasOf(x.pack, bare), x.qualified]).sort((a, b) => cmp(a[0], b[0])));
       out[bare] = entry;
-      if (entry.shadowed.length) warnings.push({ code: 'W_PACK_SHADOW', message: `${kind}!${bare}: ${entry.winner} wins over ${entry.shadowed.join(', ')}`, kind, name: bare, winner: entry.winner, shadowed: entry.shadowed });
+      if (entry.shadowed.length) {
+        // identical content under another pack (a duplicate or alias) is not a conflict: info only. Different content: one warning naming the winner and each loser once.
+        const lost = c.slice(1).filter((x) => x.content !== c[0].content).map((x) => x.qualified);
+        if (lost.length) warnings.push({ code: 'W_PACK_SHADOW', message: `${kind}!${bare}: ${entry.winner} wins over ${lost.join(', ')}`, kind, name: bare, winner: entry.winner, shadowed: lost });
+        else info.push({ code: 'I_PACK_SHADOW', message: `${kind}!${bare}: ${entry.winner} duplicates ${entry.shadowed.join(', ')} (identical)`, kind, name: bare, winner: entry.winner, shadowed: entry.shadowed });
+      }
     }
   }
   for (const [kind, byAlias] of Object.entries(aliasClaims)) for (const [alias, c] of Object.entries(byAlias)) {
     c.sort((a, b) => b.priority - a.priority || a.rank - b.rank || a.seq - b.seq); ((resolution[kind] ||= {})[alias]) = { winner: c[0].qualified, shadowed: c.slice(1).map((x) => x.qualified), alias: true };
   }
   warnings.sort((a, b) => cmp(a.kind + a.name, b.kind + b.name));
-  return { errors, warnings, resolution };
+  return { errors, warnings, info, resolution };
 }
 
 // ---------------------------------------------------------------- verify (docs/PACK_SPEC.md 11.1): "does this pinned reference still hash to this value?"

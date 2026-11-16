@@ -259,7 +259,7 @@ export function createPacks(opts = {}) {
     const loaded = {};
     for (const p of packs.values()) loaded[p.id] = { version: p.version, ingredients: [...p.ingredients.values()].filter((i) => i.data && (i.state === 'ready' || i.state === 'blocked')).map((i) => ({ id: i.id, kind: i.kind, data: i.data })) };
     const core = coreResolve(effective(), loaded);
-    cached = { errors: [...core.errors, ...errors], warnings: [...core.warnings, ...warnings], resolution: core.resolution }; dirty = false; return cached;
+    cached = { errors: [...core.errors, ...errors], warnings: [...core.warnings, ...warnings], info: core.info, resolution: core.resolution }; dirty = false; return cached;
   }
   const valueOf = (kind, ing, item) => { const hit = KINDS[kind].items(ing.data).find(([k]) => k === item); return hit ? hit[1] : undefined; };
   function resolveRef(kind, ref) {

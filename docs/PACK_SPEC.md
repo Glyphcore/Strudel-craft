@@ -326,7 +326,7 @@ Array order is load order and tie-break order. Three lock layers exist at run ti
 1. A qualified id always resolves to its own pack. Nothing overrides it.
 2. A bare name resolves, within its kind, to the candidate with the highest `priority`; ties go to the earlier layer (shipped, user,
    session) and then the earlier lock entry. Core is first in the shipped lock with priority 0, so by default **nothing shadows core and
-   the first pack to claim a name keeps it**. The loser stays reachable by its qualified id; the report lists it as `W_PACK_SHADOW`.
+   the first pack to claim a name keeps it**. The loser stays reachable by its qualified id; the report lists it as `W_PACK_SHADOW`. Shadowing is reported **once per bare name**, with each claiming pack listed once (two ingredients of one pack that name the same item count as one claimant, the first ingredient wins). A loser whose content is **identical** to the winner's (a duplicate or alias of the same item) is not a conflict: it stays in `resolution[kind][name].shadowed` and appears in `report.info` as `I_PACK_SHADOW`, never as a warning. Only a loser with different content raises `W_PACK_SHADOW`, and the warning lists just those losers. The CLI prints a `W_PACK_SHADOW` from `strudel check` only when the program text names the shadowed id; `--verbose` (or `STRUDEL_VERBOSE`) prints all of them.
 3. Deliberate override = the lock owner raises `priority` on that pack's lock entry (-100..99). A manifest cannot set its own priority.
    The site's "prefer this pack" switch writes priority 10 into the user lock.
 4. Keyed data (`param-shapes.params[fn]`, `ranges[name]`, `canon[alias]`, intellisense items by `label` + `category`, `param-editors`
@@ -613,7 +613,8 @@ and `packs validate` list everything, errors exit 1.
 | `E_PACK_SANDBOX_LIMIT` | more than 4 sandboxes at once: the extra one does not start |
 | `E_LOCK_MUTABLE` / `E_LOCK_DUPLICATE` | shipped lock with an unpinned entry; one id twice in a layer |
 | `E_NAME_COLLISION`, `E_COMPONENT_HASH`, `E_OPAQUE`, `E_UNKNOWN_METHOD` | existing codes, unchanged |
-| `W_PACK_SHADOW` | a bare name has more than one claimant (winner and losers listed) |
+| `W_PACK_SHADOW` | a bare name has more than one claimant with different content (winner and each differing loser listed once) |
+| `I_PACK_SHADOW` | `report.info` only: another pack defines the same name with identical content (not a conflict) |
 | `W_PACK_KIND` | unknown kind or format major: ingredient skipped |
 | `W_PACK_NEWER` | spec or format minor newer than the host |
 | `E_PACK_FOLDER` | a `folder` (item, ingredient or `taxonomy.folders` key) is not a valid slash path (section 5.3) |

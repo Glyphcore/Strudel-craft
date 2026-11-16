@@ -17,8 +17,7 @@
       "expect": {
         "errors": [],
         "warnings": [
-          { "code": "W_PACK_SHADOW", "kind": "recipes", "name": "thump", "winner": "testco/collide-a:thump", "shadowed": ["testco/collide-b:thump"] },
-          { "code": "W_PACK_SHADOW", "kind": "sounds", "name": "tkick", "winner": "testco/collide-a:tkick", "shadowed": ["testco/collide-b:tkick"] }
+          { "code": "W_PACK_SHADOW", "kind": "recipes", "name": "thump", "winner": "testco/collide-a:thump", "shadowed": ["testco/collide-b:thump"] }
         ],
         "resolution": {
           "recipes": {
@@ -52,8 +51,7 @@
       "expect": {
         "errors": [],
         "warnings": [
-          { "code": "W_PACK_SHADOW", "kind": "recipes", "name": "thump", "winner": "testco/collide-b:thump", "shadowed": ["testco/collide-a:thump"] },
-          { "code": "W_PACK_SHADOW", "kind": "sounds", "name": "tkick", "winner": "testco/collide-b:tkick", "shadowed": ["testco/collide-a:tkick"] }
+          { "code": "W_PACK_SHADOW", "kind": "recipes", "name": "thump", "winner": "testco/collide-b:thump", "shadowed": ["testco/collide-a:thump"] }
         ],
         "resolution": {
           "recipes": {
@@ -91,8 +89,7 @@
       "expect": {
         "errors": [{ "code": "E_PACK_NAMESPACE", "id": "testco/collide-a" }],
         "warnings": [
-          { "code": "W_PACK_SHADOW", "kind": "recipes", "name": "thump", "winner": "testco/collide-a:thump", "shadowed": ["testco/collide-b:thump"] },
-          { "code": "W_PACK_SHADOW", "kind": "sounds", "name": "tkick", "winner": "testco/collide-a:tkick", "shadowed": ["testco/collide-b:tkick"] }
+          { "code": "W_PACK_SHADOW", "kind": "recipes", "name": "thump", "winner": "testco/collide-a:thump", "shadowed": ["testco/collide-b:thump"] }
         ],
         "resolution": {
           "recipes": {

@@ -85,6 +85,7 @@
         "vox": { "type": "array", "items": { "type": "object", "required": ["bank", "url", "sha256"], "properties": { "bank": { "type": "string" }, "url": { "type": "string" }, "sha256": { "$ref": "#/$defs/hash" } } } }
       }
     },
-    "outputs": { "type": "object", "properties": { "capture": { "$ref": "#/$defs/audioOut" }, "render": { "$ref": "#/$defs/audioOut" } }, "additionalProperties": false }
+    "outputs": { "type": "object", "properties": { "capture": { "$ref": "#/$defs/audioOut" }, "render": { "$ref": "#/$defs/audioOut" } }, "additionalProperties": false },
+    "cues": { "type": "object", "description": "optional (CraftCues, #163): the program's score annotations at take time, canonical JSON of schemas/craftcues.v1.json (docs/CRAFTCUES.md). The Record panel writes a .vtt next to the wav from it (bar 1 of the program at 0 s, shifted by timing.start / timing.cps). Recipes without it stay valid.", "required": ["format", "cues"], "properties": { "format": { "const": "craftcues@1" }, "header": { "type": "object" }, "notes": { "type": "array" }, "cues": { "type": "array", "items": { "type": "object" } } } }
   }
 }

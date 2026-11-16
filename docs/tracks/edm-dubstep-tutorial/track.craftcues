@@ -1,0 +1,102 @@
+CRAFTCUES 1
+track: edm-dubstep-tutorial
+title: Dubstep tutorial track (104 bars, 11 lessons)
+program: docs/tracks/edm-dubstep-tutorial/track.strudel.js
+bars: 104
+bpm: 140
+beats: 4
+offset: 0
+sections: intro 1-16, build 17-24, drop1 25-40, break 41-56, build2 57-64, drop2 65-76, switch 77-88, outro 89-104
+
+NOTE The 11 lessons of the track (README.md, the LESSON comments of track.strudel.js) as lesson cues at their bars (CraftCues #164).
+Lesson 0 (the half-time grid, 140 bpm, one cycle = one bar) holds for the whole track and is the leading whole-track cue.
+
+lesson-0
+* lesson @track
+Lesson 0: half-time on a 140 meter: kick on 1, snare alone on 3, hats keep the full meter
+| GRV-03 genre:dubstep | src=author
+
+lesson-1
+1-16 lesson @pad
+Lesson 1: start with the *key*, not the drop; the pad low-pass is automation as data
+| HAR-01 TEN-03 | src=author
+
+lesson-2
+9-16 lesson @shaker,kickIntro
+Lesson 2: add *rhythm before weight*: shaker 16ths, kick on the 1 only
+| LAY-01 | prepares:lesson-5 src=author
+
+chops-intro
+13-16 foreshadow @chops
+vowel chops tease the drop's voice
+| FS-01 VOX-01 | prepares:lesson-6 src=author
+
+lesson-3
+17-24 lesson @roll,buildChords,riser
+Lesson 3: tension = density + brightness + level rising, then *the gap*
+| TEN-02 TR-01 | prepares:lesson-4 src=author
+
+lesson-4
+25 lesson @impact,crash,kick
+Lesson 4: mark the downbeat in three bands at once: impact, crash, kit
+| TR-04 | resolves:lesson-3 src=author
+
+lesson-5
+25-40 lesson @kick,snare,ghost,hats
+Lesson 5: the half-time kit; sidechain ducks bass -8 dB and music -10.7 dB
+| GRV-03 syntax:dubstep | src=author
+
+lesson-6
+25-40 lesson @growl~talk
+Lesson 6: split the bass by layering: clean sine sub, growl and talk bass in call and response
+| INT-01 LAY-04 | src=author
+
+laser
+25-40 layer-role @laser
+laser zap every 4th bar: the phrase marker
+| ARR-03 | src=author
+
+lesson-7
+41-56 lesson @track
+Lesson 7: *contrast*: no kick, no sub; the pad pumps from a silent ghost trigger
+| EN-02 | contrasts:lesson-5 src=author
+
+breakdown-lead
+49-56 layer-role @lead
+lead melody enters over the breakdown, chops return
+| INT-07 | src=author
+
+lesson-8
+57-64 lesson @whiteBuild,pitchUp,swell
+Lesson 8: never build the same way twice: hp build, pitch riser, reverse swell
+| TR-01 MOT-02 | varies:lesson-3 src=author
+
+lesson-9
+65-76 lesson @wobble
+Lesson 9: the second drop changes something: the wobble's synced filter LFO
+| SYN-02 | varies:lesson-6 src=author
+
+lesson-10
+77-88 lesson @riddim->screech
+Lesson 10: same kit, new idea: riddim 3+3+2, screech in the gaps
+| INT-03 GRV-05 | src=author
+
+lesson-11
+89-104 lesson @track
+Lesson 11: give the next DJ 16 bars: drums for 8, then atmosphere; the fade is data
+| ARR-04 form:outro | src=author
+
+drop1
+25-40 section @track
+Drop A
+| form:drop | src=author
+
+break
+41-56 section @track
+Breakdown
+| form:breakdown | src=author
+
+drop2
+65-76 section @track
+Drop B: the wobble
+| form:drop | echoes:drop1 src=author

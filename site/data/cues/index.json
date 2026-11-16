@@ -1,0 +1,28 @@
+{
+ "format": "craftcues-index@1",
+ "doc": "docs/CRAFTCUES.md",
+ "sets": [
+  {
+   "file": "dnb-electro-tutorial.craftcues",
+   "track": "dnb-electro-tutorial",
+   "title": "DnB tutorial track (128 bars, one lesson per section)",
+   "cues": 12,
+   "first": "// DnB tutorial (#124): F minor, 174 bpm, 128 ba"
+  },
+  {
+   "file": "edm-dubstep-tutorial.craftcues",
+   "track": "edm-dubstep-tutorial",
+   "title": "Dubstep tutorial track (104 bars, 11 lessons)",
+   "cues": 18,
+   "recipe": "edm-dubstep-tutorial",
+   "first": "// == EDM / dubstep tutorial (glyphcore/edm, CC0"
+  },
+  {
+   "file": "night-phonk-v2.craftcues",
+   "track": "night-phonk-v2",
+   "title": "Night phonk v2 (pump, confrontation, drops against relief)",
+   "cues": 25,
+   "first": "// Night phonk v2: G minor, VI-i-VII-VI, half-ti"
+  }
+ ]
+}

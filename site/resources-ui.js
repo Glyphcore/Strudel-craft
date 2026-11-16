@@ -102,6 +102,8 @@ export function createPanel(root, o = {}) {
     banner.hidden = !m.missing.length;
     if (m.missing.length) banner.innerHTML = `<b>${m.missing.length} missing</b> <span>${m.missing.slice(0, 3).map((x) => `<button type="button" class="rs-mi" data-open="${esc(x.id)}">${esc(x.name)}</button>`).join('')}${m.missing.length > 3 ? ` +${m.missing.length - 3}` : ''}</span>`;
     root.querySelector('[data-n="program"]').textContent = m.total ? String(m.total) : '';
+    /* CraftCues (#163): the KB ids the program's score cues reference, resolved (cues-ui.js resourcesSection; loads only when the program carries cues) */
+    { const code = programText(); if (sc.cues && sc.cues.ui) sc.cues.ui().then((cm) => cm.resourcesSection(code)).then((html) => { if (!html || st.tab !== 'program') return; const old = body.querySelector('.rs-cues'); if (old) old.remove(); body.insertAdjacentHTML('beforeend', html); }).catch(() => {}); }
   };
 
   /* ----- Available ----- */

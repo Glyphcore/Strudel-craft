@@ -87,6 +87,7 @@ export function validate(r) {
   const t = r.timing; if (!t || !(t.cps > 0) || typeof t.start !== 'number' || typeof t.stop !== 'number' || !(t.stop > t.start)) bad('Recipe timing needs cps > 0 and start < stop (cycles)');
   { const m = checkTimingMeta(t); if (m) bad('Recipe ' + m); } /* optional bars/startBar fields (#139); old cycle-only recipes have none */
   if (!r.includes || typeof r.includes !== 'object') bad('Recipe needs includes {audio, events, code}');
+  if (r.cues !== undefined && (!r.cues || r.cues.format !== 'craftcues@1' || !Array.isArray(r.cues.cues))) bad('Recipe cues must be CraftCues JSON (format craftcues@1 with a cues array; docs/CRAFTCUES.md)');
   if (!r.random || !Number.isInteger(r.random.seed)) bad('Recipe needs random.seed (integer)');
   if (r.includes.code && (!r.state || typeof r.state.source?.code !== 'string')) bad('Recipe says it includes code-state but has no state.source.code');
   const d = r.deps; if (!d || !d.strudel || !d.site || !Array.isArray(d.packs) || !Array.isArray(d.samples) || !Array.isArray(d.vox)) bad('Recipe needs deps {strudel, superdough, site, packs, samples, vox}');

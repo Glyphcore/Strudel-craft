@@ -1,0 +1,49 @@
+/* CraftCues (docs/CRAFTCUES.md; #163): captions strip, timeline lane with relation arcs, Score sheet, KB card. Loaded on first use. Tokens from style.css. */
+.cu-strip{position:fixed;left:0;right:0;z-index:11;display:flex;flex-direction:column;gap:2px;padding:4px 8px 3px;background:color-mix(in srgb,var(--panel) 94%,transparent);border-top:1px solid var(--line);backdrop-filter:blur(6px);font-size:.8rem}
+.cu-strip[hidden]{display:none}
+.cu-row{display:flex;align-items:center;gap:6px;min-height:44px}
+.cu-bar{flex:none;font-family:var(--mono);font-size:.72rem;color:var(--dim);min-width:52px}
+.cu-bar b{color:var(--text);font-variant-numeric:tabular-nums}
+.cu-chips{flex:1;min-width:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
+.cu-chip{flex:none;max-width:78vw;min-height:40px;display:flex;align-items:center;gap:6px;padding:2px 10px;border:1px solid var(--line-2);border-left:3px solid var(--k,var(--sig-2));border-radius:var(--r2);background:var(--panel-2);color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.cu-chip i{font-style:normal;font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);white-space:nowrap}
+.cu-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cu-chip:focus-visible,.cu-x:focus-visible,.cu-score:focus-visible{outline:2px solid var(--sig-2);outline-offset:1px}
+.cu-x,.cu-score{flex:none;min-width:44px;min-height:44px;border:0;background:transparent;color:var(--dim);font:inherit;cursor:pointer;border-radius:var(--r1)}
+.cu-none{color:var(--faint);font-size:.74rem}
+.cu-tl{display:block;width:100%;height:22px}
+.cu-tl .sp{stroke-width:2}.cu-tl .arc{fill:none;stroke:var(--sig-2);stroke-width:1;opacity:.75}.cu-tl .arc.pair{stroke:var(--sig);stroke-dasharray:2 2}
+.cu-tl .ph{stroke:var(--text);stroke-width:1.5}.cu-tl .sec{stroke:var(--line-2);stroke-width:1}
+[data-cue-hot="true"]{outline:2px solid var(--sig-2)!important;outline-offset:-2px;box-shadow:0 0 0 3px var(--sig-2-soft)}
+/* kind colours (the left rule of a chip, the span in the timeline) */
+[data-k="section"]{--k:var(--line-2)}[data-k="tension"],[data-k="clash"]{--k:var(--bad)}[data-k="release"],[data-k="resolution"]{--k:var(--ok)}
+[data-k="motif"],[data-k="foreshadow"],[data-k="callback"]{--k:var(--sig)}[data-k="todo"]{--k:var(--warn)}[data-k="lesson"]{--k:var(--sig-2)}
+/* KB card (inside the site modal) */
+.cu-card{display:flex;flex-direction:column;gap:8px;font-size:.84rem;max-width:560px}
+.cu-card .cu-meta{font-family:var(--mono);font-size:.7rem;color:var(--dim);overflow-wrap:anywhere}
+.cu-card .cu-body{font-size:.95rem}
+.cu-kb{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.cu-kb li{border:1px solid var(--line-2);border-radius:var(--r2);padding:8px 10px;background:var(--panel-2)}
+.cu-kb b{font-family:var(--mono)}.cu-kb small{display:block;color:var(--dim)}.cu-kb a{color:var(--sig-2)}
+.cu-kb [data-s="unknown"]{color:var(--bad)}.cu-kb [data-s="not-loaded"],.cu-kb [data-s="unchecked"]{color:var(--warn)}
+.cu-acts{display:flex;flex-wrap:wrap;gap:8px}.cu-acts button{min-height:44px}
+/* Score sheet */
+dialog.cu-sheet{width:min(760px,calc(100vw - 8px));height:min(900px,calc(100dvh - 12px));max-height:none;flex-direction:column;overflow:hidden}
+dialog.cu-sheet[open]{display:flex}
+.cu-sbar{display:flex;flex-direction:column;gap:6px;padding:8px 12px;border-bottom:1px solid var(--line);flex:none}
+.cu-pills{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.cu-pill{flex:none;min-height:36px;padding:2px 12px;border:1px solid var(--line-2);border-radius:999px;background:transparent;color:var(--dim);font:inherit;font-size:.76rem;cursor:pointer;white-space:nowrap}
+.cu-pill[aria-pressed="true"]{color:var(--sig-ink);background:var(--sig-2);border-color:var(--sig-2)}
+.cu-sel{display:flex;gap:6px}.cu-sel select{flex:1;min-width:0;min-height:44px;background:var(--panel-2);color:var(--text);border:1px solid var(--line-2);border-radius:var(--r1);font:inherit}
+.cu-tools{display:flex;flex-wrap:wrap;gap:6px}.cu-tools button,.cu-tools label{min-height:44px}
+.cu-sbody{flex:1;overflow:auto;padding:8px 12px 18px;overscroll-behavior:contain}
+.cu-sec h3{font-family:var(--mono);font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin:12px 0 6px}
+.cu-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.cu-item{position:relative;border:1px solid var(--line-2);border-left:3px solid var(--k,var(--sig-2));border-radius:var(--r2);background:var(--panel-2)}
+.cu-item>button.cu-open{display:block;width:100%;min-height:52px;padding:8px 96px 8px 12px;border:0;background:transparent;color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.cu-item .cu-t{font-family:var(--mono);font-size:.7rem;color:var(--dim)}
+.cu-item .cu-ed,.cu-item .cu-del{position:absolute;top:4px;width:44px;min-height:44px;border:0;background:transparent;color:var(--sig-2);cursor:pointer;font:inherit;font-size:.72rem}
+.cu-item .cu-ed{right:46px}.cu-item .cu-del{right:2px;color:var(--dim)}
+.cu-form{display:grid;gap:8px}.cu-form label{display:grid;gap:4px;font-size:.78rem;color:var(--dim)}
+.cu-form input,.cu-form select,.cu-form textarea{min-height:44px;background:var(--panel-2);color:var(--text);border:1px solid var(--line-2);border-radius:var(--r1);font:inherit;padding:4px 8px}
+.rs-cues{margin:10px 0}.rs-cues h3{font-family:var(--mono);font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}

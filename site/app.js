@@ -840,6 +840,7 @@ function route() {
   const h = decodeURIComponent(location.hash.slice(1));
   if (VIEWS.includes(h)) return setView(h, { push: false });
   if (/^(syntax=|sx-)[\w.-]+$/.test(h)) return setView('syntax', { push: false }); /* deep link to a Syntax section (syntax.js opens it); #sx-<id> is the old anchor */
+  if (/^cues(=|$)/.test(h)) { Promise.resolve(window.strudelCraft.booted).then(() => window.strudelCraft.cues && window.strudelCraft.cues.openScore()); return; } /* CraftCues Score sheet (#163) over the current view */
   if (/^res(=|$)/.test(h)) { Promise.resolve(window.strudelCraft.booted).then(() => window.strudelCraft.resources && window.strudelCraft.resources.openLink('#' + h)); return; } /* Resources pane deep link (#res=<id>): opens the sheet over the current view */
   if (h.startsWith('code/')) { setView('rack', { push: false }); Promise.resolve(window.strudelCraft.booted).then(() => window.strudelCraft.copycode && window.strudelCraft.copycode.loadHash('#' + h)); return; } /* shared code link (copycode.js, loaded after the shell: #59) */
   let id = h.startsWith('r/') ? h.slice(2) : h; { const al = S.recipes.some((r) => r.id === id) ? null : aliasRecipe(id); if (al) { id = al.id; history.replaceState(null, '', '#r/' + id); } }

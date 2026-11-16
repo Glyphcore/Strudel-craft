@@ -1,0 +1,137 @@
+CRAFTCUES 1
+track: night-phonk-v2
+title: Night phonk v2 (pump, confrontation, drops against relief)
+program: docs/tracks/night-phonk-demo/track.v2.strudel.js
+bars: 84
+bpm: 128.8
+beats: 4
+offset: 0
+sections: intro 1-8, build 9-16, drop-a 17-32, relief-1 33-40, drop-b 41-52, relief-2 53-60, build-3 61-64, drop-c 65-80, outro 81-84
+
+NOTE Authored cues for night phonk v2 (#93; CraftCues #164). Generated findings (composer ledger / density / foreshadow, genre score) are merged
+by id with src=inferred or analysis: node tools/craftcues/cues.mjs merge track.v2.craftcues generated.craftcues
+
+intro
+1-8 section @track
+Intro: *hook lead from bar 1*, 808 from bar 5; G minor, VI-i-VII-VI
+| form:intro ARR-01 | src=author
+
+lead-intro
+1-8 layer-role @lead
+Hook lead states the line alone: the identity before the weight
+| INT-07 hook:deepLead | src=author
+
+sub-in
+5 layer-role @sub
+808 enters under the hook: weight arrives *after* the identity
+| LAY-01 | prepares:drop-a src=author
+
+build
+9-16 section @track
+Build: thin tone on the pad and lead, riser, roll
+| form:build TR-01 | prepares:drop-a src=author
+
+build-thin
+9-16 transition @pad,lead
+tone slot -> thin: highs open, lows leave, so the drop has room to land
+| TEN-03 hook:thin | prepares:drop-a src=author
+
+riser
+9-16 tension @rise
+riser sweeps 3.5 octaves into the drop
+| TEN-02 hook:riser | src=author
+
+vac-a
+16.3-16.4 transition @track
+Vacuum: two beats cut before drop A (all but the reverse hit)
+| TR-03 atom:ph2.vac | prepares:drop-a src=author
+
+drop-a
+17-32 section @track
+Drop A (*confrontation*): toms, rim, stab, stutter against the bell
+| form:drop ARR-02 | src=author
+
+pump-a
+17-32 mix-note @kick
+pumpHard(0.8): duckorbit on orbits 3-8, 0.23 s recovery; the mix breathes with the kick
+| hook:pumpHard syntax:slots | src=author
+
+conf-a
+17-32 call-response @bell~stab
+Bell hook and the stab trade the bar: the confrontation is call against answer
+| INT-01 | src=author
+
+bell-hook
+M9@17 -> M9@65 callback @bell
+Bell hook M9 at drop A returns at drop C
+| FS-05 MOT-01 | src=author
+
+relief-1
+33-40 section @track
+Relief 1: drums out, heartbeat, chime, hush tone, wide room
+| form:breakdown EN-02 | contrasts:drop-a src=author
+
+relief-room
+33-40 mix-note @tag:relief
+space macro maps room to 0..3.2 in reliefs: the contrast is space as well as level
+| syntax:controls | src=author
+
+relief-release
+33-40 release @track
+Drop minus relief 7.8 LU (measured): the release is a level and a density step
+| TEN-01 | resolves:drop-a src=author
+
+stop-b
+40.3-40.4 transition @track
+Stop-cut, then vacuum into drop B
+| TR-03 atom:ph2.vac | prepares:drop-b src=author
+
+drop-b
+41-52 section @track
+Drop B: half-time swing, *no pad or counter*
+| form:drop GRV-02 | varies:drop-a src=author
+
+drop-b-feel
+41-52 feel @hats,kick
+gated struct + swingBy 0.16 binds: same kit, a new pocket
+| GRV-01 slot:groove | src=author
+
+relief-2
+53-60 section @track
+Relief 2: melody filter opens, vocal pad swells
+| form:breakdown EN-03 | contrasts:drop-b src=author
+
+relief2-swell
+53-60 layer-role @voxpad->lead
+Vocal pad swell hands the space to the opening lead filter
+| INT-04 XT-02 | src=author
+
+build-3
+61-64 section @track
+Build 3: four bars only, the shortest lift
+| form:build TR-01 | prepares:drop-c src=author
+
+drop-c
+65-80 section @track
+Drop C (*return*): drop A material with everything learned
+| form:drop FS-06 | echoes:drop-a src=author
+
+drop-c-res
+65-80 resolution @bell+stab
+The bell and the stab now sit together: the confrontation resolved by doubling
+| INT-05 | resolves:conf-a src=author
+
+outro
+81-84 section @track
+Outro: four bars, the air word on the last bar
+| form:outro | src=author
+
+air
+84 layer-role @vox
+"air" on the last bar, filtered: the tail
+| VOX-01 vox:ljspeech | src=author
+
+todo-pre-echo
+9-16 todo @bell
+Bell hook has no pre-echo in the build (composer foreshadow); try a filtered bell fragment here
+| FS-01 FS-02 | prepares:bell-hook src=author

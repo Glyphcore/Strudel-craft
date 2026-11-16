@@ -164,6 +164,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     python3 -m http.server 8000 --directory site     # open http://localhost:8000
 
 ## Tests (from the repo root)
+- `node tests/site/cues.mjs [shot.png]`: CraftCues at 390 px touch (captions at bars 17 / 33 / 65 of night phonk v2 within 1 bar of the transport, KB card without editor movement, Score sheet, export, Resources Cues section, inline Go to code, Record .vtt, quick play captions); `node tests/cues/cues.mjs`, `node tests/cues/vtt_browser.mjs` (format, fuzz, WebVTT parser).
     node tests/site/smoke.mjs          # Playwright Chromium: keyboard, views, every recipe plays, frame time, screenshots
     node tests/site/smoke.mjs --quick  # first 4 recipes only
     node tests/site/comments.mjs       # comment torture: comments in every position give zero diagnostics, same compiled code, same control ids (engine/comments.js)
@@ -426,6 +427,18 @@ states), `closers` (open brackets/quotes). Register more:
 
 ## Resources pane (`resources.js`, `resources-ui.js`, `resources.css`, `engine/resources.js`; docs/RESOURCES.md)
 What the program uses and what is installed, in one panel (sheet on phones, workspace pane on desktop). Entry points: the **Resources** button in the Rack / Stack editor heads, `Ctrl+K > Show resources`, `Show Resources pane`, the workspace pane `resources`, deep link `#res=<kind>:<name>` / `#res=available:<query>`. **In this program**: every reference resolved live (atoms and `atoms.import`, racks and `hooks.bind`, slots, taps, buses, lanes, controls, vox banks and words, packs with version and licence, `lib:` refs), with source pack, description, params with ranges, lines, status chips (resolved, shadowed #143, older id #120, missing + fix and Insert, unused, unread #114, code needs allow) and a missing banner; a plain press only expands a row, Go to line is its own target button (#107). **Available**: packs -> kinds -> items with the folder / tag organizer (#120), search, example in Craft and lowered form (#117), Play (#150), **Insert reference** (one change at one place, nothing else moves) and Copy. The model is `engine/resources.js` `buildModel()`, also behind the CLI twin `strudel refs IN [--json]`. Lazy: loaded on first open, precached, outside the eager shell budget.
+
+## Score cues: CraftCues (`cues.js`, `cues-ui.js`, `cues.css`, `engine/cues.js`, `engine/cues-kb.js`; docs/CRAFTCUES.md, #162-#164)
+Terse timed annotations in bars: `//@ 17-24 motif @bell: hook enters | MOT-05 | prepares:drop-c` in the code (blanked by the comment masker, never
+affects the sound), shipped sidecars in `data/cues/` (`index.json` matches a recipe id or the program's first line; `node tools/craftcues/build_site.mjs`
+copies `docs/tracks/*/*.craftcues`), and cues saved in this browser (localStorage `sc.cues.<program>`). `cues.js` is a tiny lazy entry (palette
+commands Show score cues / Add cue at the current bar / Captions on / off, the Score button in the editor heads, `#cues`, a 600 ms watcher that loads
+the UI only when a playing program has cues, the `//@` intellisense source). While playing: a captions strip above the transport (bar, chips of the
+active cues, a timeline lane with spans, section ticks, playhead and relation arcs; layer cues set `[data-cue-hot]` on their lane rows and graph
+nodes). A chip press opens the KB card in the site modal (nothing in the editor moves; Go to code is a separate button). Score sheet: by section,
+kind / layer / concept filters, edit (inline cues are rewritten in place), add at bar, import and export `.craftcues` / `.vtt` / JSON. Quick play shows
+the strip for examples with `//@` cues (`qp:play` event); the Resources sheet gets a Cues section; Record takes store `cues` and the WAV download
+writes a `.vtt`. Tests: `node tests/cues/cues.mjs`, `node tests/cues/vtt_browser.mjs`, `node tests/site/cues.mjs [shot.png]` (390 px touch).
 
 ## Banks browser (`vox-banks.js`, `voxbrowser.js`, `voxbrowser.css`, #85)
 "What is in a bank, so I know what I can type": the **Banks** button in the Syntax view head, Ctrl+K > *Browse vox banks*, or the

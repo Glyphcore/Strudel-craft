@@ -213,11 +213,23 @@ function envelopeMatch(a, b, tolDb = 1.5) {
 const seed32 = () => crypto.getRandomValues(new Uint32Array(1))[0] | 0;
 function newId() { return 'rc' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 async function uniqueName(base) { const names = new Set((await store.list()).map((r) => r.recipe.name)); let n = safe(base), i = 2; const b = n; while (names.has(n)) n = b + '-' + i++; return n; }
+async function takeCues(state) {
+  let code = state && state.source ? state.source.code : ''; if (!code) { try { const s = sc.transport && sc.transport.source && sc.transport.source(); code = (s && s.code) || ''; } catch (e) { /* none */ } }
+  try { if (sc.cues && sc.cues.forTake && (sc.cues.doc || /\/\/@|\/\*@/.test(code))) return await sc.cues.forTake(code); if (/\/\/@|\/\*@/.test(code)) { const C = await import('./engine/cues.js'); const d = C.extract(code).doc; return d.cues.length ? C.toJSON(d) : null; } } catch (e) { /* cues are optional */ }
+  return null;
+}
+/* captions of a take: bar 1 of the program at 0 s minus the take start, tempo from the take (1 cycle = 1 bar) */
+async function takeVTT(r) {
+  if (!r.cues || !Array.isArray(r.cues.cues) || !r.cues.cues.length) return null; const C = await import('./engine/cues.js'); const d = C.fromJSON(r.cues);
+  const beats = +d.header.beats || 4; d.header.bpm = r.timing.cps * 60 * beats; d.header.offset = -r.timing.start / r.timing.cps; d.header.bars = undefined;
+  try { return C.toVTT(d); } catch (e) { return null; }
+}
 async function buildRecipe({ name, includes, timing, state, events, outputs = {} }) {
   const deps = await collectDeps(state ? state.source.code : '');
+  const cues = await takeCues(state); /* CraftCues (#163): the program's score cues ride with the take; the download writes a .vtt next to the wav */
   return { format: FORMAT, version: VERSION, id: newId(), name: await uniqueName(name), created: new Date().toISOString(), includes, timing,
     random: { seed: seed32(), note: 'Math.random is seeded with this value during offline renders (noise, random phases); Strudel rand is cycle-deterministic' },
-    state: includes.code ? state : null, events: includes.events || includes.code ? events || null : null, deps, outputs };
+    state: includes.code ? state : null, events: includes.events || includes.code ? events || null : null, deps, outputs, ...(cues ? { cues } : {}) };
 }
 
 /* Hook 2 (#76): addTake({name, L, R, sr, cps, cycles, from, code}) stores an audio-only take (Float32Array L, R) in the take store, e.g. the bounce of
@@ -798,6 +810,7 @@ async function download(id, fmt = 'recipe') {
   if (fmt === 'webm') { const w = rec.audio.webm; if (!w) { toast(WEBM_MIME ? 'This take has no compressed audio (only realtime takes with Audio ticked have it)' : 'This browser cannot record webm/opus (MediaRecorder)', { kind: 'info' }); return; } return saveBlob(w.blob, baseName(r) + (/ogg/.test(w.mime) ? '.ogg' : '.webm')); }
   const [k, a] = fmt === 'wav16' || fmt === 'wav24' ? bestAudio(rec) : [fmt, rec.audio[fmt]];
   if (!a) { toast('This take has no audio yet: Remake it first', { kind: 'info' }); return; }
+  takeVTT(r).then((v) => { if (v) saveBlob(new Blob([v], { type: 'text/vtt' }), baseName(r) + (k === 'capture' ? '' : '_' + k) + '.vtt'); });
   return saveBlob(encodeWav(a, fmt === 'wav24' || opts.bits === 24 && fmt !== 'wav16' ? 24 : 16, { name: r.name, created: r.created, comment: { recipe: r.id, output: k, sha256: (r.outputs[k] || rec.remake || {}).sha256, cps: r.timing.cps, cycles: r.timing.cycles } }), baseName(r) + (k === 'capture' ? '' : '_' + k) + '.wav');
 }
 

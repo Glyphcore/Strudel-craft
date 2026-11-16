@@ -174,6 +174,7 @@ export async function play(spec) {
     applyMode(r);
     if (H && R.scheduler.pattern) { const real = R.scheduler.pattern; R.scheduler.pattern = new window.Pattern((st) => H.within(A, () => real.query(st))); }
     state.phase = 'playing'; stats.plays++; sync(); startLoops();
+    try { window.dispatchEvent(new CustomEvent('qp:play', { detail: { key: spec.key, title: spec.title || '', code: spec.code } })); } catch (e) { /* no listener */ } /* CraftCues (#163): captions of an example that carries //@ cues */
   } catch (e) {
     if (me !== token) return;
     run = null; state.phase = 'idle'; state.key = null; state.error = e && e.message || String(e); sync(); restoreGlobals();

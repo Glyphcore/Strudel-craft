@@ -22,9 +22,9 @@ const loaded = {
 };
 ok('itemAliases lists [alias, id] pairs per kind', () => assert.deepEqual(itemAliases('recipes', loaded['a/one'].ingredients[0].data), [['old-name', 'new-name'], ['shared', 'new-name']]));
 const { resolution: R, errors } = resolve(layers, loaded);
-ok('no errors', () => assert.deepEqual(errors, []));
+ok('alias vs real id and cross-pack alias clashes are E_PACK_ALIAS_CONFLICT (three in this fixture), nothing else', () => { assert.deepEqual([...new Set(errors.map((e) => e.code))], ['E_PACK_ALIAS_CONFLICT']); assert.equal(errors.length, 3); });
 ok('a bare alias of a recipe resolves to the qualified item when nobody owns that id', () => assert.equal(R.recipes.shared.winner, 'a/one:new-name'));
-ok('the second claimant of an alias is listed as shadowed', () => assert.deepEqual(R.recipes.shared.shadowed, ['b/two:other']));
+ok('a clashing alias keeps its first claim only (no shadow list)', () => assert.deepEqual(R.recipes.shared.shadowed, []));
 ok('a real item id beats an alias of the same name (b/two defines old-name)', () => { assert.equal(R.recipes['old-name'].winner, 'b/two:old-name'); assert.ok(!R.recipes['old-name'].alias); });
 ok('a real id of one pack beats an alias of another (real)', () => assert.equal(R.recipes.real.winner, 'a/one:real'));
 ok('an atom alias resolves', () => assert.equal(R.atoms['hh.kickOld'].winner, 'a/one:hh.kickNew'));
@@ -51,6 +51,6 @@ ok('every catalog recipe id from origin/main is still a catalog id', () => {
   const before = JSON.parse(execSync('git show origin/main:site/data/catalog.json', { cwd: new URL('../../', import.meta.url).pathname, maxBuffer: 1 << 26 }).toString()).recipes.map((r) => r.id);
   const now = new Set(rd('site/data/catalog.json').recipes.map((r) => r.id)); for (const id of before) assert.ok(now.has(id), id);
 });
-{ const H = await import('../../site/packs-hooks.js'); const allow = new Set(['hpf']); const good = H.validate({ model: 1, defs: { a: { chain: [['hpf', 40]], folder: 'racks/drums', tags: ['drums', 'rack'], aliases: ['old-a'] } } }, allow); const bad = H.validate({ model: 1, defs: { a: { chain: [['hpf', 40]], folder: 'Bad Path' } } }, allow);
+{ const H = await import('../../site/packs-hooks.js'); const allow = new Set(['hpf']); const good = H.validate({ model: 1, defs: { a: { chain: [], folder: 'racks/drums', tags: ['drums', 'rack'], aliases: ['old-a'] } } }, allow); const bad = H.validate({ model: 1, defs: { a: { chain: [], folder: 'Bad Path' } } }, allow);
   assert.ok(!(good && (good.errors || good).length), JSON.stringify(good)); assert.ok(bad && (bad.errors || bad).length, 'bad folder must be reported'); n++; console.log('ok   packs-hooks validate: folder/tags/aliases accepted, bad folder refused'); }
 console.log(`${n} checks passed`);

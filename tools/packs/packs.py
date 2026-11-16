@@ -255,6 +255,10 @@ def validate_pack(root):
         for item, n in byid.items():
             if n > 1:
                 E.append(("E_PACK_ID", f"kind {kind}", f"item id {item!r} defined {n} times in one pack"))
+    for kind, als in (TAXONOMY.get("als") or {}).items():  # an alias is never an item id of the same kind (PACK_SPEC 9.3 rule 8)
+        for a, item in als.items():
+            if a in (TAXONOMY.get("ids") or {}).get(kind, set()):
+                E.append(("E_PACK_ALIAS_CONFLICT", f"kind {kind}", f"alias {a!r} of {item!r} is also an item id"))
     return E, W
 
 
@@ -340,11 +344,14 @@ def check_entry_taxonomy(kind, data, ing, E, W):
         its = [(n, d) for n, d in (data.get("defs") or {}).items() if isinstance(d, dict)]
     else:
         return
-    names = [i for i, _ in its]
+    ids, als = TAXONOMY.setdefault("ids", {}).setdefault(kind, set()), TAXONOMY.setdefault("als", {}).setdefault(kind, {})
     for item, it in its:
+        ids.add(item)
         for a in it.get("aliases") or []:
-            if a in names and a != item:
-                E.append(("E_PACK_ID", f"{ing['path']}#{item}", f"alias {a!r} is also an item id of this ingredient"))
+            if isinstance(a, str):
+                if als.get(a, item) != item:
+                    E.append(("E_PACK_ALIAS_CONFLICT", f"{ing['path']}#{item}", f"alias {a!r} is already an alias of {als[a]!r}"))
+                als[a] = item
         if vocab is not None:
             for t in it.get("tags") or []:
                 if isinstance(t, str) and TAG_RE.match(t) and t not in vocab:

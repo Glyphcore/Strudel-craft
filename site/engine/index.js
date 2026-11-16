@@ -40,7 +40,7 @@ sc.packHooks = {
     if (ids.length) { phSt.view = await sc.packs.get('hooks'); phSt.info = Object.fromEntries(sc.packs.list().flatMap((p) => p.ingredients.filter((i) => i.kind === 'hooks').map((i) => [p.id + ':' + i.id, i]))); } },
   install(code) { if (!sc.hooks || !phSt.mod) return null; const ids = phNamed(code); if (!ids.length && !phSt.defs.size) return null;
     phSt.allow ||= phSt.mod.chainable(globalThis.Pattern, phSt.steps); // reviewed allowlist (site/data/hooks-steps.json) narrowed to what Pattern.prototype has, built once
-    return phSt.mod.install(sc.hooks, phSt.view.filter((e) => ids.includes(e.pack)), phSt, phSt.info, (m) => sc.ui && sc.ui.toast(m, { kind: 'error', sticky: true }), { allow: phSt.allow }); },
+    return phSt.mod.install(sc.hooks, phSt.view.filter((e) => ids.includes(e.pack)), phSt, phSt.info, (m) => sc.ui && sc.ui.toast(m, { kind: 'error', sticky: true }), { allow: phSt.allow, text: String(code) }); },
   state: () => ({ defs: [...phSt.defs.keys()], refused: phSt.refused, invalid: phSt.invalid }),
 };
 // Record panel hook (#76): every offline render (exact, reference, Remake) runs the capture passes first, in dependency order. Registered once per page, at load, because the first

@@ -2,6 +2,7 @@
 // Imported lazily (engine/index.js sc.packHooks), only when a program names a pack that ships a hooks ingredient. Data only: nothing here evaluates text.
 // Defs are data (method chains with literal args). A def with `opaque: true` or a `$code` arg is code: never installed here, since this host has no
 // sandbox path that can express a hook def (the sandbox runs declared modules, not defs); it stays refused with the grant error and a visible notice.
+import { expandAliasDefs } from './engine/aliases.js';
 const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
 export const isCodeDef = (d) => !isObj(d) || d.opaque === true || JSON.stringify(d).includes('"$code"');
 const canon = (x) => JSON.stringify(x, (k, v) => (isObj(v) ? Object.fromEntries(Object.keys(v).sort().map((n) => [n, v[n]])) : v)); // toJSON sorts keys
@@ -136,6 +137,7 @@ export function install(H, entries, st, info = {}, notify = () => {}, opts = {})
       const key = q + '@' + (i.codeHash || ''); if (!st.told.has(key)) { st.told.add(key); notify(`${q}: ${bad.length} code-bearing hook def${bad.length > 1 ? 's' : ''} not loaded (${code}: this host runs no pack code for hooks); the chain-only defs are loaded`); }
     }
   }
+  { const ex = expandAliasDefs(Object.fromEntries(defs), opts.text); for (const [k, v] of Object.entries(ex.defs)) if (!defs.has(k)) defs.set(k, v); } // an old def name keeps working (PACK_SPEC 9.3 rule 8); one hint per alias the program uses
   const prev = st.defs || new Map();
   const gone = [...prev.keys()].filter((k) => !defs.has(k));
   if (gone.length) { let cur = {}; try { cur = JSON.parse(H.toJSON()).defs || {}; } catch (e) { cur = {}; } for (const k of gone) { if (same(cur[k], prev.get(k))) H.undef(k); } }

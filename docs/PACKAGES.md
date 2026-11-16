@@ -51,10 +51,10 @@ An **orphan** is an entry outside every pack manifest. Columns folder and tags c
 | groove | 9 | `site/engine/groove.js GROOVES (standard library)` | none | - | - | no | 0 | 0 | engine built-in, kept for --no-packs; every def is also in glyphcore/phonk:grooves (parity tested) |
 | perform preset | 4 | `site/data/perform/presets.json` | none | - | - | **yes** | 0 | 0 | pack kind perform-presets is coming (PACK_SPEC 5); no adapter yet |
 | layout | 4 | `site/workspace.js DEFAULTS` | none | - | - | **yes** | 0 | 0 | kind layouts has an adapter; content moves with P4 (#69) |
-| syntax example | 114 | `site/data/syntax.json` | `glyphcore/shim` | 1.0.0 | LicenseRef-undecided | no | 0 | 0 | kind syntax |
+| syntax example | 115 | `site/data/syntax.json` | `glyphcore/shim` | 1.0.0 | LicenseRef-undecided | no | 0 | 0 | kind syntax |
 | control type | 16 | `site/data/controls/types.json` | `glyphcore/shim` | 1.0.0 | LicenseRef-undecided | no | 0 | 0 | kind control-types |
 
-Totals: 762 entries; 273 in the real pack `glyphcore/phonk` (CC0-1.0); 210 in other real packs under site/data (glyphcore/edm, ...; CC0-1.0); 262 in the provisional `glyphcore/shim` pack (licence undecided, #66; replaced by `glyphcore/core` in P4, #69); 9 engine built-ins (groove standard library, duplicated in `glyphcore/phonk:grooves`); **8 orphans** outside every pack; 615 with a folder and 615 with tags in the pack data.
+Totals: 763 entries; 273 in the real pack `glyphcore/phonk` (CC0-1.0); 210 in other real packs under site/data (glyphcore/edm, ...; CC0-1.0); 263 in the provisional `glyphcore/shim` pack (licence undecided, #66; replaced by `glyphcore/core` in P4, #69); 9 engine built-ins (groove standard library, duplicated in `glyphcore/phonk:grooves`); **8 orphans** outside every pack; 615 with a folder and 615 with tags in the pack data.
 <!-- audit:end -->
 
 Reading the table:
@@ -90,8 +90,18 @@ a bad folder is `E_PACK_FOLDER`; a tag outside the pack's `taxonomy.tags` is `W_
 `taxonomy` in each manifest lists the tags that are used, each with a `group`, and the groups with a title; `taxonomy.priority` is roles first, then genre, feel, tempo, mood, technique, status.
 
 ## 5. Aliases
-`aliases: ["old-id"]` on a recipe, atom or hook def (and `meta.aliases` on a library component). `packs-core.resolve` adds `resolution[kind][alias] = { winner, shadowed, alias: true }` for every alias no item of that kind owns.
-Use it when an entry is renamed or moves between packs (for example the catalog moving from `glyphcore/shim` to `glyphcore/core` keeps every bare id). Test: `node tests/packs/aliases.mjs`.
+`aliases: ["old-id"]` on a recipe, atom or hook def (and `meta.aliases` on a library component). An old name behaves exactly like the new one **where it is used**, with one deprecation hint per alias naming the new id (console and toast on the site, a stderr line in the CLI), never an error:
+
+| consumer | what resolves | where |
+|---|---|---|
+| atoms engine (site and CLI) | `atoms.zz.oldkick` compiles as `atoms.zz.newkick` (also with `{ as }`) | `site/engine/atoms.js` buildEnv / toRef |
+| hook defs | `.hook("oldRack")`, `hooks.bind(slot, "oldRack")` | `site/packs-hooks.js` install (site), `lib/engine.mjs` `--hooks FILE` (CLI), both via `engine/aliases.js` `expandAliasDefs` |
+| recipe ids | `#r/old-id` (link is rewritten), `pack:author/pack:old-id` (CLI) | `site/app.js` byId / route, `lib/packs.mjs` findRecipe |
+| library components | `get("old")`, `lib:old@1` | `site/library.js`, CLI `lib/library.mjs` (`strudel library save --aliases a,b`) |
+| resolution report | `resolution[kind][alias] = { winner, alias: true }` | `site/engine/packs-core.js` |
+
+Collisions are validation errors, `E_PACK_ALIAS_CONFLICT`: an alias equal to an item id of the same kind (`packs validate` inside a pack, the loader report across packs) or one alias claimed for two items; the clashing alias is not registered and the real id wins.
+Use it when an entry is renamed or moves between packs (for example the catalog moving from `glyphcore/shim` to `glyphcore/core`). Test: `node tests/packs/alias_e2e.mjs` (pack `zed/alias`: atom, hook def, recipe, library; site modules and CLI `strudel events`), `node tests/packs/aliases.mjs`.
 
 ## 6. Appearance by tag
 `site/engine/taxonomy.js` resolves a style `{ color, icon, pattern?, badge? }` for tags, entries and folders; the chain and the palette are specified in PACK_SPEC 5.3.
@@ -102,12 +112,12 @@ Use it when an entry is renamed or moves between packs (for example the catalog 
 - **User override**: Folders and tags > Appearance opens the site modal: pick the tag or folder, a colour from the fixed set, an icon and a pattern; stored in `localStorage sc.taxonomy` `styles` and exported with the rest.
 
 ## 7. UI, deep links, CLI
-- Recipes (`site/organizer.js`, mounted in `app.js`), Syntax (`syntax.js`) and Banks (`voxbrowser.js`) share one organizer: collapsible folder tree with counts, breadcrumbs, tag chips with Match all / any, sort (catalog, name, folder, pack),
+- **Built:** Recipes (`site/organizer.js`, mounted in `app.js`), Syntax (`syntax.js`) and Banks (`voxbrowser.js`) share one organizer: collapsible folder tree with counts, breadcrumbs, tag chips with Match all / any, sort (catalog, name, folder, pack),
   search over names, tags and folder paths, a pack badge on every row, targets of 44 px at 390 px. Presses never focus or scroll the editor (#107). The state persists (`sc.org.<view>`).
 - Deep links: `#folder=hiphop/trap&tag=drums,kick&mode=or` (Recipes). A `#r/<id>` link is not combined with a filter link.
-- User organization: Inspector > Folder and tags (site modal) moves a recipe to a folder and adds your tags; Folders and tags > New folder, Appearance, Export, Import. The document is `taxonomy@1`
-  (`{ folders[], entries{"recipe!id": {folder, tags}}, styles{} }`); the same keys serve takes (`take!id`), library components (`component!name`) and atoms (`atom!name`) through `strudelCraft.taxonomyStore`
-  (`move`, `tag`, `setStyle`, `exportJSON`, `importJSON`). The Perform view and the Atoms browser do not render the tree yet (those files are being changed by other work); the data and the API are in place.
+- User organization (built for recipes): Inspector > Folder and tags (site modal) moves a recipe to a folder and adds your tags; Folders and tags > New folder, Appearance, Export, Import. The document is `taxonomy@1`
+  (`{ folders[], entries{"recipe!id": {folder, tags}}, styles{} }`) in `localStorage sc.taxonomy`.
+- **Not built (#135, tree UI for Library components, Perform takes and the Atoms browser)**: the store already accepts the keys `take!id`, `component!name`, `atom!name` (`strudelCraft.taxonomyStore`), but no tree, chips or edit modal is mounted on those views yet.
 - CLI (in `engine/strudel-cli` of the suno-track-lab checkout, same rules as the site, `$STRUDEL_CRAFT/site/engine/taxonomy.js`): `strudel packs list --folder hiphop/trap --tag drums [--any-tag a,b]`,
   `strudel library list --library DIR --tag drums`, `strudel complete tag:dr` (tags and folders with counts). Test: `node tests/packs/cli_taxonomy.mjs`.
 

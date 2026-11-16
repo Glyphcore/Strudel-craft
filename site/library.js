@@ -2,6 +2,7 @@
 // Standalone ES module; storage goes through ./library-store.js. Errors carry `.code` (E_COMPONENT_REQUIRES, _HASH, _CYCLE, ...).
 import { hash as modelHash } from './model.js';
 import { defaultStore } from './library-store.js';
+import { aliasHint } from './engine/aliases.js';
 
 const clone = (v) => (v === undefined ? v : JSON.parse(JSON.stringify(v)));
 const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
@@ -26,7 +27,7 @@ export const verify = (rec, ref) => {
   return rec;
 };
 
-const byAlias = (store, name, rev) => { const m = store.list().find((x) => (x.aliases || []).includes(name)); return m ? store.get(m.name, rev) : undefined; };
+const byAlias = (store, name, rev) => { const m = store.list().find((x) => (x.aliases || []).includes(name)); if (m) aliasHint('component', name, m.name); return m ? store.get(m.name, rev) : undefined; };
 
 export function createLibrary(store = defaultStore()) {
   const lib = {

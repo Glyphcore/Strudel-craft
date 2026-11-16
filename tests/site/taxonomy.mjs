@@ -70,9 +70,12 @@ const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, de
 const page = await ctx.newPage();
 page.on('console', (m) => { if (m.type() === 'error' && !/rate limit|403|Failed to load resource/.test(m.text())) errors.push(m.text()); }); page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
 let nativeDialog = 0; page.on('dialog', (d) => { nativeDialog++; d.dismiss(); });
+/* real touch: CDP Input.dispatchTouchEvent through page.touchscreen.tap at the element's centre (not a synthetic mouse click) */
+let touches = 0; page.on('console', () => {}); await page.addInitScript(() => { window.__touch = 0; addEventListener('touchstart', () => { window.__touch++; }, true); });
+const tap = async (sel) => { const e = await page.waitForSelector(sel, { state: 'visible', timeout: 15000 }); await e.evaluate((x) => x.scrollIntoView({ block: 'center' })); await page.waitForTimeout(40); const b = await e.boundingBox(); /* centred: the fixed transport bar covers the bottom 84 px */ await page.touchscreen.tap(b.x + b.width / 2, b.y + b.height / 2); touches++; };
 const ready = async (hash = '') => { await page.goto(BASE + hash, { waitUntil: 'load' }); await page.waitForSelector('#org .org', { timeout: 20000 }); await page.waitForFunction(() => document.querySelectorAll('#list li[data-id]').length > 0 || document.querySelector('#list .empty'), null, { timeout: 20000 }); };
 const count = () => page.evaluate(() => { const m = document.getElementById('count').textContent.match(/(\d+) \/ (\d+)/); return { shown: +m[1], total: +m[2] }; });
-const openOrg = async () => { if (!(await page.$eval('#org .org', (d) => d.open))) await page.click('#org .org summary'); };
+const openOrg = async () => { if (!(await page.$eval('#org .org', (d) => d.open))) await tap('#org .org summary'); };
 await page.addInitScript(() => { if (!sessionStorage.getItem('__t')) { sessionStorage.setItem('__t', '1'); localStorage.clear(); } });
 await ready(); await openOrg();
 const total = (await count()).total;
@@ -81,25 +84,25 @@ const rows = await page.$$eval('#org .org-node', (n) => n.map((x) => ({ p: x.dat
 check('folder tree: root "All" counts every recipe and the top folders add up to it', rows[0].p === '' && rows[0].n === total && rows.slice(1).reduce((a, r) => a + r.n, 0) === total, JSON.stringify(rows));
 check('folder tree has the expected top folders with counts', ['dovetail', 'groove', 'hiphop', 'phonk', 'strudel'].every((f) => rows.some((r) => r.p === f && r.n > 0)), rows.map((r) => r.p).join());
 // expand + select
-await page.click('#org .org-node[data-path="hiphop"] .org-tgl'); await page.waitForSelector('#org .org-node[data-path="hiphop/trap"]');
-await page.click('#org .org-node[data-path="hiphop/trap"] .org-sel');
+await tap('#org .org-node[data-path="hiphop"] .org-tgl'); await page.waitForSelector('#org .org-node[data-path="hiphop/trap"]');
+await tap('#org .org-node[data-path="hiphop/trap"] .org-sel');
 const afterFolder = await count(); const trapN = await page.$eval('#org .org-node[data-path="hiphop/trap"] .org-n', (e) => +e.textContent);
 check('selecting a folder filters the list to its count', afterFolder.shown === trapN && trapN > 0 && trapN < total, JSON.stringify(afterFolder) + ' ' + trapN);
 check('breadcrumbs show the path and "All" clears back', await page.$$eval('.org-crumbs .org-crumb', (b) => b.map((x) => x.textContent.trim()).filter((t) => t && t !== 'Clear').join('>')) === 'All>hiphop>trap');
 check('the URL carries the folder (#folder=)', (await page.evaluate(() => location.hash)).includes('folder=hiphop/trap'), await page.evaluate(() => location.hash));
 await page.screenshot({ path: path.join(OUT, 'phone-390-folders-tree.png') });
 // tags AND / OR
-await page.click('.org-crumbs .org-clear'); await page.click('#org .org-more'); check('the chip bar shows the most used tags and All N tags reveals the rest', (await page.$$('#org .org-chip')).length > 20);
-await page.click('#org .org-chip[data-tag="trap"]'); const nTrap = (await count()).shown;
-await page.click('#org .org-chip[data-tag="drums"]'); const nAnd = (await count()).shown;
-await page.click('#org .org-mode'); const nOr = (await count()).shown;
+await tap('.org-crumbs .org-clear'); await tap('#org .org-more'); check('the chip bar shows the most used tags and All N tags reveals the rest', (await page.$$('#org .org-chip')).length > 20);
+await tap('#org .org-chip[data-tag="trap"]'); const nTrap = (await count()).shown;
+await tap('#org .org-chip[data-tag="drums"]'); const nAnd = (await count()).shown;
+await tap('#org .org-mode'); const nOr = (await count()).shown;
 check('tag chips filter; AND narrows, OR widens (trap, trap+drums AND, trap+drums OR)', nTrap > 0 && nAnd > 0 && nAnd <= nTrap && nOr >= nTrap && nOr > nAnd, `${nTrap} ${nAnd} ${nOr}`);
 check('the mode switch is a switch with its state', (await page.$eval('#org .org-mode', (b) => [b.getAttribute('role'), b.getAttribute('aria-checked')])).join() === 'switch,true');
 check('the URL carries tags and the OR mode', /tag=trap,drums/.test(await page.evaluate(() => location.hash)) && /mode=or/.test(await page.evaluate(() => location.hash)));
-await page.click('#org .org-mode'); await page.click('.org-crumbs .org-clear');
+await tap('#org .org-mode'); await tap('.org-crumbs .org-clear');
 check('Clear restores every recipe', (await count()).shown === total);
 // search over name, tag and folder path
-const q = async (s) => { await page.fill('#q', s); await page.waitForTimeout(60); return (await count()).shown; };
+const q = async (s) => { await tap('#q'); await page.keyboard.press('Control+A'); await page.keyboard.press('Backspace'); if (s) await page.keyboard.type(s); await page.waitForTimeout(80); return (await count()).shown; };
 const byName = await q('trap beat'), byFolder = await q('hiphop trap drums'), byTag = await q('half time'), none = await q('qqqzzz'); await q('');
 check('search matches names, tags and folder paths', byName >= 1 && byFolder >= 2 && byTag >= 1 && none === 0, `${byName} ${byFolder} ${byTag} ${none}`);
 // sort
@@ -126,40 +129,40 @@ check('all organizer targets are at least 44 x 44 px', small.length === 0, JSON.
 check('no horizontal overflow at 390 px', await page.evaluate(() => document.documentElement.scrollWidth <= 390 + 1), await page.evaluate(() => String(document.documentElement.scrollWidth)));
 // press does not scroll the editor (#107)
 const before = await page.evaluate(() => ({ st: document.querySelector('.cm-scroller')?.scrollTop ?? document.getElementById('code').scrollTop, ae: document.activeElement && document.activeElement.id }));
-await page.click('#org .org-chip[data-tag="drums"]'); await page.click('#org .org-chip[data-tag="drums"]');
+await tap('#org .org-chip[data-tag="drums"]'); await tap('#org .org-chip[data-tag="drums"]');
 const after = await page.evaluate(() => ({ st: document.querySelector('.cm-scroller')?.scrollTop ?? document.getElementById('code').scrollTop, ae: document.activeElement && document.activeElement.id }));
 check('pressing chips and tree rows neither scrolls the editor nor focuses it (#107)', before.st === after.st && after.ae !== 'code', JSON.stringify([before, after]));
 // persistence
-await page.click('#org .org-node[data-path="dovetail"] .org-sel'); await page.click('#org .org-chip[data-tag="transition"]');
+await tap('#org .org-node[data-path="dovetail"] .org-sel'); await tap('#org .org-chip[data-tag="transition"]');
 const st1 = await count(); await page.reload({ waitUntil: 'load' }); await page.waitForSelector('#org .org-crumb'); await page.waitForFunction(() => document.querySelectorAll('#list li[data-id]').length > 0);
 check('folder and tag filters persist across a reload', (await count()).shown === st1.shown && (await page.$eval('#org .org-crumbs', (c) => !c.hidden)), JSON.stringify(st1));
 await ready('#folder=hiphop/trap&tag=drums'); const dl = await count();
 check('a deep link #folder=...&tag=... applies on load', dl.shown > 0 && dl.shown < total && (await page.$$eval('.org-crumbs .org-crumb', (b) => b.map((x) => x.textContent.trim()).join('>'))).includes('hiphop>') , JSON.stringify(dl));
 await page.screenshot({ path: path.join(OUT, 'phone-390-folders-chips.png') });
-await page.click('.org-crumbs .org-clear');
+await tap('.org-crumbs .org-clear');
 // edit folder + tags of a recipe through the modal
-await page.click('#list li[data-id="four-on-the-floor"] .row'); await page.waitForSelector('.org-insp');
-await page.click('.org-insp >> text=Folder and tags'); await page.waitForSelector('dialog.scm[open] .org-form');
+await tap('#list li[data-id="four-on-the-floor"] .row'); await page.waitForSelector('.org-insp');
+await tap('.org-insp >> text=Folder and tags'); await page.waitForSelector('dialog.scm[open] .org-form');
 await page.screenshot({ path: path.join(OUT, 'phone-390-folders-edit.png') });
 await page.fill('dialog.scm input[list]', 'my/set'); await page.fill('dialog.scm .org-f:nth-of-type(2) input', 'My Fave, dark');
-await page.click('dialog.scm .scm-ok'); await page.waitForSelector('dialog.scm', { state: 'detached' });
-await page.fill('#q', 'my-fave'); await page.waitForTimeout(80);
+await tap('dialog.scm .scm-ok'); await page.waitForSelector('dialog.scm', { state: 'detached' });
+await q('my-fave');
 check('move-to-folder and tag edit (site modal): the recipe is found by its new tag and sits in the new folder', (await count()).shown === 1 && (await page.$eval('#list li[data-id="four-on-the-floor"] .sub', (s) => s.textContent)).includes('my/set'));
-await page.fill('#q', ''); await page.waitForTimeout(60);
+await q('');
 check('the new folder shows in the tree with count 1 and the edit used no native dialog', (await page.$$eval('#org .org-node[data-path="my"]', (n) => n.length)) === 1 && nativeDialog === 0);
 await page.reload({ waitUntil: 'load' }); await page.waitForSelector('#org .org'); await page.waitForFunction(() => document.querySelectorAll('#list li[data-id]').length > 0);
 check('the user folder and tags persist after a reload', (await page.evaluate(() => JSON.parse(localStorage.getItem('sc.taxonomy')).entries['recipe!four-on-the-floor'])).folder === 'my/set');
 // bad folder is refused with a toast, the modal stays
-await page.click('#list li[data-id]:first-child .row'); await page.click('.org-insp >> text=Folder and tags'); await page.waitForSelector('dialog.scm[open] .org-form');
-await page.fill('dialog.scm input[list]', 'Bad//Path!'); await page.click('dialog.scm .scm-ok'); await page.waitForTimeout(150);
+await tap('#list li[data-id]:first-child .row'); await tap('.org-insp >> text=Folder and tags'); await page.waitForSelector('dialog.scm[open] .org-form');
+await page.fill('dialog.scm input[list]', 'Bad//Path!'); await tap('dialog.scm .scm-ok'); await page.waitForTimeout(150);
 check('a malformed folder is normalised or refused, never stored raw', await page.evaluate(() => { const d = JSON.parse(localStorage.getItem('sc.taxonomy')); return Object.values(d.entries).every((e) => e.folder === undefined || /^[a-z0-9][a-z0-9-]*(\/[a-z0-9][a-z0-9-]*)*$/.test(e.folder)); }));
-await page.keyboard.press('Escape').catch(() => {}); await page.waitForTimeout(100); if (await page.$('dialog.scm[open]')) await page.click('dialog.scm .scm-acts .ghost');
+await page.keyboard.press('Escape').catch(() => {}); await page.waitForTimeout(100); if (await page.$('dialog.scm[open]')) await tap('dialog.scm .scm-acts .ghost');
 // appearance override persists, exports and imports
-await openOrg(); await page.click('#org .org-acts >> text=Appearance'); await page.waitForSelector('dialog.scm[open] .org-sw');
-await page.selectOption('dialog.scm select', 'drums'); await page.click('dialog.scm .org-swb[data-c="lime"]'); await page.click('dialog.scm .org-swb[data-i="vox"]'); await page.click('dialog.scm .org-swb[data-p="stripe"]');
+await openOrg(); await tap('#org .org-acts >> text=Appearance'); await page.waitForSelector('dialog.scm[open] .org-sw');
+await page.selectOption('dialog.scm select', 'drums'); await tap('dialog.scm .org-swb[data-c="lime"]'); await tap('dialog.scm .org-swb[data-i="vox"]'); await tap('dialog.scm .org-swb[data-p="stripe"]');
 await page.screenshot({ path: path.join(OUT, 'phone-390-folders-appearance.png') });
 const swSize = await page.$$eval('dialog.scm .org-swb', (b) => b.map((x) => { const r = x.getBoundingClientRect(); return Math.min(r.width, r.height); }).filter((v) => v < 44).length);
-await page.click('dialog.scm .scm-ok'); await page.waitForSelector('dialog.scm', { state: 'detached' });
+await tap('dialog.scm .scm-ok'); await page.waitForSelector('dialog.scm', { state: 'detached' });
 const ov = await page.$eval('#org .org-chip[data-tag="drums"] .tx-ico', (e) => [e.dataset.color, e.dataset.icon, e.dataset.pattern, e.dataset.tx]);
 check('appearance dialog: palette and icon choices are 44 px targets; applying restyles the chip (lime, vox, stripe, source user)', swSize === 0 && ov.join() === 'lime,vox,stripe,user', swSize + ' ' + ov.join());
 check('a folder whose dominant tag is drums changes with the override (same tag, same look)', await page.evaluate(() => { const n = document.querySelector('#org .org-node[data-path="strudel"] .tx-ico'); return n && n.dataset.color === 'lime'; }));
@@ -167,7 +170,7 @@ await page.reload({ waitUntil: 'load' }); await page.waitForSelector('#org .org'
 check('the appearance override persists after a reload', (await page.$eval('#org .org-chip[data-tag="drums"] .tx-ico', (e) => e.dataset.color)) === 'lime');
 const exported = await page.evaluate(() => window.strudelCraftExport = window.strudelCraft.taxonomyStore.exportJSON()); const exp = JSON.parse(exported);
 check('the JSON export holds folders, entry folders/tags and the appearance override (format taxonomy@1)', exp.format === 'taxonomy@1' && exp.styles.drums.color === 'lime' && exp.entries['recipe!four-on-the-floor'].tags.includes('my-fave') && exp.folders.includes('my/set'));
-const dl2 = page.waitForEvent('download'); await page.click('#org .org-acts >> text=Export'); const dlf = await dl2; check('Export downloads a .json file', /\.json$/.test(dlf.suggestedFilename()));
+const dl2 = page.waitForEvent('download'); await tap('#org .org-acts >> text=Export'); const dlf = await dl2; check('Export downloads a .json file', /\.json$/.test(dlf.suggestedFilename()));
 await page.evaluate(() => window.strudelCraft.taxonomyStore.clear()); await page.waitForTimeout(80);
 check('clearing the store removes the override (chip back to the pack colour)', (await page.$eval('#org .org-chip[data-tag="drums"] .tx-ico', (e) => e.dataset.color)) !== 'lime');
 const imp = await page.evaluate((j) => { const r = window.strudelCraft.taxonomyStore.importJSON(j); return r.ok; }, exported); await page.waitForTimeout(80);
@@ -180,13 +183,38 @@ await page.evaluate(() => document.documentElement.removeAttribute('data-theme')
 // Syntax organizer
 await page.evaluate(() => window.__sc.setView('syntax')); await page.waitForSelector('#syntax .org', { timeout: 15000 });
 const sx0 = await page.$$eval('#syntax .sx-sec:not([hidden])', (s) => s.length);
-await page.click('#syntax .org summary'); const tg = await page.$('#syntax .org-chip[data-tag="coming"]');
-if (tg) { await tg.click(); } const sx1 = await page.$$eval('#syntax .sx-sec:not([hidden])', (s) => s.length);
+await tap('#syntax .org summary'); const tg = await page.$('#syntax .org-chip[data-tag="coming"]');
+if (tg) { await tap('#syntax .org-chip[data-tag="coming"]'); } const sx1 = await page.$$eval('#syntax .sx-sec:not([hidden])', (s) => s.length);
 check('Syntax view: the organizer filters sections by tag (coming)', sx0 > 0 && (!tg || sx1 < sx0 || sx1 === 0), `${sx0} -> ${sx1}`);
 await page.screenshot({ path: path.join(OUT, 'phone-390-folders-syntax.png') });
 // Banks organizer
 const banks = await page.evaluate(async () => { const m = await import('./voxbrowser.js'); const d = document.createElement('div'); document.body.append(d); await m.mount(d); await new Promise((r) => setTimeout(r, 1500)); return { org: !!d.querySelector('.org'), cards: d.querySelectorAll('.vb-card').length }; });
 check('Banks browser: the organizer mounts and lists the bank cards', banks.org && banks.cards >= 1, JSON.stringify(banks));
+
+// the OR deep link, real touch
+await ready('#folder=hiphop&tag=drums,bass&mode=or'); const orN = (await count()).shown;
+await ready('#folder=hiphop&tag=drums,bass'); const andN = (await count()).shown;
+check('a #...&mode=or deep link loads in OR mode (switch on, wider than AND)', orN > andN && andN >= 0, `${orN} > ${andN}`);
+await ready('#folder=hiphop&tag=drums,bass&mode=or'); await openOrg();
+check('the OR deep link shows the switch on', await page.$eval('#org .org-mode', (b) => b.getAttribute('aria-checked')) === 'true');
+// computed-colour sampling: first 10 folder boxes and first 10 chips, ink on tint and label on its surface, both themes
+const sample = async (theme) => { await page.evaluate((th) => { th === 'dark' ? document.documentElement.removeAttribute('data-theme') : document.documentElement.setAttribute('data-theme', th); }, theme); await page.waitForTimeout(100);
+  return page.evaluate(() => { const rgba = (s) => { const m = s.match(/[\d.]+/g).map(Number); return [m[0], m[1], m[2], m[3] ?? 1]; }; const lum = ([r, g, b]) => { const f = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
+    const over = (t, b) => [t[0] * t[3] + b[0] * (1 - t[3]), t[1] * t[3] + b[1] * (1 - t[3]), t[2] * t[3] + b[2] * (1 - t[3]), 1];
+    const bgOf = (e) => { const L = []; for (let x = e; x; x = x.parentElement) { const c = rgba(getComputedStyle(x).backgroundColor); if (c[3] > 0) { L.push(c); if (c[3] >= 1) break; } } let b = [255, 255, 255, 1]; for (const c of L.reverse()) b = over(c, b); return b; };
+    const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+    const els = [...[...document.querySelectorAll('#org .org-node .tx-ico')].slice(0, 10), ...[...document.querySelectorAll('#org .org-chip .tx-ico')].slice(0, 10)];
+    const labels = [...[...document.querySelectorAll('#org .org-node .org-name')].slice(0, 10), ...[...document.querySelectorAll('#org .org-chip > span:not(.tx-ico)')].slice(0, 10)];
+    let min = 99, worst = ''; for (const e of els) { const fg = rgba(getComputedStyle(e).color), bg = bgOf(e); const r = ratio(over(fg, bg), bg); if (r < min) { min = r; worst = e.dataset.color + ' ico'; } }
+    for (const e of labels) { const fg = rgba(getComputedStyle(e).color), bg = bgOf(e); const r = ratio(over(fg, bg), bg); if (r < min) { min = r; worst = e.textContent.trim().slice(0, 14) + ' label'; } }
+    return { n: els.length + labels.length, min: +min.toFixed(2), worst, theme: document.documentElement.dataset.theme || 'dark' }; }); };
+await tap('#org .org-more').catch(() => {});
+for (const th of ['dark', 'light']) { const s = await sample(th); check(`computed colours of 10 folder boxes, 10 chips and their labels are AA in the ${th} theme`, s.n >= 18 && s.min >= 4.5, JSON.stringify(s)); }
+await page.evaluate(() => document.documentElement.removeAttribute('data-theme'));
+// alias: an older recipe id opens the recipe it became, with one hint (site recipe lookup)
+const al = await page.evaluate(async () => { const S = window.__sc.S; S.recipes.find((r) => r.id === 'four-on-the-floor').aliases = ['four-old']; location.hash = '#r/four-old'; await new Promise((r) => setTimeout(r, 400)); return { hash: location.hash, toast: [...document.querySelectorAll('.toast')].map((x) => x.textContent).join('|') }; });
+check('site: #r/<old id> opens the new recipe, rewrites the link, and hints once', al.hash === '#r/four-on-the-floor' && /four-old.*four-on-the-floor/.test(al.toast), JSON.stringify(al));
+check('every tap in this test was a real touch event (CDP touchstart seen by the page)', touches > 20 && (await page.evaluate(() => window.__touch)) > 3, `${touches} taps, page saw ${await page.evaluate(() => window.__touch)}`);
 check('no native alert/prompt/confirm was opened', nativeDialog === 0);
 check('no console errors or page errors', errors.length === 0, errors.slice(0, 4).join(' | '));
 await browser.close(); server.close();

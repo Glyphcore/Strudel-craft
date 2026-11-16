@@ -4,6 +4,7 @@
 // Pipeline order on the site and in the CLI: atoms.compile -> control-site rewrite -> Strudel transpiler.
 import * as acorn from '../vendor/acorn-8.19.0.mjs';
 import { hash as modelHash } from '../model.js';
+import { aliasHint } from './aliases.js';
 import { parseSelector } from './lanes.js'; // the lanes selector grammar validates `selector` atoms (docs/LANES.md section 3)
 
 // ---------------------------------------------------------------- errors, positions
@@ -131,7 +132,7 @@ function declOf(code, d, atOverride) {
 // (the model copy is the previous reconciliation of the same code); two code declarations of one name raise E_ATOM_REDEFINED.
 export function buildEnv(code, extra = {}, opts = {}) {
   const diag = opts.diag, sc = /\batoms?\b/.test(code) ? scan(code) : { decls: [], imports: [], sites: [] };
-  const byName = new Map(), byId = new Map(); const bad = (e) => { if (!diag) throw e; diag.push(e); };
+  const byName = new Map(), byId = new Map(), aliasOf = new Map(); const bad = (e) => { if (!diag) throw e; diag.push(e); };
   const put = (r) => { byName.set(r.name, r); if (r.id) byId.set(r.id, r); };
   for (const [id, a] of Object.entries(extra.atoms || {})) put({ ...a, id, origin: 'model' });
   for (const im of sc.imports) {
@@ -140,7 +141,7 @@ export function buildEnv(code, extra = {}, opts = {}) {
       withAt(at, () => {
         const [s, o] = im.node.arguments.map(sv); const set = extra.imports?.[s];
         if (!set) throw err('E_ATOM_UNKNOWN', `import "${s}" is not provided`);
-        const ns = o?.as; for (const [id, a] of Object.entries(set)) put({ ...a, id, name: ns ? `${ns}.${a.name}` : a.name, origin: 'import' });
+        const ns = o?.as; for (const [id, a] of Object.entries(set)) { const r = { ...a, id, name: ns ? `${ns}.${a.name}` : a.name, origin: 'import' }; put(r); for (const al of Array.isArray(a.aliases) ? a.aliases : []) aliasOf.set(ns ? `${ns}.${al}` : al, r); } // an older name of the atom (PACK_SPEC 9.3 rule 8): resolves to it, with one deprecation hint
       });
     } catch (e) { if (e instanceof AtomError) bad(e); else throw e; }
   }
@@ -153,7 +154,8 @@ export function buildEnv(code, extra = {}, opts = {}) {
   }
   const cache = new Map(); // catalog atoms synthesised on reference (ATOMS section 2, decision 7); not part of byName, never enumerated
   const synth = (k) => { if (typeof k !== 'string') return undefined; if (!cache.has(k)) cache.set(k, catalogAtom(k)); return cache.get(k); };
-  const env = { byName, byId, decls, synth, get: (k) => byName.get(k) || byId.get(k) || synth(k) };
+  const viaAlias = (k) => { const r = typeof k === 'string' && !byName.has(k) ? aliasOf.get(k) : undefined; if (r) aliasHint('atom', k, r.name); return r; }; // a real name always wins over an alias
+  const env = { byName, byId, decls, synth, alias: viaAlias, aliases: aliasOf, get: (k) => byName.get(k) || byId.get(k) || viaAlias(k) || synth(k) };
   for (const r of byName.values()) deepFreeze(r);
   return Object.freeze(env);
 }
@@ -180,7 +182,7 @@ export function toRef(env, v) { // { $segs } (code) | { $atom } (model) | name s
   const segs = v?.$segs; if (!segs) throw err('E_ATOM_TYPE', 'not an atom reference');
   const props = []; for (const s of segs) { if (s.prop === undefined) break; props.push(s.prop); }
   let k = props.length, rec = null;
-  for (; k > 0; k--) { rec = env.byName.get(props.slice(0, k).join('.')) || env.synth(props.slice(0, k).join('.')); if (rec) break; }
+  for (; k > 0; k--) { rec = env.byName.get(props.slice(0, k).join('.')) || env.alias(props.slice(0, k).join('.')) || env.synth(props.slice(0, k).join('.')); if (rec) break; }
   if (!rec) throw err('E_ATOM_UNKNOWN', `unknown atom "atoms.${props.join('.')}"`);
   let j = k, args = {};
   if (segs[k]?.call) { args = segs[k].call[0] || {}; if (!isObj(args) || segs[k].call.length > 1) throw err('E_ATOM_ARG', `atoms.${rec.name}(...) takes one { name: value } object`); j = k + 1; }

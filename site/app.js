@@ -235,7 +235,9 @@ const S = {
 S.stack = Array.isArray(S.stack) ? S.stack.filter((l) => l && typeof l.id === 'string') : [];
 Bus.db = S.master;
 const cur = () => S.filtered[S.sel] || null;
-const byId = (id) => S.recipes.find((r) => r.id === id);
+/* an older recipe id (aliases[], PACK_SPEC 9.3 rule 8) opens the recipe it became, with one hint */
+const byId = (id) => S.recipes.find((r) => r.id === id) || aliasRecipe(id);
+function aliasRecipe(id) { const r = S.recipes.find((x) => (x.aliases || []).includes(id)); if (r) aliasHint('recipe', id, r.id); return r; }
 
 /* undo/redo for knobs and stack edits (code edits use the textarea's own undo) */
 const History = {
@@ -566,6 +568,10 @@ function bindApply(view, prep) {
 }
 function liveUpdate() { liveCode(playView()); }
 
+/* alias hints (engine/aliases.js, a module; app.js is a classic script): queued until the module is there */
+let AL = null; const ALQ = [];
+const aliasHint = (...a) => (AL ? AL.aliasHint(...a) : ALQ.push(a));
+import('./engine/aliases.js').then((m) => { AL = m; m.setAliasSink((s) => { console.warn(s); window.strudelCraft.ui && window.strudelCraft.ui.toast(s, { kind: 'info', ms: 6000 }); }); ALQ.splice(0).forEach((a) => m.aliasHint(...a)); }).catch(() => {});
 /* ---------- browser ---------- */
 const norm = (s) => s.toLowerCase();
 /* folders and tags (site/organizer.js, docs/PACKAGES.md): the effective entry of a recipe (pack folder and tags, plus the user's own); the organizer loads after the first frame */
@@ -582,7 +588,8 @@ function matches(r) {
 }
 /* packs (#67): recipes from a non-core pack carry a pack-id badge; the pack sheet (packs-ui.js) loads on first open */
 function foreignPacks() { const P = window.strudelCraft.packs, out = new Set(); try { for (const p of P ? P.list() : []) if (p.tier !== 'core') out.add(p.id); } catch (e) { /* loader not ready */ } return out; }
-let packsUiTries = 0; /* a failed import is retried as a fresh fetch ('?retry=n'), see lazyView */
+let packsUiTries = 0; /* a failed import 
+import is retried as a fresh fetch ('?retry=n'), see lazyView */
 const openPacks = (o) => import('./packs-ui.js' + (packsUiTries ? '?retry=' + packsUiTries : '')).then((m) => m.open(o)).catch((e) => { packsUiTries++; console.error('[lazy] packs-ui.js: ' + e.message); window.strudelCraft.ui.toast('The pack sheet could not load (packs-ui.js). Check the connection, then retry.', { kind: 'error', sticky: true, action: { label: 'Retry', run: () => openPacks(o) } }); });
 function renderList(keepId) {
   const prevId = keepId || (cur() && cur().id);
@@ -787,7 +794,7 @@ function route() {
   const h = decodeURIComponent(location.hash.slice(1));
   if (VIEWS.includes(h)) return setView(h, { push: false });
   if (h.startsWith('code/')) { setView('rack', { push: false }); Promise.resolve(window.strudelCraft.booted).then(() => window.strudelCraft.copycode && window.strudelCraft.copycode.loadHash('#' + h)); return; } /* shared code link (copycode.js, loaded after the shell: #59) */
-  const id = h.startsWith('r/') ? h.slice(2) : h;
+  let id = h.startsWith('r/') ? h.slice(2) : h; { const al = S.recipes.some((r) => r.id === id) ? null : aliasRecipe(id); if (al) { id = al.id; history.replaceState(null, '', '#r/' + id); } }
   const i = S.filtered.findIndex((r) => r.id === id);
   setView('rack', { push: false }); if (i >= 0) select(i, { audition: false });
 }

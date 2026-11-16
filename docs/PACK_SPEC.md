@@ -177,7 +177,7 @@ Every item of the kinds `recipes`, `atoms` and `hooks` (and `components` records
 |---|---|---|
 | `folder` | item (`recipes[].folder`, `atoms{}.folder`, `defs{}.folder`), and the manifest ingredient | slash path of lowercase segments `[a-z0-9][a-z0-9-]*`, up to 8 segments, at most 80 chars (`E_PACK_FOLDER` otherwise); `hiphop/trap/drums` |
 | `tags` | item, ingredient (existing field) | lowercase kebab, `[a-z0-9][a-z0-9-]{0,31}`, up to 24 (`E_PACK_SCHEMA`) |
-| `aliases` | item | older ids of the item (section 9.3 rule 5); an alias equal to another item id of the ingredient is `E_PACK_ID` |
+| `aliases` | item | older ids of the item (section 9.3 rule 8); an alias equal to an item id of the pack, or claimed twice, is `E_PACK_ALIAS_CONFLICT` |
 
 Neither `folder` nor `tags` is part of an atom's content hash (`hash` covers type, params and body), so filing an entry never changes a program that uses it.
 
@@ -336,7 +336,13 @@ Array order is load order and tie-break order. Three lock layers exist at run ti
 6. Same pack id from two sources: `E_PACK_NAMESPACE`; the earlier layer wins and the other entry is refused. Same id twice with different
    versions in one layer: `E_LOCK_DUPLICATE`.
 7. `packs.report()` / `strudel packs list --report` return the full resolution: per kind, each bare name, the winner, the shadowed ids.
-8. **Aliases** (`aliases[]` on recipes, atoms and hook defs): a bare reference that no item of that kind defines resolves to the item that lists it (`resolution[kind][alias] = { winner, shadowed, alias: true }`). A real id of the same kind always wins over an alias; between two aliases rule 2 applies. Library components answer `get(oldName)` through `meta.aliases`. Aliases keep programs, takes and `lib:` refs working when an entry is renamed or moves to another pack.
+8. **Aliases** (`aliases[]` on recipes, atoms and hook defs; `meta.aliases` on library components): a reference to an alias behaves exactly like the item it names, at the point of use, with one deprecation hint per alias (console and toast on the site, a stderr line in the CLI; never an error).
+   Consumers: the atoms engine (`atoms.zz.oldkick` compiles as `atoms.zz.newkick`, also under `atoms.import(..., { as })`), the hooks pack adapter and the CLI `--hooks` loader (a def is also installed under each alias; the hint appears when the program uses the old name),
+   recipe ids (`#r/old-id`, `pack:author/pack:old-id`), library refs (`lib:` / `get(old)`), and `packs-core.resolve` (`resolution[kind][alias] = { winner, shadowed, alias: true }`). Shared code: `site/engine/aliases.js`.
+   A real name always wins in lookup. **`E_PACK_ALIAS_CONFLICT`**: an alias equal to an item id of the same kind (in one pack: `packs validate`; across packs: the loader report), or one alias claimed for two different items; the clashing alias is not registered.
+   Consumers: the atoms engine (`atoms.zz.oldkick` compiles as `atoms.zz.newkick`, also under `atoms.import(..., { as })`), the hooks pack adapter and the CLI `--hooks` loader (a def is also installed under each alias; the hint appears when the program uses the old name),
+   recipe ids (`#r/old-id`, `pack:author/pack:old-id`), library refs (`lib:` / `get(old)`), and `packs-core.resolve` (`resolution[kind][alias] = { winner, shadowed, alias: true }`). Shared code: `site/engine/aliases.js`.
+   A real name always wins in lookup. **`E_PACK_ALIAS_CONFLICT`**: an alias equal to an item id of the same kind (in one pack: `packs validate`; across packs: the loader report), or one alias claimed for two different items; the clashing alias is not registered.
 
 ### 9.4 Lazy loading
 
@@ -611,6 +617,7 @@ and `packs validate` list everything, errors exit 1.
 | `W_PACK_KIND` | unknown kind or format major: ingredient skipped |
 | `W_PACK_NEWER` | spec or format minor newer than the host |
 | `E_PACK_FOLDER` | a `folder` (item, ingredient or `taxonomy.folders` key) is not a valid slash path (section 5.3) |
+| `E_PACK_ALIAS_CONFLICT` | an alias equals an item id of the same kind, or is claimed for two different items (section 9.3 rule 8) |
 | `W_PACK_TAG` | an item tag is not in the pack `taxonomy.tags`, or `taxonomy.priority` / `tags.*.group` names something undeclared |
 | `W_PACK_EAGER` | eager budget exceeded: treated as lazy |
 | `W_PACK_LICENSE` | `LicenseRef-*` without `licenseFile`, or CC BY content without `attribution.text` |

@@ -67,11 +67,16 @@ export function resolve(layers, loaded) {
       }
     }
   }
-  // alias claims: bare alias -> the qualified item it points at; a real item id of the same kind always wins over an alias
+  // alias claims: bare alias -> the qualified item it points at. An alias equal to a real item id of the same kind, or claimed for two different items, is
+  // E_PACK_ALIAS_CONFLICT and is not registered (the real id, or the first claim, stays); an alias never overrides anything.
   const aliasClaims = {};
   for (const p of accepted) for (const ing of loaded[p.id]?.ingredients || []) for (const [alias, id] of itemAliases(ing.kind, ing.data)) {
-    if (claims[ing.kind]?.[alias]) continue;
+    if (claims[ing.kind]?.[alias]) { err('E_PACK_ALIAS_CONFLICT', `${ing.kind}!${alias}: alias of ${p.id}:${id} is also an item id (${claims[ing.kind][alias][0].qualified})`, { id: p.id }); continue; }
     ((aliasClaims[ing.kind] ||= {})[alias] ||= []).push({ pack: p.id, qualified: `${p.id}:${id}`, priority: p.priority, rank: p.rank, seq: p.seq });
+  }
+  for (const [kind, byAlias] of Object.entries(aliasClaims)) for (const [alias, c] of Object.entries(byAlias)) {
+    const targets = [...new Set(c.map((x) => x.qualified))];
+    if (targets.length > 1) { err('E_PACK_ALIAS_CONFLICT', `${kind}!${alias}: claimed as an alias by ${targets.join(' and ')}`, { id: c[1].pack }); byAlias[alias] = c.slice(0, 1); }
   }
   const resolution = {};
   for (const kind of Object.keys(claims).sort()) {

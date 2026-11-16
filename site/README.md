@@ -32,7 +32,7 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
   `palette.js` and `pwa.js`. The transport range markup is static HTML (the same markup as `TPL` in `transport-range.js`; smoke checks they match), so the stage has its
   final height at first paint.
   Everything else (`engine/index.js` hooks/lanes/controls, atoms, visuals, CodeMirror intellisense and its providers, history, background
-  playback, tracker, copy-code, `transport-range.js`, Record (`capture.js` + `capture.css`), workspace, vox banks, refs) loads right after the first frame
+  playback, tracker, copy-code, `transport-range.js`, Record (`capture.js` + `capture.css`), workspace, vox banks, refs, resources) loads right after the first frame
   with recipes is on screen (`window.strudelCraft.shellPainted`: `app.js` fires `sc:shell`, then its largest-contentful-paint entry), or on
   the first pointer or key input, whichever comes first. The modules are fetched in parallel and run in their old order.
   `window.strudelCraft.booted` resolves once they have run, and `Engine.load()` (first Play, idle compiles) awaits it, so the first Play
@@ -206,6 +206,8 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/site/perform_pads_audio.mjs # every preset pad is audible on the master analyser (touch, 390 px, #116)
     node tests/site/word_intellisense.mjs  # word() completions from data/intellisense/words.json (#44)
     node tests/site/vox.mjs            # vocal banks and voxBank()
+    node tests/site/resources_model.mjs   # Resources model, insert plan and the `strudel refs` CLI twin (night phonk v2)
+    node tests/site/resources.mjs         # Resources pane at 390px touch (docs/RESOURCES.md)
     node tests/site/voxbrowser.mjs     # Banks browser and bank-aware word() completions at 360px (#85)
     STRUDEL_MODULES=... node tests/vocals/formant_helper.mjs  # word().formant(true) on a synthetic bank (#57)
     node tests/site/capture.mjs        # Record panel audio at 360px: 2-cycle take, WAV 16/24 header + length, file name, quota, rename/delete modals, tab switch, exact render (#72)
@@ -421,6 +423,9 @@ states), `closers` (open brackets/quotes). Register more:
   `data/intellisense/words.json` (the `demo` and `call-me-baby` banks) still feeds word names in other strings. Regenerate it with
   `python3 engine/vocals/complete.py "" --samples-dir site/data/vox/call-me-baby --samples-dir site/data/vox/demo --kind word`
   (add a `--samples-dir` per bank you want completed; merge duplicate names, keep the highest take count).
+
+## Resources pane (`resources.js`, `resources-ui.js`, `resources.css`, `engine/resources.js`; docs/RESOURCES.md)
+What the program uses and what is installed, in one panel (sheet on phones, workspace pane on desktop). Entry points: the **Resources** button in the Rack / Stack editor heads, `Ctrl+K > Show resources`, `Show Resources pane`, the workspace pane `resources`, deep link `#res=<kind>:<name>` / `#res=available:<query>`. **In this program**: every reference resolved live (atoms and `atoms.import`, racks and `hooks.bind`, slots, taps, buses, lanes, controls, vox banks and words, packs with version and licence, `lib:` refs), with source pack, description, params with ranges, lines, status chips (resolved, shadowed #143, older id #120, missing + fix and Insert, unused, unread #114, code needs allow) and a missing banner; a plain press only expands a row, Go to line is its own target button (#107). **Available**: packs -> kinds -> items with the folder / tag organizer (#120), search, example in Craft and lowered form (#117), Play (#150), **Insert reference** (one change at one place, nothing else moves) and Copy. The model is `engine/resources.js` `buildModel()`, also behind the CLI twin `strudel refs IN [--json]`. Lazy: loaded on first open, precached, outside the eager shell budget.
 
 ## Banks browser (`vox-banks.js`, `voxbrowser.js`, `voxbrowser.css`, #85)
 "What is in a bank, so I know what I can type": the **Banks** button in the Syntax view head, Ctrl+K > *Browse vox banks*, or the

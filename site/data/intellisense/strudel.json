@@ -1170,6 +1170,34 @@
    "detail": "fit()",
    "info": "Stretch a sample to its event length (drum breaks)",
    "category": "sample"
+  },
+  {
+   "label": "strudelCraft.resources.openSheet",
+   "method": false,
+   "detail": "openSheet({ tab: 'program' | 'available' }) -> Promise<panel>",
+   "info": "Opens the Resources panel (what this program uses, resolved live; everything installed). Same as Ctrl+K > Show resources or the Resources button above the code. Docs: docs/RESOURCES.md.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.resources.openLink",
+   "method": false,
+   "detail": "openLink('#res=hook:kick808') -> Promise<panel>",
+   "info": "Deep link: #res=<kind>:<name> opens the panel on that row (kinds: import, atom, hook, slot, tap, bus, lane, control, vox, pack, lib, groove); #res=available:<query> opens Available with a search.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.resources.insertReference",
+   "method": false,
+   "detail": "insertReference({ insert: { type: 'import' | 'header' | 'bind' | 'block', text } }, { caret }) -> { ok, line }",
+   "info": "One editor change at one place (imports and voxBank lines after the header, hooks.bind after the last bind, a block after the caret line); an existing identical line is not repeated; nothing else moves.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.resources.model",
+   "method": false,
+   "detail": "model() -> { refs, missing, counts } | null",
+   "info": "The reference model of the open panel: [{ id, kind, name, status[], source{pack, version, license}, desc, params, uses[{line}], fix }]. The CLI prints the same: strudel refs IN --json.",
+   "category": "site api"
   }
  ],
  "params": {

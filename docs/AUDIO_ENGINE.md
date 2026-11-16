@@ -27,8 +27,8 @@ recording needs the stack played out loud and can glitch. This page has the meas
   v2 at x4 hidden; one summary line per cell. Baselines are served from a `git archive` of the commit (`--site`).
 - `tests/site/lib/glitch.mjs`: a take against a reference render of the same window, on a 5 ms grid (aligned within +-150 ms): onset match and deviation,
   drift (ms per s), dropouts (>= 10 ms where the reference is loud and the take is >= 18 dB below), clicks, level within 3 dB.
-- `tests/site/ref_render.sh OUT v2 16 8 [BPM]`: the CLI reference (cycles 15..23). The site's Tempo knob rewrites `setcpm(...)` to
-  the knob's BPM (120 by default), so the reference is rendered at the same tempo.
+- `tests/site/ref_render.sh OUT v2 16 8 [BPM]`: the CLI reference (cycles 15..23). The program's own `setcpm` wins on the
+  site (night phonk plays at 128.8 BPM, `tests/site/tempo.mjs`), so the reference keeps it; pass BPM only to mimic a touched Tempo knob.
 - Hidden mode is simulated (`document.hidden` and `visibilitychange`); headless Chromium never hides a page, so real hidden-tab timer
   throttling is not reproduced.
 

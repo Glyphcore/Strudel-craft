@@ -8,8 +8,9 @@ One Record panel with one arm, one transport and one timeline of takes. A take i
   - the palette (`Ctrl+K`), group Record: Open record panel, Record / stop take, Record N cycles (loop), Render exact N cycles (offline), Import recipe;
   - the workspace pane **Record** (`strudelCraft.workspace.on([[{ id: 'record', w: 1 }]])`). Docked, the panel is in flow and always shown.
 - **Source** (docs/AUDIO_ENGINE.md, #104): **Offline render** (default) or **Live capture**.
-  - Offline render: Record becomes **Render**. It renders N cycles (the Cycles count) of the current program from the transport range start into a take, in the background, with no audible playback and without stopping or suspending the live transport. The panel shows `Rendering offline N %`; the button turns into **Cancel** (stops between chunks, nothing is stored). The recipe has `timing.mode: "offline"`, code-state and events (control histories from the controls engine, pad and hooks-journal entries), and `outputs.render`; the take shows an `offline` chip. Arm, count-in and pre-roll apply to live capture only. API: `capture.recordOffline(n, { at, name })`.
+  - Offline render: Record becomes **Render**. It renders N cycles (the Cycles count) of the current program from the transport range start into a take, in the background, with no audible playback and without stopping or suspending the live transport. A **progress strip** (bar, percent, a 44 px **Cancel**) shows for every offline render (Record, Render exact, Re-render, Remake, lane captures); Cancel, the Record button (now **Cancel**) and Esc stop it between chunks and nothing is stored. The state line also reads `Rendering offline N %`. The recipe has `timing.mode: "offline"`, code-state and events (control histories from the controls engine, pad and hooks-journal entries), and `outputs.render`; the take shows an `offline` chip. Arm, count-in and pre-roll apply to live capture only. API: `capture.recordOffline(n, { at, name })`.
   - Live capture: the master tap, as below, with a self-check (see Tap and timing).
+- **Flagged live takes**: a take whose self-check found tap gaps, dropped events, re-anchors or output glitches shows a `flagged` chip, a visible reason line (`.cap-flag`, never hover-only) and a **Re-render offline** button (when it carries code-state). After the re-render the chip reads `replaced` and the take plays the offline render.
 - **Include** boxes: **Audio** (master tap), **Events** (lanes, pads, control moves), **Code-state**. A single Record captures every ticked part.
 - **Arm**:
   - Free;
@@ -129,3 +130,5 @@ A program can capture its own lanes: `capture("groove", "drums", { window: "1b..
   - a tampered pack manifest hash is refused with the ref named;
   - version 0 is rejected;
   - no console errors.
+
+UI check: `node tests/site/record_ui.mjs` (360 px: offline default, progress strip with percent and Cancel, cancel stores no take, flagged take shows reason + Re-render button, no native dialogs). Known, unrelated: cancelling a host render mid-chunk can log an `InvalidAccessError` (stale-context connect) from the render host; it is present before this change.

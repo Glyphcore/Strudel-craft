@@ -453,3 +453,7 @@ dialog.bg-diag{width:min(520px,calc(100vw - 16px))}
 .bg-diag h3{margin:4px 16px;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
 .bg-segs{margin:0;padding:4px 16px 10px 34px;font-size:.78rem;font-family:var(--mono);max-height:180px;overflow:auto}
 .bg-segs li span{color:var(--dim)}.bg-segs li[data-kind=paused] b,.bg-segs li[data-kind=interrupted] b{color:var(--warn)}
+
+/* tempo: the knob overrides the program's setcpm only after a touch; this returns control to the program */
+.tp-reset{min-height:44px;min-width:44px;padding:0 8px;white-space:nowrap;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sig-2);border-color:var(--sig-2)}
+.tp-reset[hidden]{display:none}

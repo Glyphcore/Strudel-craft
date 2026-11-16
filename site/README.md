@@ -17,7 +17,8 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
 ## Audio and licences
 - `@strudel/web` 1.3.0 (AGPL-3.0-or-later) is loaded **unmodified** from unpkg on the first Play; it is not vendored.
 - To drive the meters, `app.js` wraps `AudioNode.prototype.connect`: a connection to `AudioContext.destination` is sent to our master `GainNode`, which feeds `AnalyserNode`s and then the real destination. Strudel's code is untouched.
-- Tempo: the knob writes `setcpm(BPM/4)` in front of the recipe, or rewrites an existing `setcpm(...)` call.
+- Tempo: the program's own `setcpm` / `setcps` / `setbpm` wins on load and on every recompile, and the knob shows its value (night phonk: 128.8 BPM). A program without one gets `setcpm(BPM/4)` in front. Only after you touch the knob does it override (rewrites `setcpm(...)`); a **Program** button then appears next to the knob and hands control back. The override persists (`sc.tempoOv`). Test: `node tests/site/tempo.mjs`.
+- Record panel: offline render is the default source; every offline render shows a progress strip (percent + Cancel); a live take with dropouts or tap gaps is flagged with its reason and a Re-render offline button. Test: `node tests/site/record_ui.mjs`.
 - "Open in strudel.cc" builds `https://strudel.cc/#` + `encodeURIComponent(btoa(UTF-8 code))`, the format the strudel.cc REPL writes.
 - Fonts: Chakra Petch and JetBrains Mono, self-hosted woff2 (latin subset), SIL OFL 1.1; licences in `fonts/`. Only Chakra Petch 500 is in
   `style.css` (preloaded); Chakra Petch 700 and JetBrains Mono are added by `index.html` (Font Loading API, `display: swap`) once the first

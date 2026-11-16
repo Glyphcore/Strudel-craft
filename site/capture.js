@@ -151,7 +151,7 @@ async function codeState(srcOverride) {
   return JSON.parse(JSON.stringify({
     source: { kind: src.kind || 'solo', title: src.title || '', code: src.code || '', resolved, atoms: [...new Set((src.code || '').match(/\batoms\.[\w.]+/g) || [])] },
     controls: C ? C.toModel() : null, aliases: C && C.labelOf ? Object.fromEntries(C.list().map((x) => [C.labelOf(x.name), x.name]).filter(([l]) => l)) : {}, sites, perform: lsj('perform'), modRanges: modHash ? { path: modHash.path, sha256: modHash.sha256 } : null,
-    settings: { tempo: lsj('tempo'), masterDb: T ? T.masterDb : null, follow: lsj('follow'), range: { start: lsj('range.start'), end: lsj('range.end'), loop: lsj('range.loop'), unit: lsj('range.unit') } },
+    settings: { tempo: (window.__sc && window.__sc.S.tempo) || lsj('tempo'), masterDb: T ? T.masterDb : null, follow: lsj('follow'), range: { start: lsj('range.start'), end: lsj('range.end'), loop: lsj('range.loop'), unit: lsj('range.unit') } },
   }));
 }
 function padEvents(c0, c1) {
@@ -340,7 +340,21 @@ function beforeRender(fn, o = {}) { if (typeof fn !== 'function') throw new Type
 /* every offline render goes to the render host (a hidden index.html?host=render page with its own Strudel and superdough) unless the page is the
    host itself or the flag says inline (?rec=inline / localStorage sc.flag.rec): the live engine keeps playing and is never suspended or swapped */
 const FLAG_REC = (() => { try { return new URLSearchParams(location.search).get('rec') || localStorage.getItem('sc.flag.rec') || 'host'; } catch (e) { return 'host'; } })();
+/* panel progress for every offline render: a render started elsewhere (Render exact, re-render, Remake, lane captures) gets its own abort signal so the panel's Cancel works,
+   and its progress feeds the bar; the Record render passes its own signal and keeps it */
+function setProg(p) {
+  if (!el.prog) return; const on = p != null; el.prog.hidden = !(st.rendering || st.phase === 'rendering' || st.progAbort); if (!on) return;
+  { const pc = Math.round(p * 100); el.bar.style.width = pc + '%'; el.pct.textContent = pc + ' %'; el.prog.querySelector('[role=progressbar]').setAttribute('aria-valuenow', String(pc)); }
+}
+function cancelRender() { const ac = st.abort || st.progAbort; if (ac) ac.abort(); }
 async function renderRecipe(recipe, o = {}) {
+  if (HOST) return renderRecipe0(recipe, o);
+  const own = !o.signal, ac = own ? new AbortController() : null, inner = o.onProgress;
+  if (own) st.progAbort = ac; setProg(0);
+  try { return await renderRecipe0(recipe, { ...o, signal: own ? ac.signal : o.signal, onProgress: (p) => { setProg(p); inner && inner(p); } }); }
+  finally { if (own && st.progAbort === ac) st.progAbort = null; setProg(null); }
+}
+async function renderRecipe0(recipe, o = {}) {
   const pageHook = [...beforeHooks].some((f) => !hostHooks.has(f));
   if (!HOST && !o.inline && FLAG_REC !== 'inline' && !st.inHook && !pageHook) return renderViaHost(recipe, o);
   return renderRecipeInline(recipe, o);
@@ -534,7 +548,7 @@ async function recordOffline(ru) {
   try {
     const src = T.source(); if (!src || src.empty || !src.code) throw new Error('Nothing to render: pick a recipe or add Stack layers');
     const r = sc.range && sc.range.state; const c0 = ru.at != null ? ru.at : Math.max(0, Math.floor((r && +r.start) || 0)), c1 = c0 + ru.n;
-    const cps = T.scheduler && T.scheduler.started && T.scheduler.cps ? T.scheduler.cps : (lsj('tempo') || 120) / 240;
+    const cps = T.scheduler && T.scheduler.started && T.scheduler.cps ? T.scheduler.cps : ((window.__sc && window.__sc.S.tempo) || lsj('tempo') || 120) / 240;
     const state = await codeState(src); const C = sc.perform && sc.perform.controls;
     const includes = { audio: true, events: !!opts.events, code: true };
     const events = { pads: padEvents(c0, c1), hooks: hookPadEntries(c1), controls: controlEvents(c0, c1), lanes: C ? (C.toModel().automation || {}) : {} };
@@ -558,7 +572,7 @@ async function rerender(id) {
     rec.audio.render = { L: out.L, R: out.R, sr: out.sr }; rec.recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr) };
     rec.replaced = { at: new Date().toISOString(), why: rec.recipe.outputs.capture && rec.recipe.outputs.capture.check ? rec.recipe.outputs.capture.check.why : 'manual' };
     await store.put(rec); renderTakes(); toast(`"${rec.recipe.name}" now plays its offline render`, { kind: 'ok' }); return rec;
-  } catch (e) { toast('Re-render: ' + (e.message || e), { kind: 'error' }); return null; }
+  } catch (e) { failToast('Re-render', e); return null; }
 }
 
 /* Render exact N cycles of the current program as a recipe (code-state + render output) */
@@ -577,8 +591,9 @@ async function renderExact(n = opts.n) {
     await store.put(rec); renderTakes();
     toast(`Rendered ${recipe.name}: ${n} cycles, ${out.L.length} frames${out.fails ? `, ${out.fails} events failed offline` : ''}`, { kind: out.fails ? 'info' : 'ok' });
     return rec;
-  } catch (e) { toast('Render: ' + (e.message || e), { kind: 'error' }); return null; }
+  } catch (e) { failToast('Render', e); return null; }
 }
+function failToast(what, e) { if (e && e.name === 'AbortError') toast(what + ' cancelled', { kind: 'info' }); else toast(what + ': ' + ((e && e.message) || e), { kind: 'error' }); }
 
 /* ---------- Remake: approve deps, trust unknown sources, verify pins, render, compare hashes ---------- */
 const ask = (o) => sc.ui.askYesNo(o);
@@ -718,6 +733,7 @@ function build() {
     <canvas id="capMeter" class="cap-meter" role="img" aria-label="Record input level"></canvas>
     <button type="button" class="icon ghost" id="capClose" aria-label="Close record panel">&times;</button>
   </div>
+  <div class="cap-prog" id="capProg" hidden><div class="cap-bar" role="progressbar" aria-label="Offline render progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="capBar"></i></div><output id="capPct" class="cap-pct num">0 %</output><button type="button" id="capCancel" class="cap-cancel">Cancel</button></div>
   <fieldset class="cap-inc"><legend>Include</legend>
     <label class="switch"><input id="capInc_audio" type="checkbox"${opts.audio ? ' checked' : ''}><span>Audio</span></label>
     <label class="switch"><input id="capInc_events" type="checkbox"${opts.events ? ' checked' : ''}><span>Events (lanes, pads, controls)</span></label>
@@ -738,7 +754,8 @@ function build() {
   <ol class="cap-takes" id="capTakes" aria-label="Takes"></ol>
   <p class="cap-quota" id="capQuota"></p>`;
   document.body.append(w);
-  el = { tb, w, rec: $('#capRec'), lab: $('#capRecLabel'), time: $('#capTime'), state: $('#capState'), meter: $('#capMeter'), n: $('#capN'), hint: $('#capHint'), takes: $('#capTakes'), exact: $('#capExact') };
+  el = { tb, w, rec: $('#capRec'), lab: $('#capRecLabel'), time: $('#capTime'), state: $('#capState'), meter: $('#capMeter'), n: $('#capN'), hint: $('#capHint'), takes: $('#capTakes'), exact: $('#capExact'), prog: $('#capProg'), bar: $('#capBar'), pct: $('#capPct') };
+  $('#capCancel').addEventListener('click', cancelRender);
   $('#capClose').addEventListener('click', () => close());
   el.rec.addEventListener('click', () => toggleRec());
   el.exact.addEventListener('click', () => renderExact());
@@ -755,7 +772,8 @@ function build() {
     const s = e.target.closest('[data-step]'); if (s) { configure({ n: opts.n + +s.dataset.step }); return; }
     const b = e.target.closest('[data-act]'); if (!b) return; const li = b.closest('[data-id]'); if (li) takeAct(b.dataset.act, li.dataset.id, b);
   });
-  w.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !w.closest('.ws-body')) { e.stopPropagation(); close(); } });
+  w.addEventListener('keydown', (e) => { if (e.key === 'Escape' && (st.rendering || st.phase === 'rendering')) { e.stopPropagation(); cancelRender(); return; }
+    if (e.key === 'Escape' && !w.closest('.ws-body')) { e.stopPropagation(); close(); } });
   sync();
 }
 function sync() {
@@ -770,6 +788,7 @@ function sync() {
   for (const i of el.w.querySelectorAll('.cap-opts input, .cap-opts select, .cap-opts button, .cap-inc input')) i.disabled = busy;
   const inc = ['audio', 'events', 'code'].filter((k) => opts[k]).map((k) => (k === 'code' ? 'code-state' : k)).join(' + ') || 'nothing';
   el.w.dataset.source = opts.source;
+  el.prog.hidden = !(st.rendering || st.phase === 'rendering'); if (el.prog.hidden) { el.bar.style.width = '0%'; }
   if (opts.source === 'offline') { el.hint.textContent = `Offline render: ${opts.n} cycles of the current program from the transport range start, rendered in the background with no playback (the live engine keeps playing). Hooks, pads, control histories and lanes are in the recipe; Arm, count-in and pre-roll apply to live capture only.`; if (!busy) { el.state.textContent = st.rendering ? 'Rendering offline' : 'Ready'; el.time.textContent = '00:00.0'; } return; }
   el.hint.textContent = (opts.mode === 'cycles' ? `Cycles: starts and stops on cycle boundaries (${opts.n}), loops cleanly; with audio + code-state the transport stops at the end for an exact reference render.` : opts.mode === 'until' ? 'Until stop: records until you stop or the play-time limit.' : 'Free: records from now until you stop.') + ` Records ${inc}.` + (WEBM_MIME ? ' Realtime audio takes also keep a WebM/opus copy.' : ' WebM/opus copies are not available in this browser (no MediaRecorder opus); WAV only.');
   if (!busy) { el.state.textContent = st.rendering ? 'Rendering offline' : 'Ready'; el.time.textContent = '00:00.0'; }
@@ -804,10 +823,12 @@ async function renderTakes() {
     const chips = ['audio', 'events', 'code'].filter((k) => r.includes[k]).map((k) => `<i class="cap-badge" data-type="${k}">${k === 'code' ? 'code' : k}</i>`).join('')
       + (r.timing.mode === 'offline' ? '<i class="cap-badge" data-type="ok">offline</i>' : '') + (ck && !ck.ok ? `<i class="cap-badge" data-type="bad" title="${esc(ck.why)}">${replaced ? "replaced" : "flagged"}</i>` : '');
     const ver = rm ? (rm.match === 'tolerance' ? '<i class="cap-badge" data-type="ok">remake ~ok</i>' : rm.match === true ? '<i class="cap-badge" data-type="ok">remake ok</i>' : rm.match === false ? '<i class="cap-badge" data-type="bad">differs</i>' : '') : imported ? '<i class="cap-badge" data-type="inert">inert</i>' : '';
+    const flagRow = ck && !ck.ok ? `<p class="cap-flag" role="note"><b>${replaced ? 'Replaced' : 'Dropouts'}</b> ${esc(ck.why)}${replaced ? '. This take plays its offline render.' : '. The live capture may have gaps or timing jumps.'}${!replaced && r.includes.code ? ' <button type="button" data-act="rerender">Re-render offline</button>' : ''}</p>` : '';
     const deps = r.deps.packs.length + r.deps.samples.length + r.deps.vox.length + 1;
-    return `<li data-id="${r.id}" class="cap-tk">
+    return `<li data-id="${r.id}" class="cap-tk"${ck && !ck.ok ? ' data-flag="1"' : ''}>
     <canvas class="cap-wave" aria-hidden="true"></canvas>
     <div class="cap-tk-info"><b class="cap-tk-name">${chips}${ver}<span class="cap-tk-label">${esc(r.name)}</span></b><span class="cap-tk-sub">${N.cyc(r.timing.cycles)}c · ${N.fix(r.timing.cps, 3)} cps · c${N.cyc(r.timing.start)}-${N.cyc(r.timing.stop)}${r.meta && r.meta.from ? ' · from ' + esc(r.meta.from) : ''} · ${deps} dep${deps > 1 ? 's' : ''}${r.outputs.render ? ' · ' + short(r.outputs.render.sha256) : ''}</span></div>
+    ${flagRow}
     <div class="cap-tk-acts">
       <button type="button" class="ghost icon" data-act="play" aria-label="Play ${esc(r.name)}" aria-pressed="false"${hasAudio ? '' : ' disabled'}>${ICON.play}</button>
       <button type="button" class="ghost icon" data-act="remake" aria-label="Remake ${esc(r.name)}"${r.includes.code ? '' : ' disabled'}>${ICON.remake}</button>
@@ -848,6 +869,7 @@ async function takeAct(act, id, btn) {
     au.onpause = () => { btn.setAttribute('aria-pressed', 'false'); URL.revokeObjectURL(au.src); if (player === au) { player = null; playerId = null; } };
     au.play().catch((e) => toast('Preview: ' + e.message, { kind: 'error' }));
   } else if (act === 'remake') { btn.disabled = true; try { await remake(id); } finally { btn.disabled = false; } }
+  else if (act === 'rerender') { btn.disabled = true; try { await rerender(id); } finally { btn.disabled = false; } }
   else if (act === 'rename') {
     const cur = li.querySelector('.cap-tk-label').textContent;
     const v = await sc.ui.ask({ title: 'Rename take', label: 'Name (letters, digits, - _ .)', value: cur, okText: 'Rename' });
@@ -891,6 +913,6 @@ function init() {
     P.register({ id: 'record.import', group: 'Record', title: 'Import recipe', run: () => { open(); $('#capFile').click(); } });
   }
 }
-sc.capture = { open, close, toggle: toggleSheet, configure, record, stop, toggleRec, renderExact, remake, rerender, recordOffline: (n, o = {}) => recordOffline({ n: Math.max(1, n | 0 || opts.n), name: o.name || opts.name, at: o.at }), host: { warm: () => hostFrame().then(() => HS.bootMs), get bootMs() { return HS.bootMs; }, get frame() { return HS.frame; } }, flag: FLAG_REC, isHost: HOST, importRecipe, webmSupported: () => WEBM_MIME, beforeRender, addTake, exportRecipe: async (id) => exportRecipe(await store.get(id)), renderRecipe,
+sc.capture = { open, close, toggle: toggleSheet, configure, record, stop, toggleRec, renderExact, remake, rerender, putTake: (rec) => store.put(rec).then(renderTakes), recordOffline: (n, o = {}) => recordOffline({ n: Math.max(1, n | 0 || opts.n), name: o.name || opts.name, at: o.at }), host: { warm: () => hostFrame().then(() => HS.bootMs), get bootMs() { return HS.bootMs; }, get frame() { return HS.frame; } }, flag: FLAG_REC, isHost: HOST, importRecipe, webmSupported: () => WEBM_MIME, beforeRender, addTake, exportRecipe: async (id) => exportRecipe(await store.get(id)), renderRecipe,
   download, list: () => store.list().then((l) => l.map((x) => ({ ...x.recipe, remake: x.remake || null, imported: x.imported || null, audio: Object.keys(x.audio) }))), get: (id) => store.get(id), remove: (id) => store.remove(id).then(renderTakes), rename, encodeWav, opts, state: st };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

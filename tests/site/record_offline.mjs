@@ -24,7 +24,7 @@ const server = http.createServer((req, res) => { let p = decodeURIComponent(new 
   res.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream', 'cache-control': 'max-age=600' }); fs.createReadStream(f).pipe(res); });
 await new Promise((r) => server.listen(0, '127.0.0.1', r)); const BASE = `http://127.0.0.1:${server.address().port}${PREFIX}`;
 let fails = 0; const report = {}; const check = (n, ok, d = '') => { if (!ok) fails++; console.log(`${ok ? 'PASS' : 'FAIL'}  ${n}${d ? '  -- ' + d : ''}`); };
-const W = readWav(fs.readFileSync(REF)); const CPS = +arg('--cps', 0.5); /* the site's Tempo knob default (120 BPM) rewrites setcpm; ref_render.sh does the same */
+const W = readWav(fs.readFileSync(REF)); const CPS = +arg('--cps', 128.8 / 240); /* the program's own setcpm(128.8 / 4) wins on the site; ref_render.sh keeps it too */
 const refWin = (c0, frames, sr) => { const a = Math.round((c0 - REF_FROM) / CPS * W.sr), b = a + Math.round(frames / sr * W.sr); return { x: mono(W.L.subarray(a, b), W.R.subarray(a, b)), sr: W.sr }; };
 const fromB64 = (b64) => new Float32Array(Uint8Array.from(Buffer.from(b64, 'base64')).buffer);
 const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });

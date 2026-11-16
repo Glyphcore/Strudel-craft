@@ -226,7 +226,7 @@ const Engine = {
 const S = {
   cat: null, labelsById: {}, recipes: [], filtered: [], sel: 0, view: 'rack',
   q: '', chips: new Set(), vonly: false,
-  edits: store.get('edits', {}), stack: store.get('stack', []), tempo: store.get('tempo', TEMPO.def), master: store.get('master', MASTER.def),
+  edits: store.get('edits', {}), stack: store.get('stack', []), tempoOv: store.get('tempoOv', false) === true, tempo: store.get('tempoOv', false) === true ? store.get('tempo', TEMPO.def) : TEMPO.def, master: store.get('master', MASTER.def),
   playing: false, playingId: null, playingSource: null, busy: false,
 };
 S.stack = Array.isArray(S.stack) ? S.stack.filter((l) => l && typeof l.id === 'string') : [];
@@ -265,7 +265,7 @@ function knob({ label, min, max, step, value, def, fmt, onChange, cls }) {
     out.textContent = fmt(v); root.setAttribute('aria-valuenow', v); root.setAttribute('aria-valuetext', fmt(v));
   };
   const quant = (x) => Math.round(clamp(x, min, max) / step) * step;
-  const set = (x, fire = true) => { const nv = +quant(x).toFixed(4); if (nv === v) return; v = nv; render(); if (fire) onChange(v); };
+  const set = (x, fire = true) => { const nv = +(fire ? quant(x) : clamp(x, min, max)).toFixed(4); /* silent sets mirror program values (128.8 BPM): not snapped to the step */ if (nv === v) return; v = nv; render(); if (fire) onChange(v); };
   const commit = (from) => { if (from === v) return; const to = v; History.push({ label: `${label} ${fmt(to)}`, undo: () => set(from), redo: () => set(to) }); };
   let drag = null;
   root.addEventListener('pointerdown', (e) => { if (e.button) return; root.setPointerCapture(e.pointerId); drag = { y: e.clientY, v, from: v }; root.classList.add('drag'); root.focus({ preventScroll: true }); e.preventDefault(); });
@@ -400,7 +400,23 @@ const Viz = {
 /* ---------- transport ---------- */
 let tempoK, masterK;
 function hasOwnTempo(code) { return /set(cpm|cps|bpm)\s*\(/.test(code); }
+/* The program's own tempo (setcpm/setcps/setbpm, first call outside comments) in BPM, or null. Argument: plain arithmetic only (128.8 / 4). */
+function programTempo(code) {
+  const m = /^[^\n]*?\bset(cpm|cps|bpm)\s*\(\s*([-+*/().\d\s]+?)\s*\)/m.exec(String(code).replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, ''));
+  if (!m) return null; let v; try { v = Function('"use strict";return (' + m[2] + ')')(); } catch (e) { return null; }
+  if (!(v > 0) || !isFinite(v)) return null; const bpm = m[1] === 'cpm' ? v * 4 : m[1] === 'cps' ? v * 240 : v;
+  return +bpm.toFixed(3);
+}
+/* The program's tempo wins until the user touches the knob (S.tempoOv, persisted); the knob then only mirrors the program. */
+function syncTempo(code) {
+  if (S.tempoOv) { tempoReset(); return; }
+  const pt = programTempo(code); if (pt != null && pt !== S.tempo) { S.tempo = pt; if (tempoK) tempoK.set(pt, false); }
+  tempoReset();
+}
+function tempoReset() { const b = $('#tempoReset'); if (b) b.hidden = !S.tempoOv; }
 function withTempo(code) {
+  syncTempo(code);
+  if (!S.tempoOv) return hasOwnTempo(code) ? code : `setcpm(${S.tempo}/4)\n` + code;
   const t = S.tempo; const re = /setcpm\s*\((?:[^()]|\([^()]*\))*\)/g;
   if (re.test(code)) return code.replace(re, `setcpm(${t}/4)`);
   if (/set(cps|bpm)\s*\(/.test(code)) return code; // leave unusual tempo calls alone
@@ -456,7 +472,7 @@ window.strudelCraft = window.strudelCraft || {};
 window.strudelCraft.app = {
   reload() {
     S.edits = store.get('edits', {}); S.stack = store.get('stack', []);
-    const t = store.get('tempo', TEMPO.def), m = store.get('master', MASTER.def);
+    S.tempoOv = store.get('tempoOv', false) === true; const t = S.tempoOv ? store.get('tempo', TEMPO.def) : S.tempo, m = store.get('master', MASTER.def);
     if (tempoK && t !== S.tempo) { S.tempo = t; tempoK.set(t, false); }
     if (masterK && m !== S.master) { S.master = m; masterK.set(m, false); setMaster(m); }
     S.live = store.get('live', 'on') !== 'off';
@@ -596,14 +612,14 @@ function renderSelection(updateHash) {
   if (document.activeElement !== code) code.value = recipeCode(r);
   liveCode('rack');
   $('#dirty').hidden = S.edits[r.id] == null; $('#revertBtn').disabled = S.edits[r.id] == null;
-  if (r.bpm_hint && r.bpm_hint !== S.tempo) { tempoK.set(r.bpm_hint, false); S.tempo = r.bpm_hint; updateStackCode(); }
+  if (!S.tempoOv && !hasOwnTempo(recipeCode(r)) && r.bpm_hint && r.bpm_hint !== S.tempo) { tempoK.set(r.bpm_hint, false); S.tempo = r.bpm_hint; updateStackCode(); } else syncTempo(recipeCode(r));
   const labs = r.labels.map((l) => el('span', { class: 'tag' }, S.labelsById[l] ? S.labelsById[l].title : l));
   const inStack = S.stack.some((l) => l.id === r.id);
   ins.replaceChildren(...[
     el('h2', {}, 'Inspector'), el('p', { class: 'title' }, r.title), el('p', { class: 'intent', html: mdInline(r.intent.charAt(0).toUpperCase() + r.intent.slice(1)) }),
     el('div', { class: 'badges' }, r.verified ? el('span', { class: 'badge ok' }, 'Rendered OK') : el('span', { class: 'badge dim' }, r.needs_samples ? 'Sample banks · not headless-checked' : 'Not verified'),
       r.unverified.length ? el('span', { class: 'badge warn', title: r.unverified.join(', ') }, 'Docs unverified: ' + r.unverified.join(', ')) : null,
-      hasOwnTempo(r.code) ? el('span', { class: 'badge dim' }, 'Tempo in code: knob rewrites setcpm') : null,
+      hasOwnTempo(r.code) ? el('span', { class: 'badge dim', title: 'The knob shows the program tempo; touching it overrides setcpm until you reset it' }, 'Tempo in code: ' + (S.tempoOv ? 'overridden by knob' : 'program wins')) : null,
       foreignPacks().has(r.pack) ? el('button', { type: 'button', class: 'badge pkb', title: 'Open the pack sheet', onclick: () => openPacks() }, 'Pack ' + r.pack) : null),
     r.verified ? el('div', { class: 'meas' }, el('div', {}, el('i', {}, 'RMS'), el('b', {}, r.rms_dbfs + ' dBFS')), el('div', {}, el('i', {}, 'Centroid'), el('b', {}, r.centroid_hz + ' Hz'))) : null,
     el('div', { class: 'tags' }, labs),
@@ -785,9 +801,10 @@ function openHelp() { const d = $('#help'); if (!d.open) d.showModal(); }
 /* ---------- boot ---------- */
 async function boot() {
   statusEl = $('#status');
-  tempoK = knob({ label: 'Tempo', min: TEMPO.min, max: TEMPO.max, step: 1, value: S.tempo, def: TEMPO.def, fmt: (v) => v + ' BPM', onChange: (v) => { S.tempo = v; store.set('tempo', v); updateStackCode(); liveUpdate(); } });
+  tempoK = knob({ label: 'Tempo', min: TEMPO.min, max: TEMPO.max, step: 1, value: S.tempo, def: TEMPO.def, fmt: (v) => +v.toFixed(1) + ' BPM', onChange: (v) => { S.tempo = v; S.tempoOv = true; store.set('tempo', v); store.set('tempoOv', true); tempoReset(); updateStackCode(); liveUpdate(); } });
   masterK = knob({ label: 'Master', min: MASTER.min, max: MASTER.max, step: 0.5, value: S.master, def: MASTER.def, fmt: (v) => (v <= MASTER.min ? '-inf' : (v > 0 ? '+' : '') + v.toFixed(1)) + ' dB', onChange: (v) => { S.master = v; store.set('master', v); setMaster(v); } });
-  $('#tempoKnob').replaceWith(tempoK.root); $('#masterKnob').replaceWith(masterK.root);
+  $('#tempoKnob').replaceWith(tempoK.root);
+  const trb = $('#tempoReset'); if (trb) { tempoReset(); trb.addEventListener('click', () => { S.tempoOv = false; store.set('tempoOv', false); const r = cur(); const code = S.view === 'stack' ? stackText() : (r ? recipeCode(r) : ''); const pt = programTempo(code); const nv = pt != null ? pt : (r && r.bpm_hint) || TEMPO.def; S.tempo = nv; tempoK.set(nv, false); store.set('tempo', nv); tempoReset(); updateStackCode(); liveUpdate(); say('Tempo: ' + nv + ' BPM (from program)'); }); } $('#masterKnob').replaceWith(masterK.root);
   $('#keys').replaceChildren(...KEYS.flatMap(([k, d]) => [el('dt', {}, el('kbd', {}, k)), el('dd', {}, d)]));
   Viz.init();
 
@@ -876,5 +893,5 @@ window.strudelCraft.transport = { play: () => play(), stop: () => stop(), toggle
   async ensureSamples(code) { await Engine.load(); if (needsSamplesFor(code) && !Engine.samplesLoaded) await loadSampleMaps(); },
   async warm() { await Engine.load(); try { if (!window.strudelCraft.hooks && window.strudelCraft.installHooks) window.strudelCraft.installHooks(); await applyRanges(); await loadPerform(); } catch (e) { /* optional */ } } };
 window.strudelCraft.engineState = () => ({ ...Engine.state, scheduler: Engine.scheduler, playing: S.playing, srcView: S.srcView || 'rack' });
-window.__sc = { S, Engine, Bus, play, stop, select, setView, History, toggleStack, holdLink: () => { S.linkHold = true; }, audio: { resume: resumeAudio, get state() { const c = audioCtx(); return c ? c.state : 'none'; }, get peak() { return AudioSt.lastPeak; }, needsSamplesFor } };
+window.__sc = { S, Engine, Bus, currentSource, programTempo, play, stop, select, setView, History, toggleStack, holdLink: () => { S.linkHold = true; }, audio: { resume: resumeAudio, get state() { const c = audioCtx(); return c ? c.state : 'none'; }, get peak() { return AudioSt.lastPeak; }, needsSamplesFor } };
 document.addEventListener('DOMContentLoaded', boot);

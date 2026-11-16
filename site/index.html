@@ -188,6 +188,7 @@ for (const t of ['pointerdown', 'keydown']) addEventListener(t, () => go(), { on
   
   <div class="tp-knobs">
     <div id="tempoKnob"></div>
+    <button type="button" class="ghost tp-reset" id="tempoReset" hidden aria-label="Reset tempo to the program's own setcpm" title="Tempo is overridden by the knob. Click to use the program's own setcpm again">Program</button>
     <div id="masterKnob"></div>
   </div>
   <div class="tp-meter">

@@ -88,7 +88,7 @@ const top = (o, k = 16) => Object.entries(o).sort((a, b) => b[1] - a[1]).slice(0
 const out = { prog: PROG, throttle: THR, hidden: HIDDEN ? vis : false, query: QUERY || null, seek: SEEK, playToStartMs: playMs, ...res, cpu: { busyMs: Math.round(total), profileS: +((prof.endTime - prof.startTime) / 1e6).toFixed(1), busyPct: +(total / ((prof.endTime - prof.startTime) / 1000) * 100).toFixed(1), byCaller: top(cat), bySelf: top(leafCat, 12), ...(process.argv.includes('--incl') ? { inclusive: top(incl, 40) } : {}) }, superdough: { droppedPast: cons.past, stillLoading: cons.loading }, pageErrors: cons.errors.length };
 if (take) {
   const x = new Float32Array(Uint8Array.from(Buffer.from(take.b64, 'base64')).buffer); out.capture = { frames: take.frames, sr: take.sr, start: take.start, segments: take.segments.length };
-  const REF = arg('--ref', null); if (REF) { const w = readWav(fs.readFileSync(REF)); const from = +arg('--ref-from', 0); const cps = +arg('--cps', 0.5); /* site Tempo knob default */ const a = Math.round((take.start - from) / cps * w.sr), b = a + Math.round(take.frames / take.sr * w.sr);
+  const REF = arg('--ref', null); if (REF) { const w = readWav(fs.readFileSync(REF)); const from = +arg('--ref-from', 0); const cps = +arg('--cps', 128.8 / 240); /* the program's own setcpm (night phonk) */ const a = Math.round((take.start - from) / cps * w.sr), b = a + Math.round(take.frames / take.sr * w.sr);
     out.capture.glitch = compare({ x: mono(w.L.subarray(a, b), w.R.subarray(a, b)), sr: w.sr }, { x, sr: take.sr }); }
   const D = arg('--save-take', null); if (D) fs.writeFileSync(D, Buffer.from(x.buffer));
 }

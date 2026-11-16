@@ -1,5 +1,6 @@
 // Hooks P3 (#49): model schema and code <-> model round trip. Run: node tests/hooks/p3.mjs
 import fs from 'node:fs';
+import { fullCatalog } from '../lib/catalog.mjs';
 import crypto from 'node:crypto';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -8,7 +9,7 @@ import { parse, generate, applyOp, graph, layout, canonical, hash, fromConfig, s
 
 const rd = (p) => fs.readFileSync(new URL(p, import.meta.url), 'utf8');
 const schema = JSON.parse(rd('../../site/data/schema/model.v1.json'));
-const catalog = JSON.parse(rd('../../site/data/catalog.json'));
+const catalog = fullCatalog();
 const syntax = rd('../../docs/HOOKS_SYNTAX.md');
 const pass = (m) => console.log('PASS ' + m);
 const skip = (m, why) => console.log(`SKIP ${m}: ${why}`);

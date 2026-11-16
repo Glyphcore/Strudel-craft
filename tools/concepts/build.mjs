@@ -14,6 +14,7 @@
 // node tools/racks/audit.mjs (hygiene). Families are data only; adding a concept never needs code here (docs/CONVENTIONS.md section 7).
 // Packs: a family ships in glyphcore/phonk unless it says "pack": "author/name" (then site/data/<name>/, whose craftpack.json must exist; the builder
 // writes its ingredient list). A family of another pack may add "section" { id, title, explain } (its Syntax section) and "labels" [[id, title, category, words]].
+import { readCatalog, catalogFiles } from '../catalog/lib.mjs';
 import fs from 'node:fs'; import path from 'node:path'; import os from 'node:os'; import { spawnSync, spawn } from 'node:child_process'; import { fileURLToPath, pathToFileURL } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..'); const HERE = path.join(ROOT, 'tools/concepts');
 const TX = await import(pathToFileURL(path.join(path.dirname(fileURLToPath(import.meta.url)), 'taxonomy.mjs')).href);
@@ -165,7 +166,7 @@ for (const x of recipes) if (x.r.program) Object.assign(x, programCode(x.r));
 for (const [rel, text] of standalones) put(rel, text);
 
 // ---------- render check (catalog fields) ----------
-const prev = new Map(rd(path.join(ROOT, 'site/data/catalog.json')).recipes.map((r) => [r.id, r]));
+const prev = new Map(readCatalog(ROOT).recipes.map((r) => [r.id, r]));
 function wavStats(file) {
   const b = fs.readFileSync(file); let p = 12, fmt = null, data = null; while (p + 8 <= b.length) { const id = b.toString('ascii', p, p + 4), sz = b.readUInt32LE(p + 4); if (id === 'fmt ') fmt = { tag: b.readUInt16LE(p + 8), ch: b.readUInt16LE(p + 10), sr: b.readUInt32LE(p + 12), bits: b.readUInt16LE(p + 22) }; if (id === 'data') data = b.subarray(p + 8, p + 8 + sz); p += 8 + sz + (sz & 1); }
   const by = fmt.bits / 8, n = Math.floor(data.length / (by * fmt.ch)); const x = new Float64Array(n); let peak = 0, ss = 0;
@@ -206,12 +207,12 @@ const catRecipes = recipes.map(({ fam, r, code, expr, craft }) => {
 const J = (x) => JSON.stringify(x, null, 1) + '\n';
 for (const ing of ingredients) put(`site/data/${dirOf(ing.pack)}/${ing.file}`, J(ing.data));
 const NEWLABELS = [['hip-hop', 'Hip-hop', 'feel', 'boom bap, rap beat, backdrop'], ['boom-bap', 'Boom-bap', 'feel', 'dusty, knock, pocket'], ['trap', 'Trap', 'feel', '808, rolling hats, half-time'], ['hyphy', 'Hyphy', 'feel', 'bay area, bounce, stomp'], ['cloud', 'Cloud / wave', 'feel', 'airy, washed, floating rap'], ['dovetail', 'Dovetail', 'arrangement', 'transition, pickup, overlap, handoff'], ['transition', 'Transition', 'arrangement', 'into the next section'], ['swing', 'Swing', 'rhythm', 'shuffle, groove, pocket, push and pull']];
-const cat = rd(path.join(ROOT, 'site/data/catalog.json'));
+const cat = readCatalog(ROOT);
 for (const f of fams) for (const l of f.labels || []) NEWLABELS.push(l);
 for (const [id, title, category, words] of NEWLABELS) if (!cat.labels.some((l) => l.id === id)) cat.labels.push({ id, title, category, words: words.split(', ') });
 const labelIds = new Set(cat.labels.map((l) => l.id)); for (const r of catRecipes) for (const l of r.labels) if (!labelIds.has(l)) die(`recipe ${r.id}: unknown label ${l}`);
 cat.recipes = [...cat.recipes.filter((r) => r.origin !== 'concepts'), ...catRecipes].map((r) => { const tx = TX.recipeTaxonomy(r); const { folder, tags, ...rest } = r; return { ...rest, folder: tx.folder, tags: tx.tags }; }); // folder and tags are derived (tools/concepts/taxonomy.mjs) { const ids = cat.recipes.map((r) => r.id); if (new Set(ids).size !== ids.length) die('duplicate catalog id'); }
-put('site/data/catalog.json', JSON.stringify(cat, null, 1).replace(/"(peak|rms_dbfs|bpm_hint)": (-?\d+)(,?)\n/g, '"$1": $2.0$3\n')); // same text as engine/strudel/build_catalog.py (Python floats)
+for (const [rel, text] of Object.entries(catalogFiles(cat))) put(rel, text); // #131: the eager index plus one lazy body file per family (tools/catalog/lib.mjs)
 const synText = fs.readFileSync(path.join(ROOT, 'site/data/syntax.json'), 'utf8');
 const oldEx = new Map(JSON.parse(synText).sections.flatMap((s) => s.examples).map((e) => [e.title, e]));
 const sections = [{ id: 'feels', title: 'Feels: hip-hop, trap, hyphy; grooves; dovetails', needs: 'hooks', explain: 'Genre kits as data (docs/CONVENTIONS.md). Components are racks (band-scoped hook defs) and pattern atoms; forms are gate atoms (hh.intro, hh.verse, hh.hook, hh.dropBar, hh.lastBeat, hh.switch, hh.bounce, hh.stomp); dovetails are gate atoms with a point param (dt.pickup, dt.rise, dt.hit, dt.tail), mask and fade-table atoms and move racks (fadeOut, fadeIn, throw, tailHold, duckUnder). Groove is one method, .groove(swing, push, jitter, vel, drift, seed, grid): swing in MPC percent, push / jitter / drift in percent of a 16th, deterministic per seed; presets groove-straight, -pocket, -lazy, -bounce, -rolling, -cloud, -swing(pct), -push(pct), -human(jitter, vel, seed). A feel template (feel-boombap, feel-lazy, feel-trap, feel-hyphy, feel-cloud of pack glyphcore/phonk) fills the slots drums, top, bass, harmony, fx and groove; a track picks one with one atoms.import line and overrides a slot with one bind. Sub-bar gates on a slot need quant: 0 on the slot.', examples: syntax.filter((s) => !s.section).map((s) => ({ title: s.title, code: s.code })) },
@@ -242,7 +243,8 @@ put(`site/data/${dirOf(pk)}/craftpack.json`, JSON.stringify(man, null, 2) + '\n'
 let stale = [];
 for (const [rel, text] of outputs) { const f = path.join(ROOT, rel); const cur = fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : null;
   const same = rel.endsWith('craftpack.json') && cur ? JSON.stringify({ ...JSON.parse(cur), ingredients: JSON.parse(cur).ingredients.map((i) => ({ ...i, hash: 0, bytes: 0 })) }) === JSON.stringify({ ...JSON.parse(text), ingredients: JSON.parse(text).ingredients.map((i) => ({ ...i, hash: 0, bytes: 0 })) }) : cur === text;
-  if (!same) { stale.push(rel); if (!CHECK) fs.writeFileSync(f, text); } }
+  if (!same) { stale.push(rel); if (!CHECK) { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, text); } } }
+for (const n of fs.existsSync(path.join(ROOT, 'site/data/recipes')) ? fs.readdirSync(path.join(ROOT, 'site/data/recipes')) : []) { const rel = 'site/data/recipes/' + n; if (!outputs.has(rel)) { stale.push(rel + ' (unused)'); if (!CHECK) fs.unlinkSync(path.join(ROOT, rel)); } } // a family that no recipe uses any more
 const failed = catRecipes.filter((r) => !r.verified).map((r) => r.id);
 console.log(JSON.stringify({ check: CHECK, stale, recipes: catRecipes.length, verified: catRecipes.length - failed.length, failed, syntax: syntax.length, ingredients: ingredients.map((i) => i.id) }));
 process.exit(CHECK && stale.length ? 1 : 0);

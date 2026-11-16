@@ -27,9 +27,38 @@ for _mf in sorted((ROOT / "site" / "data").glob("*/craftpack.json")):
         SITE_PACKS[_id] = "file:data/" + _mf.parent.name
 
 
+BODIES_KIND = "x-glyphcore.recipe-bodies"
+
+
+def sync_bodies(check):
+    """#131: one lazy `x-glyphcore.recipe-bodies` ingredient per site/data/recipes/<family>.json (written by tools/catalog); entries are kept in
+    sorted family order right after `recipes`. Hash and bytes are filled by cmd_hash next."""
+    mf = ROOT / "site" / "craftpack.json"
+    man = P.read_json(mf)
+    want = {}
+    for f in sorted((ROOT / "site" / "data" / "recipes").glob("*.json")):
+        want["bodies-" + f.stem] = {"id": "bodies-" + f.stem, "kind": BODIES_KIND, "format": BODIES_KIND + "@1", "version": "1.0.0",
+                                    "path": "data/recipes/" + f.name, "load": "lazy"}
+    cur = {i["id"]: i for i in man["ingredients"] if i.get("kind") == BODIES_KIND}
+    keep = [i for i in man["ingredients"] if i.get("kind") != BODIES_KIND]
+    new = []
+    for k, w in want.items():
+        old = cur.get(k)
+        new.append({**w, **{x: old[x] for x in ("hash", "bytes") if old and x in old}} if old else w)
+    at = next(n for n, i in enumerate(keep) if i["id"] == "recipes") + 1
+    ings = keep[:at] + new + keep[at:]
+    stale = [k for k in want if k not in cur] + [k for k in cur if k not in want]
+    if ings != man["ingredients"] and not check:
+        man["ingredients"] = ings
+        mf.write_bytes(P.dump(man))
+    return [f"ingredient {s}" for s in stale]
+
+
 def main(argv):
     check = "--check" in argv
+    sb = sync_bodies(check)
     changes, _ = P.cmd_hash(ROOT / "site", write=not check, check=check)
+    changes = sb + changes
     mb = (ROOT / "site" / "craftpack.json").read_bytes()
     want = "sha256:" + hashlib.sha256(mb).hexdigest()
     lf = ROOT / "site" / "packs.lock.json"

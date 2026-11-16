@@ -2,6 +2,7 @@
 // Real unmodified @strudel/core + mini + transpiler with site/engine/hooks.js and lanes.js on top. Rendered audio is in tests/site/lanes.mjs (Playwright).
 // Boxes that need the `strudel` CLI (another repo) print SKIP with the exact missing piece; nothing is stubbed to pass.
 import { cliUnspecified } from '../hooks/fixtures/cli.mjs';
+import { fullCatalog } from '../lib/catalog.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -61,9 +62,9 @@ const EX1_COMPILED = `drums: stack(
 {
   const c1 = compile(EX1); const c2 = compile(EX1);
   assert.equal(norm(c1.code), norm(EX1_COMPILED)); assert.equal(c1.code, c2.code); assert.equal(c1.graph.diagnostics.length, 0); assert.deepEqual(c1.graph.audio.splits.map((s) => [s.lane, s.bus, s.branches]), [['drums', 64, 3]]);
-  const cat = JSON.parse(fs.readFileSync(new URL('../../site/data/catalog.json', import.meta.url), 'utf8')); let n = 0; const bad = [];
+  const cat = fullCatalog(); let n = 0; const bad = [];
   for (const r of cat.recipes) { n++; const o = compile(r.code); if (o.code !== r.code || prepare(r.code).code !== r.code || o.graph.audio) bad.push(r.id); }
-  assert.deepEqual(bad, []); assert.equal(n, 46);
+  assert.deepEqual(bad, []); assert.equal(n, JSON.parse(fs.readFileSync(new URL('../../site/data/catalog.json', import.meta.url), 'utf8')).recipes.length); assert.ok(n >= 46); /* every recipe of the index, bodies merged (#131); the count follows the catalog */
   pass(`Compile: the LANES 5.1 program compiles to the plain text of the doc (bus 64, 10 ms attack/release, gain(1); whitespace-insensitive equal); compile and prepare are a no-op on all ${n} catalog recipe codes (${bad.length} failures)`);
 }
 

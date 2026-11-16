@@ -10,6 +10,7 @@
 // Order after a concept change: node tools/concepts/build.mjs; python3 tools/packs/packs.py hash site/data/phonk --write; python3 tools/packs/shim.py; node tools/lowering/build.mjs; python3 tools/packs/shim.py
 import fs from 'node:fs'; import path from 'node:path'; import crypto from 'node:crypto';
 import { ROOT, createLowering, verify, hasCli, classify } from './lower.mjs';
+import { readCatalog, catalogFiles } from '../catalog/lib.mjs';
 const argv = process.argv.slice(2); const flag = (n) => argv.includes(n); const CHECK = flag('--check'), FORCE = flag('--verify'), NOVER = flag('--no-verify') || !hasCli();
 const DROOT = process.env.LOWERING_DATA_ROOT || ROOT; // tests point this at a scratch copy of catalog.json, syntax.json and docs/LOWERING.md
 const rd = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, f), 'utf8'));
@@ -30,14 +31,13 @@ function check(id, craft, lowered, old) { // -> lowered_check | undefined
 }
 
 // ---------- catalog ----------
-const catText = fs.readFileSync(path.join(DROOT, 'site/data/catalog.json'), 'utf8'); const cat = JSON.parse(catText);
+const cat = readCatalog(DROOT); const catFiles = catalogFiles(cat); // #131: the full catalog (index + family bodies) in, the split files out
 for (const r of cat.recipes) {
   stats.catalog.total++; const c = classify(r.code);
   if (r.lowered) { stats.catalog.lowered++; const lc = check('catalog ' + r.id, r.code, r.lowered, r.lowered_check); if (lc) r.lowered_check = lc; else delete r.lowered_check; }
   else { stats.catalog.identical++; if (c.state !== 'plain') drift.push(`catalog ${r.id}: uses ${c.state === 'sugar' ? 'sugar' : c.kind} but has no "lowered" (regenerate: node tools/concepts/build.mjs)`); delete r.lowered_check; }
 }
-const catOut = JSON.stringify(cat, null, 1).replace(/"(peak|rms_dbfs|bpm_hint)": (-?\d+)(,?)\n/g, '"$1": $2.0$3\n'); // same text as tools/concepts/build.mjs
-if (catOut !== catText) { stale.push('site/data/catalog.json'); if (!CHECK) fs.writeFileSync(path.join(DROOT, 'site/data/catalog.json'), catOut); }
+for (const [rel, text] of Object.entries(catFiles)) { const f = path.join(DROOT, rel), cur = fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : null; if (cur !== text) { stale.push(rel); if (!CHECK) { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, text); } } } // same text as tools/concepts/build.mjs (both validated by --check)
 
 // ---------- syntax (one example per line; only lines that change are rewritten) ----------
 const synText = fs.readFileSync(path.join(DROOT, 'site/data/syntax.json'), 'utf8'); const lines = synText.split('\n'); let seen = 0, sec = null;

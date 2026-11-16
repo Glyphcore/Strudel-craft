@@ -13,3 +13,4 @@
 .qp-tray button{min-height:44px;padding:0 10px}.qp-tray button[aria-pressed="true"]{border-color:var(--sig);color:var(--sig)}.qp-tray .qp-stop{color:var(--sig)}
 .qp-tray::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,var(--sig) calc(var(--qp-p,0)*100%),transparent 0)}
 @media (prefers-reduced-motion:reduce){.qp[data-state="loading"] .qp-i{animation:none}}
+.qp[aria-busy="true"] .qp-i{opacity:.4} /* #131: the recipe body is on its way */

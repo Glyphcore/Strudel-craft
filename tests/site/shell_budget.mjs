@@ -18,9 +18,11 @@ export const EAGER = [
   'preload packs.lock.json', 'preload craftpack.json', 'preload data/vox/craftpack.json',
   'preload app.js', 'style style.css', 'style taxonomy.css', 'style organizer.css', /* #120: the organizer in the Recipes browser (first paint) */ 'script ui.js', 'script forms.js', 'script app.js', 'module packs.js', 'style workspace.css', 'module palette.js', 'style pwa.css', 'module pwa.js',
 ];
-/* the budget leaves under 3% for small fixes, not for a new feature: data/catalog.json alone is 121,056 of it */
-export const BUDGET_MEASURED = 418_999; // index.html + 18 eager files + their static imports, 2026-11-16 (7eced68 + the #59 rework)
-export const BUDGET = 510_000; // #127 decision: the glyphcore/edm concept recipes grow data/catalog.json (121,056 -> about 195,000 bytes); measured 493,404 with them (418,999 without). Structural fix, per-pack lazy recipes: #131
+/* #131: data/catalog.json is the recipe INDEX (122,716 bytes, no code / notes / lowered text); the bodies are lazy files data/recipes/<family>.json,
+   fetched on first open and precached for offline. Back to the pre-#127 budget (470,000): a new genre family adds bodies, not eager bytes.
+   Before #131: 592,892 measured against 510,000 (catalog.json 283,699). */
+export const BUDGET_MEASURED = 441_635; // index.html + 19 eager files + their static imports, 2026-11-16 (#131 split catalog)
+export const BUDGET = 470_000;
 
 export function shellBudget() {
   const checks = []; const check = (name, ok, detail = '') => checks.push({ name, ok: !!ok, detail });

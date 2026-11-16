@@ -1,0 +1,79 @@
+{
+ "family": "groove",
+ "bodies": {
+  "groove-mpc-swing": {
+   "code": "setcpm(90/4)\n$: s(\"x*16\").hook(\"hat(0.03) | groove-swing(58)\").velocity(\"[1 .6]*8\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x*16\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).swingBy(0.16, 8).velocity(\"[1 .6]*8\")",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
+    "hash": "33ea3380ef"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "groove-lazy-snare": {
+   "code": "setcpm(86/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick | groove-push(-3)\")\n$: s(atoms.hh.boomSnare).hook(\"clap | groove-push(12)\")\n$: s(atoms.hh.boomHats).hook(\"hat\")",
+   "lowered": "setcpm(86/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).early(0.001875)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).late(0.0075)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.05).sustain(0).gain(0.45)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 3 differs); with the groove taken out of both forms the events are identical",
+    "hash": "056154861d"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "groove-humanize": {
+   "code": "setcpm(90/4)\n$: s(\"x*8\").hook(\"hat | groove-human(4, 0.15, 3)\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x*8\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.05).sustain(0).gain(0.45).mul(velocity(rand.late(3.37).range(0.85, 1))).late(rand.late(3).range(0, 0.005).segment(16)).early(0.0025)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (32 Craft, 31 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "59addbee29"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "groove-drag-vs-rush": {
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomSnare).hook(\"clap | groove-push(10)\").pan(0.1)\n$: s(atoms.hh.boomSnare).hook(\"clap | groove-push(-10)\").pan(0.9)",
+   "lowered": "setcpm(90/4)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).late(0.00625).pan(0.1)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).early(0.00625).pan(0.9)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "c0d7afdd1b"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "groove-drift": {
+   "code": "setcpm(80/4)\n$: note(\"[c3,eb3,g3,bb3]*4\").hook(\"rhodes | groove-cloud(2)\")",
+   "lowered": "setcpm(80/4)\n$: note(\"[c3,eb3,g3,bb3]*4\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22).swingBy(0.12, 8).mul(velocity(rand.late(2.37).range(0.92, 1))).late(rand.late(2).range(0, 0.00625).segment(16)).late(perlin.late(2).range(0, 0.00625).slow(4).segment(16)).early(0.003125)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
+    "hash": "be40895c9e"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  }
+ }
+}

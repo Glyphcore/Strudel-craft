@@ -6,6 +6,7 @@
 // Writes OUT/report.json and OUT/report.md (default OUT = tools/racks/out, gitignored). Exit 0 = no failure, 1 = failures, 2 = usage / CLI missing.
 // Sources audited: hook defs of the given hooks files (default: site/data/racks/hygiene.json, site/data/phonk/racks*.json, racks*.json of every other pack in site/data),
 // site/data/catalog.json recipes, site/data/syntax.json examples. Classes come from tools/racks/targets.json.
+import { readCatalog } from '../catalog/lib.mjs';
 import fs from 'node:fs'; import path from 'node:path'; import os from 'node:os'; import { spawn } from 'node:child_process'; import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url)); const ROOT = path.resolve(HERE, '..', '..');
 const CLI = process.env.STRUDEL_CLI || '/home/user/suno-track-lab/engine/strudel-cli';
@@ -106,7 +107,7 @@ if (only.includes('racks')) for (const [name, def] of Object.entries(merged.defs
     alias: C.alias && !t.noalias ? { note: C.alias.note, code: pre + `$: note("${C.alias.note}").use("x").delay(0).room(0)\n` } : null,
     head: structure && TGT.hygiene && t.class !== 'move' && !/^hygiene-/.test(name) ? { found: head, want: 'hygiene-' + t.class } : null });
 }
-if (only.includes('catalog')) for (const r of JSON.parse(fs.readFileSync(opt('--catalog', path.join(ROOT, 'site/data/catalog.json')), 'utf8')).recipes) {
+if (only.includes('catalog')) for (const r of (opt('--catalog', null) ? JSON.parse(fs.readFileSync(opt('--catalog', null), 'utf8')) : readCatalog(ROOT)).recipes /* #131: --catalog takes a monolithic export (tools/catalog/catalog.mjs export); default = index + family bodies */) {
   const t = TGT.catalog[r.id] || {}; items.push({ kind: 'catalog', id: r.id, cls: t.class || 'demo', code: r.lowered || r.code, bars: t.bars || 2, skip: r.needs_samples && !fs.existsSync(KIT) ? 'needs a sample bank (no --samples-dir kit)' : t.skip });
 }
 if (only.includes('syntax')) for (const sec of JSON.parse(fs.readFileSync(opt('--syntax', path.join(ROOT, 'site/data/syntax.json')), 'utf8')).sections) for (const ex of sec.examples || []) {

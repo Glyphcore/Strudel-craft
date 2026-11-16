@@ -283,6 +283,8 @@ export function createPacks(opts = {}) {
     return ad.view(ings.filter((i) => i.data).map((i) => ({ pack: i.pack.id, ingredient: i.id, data: i.data })), name);
   }
   const view = {
+    /* #131: the lazy bodies of an indexed recipes ingredient: recipeBodies(packId, 'bodies-edm-core') -> { <recipe id>: {code, ...} }, one fetch per file (hash-verified, cached by the service worker); null when the pack or file is unavailable */
+    recipeBodies: async (packId, ingId) => { await indexed; const p = packs.get(packId), i = p && p.state === 'ready' ? p.ingredients.get(ingId) : null; if (!i || i.kind !== 'x-glyphcore.recipe-bodies' || ['skipped', 'blocked'].includes(i.state)) return null; await loadIng(i); return i.state === 'ready' && i.data ? i.data.bodies : null; },
     catalog: () => get('recipes'), controlTypes: () => get('control-types'), syntax: () => get('syntax'), doc: (name) => get('docs', name),
     paramShapes: () => get('param-shapes'), editors: () => get('param-editors'), completions: () => get('intellisense'), words: () => get('x-glyphcore.words'),
   };

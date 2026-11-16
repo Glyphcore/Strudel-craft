@@ -1,0 +1,313 @@
+{
+ "family": "hiphop",
+ "bodies": {
+  "boom-bap-kick": {
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 12,
+    "hash": "8d6c540f5c"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "clap-backbeat": {
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomSnare).hook(\"clap\")",
+   "lowered": "setcpm(90/4)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 8,
+    "hash": "d68bfc9525"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "trap-hats-rolls": {
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.trapHats).hook(\"hat(0.03)\").velocity(atoms.hh.rollVel)",
+   "lowered": "setcpm(140/4)\n$: s(\"<[x*16] [x x x x x x x x x x x x [x x x] [x x x] [x x x x] [x x x x x x]]>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).velocity(\"[1 .55 .8 .55]*4\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 88,
+    "hash": "6d297c87f5"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "open-hat-offbeat": {
+   "code": "setcpm(90/4)\n$: s(\"~ x ~ x\").hook(\"openHat\")",
+   "lowered": "setcpm(90/4)\n$: s(\"~ x ~ x\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.22).sustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 8,
+    "hash": "d319f32393"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "finger-snaps": {
+   "code": "setcpm(100/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.hyphySnap).hook(\"snap\")",
+   "lowered": "setcpm(100/4)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(80).lpf(8000).s(\"white\").bpf(2400).bpq(2).lpf(5000).decay(0.05).sustain(0).gain(0.8)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "9ab020bbea"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "trap-808-line": {
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.trap808).hook(\"sub808\")",
+   "lowered": "setcpm(140/4)\n$: note(\"<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>\").hpf(25).s(\"sine\").attack(0.004).pdecay(0.14).decay(0.6).sustain(0.7).release(0.1).shape(0.45).lpf(600).gain(0.45).postgain(0.87)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 12,
+    "hash": "f9d5f7f82d"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "boom-bap-bass": {
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.boomBass).hook(\"bbBass\")",
+   "lowered": "setcpm(90/4)\n$: note(\"c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "dd21b95058"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "rhodes-keys": {
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.boomChords).hook(\"rhodes\")",
+   "lowered": "setcpm(90/4)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "6347a5caa6"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "trap-bell-melody": {
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.trapBell).hook(\"trapBell\")",
+   "lowered": "setcpm(140/4)\n$: note(\"c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~\").hpf(300).lpf(8000).s(\"sine\").fm(1.5).fmh(4).decay(0.5).sustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 32,
+    "hash": "dc1983b904"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "cloud-pad": {
+   "code": "setcpm(70/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.cloudChords).hook(\"airPad\")",
+   "lowered": "setcpm(70/4)\n$: note(\"<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"triangle\").attack(1.2).sustain(0.8).release(2.5).lpf(1800).gain(0.16)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "b33666de4b"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "chopped-chords": {
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.chops).hook(\"chopStab\")",
+   "lowered": "setcpm(90/4)\n$: note(\"[c4,eb4,g4] ~ ~ [c4,eb4,g4] ~ ~ [bb3,d4,f4] ~ ~ ~ [ab3,c4,eb4] ~ [ab3,c4,eb4] ~ ~ ~\").hpf(120).lpf(8000).s(\"sawtooth\").attack(0.003).decay(0.14).sustain(0).lpf(1600).lpenv(2.5).lpdecay(0.12).gain(0.2)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 60,
+    "hash": "0ccfd0f12f"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "hyphy-lead": {
+   "code": "setcpm(100/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.hyphyLead).hook(\"hyphyLead\")",
+   "lowered": "setcpm(100/4)\n$: note(\"c5 ~ ~ eb5 ~ ~ g5 ~ f5 ~ eb5 ~ c5 ~ ~ ~\").hpf(150).lpf(8000).s(\"square\").lpf(2800).lpenv(1).attack(0.01).decay(0.2).sustain(0.5).release(0.15).vib(6).vibmod(0.15).gain(0.26)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 24,
+    "hash": "5ba16ff0cd"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "vox-tag-synth": {
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.tag).hook(\"voxTag\")",
+   "lowered": "setcpm(90/4)\n$: note(\"~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ <c4 g4> ~\").hpf(150).lpf(8000).s(\"sawtooth\").vowel(\"o\").attack(0.01).decay(0.25).sustain(0).lpf(3000).gain(0.35)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 4,
+    "hash": "b6d66eb782"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "vinyl-bed": {
+   "code": "setcpm(90/4)\n$: s(\"x\").hook(\"vinyl\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x\").hpf(200).lpf(12500).ftype(\"24db\").s(\"pink\").hpf(1500).lpf(8000).sustain(1).gain(0.06)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 4,
+    "hash": "5b92ffb9e1"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "downlifter": {
+   "code": "setcpm(90/4)\n$: s(\"x ~\").hook(\"downlifter\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x ~\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").hpf(400).attack(0.005).decay(2).sustain(0).lpf(1200).lpenv(3).lpattack(0.001).lpdecay(2).lpsustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 4,
+    "hash": "039b7705d4"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "boom-bap-beat": {
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick\")\n$: s(atoms.hh.boomSnare).hook(\"clap\")\n$: s(atoms.hh.boomHats).hook(\"hat\")\n$: note(atoms.hh.boomBass).hook(\"bbBass\")\n$: note(atoms.hh.boomChords).hook(\"rhodes\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.05).sustain(0).gain(0.45)\n$: note(\"c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 88,
+    "hash": "3910f846b5"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "trap-beat": {
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.trapKick).hook(\"knock808\")\n$: s(atoms.hh.trapClap).hook(\"clap\")\n$: s(atoms.hh.trapHats).hook(\"hat(0.03)\").velocity(atoms.hh.rollVel)\n$: note(atoms.hh.trap808).velocity(\"0.6\").hook(\"sub808\")\n$: note(atoms.hh.trapBell).hook(\"trapBell\")",
+   "lowered": "setcpm(140/4)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>\").hpf(30).lpf(7000).hpf(30).lpf(7000).s(\"sine\").freq(55).penv(36).pdecay(0.04).decay(0.28).sustain(0).noise(0.12).shape(0.4).gain(0.8).hpf(40)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9)\n$: s(\"<[x*16] [x x x x x x x x x x x x [x x x] [x x x] [x x x x] [x x x x x x]]>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).velocity(\"[1 .55 .8 .55]*4\")\n$: note(\"<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>\").velocity(\"0.6\").hpf(25).s(\"sine\").attack(0.004).pdecay(0.14).decay(0.6).sustain(0.7).release(0.1).shape(0.45).lpf(600).gain(0.45).postgain(0.87)\n$: note(\"c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~\").hpf(300).lpf(8000).s(\"sine\").fm(1.5).fmh(4).decay(0.5).sustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 148,
+    "hash": "cd0b404cb0"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "hyphy-bounce-stomp": {
+   "code": "setcpm(100/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(\"<[x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]!2 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hook(\"bbKick\")\n$: s(\"<[~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~]!2 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hook(\"clap\")\n$: s(atoms.hh.hyphySnap).hook(\"snap\").mask(\"<1 1 0 0>\")\n$: note(atoms.hh.hyphyLead).hook(\"hyphyLead\")",
+   "lowered": "setcpm(100/4)\n$: s(\"<[x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]!2 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75)\n$: s(\"<[~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~]!2 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(80).lpf(8000).s(\"white\").bpf(2400).bpq(2).lpf(5000).decay(0.05).sustain(0).gain(0.8).mask(\"<1 1 0 0>\")\n$: note(\"c5 ~ ~ eb5 ~ ~ g5 ~ f5 ~ eb5 ~ c5 ~ ~ ~\").hpf(150).lpf(8000).s(\"square\").lpf(2800).lpenv(1).attack(0.01).decay(0.2).sustain(0.5).release(0.15).vib(6).vibmod(0.15).gain(0.26)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 62,
+    "hash": "d8dc5bfa57"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "hook-drop-bar": {
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick\").mask(\"<1 1 1 0>\")\n$: s(atoms.hh.boomSnare).hook(\"clap\").mask(\"<1 1 1 0>\")\n$: note(atoms.hh.boomChords).hook(\"rhodes\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).mask(\"<1 1 1 0>\")\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mask(\"<1 1 1 0>\")\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 31,
+    "hash": "bb81aee231"
+   },
+   "notes": "Plain Strudel uses .mask(\"<1 1 1 0>\"); with hooks the same form is the gate atom hh.dropBar (tagged(\"drums\").mute(atoms.hh.dropBar)).",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "drop-last-beat": {
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick\").mask(\"<1 1 1 [1 1 1 0]>\")\n$: s(atoms.hh.boomSnare).hook(\"clap\").mask(\"<1 1 1 [1 1 1 0]>\")\n$: note(atoms.hh.boomBass).hook(\"bbBass\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).mask(\"<1 1 1 [1 1 1 0]>\")\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mask(\"<1 1 1 [1 1 1 0]>\")\n$: note(\"c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 35,
+    "hash": "e325478b69"
+   },
+   "notes": "Plain Strudel masks the last quarter of every 4th bar; with hooks it is the gate atom hh.lastBeat (bar.beat points, 20.4b..21b).",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "beat-switch": {
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick\").mask(\"<1 1 0 0>\")\n$: s(atoms.hh.boomSnare).hook(\"clap\").mask(\"<1 1 0 0>\")\n$: s(atoms.hh.trapKick).hook(\"knock808\").mask(\"<0 0 1 1>\")\n$: s(atoms.hh.trapClap).hook(\"clap\").mask(\"<0 0 1 1>\")\n$: s(atoms.hh.trapHats).hook(\"hat(0.03)\").mask(\"<0 0 1 1>\")\n$: note(atoms.hh.boomChords).hook(\"rhodes\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).mask(\"<1 1 0 0>\")\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mask(\"<1 1 0 0>\")\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>\").hpf(30).lpf(7000).hpf(30).lpf(7000).s(\"sine\").freq(55).penv(36).pdecay(0.04).decay(0.28).sustain(0).noise(0.12).shape(0.4).gain(0.8).hpf(40).mask(\"<0 0 1 1>\")\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mask(\"<0 0 1 1>\")\n$: s(\"<[x*16] [x x x x x x x x x x x x [x x x] [x x x] [x x x x] [x x x x x x]]>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).mask(\"<0 0 1 1>\")\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 78,
+    "hash": "06aff2e9c5"
+   },
+   "notes": "Plain Strudel alternates kits with masks; with hooks: hooks.bind(\"kick\", \"bbKick\", \"<29b\") and hooks.bind(\"kick\", \"knock808\", atoms.hh.switch).",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "switch-up": {
+   "code": "setcpm(95/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(\"<[x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~]!4 [x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]!4>\").hook(\"bbKick\")\n$: s(atoms.hh.boomSnare).hook(\"clap\")\n$: note(\"<[c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~]!4 [c2 ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~ ~ c2 ~ ~]!4>\").hook(\"bbBass\")",
+   "lowered": "setcpm(95/4)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~]!4 [x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]!4>\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9)\n$: note(\"<[c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~]!4 [c2 ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~ ~ c2 ~ ~]!4>\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 36,
+    "hash": "cb443b30f4"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  }
+ }
+}

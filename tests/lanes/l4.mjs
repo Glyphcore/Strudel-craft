@@ -3,6 +3,7 @@
 // Boxes whose RUNTIME needs the audio layer (#75) or capture (#76) check the data side only and print that; the CLI (`strudel atoms list --tag`) is another
 // repo: SKIP with the exact missing piece, never stubbed.
 import fs from 'node:fs';
+import { fullCatalog } from '../lib/catalog.mjs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import assert from 'node:assert/strict';
@@ -173,7 +174,7 @@ const NM = process.env.STRUDEL_MODULES;
 // ---- 7. Invariants: documents without lanes are untouched (ids, revs, hashes, graph) against origin/main before #77
 {
   const gold = JSON.parse(rd('./fixtures/l4_golden.json')); const sha = (s) => { return crypto.createHash('sha256').update(s).digest('hex').slice(0, 16); };
-  const catalog = JSON.parse(rd('../../site/data/catalog.json')).recipes; let n = 0, rt = 0;
+  const catalog = fullCatalog().recipes; let n = 0, rt = 0;
   const src = {}; for (const r of catalog) src['recipe:' + r.id] = r.code;
   for (const d of ['tests/hooks/fixtures', 'tests/lanes/fixtures']) for (const f of fs.readdirSync(new URL(`../../${d}`, import.meta.url)).sort()) if (/\.strudel\.js$/.test(f) && !/^l4_|^open|^closed/.test(f)) src[`fx:${d}/${f}`] = fs.readFileSync(new URL(`../../${d}/${f}`, import.meta.url), 'utf8');
   for (const [k, code] of Object.entries(src)) {

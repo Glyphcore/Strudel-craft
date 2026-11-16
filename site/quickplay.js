@@ -248,7 +248,11 @@ function rowButtons() {
 cssReady.then(() => {
   const list = document.getElementById('list'); if (!list) return; rowButtons();
   new MutationObserver(() => rowButtons()).observe(list, { childList: true });
-  list.addEventListener('click', (e) => { const qb = e.target.closest('.qp'); if (!qb) return; e.stopImmediatePropagation(); const r = recipe(qb.dataset.qp.slice(7)); if (r) press(qb, () => ({ key: qb.dataset.qp, title: r.title, code: S0().S.edits[r.id] != null ? S0().S.edits[r.id] : r.code, bpm: r.bpm_hint, samples: !!r.needs_samples })); }, true);
+  list.addEventListener('click', (e) => { const qb = e.target.closest('.qp'); if (!qb) return; e.stopImmediatePropagation(); const r = recipe(qb.dataset.qp.slice(7)); if (!r) return;
+    const go = () => press(qb, () => ({ key: qb.dataset.qp, title: r.title, code: S0().S.edits[r.id] != null ? S0().S.edits[r.id] : r.code, bpm: r.bpm_hint, samples: !!r.needs_samples }));
+    if (S0().bodyReady(r)) go(); /* synchronous: the press stays inside the user gesture */
+    else { qb.setAttribute('aria-busy', 'true'); S0().hydrate(r).then(go, (er) => toast(er.message, 'info')).finally(() => qb.removeAttribute('aria-busy')); } /* #131: the family body loads first */
+  }, true);
   /* warm the engine while idle so the first tap does not pay the cold start (Strudel from the CDN, hooks, perform glue, worklets) */
   const warm = () => { const A = S0(); if (A && A.Engine && !A.Engine.repl) A.Engine.prepare('', false, () => {}).catch(() => {}); };
   setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(warm, { timeout: 5000 }) : warm()), 1500);

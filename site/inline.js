@@ -38,7 +38,9 @@ export function setupInline(api, cm) {
   const top = (ctx, k) => { const m = grams.get(ctx); return m ? [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, k).map((e) => e[0]) : []; };
   const nextTok = (a, b, k = 3) => { const r = top(a + ' ' + b, k); return r.length ? r : top(b, k); };
   const join = (prev, toks) => toks.reduce((s, t, i) => { const p = i ? toks[i - 1] : prev; return s + (p === ',' ? ' ' : '') + t; }, '');
-  window.strudelCraft.packs.catalog().then((d) => d.recipes.forEach((r) => train(r.code || ''))).catch(() => {});
+  /* #131: the catalog is an index; train on each family body as it is loaded (open, search, completion), never fetch them just for this */
+  const trained = new Set(); const trainBodies = () => { const A = window.__sc; if (A) for (const r of A.S.recipes) if (r.code && !trained.has(r.id)) { trained.add(r.id); train(r.code); } };
+  trainBodies(); window.addEventListener('sc:recipe-bodies', trainBodies);
   async function trainHistory() {
     const h = window.strudelCraft && window.strudelCraft.history; if (!h) return;
     try { const log = (await h.log()).slice(0, 40); for (const c of log) { const s = await h.get(c.id); if (s) { train(s['ui:rack-editor'] || '', 2); train(s['ui:stack-editor'] || '', 2); } } } catch (e) { /* ignore */ }

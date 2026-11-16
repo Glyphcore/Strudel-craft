@@ -1,0 +1,327 @@
+{
+ "family": "base",
+ "bodies": {
+  "four-on-the-floor": {
+   "code": "$: s(\"bd*4\").bank(\"RolandTR909\")",
+   "notes": "`bd*4` is four kicks per cycle. Add a hat in recipe 2.",
+   "source": "https://strudel.cc/learn/samples/",
+   "expr": "s(\"bd*4\").bank(\"RolandTR909\")",
+   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR909_bd not found! Is it loaded?"
+  },
+  "offbeat-hat": {
+   "code": "$: s(\"~ hh ~ hh ~ hh ~ hh\").bank(\"RolandTR808\").gain(0.8)",
+   "notes": "`~` rests shift the hat to the offbeats.",
+   "source": "https://strudel.cc/learn/samples/",
+   "expr": "s(\"~ hh ~ hh ~ hh ~ hh\").bank(\"RolandTR808\").gain(0.8)",
+   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR808_hh not found! Is it loaded?"
+  },
+  "euclid-groove": {
+   "code": "$: s(\"bd(3,8), hh(5,8,2), sd(2,8,4)\").bank(\"RolandTR909\")",
+   "notes": "`(beats,segments,rotation)`. Source: https://strudel.cc/learn/mini-notation/",
+   "source": "https://strudel.cc/learn/mini-notation/",
+   "expr": "s(\"bd(3,8), hh(5,8,2), sd(2,8,4)\").bank(\"RolandTR909\")",
+   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR909_bd not found! Is it loaded?"
+  },
+  "reese-style-detuned-bass": {
+   "code": "$: stack(\n  note(\"c2 c2 eb2 g1\").s(\"sawtooth\"),\n  note(\"c2 c2 eb2 g1\").s(\"sawtooth\").add(note(0.12))\n).hpf(30).lpf(400).lpq(8).attack(0.005).gain(0.38)",
+   "notes": "the `add(note(0.12))` detune is UNVERIFIED (it is a semitone offset via documented `add`). A true supersaw is `s(\"supersaw\")`, which appears in a documented example. Keep `lpq` below about 15 for stability (judgement, UNVERIFIED).",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "stack(\n  note(\"c2 c2 eb2 g1\").s(\"sawtooth\"),\n  note(\"c2 c2 eb2 g1\").s(\"sawtooth\").add(note(0.12))\n).hpf(30).lpf(400).lpq(8).attack(0.005).gain(0.38)",
+   "error": null
+  },
+  "sub-bass": {
+   "code": "$: note(\"c1 c1 eb1 bb0\").s(\"sine\").hpf(28).lpf(120).attack(0.01).release(0.08).gain(0.85)",
+   "notes": "low-pass keeps it sub. Remove the filter for purer sine.",
+   "source": "https://strudel.cc/learn/synths/",
+   "expr": "note(\"c1 c1 eb1 bb0\").s(\"sine\").hpf(28).lpf(120).attack(0.01).release(0.08).gain(0.85)",
+   "error": null
+  },
+  "pad-swell": {
+   "code": "$: note(\"<[c3,eb3,g3] [bb2,d3,f3]>\").s(\"triangle\")\n  .hpf(180).lpf(6000).attack(2).release(3).room(0.5).roomsize(6).gain(0.4)",
+   "notes": "`attack`/`release` in seconds, `roomsize` 0 to 10.",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"<[c3,eb3,g3] [bb2,d3,f3]>\").s(\"triangle\")\n  .hpf(180).lpf(6000).attack(2).release(3).room(0.5).roomsize(6).gain(0.4)",
+   "error": null
+  },
+  "filter-sweep-build": {
+   "code": "$: note(\"c2*4\").s(\"sawtooth\")\n  .hpf(30).lpf(sine.slow(8).range(200,4000)).lpq(6).attack(0.005)",
+   "notes": "`sine.slow(8).range(200,4000)` is a signal on `lpf`. Cutoff is 0 to 20000 Hz.",
+   "source": "https://strudel.cc/learn/signals/",
+   "expr": "note(\"c2*4\").s(\"sawtooth\")\n  .hpf(30).lpf(sine.slow(8).range(200,4000)).lpq(6).attack(0.005)",
+   "error": null
+  },
+  "riser": {
+   "code": "$: s(\"white\").hpf(saw.range(200,8000).slow(8)).lpf(11000).ftype(\"24db\")\n  .gain(saw.slow(8)).room(0.3)",
+   "notes": "`saw.slow(8)` runs 0 to 1 over 8 cycles, so the riser fades in.",
+   "source": "https://strudel.cc/learn/signals/",
+   "expr": "s(\"white\").hpf(saw.range(200,8000).slow(8)).lpf(11000).ftype(\"24db\")\n  .gain(saw.slow(8)).room(0.3)",
+   "error": null
+  },
+  "breakdown-drop-arrangement-over-bars": {
+   "code": "const drums = s(\"bd*4,hh*8\").bank(\"RolandTR909\")\nconst pad = note(\"c3 eb3 g3 bb3\").s(\"triangle\").slow(2).room(0.4)\nsetcpm(128/4)\narrange([8, pad], [8, drums], [8, stack(drums, pad)])",
+   "notes": "`arrange([cycles, pattern], ...)` syntax is verified from the Strudel FAQ mirror (https://warm.strudel.cc/learn/faq). Confirm on strudel.cc. `setcpm(BPM/4)` for 4/4.",
+   "source": "https://warm.strudel.cc/learn/faq",
+   "expr": null,
+   "error": null
+  },
+  "half-time": {
+   "code": "$: s(\"bd ~ ~ ~ ~ ~ ~ ~, ~ ~ ~ ~ sd ~ ~ ~, hh*8\").bank(\"RolandTR808\")",
+   "notes": "one kick and one snare per cycle; cycle length is one bar at the set tempo. Use `.slow(2)` on the hat to thin it.",
+   "source": "https://strudel.cc/learn/samples/",
+   "expr": "s(\"bd ~ ~ ~ ~ ~ ~ ~, ~ ~ ~ ~ sd ~ ~ ~, hh*8\").bank(\"RolandTR808\")",
+   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR808_bd not found! Is it loaded?"
+  },
+  "call-and-response": {
+   "code": "$: note(\"<[c4 e4 g4 e4] ~>\").s(\"triangle\").room(0.3)\n$: note(\"<~ [g4 a4 b4 c5]>\").s(\"square\").gain(0.5)",
+   "notes": "alternation `< >` swaps the phrase and answer each cycle.",
+   "source": "https://strudel.cc/learn/mini-notation/",
+   "expr": "stack(\n  note(\"<[c4 e4 g4 e4] ~>\").s(\"triangle\").room(0.3),\n  note(\"<~ [g4 a4 b4 c5]>\").s(\"square\").gain(0.5)\n)",
+   "error": null
+  },
+  "minor-motif": {
+   "code": "$: n(\"0 2 <3 4> 2\").scale(\"A:minor\").s(\"triangle\").slow(2)",
+   "notes": "`scale(\"A:minor\")` uses root:scale syntax from the tonal page. Numbers index the scale.",
+   "source": "https://strudel.cc/learn/tonal/",
+   "expr": "n(\"0 2 <3 4> 2\").scale(\"A:minor\").s(\"triangle\").slow(2)",
+   "error": null
+  },
+  "chord-stabs": {
+   "code": "$: chord(\"<Am7 F^7 C G>*2\").voicing()\n  .s(\"sawtooth\").hpf(120).lpf(1800).decay(0.2).sustain(0).gain(0.5)",
+   "notes": "`^` marks major seventh. `decay` and `sustain(0)` cut each chord short.",
+   "source": "https://strudel.cc/learn/tonal/",
+   "expr": "chord(\"<Am7 F^7 C G>*2\").voicing()\n  .s(\"sawtooth\").hpf(120).lpf(1800).decay(0.2).sustain(0).gain(0.5)",
+   "error": null
+  },
+  "sidechain-pump": {
+   "code": "$: note(\"<c3 eb3 g3 bb3>\").s(\"sawtooth\").orbit(2).hpf(100).lpf(900)\n$: s(\"bd:4!4\").beat(\"0,4,8,11,14\",16)\n  .duckorbit(2).duckattack(0.2).duckdepth(1)",
+   "notes": "the pattern on `orbit(2)` is the one that ducks. Structure taken from the duck section of https://strudel.cc/learn/effects/. Ducked layer is listed first: otherwise superdough reports 'duck target orbit 2 does not exist'. The offline renderer also logs a harmless t=0 stop-time warning for ducking (ignored by the verifier).",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "stack(\n  note(\"<c3 eb3 g3 bb3>\").s(\"sawtooth\").orbit(2).hpf(100).lpf(900),\n  s(\"bd:4!4\").beat(\"0,4,8,11,14\",16)\n    .duckorbit(2).duckattack(0.2).duckdepth(1)\n)",
+   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound bd not found! Is it loaded?"
+  },
+  "fade-out": {
+   "code": "$: note(\"c3 eb3 g3\").s(\"triangle\").hpf(80).gain(\"<1 .8 .6 .4 .2 0>\")",
+   "notes": "`gain` accepts a pattern, so each cycle drops one step. Use `saw.range(1,0).slow(8)` for a smooth fade (signal form documented on https://strudel.cc/learn/signals/).",
+   "source": "https://strudel.cc/learn/signals/",
+   "expr": "note(\"c3 eb3 g3\").s(\"triangle\").hpf(80).gain(\"<1 .8 .6 .4 .2 0>\")",
+   "error": null
+  },
+  "synth-kick": {
+   "code": "$: note(\"g1*4\").s(\"sine\").hpf(30).penv(24).pdecay(0.08).decay(0.25).sustain(0)",
+   "notes": "Pitch envelope drops 24 semitones in 0.08 s; decay cuts the tail. Same idea as the kick mapping in docs/STRUDEL_PORT.md. Tuned to G1 (49 Hz) so the body sits above the 30 Hz high-pass.",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"g1*4\").s(\"sine\").hpf(30).penv(24).pdecay(0.08).decay(0.25).sustain(0)",
+   "error": null
+  },
+  "synth-hat-offbeat": {
+   "code": "$: s(\"~ white ~ white ~ white ~ white\").hpf(7000).lpf(14500).ftype(\"24db\").decay(0.05).sustain(0).gain(0.5)",
+   "notes": "`white` is the built-in noise source. hpf keeps only the top; decay/sustain(0) make it short.",
+   "source": "https://strudel.cc/learn/synths/",
+   "expr": "s(\"~ white ~ white ~ white ~ white\").hpf(7000).lpf(14500).ftype(\"24db\").decay(0.05).sustain(0).gain(0.5)",
+   "error": null
+  },
+  "synth-backbeat": {
+   "code": "$: s(\"~ white\").hpf(900).lpf(3500).decay(0.15).sustain(0).gain(0.6)",
+   "notes": "Two-step bar, so the burst lands on the second half (a half-time feel).",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "s(\"~ white\").hpf(900).lpf(3500).decay(0.15).sustain(0).gain(0.6)",
+   "error": null
+  },
+  "synth-euclid": {
+   "code": "$: note(\"g1(3,8)\").s(\"sine\").hpf(40).penv(12).pdecay(0.06).decay(0.2).sustain(0)",
+   "notes": "`(beats,segments)` euclidean mini-notation.",
+   "source": "https://strudel.cc/learn/mini-notation/",
+   "expr": "note(\"g1(3,8)\").s(\"sine\").hpf(40).penv(12).pdecay(0.06).decay(0.2).sustain(0)",
+   "error": null
+  },
+  "syncopated-bass": {
+   "code": "$: note(\"c2 ~ c2 eb2 ~ g1 ~ c2\").s(\"sawtooth\").hpf(30).lpf(500).attack(0.005).decay(0.25).sustain(0.2)",
+   "notes": "Rests (`~`) make the groove; lower the lpf for darker.",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"c2 ~ c2 eb2 ~ g1 ~ c2\").s(\"sawtooth\").hpf(30).lpf(500).attack(0.005).decay(0.25).sustain(0.2)",
+   "error": null
+  },
+  "supersaw-pad": {
+   "code": "$: note(\"<[c3,eb3,g3] [bb2,d3,f3]>\").s(\"supersaw\").unison(3).detune(0.3).spread(0.8).hpf(200).lpf(1500).attack(1).release(2).gain(0.35)",
+   "notes": "`s(\"supersaw\")` is in a documented example; `unison`, `detune`, `spread` come from docs/STRUDEL_PORT.md (not on the fetched official pages).",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"<[c3,eb3,g3] [bb2,d3,f3]>\").s(\"supersaw\").unison(3).detune(0.3).spread(0.8).hpf(200).lpf(1500).attack(1).release(2).gain(0.35)",
+   "error": null
+  },
+  "pluck": {
+   "code": "$: note(\"c4 eb4 g4 bb4\").s(\"triangle\").lpf(2000).lpenv(3).lpa(0).lpd(0.15).decay(0.2).sustain(0)",
+   "notes": "`lpenv` is the filter envelope depth; lpa/lpd its attack/decay.",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"c4 eb4 g4 bb4\").s(\"triangle\").lpf(2000).lpenv(3).lpa(0).lpd(0.15).decay(0.2).sustain(0)",
+   "error": null
+  },
+  "minor-arp": {
+   "code": "$: n(\"[0 2 4 7 4 2]*2\").scale(\"A:minor\").s(\"triangle\").hpf(150).lpf(8000).gain(0.6)",
+   "notes": "Scale degrees via `scale(\"A:minor\")`.",
+   "source": "https://strudel.cc/learn/tonal/",
+   "expr": "n(\"[0 2 4 7 4 2]*2\").scale(\"A:minor\").s(\"triangle\").hpf(150).lpf(8000).gain(0.6)",
+   "error": null
+  },
+  "chord-progression": {
+   "code": "$: chord(\"<Am7 F^7 C G>\").voicing().s(\"triangle\").hpf(80).lpf(7000).attack(0.05).release(0.4).gain(0.35)",
+   "notes": "`^` = major seventh. `voicing()` picks chord tones near a default anchor.",
+   "source": "https://strudel.cc/learn/tonal/",
+   "expr": "chord(\"<Am7 F^7 C G>\").voicing().s(\"triangle\").hpf(80).lpf(7000).attack(0.05).release(0.4).gain(0.35)",
+   "error": null
+  },
+  "root-bass": {
+   "code": "$: note(\"<a1 f1 c2 g1>*2\").s(\"sine\").hpf(25).lpf(300).attack(0.005).gain(0.8)",
+   "notes": "Match the roots to the chord recipe above.",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"<a1 f1 c2 g1>*2\").s(\"sine\").hpf(25).lpf(300).attack(0.005).gain(0.8)",
+   "error": null
+  },
+  "delay-echo": {
+   "code": "$: note(\"c4 ~ eb4 ~\").s(\"triangle\").delay(0.5).delaytime(0.375).delayfeedback(0.55).gain(0.5)",
+   "notes": "delay = send level, delaytime in seconds, feedback 0 to 1 (below 1).",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"c4 ~ eb4 ~\").s(\"triangle\").delay(0.5).delaytime(0.375).delayfeedback(0.55).gain(0.5)",
+   "error": null
+  },
+  "stereo-jux": {
+   "code": "$: note(\"c3 eb3 g3 bb3\").s(\"sawtooth\").hpf(80).lpf(1200).jux(rev)",
+   "notes": "`jux` applies a function to the right channel only. `rev` appears in a jux example only.",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"c3 eb3 g3 bb3\").s(\"sawtooth\").hpf(80).lpf(1200).jux(rev)",
+   "error": null
+  },
+  "big-reverb": {
+   "code": "$: note(\"c4 ~ ~ ~\").s(\"triangle\").room(0.9).roomsize(9).decay(0.3).sustain(0)",
+   "notes": "roomsize 0 to 10.",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"c4 ~ ~ ~\").s(\"triangle\").room(0.9).roomsize(9).decay(0.3).sustain(0)",
+   "error": null
+  },
+  "dry-tight": {
+   "code": "$: note(\"c3 eb3 g3 eb3\").s(\"triangle\").room(0).decay(0.1).sustain(0).hpf(100).lpf(2500)",
+   "notes": "Contrast with the big reverb recipe.",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"c3 eb3 g3 eb3\").s(\"triangle\").room(0).decay(0.1).sustain(0).hpf(100).lpf(2500)",
+   "error": null
+  },
+  "phaser-sweep": {
+   "code": "$: note(\"<c3 eb3>\").s(\"sawtooth\").lpf(1500).phaser(2).phaserdepth(0.8).gain(0.4)",
+   "notes": "phaser = speed; depth 0 to 1.",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"<c3 eb3>\").s(\"sawtooth\").lpf(1500).phaser(2).phaserdepth(0.8).gain(0.4)",
+   "error": null
+  },
+  "tremolo-pad": {
+   "code": "$: note(\"[c3,eb3,g3]\").s(\"triangle\").hpf(100).tremolo(6).tremoloshape(\"sine\").tremolodepth(0.8).gain(0.5)",
+   "notes": "tremolo speed in Hz; tremolodepth amount; tremoloshape(\"sine\") keeps the wobble smooth (the default shape is a ramp, which clicks).",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"[c3,eb3,g3]\").s(\"triangle\").hpf(100).tremolo(6).tremoloshape(\"sine\").tremolodepth(0.8).gain(0.5)",
+   "error": null
+  },
+  "vowel-voice": {
+   "code": "$: note(\"c3 eb3 g3 eb3\").s(\"sawtooth\").vowel(\"<a e i o>\").gain(0.5)",
+   "notes": "`vowel` is a formant filter, not a sampled voice.",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"c3 eb3 g3 eb3\").s(\"sawtooth\").vowel(\"<a e i o>\").gain(0.5)",
+   "error": null
+  },
+  "fm-bell": {
+   "code": "$: note(\"c5 g5 eb5 bb4\").s(\"sine\").hpf(300).lpf(6500).fm(4).fmh(2.5).decay(0.6).sustain(0).room(0.4)",
+   "notes": "fm = modulation index, fmh = harmonicity ratio.",
+   "source": "https://strudel.cc/learn/synths/",
+   "expr": "note(\"c5 g5 eb5 bb4\").s(\"sine\").hpf(300).lpf(6500).fm(4).fmh(2.5).decay(0.6).sustain(0).room(0.4)",
+   "error": null
+  },
+  "lofi-crunch": {
+   "code": "$: note(\"c3 eb3 g3 bb3\").s(\"square\").hpf(80).crush(6).coarse(4).lpf(2500).gain(0.4)",
+   "notes": "crush 1 to 16 bits (lower = rougher); coarse divides the sample rate.",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"c3 eb3 g3 bb3\").s(\"square\").hpf(80).crush(6).coarse(4).lpf(2500).gain(0.4)",
+   "error": null
+  },
+  "perlin-drift": {
+   "code": "$: note(\"c2*8\").s(\"sawtooth\").hpf(30).lpf(perlin.range(300,3000)).lpq(5).attack(0.005).gain(0.5)",
+   "notes": "perlin = smooth noise 0..1; `.range` scales it. The cutoff is read once per note.",
+   "source": "https://strudel.cc/learn/signals/",
+   "expr": "note(\"c2*8\").s(\"sawtooth\").hpf(30).lpf(perlin.range(300,3000)).lpq(5).attack(0.005).gain(0.5)",
+   "error": null
+  },
+  "crescendo": {
+   "code": "$: note(\"c3*4\").s(\"sawtooth\").hpf(80).lpf(1200).gain(saw.range(0.1,1).slow(8))",
+   "notes": "saw ramps 0 to 1 each period.",
+   "source": "https://strudel.cc/learn/signals/",
+   "expr": "note(\"c3*4\").s(\"sawtooth\").hpf(80).lpf(1200).gain(saw.range(0.1,1).slow(8))",
+   "error": null
+  },
+  "accents": {
+   "code": "$: note(\"c2*8\").s(\"square\").hpf(30).lpf(600).attack(0.005).velocity(\"1 0.4 0.7 0.4\").gain(0.7)",
+   "notes": "velocity multiplies gain, 0 to 1.",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"c2*8\").s(\"square\").hpf(30).lpf(600).attack(0.005).velocity(\"1 0.4 0.7 0.4\").gain(0.7)",
+   "error": null
+  },
+  "sidechain-synth": {
+   "code": "$: note(\"<c3 eb3 g3 bb3>\").s(\"sawtooth\").orbit(2).hpf(100).lpf(900)\n$: note(\"g1*4\").s(\"sine\").hpf(30).penv(24).pdecay(0.08).decay(0.25).sustain(0).duckorbit(2).duckattack(0.2).duckdepth(1)",
+   "notes": "The pattern on orbit 2 is the one that ducks. Ducked layer is listed first: otherwise superdough reports 'duck target orbit 2 does not exist'. The offline renderer also logs a harmless t=0 stop-time warning for ducking (ignored by the verifier).",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "stack(\n  note(\"<c3 eb3 g3 bb3>\").s(\"sawtooth\").orbit(2).hpf(100).lpf(900),\n  note(\"g1*4\").s(\"sine\").hpf(30).penv(24).pdecay(0.08).decay(0.25).sustain(0).duckorbit(2).duckattack(0.2).duckdepth(1)\n)",
+   "error": null
+  },
+  "build-drop": {
+   "code": "setcpm(124/4)\nconst kick = note(\"g1*4\").s(\"sine\").hpf(30).penv(24).pdecay(0.08).decay(0.25).sustain(0)\nconst pad = note(\"<[c3,eb3,g3] [bb2,d3,f3]>\").s(\"triangle\").slow(2).room(0.4)\nconst top = s(\"~ white ~ white\").hpf(7000).decay(0.05).sustain(0).gain(0.4)\narrange([4, pad], [4, stack(kick, pad)], [4, stack(kick, pad, top)])",
+   "notes": "`arrange([cycles, pattern], ...)` from the FAQ mirror. Not stackable in the compose page (it has top-level statements).",
+   "source": "https://warm.strudel.cc/learn/faq",
+   "expr": null,
+   "error": null
+  },
+  "layers-in": {
+   "code": "setcpm(120/4)\n$: note(\"g1*4\").s(\"sine\").hpf(30).penv(24).pdecay(0.08).decay(0.25).sustain(0).mask(\"<0 0 1 1 1 1>\")\n$: note(\"c2 ~ c2 eb2\").s(\"sawtooth\").hpf(30).lpf(500).attack(0.005).decay(0.2).sustain(0.1).mask(\"<0 1 1 1 1 1>\")\n$: note(\"<[c4,eb4,g4]>\").s(\"triangle\").hpf(150).room(0.4).gain(0.4).mask(\"<0 0 0 0 1 1>\")",
+   "notes": "`mask` with a `<>` pattern switches a layer on/off per cycle (used by docs/STRUDEL_PORT.md; not on the fetched official pages).",
+   "source": "https://warm.strudel.cc/learn/faq",
+   "expr": null,
+   "error": null
+  },
+  "filter-open-intro": {
+   "code": "$: note(\"c2 c3 c2 eb2\").s(\"sawtooth\").hpf(30).lpf(\"<400 600 1000 1600 2600 4000>\").lpq(4).attack(0.005).gain(0.5)",
+   "notes": "A `<>` list on `lpf` is one value per cycle.",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"c2 c3 c2 eb2\").s(\"sawtooth\").hpf(30).lpf(\"<400 600 1000 1600 2600 4000>\").lpq(4).attack(0.005).gain(0.5)",
+   "error": null
+  },
+  "random-thin": {
+   "code": "$: s(\"white*16?\").hpf(7000).lpf(14500).ftype(\"24db\").decay(0.03).sustain(0).gain(0.3)",
+   "notes": "`?` removes events at random (50%); `?0.2` removes fewer.",
+   "source": "https://strudel.cc/learn/mini-notation/",
+   "expr": "s(\"white*16?\").hpf(7000).lpf(14500).ftype(\"24db\").decay(0.03).sustain(0).gain(0.3)",
+   "error": null
+  },
+  "polymeter": {
+   "code": "$: note(\"{c3 eb3 g3, c2 g2 bb2 d3}%4\").s(\"triangle\").hpf(60).gain(0.5)",
+   "notes": "Curly braces with `%steps`; not on the fetched official pages.",
+   "source": "https://strudel.cc/learn/mini-notation/",
+   "expr": "note(\"{c3 eb3 g3, c2 g2 bb2 d3}%4\").s(\"triangle\").hpf(60).gain(0.5)",
+   "error": null
+  },
+  "dark-drone": {
+   "code": "$: note(\"<c1 c1>\").s(\"sawtooth\").hpf(30).lpf(sine.range(100,500).slow(8)).lpq(4).attack(0.05).release(0.2).gain(0.5)",
+   "notes": "Low root, low cutoff, slow movement.",
+   "source": "https://strudel.cc/learn/signals/",
+   "expr": "note(\"<c1 c1>\").s(\"sawtooth\").hpf(30).lpf(sine.range(100,500).slow(8)).lpq(4).attack(0.05).release(0.2).gain(0.5)",
+   "error": null
+  },
+  "sparse-line": {
+   "code": "$: note(\"c4 ~ ~ ~ ~ ~ eb4 ~\").s(\"triangle\").room(0.6).roomsize(6).gain(0.5)",
+   "notes": "Rests carry the feel.",
+   "source": "https://strudel.cc/learn/mini-notation/",
+   "expr": "note(\"c4 ~ ~ ~ ~ ~ eb4 ~\").s(\"triangle\").room(0.6).roomsize(6).gain(0.5)",
+   "error": null
+  },
+  "tense-riser": {
+   "code": "$: note(\"c3\").s(\"sawtooth\").lpf(1500).penv(12).pattack(8).pdecay(0.01).gain(0.4)",
+   "notes": "Pitch envelope attack stretches the climb. Check by ear: panchor/pcurve behaviour is documented loosely.",
+   "source": "https://strudel.cc/learn/effects/",
+   "expr": "note(\"c3\").s(\"sawtooth\").lpf(1500).penv(12).pattack(8).pdecay(0.01).gain(0.4)",
+   "error": null
+  }
+ }
+}

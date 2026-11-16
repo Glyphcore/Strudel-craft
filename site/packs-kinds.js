@@ -151,6 +151,12 @@ export const KINDS = {
     check: (d) => (Array.isArray(d.items) ? null : 'items must be an array'),
     items: () => [],
     view: (entries) => firstWins(entries, (d) => d.items, (i) => `${i.kind}|${i.name}`).map(([i]) => i) },
+  // extension kind (#131): the lazy bodies of an indexed recipes@1 ingredient (docs/PACK_SPEC.md 14.4): { family, bodies: { <recipe id>: { code, expr, notes, source, error, lowered, lowered_note, lowered_check } } }.
+  // A recipes entry with `body: "<ingredient id>"` and no `code` is an index row; the host merges its body when the row is first opened, played, searched or completed. Data only; registers nothing.
+  'x-glyphcore.recipe-bodies': { formats: ['x-glyphcore.recipe-bodies@1'], code: 'never',
+    check: (d) => (isObj(d.bodies) ? null : 'bodies must be an object'),
+    items: () => [],
+    view: (entries) => entries.map((e) => ({ pack: e.pack, ingredient: e.ingredient })) },
   // extension kind (#85): the vox bank index pack (glyphcore/vox, tools/vox/bank_index.py): banks.json plus each bank's words.json and pitched map,
   // read whole through packs.raw() by the Banks browser and word() completions only when opened. Data only; registers nothing.
   'x-glyphcore.vox-data': { formats: ['x-glyphcore.vox-data@1'], code: 'never',

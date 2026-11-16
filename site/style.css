@@ -504,3 +504,10 @@ dialog.bg-diag{width:min(520px,calc(100vw - 16px))}
 .fm-ins{border-color:var(--sig-2);color:var(--sig-2)}
 .inspector .fm{margin-top:14px;border:1px solid var(--line-2);border-radius:var(--r2);overflow:hidden;background:var(--panel-2)}
 .sx-ex .fm{border-bottom:0}
+
+/* #131: a recipe body is loading (inspector status row) and a list row's quick play is waiting for it */
+.rec-load{display:flex;align-items:center;gap:10px;margin:12px 0;padding:10px 12px;min-height:44px;border:1px solid var(--line, currentColor);border-radius:8px;color:var(--dim, inherit)}
+.rec-load.err{color:var(--warn, inherit);flex-wrap:wrap}
+.rec-load .spin{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;flex:none;animation:recSpin .8s linear infinite}
+@keyframes recSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.rec-load .spin{animation:none;border-right-color:currentColor;opacity:.6}}

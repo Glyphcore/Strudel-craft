@@ -124,7 +124,7 @@ Index: `schemas/craftpack/1/kinds/index.json`. Each kind has a schema `kinds/<ki
 |---|---|---|---|---|---|
 | `sounds` | strudel.json-compatible map: `key -> [files]` or `key -> {note: [files]}`, optional relative `_base` | `samples(map, base)`; sound names in intellisense | never | site, cli | third-party maps via `samples()` |
 | `vox-bank` | `{prefix, maps: {flat, pitched}, words, sr, voice, fallback}`; maps are `sounds@1`, words file is `vox-bank.words@1` | `voxBank()`, `word()`, `syl()`, word completions | never | site, cli | `site/data/vox/*` |
-| `recipes` | `{categories, labels, recipes[]}`; recipe = `id, title, intent, code, expr, labels, needs[], bpm_hint, verified, rms_dbfs, centroid_hz, ...` | Rack browser, Stack, `catalog` provider, pad targets | never (program text) | site, cli | `data/catalog.json` |
+| `recipes` | `{categories, labels, recipes[]}`; recipe = `id, title, intent, code, expr, labels, needs[], bpm_hint, verified, rms_dbfs, centroid_hz, ...` (or an index row with `body`, section 14.5) | Rack browser, Stack, `catalog` provider, pad targets | never (program text) | site, cli | `data/catalog.json` |
 | `syntax` | `sections[{id, title, needs, explain, examples[{title, code}]}]` | Syntax view, `syntax` provider | never (program text) | site | `data/syntax.json` |
 | `docs` | `{view, sections[{title, blocks[html \| table \| code]}]}` | Ref and Practice views | never | site | `data/plugins.json`, `data/practices.json` |
 | `intellisense` | `{provider, items[{label, detail, info, category, method, string, apply}]}` | `intellisense.register` (static provider) | never | site, cli (`strudel complete`) | `data/intellisense/strudel.json` `items` |
@@ -706,6 +706,14 @@ my-pack/
 
 Publish = push, then give people `github:<owner>/<repo>@<commit>/<path>` (works at once, no registry needed), and optionally open a pull
 request that adds the version to `registry/index.json`.
+
+### 14.5 Indexed recipes: lazy bodies (#131)
+
+A `recipes@1` entry file may be an **index**: its rows carry what lists, filters and sorts (`id, title, intent, labels, folder, tags, origin, family, verified, needs_samples, bpm_hint, ...`) plus `body: "<ingredient id>"`, `stackable` (the body has an `expr`) and `has_lowered`, and no `code`. The ingredient named by `body` is of the extension kind `x-glyphcore.recipe-bodies` (`x-glyphcore.recipe-bodies@1`, `load: lazy`, same pack) and holds `{ family, bodies: { <recipe id>: { code, expr, notes, source, error, lowered, lowered_note, lowered_check } } }`. A row without `body` is a plain recipe (every older pack stays valid). Schema: `code` is required unless `body` is present.
+
+- The site fetches a body file (hash-verified like any ingredient) when a row is first opened, played, quick-played, stacked, searched by text, or asked for by `<id>` completion, merges it into the row objects in place, and shows a status row (spinner, or the failure with Retry) meanwhile. Rows, counts, folders, tags, ids and `#r/<id>` deep links need no body.
+- Hosts that read whole packs (the CLI: `lib/packs.mjs` `load()`) merge the bodies of a pack's `recipes` ingredients right after reading it, so `pack:author/pack:recipe`, `events` and `render` see full recipes.
+- The shipped shim pack splits by `family` (`bodies-<family>`, files `site/data/recipes/<family>.json`; recipes without a family are `bodies-base`). Writers: `tools/concepts/build.mjs` and `tools/lowering/build.mjs` (both `--check`) through `tools/catalog/lib.mjs`; `python3 tools/packs/shim.py` lists the ingredients and pins the hashes; `node tools/pwa/precache.mjs` adds the files to the offline snapshot. A monolithic catalog (old `build_catalog.py` output) is read as is and split by `node tools/catalog/catalog.mjs split`; `node tools/catalog/catalog.mjs export OUT.json` writes the monolith for tools (not shipped).
 
 ## 15. Test method
 

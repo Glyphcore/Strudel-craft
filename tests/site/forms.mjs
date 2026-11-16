@@ -3,13 +3,14 @@
 // each Copy puts exactly that form on the clipboard, Insert into editor puts Craft in the editor by default and the Strudel form from the Strudel tab;
 // a plain recipe says both forms are identical; a Syntax example that needs the Craft runtime says why (Copy Strudel disabled), a lowered one copies its plain form;
 // no horizontal overflow at 390 px; data: every catalog recipe with a lowered form carries a passing check, and the hap-equality build check (tools/lowering/build.mjs --check) passes.
+import { fullCatalog } from '../lib/catalog.mjs'; import { writeCatalog } from '../../tools/catalog/lib.mjs';
 import http from 'node:http'; import os from 'node:os'; import fs from 'node:fs'; import path from 'node:path'; import { createRequire } from 'node:module'; import { fileURLToPath } from 'node:url'; import { spawnSync } from 'node:child_process';
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'); const ROOT = path.join(REPO, 'site'); const require = createRequire(import.meta.url);
 let chromium; try { ({ chromium } = require('playwright')); } catch { ({ chromium } = require(process.env.PLAYWRIGHT_DIR || '/opt/node-tools/node_modules/playwright')); }
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.css': 'text/css', '.woff2': 'font/woff2' };
 const server = http.createServer((q, s) => { const f = path.join(ROOT, decodeURIComponent(q.url.split('?')[0]).replace(/\/$/, '/index.html')); if (!f.startsWith(ROOT) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { s.writeHead(404).end(); return; } s.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream' }).end(fs.readFileSync(f)); }).listen(0);
 const ORIGIN = `http://localhost:${server.address().port}`; let fail = 0; const ok = (n, p, i = '') => { if (!p) fail++; console.log(`${p ? 'PASS' : 'FAIL'}  ${n}  ${i}`); };
-const cat = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/catalog.json'), 'utf8')).recipes; const syn = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/syntax.json'), 'utf8'));
+const cat = fullCatalog(REPO).recipes; /* #131: index + family bodies */ const syn = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/syntax.json'), 'utf8'));
 
 // ---- data
 const lowered = cat.filter((r) => r.lowered); const R = cat.find((r) => r.id === 'boom-bap-kick'), P = cat.find((r) => !r.lowered);
@@ -29,8 +30,8 @@ ok('docs/LOWERING.md states the uncovered cases (take / library views, edited-re
 {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'lowering-drift-')); fs.mkdirSync(path.join(tmp, 'site/data'), { recursive: true }); fs.mkdirSync(path.join(tmp, 'docs'));
   for (const f of ['site/data/syntax.json', 'docs/LOWERING.md']) fs.copyFileSync(path.join(REPO, f), path.join(tmp, f));
-  const c2 = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/catalog.json'), 'utf8')); const get = (id) => c2.recipes.find((r) => r.id === id);
-  const run = () => { fs.writeFileSync(path.join(tmp, 'site/data/catalog.json'), JSON.stringify(c2, null, 1).replace(/"(peak|rms_dbfs|bpm_hint)": (-?\d+)(,?)\n/g, '"$1": $2.0$3\n')); return spawnSync('node', [path.join(REPO, 'tools/lowering/build.mjs'), '--check'], { encoding: 'utf8', env: { ...process.env, LOWERING_DATA_ROOT: tmp, STRUDEL_CRAFT: REPO } }); };
+  const c2 = fullCatalog(REPO); const get = (id) => c2.recipes.find((r) => r.id === id);
+  const run = () => { writeCatalog(tmp, c2); return spawnSync('node', [path.join(REPO, 'tools/lowering/build.mjs'), '--check'], { encoding: 'utf8', env: { ...process.env, LOWERING_DATA_ROOT: tmp, STRUDEL_CRAFT: REPO } }); };
   const cliOk = fs.existsSync((process.env.STRUDEL_CLI || '/home/user/suno-track-lab/engine/strudel-cli') + '/strudel');
   if (cliOk) {
     const a = get('chopped-chords'), b = get('groove-mpc-swing'); const a0 = a.lowered, b0 = b.lowered;

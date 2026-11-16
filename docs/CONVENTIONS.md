@@ -13,7 +13,7 @@ Each concept family is one JSON file, `tools/concepts/families/<family>.json`. `
 | `site/data/phonk/racks-hiphop.json` | hooks@1 chain-only defs (instrument racks, dovetail moves) | site (pack hooks adapter, #91), CLI `--hooks`, rack audit |
 | `site/data/phonk/atoms-<id>.json` | atoms@1 (`hh.` patterns and form gates, `dt.` dovetail atoms) | `atoms.import("pack:glyphcore/phonk:atoms-hiphop")` |
 | `site/data/phonk/feel-<id>.json` | atoms@1, one per feel template (section 5) | `atoms.import("pack:glyphcore/phonk:feel-trap", { as: "feel" })` |
-| `site/data/catalog.json` recipes with `origin: "concepts"` | `code` = the Craft form (atoms + `.hook("rack \| groove")`), `lowered` = plain Strudel generated from the same racks, atoms and grooves (opens on strudel.cc), `lowered_check` = event equality (docs/LOWERING.md) | Rack inspector (both forms as tabs) |
+| `site/data/catalog.json` index rows (+ `site/data/recipes/<family>.json` bodies, #131) of recipes with `origin: "concepts"` | `code` = the Craft form (atoms + `.hook("rack \| groove")`), `lowered` = plain Strudel generated from the same racks, atoms and grooves (opens on strudel.cc), `lowered_check` = event equality (docs/LOWERING.md) | Rack inspector (both forms as tabs) |
 | `site/data/syntax.json` section `feels` | hooks / atoms / pack programs | Syntax view |
 | `tools/racks/targets.json` | the class of every new rack, recipe and Syntax example | `node tools/racks/audit.mjs` |
 | `site/data/phonk/craftpack.json` | the ingredient list (hashes by `packs.py hash --write`) | packs loader, lock |

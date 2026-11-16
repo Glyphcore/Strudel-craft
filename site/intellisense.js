@@ -90,7 +90,13 @@ function shapeOptions(p, ctx, items) {
 const catalog = packs().catalog().catch(() => ({ recipes: [] }));
 /* a preset inserts its plain Strudel form: the one-line expression, or the generated lowering (`lowered`) for recipes with Craft syntax, which have no single expression;
    those also offer `<id>.craft`, the authored Craft program (docs/LOWERING.md) */
-api.register({ id: 'catalog', items: async () => (await catalog).recipes.flatMap((r) => { const plain = r.lowered || r.expr; return [
+/* #131: the catalog is an index; the first completion request fetches the recipe bodies (one hash-verified file per family, precached for offline) and merges them here */
+async function withBodies() {
+  const c = await catalog, P = packs(), keys = [...new Set(c.recipes.filter((r) => r.body && r.code == null).map((r) => (r.pack || 'glyphcore/shim') + '|' + r.body))], got = {};
+  await Promise.all(keys.map(async (k) => { const [pk, b] = k.split('|'); got[k] = await P.recipeBodies(pk, b).catch(() => null); }));
+  return c.recipes.map((r) => { const g = r.body && r.code == null ? got[(r.pack || 'glyphcore/shim') + '|' + r.body] : null; return g && g[r.id] ? { ...r, ...g[r.id] } : r; });
+}
+api.register({ id: 'catalog', items: async () => (await withBodies()).flatMap((r) => { const plain = r.lowered || r.expr; return [
   ...(plain ? [{ label: r.id, category: 'presets', detail: r.title + (r.lowered ? ' (Strudel)' : ''), info: r.intent + '\n' + plain, apply: plain }] : []),
   ...(r.lowered ? [{ label: r.id + '.craft', category: 'presets', detail: r.title + ' (Craft)', info: r.intent + '\n' + r.code, apply: r.code }] : [])]; }) });
 

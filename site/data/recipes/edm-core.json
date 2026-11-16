@@ -1,0 +1,299 @@
+{
+ "family": "edm-core",
+ "bodies": {
+  "edm-kick-four-floor": {
+   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.fourFloor).hook(\"edmKick\")",
+   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(36).pdecay(0.05).decay(0.3).sustain(0).shape(0.35).lpf(4000).hpf(38).gain(0.8)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "b6c30d0c43"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-sub-sine": {
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<c1 c1 f1 g1>\").hook(\"subSine\")",
+   "lowered": "setcpm(140/4)\n$: note(\"<c1 c1 f1 g1>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 4,
+    "hash": "9240574b29"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-clap": {
+   "code": "setcpm(128/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"~ x ~ x\").hook(\"edmClap\")",
+   "lowered": "setcpm(128/4)\n$: s(\"~ x ~ x\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1.1).attack(0.001).decay(0.17).sustain(0).gain(0.85)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 8,
+    "hash": "90737786ee"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-hats-offbeat": {
+   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.offHats).hook(\"hatOpen\")\n$: s(atoms.ec.hats16).velocity(atoms.ec.accent16).hook(\"shaker\")",
+   "lowered": "setcpm(128/4)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.2).sustain(0).gain(0.3)\n$: s(\"x*16\").velocity(\"[1 .5 .75 .5]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5500).attack(0.012).decay(0.06).sustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 80,
+    "hash": "20a4e0c156"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-crash": {
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(\"<x ~>\").hook(\"crash\").mask(atoms.ec.dropMask)",
+   "lowered": "setcpm(140/4)\n$: s(\"<x ~>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5000).decay(1.6).sustain(0).gain(0.22).mask(\"<1!3 [1 1 1 0]>\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 2,
+    "hash": "14dc6ac53f"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-sidechain-duck": {
+   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.fourFloor).hook(\"edmKick | sidechain(2, 0.5, 0.2)\")\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hook(\"superChord | ducked(2)\")",
+   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(36).pdecay(0.05).decay(0.3).sustain(0).shape(0.35).lpf(4000).hpf(38).gain(0.8).duckorbit(2).duckdepth(0.5).duckattack(0.2)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).orbit(2)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 32,
+    "hash": "657b78c9bd"
+   },
+   "notes": "duckorbit on the kick (the trigger) and orbit on the chords (the target): Strudel's sidechain. One orbit = one delay and one reverb, so keep ducked parts that need different sends on separate orbits.",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-pump-shaper": {
+   "code": "setcpm(128/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hook(\"superChord | lfoPump(0.7)\")",
+   "lowered": "setcpm(128/4)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).tremolosync(4).tremolodepth(0.7).tremoloshape(\"ramp\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "46540302fd"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-snare-roll-8": {
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook(\"snareTight\")",
+   "lowered": "setcpm(140/4)\n$: s(\"<x*4!2 x*8!2 x*16!3 x*32>\").velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 48,
+    "hash": "cb4bf4837c"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-noise-riser": {
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/4\").hook(\"noiseRiser(6.86)\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x/4\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(6.86).sustain(1).release(0.2).hpf(300).lpf(700).lpenv(4).lpattack(6.86).lpsustain(1).gain(0.28)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 1,
+    "hash": "c55895dcae"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-white-noise-build": {
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/4\").hook(\"hpBuild(6.86)\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x/4\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(1).sustain(1).release(0.2).hpf(200).hpenv(4).hpattack(6.86).hpsustain(1).lpf(11000).gain(0.22)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 1,
+    "hash": "a628646dbc"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-pitch-riser": {
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/4\").hook(\"pitchRiser(6.86)\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x/4\").hpf(150).lpf(12500).ftype(\"24db\").s(\"sawtooth\").note(\"c4\").penv(24).pattack(6.86).panchor(0).attack(2).sustain(1).release(0.1).lpf(4000).gain(0.16)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 1,
+    "hash": "30be3fbffd"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-impact": {
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/2\").hook(\"impactBoom\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x/2\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(0.25).decay(2.2).sustain(0).shape(0.25).lpf(3000).gain(0.7)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 2,
+    "hash": "7ed8c93455"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-sub-drop": {
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/2\").hook(\"subDrop\")",
+   "lowered": "setcpm(140/4)\n$: s(\"x/2\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(1).decay(2.5).sustain(0).lpf(400).gain(0.6)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 2,
+    "hash": "c1964cb860"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-reverse-swell": {
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"<x ~>\").hook(\"reverseSwell(1.71)\")",
+   "lowered": "setcpm(140/4)\n$: s(\"<x ~>\").hpf(200).lpf(12000).ftype(\"24db\").s(\"white\").attack(1.71).sustain(1).release(0.02).hpf(1500).lpf(9000).gain(0.28)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 2,
+    "hash": "9202b8d517"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-downlifter": {
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"<x ~>\").hook(\"downSweep\")",
+   "lowered": "setcpm(140/4)\n$: s(\"<x ~>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(0.005).decay(2).sustain(0).hpf(300).lpf(1000).lpenv(3.5).lpattack(0.001).lpdecay(1.8).lpsustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 2,
+    "hash": "f5ef5298ff"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-supersaw-chords": {
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<[c3,g3,c4,eb4] [ab2,eb3,ab3,c4]>\").hook(\"superChord\")",
+   "lowered": "setcpm(140/4)\n$: note(\"<[c3,g3,c4,eb4] [ab2,eb3,ab3,c4]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "908fbfbfbd"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-pluck": {
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hook(\"edmPluck\")",
+   "lowered": "setcpm(140/4)\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.2).sustain(0).lpf(1500).lpenv(2).lpdecay(0.18).lpsustain(0).gain(0.35)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 32,
+    "hash": "9e63d9f917"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-pad": {
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<[c3,eb3,g3,bb3] [bb2,d3,f3,a3]>\").hook(\"edmPad\")",
+   "lowered": "setcpm(140/4)\n$: note(\"<[c3,eb3,g3,bb3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"supersaw\").unison(4).detune(0.2).attack(1).sustain(0.8).release(2.5).lpf(1600).lpenv(1).lpattack(2).gain(0.18)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "84947bd309"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-ott-squash": {
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hook(\"edmPluck | ott(0.5)\")",
+   "lowered": "setcpm(140/4)\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.2).sustain(0).lpf(1500).lpenv(2).lpdecay(0.18).lpsustain(0).gain(0.35).compressor(-30).compressorRatio(6).compressorKnee(6).compressorAttack(0.003).compressorRelease(0.08).postgain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 32,
+    "hash": "321c04b6ff"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-filter-build": {
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"[c3,eb3,g3,bb3]*4\").hook(\"superChord | filterBuild | thinBuild\")",
+   "lowered": "setcpm(140/4)\n$: note(\"[c3,eb3,g3,bb3]*4\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).lpf(\"<300 450 700 1000 1500 2300 3600 6000>\").hpf(\"<30 50 80 130 200 320 500 800>\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 64,
+    "hash": "189fbb9bca"
+   },
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  },
+  "edm-build-grammar": {
+   "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"<x*4!2 x*8!2 x*16!3 x*32 ~ ~>\").hook(\"snareTight\").velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").mask(\"<1!7 [1 1 1 0] 0 0>\")\n$: s(\"<x ~ ~ ~ ~ ~ ~ ~ ~ ~>\").hook(\"noiseRiser(13.3)\")\n$: note(\"[c3,eb3,g3,bb3]*4\").hook(\"superChord\").lpf(\"<300 450 700 1000 1500 2300 3600 6000 6000 6000>\").mask(\"<1!7 [1 1 1 0] 1 1>\")\n$: s(\"<~!8 x ~>\").hook(\"impactBoom\")\n$: s(\"<~!8 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hook(\"edmKick\")\n$: note(\"<~!8 c1@2>\").hook(\"subSine\")",
+   "lowered": "setcpm(140/4)\n$: s(\"<x*4!2 x*8!2 x*16!3 x*32 ~ ~>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55).velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").mask(\"<1!7 [1 1 1 0] 0 0>\")\n$: s(\"<x ~ ~ ~ ~ ~ ~ ~ ~ ~>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(13.3).sustain(1).release(0.2).hpf(300).lpf(700).lpenv(4).lpattack(13.3).lpsustain(1).gain(0.28)\n$: note(\"[c3,eb3,g3,bb3]*4\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).lpf(\"<300 450 700 1000 1500 2300 3600 6000 6000 6000>\").mask(\"<1!7 [1 1 1 0] 1 1>\")\n$: s(\"<~!8 x ~>\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(0.25).decay(2.2).sustain(0).shape(0.25).lpf(3000).gain(0.7)\n$: s(\"<~!8 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(36).pdecay(0.05).decay(0.3).sustain(0).shape(0.35).lpf(4000).hpf(38).gain(0.8)\n$: note(\"<~!8 c1@2>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 113,
+    "hash": "87f2448244"
+   },
+   "notes": "With hooks the same build is gates: ec.build, ec.gap, ec.rise8({ at: \"25b\" }), ec.hit({ at: \"25b\" }) (Syntax: EDM foundations).",
+   "source": "docs/EDM_REFERENCES.md",
+   "expr": null,
+   "error": null
+  }
+ }
+}

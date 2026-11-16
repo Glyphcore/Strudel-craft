@@ -29,7 +29,15 @@ def main():
             print(f"MISSING {rel}")
             bad += 1
             continue
-        errs = P.schema_errors(json.loads(f.read_text()), schema)
+        data = json.loads(f.read_text())
+        errs = P.schema_errors(data, schema)
+        if rel == "site/data/catalog.json":  # #131: the index validates as is; index + family bodies must validate too (every field, code included)
+            full = dict(data)
+            full["recipes"] = []
+            for r in data["recipes"]:
+                b = json.loads((ROOT / "site" / "data" / "recipes" / (r["body"].replace("bodies-", "", 1) + ".json")).read_text())["bodies"][r["id"]] if r.get("body") else {}
+                full["recipes"].append({**{k: v for k, v in r.items() if k not in ("body", "stackable", "has_lowered")}, **b})
+            errs += P.schema_errors(full, schema)
         for ptr, msg, _ in errs[:5]:
             print(f"INVALID {rel} {ptr}: {msg}")
         bad += len(errs)

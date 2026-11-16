@@ -1,6 +1,6 @@
 {
-  "date": "2026-11-14T05:49:01.313Z",
-  "base": "http://127.0.0.1:34033/Strudel-craft/",
+  "date": "2026-11-16T18:53:06.029Z",
+  "base": "http://127.0.0.1:33195/Strudel-craft/",
   "installabilityErrors": [],
   "icons": [
     {
@@ -48,7 +48,7 @@
     {
       "name": "manifest parsed without errors",
       "ok": true,
-      "detail": "http://127.0.0.1:34033/Strudel-craft/manifest.webmanifest []"
+      "detail": "http://127.0.0.1:33195/Strudel-craft/manifest.webmanifest []"
     },
     {
       "name": "manifest fields",
@@ -78,7 +78,7 @@
     {
       "name": "every same-origin file the shell fetched is cached",
       "ok": true,
-      "detail": "83 files"
+      "detail": "135 files"
     },
     {
       "name": "every fetched shell file is in the SHELL list or site/precache.json",
@@ -88,7 +88,7 @@
     {
       "name": "offline reload renders the app shell with recipes",
       "ok": true,
-      "detail": "{\"rows\":46,\"title\":\"Four-on-the-floor\",\"manifest\":true}"
+      "detail": "{\"rows\":182,\"title\":\"Four-on-the-floor\",\"manifest\":true}"
     },
     {
       "name": "uncached sample bank offline -> \"Offline\" toast",

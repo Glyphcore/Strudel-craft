@@ -12,9 +12,119 @@
       "format": "recipes@1",
       "version": "1.0.0",
       "path": "data/catalog.json",
-      "hash": "sha256:ea16f6c79500fd2f655964502842765d4b4d29e6aec632129182d11ec244612a",
+      "hash": "sha256:7b8b38dd099d15120c7d6e9b46ad3b2b62798777c3ab14f81640428d1b1305d5",
       "load": "eager",
-      "bytes": 283699
+      "bytes": 122716
+    },
+    {
+      "id": "bodies-base",
+      "kind": "x-glyphcore.recipe-bodies",
+      "format": "x-glyphcore.recipe-bodies@1",
+      "version": "1.0.0",
+      "path": "data/recipes/base.json",
+      "load": "lazy",
+      "hash": "sha256:881326f0e26e6982cdbe8a7c6206e705e0eadd3244e6f704783f24fa4db50173",
+      "bytes": 20023
+    },
+    {
+      "id": "bodies-dnb",
+      "kind": "x-glyphcore.recipe-bodies",
+      "format": "x-glyphcore.recipe-bodies@1",
+      "version": "1.0.0",
+      "path": "data/recipes/dnb.json",
+      "load": "lazy",
+      "hash": "sha256:3cb94f899a01797fd74afa27e4570b2c8c63b2620641391f6677079c43472d78",
+      "bytes": 17878
+    },
+    {
+      "id": "bodies-dovetail",
+      "kind": "x-glyphcore.recipe-bodies",
+      "format": "x-glyphcore.recipe-bodies@1",
+      "version": "1.0.0",
+      "path": "data/recipes/dovetail.json",
+      "load": "lazy",
+      "hash": "sha256:39e2b7d57ee8392279dd1f2fe081454af81aa9c887d13a45470e1257af5d3fbe",
+      "bytes": 8566
+    },
+    {
+      "id": "bodies-dubstep",
+      "kind": "x-glyphcore.recipe-bodies",
+      "format": "x-glyphcore.recipe-bodies@1",
+      "version": "1.0.0",
+      "path": "data/recipes/dubstep.json",
+      "load": "lazy",
+      "hash": "sha256:d43ffdcb1873cb78b229c01135ac5c6dd43f72887fe0aa020735c254ef63edd2",
+      "bytes": 39993
+    },
+    {
+      "id": "bodies-edm-core",
+      "kind": "x-glyphcore.recipe-bodies",
+      "format": "x-glyphcore.recipe-bodies@1",
+      "version": "1.0.0",
+      "path": "data/recipes/edm-core.json",
+      "load": "lazy",
+      "hash": "sha256:2a73a67d9d26616dc19508b721f08d9db38ce0777ede3d9286352152fb8c7b05",
+      "bytes": 14048
+    },
+    {
+      "id": "bodies-edmfeels",
+      "kind": "x-glyphcore.recipe-bodies",
+      "format": "x-glyphcore.recipe-bodies@1",
+      "version": "1.0.0",
+      "path": "data/recipes/edmfeels.json",
+      "load": "lazy",
+      "hash": "sha256:d4da4d6361fc79a2c63d64d9d01ea6d9e78e620278e4ec1de6b5a0a1bca382bd",
+      "bytes": 20506
+    },
+    {
+      "id": "bodies-electro",
+      "kind": "x-glyphcore.recipe-bodies",
+      "format": "x-glyphcore.recipe-bodies@1",
+      "version": "1.0.0",
+      "path": "data/recipes/electro.json",
+      "load": "lazy",
+      "hash": "sha256:d20ad13ee209f9797fe5f7df7d0070172ca01470029d0abedac9bfa60b991d4e",
+      "bytes": 6946
+    },
+    {
+      "id": "bodies-feels",
+      "kind": "x-glyphcore.recipe-bodies",
+      "format": "x-glyphcore.recipe-bodies@1",
+      "version": "1.0.0",
+      "path": "data/recipes/feels.json",
+      "load": "lazy",
+      "hash": "sha256:1225db4d427046428b7b1b7c96f381f45039fe523e03ad90896c7a780595eaea",
+      "bytes": 16592
+    },
+    {
+      "id": "bodies-groove",
+      "kind": "x-glyphcore.recipe-bodies",
+      "format": "x-glyphcore.recipe-bodies@1",
+      "version": "1.0.0",
+      "path": "data/recipes/groove.json",
+      "load": "lazy",
+      "hash": "sha256:329e7fdac671f5a26184b8001386c9c53b7706cfdc01f8a7edd30e76d52938c3",
+      "bytes": 4644
+    },
+    {
+      "id": "bodies-hiphop",
+      "kind": "x-glyphcore.recipe-bodies",
+      "format": "x-glyphcore.recipe-bodies@1",
+      "version": "1.0.0",
+      "path": "data/recipes/hiphop.json",
+      "load": "lazy",
+      "hash": "sha256:8b87e819e3949b0edfb50777f9acd5dce11b9c829d7a8fe1189021805739aaf7",
+      "bytes": 17740
+    },
+    {
+      "id": "bodies-house",
+      "kind": "x-glyphcore.recipe-bodies",
+      "format": "x-glyphcore.recipe-bodies@1",
+      "version": "1.0.0",
+      "path": "data/recipes/house.json",
+      "load": "lazy",
+      "hash": "sha256:e83e82e3e5f711bd647e117df977d40ce585c8206ed12d59b1ac08a5ed98e247",
+      "bytes": 11081
     },
     {
       "id": "strudel-docs",

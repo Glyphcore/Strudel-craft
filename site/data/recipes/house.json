@@ -1,0 +1,161 @@
+{
+ "family": "house",
+ "bodies": {
+  "house-four-on-the-floor": {
+   "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.kick).hook(\"houseKick\")\n$: s(atoms.hs.offHat).hook(\"offHat\")\n$: s(atoms.hs.clap).hook(\"houseClap\")\n$: s(atoms.hs.hats).velocity(atoms.hs.hatVel).hook(\"closedHat\")",
+   "lowered": "setcpm(124/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9)\n$: s(\"x*16\").velocity(\"[.5 .3 .8 .3]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8500).decay(0.025).sustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 104,
+    "hash": "242c38b91f"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "offbeat-open-hat": {
+   "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.offHat).hook(\"offHat\")",
+   "lowered": "setcpm(124/4)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "f329e7f380"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "house-swing-groove": {
+   "code": "setcpm(122/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.kick).hook(\"houseKick\")\n$: s(atoms.hs.offHat).hook(\"offHat | groove-swing(56) | groove-human(1, 0.1, 1)\")\n$: s(atoms.hs.clap).hook(\"houseClap | groove-swing(56) | groove-human(1, 0.1, 2)\")\n$: s(atoms.hs.hats).velocity(atoms.hs.hatVel).hook(\"closedHat | groove-swing(56) | groove-human(1, 0.1, 3)\")",
+   "lowered": "setcpm(122/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3).swingBy(0.12, 8).mul(velocity(rand.late(1.37).range(0.9, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9).swingBy(0.12, 8).mul(velocity(rand.late(2.37).range(0.9, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"x*16\").velocity(\"[.5 .3 .8 .3]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8500).decay(0.025).sustain(0).gain(0.3).swingBy(0.12, 8).mul(velocity(rand.late(3.37).range(0.9, 1))).late(rand.late(3).range(0, 0.00125).segment(16)).early(0.000625)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (104 Craft, 103 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "382d14b896"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "house-bass": {
+   "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.bass).hook(\"houseBass\")",
+   "lowered": "setcpm(124/4)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ ab1 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "828a9ea4ba"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "techno-rolling-bass": {
+   "code": "setcpm(132/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.kick).hook(\"houseKick\")\n$: note(atoms.hs.rolling).hook(\"houseBass | groove-human(0.8, 0.08, 2)\")",
+   "lowered": "setcpm(132/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8)\n$: note(\"~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f2\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4).mul(velocity(rand.late(2.37).range(0.92, 1))).late(rand.late(2).range(0, 0.001).segment(16)).early(0.0005)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 1 differs); with the groove taken out of both forms the events are identical",
+    "hash": "74112f3a5f"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "techno-rumble": {
+   "code": "setcpm(132/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.rumble).hook(\"rumble\")",
+   "lowered": "setcpm(132/4)\n$: note(\"~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1\").hpf(25).s(\"sine\").hpf(32).attack(0.03).decay(0.12).sustain(0.4).release(0.1).lpf(160).gain(0.42)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 48,
+    "hash": "76519c177f"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "trance-pluck": {
+   "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.arp).hook(\"pluck\").delay(0.3).delaytime(0.326).delayfeedback(0.35)",
+   "lowered": "setcpm(138/4)\n$: note(\"<[f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5] [f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5] [eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5] [eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4]>\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.22).sustain(0).lpf(1600).lpenv(2).lpdecay(0.18).gain(0.26).delay(0.3).delaytime(0.326).delayfeedback(0.35)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 64,
+    "hash": "0d4534cccd"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "supersaw-chords": {
+   "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.chords).hook(\"bigChords\")",
+   "lowered": "setcpm(138/4)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>\").hpf(100).lpf(9000).s(\"supersaw\").hpf(180).unison(7).detune(0.3).spread(0.7).attack(0.02).sustain(0.8).release(0.6).lpf(6000).gain(0.11)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "10ffa801e5"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "trance-gate": {
+   "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.chords).hook(\"gatePad\")",
+   "lowered": "setcpm(138/4)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>\").hpf(120).lpf(9000).struct(\"x ~ x x x ~ x x x ~ x x x ~ x x\").s(\"supersaw\").unison(5).detune(0.3).spread(0.6).attack(0.003).decay(0.09).sustain(0.1).release(0.04).lpf(4500).gain(0.15)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 192,
+    "hash": "a2dd9210eb"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "big-room-drop": {
+   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(atoms.hs.kick).hook(\"bigKick | sidechain(5, 0.6, 0.16)\")\n$: s(atoms.hs.clap).hook(\"houseClap\")\n$: note(atoms.hs.lead).hook(\"roomLead | ducked(5)\")",
+   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).attack(0.003).penv(32).pdecay(0.06).decay(0.4).sustain(0).hpf(38).lpf(5000).gain(0.78).duckorbit(5).duckdepth(0.6).duckattack(0.16)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9)\n$: note(\"<[f4 ~ f4 ~ ab4 ~ f4 ~ c5 ~ ~ ~ ab4 ~ g4 ~] [f4 ~ f4 ~ ab4 ~ f4 ~ db5 ~ ~ ~ c5 ~ ab4 ~]>\").hpf(150).lpf(8000).s(\"supersaw\").unison(3).detune(0.12).spread(0.3).attack(0.005).decay(0.3).sustain(0.4).release(0.1).lpf(4500).gain(0.16).orbit(5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 52,
+    "hash": "e799c457a5"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "trance-drop": {
+   "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(atoms.hs.kick).hook(\"houseKick | sidechain(3, 0.5, 0.14)\")\n$: s(atoms.hs.offHat).hook(\"offHat\")\n$: note(atoms.hs.bass).hook(\"houseBass | ducked(3)\")\n$: note(atoms.hs.chords).hook(\"gatePad | ducked(3)\")\n$: note(atoms.hs.arp).hook(\"pluck | ducked(3)\")",
+   "lowered": "setcpm(138/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8).duckorbit(3).duckdepth(0.5).duckattack(0.14)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ ab1 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4).orbit(3)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>\").hpf(120).lpf(9000).struct(\"x ~ x x x ~ x x x ~ x x x ~ x x\").s(\"supersaw\").unison(5).detune(0.3).spread(0.6).attack(0.003).decay(0.09).sustain(0.1).release(0.04).lpf(4500).gain(0.15).orbit(3)\n$: note(\"<[f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5] [f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5] [eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5] [eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4]>\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.22).sustain(0).lpf(1600).lpenv(2).lpdecay(0.18).gain(0.26).orbit(3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 304,
+    "hash": "df45d74c76"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  }
+ }
+}

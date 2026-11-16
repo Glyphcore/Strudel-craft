@@ -1,6 +1,7 @@
 // Atoms A2 (#62): migration - extract, parse, inline, catalog atoms. Run: STRUDEL_MODULES=<dir with @strudel/> node tests/atoms/a2.mjs
 // One minimal check per acceptance box. Boxes that need the `strudel` CLI (another repo) print SKIP with the missing piece.
 import fs from 'node:fs';
+import { fullCatalog } from '../lib/catalog.mjs';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import * as acorn from '../../site/vendor/acorn-8.19.0.mjs';
@@ -13,7 +14,7 @@ const pass = (m) => console.log('PASS ' + m);
 const skip = (m, why) => console.log(`SKIP ${m}: ${why}`);
 A.loadTypes(rd('../../site/data/atoms/types.json'));
 const positions = JSON.parse(rd('../../site/data/atoms/positions.json'));
-const catalog = JSON.parse(rd('../../site/data/catalog.json'));
+const catalog = fullCatalog();
 const RT = await bootRuntime();
 if (!RT) { skip('A2 (all boxes need parsers)', '@strudel/core/@strudel/mini not installed (set STRUDEL_MODULES=<dir with @strudel/>)'); process.exit(0); }
 const SOUNDS = Array.from({ length: 5000 }, (_, i) => `snd${i}`).concat(['bd', 'sd', 'hh', 'oh', 'cp']);

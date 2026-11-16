@@ -80,8 +80,7 @@
    "type": "object",
    "required": [
     "id",
-    "title",
-    "code"
+    "title"
    ],
    "additionalProperties": false,
    "patternProperties": {
@@ -236,8 +235,33 @@
       "type": "string"
      },
      "description": "older ids or names of this item: a bare reference to an alias resolves to this item (PACK_SPEC 9.3 rule 5)"
+    },
+    "body": {
+     "type": "string",
+     "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$",
+     "description": "indexed form (docs/PACK_SPEC.md 14.4): the id of an x-glyphcore.recipe-bodies ingredient of the same pack that holds this recipe's code, expr, notes, source, error, lowered, lowered_note and lowered_check; a row with `body` may omit `code`; the host loads the body when the row is first opened, played, searched or completed"
+    },
+    "stackable": {
+     "type": "boolean",
+     "description": "indexed form: true when the body has an `expr` (the recipe can be stacked), known before the body loads"
+    },
+    "has_lowered": {
+     "type": "boolean",
+     "description": "indexed form: true when the body carries a distinct plain-Strudel `lowered` form"
     }
-   }
+   },
+   "anyOf": [
+    {
+     "required": [
+      "code"
+     ]
+    },
+    {
+     "required": [
+      "body"
+     ]
+    }
+   ]
   }
  }
 }

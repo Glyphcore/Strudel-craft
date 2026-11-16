@@ -244,6 +244,28 @@ Bus.db = S.master;
 const cur = () => S.filtered[S.sel] || null;
 /* an older recipe id (aliases[], PACK_SPEC 9.3 rule 8) opens the recipe it became, with one hint */
 const byId = (id) => S.recipes.find((r) => r.id === id) || aliasRecipe(id);
+/* #131: the index row (id, title, folder, tags, labels, pack, flags) lists, filters and sorts; the body (code, expr, notes, source, lowered ...) is one lazy file per family,
+   fetched on first need (open, play, insert, stack, search, completion) and merged into the same row objects, so every other reader sees plain recipes */
+const bodyReady = (r) => !r.body || !!r.bodyReady;
+const canStack = (r) => (bodyReady(r) ? !!r.expr : r.stackable !== false);
+const bodyJobs = new Map();
+function hydrate(r) {
+  if (!r || bodyReady(r)) return Promise.resolve(r);
+  const key = (r.pack || 'glyphcore/shim') + '|' + r.body; let job = bodyJobs.get(key);
+  if (!job) {
+    job = window.strudelCraft.packs.recipeBodies(r.pack || 'glyphcore/shim', r.body).then((b) => {
+      if (!b) throw new Error('The recipe file ' + r.body + ' could not be loaded. Check the connection, then retry.');
+      for (const x of S.recipes) if (x.body === r.body && (x.pack || 'glyphcore/shim') === (r.pack || 'glyphcore/shim') && b[x.id]) { Object.assign(x, b[x.id]); x.bodyReady = true; }
+      window.dispatchEvent(new CustomEvent('sc:recipe-bodies', { detail: { pack: r.pack, body: r.body } }));
+    }).finally(() => bodyJobs.delete(key));
+    bodyJobs.set(key, job);
+  }
+  return job.then(() => r);
+}
+/* stacked layers need their program text: fetch those families after the first frame, then draw the layers */
+function hydrateStack() { const rs = S.stack.map((l) => byId(l.id)).filter((r) => r && !bodyReady(r)); if (rs.length) Promise.all(rs.map(hydrate)).then(() => { renderStack(); renderList(); if (S.playingSource === 'stack') liveUpdate(); }, () => {}); }
+/* every body, for searching the program text (first query) and for completion */
+function hydrateAll() { return Promise.all(S.recipes.map(hydrate)).then(() => { S.allBodies = true; }); }
 function aliasRecipe(id) { const r = S.recipes.find((x) => (x.aliases || []).includes(id)); if (r) aliasHint('recipe', id, r.id); return r; }
 
 /* undo/redo for knobs and stack edits (code edits use the textarea's own undo) */
@@ -436,7 +458,7 @@ function withTempo(code) {
   if (/set(cps|bpm)\s*\(/.test(masked)) return code; // leave unusual tempo calls alone
   return `setcpm(${t}/4)\n` + code;
 }
-function recipeCode(r) { return S.edits[r.id] != null ? S.edits[r.id] : r.code; }
+function recipeCode(r) { return S.edits[r.id] != null ? S.edits[r.id] : (r.code == null ? '' : r.code); }
 function stackLayers() { return S.stack.map((l) => ({ ...l, r: byId(l.id) })).filter((l) => l.r && l.r.expr); }
 function stackProgram() {
   const ls = stackLayers(); if (!ls.length) return '// Stack is empty: add recipes with + in the browser';
@@ -448,11 +470,13 @@ function playView() { if (S.playing && !S.follow) return S.srcView || 'rack'; re
 function currentSource(view = playView()) {
   if (view === 'stack') { const ls = stackLayers(); return { kind: 'stack', id: 'stack', title: ls.length ? `Stack · ${ls.length} layer${ls.length > 1 ? 's' : ''}` : S.stackEdit != null && S.stackEdit.trim() ? 'Stack program' : 'Stack (empty)', code: stackText(), samples: ls.some((l) => l.r.needs_samples), empty: !ls.length && !(S.stackEdit || '').replace(/\/\/.*$/gm, '').trim() }; }
   const r = cur(); if (!r) return null;
+  if (!bodyReady(r)) { const pending = hydrate(r); pending.catch(() => {}); /* readers that only peek at the source must not leave an unhandled rejection */ return { kind: 'solo', id: r.id, title: r.title, code: '', samples: false, pending }; }
   return { kind: 'solo', id: r.id, title: r.title, code: withTempo(recipeCode(r)), samples: r.needs_samples || /\.bank\(|\bs\("(?:bd|hh|sd|cp|oh)/.test(recipeCode(r)) };
 }
 Engine.evalCount = 0;
 async function play(src = currentSource()) {
   if (!src) return;
+  if (src.pending) { say('Loading ' + src.title + '…'); try { await src.pending; } catch (e) { say(e.message, true); return; } src = currentSource(); if (!src) return; }
   S.linkHold = false; /* an explicit Play / Run is the user's consent to evaluate shared-link code */
   if (src.empty) { say('Stack is empty. Add layers with + or A, or type a program.', true); return; }
   const btn = $('#playBtn'); btn.classList.add('busy'); S.busy = true;
@@ -547,7 +571,7 @@ function reportError(view, src, line, raw) {
 async function settleRun(views, ctx) {
   for (const view of views) {
     if (!ctx.alive()) { ctx.cancelled(); return; }
-    const src = currentSource(view); if (!src || src.empty) { ctx.emit('ok', view); continue; }
+    const src = currentSource(view); if (!src || src.empty || src.pending) { ctx.emit('ok', view); continue; }
     const prep = bindPrep(view, src.code); /* validate + derive (not committed) */
     if (!prep.ok) { reportError(view, src, prep.error && prep.error.line, 'Not playing yet: ' + (prep.error && prep.error.message)); ctx.emit('invalid', view); continue; }
     const live = S.playing && view === playView();
@@ -620,9 +644,10 @@ function renderList(keepId) {
         el('span', { class: 'tt' }, el('span', { class: 't' }, r.title), e.folder || (e.tags || []).length ? el('span', { class: 'sub' }, [e.folder, (e.tags || []).filter((x) => !['verified', 'unverified'].includes(x) && !(e.folder || '').split('/').includes(x)).slice(0, 2).join(' ')].filter(Boolean).join(' · ')) : null),
         el('span', { class: foreign.has(r.pack) ? 'pk ns' : 'ns own', title: 'Pack ' + (r.pack || 'glyphcore/shim') }, foreign.has(r.pack) ? r.pack : (r.pack || 'glyphcore/shim').replace(/^glyphcore\//, '')),
         el('span', { class: 'k' + (r.verified ? ' ok' : '') }, r.verified ? 'ok' : r.needs_samples ? 'smp' : '·')),
-      el('button', { type: 'button', class: 'add', 'data-add': r.id, 'aria-pressed': inStack ? 'true' : 'false', disabled: !r.expr, 'aria-label': (inStack ? 'Remove ' : 'Add ') + r.title + (inStack ? ' from stack' : ' to stack'), title: r.expr ? 'Stack (A)' : 'Uses top-level statements: solo only' }, inStack ? '−' : '+'));
+      el('button', { type: 'button', class: 'add', 'data-add': r.id, 'aria-pressed': inStack ? 'true' : 'false', disabled: !canStack(r), 'aria-label': (inStack ? 'Remove ' : 'Add ') + r.title + (inStack ? ' from stack' : ' to stack'), title: canStack(r) ? 'Stack (A)' : 'Uses top-level statements: solo only' }, inStack ? '−' : '+'));
   }));
   $('#count').textContent = `${S.filtered.length} / ${S.recipes.length} recipes`;
+  if (S.q.trim() && !S.allBodies && !S.bodiesAsked) { S.bodiesAsked = true; hydrateAll().then(() => renderList(), () => { S.bodiesAsked = false; }); } /* the program text is searched too: the first query loads the bodies */
   const n = S.chips.size + (S.vonly ? 1 : 0); $('#filterCount').textContent = n ? String(n) : '';
   renderSelection(false);
 }
@@ -636,16 +661,28 @@ function select(i, { scroll = true, audition = true } = {}) {
   if (audition && S.playing && S.view === 'rack') play();
 }
 /* the plain Strudel form of a recipe as it stands: the generated lowering for the catalog text, else the editor text with atoms inlined (an edit has no stored lowering) */
-function strudelForm(r) { return S.edits[r.id] != null ? plain(S.edits[r.id]) : (r.lowered || plain(r.code)); }
+function strudelForm(r) { return S.edits[r.id] != null ? plain(S.edits[r.id]) : (r.lowered || plain(r.code || '')); }
 /* both forms of the catalog code, Craft and Strudel (site/forms.js); Insert puts the chosen form in the editor, as an edit that Revert undoes */
 function formsBlock(r) {
   const F = window.strudelCraft.forms; if (!F) return null;
   return F.render({ craft: r.code, lowered: r.lowered, lowered_note: r.lowered_note, lowered_check: r.lowered_check }, { insert: (code, which) => {
     const ta = $('#code'); ta.value = code; ta.dispatchEvent(new Event('input')); say('Inserted the ' + (which === 'craft' ? 'Craft' : 'Strudel') + ' form into the editor'); } });
 }
+/* the row is in the index but its family body is still on the way: title, intent and a status row (spinner, or the failure with Retry); the full inspector replaces it when the body lands */
+function renderPending(r, updateHash, failed) {
+  const code = $('#code'); if (document.activeElement !== code) code.value = '';
+  $('#dirty').hidden = true; $('#revertBtn').disabled = true;
+  $('#inspector').replaceChildren(el('h2', {}, 'Inspector'), el('p', { class: 'title' }, r.title), el('p', { class: 'intent', html: mdInline(r.intent.charAt(0).toUpperCase() + r.intent.slice(1)) }),
+    failed ? el('div', { class: 'rec-load err', role: 'alert' }, el('span', {}, failed), el('button', { type: 'button', class: 'ghost', onclick: () => renderPending(r, updateHash) }, 'Retry'))
+      : el('div', { class: 'rec-load', role: 'status' }, el('i', { class: 'spin', 'aria-hidden': 'true' }), el('span', {}, 'Loading recipe…')));
+  if (updateHash && S.view === 'rack') history.replaceState(null, '', '#r/' + r.id);
+  syncTransport();
+  if (!failed) hydrate(r).then(() => { if (cur() === r) renderSelection(false); }, (e) => { if (cur() === r) renderPending(r, updateHash, e.message); });
+}
 function renderSelection(updateHash) {
   const r = cur(); const code = $('#code'); const ins = $('#inspector');
   if (!r) { code.value = ''; ins.replaceChildren(el('p', {}, 'Nothing selected.')); syncTransport(); return; }
+  if (!bodyReady(r)) return renderPending(r, updateHash);
   if (document.activeElement !== code) code.value = recipeCode(r);
   liveCode('rack');
   $('#dirty').hidden = S.edits[r.id] == null; $('#revertBtn').disabled = S.edits[r.id] == null;
@@ -709,7 +746,7 @@ function setStack(next, label) {
   const apply = (json) => { S.stack = JSON.parse(json); saveStack(); renderStack(); renderList(); if (S.playingSource === 'stack') liveUpdate(); };
   History.push({ label, undo: () => apply(before), redo: () => apply(after) }); apply(after);
 }
-function toggleStack(id) { const r = byId(id); if (!r || !r.expr) return say('“' + (r ? r.title : id) + '” uses top-level statements and plays solo only.', true); const has = S.stack.some((l) => l.id === id); setStack(has ? S.stack.filter((l) => l.id !== id) : [...S.stack, { id, on: true, db: 0 }], (has ? 'unstack ' : 'stack ') + r.title); say((has ? 'Removed from' : 'Added to') + ' stack: ' + r.title); }
+async function toggleStack(id) { let r = byId(id); if (r && !bodyReady(r)) { try { await hydrate(r); } catch (e) { return say(e.message, true); } r = byId(id); } if (!r || !r.expr) return say('“' + (r ? r.title : id) + '” uses top-level statements and plays solo only.', true); const has = S.stack.some((l) => l.id === id); setStack(has ? S.stack.filter((l) => l.id !== id) : [...S.stack, { id, on: true, db: 0 }], (has ? 'unstack ' : 'stack ') + r.title); say((has ? 'Removed from' : 'Added to') + ' stack: ' + r.title); }
 function renderStack() {
   const ls = stackLayers(); const ol = $('#layers');
   $('#stackCount').textContent = ls.length ? String(ls.length) : '';
@@ -853,7 +890,7 @@ function onKey(e) {
     1: () => setView('rack'), 2: () => setView('stack'), 3: () => setView('ref'), 4: () => setView('practice'), 5: () => setView('perform'), 6: () => setView('syntax'), 7: () => setView('graph'),
     '/': () => { const q = $('#q'); if (S.view === 'ref') $('#refQ').focus(); else if (S.view === 'practice') $('#pracQ').focus(); else { q.focus(); q.select(); } },
     Escape: () => { if (S.q || S.chips.size || S.vonly) clearFilters(); },
-    c: () => { const s = currentSource(); if (s) copyText(S.view === 'stack' ? plain(stackText()) : recipeCode(cur())); },
+    c: () => { const s = currentSource(); if (s && !s.pending) copyText(S.view === 'stack' ? plain(stackText()) : recipeCode(cur())); },
     o: () => { const code = S.view === 'stack' ? stackText() : cur() && strudelForm(cur()); if (code) window.open(strudelUrl(code), '_blank', 'noopener'); },
     t: toggleTheme, '?': openHelp,
   }[k];
@@ -866,10 +903,10 @@ function moveSel(d) { select(S.sel + d); const b = $$('#list .row')[S.sel]; if (
 function runEditor() {
   if (S.view === 'stack') { S.stackEdit = $('#stackCode').value; play(); return; }
   const ta = document.activeElement && document.activeElement.id === 'code' ? document.activeElement : $('#code');
-  const r = cur(); if (!r) return; commitEdit(ta.value);
+  const r = cur(); if (!r || !bodyReady(r)) return; commitEdit(ta.value);
   if (S.view !== 'rack') setView('rack'); play();
 }
-function commitEdit(val) { const r = cur(); if (!r) return; if (val === r.code) delete S.edits[r.id]; else S.edits[r.id] = val; $('#dirty').hidden = S.edits[r.id] == null; $('#revertBtn').disabled = S.edits[r.id] == null; store.set('edits', S.edits); }
+function commitEdit(val) { const r = cur(); if (!r || !bodyReady(r)) return; if (val === r.code) delete S.edits[r.id]; else S.edits[r.id] = val; $('#dirty').hidden = S.edits[r.id] == null; $('#revertBtn').disabled = S.edits[r.id] == null; store.set('edits', S.edits); }
 function clearFilters() { S.q = ''; $('#q').value = ''; S.chips.clear(); S.vonly = false; $('#vonly').checked = false; $$('.chip').forEach((b) => b.setAttribute('aria-pressed', 'false')); renderList(); say('Filters cleared'); }
 
 /* ---------- theme / help ---------- */
@@ -924,12 +961,12 @@ async function boot() {
   try {
     S.cat = await loadJSON('catalog');
     S.labelsById = Object.fromEntries(S.cat.labels.map((l) => [l.id, l])); S.recipes = S.cat.recipes;
-    buildFilters(); renderList(); renderStack(); route();
+    buildFilters(); renderList(); renderStack(); route(); hydrateStack();
     startOrganizer();
     say(S.recipes.length ? `${S.recipes.length} recipes loaded. Press Play or Space.` : 'No recipes: no content pack provides any. Type a program in the Stack view, or add a pack.');
   } catch (e) { say('Failed to load recipes: ' + e.message, true); $('#nowTitle').textContent = 'Offline'; }
   window.dispatchEvent(new Event('sc:shell')); /* #59: first frame with recipes is ready; index.html now loads the rest of the instrument */
-  window.strudelCraft.recipes = { async reload() { S.cat = await loadJSON('catalog'); S.labelsById = Object.fromEntries(S.cat.labels.map((l) => [l.id, l])); S.recipes = S.cat.recipes; buildFilters(); renderList(); renderStack(); } };
+  window.strudelCraft.recipes = { async reload() { S.cat = await loadJSON('catalog'); S.labelsById = Object.fromEntries(S.cat.labels.map((l) => [l.id, l])); S.recipes = S.cat.recipes; buildFilters(); renderList(); renderStack(); hydrateStack(); } };
   window.strudelCraft.packsSheet = { open: openPacks };
   packsReady.then((P) => P.ready.then(() => { if (P.proposals().some((x) => x.state === 'new')) window.strudelCraft.ui.toast('A link proposes a pack. Review it', { sticky: true, onClick: () => openPacks() }); }));
 
@@ -955,7 +992,8 @@ window.strudelCraft.transport = { play: () => play(), stop: () => stop(), toggle
   get scheduler() { return Engine.scheduler; },
   source: () => { const s = S.playing ? currentSource(S.srcView || 'rack') : currentSource(); return s && { kind: s.kind, id: s.id, title: s.title, code: s.code, samples: !!s.samples, empty: !!s.empty }; },
   async compile() {
-    const src = S.playing ? currentSource(S.srcView || 'rack') : currentSource(); if (!src || src.empty) throw new Error('Nothing to render: pick a recipe or add Stack layers');
+    let src = S.playing ? currentSource(S.srcView || 'rack') : currentSource(); if (src && src.pending) { await src.pending; src = S.playing ? currentSource(S.srcView || 'rack') : currentSource(); }
+    if (!src || src.empty) throw new Error('Nothing to render: pick a recipe or add Stack layers');
     if (!S.playing && !Engine.started) await Engine.idle(src.code, () => true, playView());
     else await Engine.load();
     if ((src.samples || needsSamplesFor(src.code)) && !Engine.samplesLoaded) await loadSampleMaps();
@@ -972,5 +1010,5 @@ window.strudelCraft.transport = { play: () => play(), stop: () => stop(), toggle
   async ensureSamples(code) { await Engine.load(); if (needsSamplesFor(code) && !Engine.samplesLoaded) await loadSampleMaps(); },
   async warm() { await Engine.load(); try { if (!window.strudelCraft.hooks && window.strudelCraft.installHooks) window.strudelCraft.installHooks(); await applyRanges(); await loadPerform(); } catch (e) { /* optional */ } } };
 window.strudelCraft.engineState = () => ({ ...Engine.state, scheduler: Engine.scheduler, playing: S.playing, srcView: S.srcView || 'rack' });
-window.__sc = { S, Engine, Bus, unmuteBus, muteBus, protectCode, ensureCode, hasOwnTempo, currentSource, programTempo, play, stop, select, setView, History, toggleStack, holdLink: () => { S.linkHold = true; }, audio: { resume: resumeAudio, get state() { const c = audioCtx(); return c ? c.state : 'none'; }, get peak() { return AudioSt.lastPeak; }, needsSamplesFor } };
+window.__sc = { S, hydrate, hydrateAll, bodyReady, Engine, Bus, unmuteBus, muteBus, protectCode, ensureCode, hasOwnTempo, currentSource, programTempo, play, stop, select, setView, History, toggleStack, holdLink: () => { S.linkHold = true; }, audio: { resume: resumeAudio, get state() { const c = audioCtx(); return c ? c.state : 'none'; }, get peak() { return AudioSt.lastPeak; }, needsSamplesFor } };
 document.addEventListener('DOMContentLoaded', boot);

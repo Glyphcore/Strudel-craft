@@ -1,0 +1,131 @@
+{
+ "family": "electro",
+ "bodies": {
+  "electro-808-beat": {
+   "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: s(atoms.el.kick).hook(\"boom808\")\n$: s(atoms.el.clap).hook(\"clap808\")\n$: s(atoms.el.hats).velocity(atoms.el.hatVel).hook(\"hat808\")\n$: s(atoms.el.cowbell).hook(\"cowbell808\").note(\"[c#5,g#5]\")",
+   "lowered": "setcpm(124/4)\n$: s(\"x ~ ~ ~ ~ ~ x ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(47).attack(0.003).penv(14).pdecay(0.06).decay(0.7).sustain(0).hpf(38).lpf(3000).gain(0.8)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1100).bpq(1.5).attack(0.002).decay(0.2).sustain(0).gain(0.95)\n$: s(\"x*16\").velocity(\"[1 .45 .7 .45]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.03).sustain(0).gain(0.35)\n$: s(\"<[~ ~ x ~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~] [~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]>\").hpf(300).lpf(8000).s(\"square\").bpf(900).bpq(1.2).attack(0.001).decay(0.22).sustain(0).gain(0.18).note(\"[c#5,g#5]\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 116,
+    "hash": "0c34e92f3a"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "electro-808-kick": {
+   "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: s(atoms.el.kick).hook(\"boom808\")",
+   "lowered": "setcpm(124/4)\n$: s(\"x ~ ~ ~ ~ ~ x ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(47).attack(0.003).penv(14).pdecay(0.06).decay(0.7).sustain(0).hpf(38).lpf(3000).gain(0.8)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 12,
+    "hash": "7b6431ce29"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "electro-cowbell": {
+   "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: s(atoms.el.cowbell).hook(\"cowbell808\").note(\"[c#5,g#5]\")",
+   "lowered": "setcpm(124/4)\n$: s(\"<[~ ~ x ~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~] [~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]>\").hpf(300).lpf(8000).s(\"square\").bpf(900).bpq(1.2).attack(0.001).decay(0.22).sustain(0).gain(0.18).note(\"[c#5,g#5]\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 32,
+    "hash": "ba240032dc"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "electro-funk-bass": {
+   "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: note(atoms.el.bass).hook(\"electroBass\")",
+   "lowered": "setcpm(124/4)\n$: note(\"<[f1 ~ ~ f1 ~ ~ f2 ~ ~ f1 ~ ~ ab1 ~ c2 ~] [db2 ~ ~ db2 ~ ~ db1 ~ ~ eb2 ~ ~ eb1 ~ c2 ~]>\").hpf(40).lpf(3500).s(\"square\").attack(0.012).decay(0.25).sustain(0.3).release(0.08).lpf(600).lpq(5).lpenv(2.5).lpdecay(0.12).gain(0.38)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 24,
+    "hash": "2308514834"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "vocoder-lead": {
+   "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: note(atoms.el.lead).hook(\"vocoLead\").vowel(atoms.el.leadVowel)",
+   "lowered": "setcpm(124/4)\n$: note(\"<[f4 ~ ab4 ~ c5 ~ ab4 ~ ~ ~ ~ ~ eb4 ~ f4 ~] [~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~]>\").hpf(150).lpf(8000).s(\"sawtooth\").vowel(\"a\").attack(0.01).sustain(0.7).release(0.1).lpf(3200).vib(5).vibmod(0.04).gain(0.3).vowel(\"<[a e i o] [o]>\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 12,
+    "hash": "8858a435ea"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "robot-stabs": {
+   "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: note(atoms.el.chords).hook(\"robotStab\").struct(atoms.el.stabs)",
+   "lowered": "setcpm(124/4)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [eb3,g3,bb3,eb4] [c3,eb3,g3,c4]>\").hpf(120).lpf(8000).s(\"square\").vowel(\"e\").attack(0.003).decay(0.15).sustain(0).lpf(2400).lpenv(2).lpdecay(0.1).gain(0.16).struct(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 64,
+    "hash": "06c723ce42"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "electro-house-bass": {
+   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: note(atoms.el.ehBass).hook(\"filterBass\")",
+   "lowered": "setcpm(128/4)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f2 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).sustain(0.5).release(0.08).lpf(500).lpq(6).lpenv(2.5).lpdecay(0.15).gain(0.28)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "ff096a8fdf"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "sidechain-supersaw-stabs": {
+   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(atoms.el.ehKick).hook(\"houseKick | sidechain(3, 0.8, 0.18)\")\n$: note(atoms.el.chords).hook(\"sawStab | ducked(3)\").struct(atoms.el.ehStabs)\n$: note(atoms.el.ehBass).hook(\"filterBass | ducked(3)\")",
+   "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8).duckorbit(3).duckdepth(0.8).duckattack(0.18)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [eb3,g3,bb3,eb4] [c3,eb3,g3,c4]>\").hpf(100).lpf(9000).s(\"supersaw\").hpf(180).unison(7).detune(0.35).spread(0.6).attack(0.003).decay(0.28).sustain(0).lpf(5000).lpenv(1).lpdecay(0.2).gain(0.13).orbit(3).struct(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ x ~ ~\")\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f2 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).sustain(0.5).release(0.08).lpf(500).lpq(6).lpenv(2.5).lpdecay(0.15).gain(0.28).orbit(3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 96,
+    "hash": "90eba954e5"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  },
+  "clap-build": {
+   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n// racks: pack:glyphcore/dnb-electro:racks-dnb-electro\n$: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook(\"clap808\")",
+   "lowered": "setcpm(128/4)\n$: s(\"<x*4!2 x*8!2 x*16!3 x*32>\").velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1100).bpq(1.5).attack(0.002).decay(0.2).sustain(0).gain(0.95)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 24,
+    "hash": "f4d80d11ec"
+   },
+   "notes": "",
+   "source": "docs/CONVENTIONS.md",
+   "expr": null,
+   "error": null
+  }
+ }
+}

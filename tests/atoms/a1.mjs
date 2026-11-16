@@ -2,6 +2,7 @@
 // One minimal check per acceptance box. Rendered checks use an unmodified @strudel/core + @strudel/mini through tests/hooks/fixtures/rt.mjs
 // (STRUDEL_MODULES=<dir with @strudel/>); boxes that need the `strudel` CLI (another repo) print SKIP with the missing piece.
 import fs from 'node:fs';
+import { fullCatalog } from '../lib/catalog.mjs';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import * as A from '../../site/engine/atoms.js';
@@ -18,7 +19,7 @@ const fx = (n) => rd('./fixtures/' + n);
 A.loadTypes(rd('../../site/data/atoms/types.json'));
 const positions = JSON.parse(rd('../../site/data/atoms/positions.json'));
 const schema = JSON.parse(rd('../../site/data/schema/model.v1.json'));
-const catalog = JSON.parse(rd('../../site/data/catalog.json'));
+const catalog = fullCatalog();
 
 const RT = await bootRuntime(); // unmodified @strudel/core + @strudel/mini + site/engine/hooks.js (for the gate/point/ref/hook parsers)
 const NO_RT = '@strudel/core/@strudel/mini not installed (set STRUDEL_MODULES=<dir with @strudel/>); cannot parse or render';

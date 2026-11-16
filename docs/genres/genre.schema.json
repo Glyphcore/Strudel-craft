@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "genre-standard@1 (docs/RACK_STANDARD.md section 8, issue #125)",
+  "type": "object",
+  "required": ["schema", "genre", "label", "status", "method", "criteria"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "genre-standard@1" },
+    "genre": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "label": { "type": "string" },
+    "status": { "enum": ["provisional", "reference"] },
+    "method": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/definitions/sourced" }
+    },
+    "criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "metric", "unit", "min", "max", "basis", "source", "confidence"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "metric": { "type": "string", "description": "key of the measure.mjs output" },
+          "unit": { "type": "string" },
+          "min": { "type": ["number", "null"] },
+          "max": { "type": ["number", "null"] },
+          "basis": { "enum": ["standard", "platform", "convention", "reference"] },
+          "source": { "type": ["string", "null"], "description": "URL; null only for convention" },
+          "confidence": { "enum": ["high", "medium", "low"] },
+          "note": { "type": "string" },
+          "needs": { "type": "string", "description": "extra CLI input the metric needs; the criterion is skipped without it" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "sourced": {
+      "type": "object",
+      "required": ["basis", "source"],
+      "properties": { "basis": { "enum": ["standard", "platform", "convention", "reference"] }, "source": { "type": ["string", "null"] }, "note": { "type": "string" } }
+    }
+  }
+}

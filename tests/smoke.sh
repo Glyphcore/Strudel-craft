@@ -8,5 +8,7 @@ node "$HERE/smoke.mjs" || rc=1
 node "$LAB/engine/strudel-cli/test/smoke.mjs" || rc=1
 # rack standard (#94, docs/RACK_STANDARD.md): every rack of the phonk pack against its class thresholds (needs the strudel CLI; a few minutes)
 STRUDEL_CLI="$LAB/engine/strudel-cli" node "$HERE/../tools/racks/audit.mjs" --only racks --quiet || rc=1
+# sound standard (#125): measure.mjs conformance on synthetic signals, genre files against the schema (plain Node, seconds)
+node "$HERE/racks/measure.mjs" || rc=1
 [ $rc -eq 0 ] && echo "OVERALL: PASS" || echo "OVERALL: FAIL"
 exit $rc

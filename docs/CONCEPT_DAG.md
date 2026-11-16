@@ -94,6 +94,7 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 ## Waiting nodes
 - audio engine (#102-#104): measured first (#102); B wins behind flags (vis, sched, late) and C (render host, offline Record default, self-checking live takes) built; the engine worker (B1) is designed in docs/AUDIO_ENGINE.md 7 and waits for its own issue once the flag numbers settle.
 | rack-standard (signal order, class bands, hygiene racks as stdlib hook defs, `.hook()`, audit tool; docs/RACK_STANDARD.md) | hooks-core, track-demo-night-phonk | built (critic pending) | #94 |
+| sound-standard (measured per-genre and per-role acceptance: `tools/racks/measure.mjs` BS.1770 / Tech 3342 / true peak / spectral / onsets / duck, `docs/genres/*.json` with basis per number, `--score`; docs/RACK_STANDARD.md 8) | rack-standard | built (critic pending; example render open) | #125 |
 | daw-survey + refactor-plan (docs/DAW_SURVEY.md, docs/REFACTOR_PLAN.md) | issues-protocol | built (critic pending) | #95 |
 | mixer-read-model (R1: channel strips derived from the lane graph, `site/engine/mixer-model.js`) | lanes-audio, lanes-consumers | built (critic pending) | #95 |
 | strip-meters (R2: per-strip peak / RMS / LUFS in the CLI manifest and on the site; `strudel lanes --mixer`) | mixer-read-model, audio-engine-measurements | issued | #96 |

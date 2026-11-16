@@ -240,3 +240,63 @@ New items in the after run: racks/Scope a source first (.hook) (pass), racks/A r
 Open point: superdough's high-pass has a default Q of 1 (a bump of about 1.2 dB just above the cutoff, measured); `hpq(0)` measures flat
 (+0.2 dB). The bump is the likely reason for the louder reliefs and the higher low-end ratio. Setting `["hpq", 0]` in the hygiene racks and
 re-rendering is the next step on #94; it was measured on noise but not yet applied.
+
+## 8. Sound standard: measured per-genre and per-role acceptance (issue #125)
+"Studio-worthy" is measured. `tools/racks/measure.mjs` (plain Node, no dependencies) measures one WAV; `docs/genres/<genre>.json` holds the
+numbers; `measure.mjs --score docs/genres/<genre>.json FILE.wav` prints pass, miss or skip per criterion (value, range, basis) and exits 0 on all
+pass, 1 on a miss. Test: `node tests/racks/measure.mjs` (synthetic signals with known answers; schema and basis checks of the genre files).
+
+### Basis rule
+Every number carries `basis`, `source` and `confidence`. `standard` (ITU / EBU) and `platform` (a streaming service's published rule) need a
+source URL (a test fails on null). `convention` is practitioner convention, source null, `confidence: low`, provisional: it is reported as a
+miss marked provisional but never fails a track unless `--strict` is given. `reference` is measured from audio the owner holds the rights to;
+no reference audio is committed, only the measurements JSON (numbers) the tool writes. No published per-genre loudness, crest, spectral or
+sidechain data was found (research 2026-11-16), so the per-genre ranges are all `convention` until references replace them.
+
+### Method (basis: standard)
+Integrated loudness and gating per ITU-R BS.1770 (K-weighting, 400 ms blocks at 75 % overlap, absolute gate -70 LUFS, relative gate -10 LU),
+loudness range per EBU Tech 3342 (3 s blocks, relative gate -20 LU, 10th to 95th percentile), true peak by 4x oversampling. The tool is
+checked against synthetic signals with hand-derived answers (1 kHz at -23 and -33 dBFS, a -36/-23/-36 gating sequence, an fs/4 sine at 45
+degrees for true peak, identical and anti-phase channels), not against its own output.
+
+### Delivery rule (basis: platform)
+A finished track render is normalised to -14 LUFS integrated, tolerance 1 LU, true peak at or below -1.0 dBTP (Spotify for Artists, "Loudness
+normalization", fetched 2026-11-16). Everything else uses gain-independent measures (PLR, LRA, shares, tilt, onsets), so a quiet render is not
+mistaken for a dynamic one.
+
+### Measured keys (measure.mjs output)
+`lufs_integrated`, `lra_lu`, `true_peak_dbtp`, `sample_peak_dbfs`, `plr_db` (true peak minus LUFS), `crest_db` (sample peak minus RMS),
+`dc_offset_dbfs`, `clipped_samples` (at or above 0.999), `low_share_pct` (20-250 Hz of 20 Hz to Nyquist power), `spectral_tilt_db_oct` (PSD slope
+100 Hz to 10 kHz in 1/3-octave bands, pink = -3), `spectral_centroid_hz`, `lr_correlation_below_120` and `side_to_mid_db_below_120`
+(4th-order low-pass at 120 Hz; -200 stands for minus infinity). With `--bpm N` (`--beats-per-bar`, default 4): `tempo_bpm` (declared, not
+detected), `bars`, `onsets_per_bar` (spectral-flux peaks of the whole mix), `spectral_centroid_densest_8_bars_hz`. With `--kick` and `--bass`
+stems: `duck_depth_db` (median over kicks of the bass peak level before the kick minus its minimum in the next 200 ms).
+
+### Genres (all `convention`, `confidence: low`, provisional)
+Every file also carries the delivery rule (platform) and the mono low end (side-to-mid at or below -20 dB and correlation at or above 0.95
+below 120 Hz), no clipped samples and DC at or below -60 dBFS (convention); spectral tilt -6 to -3 dB per octave for all.
+
+| genre | file | BPM | PLR dB | LRA LU | low share % | duck dB | onsets/bar |
+|---|---|---|---|---|---|---|---|
+| dubstep | `docs/genres/dubstep.json` | 138-142 | 7-10 | 3-8 | 50-70 | 3-6 | 8-24 |
+| drum and bass | `docs/genres/drum-and-bass.json` | 170-176 | 7-10 | 3-7 | 45-65 | 2-5 | 16-40 |
+| house | `docs/genres/house.json` | 120-128 | 8-11 | 3-6 | 40-60 | 4-8 | 12-24 |
+| tech house | `docs/genres/tech-house.json` | 124-128 | 8-11 | 3-6 | 40-60 | 3-6 | 12-28 |
+| techno | `docs/genres/techno.json` | 125-140 | 8-11 | 2-6 | 40-60 | 2-6 | 12-32 |
+| trance | `docs/genres/trance.json` | 132-142 | 8-11 | 4-9 | 35-55 | 6-10 | 16-32 |
+| electro | `docs/genres/electro.json` | 125-135 | 8-11 | 3-7 | 40-60 | 3-6 | 12-28 |
+
+Schema: `docs/genres/genre.schema.json`. Criteria whose input is missing (`--bpm`, stems) are skipped, not missed. Hip-hop, trap and hyphy
+(#109 to #112) have no file yet: they get one in the same schema with their existing numbers moved in unchanged.
+
+### Per role (soloed lane render, same tool)
+Section 4 defines the classes, bands and thresholds (`audit.mjs`, per rack). The per-role criteria measurable on one soloed render with
+`measure.mjs` are: band containment (the section 4 below/above/sub20/>18k columns), peak into the bus (section 4 `peak dBFS`), mono below 120
+Hz for kick and sub (`lr_correlation_below_120` at or above 0.95, `side_to_mid_db_below_120` at or below -20; the audit's side<120 column is
+the stricter gate), no clipped samples, DC at or below -60 dBFS. Master: the delivery rule above. Roles: kick, sub/bass, lead, pad, hats, vocal,
+FX return, master. A per-role `--score` file is not built yet (coming); only the genre files score.
+
+### Not done
+No example measurement is committed yet: the night phonk demo needs the strudel CLI (suno-track-lab `engine/strudel-cli`), which was absent in
+the sandbox that built this. Rejected: one loudness target per genre from blog tables, six-band target curves per genre, matching commercial
+masters at -6 to -8 LUFS.

@@ -1,0 +1,171 @@
+{
+  "schema": "genre-standard@1",
+  "genre": "electro",
+  "label": "Electro",
+  "status": "provisional",
+  "method": {
+    "loudness": {
+      "basis": "standard",
+      "source": "https://www.itu.int/rec/R-REC-BS.1770",
+      "note": "ITU-R BS.1770 (current revision BS.1770-5): K-weighting, 400 ms blocks, absolute gate -70 LUFS, relative gate -10 LU"
+    },
+    "loudness_range": {
+      "basis": "standard",
+      "source": "https://tech.ebu.ch/docs/tech/tech3342.pdf",
+      "note": "EBU Tech 3342: 3 s blocks, relative gate -20 LU, 10th to 95th percentile"
+    },
+    "true_peak": {
+      "basis": "standard",
+      "source": "https://www.itu.int/rec/R-REC-BS.1770",
+      "note": "BS.1770 Annex 2, 4x oversampling"
+    }
+  },
+  "criteria": [
+    {
+      "id": "delivery-loudness",
+      "metric": "lufs_integrated",
+      "unit": "LUFS",
+      "min": -15,
+      "max": -13,
+      "basis": "platform",
+      "source": "https://support.spotify.com/us/artists/article/loudness-normalization/",
+      "confidence": "high",
+      "note": "finished render normalised to -14 LUFS integrated, tolerance 1 LU (Spotify for Artists, Loudness normalization, fetched 2026-11-16)"
+    },
+    {
+      "id": "delivery-true-peak",
+      "metric": "true_peak_dbtp",
+      "unit": "dBTP",
+      "min": null,
+      "max": -1,
+      "basis": "platform",
+      "source": "https://support.spotify.com/us/artists/article/loudness-normalization/",
+      "confidence": "high",
+      "note": "true peak at or below -1.0 dBTP (same source)"
+    },
+    {
+      "id": "tempo",
+      "metric": "tempo_bpm",
+      "unit": "BPM",
+      "min": 125,
+      "max": 135,
+      "basis": "convention",
+      "source": null,
+      "confidence": "low",
+      "note": "declared with --bpm, not detected",
+      "needs": "--bpm"
+    },
+    {
+      "id": "plr",
+      "metric": "plr_db",
+      "unit": "dB",
+      "min": 8,
+      "max": 11,
+      "basis": "convention",
+      "source": null,
+      "confidence": "low",
+      "note": "true peak minus integrated loudness; gain independent"
+    },
+    {
+      "id": "loudness-range",
+      "metric": "lra_lu",
+      "unit": "LU",
+      "min": 3,
+      "max": 7,
+      "basis": "convention",
+      "source": null,
+      "confidence": "low",
+      "note": "EBU Tech 3342 loudness range (method is standard; the range is convention)"
+    },
+    {
+      "id": "low-band-share",
+      "metric": "low_share_pct",
+      "unit": "%",
+      "min": 40,
+      "max": 60,
+      "basis": "convention",
+      "source": null,
+      "confidence": "low",
+      "note": "share of 20 Hz to Nyquist power in 20 to 250 Hz"
+    },
+    {
+      "id": "spectral-tilt",
+      "metric": "spectral_tilt_db_oct",
+      "unit": "dB/oct",
+      "min": -6,
+      "max": -3,
+      "basis": "convention",
+      "source": null,
+      "confidence": "low",
+      "note": "PSD slope 100 Hz to 10 kHz; pink noise is -3"
+    },
+    {
+      "id": "onsets-per-bar",
+      "metric": "onsets_per_bar",
+      "unit": "onsets/bar",
+      "min": 12,
+      "max": 28,
+      "basis": "convention",
+      "source": null,
+      "confidence": "low",
+      "note": "spectral-flux onsets of the mix (all parts) per bar",
+      "needs": "--bpm"
+    },
+    {
+      "id": "kick-bass-duck",
+      "metric": "duck_depth_db",
+      "unit": "dB",
+      "min": 3,
+      "max": 6,
+      "basis": "convention",
+      "source": null,
+      "confidence": "low",
+      "note": "bass level drop at each kick, from stems",
+      "needs": "--kick and --bass"
+    },
+    {
+      "id": "mono-low-side-to-mid",
+      "metric": "side_to_mid_db_below_120",
+      "unit": "dB",
+      "min": null,
+      "max": -20,
+      "basis": "convention",
+      "source": null,
+      "confidence": "low",
+      "note": "side-to-mid energy below 120 Hz; about 100 Hz in practitioner sources"
+    },
+    {
+      "id": "mono-low-correlation",
+      "metric": "lr_correlation_below_120",
+      "unit": "ratio",
+      "min": 0.95,
+      "max": null,
+      "basis": "convention",
+      "source": null,
+      "confidence": "low",
+      "note": "L/R correlation below 120 Hz"
+    },
+    {
+      "id": "no-clipping",
+      "metric": "clipped_samples",
+      "unit": "samples",
+      "min": 0,
+      "max": 0,
+      "basis": "convention",
+      "source": null,
+      "confidence": "low",
+      "note": "samples at or above 0.999 full scale"
+    },
+    {
+      "id": "dc-offset",
+      "metric": "dc_offset_dbfs",
+      "unit": "dBFS",
+      "min": null,
+      "max": -60,
+      "basis": "convention",
+      "source": null,
+      "confidence": "low",
+      "note": "largest channel mean"
+    }
+  ]
+}

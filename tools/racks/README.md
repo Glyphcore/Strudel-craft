@@ -6,6 +6,7 @@ Checks every rack against the rack standard (docs/RACK_STANDARD.md, issue #94).
 |---|---|
 | `audit.mjs` | renders a test phrase per class through each rack with the strudel CLI, measures, judges, writes `out/report.json` and `out/report.md` |
 | `standard.json` | classes: target band, thresholds, test phrase; global limits |
+| `measure.mjs` | measures one WAV (loudness BS.1770, LRA Tech 3342, true peak, spectral, mono low end, onsets per bar, duck depth) and scores it against `docs/genres/*.json` (issue #125, RACK_STANDARD.md section 8) |
 | `targets.json` | the class of every audited item: racks (hook def name), catalog recipes (id), Syntax examples (`section/title`); unlisted catalog and Syntax items are class `demo` |
 
 ```
@@ -22,3 +23,7 @@ Adding a rack: start its chain with `["hook", "hygiene-<class>"]`, add `"name": 
 `--item name`. Adding a class: an entry in `standard.json` `classes` (band, limits, phrase) and a `hygiene-<class>` def in
 `site/engine/hygiene.js` (`tests/hooks/p9_hook.mjs` checks that every class has one).
 Result of the first pass: docs/RACK_STANDARD.md section 7.
+
+Measure and score a render (no CLI needed, plain Node): `node tools/racks/measure.mjs [--bpm N] [--kick K.wav --bass B.wav] FILE.wav`,
+add `--score docs/genres/dubstep.json [--strict]` for pass or miss per criterion (exit 1 on a miss; `convention` misses only with `--strict`).
+Test: `node tests/racks/measure.mjs` (synthetic conformance signals, genre files against `docs/genres/genre.schema.json`).

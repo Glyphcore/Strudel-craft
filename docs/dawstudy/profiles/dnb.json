@@ -1,0 +1,166 @@
+{
+ "schema": "dawstudy-form@1",
+ "genre": "dnb",
+ "n": 1,
+ "basis": "measured (n < 3: indicative only)",
+ "tempo": {
+  "min": 170.0,
+  "median": 170.0,
+  "max": 170.0
+ },
+ "length_bars": {
+  "median": 105,
+  "min": 105,
+  "max": 105
+ },
+ "section_bars_median": {
+  "body": 8,
+  "breakdown": 4.0,
+  "intro": 4,
+  "outro": 1,
+  "peak": 38.0
+ },
+ "section_count": {
+  "body": 1,
+  "breakdown": 4,
+  "intro": 1,
+  "outro": 1,
+  "peak": 2
+ },
+ "layers_median_by_section": {
+  "body": 8.0,
+  "breakdown": 3.5,
+  "intro": 2.0,
+  "outro": 1,
+  "peak": 9.5
+ },
+ "orders": [
+  [
+   "intro > breakdown > peak > breakdown > peak > breakdown > body > breakdown > outro",
+   1
+  ]
+ ],
+ "role_presence": {
+  "bass": 1.0,
+  "hat": 1.0,
+  "keys": 1.0,
+  "kick": 1.0,
+  "lead": 1.0,
+  "other": 1.0,
+  "pad": 1.0,
+  "snare": 1.0
+ },
+ "fx_presence": {
+  "compressor": 1.0,
+  "eq": 1.0,
+  "filter": 1.0,
+  "modulation": 1.0,
+  "other": 1.0,
+  "reverb": 1.0
+ },
+ "fx_chains_top": [
+  [
+   "bus: reverb",
+   2
+  ],
+  [
+   "bass: other > compressor > modulation",
+   1
+  ],
+  [
+   "bass: other > compressor > other > reverb > modulation > eq",
+   1
+  ],
+  [
+   "other: other > compressor",
+   1
+  ],
+  [
+   "lead: reverb",
+   1
+  ],
+  [
+   "other: other > compressor > eq > reverb",
+   1
+  ],
+  [
+   "pad: other > compressor",
+   1
+  ],
+  [
+   "snare: other > compressor > reverb",
+   1
+  ]
+ ],
+ "automation_top": [
+  [
+   "cutoff/rise",
+   2
+  ]
+ ],
+ "tracks_median": 15,
+ "sends_median": 10,
+ "sidechain_projects": 0,
+ "density_curve_20": [
+  2.6,
+  6.2,
+  8,
+  8.5,
+  9,
+  9,
+  8.2,
+  8.5,
+  8.4,
+  8.4,
+  9.4,
+  9.17,
+  9.8,
+  8.8,
+  5,
+  9.5,
+  8.8,
+  6,
+  7.6,
+  3.5
+ ],
+ "clip_bars_top": [
+  [
+   "8.0",
+   44
+  ],
+  [
+   "4.0",
+   14
+  ],
+  [
+   "9.0",
+   14
+  ],
+  [
+   "2.0",
+   10
+  ],
+  [
+   "6.0",
+   6
+  ],
+  [
+   "16.0",
+   6
+  ]
+ ],
+ "sources": [
+  {
+   "title": "CapDan-TwilightArea-OriginalByAlf42red.mmpz",
+   "author": "Der Daniel (CapDan)",
+   "licence": "CC (by-sa)",
+   "page_url": "https://lmms.io/lsp/index.php?action=show&file=1439",
+   "sha256": "092667a2c539d2ab1574ff739d964e8a3efe3a18d6f1896e7c4574ba2ec7a447",
+   "tempo": 170.0,
+   "bars": 105,
+   "sections_source": [
+    "inferred"
+   ]
+  }
+ ]
+}

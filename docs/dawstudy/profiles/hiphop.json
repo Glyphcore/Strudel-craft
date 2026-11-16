@@ -1,0 +1,107 @@
+{
+ "schema": "dawstudy-form@1",
+ "genre": "hiphop",
+ "n": 1,
+ "basis": "measured (n < 3: indicative only)",
+ "tempo": {
+  "min": 140.0,
+  "median": 140.0,
+  "max": 140.0
+ },
+ "length_bars": {
+  "median": 145,
+  "min": 145,
+  "max": 145
+ },
+ "section_bars_median": {
+  "body": 128,
+  "intro": 16,
+  "outro": 1
+ },
+ "section_count": {
+  "body": 1,
+  "intro": 1,
+  "outro": 1
+ },
+ "layers_median_by_section": {
+  "body": 6.0,
+  "intro": 2.0,
+  "outro": 1
+ },
+ "orders": [
+  [
+   "intro > body > outro",
+   1
+  ]
+ ],
+ "role_presence": {
+  "hat": 1.0,
+  "kick": 1.0,
+  "other": 1.0,
+  "snare": 1.0
+ },
+ "fx_presence": {},
+ "fx_chains_top": [],
+ "automation_top": [],
+ "tracks_median": 7,
+ "sends_median": 0,
+ "sidechain_projects": 0,
+ "density_curve_20": [
+  2.14,
+  2,
+  4.43,
+  5.5,
+  6.14,
+  6,
+  5.86,
+  5.5,
+  5.57,
+  4,
+  4,
+  4.12,
+  4,
+  5.57,
+  6,
+  5.62,
+  5.14,
+  5.29,
+  6,
+  5.38
+ ],
+ "clip_bars_top": [
+  [
+   "1.0",
+   42
+  ],
+  [
+   "2.0",
+   20
+  ],
+  [
+   "4.0",
+   14
+  ],
+  [
+   "16.0",
+   4
+  ],
+  [
+   "128.0",
+   4
+  ]
+ ],
+ "sources": [
+  {
+   "title": "TameAnderson-MakeMe.mmpz",
+   "author": "tame anderson (tame anderson)",
+   "licence": "Artistic 2.0",
+   "page_url": "https://lmms.io/lsp/index.php?action=show&file=1060",
+   "sha256": "ecece368cd72b3ca94ed34f655d491c92d595ae6ba932c2659f83a440f51c009",
+   "tempo": 140.0,
+   "bars": 145,
+   "sections_source": [
+    "inferred"
+   ]
+  }
+ ]
+}

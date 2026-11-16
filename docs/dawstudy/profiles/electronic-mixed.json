@@ -1,0 +1,264 @@
+{
+ "schema": "dawstudy-form@1",
+ "genre": "electronic-mixed",
+ "n": 5,
+ "basis": "measured",
+ "tempo": {
+  "min": 128.0,
+  "median": 140.0,
+  "max": 170.0
+ },
+ "length_bars": {
+  "median": 128,
+  "min": 105,
+  "max": 145
+ },
+ "section_bars_median": {
+  "body": 35,
+  "breakdown": 4,
+  "intro": 4,
+  "outro": 2.5,
+  "peak": 38.0
+ },
+ "section_count": {
+  "body": 7,
+  "breakdown": 11,
+  "intro": 5,
+  "outro": 4,
+  "peak": 2
+ },
+ "layers_median_by_section": {
+  "body": 8.0,
+  "breakdown": 3.0,
+  "intro": 2.0,
+  "outro": 1.0,
+  "peak": 9.5
+ },
+ "orders": [
+  [
+   "intro > breakdown > body",
+   1
+  ],
+  [
+   "intro > body > breakdown > outro",
+   1
+  ],
+  [
+   "intro > breakdown > body > breakdown > body > outro",
+   1
+  ],
+  [
+   "intro > breakdown > peak > breakdown > peak > breakdown > body > breakdown > outro",
+   1
+  ],
+  [
+   "intro > body > outro",
+   1
+  ]
+ ],
+ "role_presence": {
+  "hat": 1.0,
+  "kick": 1.0,
+  "other": 1.0,
+  "snare": 1.0,
+  "bass": 0.6,
+  "pad": 0.4,
+  "lead": 0.4,
+  "fx": 0.2,
+  "sub": 0.2,
+  "keys": 0.2
+ },
+ "fx_presence": {
+  "modulation": 0.8,
+  "reverb": 0.8,
+  "compressor": 0.6,
+  "delay": 0.6,
+  "eq": 0.6,
+  "other": 0.6,
+  "limiter": 0.4,
+  "filter": 0.4,
+  "stereo": 0.2,
+  "sidechain": 0.2
+ },
+ "fx_chains_top": [
+  [
+   "bus: reverb",
+   3
+  ],
+  [
+   "bus: eq",
+   2
+  ],
+  [
+   "other: filter",
+   2
+  ],
+  [
+   "kick: eq",
+   2
+  ],
+  [
+   "hat: eq > reverb",
+   2
+  ],
+  [
+   "snare: eq > reverb",
+   2
+  ],
+  [
+   "pad: modulation",
+   1
+  ],
+  [
+   "hat: delay > reverb > delay",
+   1
+  ]
+ ],
+ "automation_top": [
+  [
+   "cutoff/lfo",
+   24
+  ],
+  [
+   "wet/lfo",
+   19
+  ],
+  [
+   "cutoff/rise",
+   12
+  ],
+  [
+   "cutoff/fall",
+   7
+  ],
+  [
+   "volume/rise",
+   6
+  ],
+  [
+   "cutoff/curve",
+   5
+  ],
+  [
+   "wet/curve",
+   3
+  ],
+  [
+   "other/curve",
+   2
+  ]
+ ],
+ "tracks_median": 15,
+ "sends_median": 6,
+ "sidechain_projects": 1,
+ "density_curve_20": [
+  2.33,
+  4.33,
+  5.57,
+  7,
+  6.71,
+  6,
+  6.33,
+  8.5,
+  8.4,
+  10,
+  9.4,
+  9.17,
+  7.29,
+  5.57,
+  6.17,
+  9.5,
+  9.17,
+  6,
+  6,
+  5.14
+ ],
+ "clip_bars_top": [
+  [
+   "1.0",
+   395
+  ],
+  [
+   "2.0",
+   342
+  ],
+  [
+   "4.0",
+   141
+  ],
+  [
+   "8.0",
+   69
+  ],
+  [
+   "16.0",
+   18
+  ],
+  [
+   "9.0",
+   14
+  ]
+ ],
+ "sources": [
+  {
+   "title": "CapDan-ZeroSumGame-OriginalByZakarra.mmpz",
+   "author": "Der Daniel (CapDan)",
+   "licence": "Artistic 2.0",
+   "page_url": "https://lmms.io/lsp/index.php?action=show&file=1565",
+   "sha256": "bdcf398f34e66399da26556c06c36c9510584bd13e238ed390b8eaa9095dec37",
+   "tempo": 144.0,
+   "bars": 139,
+   "sections_source": [
+    "inferred"
+   ]
+  },
+  {
+   "title": "Impulslogik-Zen.mmpz",
+   "author": "Impulslogik",
+   "licence": "Artistic 2.0",
+   "page_url": "https://lmms.io/lsp/index.php?action=show&file=581",
+   "sha256": "c4bb45ad37792b38cc57d91997f7bbecd9eae7e8db2e87b69cacb9c45be4ed34",
+   "tempo": 140.0,
+   "bars": 128,
+   "sections_source": [
+    "inferred"
+   ]
+  },
+  {
+   "title": "EsoXLB-CPU.mmpz",
+   "author": "E.SoX (lowbudget)",
+   "licence": "Artistic 2.0",
+   "page_url": "https://lmms.io/lsp/index.php?action=show&file=723",
+   "sha256": "ffbce994454da09892946cda114334298b7bffa2e5d4e77dd956b881f22eab4f",
+   "tempo": 128.0,
+   "bars": 120,
+   "sections_source": [
+    "inferred"
+   ]
+  },
+  {
+   "title": "CapDan-TwilightArea-OriginalByAlf42red.mmpz",
+   "author": "Der Daniel (CapDan)",
+   "licence": "CC (by-sa)",
+   "page_url": "https://lmms.io/lsp/index.php?action=show&file=1439",
+   "sha256": "092667a2c539d2ab1574ff739d964e8a3efe3a18d6f1896e7c4574ba2ec7a447",
+   "tempo": 170.0,
+   "bars": 105,
+   "sections_source": [
+    "inferred"
+   ]
+  },
+  {
+   "title": "TameAnderson-MakeMe.mmpz",
+   "author": "tame anderson (tame anderson)",
+   "licence": "Artistic 2.0",
+   "page_url": "https://lmms.io/lsp/index.php?action=show&file=1060",
+   "sha256": "ecece368cd72b3ca94ed34f655d491c92d595ae6ba932c2659f83a440f51c009",
+   "tempo": 140.0,
+   "bars": 145,
+   "sections_source": [
+    "inferred"
+   ]
+  }
+ ]
+}

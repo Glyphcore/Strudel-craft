@@ -1,0 +1,105 @@
+{
+ "schema": "dawstudy-form@1",
+ "genre": "metal",
+ "n": 1,
+ "basis": "measured (n < 3: indicative only)",
+ "tempo": {
+  "min": 140.0,
+  "median": 140.0,
+  "max": 140.0
+ },
+ "length_bars": {
+  "median": 136,
+  "min": 136,
+  "max": 136
+ },
+ "section_bars_median": {
+  "body": 36,
+  "breakdown": 8.0,
+  "intro": 20
+ },
+ "section_count": {
+  "body": 3,
+  "breakdown": 2,
+  "intro": 1
+ },
+ "layers_median_by_section": {
+  "body": 3.5,
+  "breakdown": 2.0,
+  "intro": 0.0
+ },
+ "orders": [
+  [
+   "intro > breakdown > body > breakdown > body",
+   1
+  ]
+ ],
+ "role_presence": {
+  "bass": 1.0,
+  "hat": 1.0,
+  "kick": 1.0,
+  "other": 1.0,
+  "perc": 1.0,
+  "snare": 1.0
+ },
+ "fx_presence": {
+  "delay": 1.0,
+  "reverb": 1.0
+ },
+ "fx_chains_top": [
+  [
+   "bus: reverb",
+   1
+  ],
+  [
+   "bus: delay",
+   1
+  ]
+ ],
+ "automation_top": [],
+ "tracks_median": 13,
+ "sends_median": 0,
+ "sidechain_projects": 0,
+ "density_curve_20": [
+  0.5,
+  0.29,
+  0.29,
+  2,
+  4,
+  4.33,
+  3.57,
+  3.86,
+  3.57,
+  2.71,
+  3.83,
+  4.71,
+  3.86,
+  3.71,
+  3.71,
+  2.83,
+  2.29,
+  3.71,
+  3.86,
+  4.14
+ ],
+ "clip_bars_top": [
+  [
+   "1.0",
+   421
+  ]
+ ],
+ "sources": [
+  {
+   "title": "Thomasso-AxeFromThe80s.mmpz",
+   "author": "Tom H (thomasso)",
+   "licence": "Artistic 2.0",
+   "page_url": "https://lmms.io/lsp/index.php?action=show&file=474",
+   "sha256": "00aebf48415e74240f8f263380303fae1567b3677179956e67825e9ebc202fc7",
+   "tempo": 140.0,
+   "bars": 136,
+   "sections_source": [
+    "inferred"
+   ]
+  }
+ ]
+}

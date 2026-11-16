@@ -1,0 +1,181 @@
+{
+ "schema": "dawstudy-form@1",
+ "genre": "eurodance",
+ "n": 1,
+ "basis": "measured (n < 3: indicative only)",
+ "tempo": {
+  "min": 128.0,
+  "median": 128.0,
+  "max": 128.0
+ },
+ "length_bars": {
+  "median": 120,
+  "min": 120,
+  "max": 120
+ },
+ "section_bars_median": {
+  "body": 28.0,
+  "breakdown": 6.0,
+  "intro": 4,
+  "outro": 48
+ },
+ "section_count": {
+  "body": 2,
+  "breakdown": 2,
+  "intro": 1,
+  "outro": 1
+ },
+ "layers_median_by_section": {
+  "body": 9.0,
+  "breakdown": 3.25,
+  "intro": 2.0,
+  "outro": 8.0
+ },
+ "orders": [
+  [
+   "intro > breakdown > body > breakdown > body > outro",
+   1
+  ]
+ ],
+ "role_presence": {
+  "bass": 1.0,
+  "hat": 1.0,
+  "kick": 1.0,
+  "lead": 1.0,
+  "other": 1.0,
+  "snare": 1.0
+ },
+ "fx_presence": {
+  "delay": 1.0,
+  "limiter": 1.0,
+  "modulation": 1.0,
+  "other": 1.0,
+  "reverb": 1.0,
+  "sidechain": 1.0
+ },
+ "fx_chains_top": [
+  [
+   "bus: reverb > other",
+   1
+  ],
+  [
+   "bus: delay > modulation",
+   1
+  ],
+  [
+   "bus: limiter > sidechain",
+   1
+  ],
+  [
+   "bus: reverb",
+   1
+  ],
+  [
+   "bus: reverb > delay",
+   1
+  ],
+  [
+   "bus: modulation > delay",
+   1
+  ]
+ ],
+ "automation_top": [
+  [
+   "cutoff/lfo",
+   22
+  ],
+  [
+   "wet/lfo",
+   19
+  ],
+  [
+   "wet/curve",
+   3
+  ],
+  [
+   "cutoff/rise",
+   2
+  ],
+  [
+   "other/curve",
+   2
+  ],
+  [
+   "other/flat",
+   1
+  ],
+  [
+   "volume/rise",
+   1
+  ],
+  [
+   "wet/rise",
+   1
+  ]
+ ],
+ "tracks_median": 17,
+ "sends_median": 0,
+ "sidechain_projects": 1,
+ "density_curve_20": [
+  2.33,
+  4.33,
+  6,
+  7.17,
+  8.33,
+  4.83,
+  6.33,
+  9.67,
+  10,
+  10.67,
+  11,
+  10.83,
+  4.5,
+  4.33,
+  6.17,
+  6.83,
+  9.17,
+  9.5,
+  10.83,
+  11.17
+ ],
+ "clip_bars_top": [
+  [
+   "1.0",
+   90
+  ],
+  [
+   "2.0",
+   14
+  ],
+  [
+   "32.0",
+   5
+  ],
+  [
+   "15.0",
+   4
+  ],
+  [
+   "16.0",
+   2
+  ],
+  [
+   "120.0",
+   2
+  ]
+ ],
+ "sources": [
+  {
+   "title": "EsoXLB-CPU.mmpz",
+   "author": "E.SoX (lowbudget)",
+   "licence": "Artistic 2.0",
+   "page_url": "https://lmms.io/lsp/index.php?action=show&file=723",
+   "sha256": "ffbce994454da09892946cda114334298b7bffa2e5d4e77dd956b881f22eab4f",
+   "tempo": 128.0,
+   "bars": 120,
+   "sections_source": [
+    "inferred"
+   ]
+  }
+ ]
+}

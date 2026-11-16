@@ -87,10 +87,11 @@ function shapeOptions(p, ctx, items) {
 
 /* 2. catalog presets */
 const catalog = packs().catalog().catch(() => ({ recipes: [] }));
-/* a preset inserts its plain Strudel expression (works anywhere); recipes that use Craft syntax also offer `<id>.craft`, the authored Craft program (docs/LOWERING.md) */
-api.register({ id: 'catalog', items: async () => (await catalog).recipes.flatMap((r) => [
-  ...(r.expr ? [{ label: r.id, category: 'presets', detail: r.title + (r.lowered ? ' (Strudel)' : ''), info: r.intent + '\n' + r.expr, apply: r.expr }] : []),
-  ...(r.lowered ? [{ label: r.id + '.craft', category: 'presets', detail: r.title + ' (Craft)', info: r.intent + '\n' + r.code, apply: r.code }] : [])]) });
+/* a preset inserts its plain Strudel form: the one-line expression, or the generated lowering (`lowered`) for recipes with Craft syntax, which have no single expression;
+   those also offer `<id>.craft`, the authored Craft program (docs/LOWERING.md) */
+api.register({ id: 'catalog', items: async () => (await catalog).recipes.flatMap((r) => { const plain = r.lowered || r.expr; return [
+  ...(plain ? [{ label: r.id, category: 'presets', detail: r.title + (r.lowered ? ' (Strudel)' : ''), info: r.intent + '\n' + plain, apply: plain }] : []),
+  ...(r.lowered ? [{ label: r.id + '.craft', category: 'presets', detail: r.title + ' (Craft)', info: r.intent + '\n' + r.code, apply: r.code }] : [])]; }) });
 
 /* 3. runtime discovery after Strudel loads: exported globals, Pattern methods, loaded sounds */
 let runtime = [];

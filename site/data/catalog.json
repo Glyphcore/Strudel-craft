@@ -2717,7 +2717,7 @@
     "equal": false,
     "approx": true,
     "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs)",
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
     "hash": "33ea3380ef"
    },
    "notes": "",
@@ -2749,7 +2749,7 @@
     "equal": false,
     "approx": true,
     "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 3 differs)",
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 3 differs); with the groove taken out of both forms the events are identical",
     "hash": "056154861d"
    },
    "notes": "",
@@ -2781,7 +2781,7 @@
     "equal": false,
     "approx": true,
     "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (32 Craft, 31 Strudel))",
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (32 Craft, 31 Strudel)); with the groove taken out of both forms the events are identical",
     "hash": "59addbee29"
    },
    "notes": "",
@@ -2842,7 +2842,7 @@
     "equal": false,
     "approx": true,
     "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs)",
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
     "hash": "be40895c9e"
    },
    "notes": "",
@@ -2873,7 +2873,7 @@
     "equal": false,
     "approx": true,
     "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (92 Craft, 93 Strudel))",
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (92 Craft, 93 Strudel)); with the groove taken out of both forms the events are identical",
     "hash": "7c6d43cfb8"
    },
    "notes": "Craft form of the feel template glyphcore/phonk:feel-boombap (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-boombap\", { as: \"feel\" }).",
@@ -2905,7 +2905,7 @@
     "equal": false,
     "approx": true,
     "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (89 Craft, 88 Strudel))",
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (89 Craft, 88 Strudel)); with the groove taken out of both forms the events are identical",
     "hash": "613c25d58c"
    },
    "notes": "Craft form of the feel template glyphcore/phonk:feel-lazy (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-lazy\", { as: \"feel\" }).",
@@ -2937,7 +2937,7 @@
     "equal": false,
     "approx": true,
     "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (160 Craft, 161 Strudel))",
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (160 Craft, 161 Strudel)); with the groove taken out of both forms the events are identical",
     "hash": "27e5b43dd4"
    },
    "notes": "Craft form of the feel template glyphcore/phonk:feel-trap (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-trap\", { as: \"feel\" }).",
@@ -2969,7 +2969,7 @@
     "equal": false,
     "approx": true,
     "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs)",
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
     "hash": "8345117aa5"
    },
    "notes": "Craft form of the feel template glyphcore/phonk:feel-hyphy (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-hyphy\", { as: \"feel\" }).",
@@ -3001,7 +3001,7 @@
     "equal": false,
     "approx": true,
     "cycles": 4,
-    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (111 Craft, 113 Strudel))",
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (111 Craft, 113 Strudel)); with the groove taken out of both forms the events are identical",
     "hash": "7ce6918e31"
    },
    "notes": "Craft form of the feel template glyphcore/phonk:feel-cloud (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-cloud\", { as: \"feel\" }).",

@@ -18,16 +18,15 @@ const rd = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
 /* ---------- classification ---------- */
 // first match wins; each says why plain Strudel cannot hold it
 export const BLOCKERS = [
-  [/\bhooks\.\w+\s*\(/, 'hooks', 'slots, gates and bindings (hooks.def / hooks.bind / hooks.let) are resolved by the Craft runtime while it plays; plain Strudel has no slots'],
-  [/\.use\s*\(/, 'slots', 'a .use() slot is filled by a binding at play time (the Craft runtime); plain Strudel has no slots'],
   [/\.(?:tap|wire)\s*\(|\btap\s*\(/, 'taps', 'taps and wires read another lane live (the Craft runtime); plain Strudel cannot read another pattern as a control'],
   [/\.(?:tags|split|merge|send)\s*\(|\btagged\s*\(|\bret\b\s*[:(.]/, 'lanes', 'lanes (tags, selections, buses, sends) are compiled by the Craft lane engine to audio buses; strudel.cc has no lanes'],
-  [/\b(?:ctl|slider)\s*\(|\bcontrols\./, 'controls', 'controls (ctl, slider) are bound to knobs and automation by the Craft runtime'],
+  [/\b(?:ctl|slider)\s*\(|\bcontrols\.|\bhooks\.map\s*\(/, 'controls', 'controls (ctl, slider, hooks.map) are bound to knobs, faders and automation by the Craft runtime; a plain pattern has no live control'],
   [/\b(?:word|syl)\s*\(|\bvoxBank\s*\(|\bvox\s*\(/, 'prelude', 'word() and vox banks come from the Craft prelude (sample banks the site loads); strudel.cc does not have them'],
   [/\bstrudelCraft\s*\.|\bperf\s*\(|\bvisual\w*\s*\(|\bpads?\./, 'runtime', 'this calls the Craft site API (strudelCraft.*, perform, visuals); it runs inside this site only and has no plain Strudel form'],
+  [/\bhooks\.inst\s*\(|lib:/, 'library', 'this instances or binds a component from the browser library (hooks.inst, lib:); only the Craft runtime can read the library'],
 ];
 const strip = (code) => code.replace(/\/\/[^\n]*/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
-const SUGAR = [/\batoms?\b/, /\.hook\s*\(/, /\.groove\s*\(/];
+const SUGAR = [/\batoms?\b/, /\.hook\s*\(/, /\.groove\s*\(/, /\bhooks\.\w+\s*\(/, /\.use\s*\(/];
 export function classify(code) {
   const c = strip(code);
   for (const [re, kind, why] of BLOCKERS) if (re.test(c)) return { state: 'runtime', kind, why };
@@ -47,13 +46,13 @@ export async function createLowering({ defs = {}, die = (m) => { throw new Error
   }
   const ALL = { ...HYGIENE, ...G.GROOVES, ...phonk, ...defs };
   const parseExpr = (e) => e.split('|').map((t) => t.trim()).filter(Boolean).map((t) => { const m = /^([\w-]+)(?:\((.*)\))?$/.exec(t); if (!m) die(`bad hook expression "${e}"`); return { name: m[1], args: m[2] ? m[2].split(',').map((x) => Number(x.trim())) : [] }; });
-  function expand(expr) { // hook expression -> plain chain steps with params substituted
-    const out = [];
+  function expand(expr, local = {}) { // hook expression -> plain chain steps with params substituted; `local` = defs the program itself declares (they win)
+    const out = []; const ALL_ = local === ALL ? ALL : { ...ALL, ...local };
     for (const t of parseExpr(expr)) {
-      const def = ALL[t.name]; if (!def) die(`unknown rack or hook "${t.name}"`); if (!def.chain) die(`"${t.name}" is not chain-only`);
+      const def = ALL_[t.name]; if (!def) die(`unknown rack or hook "${t.name}"`); if (!def.chain) die(`"${t.name}" is not chain-only`);
       const names = Object.keys(def.params || {}); const vals = Object.fromEntries(names.map((k, i) => [k, t.args[i] ?? def.params[k].default]));
       const sub = (x) => Array.isArray(x) ? x.map(sub) : x && typeof x === 'object' ? ('$param' in x ? vals[x.$param] : '$expr' in x ? Function(...names, `return (${x.$expr.replace(/[^\w\s.+\-*/()]/g, '')})`)(...names.map((k) => vals[k])) : '$mini' in x ? { $mini: x.$mini } : Object.fromEntries(Object.entries(x).map(([k, v]) => [k, sub(v)]))) : x;
-      for (const [m, ...a] of def.chain) { if (m === 'hook') out.push(...expand(a[0])); else out.push([m, ...a.map(sub)]); }
+      for (const [m, ...a] of def.chain) { if (m === 'hook') out.push(...expand(a[0], local)); else out.push([m, ...a.map(sub)]); }
     }
     return out;
   }
@@ -73,20 +72,60 @@ export async function createLowering({ defs = {}, die = (m) => { throw new Error
     return steps.map(([m, ...a]) => { if (m === 'groove') return lowerGroove(a[0]); if (m === 'wire') die(`${where}: a wire step cannot be lowered to plain Strudel`); return `.${m}(${a.map(fmt).join(', ')})`; }).join('');
   }
   const atomsPlain = (code) => { const env = A.buildEnv(code, { imports }); return A.compile(code, env).code; };
-  // plain text of a whole program: atoms inlined, then .hook("...") and .groove({...}) written out
-  function lower(code) {
+  // ---- static hooks: hooks.def / hooks.bind (no gate) / .use("slot") written out as the chain steps they stand for ----
+  // end index (exclusive) of the call whose "(" is at `open`; strings and escapes are skipped
+  const callEnd = (s, open) => { let d = 0, q = null; for (let i = open; i < s.length; i++) { const c = s[i]; if (q) { if (c === '\\') i++; else if (c === q) q = null; continue; } if (c === '"' || c === "'" || c === '`') q = c; else if (c === '(') d++; else if (c === ')' && --d === 0) return i + 1; } return -1; };
+  const argsOf = (text) => Function(`return [${text}]`)();
+  class Runtime extends Error {}
+  const rt = (why) => { throw new Runtime(why); };
+  function staticHooks(code) { // -> code without the hooks.* statements and without .use() (steps inlined); throws Runtime(why) when a binding is live
+    const local = {}; const binds = {}; let out = ''; let i = 0; const re = /\bhooks\.(\w+)\s*\(/g; let m;
+    while ((m = re.exec(code))) {
+      const open = m.index + m[0].length - 1, end = callEnd(code, open); if (end < 0) rt('a hooks call could not be read');
+      const fn = m[1]; let args; try { args = argsOf(code.slice(open + 1, end - 1)); } catch (e) { rt(`hooks.${fn}() has an argument that is not plain data`); }
+      if (fn === 'def') { const [name, spec] = args; if (typeof name !== 'string' || !spec || !Array.isArray(spec.chain) || Object.keys(spec).some((k) => !['chain', 'params'].includes(k))) rt(`the hook "${name}" is a function, a module with taps or an apply step, which only the Craft runtime can run`); local[name] = spec; }
+      else if (fn === 'bind') { const [slot, spec, gate, opts] = args; if (gate !== undefined) rt('the binding is gated (it opens at a bar or in a range): gates are evaluated by the Craft runtime as the song plays, plain Strudel has no timeline of bindings'); if (opts) rt('the binding has options (order, priority, scope) that only the Craft runtime resolves'); (binds[slot] = binds[slot] || []).push(spec); }
+      else rt(`hooks.${fn}() is a live value or registry call driven by the Craft runtime`);
+      let stop = end; while (/[ \t]/.test(code[stop] || '')) stop++; if (code[stop] === ';') stop++; while (/[ \t]/.test(code[stop] || '')) stop++;
+      out += code.slice(i, m.index); i = stop; re.lastIndex = stop;
+    }
+    out += code.slice(i);
+    const stepsOf = (spec) => { if (Array.isArray(spec)) return spec; if (typeof spec === 'string') return expand(spec, local); rt('a binding with a function or an unreadable hook'); };
+    out = out.replace(/\.use\s*\(\s*(["'])((?:(?!\1).)*)\1\s*(?:,\s*(\{[^{}]*\}))?\s*\)/g, (_, q, slot, o) => {
+      const opts = o ? Function(`return (${o})`)() : {}; const bs = binds[slot] || [];
+      if (Object.keys(opts).some((k) => !['mode', 'else', 'quant'].includes(k)) || (opts.mode && !['chain', 'swap'].includes(opts.mode))) rt(`the slot "${slot}" is used with options (stack mode, scope) that only the Craft runtime resolves`);
+      if (!bs.length) { if (opts.else && opts.else !== 'bypass') rt(`the slot "${slot}" has no binding and its else is "${opts.else}", a runtime choice`); return ''; }
+      return plain(opts.mode === 'swap' ? stepsOf(bs[bs.length - 1]) : bs.flatMap(stepsOf), 'slot ' + slot);
+    });
+    if (/\.use\s*\(|\bhooks\./.test(strip(out))) rt('a slot is used in a way that only the Craft runtime resolves');
+    return { code: out.replace(/^[ \t]*\n/gm, '').replace(/\n{3,}/g, '\n\n'), local };
+  }
+  // the groove steps taken out of a program: the pair that is left must still give identical events; that is how a groove-only difference is told from drift
+  const GROOVE_SEG = /^\s*groove[-\w]*\s*(\([^)]*\))?\s*$/;
+  function stripGroove(code) {
+    const dropSegs = (s) => s.split('|').filter((x) => !GROOVE_SEG.test(x)).map((x) => x.trim()).join(' | ');
+    return code.replace(/\.groove\s*\(\s*\{[^{}]*\}\s*\)/g, '')
+      .replace(/\.hook\s*\(\s*(["'])((?:(?!\1).)*)\1\s*\)/g, (_, q, e) => { const r = dropSegs(e); return r ? `.hook(${q}${r}${q})` : ''; })
+      .replace(/(\bhooks\.bind\s*\(\s*(?:"[^"]*"|'[^']*')\s*,\s*)(["'])((?:(?!\2).)*)\2/g, (_, pre, q, e) => { const r = dropSegs(e); return r ? `${pre}${q}${r}${q}` : `${pre}[]`; });
+  }
+  // plain text of a whole program: atoms inlined, static hooks written out, then .hook("...") and .groove({...}) written out
+  function lower(code, { noGroove = false } = {}) {
     const c = classify(code);
     if (c.state === 'plain') return { state: 'plain', lowered: null };
     if (c.state === 'runtime') return { state: 'runtime', lowered: null, kind: c.kind, why: c.why };
-    let out = /\batoms?\b/.test(code) ? atomsPlain(code) : code;
+    const run = (kind, why) => ({ state: 'runtime', lowered: null, kind, why });
+    let out = /\batoms?\b/.test(code) ? atomsPlain(code) : code; let local = {}; if (noGroove) out = stripGroove(out);
+    try { ({ code: out, local } = staticHooks(out)); } catch (e) { if (e instanceof Runtime) return run('hooks', e.message); return run('hooks', /bad hook expression/.test(e.message) ? `a binding uses a decorator or library reference (${e.message.replace(/^bad hook expression /, '')}), which only the Craft runtime resolves` : `a hook here has no chain form (${e.message}); it runs in the Craft runtime only`); }
     try {
-      out = out.replace(/\.hook\s*\(\s*(["'])((?:(?!\1).)*)\1\s*\)/g, (_, q, expr) => plain(expand(expr), 'hook'));
+      out = out.replace(/\.hook\s*\(\s*(["'])((?:(?!\1).)*)\1\s*\)/g, (_, q, expr) => plain(expand(expr, local), 'hook'));
       out = out.replace(/\.groove\s*\(\s*(\{[^{}]*\})\s*\)/g, (_, o) => lowerGroove(Function(`return (${o})`)()));
-    } catch (e) { return { state: 'runtime', lowered: null, kind: 'hook', why: `a hook in this program has no chain form (${e.message}); it runs in the Craft runtime only` }; }
-    if (/\.(?:hook|groove)\s*\(/.test(strip(out))) return { state: 'runtime', lowered: null, kind: 'hook', why: 'a hook or groove call here takes a computed argument; it runs in the Craft runtime only' };
+    } catch (e) { return run('hook', `a hook in this program has no chain form (${e.message}); it runs in the Craft runtime only`); }
+    if (/\.(?:hook|groove)\s*\(/.test(strip(out))) return run('hook', 'a hook or groove call here takes a computed argument; it runs in the Craft runtime only');
+    if (noGroove) return { state: 'lowered', lowered: out.trim() + '\n', craft: stripGroove(/\batoms?\b/.test(code) ? atomsPlain(code) : code).trim() + '\n' };
     return out.trim() === code.trim() ? { state: 'plain', lowered: null } : { state: 'lowered', lowered: out.replace(/^\n+/, '').replace(/\n{3,}/g, '\n\n').trimEnd() + '\n'.repeat(code.endsWith('\n') ? 1 : 0) };
   }
-  return { A, AC, G, ALL, imports, expand, plain, lowerGroove, fmt, lower, atomsPlain };
+  const noGrooveOf = (code) => { const r = lower(code, { noGroove: true }); return r.state === 'lowered' ? { craft: r.craft, lowered: r.lowered } : null; };
+  return { A, AC, G, ALL, imports, expand, plain, lowerGroove, fmt, lower, atomsPlain, noGrooveOf };
 }
 
 /* ---------- hap equality (CLI `strudel events`) ---------- */

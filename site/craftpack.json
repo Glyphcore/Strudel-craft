@@ -12,9 +12,9 @@
       "format": "recipes@1",
       "version": "1.0.0",
       "path": "data/catalog.json",
-      "hash": "sha256:10d55217c5bfe388ef79498cd7587a33d0f5ef7eb4e0bef8b70408c32de49443",
+      "hash": "sha256:1122cb7025c40971588544a716e1c0381ce364a17d6b4b7af1686bf47354cb69",
       "load": "eager",
-      "bytes": 109384
+      "bytes": 109978
     },
     {
       "id": "strudel-docs",
@@ -72,9 +72,9 @@
       "format": "syntax@1",
       "version": "1.0.0",
       "path": "data/syntax.json",
-      "hash": "sha256:4d0cb99085b06f2455c5335c3a66f606520351de02539330f593ed15bc2fbc26",
+      "hash": "sha256:5f2ab01aaf5607598ee66a98eacb39dbdce14ec405da2e80558c3b8bfa6e713a",
       "load": "eager",
-      "bytes": 95097
+      "bytes": 102300
     },
     {
       "id": "plugins",

@@ -273,7 +273,7 @@ document.addEventListener('visibilitychange', () => { if (st.phase !== 'idle' &&
    the scheduler counters (bgplay.js) say whether events were dropped (target already past) or the clock re-anchored (a stall longer than the
    lookahead: the musical position paused, i.e. tempo drift); Chrome's playout statistics, where present, count output glitches */
 function perfNow() { const s = sc.bg && sc.bg.stats ? sc.bg.stats() : null; const c = st.tapCtx; const ps = c && c.playoutStats ? c.playoutStats : null;
-  return { late: s ? s.perf.lateHaps : 0, underruns: s ? s.underruns : 0, lt: s && s.perf.longTasks != null ? s.perf.longTasks : 0, worst: s ? s.perf.longTaskWorstMs : 0, glitch: ps && ps.fallbackFramesEvents != null ? ps.fallbackFramesEvents : null }; }
+  return { late: s ? s.perf.lateHaps + (s.perf.skippedHaps || 0) : 0, underruns: s ? s.underruns : 0, lt: s && s.perf.longTasks != null ? s.perf.longTasks : 0, worst: s ? s.perf.longTaskWorstMs : 0, glitch: ps && ps.fallbackFramesEvents != null ? ps.fallbackFramesEvents : null }; }
 function frameGaps(a, b) { const cs = st.chunks.filter((c) => c.f0 + c.L.length > a && c.f0 < b).sort((x, y) => x.f0 - y.f0); let gaps = 0, missing = 0, at = a;
   for (const c of cs) { if (c.f0 > at) { gaps++; missing += c.f0 - at; } at = Math.max(at, c.f0 + c.L.length); } if (at < b) { gaps++; missing += b - at; } return { gaps, missing }; }
 function selfCheck(a, b) {

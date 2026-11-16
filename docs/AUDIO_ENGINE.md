@@ -66,7 +66,7 @@ Always on (W3): `hooks.gateAt` closures memoised per (gate, id, quant) and clear
 memoised. The hooks (p1-p5) and lanes (l1-l4) tests are unchanged.
 
 Diagnostics (B4): the audio dot's sheet now also shows Engine (main thread, worker clock), long tasks and the worst, late (dropped) and
-tight haps, voices in flight (from events: a triggered hap counts until its end + 0.25 s), query and voice time.
+tight haps, skipped haps (the trigger settled after its target: superdough's silent "skip hap: still loading"), voices in flight (from events: a triggered hap counts until its end + 0.25 s), query and voice time.
 
 Rejected: sharing the scheduler's haps with the visuals (they have no future cycles for a pianoroll); lowering the frame rate (still a
 60 ms task per frame); raising the base lookahead alone (more latency for live edits, the same number of queries).

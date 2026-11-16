@@ -65,7 +65,7 @@ const now = () => performance.now();
 const VF = []; const inFlight = () => { const c = ctx(); if (!c) return 0; const t = c.currentTime; let n = 0; for (let i = VF.length - 1; i >= 0; i--) if (VF[i] > t) n++; return n; };
 /* main-thread long tasks while playing (PerformanceObserver 'longtask'): count and worst, reset on Play */
 const LT = { n: 0, worst: 0, total: 0 }; try { new PerformanceObserver((l) => { if (!B.playing) return; for (const e of l.getEntries()) { LT.n++; LT.total += e.duration; if (e.duration > LT.worst) LT.worst = e.duration; } }).observe({ type: 'longtask' }); } catch (e) { LT.na = true; }
-const PF = {}; function resetPerf() { VF.length = 0; Object.assign(LT, { n: 0, worst: 0, total: 0 }); Object.assign(PF, { tickMs: 0, tickMax: 0, queryMs: 0, queryMax: 0, voiceMs: 0, voiceMax: 0, late: 0, tight: 0, haps: 0, rescued: 0, minMargin: Infinity }); } resetPerf();
+const PF = {}; function resetPerf() { VF.length = 0; Object.assign(LT, { n: 0, worst: 0, total: 0 }); Object.assign(PF, { tickMs: 0, tickMax: 0, queryMs: 0, queryMax: 0, voiceMs: 0, voiceMax: 0, late: 0, tight: 0, haps: 0, rescued: 0, skipped: 0, minMargin: Infinity }); } resetPerf();
 const ctx = () => { try { return window.getAudioContext ? window.getAudioContext() : null; } catch (e) { return null; } };
 const sched = () => { const s = sc.engineState && sc.engineState(); return s && s.scheduler; };
 const cycleNow = () => { const s = sched(); try { return s && s.started ? +s.now().toFixed(3) : (s ? +(+s.lastEnd || 0).toFixed(3) : 0); } catch (e) { return 0; } };
@@ -128,7 +128,10 @@ function makeClock(S, getTime, onTrigger, latency) {
         /* late-hap accounting: superdough 1.3.0 drops a voice whose target is already in the past ("cannot schedule sounds in the past") */
         PF.haps++; const m = target - getTime(); if (m < 0) PF.late++; else if (m < 0.02) PF.tight++; if (m < PF.minMargin) PF.minMargin = m;
         VF.push(target + d + 0.25); if (VF.length > 4096) VF.splice(0, 2048);
-        const v0 = now(); onTrigger(h, target - ph, d, S.cps, target); const dv = now() - v0; PF.voiceMs += dv; if (dv > PF.voiceMax) PF.voiceMax = dv;
+        const v0 = now(); const pr = onTrigger(h, target - ph, d, S.cps, target); const dv = now() - v0; PF.voiceMs += dv; if (dv > PF.voiceMax) PF.voiceMax = dv;
+        /* superdough checks the time again after awaiting the sound (samples, vox): a voice whose target passed meanwhile is skipped silently
+           ("skip hap: still loading"); when the trigger settles after its target, count it as skipped */
+        if (pr && typeof pr.then === 'function') pr.then(() => { if (getTime() > target) PF.skipped++; }, () => {});
         if (h.value.cps !== undefined && S.cps != h.value.cps) { S.cps = h.value.cps; S.num_ticks_since_cps_change = 0; }
       });
     } catch (e) { logErr(e); }
@@ -226,7 +229,7 @@ function stats() {
     sched: FLAG_SCHED, late: FLAG_LATE, querySpanMs: Math.round(QSPAN * 1000),
     perf: { tickMs: Math.round(PF.tickMs), tickMaxMs: +PF.tickMax.toFixed(1), queryMs: Math.round(PF.queryMs), queryMaxMs: +PF.queryMax.toFixed(1), voiceMs: Math.round(PF.voiceMs), voiceMaxMs: +PF.voiceMax.toFixed(1),
       voicesInFlight: inFlight(), longTasks: LT.na ? null : LT.n, longTaskWorstMs: Math.round(LT.worst), longTaskMs: Math.round(LT.total),
-      haps: PF.haps, voiceMsPerHap: PF.haps ? +(PF.voiceMs / PF.haps).toFixed(3) : 0, lateHaps: PF.late, tightHaps: PF.tight, rescuedWindows: PF.rescued, minMarginMs: PF.minMargin === Infinity ? null : Math.round(PF.minMargin * 1000) } };
+      haps: PF.haps, voiceMsPerHap: PF.haps ? +(PF.voiceMs / PF.haps).toFixed(3) : 0, lateHaps: PF.late, skippedHaps: PF.skipped, tightHaps: PF.tight, rescuedWindows: PF.rescued, minMarginMs: PF.minMargin === Infinity ? null : Math.round(PF.minMargin * 1000) } };
 }
 function segments() { const t = now(); return B.segs.map((s) => ({ kind: s.kind, why: s.why, cycle: s.cycle, audio: s.audio, wall: s.wall, ms: s.ms != null ? s.ms : Math.round(t - s.t0) })); }
 /* gaps between two audio-clock times (for capture takes): paused / interrupted segments that overlap [a, b] */
@@ -258,7 +261,7 @@ function openDiagnostics() {
     d.innerHTML = `<div class="help-head"><h2 id="bgDiagH">Audio and background</h2><button type="button" class="icon bg-close" aria-label="Close">&times;</button></div>
       <dl class="bg-stats">${[['Clock', s.clock], ['Audio context', s.context], ['Lookahead in use', N.span(N.ms(s.lookaheadMs), 7) + ' ms (' + N.span(N.ms(s.lookaheadBounds.baseMs), 7) + ' foreground, ' + N.span(N.ms(s.lookaheadBounds.hiddenMs), 7) + ' hidden, max ' + N.span(N.ms(s.lookaheadBounds.maxMs), 7) + ')'],
         ['Ticks / late ticks', N.span(s.ticks, 8) + ' / ' + N.span(s.lateTicks, 6)], ['Max tick gap', N.span(N.ms(s.maxGapMs), 7) + ' ms'], ['Underruns (re-anchored)', N.span(s.underruns, 6)], ['Engine', 'main thread (worker clock)'], ['Long tasks / worst', (s.perf.longTasks == null ? 'n/a' : N.span(s.perf.longTasks, 6)) + ' / ' + N.span(N.ms(s.perf.longTaskWorstMs), 6) + ' ms'],
-        ['Late haps (dropped) / tight', N.span(s.perf.lateHaps, 6) + ' / ' + N.span(s.perf.tightHaps, 6)], ['Voices in flight', N.span(s.perf.voicesInFlight, 5)], ['Query / voice time', N.span(N.ms(s.perf.queryMs), 7) + ' / ' + N.span(N.ms(s.perf.voiceMs), 7) + ' ms'], ['Played / paused', N.span(fmt(s.playedSec), 7) + ' / ' + N.span(fmt(s.pausedSec), 7)], ['Wake lock', s.wakeLock ? 'held' : 'off']]
+        ['Late haps (dropped) / skipped / tight', N.span(s.perf.lateHaps, 6) + ' / ' + N.span(s.perf.skippedHaps, 6) + ' / ' + N.span(s.perf.tightHaps, 6)], ['Voices in flight', N.span(s.perf.voicesInFlight, 5)], ['Query / voice time', N.span(N.ms(s.perf.queryMs), 7) + ' / ' + N.span(N.ms(s.perf.voiceMs), 7) + ' ms'], ['Played / paused', N.span(fmt(s.playedSec), 7) + ' / ' + N.span(fmt(s.pausedSec), 7)], ['Wake lock', s.wakeLock ? 'held' : 'off']]
         .map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
       <h3>Segments</h3><ol class="bg-segs">${segs.length ? segs.map((g) => `<li data-kind="${g.kind}"><b>${g.kind}</b> c ${N.span(N.cyc(+g.cycle), 6)} · ${N.span(fmt(g.ms / 1000), 7)} <span>${g.why || ''}</span></li>`).join('') : '<li>Nothing yet: press Play</li>'}</ol>
       ${settingsHtml()}`;

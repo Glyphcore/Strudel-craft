@@ -95,7 +95,7 @@ CPU x4 gave 127 skipped queries and 25 dropped haps; a 2.5 s main-thread stall g
   when the page is hidden. Record takes mark gaps (docs/CAPTURE.md).
 - Diagnostics: tap the audio dot: clock kind, context state, lookahead in use, ticks and late ticks, max tick gap, underruns
   (re-anchors), engine (main thread, worker clock), main-thread long tasks and the worst, late haps (scheduled after their time,
-  which superdough drops) and tight ones (under 20 ms), voices in flight (from events), query and voice-construction time,
+  which superdough drops), skipped ones (the voice settled after its target) and tight ones (under 20 ms), voices in flight (from events), query and voice-construction time,
   played / paused time, the segment timeline, the policy, and the Engine flags (applies after reload).
 
 ## Audio engine flags and measurements (docs/AUDIO_ENGINE.md, #102-#104)

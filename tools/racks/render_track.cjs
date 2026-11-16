@@ -20,11 +20,11 @@ const list = (k) => (arg(k, '') || '').split(',').map((s) => s.trim()).filter(Bo
 const SITE = path.resolve(__dirname, '../../site'), PFX = '/Strudel-craft/';
 let code = fs.readFileSync(path.resolve(TRACK), 'utf8');
 // lane filter: a lane is a line `name: ...` at column 0 (continuation lines are indented or start with `.`)
-if (SOLO.length || MUTE.length) {
+if (SOLO.length || MUTE.length) { // a --quiet lane is never muted by --solo (it keeps firing, silently)
   const lines = code.split('\n');
   for (let i = 0; i < lines.length; i++) {
     const m = /^(_?)([A-Za-z]\w*):/.exec(lines[i]);
-    if (m) { const off = (SOLO.length && !SOLO.includes(m[2])) || MUTE.includes(m[2]); if (off && !m[1]) lines[i] = '_' + lines[i]; }
+    if (m) { const off = (SOLO.length && !SOLO.includes(m[2]) && !QUIET.includes(m[2])) || MUTE.includes(m[2]); if (off && !m[1]) lines[i] = '_' + lines[i]; }
   }
   code = lines.join('\n');
 }

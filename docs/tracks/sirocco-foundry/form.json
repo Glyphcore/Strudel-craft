@@ -1,0 +1,9 @@
+{"bpm": 140, "form": [
+ {"section": "intro", "bars": 16},
+ {"section": "build1", "bars": 16},
+ {"section": "drop1", "bars": 24, "type": "drop"},
+ {"section": "breakdown", "bars": 16},
+ {"section": "drop2", "bars": 24, "type": "drop"},
+ {"section": "drop3", "bars": 16, "type": "drop"},
+ {"section": "outro", "bars": 16}
+]}

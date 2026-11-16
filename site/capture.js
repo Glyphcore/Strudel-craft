@@ -8,6 +8,7 @@
    API: window.strudelCraft.capture = { open, close, toggle, configure, record, stop, toggleRec, renderExact, remake, importRecipe, exportRecipe,
    download, list, get, remove, rename, encodeWav, opts, state } */
 import * as N from './numfmt.js';
+import * as RL from './record-length.js';
 import { FORMAT, VERSION, audioHash, collectDeps, validate, refsOf, verify, trusted, grant, store, pruneLegacy, sha256 } from './recipe.js';
 const sc = (window.strudelCraft = window.strudelCraft || {});
 const $ = (s, r = document) => r.querySelector(s);
@@ -21,7 +22,7 @@ const numStr = (x) => String(+(+x).toFixed(3));
 const short = (h) => (h ? String(h).replace('sha256:', '').slice(0, 12) : '-');
 
 const opts = {
-  source: get('source', 'offline'), autoFix: get('autoFix', false), mode: get('mode', 'cycles'), n: get('n', 2), countIn: get('countIn', 0), preRoll: get('preRoll', 0),
+  source: get('source', 'offline'), autoFix: get('autoFix', false), mode: get('mode', 'cycles'), n: get('n', 2), unit: get('unit', 'bars'), len: get('len', 4), toEnd: get('toEnd', false), startBar: get('startBar', ''), endBar: get('endBar', ''), countIn: get('countIn', 0), preRoll: get('preRoll', 0),
   name: get('name', 'take'), bits: get('bits', 16), fold: get('fold', true), audio: get('audio', true), events: get('events', true), code: get('code', true),
 };
 /* render host (docs/AUDIO_ENGINE.md, Part C): this page loaded as index.html?host=render inside a hidden iframe renders recipes for its parent */
@@ -202,12 +203,41 @@ async function addTake({ name = 'take', L, R, sr, cps, cycles, from = null, code
   await store.put(rec); renderTakes(); return rec;
 }
 
+/* ---------- length: bars / cycles / seconds, start bar, end of track (site/record-length.js, docs/CAPTURE.md "Length") ---------- */
+const HZ = 1024; /* cycles scanned for gate windows when resolving the end of track */
+function lenEnv() {
+  const T = sc.transport || {}, H = sc.hooks || {};
+  const cps = T.scheduler && T.scheduler.started && T.scheduler.cps ? T.scheduler.cps : ((window.__sc && window.__sc.S.tempo) || lsj('tempo') || 120) / 240;
+  return { cps: +cps, cpb: +H.cpb > 0 ? +H.cpb : 1, bpb: +H.bpb > 0 ? +H.bpb : 4 };
+}
+function endInfo(env) {
+  let planJ = null, markers = null, code = '';
+  try { const H = sc.hooks; if (H && H.plan) { planJ = H.plan({ horizon: HZ }); markers = planJ.markers || null; } } catch (e) { /* no hooks */ }
+  try { const s = sc.transport && sc.transport.source && sc.transport.source(); code = (s && s.code) || ''; } catch (e) { /* none */ }
+  const r = sc.range && sc.range.state;
+  return RL.resolveEnd({ plan: planJ, horizon: HZ, markers, loop: r ? { on: !!r.loop, end: +r.end } : null, code, ...env });
+}
+/* the take the panel describes right now: { ok, error, startCycle, stopCycle, cycles, bars, seconds, startBar, endBar, toEnd, end, env, explicitStart } */
+function takePlan(over = {}) {
+  const env = lenEnv(), r = sc.range && sc.range.state;
+  const sb = RL.parseStartBar(over.startBar !== undefined ? over.startBar : opts.startBar); if (!sb.ok) return { ok: false, error: sb.error, field: 'start' };
+  const eb = RL.parseStartBar(over.endBar !== undefined ? over.endBar : opts.endBar); if (!eb.ok) return { ok: false, error: eb.error.replace('bar number', 'end bar'), field: 'end' };
+  const unit = over.unit || opts.unit, toEnd = over.toEnd !== undefined ? over.toEnd : opts.toEnd;
+  const value = over.value !== undefined ? over.value : opts.len;
+  const end = toEnd ? endInfo(env) : null;
+  const p = RL.plan({ unit, value, toEnd, startBar: sb.value, endBar: eb.value, end, transportStart: Math.max(0, Math.floor((r && +r.start) || 0)), maxMin: r && r.maxMin || RL.MAX_MIN, extra: r && r.extra || 0, ...env });
+  return { ...p, end, env, unit, explicitStart: sb.value != null };
+}
+const metaFor = (p, cycles, c0) => RL.timingMeta({ bars: +(cycles / p.env.cpb).toFixed(6), startBar: +(c0 / p.env.cpb + 1).toFixed(6), toEnd: p.toEnd }, { unit: p.unit, cpb: p.env.cpb, bpb: p.env.bpb, end: p.end });
+
 /* ---------- record ---------- */
 /* run: one-off overrides that are not persisted ({mode, n, countIn, name, at: absolute start cycle, step}); resolves with the saved record */
 async function record(o = {}, run = {}) {
   if (st.phase !== 'idle') return null; /* busy: use stop() or toggleRec() */
   if (o && Object.keys(o).length) configure(o);
-  const ru = st.run = { mode: run.mode || opts.mode, n: Math.max(1, (run.n || opts.n) | 0), countIn: run.countIn != null ? run.countIn : opts.countIn, preRoll: run.mode ? 0 : opts.preRoll, name: run.name || opts.name, at: run.at, step: run.step };
+  const lp = run.n ? { ...takePlan({ unit: 'cycles', value: Math.max(1, run.n | 0), toEnd: false }), explicitStart: false } : takePlan();
+  if (!lp.ok) { toast('Record: ' + lp.error, { kind: 'error' }); return null; }
+  const ru = st.run = { plan: lp, mode: run.mode || opts.mode, n: lp.cycles, countIn: run.countIn != null ? run.countIn : opts.countIn, preRoll: run.mode ? 0 : opts.preRoll, name: run.name || opts.name, at: run.at, step: run.step };
   const done = st.done = new Promise((r) => { st.resolve = r; });
   if (!opts.audio && !opts.events && !opts.code) { toast('Tick at least one of Audio, Events, Code-state', { kind: 'error' }); st.resolve(null); return null; }
   if (st.rendering) { toast('Rendering, wait a moment', { kind: 'info' }); st.resolve(null); return null; }
@@ -222,10 +252,12 @@ async function record(o = {}, run = {}) {
     const ck = clock(); if (!ck) throw new Error('The transport is not running');
     const now = st.tapCtx.currentTime + 0.02, rate = sr(), c = ck.cycleAt(now);
     const k = Math.max(0, ru.countIn | 0);
-    let startT, startCycle = null;
-    if (ru.at != null) { startCycle = ru.at; while (ck.timeOf(startCycle) < now) startCycle += ru.step || ru.n; startT = ck.timeOf(startCycle); }
+    let startT, startCycle = null, at = ru.at;
+    if (at == null && ru.plan.explicitStart) { if (ck.timeOf(ru.plan.startCycle) >= now) at = ru.plan.startCycle; else toast(`Bar ${RL.cycleToBar(ru.plan.startCycle, ru.plan.env.cpb)} has already passed; recording from the next bar`, { kind: 'info' }); }
+    if (at != null) { startCycle = at; while (ck.timeOf(startCycle) < now) startCycle += ru.step || ru.n; startT = ck.timeOf(startCycle); }
     else if (ru.mode === 'cycles' || k > 0) { startCycle = Math.ceil(c - 1e-6) + k; startT = ck.timeOf(startCycle); } else startT = now;
     st.startCycle = startCycle; st.c0 = startCycle != null ? startCycle : ck.cycleAt(startT); st.cps = ck.cps;
+    if (ru.plan.toEnd) { const left = ru.plan.stopCycle - st.c0; if (!(left > 0)) throw new Error(`Already past the end of track (bar ${RL.cycleToBar(ru.plan.stopCycle, ru.plan.env.cpb)})`); ru.n = left; }
     const pre = ru.mode === 'cycles' ? 0 : Math.max(0, +ru.preRoll || 0);
     const first = st.chunks.length ? st.chunks[0].f0 : Math.round(now * rate);
     st.startFrame = Math.max(first, Math.round((startT - pre) * rate)); st.recFrame = Math.round(startT * rate);
@@ -242,8 +274,10 @@ async function record(o = {}, run = {}) {
 function toggleRec() { return st.phase === 'idle' ? record() : stop(); }
 /* set options from code or the palette; persisted (sc.record.*) and reflected in the panel */
 function configure(o = {}) {
-  for (const k of Object.keys(opts)) if (o[k] !== undefined) { opts[k] = k === 'name' ? safe(o[k]) : typeof opts[k] === 'number' ? +o[k] : typeof opts[k] === 'boolean' ? !!o[k] : o[k]; set(k, opts[k]); }
-  opts.n = Math.max(1, Math.min(64, opts.n | 0));
+  for (const k of Object.keys(opts)) if (o[k] !== undefined) { opts[k] = k === 'name' ? safe(o[k]) : k === 'len' ? (+o[k] > 0 ? +o[k] : opts.len) : k === 'startBar' || k === 'endBar' ? String(o[k] == null ? '' : o[k]).trim() : typeof opts[k] === 'number' ? +o[k] : typeof opts[k] === 'boolean' ? !!o[k] : o[k]; set(k, opts[k]); }
+  if (!RL.UNITS.includes(opts.unit)) opts.unit = 'bars';
+  opts.n = Math.max(1, Math.min(4096, opts.n | 0));
+  if (o.n !== undefined && o.len === undefined && o.unit === undefined) { opts.unit = 'cycles'; opts.len = opts.n; opts.toEnd = false; set('unit', 'cycles'); set('len', opts.len); set('toEnd', false); } /* legacy: configure({ n }) is N cycles */
   if (el.w) {
     for (const r of el.w.querySelectorAll('.cap-seg input')) r.checked = String(opts[r.name.slice(4)]) === r.value;
     $('#capCount').value = String(opts.countIn); $('#capPre').value = String(opts.preRoll); $('#capName').value = opts.name; $('#capFold').checked = opts.fold;
@@ -304,7 +338,7 @@ async function finish(why) {
     const includes = { audio: !!opts.audio, events: !!opts.events, code: !!opts.code };
     const C = sc.perform && sc.perform.controls;
     const events = includes.events || includes.code ? { pads: padEvents(c0, c1), hooks: hookPadEntries(c1), controls: st.ev ? st.ev.controls : [], lanes: C ? (C.toModel().automation || {}) : {} } : null;
-    const timing = { cps: +(+st.cps).toFixed(6), start: +c0.toFixed(6), stop: +c1.toFixed(6), cycles: +(c1 - c0).toFixed(6), loop: exact, mode: ru.mode, exact, fold: !!opts.fold, preRoll: (st.recFrame - st.startFrame) / rate };
+    const timing = { cps: +(+st.cps).toFixed(6), start: +c0.toFixed(6), stop: +c1.toFixed(6), cycles: +(c1 - c0).toFixed(6), loop: exact, mode: ru.mode, exact, fold: !!opts.fold, preRoll: (st.recFrame - st.startFrame) / rate, ...metaFor(ru.plan, c1 - c0, c0) };
     /* gaps (bgplay.js segments): a take that crossed a pause or interruption carries segment markers; the audio has the gap, Remake and
        the exact render do not (they render the cycles, not the wall clock) */
     const gaps = sc.bg && st.tapCtx && st.recAudio0 != null ? sc.bg.gapsBetween(st.recAudio0, st.tapCtx.currentTime) : [];
@@ -570,19 +604,19 @@ async function recordOffline(ru) {
   const T = sc.transport; st.phase = 'rendering'; st.abort = new AbortController(); sync();
   try {
     const src = T.source(); if (!src || src.empty || !src.code) throw new Error('Nothing to render: pick a recipe or add Stack layers');
-    const r = sc.range && sc.range.state; const c0 = ru.at != null ? ru.at : Math.max(0, Math.floor((r && +r.start) || 0)), c1 = c0 + ru.n;
-    const cps = T.scheduler && T.scheduler.started && T.scheduler.cps ? T.scheduler.cps : ((window.__sc && window.__sc.S.tempo) || lsj('tempo') || 120) / 240;
+    const r = sc.range && sc.range.state; const pl = ru.plan; const c0 = ru.at != null ? ru.at : pl ? pl.startCycle : Math.max(0, Math.floor((r && +r.start) || 0)), c1 = c0 + ru.n;
+    const cps = lenEnv().cps;
     const state = await codeState(src); const C = sc.perform && sc.perform.controls;
     const includes = { audio: true, events: !!opts.events, code: true };
     const events = { pads: padEvents(c0, c1), hooks: hookPadEntries(c1), controls: controlEvents(c0, c1), lanes: C ? (C.toModel().automation || {}) : {} };
-    const timing = { cps: +(+cps).toFixed(6), start: c0, stop: c1, cycles: ru.n, loop: true, mode: 'offline', exact: true, fold: !!opts.fold, preRoll: 0 };
+    const timing = { cps: +(+cps).toFixed(6), start: c0, stop: c1, cycles: ru.n, loop: true, mode: 'offline', exact: true, fold: !!opts.fold, preRoll: 0, ...(pl ? metaFor(pl, ru.n, c0) : {}) };
     const recipe = await buildRecipe({ name: ru.name, includes, timing, state, events });
     const t0 = performance.now();
     const out = await renderRecipe(recipe, { signal: st.abort.signal, onProgress: (p) => { st.progress = p; if (el.state) el.state.textContent = `Rendering offline ${Math.round(p * 100)} %`; } });
     const rec = { id: recipe.id, recipe, audio: { render: { L: out.L, R: out.R, sr: out.sr } } };
     recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr), ms: Math.round(performance.now() - t0) };
     await store.put(rec); renderTakes();
-    toast(`Rendered "${recipe.name}" offline: ${ru.n} cycles from cycle ${c0}, ${out.L.length} frames${out.fails ? `, ${out.fails} events failed` : ''}. Download`, { kind: out.fails ? 'info' : 'ok', ms: 6000, onClick: () => download(recipe.id, 'recipe') });
+    toast(`Rendered "${recipe.name}" offline: ${pl ? `${N.fix(pl.bars, pl.bars % 1 ? 2 : 0)} bars from bar ${N.fix(pl.startBar, pl.startBar % 1 ? 2 : 0)}` : `${ru.n} cycles from cycle ${c0}`}, ${out.L.length} frames${out.fails ? `, ${out.fails} events failed` : ''}. Download`, { kind: out.fails ? 'info' : 'ok', ms: 6000, onClick: () => download(recipe.id, 'recipe') });
     return rec;
   } catch (e) { toast(e.name === 'AbortError' ? 'Offline render cancelled' : 'Offline render: ' + (e.message || e), { kind: e.name === 'AbortError' ? 'info' : 'error' }); return null; }
   finally { st.phase = 'idle'; st.abort = null; st.progress = 0; sync(); }
@@ -599,20 +633,21 @@ async function rerender(id) {
 }
 
 /* Render exact N cycles of the current program as a recipe (code-state + render output) */
-async function renderExact(n = opts.n) {
+async function renderExact(n) {
   if (st.rendering || st.phase !== 'idle') return null;
   const T = sc.transport;
   try {
-    const info = await T.compile(); n = Math.max(1, n | 0);
+    const lp = n != null ? takePlan({ unit: 'cycles', value: Math.max(1, n | 0), toEnd: false, startBar: '' }) : takePlan(); if (!lp.ok) { toast('Render: ' + lp.error, { kind: 'error' }); return null; }
+    const info = await T.compile(); n = lp.cycles; const c0 = lp.startCycle;
     const state = await codeState({ kind: info.kind, title: info.title, code: info.code });
     const includes = { audio: true, events: false, code: true };
-    const recipe = await buildRecipe({ name: opts.name, includes, state, timing: { cps: +(+info.cps).toFixed(6), start: 0, stop: n, cycles: n, loop: true, mode: 'cycles', exact: true, fold: !!opts.fold, preRoll: 0 } });
+    const recipe = await buildRecipe({ name: opts.name, includes, state, timing: { cps: +(+info.cps).toFixed(6), start: c0, stop: +(c0 + n).toFixed(6), cycles: n, loop: true, mode: 'cycles', exact: true, fold: !!opts.fold, preRoll: 0, ...metaFor(lp, n, c0) } });
     if (T.playing && FLAG_REC === 'inline') { T.stop(); await new Promise((r) => setTimeout(r, 150)); }
     const out = await renderRecipe(recipe);
     const rec = { id: recipe.id, recipe, audio: { render: { L: out.L, R: out.R, sr: out.sr } } };
     recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr) };
     await store.put(rec); renderTakes();
-    toast(`Rendered ${recipe.name}: ${n} cycles, ${out.L.length} frames${out.fails ? `, ${out.fails} events failed offline` : ''}`, { kind: out.fails ? 'info' : 'ok' });
+    toast(`Rendered ${recipe.name}: ${N.fix(lp.bars, lp.bars % 1 ? 2 : 0)} bars (${N.fix(n, n % 1 ? 2 : 0)} cycles) from bar ${N.fix(lp.startBar, lp.startBar % 1 ? 2 : 0)}, ${out.L.length} frames${out.fails ? `, ${out.fails} events failed offline` : ''}`, { kind: out.fails ? 'info' : 'ok' });
     return rec;
   } catch (e) { failToast('Render', e); return null; }
 }
@@ -765,19 +800,34 @@ function build() {
   <div class="cap-opts">
     ${seg('source', 'Source', [['offline', 'Offline render'], ['live', 'Live capture']], opts.source)}
     ${seg('mode', 'Arm', [['free', 'Free'], ['cycles', 'Cycles'], ['until', 'Until stop']], opts.mode)}
-    <div class="cap-num"><span class="cap-lab" id="capNLab">Cycles</span><div class="cap-step"><button type="button" class="ghost" data-step="-1" aria-label="Fewer cycles">-</button><output id="capN" aria-labelledby="capNLab">${opts.n}</output><button type="button" class="ghost" data-step="1" aria-label="More cycles">+</button></div></div>
+    <div class="cap-len">
+      ${seg('unit', 'Length', [['bars', 'Bars'], ['cycles', 'Cycles'], ['seconds', 'Seconds']], opts.unit)}
+      <div class="cap-lenrow">
+        <button type="button" class="ghost cap-stepb" data-step="-1" aria-label="Shorter">-</button>
+        <input id="capLen" class="cap-in" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="done" aria-label="Length" aria-describedby="capDerive capLenErr" value="${opts.len}">
+        <button type="button" class="ghost cap-stepb" data-step="1" aria-label="Longer">+</button>
+        <button type="button" class="ghost cap-endchip" id="capToEnd" aria-pressed="${opts.toEnd}">To end of track</button>
+      </div>
+      <div class="cap-chips" id="capChips" role="group" aria-label="Quick lengths"></div>
+      <div class="cap-lenrow cap-fromto">
+        <label class="cap-sel"><span class="cap-lab">Start bar</span><input id="capStart" class="cap-in" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="done" placeholder="transport start" aria-describedby="capLenErr" value="${esc(opts.startBar)}"></label>
+        <label class="cap-sel" id="capEndLab"><span class="cap-lab">End bar (to end)</span><input id="capEnd" class="cap-in" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="done" placeholder="auto" aria-describedby="capLenErr" value="${esc(opts.endBar)}"></label>
+      </div>
+      <p class="cap-derive" id="capDerive" aria-live="polite"></p>
+      <p class="cap-err" id="capLenErr" role="alert" hidden></p>
+    </div>
     <label class="cap-sel"><span class="cap-lab">Count-in</span><select id="capCount">${[0, 1, 2, 4].map((v) => `<option value="${v}"${v === opts.countIn ? ' selected' : ''}>${v ? v + ' cyc' : 'Off'}</option>`).join('')}</select></label>
     <label class="cap-sel"><span class="cap-lab">Pre-roll</span><select id="capPre">${[0, 0.5, 1, 2, 4].map((v) => `<option value="${v}"${v === opts.preRoll ? ' selected' : ''}>${v ? v + ' s' : 'Off'}</option>`).join('')}</select></label>
     <label class="cap-name"><span class="cap-lab">Name</span><input id="capName" type="text" autocomplete="off" spellcheck="false" enterkeyhint="done" maxlength="60" value="${esc(opts.name)}"></label>
     ${seg('bits', 'WAV', [[16, '16 bit'], [24, '24 bit']], opts.bits)}
   </div>
-  <div class="cap-exact"><button type="button" id="capExact" class="ghost">Render exact <b id="capExactN">${opts.n}</b> cycles</button><label class="switch"><input id="capFold" type="checkbox"${opts.fold ? ' checked' : ''}><span>Fold tail (seamless)</span></label></div>
+  <div class="cap-exact"><button type="button" id="capExact" class="ghost">Render exact <b id="capExactN"></b></button><label class="switch"><input id="capFold" type="checkbox"${opts.fold ? ' checked' : ''}><span>Fold tail (seamless)</span></label></div>
   <p class="cap-hint" id="capHint"></p>
   <div class="cap-imp"><button type="button" id="capImport" class="ghost">Import recipe</button><input type="file" id="capFile" accept="application/json,.json" hidden></div>
   <ol class="cap-takes" id="capTakes" aria-label="Takes"></ol>
   <p class="cap-quota" id="capQuota"></p>`;
   document.body.append(w);
-  el = { tb, w, rec: $('#capRec'), lab: $('#capRecLabel'), time: $('#capTime'), state: $('#capState'), meter: $('#capMeter'), n: $('#capN'), hint: $('#capHint'), takes: $('#capTakes'), exact: $('#capExact'), prog: $('#capProg'), bar: $('#capBar'), pct: $('#capPct') };
+  el = { tb, w, rec: $('#capRec'), lab: $('#capRecLabel'), time: $('#capTime'), state: $('#capState'), meter: $('#capMeter'), hint: $('#capHint'), takes: $('#capTakes'), exact: $('#capExact'), prog: $('#capProg'), bar: $('#capBar'), pct: $('#capPct') };
   $('#capCancel').addEventListener('click', cancelRender);
   $('#capClose').addEventListener('click', () => close());
   el.rec.addEventListener('click', () => toggleRec());
@@ -786,18 +836,54 @@ function build() {
   $('#capFile').addEventListener('change', async (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return; try { await importRecipe(f); } catch (err) { await sc.ui.askYesNo({ title: 'Import refused', message: err.message, okText: 'OK' }); } });
   w.addEventListener('change', (e) => {
     const t = e.target;
-    if (t.name === 'cap-source') configure({ source: t.value }); else if (t.name === 'cap-mode') configure({ mode: t.value }); else if (t.name === 'cap-bits') configure({ bits: +t.value });
+    if (t.name === 'cap-source') configure({ source: t.value }); else if (t.name === 'cap-mode') configure({ mode: t.value }); else if (t.name === 'cap-bits') configure({ bits: +t.value }); else if (t.name === 'cap-unit') setUnit(t.value);
+    else if (t.id === 'capLen') commitLen(); else if (t.id === 'capStart') { const r = RL.parseStartBar(t.value); if (r.ok) configure({ startBar: t.value }); else updateLen(); } else if (t.id === 'capEnd') { const r = RL.parseStartBar(t.value); if (r.ok) configure({ endBar: t.value }); else updateLen(); }
     else if (t.id === 'capCount') configure({ countIn: +t.value }); else if (t.id === 'capPre') configure({ preRoll: +t.value });
     else if (t.id === 'capFold') configure({ fold: t.checked }); else if (t.id === 'capName') configure({ name: t.value });
     else if (t.id && t.id.startsWith('capInc_')) configure({ [t.id.slice(7)]: t.checked });
   });
   w.addEventListener('click', (e) => {
-    const s = e.target.closest('[data-step]'); if (s) { configure({ n: opts.n + +s.dataset.step }); return; }
+    const s = e.target.closest('[data-step]'); if (s) { const k = opts.unit === 'seconds' ? 5 : 1; configure({ len: Math.max(k, +(opts.len + k * +s.dataset.step).toFixed(3)), toEnd: false }); return; }
+    const ch = e.target.closest('[data-chip]'); if (ch) { configure({ len: +ch.dataset.chip, toEnd: false }); return; }
+    if (e.target.closest('#capToEnd')) { configure({ toEnd: !opts.toEnd }); return; }
     const b = e.target.closest('[data-act]'); if (!b) return; const li = b.closest('[data-id]'); if (li) takeAct(b.dataset.act, li.dataset.id, b);
   });
+  w.addEventListener('input', (e) => { const t = e.target; if (t.id === 'capLen' || t.id === 'capStart' || t.id === 'capEnd') typing(t); });
   w.addEventListener('keydown', (e) => { if (e.key === 'Escape' && (st.rendering || st.phase === 'rendering')) { e.stopPropagation(); cancelRender(); return; }
     if (e.key === 'Escape' && !w.closest('.ws-body')) { e.stopPropagation(); close(); } });
   sync();
+}
+/* length fields: typed input validates live (inline error, nothing persisted until valid), chips and steps set the number, "To end of track" resolves the end */
+const fx = (v) => N.fix(v, v % 1 ? 2 : 0);
+function lenSum() { const p = takePlan(); return p.ok ? (p.toEnd ? `to the end of track, bar ${fx(p.endBar)}` : `${fx(p.bars)} bars`) + ` from bar ${fx(p.startBar)}` : 'an invalid length'; }
+function typing(t) {
+  const r = t.id === 'capLen' ? RL.parseLen(t.value, opts.unit) : RL.parseStartBar(t.value);
+  if (!r.ok) { showErr(r.error, t); return; }
+  if (t.id === 'capLen') { opts.len = r.value; opts.toEnd = false; set('len', r.value); set('toEnd', false); }
+  else if (t.id === 'capStart') { opts.startBar = t.value.trim(); set('startBar', opts.startBar); } else { opts.endBar = t.value.trim(); set('endBar', opts.endBar); }
+  updateLen(t);
+}
+function commitLen() { const t = $('#capLen'), r = RL.parseLen(t.value, opts.unit); if (r.ok) configure({ len: r.value, toEnd: false }); else showErr(r.error, t); }
+function setUnit(u) {
+  const env = lenEnv(), c = RL.toCycles(opts.len, opts.unit, env), v = u === 'bars' ? c / env.cpb : u === 'seconds' ? c / env.cps : c;
+  configure({ unit: u, len: +v.toFixed(u === 'seconds' ? 1 : 2) || 1 });
+}
+function showErr(msg, field) { const e = $('#capLenErr'); if (!e) return; e.textContent = msg || ''; e.hidden = !msg; for (const i of el.w.querySelectorAll('.cap-in')) i.removeAttribute('aria-invalid'); if (msg && field) field.setAttribute('aria-invalid', 'true'); }
+function updateLen(active) {
+  if (!el.w) return;
+  const p = takePlan(), busy = st.phase !== 'idle';
+  const inp = $('#capLen'); if (inp && inp !== active && inp !== document.activeElement) inp.value = String(+(+opts.len).toFixed(3));
+  for (const [id, v] of [['capStart', opts.startBar], ['capEnd', opts.endBar]]) { const i = $('#' + id); if (i && i !== active && i !== document.activeElement) i.value = v; }
+  $('#capEndLab').hidden = !opts.toEnd; $('#capToEnd').setAttribute('aria-pressed', String(opts.toEnd)); inp.disabled = opts.toEnd || busy;
+  $('#capChips').innerHTML = RL.CHIPS[opts.unit].map((v) => `<button type="button" class="ghost cap-chip" data-chip="${v}" aria-pressed="${!opts.toEnd && +opts.len === v}"${busy ? ' disabled' : ''}>${v}</button>`).join('');
+  for (const b of el.w.querySelectorAll('.cap-stepb')) b.disabled = busy || opts.toEnd;
+  const d = $('#capDerive'), x = $('#capExactN');
+  if (p.ok) {
+    const how = p.toEnd && p.end ? (opts.endBar ? 'typed end' : { gates: 'last gate section', marker: 'marker "end"', loop: 'Loop range end', period: 'longest lane period' }[p.end.rule]) : '';
+    d.textContent = `${fx(p.bars)} bars \u00b7 ${fx(p.cycles)} cycles \u00b7 ${N.clock(p.seconds, { tenths: true })} \u00b7 bar ${fx(p.startBar)} to ${fx(p.endBar)} (last bar ${fx(p.endBar - 1)})${how ? ' \u00b7 end: ' + how : ''}`;
+    x.textContent = p.toEnd ? `to end (bar ${fx(p.endBar)})` : `${fx(opts.unit === 'bars' ? p.bars : opts.unit === 'cycles' ? p.cycles : p.seconds)} ${opts.unit}`;
+    showErr('');
+  } else { d.textContent = ''; x.textContent = '-'; showErr(p.error, p.field === 'start' ? $('#capStart') : p.field === 'end' ? $('#capEnd') : inp); }
 }
 function sync() {
   if (!el.w) return;
@@ -805,15 +891,15 @@ function sync() {
   el.rec.setAttribute('aria-pressed', String(busy)); el.lab.textContent = st.phase === 'waiting' || st.phase === 'rendering' ? 'Cancel' : busy ? 'Stop' : opts.source === 'offline' ? 'Render' : 'Record';
   el.w.dataset.phase = st.phase; el.tb.dataset.phase = st.phase; document.body.classList.toggle('capturing', busy);
   el.tb.setAttribute('aria-label', busy ? 'Record panel: recording' : 'Record panel');
-  el.n.textContent = opts.n; $('#capExactN').textContent = opts.n; $('#capNLab').closest('.cap-num').classList.toggle('off', opts.mode !== 'cycles');
   el.exact.disabled = st.rendering || busy; el.exact.firstChild.textContent = st.rendering ? 'Rendering ' : 'Render exact ';
   el.rec.disabled = st.rendering && st.phase !== 'rendering'; /* Cancel stays available while an offline Record renders */
   for (const i of el.w.querySelectorAll('.cap-opts input, .cap-opts select, .cap-opts button, .cap-inc input')) i.disabled = busy;
+  updateLen();
   const inc = ['audio', 'events', 'code'].filter((k) => opts[k]).map((k) => (k === 'code' ? 'code-state' : k)).join(' + ') || 'nothing';
   el.w.dataset.source = opts.source;
   el.prog.hidden = !(st.rendering || st.phase === 'rendering'); if (el.prog.hidden) { el.bar.style.width = '0%'; }
-  if (opts.source === 'offline') { el.hint.textContent = `Offline render: ${opts.n} cycles of the current program from the transport range start, rendered in the background with no playback (the live engine keeps playing). Hooks, pads, control histories and lanes are in the recipe; Arm, count-in and pre-roll apply to live capture only.`; if (!busy) { el.state.textContent = st.rendering ? 'Rendering offline' : 'Ready'; el.time.textContent = '00:00.0'; } return; }
-  el.hint.textContent = (opts.mode === 'cycles' ? `Cycles: starts and stops on cycle boundaries (${opts.n}), loops cleanly; with audio + code-state the transport stops at the end for an exact reference render.` : opts.mode === 'until' ? 'Until stop: records until you stop or the play-time limit.' : 'Free: records from now until you stop.') + ` Records ${inc}.` + (WEBM_MIME ? ' Realtime audio takes also keep a WebM/opus copy.' : ' WebM/opus copies are not available in this browser (no MediaRecorder opus); WAV only.');
+  if (opts.source === 'offline') { el.hint.textContent = `Offline render: ${lenSum()} of the current program, rendered in the background with no playback (the live engine keeps playing). Hooks, pads, control histories and lanes are in the recipe; Arm, count-in and pre-roll apply to live capture only.`; if (!busy) { el.state.textContent = st.rendering ? 'Rendering offline' : 'Ready'; el.time.textContent = '00:00.0'; } return; }
+  el.hint.textContent = (opts.mode === 'cycles' ? `Cycles: starts and stops on cycle boundaries (${lenSum()}), loops cleanly; with audio + code-state the transport stops at the end for an exact reference render.` : opts.mode === 'until' ? 'Until stop: records until you stop or the play-time limit.' : 'Free: records from now until you stop.') + ` Records ${inc}.` + (WEBM_MIME ? ' Realtime audio takes also keep a WebM/opus copy.' : ' WebM/opus copies are not available in this browser (no MediaRecorder opus); WAV only.');
   if (!busy) { el.state.textContent = st.rendering ? 'Rendering offline' : 'Ready'; el.time.textContent = '00:00.0'; }
 }
 function draw() {
@@ -933,11 +1019,11 @@ function init() {
   const P = sc.palette; if (P) {
     P.register({ id: 'record.open', group: 'Record', title: 'Open record panel', run: () => open() });
     P.register({ id: 'record.toggle', group: 'Record', title: 'Record / stop take', run: () => { open(); toggleRec(); } });
-    P.register({ id: 'record.cycles', group: 'Record', title: 'Record N cycles (loop)', run: () => { open(); if (st.phase === 'idle') { configure({ mode: 'cycles' }); record(); } } });
-    P.register({ id: 'record.exact', group: 'Record', title: 'Render exact N cycles (offline)', run: () => { open(); renderExact(); } });
+    P.register({ id: 'record.cycles', group: 'Record', title: 'Record N bars (loop)', run: () => { open(); if (st.phase === 'idle') { configure({ mode: 'cycles' }); record(); } } });
+    P.register({ id: 'record.exact', group: 'Record', title: 'Render exact N bars (offline)', run: () => { open(); renderExact(); } });
     P.register({ id: 'record.import', group: 'Record', title: 'Import recipe', run: () => { open(); $('#capFile').click(); } });
   }
 }
-sc.capture = { open, close, toggle: toggleSheet, configure, record, stop, toggleRec, renderExact, remake, rerender, putTake: (rec) => store.put(rec).then(renderTakes), recordOffline: (n, o = {}) => recordOffline({ n: Math.max(1, n | 0 || opts.n), name: o.name || opts.name, at: o.at }), host: { warm: () => hostFrame().then(() => HS.bootMs), get bootMs() { return HS.bootMs; }, get frame() { return HS.frame; } }, flag: FLAG_REC, isHost: HOST, importRecipe, webmSupported: () => WEBM_MIME, beforeRender, addTake, exportRecipe: async (id) => exportRecipe(await store.get(id)), renderRecipe,
+sc.capture = { open, close, toggle: toggleSheet, configure, record, stop, toggleRec, renderExact, remake, rerender, putTake: (rec) => store.put(rec).then(renderTakes), recordOffline: (n, o = {}) => { const lp = n == null && !o.at ? takePlan() : { ...takePlan({ unit: 'cycles', value: Math.max(1, n | 0 || opts.n), toEnd: false, startBar: '' }), explicitStart: false }; if (!lp.ok) { toast('Render: ' + lp.error, { kind: 'error' }); return Promise.resolve(null); } return recordOffline({ plan: lp, n: lp.cycles, name: o.name || opts.name, at: o.at }); }, plan: takePlan, resolveEnd: () => endInfo(lenEnv()), host: { warm: () => hostFrame().then(() => HS.bootMs), get bootMs() { return HS.bootMs; }, get frame() { return HS.frame; } }, flag: FLAG_REC, isHost: HOST, importRecipe, webmSupported: () => WEBM_MIME, beforeRender, addTake, exportRecipe: async (id) => exportRecipe(await store.get(id)), renderRecipe,
   download, list: () => store.list().then((l) => l.map((x) => ({ ...x.recipe, remake: x.remake || null, imported: x.imported || null, audio: Object.keys(x.audio) }))), get: (id) => store.get(id), remove: (id) => store.remove(id).then(renderTakes), rename, encodeWav, opts, state: st };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

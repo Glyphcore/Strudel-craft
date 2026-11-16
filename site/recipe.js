@@ -77,6 +77,7 @@ export async function collectDeps(code = '') {
 }
 
 /* ---------- validation (mirrors schemas/recipe.v1.json; forward only) ---------- */
+import { checkTimingMeta } from './record-length.js';
 export function validate(r) {
   const bad = (m) => { throw Object.assign(new Error(m), { code: 'E_RECIPE' }); };
   if (!r || typeof r !== 'object') bad('Not a recipe: expected a JSON object');
@@ -84,6 +85,7 @@ export function validate(r) {
   if (r.version !== VERSION) bad(`Recipe version ${JSON.stringify(r.version)} is not supported: this site reads version ${VERSION} only (no older or newer formats)`);
   for (const k of ['id', 'name', 'created']) if (typeof r[k] !== 'string' || !r[k]) bad(`Recipe needs a ${k}`);
   const t = r.timing; if (!t || !(t.cps > 0) || typeof t.start !== 'number' || typeof t.stop !== 'number' || !(t.stop > t.start)) bad('Recipe timing needs cps > 0 and start < stop (cycles)');
+  { const m = checkTimingMeta(t); if (m) bad('Recipe ' + m); } /* optional bars/startBar fields (#139); old cycle-only recipes have none */
   if (!r.includes || typeof r.includes !== 'object') bad('Recipe needs includes {audio, events, code}');
   if (!r.random || !Number.isInteger(r.random.seed)) bad('Recipe needs random.seed (integer)');
   if (r.includes.code && (!r.state || typeof r.state.source?.code !== 'string')) bad('Recipe says it includes code-state but has no state.source.code');

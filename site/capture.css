@@ -38,10 +38,22 @@ body.cap-open .pal-fab{display:none}
 .cap-seg input:checked+span{color:var(--text);background:var(--panel-3);box-shadow:inset 0 -2px 0 var(--sig)}
 .cap-seg input:focus-visible+span{outline:2px solid var(--sig-2);outline-offset:1px}
 .cap-seg input:disabled+span{opacity:.5}
-.cap-num.off{opacity:.45}
-.cap-step{display:flex;align-items:center}
-.cap-step button{width:44px;padding:0;font-size:1.1rem}
-.cap-step output{min-width:44px;text-align:center;font-family:var(--mono);font-size:1rem;font-weight:700;font-variant-numeric:tabular-nums}
+.cap-len{grid-column:1 / -1;display:grid;gap:8px;min-width:0}
+.cap-lenrow{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end}
+.cap-stepb{width:44px;min-height:44px;padding:0;font-size:1.1rem}
+.cap-in{box-sizing:border-box;min-height:44px;height:44px;padding:0 10px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--r2);font:700 16px/1 var(--mono);color:var(--text);font-variant-numeric:tabular-nums}
+.cap-lenrow>#capLen{width:92px;text-align:center}
+.cap-in[aria-invalid="true"]{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad)}
+.cap-in:disabled{opacity:.5}
+.cap-endchip{min-height:44px;padding:0 12px;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.cap-endchip[aria-pressed="true"],.cap-chip[aria-pressed="true"]{border-color:var(--sig-2);color:var(--sig-2);box-shadow:inset 0 -2px 0 var(--sig)}
+.cap-chips{display:flex;gap:6px;flex-wrap:wrap}
+.cap-chip{min-width:44px;min-height:44px;padding:0 10px;font:700 .9rem var(--mono)}
+.cap-fromto{align-items:flex-start}.cap-fromto .cap-sel{flex:1 1 130px;min-width:0}.cap-fromto .cap-in{width:100%}
+.cap-fromto [hidden]{display:none}
+.cap-derive{margin:0;font:.74rem/1.35 var(--mono);color:var(--dim);overflow-wrap:anywhere}
+.cap-err{margin:0;font-size:.78rem;line-height:1.35;color:var(--bad)}
+.cap-err[hidden]{display:none}
 .cap-sel select,.cap-name input{width:100%;min-height:44px;padding:0 10px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--r2);font-size:16px}
 .cap-name{grid-column:span 2}
 .cap-exact{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:0 10px}

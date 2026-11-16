@@ -34,6 +34,13 @@
       "properties": {
         "cps": { "type": "number", "exclusiveMinimum": 0 }, "start": { "type": "number" }, "stop": { "type": "number" }, "cycles": { "type": "number" },
         "loop": { "type": "boolean" }, "mode": { "enum": ["free", "cycles", "until", "offline"], "description": "offline: rendered from the recipe by the Record panel's default source, no realtime capture" }, "exact": { "type": "boolean" }, "fold": { "type": "boolean" }, "preRoll": { "type": "number" },
+        "bars": { "type": "number", "exclusiveMinimum": 0, "description": "Optional (#139). Length in bars = cycles / cpb. Informative: start, stop and cycles stay authoritative, so a recipe without these fields replays unchanged" },
+        "startBar": { "type": "number", "minimum": 1, "description": "Optional. 1-based start bar = start / cpb + 1" },
+        "bpb": { "type": "number", "exclusiveMinimum": 0, "description": "Optional. Beats per bar the take was set up with (default 4)" },
+        "cpb": { "type": "number", "exclusiveMinimum": 0, "description": "Optional. Cycles per bar (default 1)" },
+        "unit": { "enum": ["bars", "cycles", "seconds"], "description": "Optional. The unit the length was typed in" },
+        "toEnd": { "type": "boolean", "description": "Optional. The take ran from start to the resolved end of track" },
+        "endRule": { "enum": ["gates", "marker", "loop", "period"], "description": "Optional, with toEnd: which rule resolved the end (docs/CAPTURE.md Length)" },
         "segments": { "type": "array", "description": "Pauses or interruptions while a realtime take was recording (background playback, #56): kind, cycle where it began, audio time from the take start (s), length (s). Absent when the take ran without a gap; Remake and exact renders ignore it.", "items": { "type": "object", "required": ["kind", "cycle", "seconds"], "properties": { "kind": { "enum": ["paused", "interrupted"] }, "cycle": { "type": "number" }, "audio": { "type": "number" }, "seconds": { "type": "number", "minimum": 0 } } } }
       }
     },

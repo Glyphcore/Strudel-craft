@@ -149,6 +149,7 @@ between runs, the pairs do not). Per played minute.
   worklet seed and the noise prefill).
 
 ## 6. Offline Record and the render host (Part C)
+Length of a render (#139): the panel takes bars, cycles or seconds plus a start bar or To end of track (docs/CAPTURE.md Length); the render host only ever sees the resolved `timing.start/stop/cycles`, so frames are `round(cycles / cps * sr)` whatever unit was typed, and the attached-render calm wait and the 20-minute play-time limit are unchanged.
 docs/CAPTURE.md has the panel and recipe detail. In short: superdough keeps one AudioContext per page (module state), so an offline
 render in the page had to stop the transport and swap the context. Renders now run in a hidden same-origin iframe
 (`index.html?host=render`) with its own Strudel and superdough; it never plays, so the live engine is never stopped, suspended or

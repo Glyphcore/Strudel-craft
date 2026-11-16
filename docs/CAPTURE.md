@@ -5,19 +5,31 @@ One Record panel with one arm, one transport and one timeline of takes. A take i
 ## Panel
 - **Opening it**:
   - the record button in the transport (after Next);
-  - the palette (`Ctrl+K`), group Record: Open record panel, Record / stop take, Record N cycles (loop), Render exact N cycles (offline), Import recipe;
+  - the palette (`Ctrl+K`), group Record: Open record panel, Record / stop take, Record N bars (loop), Render exact N bars (offline), Import recipe;
   - the workspace pane **Record** (`strudelCraft.workspace.on([[{ id: 'record', w: 1 }]])`). Docked, the panel is in flow and always shown.
 - **Source** (docs/AUDIO_ENGINE.md, #104): **Offline render** (default) or **Live capture**.
-  - Offline render: Record becomes **Render**. It renders N cycles (the Cycles count) of the current program from the transport range start into a take, in the background, with no audible playback and without stopping or suspending the live transport. A **progress strip** (bar, percent, a 44 px **Cancel**) shows for every offline render (Record, Render exact, Re-render, Remake, lane captures); Cancel, the Record button (now **Cancel**) and Esc stop it between chunks and nothing is stored. The state line also reads `Rendering offline N %`. The recipe has `timing.mode: "offline"`, code-state and events (control histories from the controls engine, pad and hooks-journal entries), and `outputs.render`; the take shows an `offline` chip. Arm, count-in and pre-roll apply to live capture only. API: `capture.recordOffline(n, { at, name })`.
+  - Offline render: Record becomes **Render**. It renders the **Length** (below) of the current program, from the Start bar (default: the transport range start), into a take, in the background, with no audible playback and without stopping or suspending the live transport. A **progress strip** (bar, percent, a 44 px **Cancel**) shows for every offline render (Record, Render exact, Re-render, Remake, lane captures); Cancel, the Record button (now **Cancel**) and Esc stop it between chunks and nothing is stored. The state line also reads `Rendering offline N %`. The recipe has `timing.mode: "offline"`, code-state and events (control histories from the controls engine, pad and hooks-journal entries), and `outputs.render`; the take shows an `offline` chip. Arm, count-in and pre-roll apply to live capture only. API: `capture.recordOffline(n, { at, name })`.
   - Live capture: the master tap, as below, with a self-check (see Tap and timing).
 - **Flagged live takes**: a take whose self-check found tap gaps, dropped events, re-anchors or output glitches shows a `flagged` chip, a visible reason line (`.cap-flag`, never hover-only) and a **Re-render offline** button (when it carries code-state). After the re-render the chip reads `replaced` and the take plays the offline render.
 - **Include** boxes: **Audio** (master tap), **Events** (lanes, pads, control moves), **Code-state**. A single Record captures every ticked part.
+- **Length** (#139, `site/record-length.js`; applies to Offline render, Render exact and the Cycles arm):
+  - **Unit**: Bars (default), Cycles, Seconds. One cycle is `cpb` bars-worth of time (`cpb` cycles per bar, default 1) and a bar has `bpb` beats (default 4), the hooks registry settings (docs/HOOKS_SYNTAX.md 4.1). Bar N starts at cycle `(N-1)*cpb`; seconds = cycles / cps; bpm = cps * 60 * bpb * cpb (128.8 bpm in 4/4 is 0.53667 cps; 140 bpm in 7/x is 0.3333 cps). Changing the unit converts the number.
+  - **Input**: a typed field (`inputmode=decimal`, 44 px; `12`, `12.5`, `12,5`, `1:30` in Seconds) with live validation and inline error text (never a native dialog), quick chips (4, 8, 16, 32 bars or cycles; 10, 30, 60, 120 seconds) and optional -/+ steps. Under it: the derived `bars - cycles - mm:ss - bar A to B (last bar B-1)`.
+  - **Limits**: more than 0, at least 1/16 cycle, and not longer than the play-time limit (20:00 by default, `+5 min` extends it): `Longer than the 20:00 play-time limit (this is 31:01.5). Shorten it, or raise the limit in Play-time limit settings.` The limit itself and its fade/stop are unchanged.
+  - **Start bar**: blank = the transport range Start; a typed bar (1-based, decimals allowed) starts there. A take is `[start, start + N bars)`. Live capture waits for that bar if it is still ahead, else says it passed and starts at the next bar.
+  - **To end of track**: the take is `[start, end of track)`. The end is resolved by the first rule that applies, shown as `end: ...` with its bar before you record, and overridden by typing an End bar (or by typing a length, which turns the option off). Bars are exclusive (`bar 17` = the last bar is 16):
+    1. **gates**: the end of the last gate window of any hooks binding (`"9b..17b"` -> bar 17). When the last window is open ended (`"@17b"`) the last section is taken as long as the one before it (bar 17 + 16 = bar 33);
+    2. **marker**: a hooks marker named `end` (`hooks.marker("end", "33b")`);
+    3. **loop**: the transport Loop range End, when Loop is on;
+    4. **period**: the longest lane pattern period: `arrange([n, pat], ...)` totals, `<a b c>` alternations, `.slow(n)`, at least 1 bar. Never prompts.
+  - **Recipe**: `timing.cycles`, `start`, `stop` stay authoritative; the take also stores `timing.bars`, `startBar`, `unit`, `bpb`, `cpb` and, for To end, `toEnd` and `endRule`. A recipe without them (every older take) replays unchanged; with them they must agree with cycles/start or the recipe is refused. The resolved cycles are what Remake and the CLI render, so frames stay `round(cycles / cps * sr)` and the audio hash does not depend on the unit used.
+  - **CLI**: `strudel render|stems|record IN OUT --bars N [--from-bar B] [--to-end]` (`record` = `render`, `--from-bar` = `--from`). `--to-end` takes the end from `// @daw bars=N`, else `hooks.marker("end", "33b")`, else the longest `arrange` total (gates and the Loop range are site only). `--bars` wins.
 - **Arm**:
   - Free;
   - Cycles: starts and stops on cycle boundaries. Length is `round(N / cps * sr)` frames, so the take loops;
   - Until stop: capped by the play-time limit.
 
-  Plus count-in (cycles), pre-roll (seconds, Free / Until stop), name, WAV 16/24 and Render exact N cycles with Fold tail.
+  Plus count-in (cycles), pre-roll (seconds, Free / Until stop), name, WAV 16/24 and Render exact (the Length) with Fold tail.
 - **Timeline**: one row per recipe with:
   - chips: `audio` / `events` / `code`, `remake ok` / `differs`, `inert` for imports;
   - a waveform, or event ticks for event-only takes;
@@ -45,7 +57,7 @@ One Record panel with one arm, one transport and one timeline of takes. A take i
 | field | contents |
 |---|---|
 | `includes` | `{audio, events, code}` |
-| `timing` | `cps`, `start`, `stop`, `cycles`, `loop`, `mode`, `exact`, `fold`, `preRoll` |
+| `timing` | `cps`, `start`, `stop`, `cycles`, `loop`, `mode`, `exact`, `fold`, `preRoll`; optional (#139) `bars`, `startBar`, `unit`, `bpb`, `cpb`, `toEnd`, `endRule` |
 | `random.seed` | 32-bit seed: `Math.random` is seeded with it during offline renders only, restored in `finally` (Strudel's `rand` is cycle-deterministic already) |
 | `state` | `source` `{kind, title, code (as played), resolved (atoms inlined), atoms}`, `controls` (controls engine model: values, ranges, maps, lanes), `aliases` (label -> AST control id), `sites` (AST control ids with path, value, range), `perform` (pads = hook bindings, boards, maps), `modRanges` (path + sha256), `settings` (tempo, masterDb, follow, transport range) |
 | `events` | `pads` (Perform journal), `hooks` (the pad entries of the hooks journal up to `stop`, as the runtime reads them; replayed by renders), `controls`, `lanes` (+ `performance`, `bank`, `targets` for looper takes). Present whenever events or code-state is included |
@@ -101,7 +113,7 @@ One Record panel with one arm, one transport and one timeline of takes. A take i
 - Superdough pools nodes without regard to context. A collector installed for the render only strips the pool key from offline nodes. Haps that receive a stale live node are retried.
 
 ## API
-`strudelCraft.capture = { open, close, toggle, configure({source, mode, n, countIn, preRoll, name, bits, fold, audio, events, code, autoFix}), record(opts, run), recordOffline(n, {at, name}), rerender(id), stop, toggleRec, renderExact(n), remake(id), host: { warm(), bootMs, frame }, flag, isHost, importRecipe(fileOrText), beforeRender(fn) -> unregister, addTake({name, L, R, sr, cps, cycles, from}), exportRecipe(id), renderRecipe(recipe), download(id, 'recipe'|'wav16'|'wav24'|'capture'|'render'|'remake'), list, get, remove, rename, encodeWav, opts, state }`
+`strudelCraft.capture = { open, close, toggle, configure({source, mode, n (cycles), unit, len, toEnd, startBar, endBar, countIn, preRoll, name, bits, fold, audio, events, code, autoFix}), record(opts, run), recordOffline(n, {at, name}) (no n: the panel's Length), plan(over), resolveEnd(), rerender(id), stop, toggleRec, renderExact(n), remake(id), host: { warm(), bootMs, frame }, flag, isHost, importRecipe(fileOrText), beforeRender(fn) -> unregister, addTake({name, L, R, sr, cps, cycles, from}), exportRecipe(id), renderRecipe(recipe), download(id, 'recipe'|'wav16'|'wav24'|'capture'|'render'|'remake'), list, get, remove, rename, encodeWav, opts, state }`
 
 `strudelCraft.recipe = { FORMAT, VERSION, sha256, audioHash, collectDeps, validate, refsOf, verify, trusted, grant, store }`. The controls engine gains `history(name)` / `setHistory(name, entries)` for exact, restorable value histories.
 
@@ -111,6 +123,8 @@ A program can capture its own lanes: `capture("groove", "drums", { window: "1b..
 
 ## Test
 `node tests/site/record_offline.mjs --ref REF/mix.wav` (REF from `tests/site/ref_render.sh REF v2 16 8`, the CLI render of night phonk v2 cycles 15..23), 360x780: offline Record of 4 cycles while the transport plays (never stops, progress, sample-exact length, matches the CLI render by onsets, drift, dropouts and level), determinism, Cancel, a live take under CPU throttling with its self-check and glitch metric, a live take with a forced 700 ms stall flagged and its re-render clean, no page errors.
+
+`node tests/site/record_length_unit.mjs` (pure: bars/cycles/seconds at 128.8 and 140 bpm, 7 and 3 beats per bar, end-of-track rules, validation, clamp, recipe compat) and `node tests/site/record_length.mjs` (390 px: typed 12 bars -> exactly `round(12 / cps * sr)` frames, chips, unit conversion, To end resolves bar 17 for a `9b..17b` program, start/end override, clamp message, no scroll on press, an old cycle-only recipe validates and Remakes to the same hash) cover Length (#139).
 
 `node tests/site/record.mjs` runs at 360x740 in two browser profiles:
 - **A** (with a pad and a noise take):

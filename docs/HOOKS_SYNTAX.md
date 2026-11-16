@@ -226,7 +226,7 @@ Continuous facets look back at most `lookback` cycles (default 4) for the govern
 random access exact. `read-opts`: `{ gate, default, lookback, a, r, curve }`. A **gated read** (`tap("kick:env", { gate: "<17b" })`) is
 open only inside the gate; outside it yields `default` (continuous facets, default `0`) or silence (discrete facets).
 
-`pat.wire(param, tapRef, opts)` is the data-driven mapping of a tap onto the consumer's own param:
+`pat.wire(param, tapRef, opts)` is the data-driven mapping of a tap onto the consumer's own param (`param` must be a registered Strudel control or alias, resolved from Strudel's control registry; anything else throws `E_BAD_ARG`):
 
 | opt | default | meaning |
 |---|---|---|

@@ -1,6 +1,6 @@
 {
  "version": 1,
- "_doc": "Positive allowlist of chain steps a hooks pack def may use (site/packs-hooks.js; docs/PACK_SPEC.md 5.2). A method not listed is rejected with E_PACK_HOOKS_INVALID. The file never widens the runtime: the method must also exist on Pattern.prototype. Review rule: a method is listed only if it is (a) a control or structure method that takes numbers or strings, (b) used by a shipped hooks def or documented in site/data/intellisense/strudel.json, and (c) NOT one that compiles or evaluates text (bbexpr, byteBeatExpression, workletSrc, kabel, ...), speaks, draws or adds DOM nodes or window globals (pianoroll, scope, spectrum, punchcard, draw*, ...), loads samples or URLs, registers methods, logs, touches storage / MIDI / OSC / serial, or takes a function (every, off, jux, sometimes, apply, fmap, bind*, with*). To propose a step: add it here with its args shapes in a PR that also names the shipped def or documented use, and the reviewer applies the rule above.",
+ "_doc": "Positive allowlist of chain steps a hooks pack def may use (site/packs-hooks.js; docs/PACK_SPEC.md 5.2). A method not listed is rejected with E_PACK_HOOKS_INVALID. The file never widens the runtime: the method must also exist on Pattern.prototype. Review rule: a method is listed only if it is (a) a control or structure method that takes numbers or strings, (b) used by a shipped hooks def or documented in site/data/intellisense/strudel.json, and (c) NOT one that compiles or evaluates text (bbexpr, byteBeatExpression, workletSrc, kabel, ...), speaks, draws or adds DOM nodes or window globals (pianoroll, scope, spectrum, punchcard, draw*, ...), loads samples or URLs, registers methods, logs, touches storage / MIDI / OSC / serial, or takes a function (every, off, jux, sometimes, apply, fmap, bind*, with*). To propose a step: add it here with its args shapes in a PR that also names the shipped def or documented use, and the reviewer applies the rule above. Wire targets: wire's first argument is the control it writes. It must name an entry here with \"wire\": true, a plain value control that takes a number (not s/sound/bank/vowel, not structure or time methods, not wire/hook). Any other target is rejected with E_PACK_HOOKS_INVALID. Review rule for the flag: the entry is a Strudel control (registered in its control/alias registry) whose value is a number. Any argument used as a name (method, property key, param, event) must be validated against a closed set: wire target -> entries flagged wire; $param -> own def params; hook expression -> hook defs at query time.",
  "limits": {
   "str": 256,
   "args": 6,
@@ -17,7 +17,8 @@
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "bank": {
    "args": [
@@ -29,13 +30,15 @@
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "bpq": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "chop": {
    "args": [
@@ -47,26 +50,30 @@
    "args": [
     "scalar"
    ],
-   "from": "documented"
+   "from": "documented",
+   "wire": true
   },
   "crush": {
    "args": [
     "scalar"
    ],
-   "from": "documented"
+   "from": "documented",
+   "wire": true
   },
   "cutoff": {
    "args": [
     "scalar"
    ],
-   "from": "documented"
+   "from": "documented",
+   "wire": true
   },
   "decay": {
    "args": [
     "scalar",
     "param"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "degradeBy": {
    "args": [
@@ -78,45 +85,52 @@
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "delayfeedback": {
    "args": [
     "scalar",
     "param"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "delaytime": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "detune": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "distort": {
    "args": [
     "scalar"
    ],
-   "from": "documented"
+   "from": "documented",
+   "wire": true
   },
   "duckattack": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "duckdepth": {
    "args": [
     "scalar",
     "param"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "duckorbit": {
    "args": [
@@ -135,7 +149,8 @@
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "euclid": {
    "args": [
@@ -153,25 +168,29 @@
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "fmh": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "freq": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "gain": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "hook": {
    "args": [
@@ -184,7 +203,8 @@
     "scalar",
     "param"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "late": {
    "args": [
@@ -196,19 +216,22 @@
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "lpdecay": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "lpenv": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "lpf": {
    "args": [
@@ -216,19 +239,22 @@
     "param",
     "mini"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "lpq": {
    "args": [
     "scalar"
    ],
-   "from": "documented"
+   "from": "documented",
+   "wire": true
   },
   "lpsustain": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "mask": {
    "args": [
@@ -240,49 +266,57 @@
    "args": [
     "scalar"
    ],
-   "from": "documented"
+   "from": "documented",
+   "wire": true
   },
   "noise": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "note": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "orbit": {
    "args": [
     "scalar"
    ],
-   "from": "documented"
+   "from": "documented",
+   "wire": true
   },
   "pan": {
    "args": [
     "scalar"
    ],
-   "from": "documented"
+   "from": "documented",
+   "wire": true
   },
   "pdecay": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "penv": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "postgain": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "range": {
    "args": [
@@ -294,7 +328,8 @@
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "rev": {
    "args": [
@@ -306,7 +341,8 @@
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "s": {
    "args": [
@@ -326,13 +362,15 @@
     "scalar",
     "param"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "size": {
    "args": [
     "scalar"
    ],
-   "from": "documented"
+   "from": "documented",
+   "wire": true
   },
   "slow": {
    "args": [
@@ -350,7 +388,8 @@
    "args": [
     "scalar"
    ],
-   "from": "documented"
+   "from": "documented",
+   "wire": true
   },
   "struct": {
    "args": [
@@ -362,32 +401,37 @@
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "unison": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "velocity": {
    "args": [
     "scalar",
     "mini"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "vib": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "vibmod": {
    "args": [
     "scalar"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "vowel": {
    "args": [

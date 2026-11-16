@@ -53,7 +53,7 @@ const hookCapture = () => {
 hookCapture(); globalThis.document?.addEventListener('DOMContentLoaded', hookCapture); globalThis.addEventListener?.('strudel:ready', hookCapture);
 sc.installHooks = (S = globalThis, o = {}) => {
   if (!S.Pattern || !S.signal || !S.Fraction) throw new Error('installHooks: Strudel globals (Pattern, signal, Fraction, ...) not ready');
-  const r = hooksMod.install({ Pattern: S.Pattern, stack: S.stack, silence: S.silence, reify: S.reify, signal: S.signal, Fraction: S.Fraction, mini: S.mini }, o);
+  const r = hooksMod.install({ Pattern: S.Pattern, stack: S.stack, silence: S.silence, reify: S.reify, signal: S.signal, Fraction: S.Fraction, mini: S.mini, isControlName: S.isControlName, getControlName: S.getControlName }, o);
   r.hooks.live = true; sc.hooks = r.hooks; sc.tap = r.tap; sc.lanes = lanesMod.install({ Pattern: S.Pattern }, r.hooks, { outer: sc.outer, global: o.global }); return r;
 };
 const tryHooks = () => { if (!sc.hooks && globalThis.Pattern && globalThis.signal) { try { sc.installHooks(); } catch (e) { console.warn('[hooks]', e.message); } } };

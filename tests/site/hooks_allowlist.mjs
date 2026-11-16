@@ -26,6 +26,16 @@ const cases = [
   ['speak', [['speak', 'en', 'hello']], 'speak'],
   ['visual pianoroll', [['pianoroll']], 'pianoroll'],
   ['visual _scope', [['_scope']], '_scope'],
+  // wire's first argument is the control it writes: only a control flagged "wire" in hooks-steps.json (round 3: animate added a canvas and a `frame` global)
+  ['wire to animate (critic reproducer)', [['s', 'bd'], ['wire', 'animate', 't:ev']], 'animate'],
+  ['wire to a visual (pianoroll)', [['s', 'bd'], ['wire', 'pianoroll', 't:ev']], 'pianoroll'],
+  ['wire to bbexpr', [['s', 'bd'], ['wire', 'bbexpr', 't:ev']], 'bbexpr'],
+  ['wire to speak', [['s', 'bd'], ['wire', 'speak', 't:ev']], 'speak'],
+  ['wire to a prototype member (constructor)', [['s', 'bd'], ['wire', 'constructor', 't:ev']], 'constructor'],
+  ['wire to a prototype member (__lookupGetter__)', [['s', 'bd'], ['wire', '__lookupGetter__', 't:ev']], '__lookupGetter__'],
+  ['wire to a non-control allowlisted method (fast)', [['s', 'bd'], ['wire', 'fast', 't:ev']], 'fast'],
+  ['wire to a string control (s)', [['s', 'bd'], ['wire', 's', 't:ev']], 's'],
+  ['wire to wire', [['s', 'bd'], ['wire', 'wire', 't:ev']], 'wire'],
 ];
 const r = await page.evaluate(async (cases) => {
   const m = await import(location.pathname.replace(/[^/]*$/, '') + 'packs-hooks.js'); const steps = await m.loadSteps(); const allow = m.chainable(globalThis.Pattern, steps);
@@ -42,7 +52,18 @@ const r = await page.evaluate(async (cases) => {
   await window.__sc.Engine.idle('s("bd").hook("evil")').catch(() => {});
   out.registry = Object.keys(JSON.parse(H.toJSON()).defs || {});
   out.canvasAdded = document.querySelectorAll('canvas').length - canvasBefore; out.newGlobals = Object.getOwnPropertyNames(window).filter((k) => !globalsBefore.has(k) && k !== '__wk');
-  out.pwn = window.__pwn === undefined; return out;
+  out.pwn = window.__pwn === undefined;
+  out.reg = [typeof globalThis.isControlName, typeof globalThis.getControlName, (() => { try { window.strudelCraft.hooks.reset(); const p = globalThis.s('x').wire('lpf', 'k:env'); const q = globalThis.s('x').wire('animate', 'k:env'); return 'no throw ' + typeof p + typeof q; } catch (e) { return e.code; } })()];
+  // general: one def per allowlisted method with a representative valid argument; evaluate and query 2 cycles each; versus a control run without hooks defs, the set of window globals and the count of canvas/iframe/audio/script nodes must be unchanged
+  const ARGS = { range: [0, 1], euclid: [3, 8], struct: ['x ~ x x'], mask: ['1 0 1 1'], s: ['bd'], sound: ['bd'], bank: ['RolandTR909'], vowel: ['a'], note: ['c3'], chop: [2], fast: [2], slow: [2], segment: [4], wire: ['gain', 't:ev'], hook: ['base'], duckorbit: [1], n: [1] };
+  const names = Object.keys(steps.methods), nodes = () => ['canvas', 'iframe', 'audio', 'script'].map((t) => document.querySelectorAll(t).length).join(',');
+  const run = async (hooked) => { const errs = []; for (const m of names) { try { await window.__sc.Engine.idle(hooked ? `s("bd*2").hook("g_${m}")` : 's("bd*2")'); const pat = window.__sc.Engine.repl.state.pattern; try { pat && pat.queryArc(0, 2, { _cps: 1 }); } catch (e) { errs.push(m + ': ' + e.message); } } catch (e) { errs.push(m + ': ' + e.message); } } return errs; };
+  const g0 = new Set(Object.getOwnPropertyNames(window)); await run(false); const ctlGlobals = Object.getOwnPropertyNames(window).filter((k) => !g0.has(k)), ctlNodes = nodes(); const wk0 = window.__wk.length;
+  const defs = { base: { chain: [['gain', 1]] } }; for (const m of names) defs['g_' + m] = { chain: [[m, ...(ARGS[m] || [0.5])]] };
+  const gr = m.install(H, [{ pack: 'gen/p', ingredient: 'x', data: { model: 1, defs } }], { defs: new Map(), told: new Set() }, {}, () => {}, { allow });
+  const gerrs = await run(true); H.reset();
+  out.gen = { methods: names.length, installed: gr.defs.length, invalid: gr.invalid.map((i) => i.errors[0].message), errs: gerrs.slice(0, 5), nErrs: gerrs.length, newGlobals: Object.getOwnPropertyNames(window).filter((k) => !g0.has(k) && !ctlGlobals.includes(k) && k !== '__wk'), nodesCtl: ctlNodes, nodesHooked: nodes(), wk: window.__wk.length - wk0 };
+  return out;
 }, cases);
 await page.waitForTimeout(500);
 const wk = await page.evaluate(() => window.__wk);
@@ -52,5 +73,9 @@ check('positive control: an allowlisted def installs', r.control.defs.includes('
 check('no attacker def in the hooks registry', !r.registry.includes('evil'), JSON.stringify(r.registry));
 check('no message reached byte-beat-processor (and none was created)', !wk.some((w) => /byte-beat/.test(w[0])), JSON.stringify(wk.filter((w) => /byte/.test(w[0]))));
 check('no canvas added, no new window global, attacker code never ran', r.canvasAdded === 0 && r.newGlobals.length === 0 && r.pwn, JSON.stringify({ canvas: r.canvasAdded, globals: r.newGlobals }));
+check(`general: a def for each of the ${r.gen.methods} allowlisted methods installs (plus base) and plays`, r.gen.installed === r.gen.methods + 1 && r.gen.invalid.length === 0, JSON.stringify({ invalid: r.gen.invalid.slice(0, 3) }));
+check('general: query errors are none', r.gen.nErrs === 0, JSON.stringify(r.gen.errs));
+check('general: window globals and canvas/iframe/audio/script node counts unchanged versus the control run, nothing posted to a worklet', r.gen.newGlobals.length === 0 && r.gen.nodesCtl === r.gen.nodesHooked && r.gen.wk === 0, JSON.stringify({ globals: r.gen.newGlobals, ctl: r.gen.nodesCtl, hooked: r.gen.nodesHooked, wk: r.gen.wk }));
+check('engine in the page resolves wire targets from Strudel\'s registry (isControlName / getControlName present); a non-control throws E_BAD_ARG', r.reg[0] === 'function' && r.reg[1] === 'function' && r.reg[2] === 'E_BAD_ARG', JSON.stringify(r.reg));
 check('no page errors', errors.length === 0, errors.slice(0, 3).join(' | '));
 await browser.close(); server.close(); process.exit(fails ? 1 : 0);

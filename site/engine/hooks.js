@@ -670,8 +670,16 @@ export function install(S, opts = {}) {
       });
     });
   }
-  const aliasMemo = new Map(); const aliasKey = (param) => { if (aliasMemo.has(param)) return aliasMemo.get(param); const k = aliasKey0(param); aliasMemo.set(param, k); return k; };
-  const aliasKey0 = (param) => { try { const h = reify({})[param](1).queryArc(0, 0)[0]; const k = h && isObj(h.value) && Object.keys(h.value)[0]; return k || param; } catch { return param; } };
+  // A wire target is a control name resolved from Strudel's own control/alias registry (isControlName / getControlName, exported by @strudel/core).
+  // Nothing is called on the Pattern to discover the key (that used to run any prototype method, e.g. animate). Without a registry only plain
+  // identifiers that are own Pattern methods are accepted, mapping to themselves. An unknown name is a structured error (E_BAD_ARG); nothing runs.
+  const isCtl = S.isControlName || globalThis.isControlName, ctlName = S.getControlName || globalThis.getControlName;
+  const aliasKey = (param) => {
+    if (typeof param !== 'string' || !/^[A-Za-z][A-Za-z0-9]{0,31}$/.test(param)) throw code('E_BAD_ARG', `wire target "${String(param).slice(0, 40)}" is not a control name`);
+    if (typeof isCtl === 'function' && typeof ctlName === 'function') { if (!isCtl(param)) throw code('E_BAD_ARG', `wire target "${param}" is not a known control`); return ctlName(param); }
+    if (!Object.prototype.hasOwnProperty.call(proto, param) || typeof proto[param] !== 'function') throw code('E_BAD_ARG', `wire target "${param}" is not a known control`);
+    return param;
+  };
   const rangeOf = (param, key) => { const r = hooks.ranges?.[key] || hooks.ranges?.[param] || hooks.ranges?.[hooks.canon ? hooks.canon(param) : param]; return r ? [r.min, r.max] : [0, 1]; };
   function wireFn(src, param, ref, o = {}) {
     const key = aliasKey(param); const [lo, hi] = o.range || rangeOf(param, key); const op = o.op || 'set';

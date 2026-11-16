@@ -102,4 +102,27 @@ const FORBIDDEN = ['bbexpr', 'byteBeatExpression', 'bbst', 'byteBeatStartTime', 
   rej([['gain', [1]]], /arrays are not accepted/); rej([['gain', { a: 1 }]], /object arguments/); rej([['gain', { $param: 'x' }]], /object arguments/); rej([['s', 'x'.repeat(300)]], /not an accepted/); rej([['gain', NaN]], /not an accepted/); rej([['gain', 1, 2, 3, 4, 5, 6, 7]], /more than/);
   rej([['s', { $mini: 'a', extra: 1 }]], /object arguments/); rej([['lpf', { $param: 'nope' }]], /\$param/); rej([['wire', 'gain', 'k', { range: [1, { $expr: 'constructor' }] }]], /range/);
   assert.deepEqual(rawValidate({ model: 1, defs: { ok: { params: { d: { default: 1 } }, chain: [['lpf', { $param: 'd' }], ['s', { $mini: 'a b' }], ['gain', 0.5]] } } }, allow), []); ok('rejected with a structured E_PACK_HOOKS_INVALID naming the method: bbexpr (string and array), byteBeatExpression, speak, a visual, samples; non-scalar and over-limit args; shaped args accepted'); }
+// --- #91 rework 4: wire targets are a closed set (a control flagged "wire" in hooks-steps.json), and the engine resolves them from Strudel's registry ---
+{ const mk = (...c) => ({ model: 1, defs: { evil: { chain: c } } });
+  const rej = (target, re = new RegExp(String(target).replace(/\W/g, '.'))) => { const r = rawValidate(mk(['s', 'bd'], ['wire', target, 't:ev']), allow); assert.ok(r.length && r.every((x) => x.code === 'E_PACK_HOOKS_INVALID'), 'wire ' + String(target)); assert.match(r[0].message, /wire target/); assert.match(r[0].message, re); };
+  for (const t of ['animate', 'pianoroll', 'bbexpr', 'byteBeatExpression', 'speak', 'constructor', '__lookupGetter__', 'toString', 'apply', 'fast', 'slow', 's', 'sound', 'bank', 'vowel', 'hook', 'wire', 'hasOwnProperty', 'nope']) rej(t);
+  for (const t of [1, null, ['gain'], { a: 1 }, undefined]) { const r = rawValidate(mk(['s', 'bd'], ['wire', t, 't:ev']), allow); assert.ok(r.length && r[0].code === 'E_PACK_HOOKS_INVALID', 'wire target ' + JSON.stringify(t)); }
+  for (const t of ['gain', 'lpf', 'cutoff', 'pan', 'room']) assert.deepEqual(rawValidate(mk(['s', 'bd'], ['wire', t, 't:ev', { range: [0, 1] }]), allow), [], t);
+  for (const [k, m] of Object.entries(STEPS.methods)) if (m.wire) { assert.ok(RT.core.isControlName(k), k + ' flagged wire but is not a Strudel control'); assert.equal(allow.wireTarget(k), true); }
+  assert.equal(allow.wireTarget('animate'), false); assert.equal(allow.wireTarget('constructor'), false);
+  ok('data-only def with wire to animate / visual / bbexpr / speak / prototype member / non-control method / string control / non-string: E_PACK_HOOKS_INVALID naming the target; valid controls pass; every flag is a registered control');
+  H.reset(); const s5 = st(); const r5 = install(H, [e('evil/w', 'x', { model: 1, defs: { anim: chain(['s', 'bd'], ['wire', 'animate', 't:ev']), fine: chain(['gain', 1]) } })], s5);
+  assert.deepEqual(defsOf(), []); assert.equal(r5.invalid.length, 1); assert.equal(r5.invalid[0].errors[0].code, 'E_PACK_HOOKS_INVALID'); ok('installer: the ingredient with a bad wire target installs nothing (atomic)'); }
+{ // engine: user-written wire on a non-control is a structured error, nothing is called (spy on animate); no probing
+  const P = RT.core.Pattern.prototype; let called = 0; const orig = P.animate; P.animate = function () { called++; return this; };
+  try { assert.throws(() => RT.core.s('x').wire('animate', 'k:env'), (x) => x.code === 'E_BAD_ARG' && /animate/.test(x.message)); assert.throws(() => RT.core.s('x').wire('constructor', 'k:env'), (x) => x.code === 'E_BAD_ARG'); assert.throws(() => RT.core.s('x').wire('__proto__', 'k:env'), (x) => x.code === 'E_BAD_ARG'); } finally { if (orig) P.animate = orig; else delete P.animate; }
+  assert.equal(called, 0); ok('engine: wire to a non-control (animate, constructor, __proto__) throws E_BAD_ARG and calls no Pattern method'); }
+{ // old (probing) versus new (registry) resolution for every registered control; the old approach lives only here, in Node, with no DOM
+  const C = RT.core, names = Object.keys(C.controls).filter((k) => C.isControlName(k)); assert.ok(names.length > 400);
+  const oldKey = (p) => { try { const h = C.reify({})[p](1).queryArc(0, 0)[0]; const k = h && h.value && typeof h.value === 'object' && Object.keys(h.value)[0]; return k || p; } catch { return p; } };
+  H.reset(); C.s('bd*4').tap('k'); const bad = [];
+  for (const nm of names) { const hp = C.s('x').wire(nm, 'k:env', { range: [7, 7] }).queryArc(0.25, 0.25)[0]; const nk = Object.keys(hp.value).find((k) => hp.value[k] === 7); if (nk !== oldKey(nm)) bad.push(`${nm}: old ${oldKey(nm)} new ${nk}`); }
+  assert.deepEqual(bad, []); ok(`wire resolves the same key as the old probing for all ${names.length} registered controls (aliases included)`);
+  const used = new Set(); for (const f of fs.readdirSync(new URL('../../site/data/phonk/', import.meta.url)).filter((f) => /^racks.*\.json$/.test(f))) for (const v of Object.values(JSON.parse(fs.readFileSync(new URL('../../site/data/phonk/' + f, import.meta.url), 'utf8')).defs || {})) for (const st2 of v.chain || []) if (st2[0] === 'wire') used.add(st2[1]);
+  for (const t of ['gain', 'lpf', 'hpf', 'cutoff', 'pan', 'room', 'delay', ...used]) assert.ok(C.isControlName(t) && allow.wireTarget(t) , 'wire target in racks/examples: ' + t); ok('every wire target used by shipped racks and the documented examples (' + [...used].join(', ') + ') is a registered control and a flagged target'); }
 console.log(`${n} checks passed`);

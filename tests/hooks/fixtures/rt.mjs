@@ -17,7 +17,7 @@ export async function bootRuntime() {
   if (!core || !mini) return null;
   Object.assign(globalThis, core, { mini: mini.mini });
   const { install } = await import('../../../site/engine/hooks.js');
-  const r = install({ Pattern: core.Pattern, stack: core.stack, silence: core.silence, reify: core.reify, signal: core.signal, Fraction: core.Fraction, mini: mini.mini });
+  const r = install({ Pattern: core.Pattern, stack: core.stack, silence: core.silence, reify: core.reify, signal: core.signal, Fraction: core.Fraction, mini: mini.mini, isControlName: core.isControlName, getControlName: core.getControlName });
   return { core, mini, ...r, S: { ...core, mini: mini.mini } };
 }
 export const haps = (p, a, b) => p.queryArc(a, b, { _cps: 1 }).map((h) => ({ b: +h.whole.begin, v: h.value }));

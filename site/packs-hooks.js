@@ -22,13 +22,13 @@ export async function loadSteps(url = new URL('./data/hooks-steps.json', import.
 // allowlist = the methods named in the data file `doc` that ALSO exist as own enumerable functions on Pattern.prototype (what register() and the controls put there) and are not reserved / NEVER.
 // Returns { has(name), args(name) -> shapes[], limits, size }. Never widens the runtime; an entry with an unknown shape name is dropped.
 export function chainable(Pattern, doc) {
-  const proto = Pattern && Pattern.prototype, set = new Map(), M = (doc && doc.methods) || {};
+  const proto = Pattern && Pattern.prototype, set = new Map(), wires = new Set(), M = (doc && doc.methods) || {};
   const lim = { str: 256, args: 6, expr: 64, ...((doc && doc.limits) || {}) };
   if (proto) for (const k of Object.keys(M)) {
     const a = M[k] && Array.isArray(M[k].args) ? M[k].args : ['scalar'];
-    if (Object.prototype.hasOwnProperty.call(proto, k) && typeof proto[k] === 'function' && STEP.test(k) && !RESERVED.has(k) && !NEVER.has(k) && a.every((x) => SHAPES.has(x))) set.set(k, Object.freeze([...a]));
+    if (Object.prototype.hasOwnProperty.call(proto, k) && typeof proto[k] === 'function' && STEP.test(k) && !RESERVED.has(k) && !NEVER.has(k) && a.every((x) => SHAPES.has(x))) { set.set(k, Object.freeze([...a])); if (M[k].wire === true) wires.add(k); }
   }
-  return Object.freeze({ has: (n) => typeof n === 'string' && set.has(n), args: (n) => set.get(n) || [], limits: Object.freeze(lim), size: set.size });
+  return Object.freeze({ has: (n) => typeof n === 'string' && set.has(n), args: (n) => set.get(n) || [], wireTarget: (n) => typeof n === 'string' && wires.has(n), limits: Object.freeze(lim), size: set.size });
 }
 const LIM = { depth: 8, nodes: 20000, str: 4096, arr: 1024, chain: 1000, defs: 5000 };
 const BADKEY = new Set(['__proto__', 'constructor', 'prototype']);
@@ -81,6 +81,7 @@ export function validate(d, allow) {
         if (!Array.isArray(st) || typeof st[0] !== 'string') return bad(k, `def "${k}": step ${i} must be [name, ...args]`);
         if (!STEP.test(st[0]) || RESERVED.has(st[0]) || NEVER.has(st[0]) || !allow || !allow.has(st[0])) return bad(k, `def "${k}": step "${String(st[0]).slice(0, 40)}" is not in the hooks step allowlist (site/data/hooks-steps.json)`);
         const sh = allow.args(st[0]), lim = allow.limits, ps = isObj(v.params) ? v.params : {};
+        if (st[0] === 'wire' && !(typeof st[1] === 'string' && allow.wireTarget && allow.wireTarget(st[1]))) return bad(k, `def "${k}": step ${i} wire target "${String(st[1]).slice(0, 40)}" is not a wire-able control (site/data/hooks-steps.json, "wire": true)`);
         if (st.length - 1 > lim.args) return bad(k, `def "${k}": step "${st[0]}" has more than ${lim.args} arguments`);
         for (let j = 1; j < st.length; j++) { const e = arg(st[j], sh, lim, ps, `def "${k}" step ${i} "${st[0]}" arg ${j}`); if (e) bad(k, e); }
       });

@@ -1,0 +1,486 @@
+{
+ "schema": "dawstudy-stats@1",
+ "format": "lmms",
+ "tempo": 140.0,
+ "meter": [
+  4,
+  4
+ ],
+ "key": null,
+ "length_bars": 73,
+ "length_s": 125.1,
+ "tracks": {
+  "total": 23,
+  "with_clips": 23,
+  "by_role": {
+   "hat": 3,
+   "kick": 2,
+   "other": 12,
+   "snare": 6
+  },
+  "by_kind": {
+   "instrument": 23
+  }
+ },
+ "sections": [
+  {
+   "role": "intro",
+   "start_bar": 1,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 0.0,
+   "layers_max": 1,
+   "roles": [
+    "other"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 5,
+   "bars": 8,
+   "source": "inferred",
+   "layers_median": 1.0,
+   "layers_max": 2,
+   "roles": [
+    "kick",
+    "other",
+    "snare"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 13,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 1.5,
+   "layers_max": 2,
+   "roles": [
+    "hat",
+    "kick",
+    "other"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 17,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 1.5,
+   "layers_max": 4,
+   "roles": [
+    "kick",
+    "other",
+    "snare"
+   ]
+  },
+  {
+   "role": "outro",
+   "start_bar": 21,
+   "bars": 53,
+   "source": "inferred",
+   "layers_median": 8,
+   "layers_max": 11,
+   "roles": [
+    "hat",
+    "kick",
+    "other",
+    "snare"
+   ]
+  }
+ ],
+ "density": {
+  "layers_per_bar": [
+   0,
+   1,
+   0,
+   0,
+   1,
+   1,
+   0,
+   0,
+   1,
+   2,
+   1,
+   2,
+   1,
+   2,
+   1,
+   2,
+   4,
+   2,
+   1,
+   1,
+   1,
+   4,
+   2,
+   3,
+   2,
+   4,
+   3,
+   4,
+   3,
+   9,
+   8,
+   11,
+   8,
+   8,
+   8,
+   8,
+   8,
+   8,
+   11,
+   8,
+   8,
+   8,
+   10,
+   8,
+   8,
+   8,
+   8,
+   2,
+   5,
+   10,
+   8,
+   8,
+   8,
+   9,
+   8,
+   9,
+   8,
+   9,
+   8,
+   10,
+   8,
+   9,
+   8,
+   10,
+   8,
+   10,
+   8,
+   10,
+   8,
+   10,
+   8,
+   8,
+   8
+  ],
+  "median": 8,
+  "max": 11,
+  "notes_per_bar_by_role": {
+   "hat": 3.5,
+   "kick": 2.0,
+   "other": 4.0,
+   "snare": 2.0
+  }
+ },
+ "clip_bars": {
+  "1.0": 44,
+  "17.0": 1,
+  "18.0": 5,
+  "24.0": 6,
+  "26.0": 1,
+  "48.0": 2
+ },
+ "fx": {
+  "chains": [
+   {
+    "role": "snare",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "kick",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "snare",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "snare",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "other",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "other",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "other",
+    "chain": [
+     "other",
+     "other",
+     "eq",
+     "modulation",
+     "delay",
+     "reverb",
+     "stereo"
+    ]
+   },
+   {
+    "role": "other",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "hat",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "snare",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "snare",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "snare",
+    "chain": [
+     "reverb"
+    ]
+   }
+  ],
+  "type_frequency": {
+   "delay": 1,
+   "eq": 1,
+   "modulation": 1,
+   "other": 1,
+   "reverb": 12,
+   "stereo": 1
+  }
+ },
+ "automation": [
+  {
+   "target": "volume",
+   "shape": "rise",
+   "start_bar": 2,
+   "end_bar": 3
+  },
+  {
+   "target": "volume",
+   "shape": "fall",
+   "start_bar": 22,
+   "end_bar": 24
+  },
+  {
+   "target": "volume",
+   "shape": "rise",
+   "start_bar": 50,
+   "end_bar": 51
+  },
+  {
+   "target": "volume",
+   "shape": "fall",
+   "start_bar": 59,
+   "end_bar": 63
+  },
+  {
+   "target": "volume",
+   "shape": "curve",
+   "start_bar": 14,
+   "end_bar": 18
+  },
+  {
+   "target": "volume",
+   "shape": "curve",
+   "start_bar": 10,
+   "end_bar": 14
+  },
+  {
+   "target": "volume",
+   "shape": "curve",
+   "start_bar": 6,
+   "end_bar": 10
+  },
+  {
+   "target": "volume",
+   "shape": "curve",
+   "start_bar": 18,
+   "end_bar": 22
+  },
+  {
+   "target": "volume",
+   "shape": "curve",
+   "start_bar": 50,
+   "end_bar": 54
+  },
+  {
+   "target": "volume",
+   "shape": "curve",
+   "start_bar": 54,
+   "end_bar": 58
+  },
+  {
+   "target": "volume",
+   "shape": "curve",
+   "start_bar": 34,
+   "end_bar": 42
+  }
+ ],
+ "routing": {
+  "buses": 8,
+  "sends": 0,
+  "sidechains": 0
+ },
+ "synth_ranges": [
+  {
+   "plugin": "zynaddsubfx",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "zynaddsubfx",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "zynaddsubfx",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "zynaddsubfx",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "zynaddsubfx",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "zynaddsubfx",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "zynaddsubfx",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "zynaddsubfx",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "zynaddsubfx",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 512,
+   "filter": "7",
+   "attack_ms": 0,
+   "decay_ms": 800,
+   "release_ms": 0
+  },
+  {
+   "plugin": "zynaddsubfx",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  }
+ ],
+ "provenance": {
+  "url": "https://raw.githubusercontent.com/LMMS/lmms/master/data/projects/demos/Saber-FinalStep.mmpz",
+  "page_url": "https://lmms.io/lsp/index.php?action=show&file=721",
+  "author": "Saber",
+  "title": "Saber-FinalStep.mmpz",
+  "licence": "BSD",
+  "licence_class": "permissive",
+  "licence_lsp": null,
+  "accessed": "2026-11-16",
+  "sha256": "e402239be26ab98e2c2b25df6fee96e02c29b1a446b6b71215831281abdd17dd",
+  "bytes": 52234,
+  "format": "lmms",
+  "parser": "tools/dawstudy/lmms.py",
+  "kept": "statistics only",
+  "genre_source": "none (unclassified)",
+  "lmms_version": null
+ }
+}

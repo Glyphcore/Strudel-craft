@@ -1,0 +1,430 @@
+{
+ "schema": "dawstudy-stats@1",
+ "format": "lmms",
+ "tempo": 177.0,
+ "meter": [
+  4,
+  4
+ ],
+ "key": null,
+ "length_bars": 67,
+ "length_s": 90.8,
+ "tracks": {
+  "total": 14,
+  "with_clips": 14,
+  "by_role": {
+   "bass": 1,
+   "fx": 2,
+   "hat": 2,
+   "kick": 1,
+   "lead": 1,
+   "other": 2,
+   "pad": 1,
+   "snare": 3,
+   "vox": 1
+  },
+  "by_kind": {
+   "instrument": 14
+  }
+ },
+ "sections": [
+  {
+   "role": "intro",
+   "start_bar": 1,
+   "bars": 8,
+   "source": "inferred",
+   "layers_median": 2.0,
+   "layers_max": 3,
+   "roles": [
+    "bass",
+    "hat",
+    "lead"
+   ]
+  },
+  {
+   "role": "body",
+   "start_bar": 9,
+   "bars": 56,
+   "source": "inferred",
+   "layers_median": 7.0,
+   "layers_max": 10,
+   "roles": [
+    "bass",
+    "fx",
+    "hat",
+    "kick",
+    "lead",
+    "other",
+    "pad",
+    "snare",
+    "vox"
+   ]
+  },
+  {
+   "role": "outro",
+   "start_bar": 65,
+   "bars": 3,
+   "source": "inferred",
+   "layers_median": 1,
+   "layers_max": 1,
+   "roles": [
+    "other"
+   ]
+  }
+ ],
+ "density": {
+  "layers_per_bar": [
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   3,
+   6,
+   6,
+   6,
+   5,
+   6,
+   6,
+   6,
+   5,
+   8,
+   7,
+   7,
+   7,
+   6,
+   6,
+   6,
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   2,
+   10,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   1,
+   1,
+   1
+  ],
+  "median": 7,
+  "max": 10,
+  "notes_per_bar_by_role": {
+   "bass": 2.0,
+   "fx": 1.0,
+   "hat": 12.5,
+   "kick": 3.0,
+   "lead": 3.0,
+   "other": 2.25,
+   "pad": 7.125,
+   "snare": 2.0,
+   "vox": 3.25
+  }
+ },
+ "clip_bars": {
+  "1.0": 11,
+  "2.0": 2,
+  "3.0": 3,
+  "4.0": 41,
+  "8.0": 6,
+  "24.0": 5,
+  "30.0": 3
+ },
+ "fx": {
+  "chains": [
+   {
+    "role": "lead",
+    "chain": [
+     "delay",
+     "delay"
+    ]
+   },
+   {
+    "role": "other",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "vox",
+    "chain": [
+     "other"
+    ]
+   },
+   {
+    "role": "pad",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "hat",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "other",
+    "chain": [
+     "delay",
+     "compressor",
+     "other",
+     "other",
+     "reverb"
+    ]
+   },
+   {
+    "role": "hat",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "snare",
+    "chain": [
+     "eq",
+     "reverb"
+    ]
+   },
+   {
+    "role": "snare",
+    "chain": [
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "gain",
+     "other",
+     "gain"
+    ]
+   }
+  ],
+  "type_frequency": {
+   "compressor": 1,
+   "delay": 2,
+   "eq": 2,
+   "gain": 1,
+   "other": 3,
+   "reverb": 6
+  }
+ },
+ "automation": [
+  {
+   "target": "other",
+   "shape": "fall",
+   "start_bar": 9,
+   "end_bar": 41
+  },
+  {
+   "target": "other",
+   "shape": "fall",
+   "start_bar": 9,
+   "end_bar": 41
+  },
+  {
+   "target": "other",
+   "shape": "fall",
+   "start_bar": 9,
+   "end_bar": 41
+  },
+  {
+   "target": "volume",
+   "shape": "flat",
+   "start_bar": 1,
+   "end_bar": 1
+  },
+  {
+   "target": "volume",
+   "shape": "fall",
+   "start_bar": 57,
+   "end_bar": 63
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 8,
+   "end_bar": 9
+  },
+  {
+   "target": "other",
+   "shape": "flat",
+   "start_bar": 2,
+   "end_bar": 2
+  },
+  {
+   "target": "volume",
+   "shape": "rise",
+   "start_bar": 9,
+   "end_bar": 41
+  },
+  {
+   "target": "other",
+   "shape": "flat",
+   "start_bar": 1,
+   "end_bar": 1
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 57,
+   "end_bar": 65
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 57,
+   "end_bar": 65
+  },
+  {
+   "target": "other",
+   "shape": "flat",
+   "start_bar": 1,
+   "end_bar": 1
+  },
+  {
+   "target": "other",
+   "shape": "fall",
+   "start_bar": 7,
+   "end_bar": 9
+  },
+  {
+   "target": "other",
+   "shape": "fall",
+   "start_bar": 65,
+   "end_bar": 66
+  }
+ ],
+ "routing": {
+  "buses": 2,
+  "sends": 6,
+  "sidechains": 0
+ },
+ "synth_ranges": [
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 240,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 8192,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 1040,
+   "release_ms": 260
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 1024,
+   "filter": "1",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "organic",
+   "cutoff_hz": 1024,
+   "filter": "1",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": null,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "sfxr",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "sfxr",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 1,
+   "filter": "14",
+   "attack_ms": 180,
+   "decay_ms": 4260,
+   "release_ms": 980
+  }
+ ],
+ "provenance": {
+  "url": "https://raw.githubusercontent.com/LMMS/lmms/master/data/projects/shorties/DirtyLove.mmpz",
+  "page_url": "https://github.com/LMMS/lmms/pull/2727",
+  "author": "DirtyLove.mmpz",
+  "title": "DirtyLove.mmpz",
+  "licence": "CC-BY-SA",
+  "licence_class": "by-sa",
+  "licence_lsp": null,
+  "accessed": "2026-11-16",
+  "sha256": "d3c833cd863ee18035d835557c3086aaa9d17134724b26bfe74a625b82d4aceb",
+  "bytes": 8595,
+  "format": "lmms",
+  "parser": "tools/dawstudy/lmms.py",
+  "kept": "statistics only",
+  "genre_source": "none (unclassified)",
+  "lmms_version": null
+ }
+}

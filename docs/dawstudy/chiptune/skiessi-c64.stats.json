@@ -1,0 +1,167 @@
+{
+ "schema": "dawstudy-stats@1",
+ "format": "lmms",
+ "tempo": 127.0,
+ "meter": [
+  4,
+  4
+ ],
+ "key": null,
+ "length_bars": 17,
+ "length_s": 32.1,
+ "tracks": {
+  "total": 9,
+  "with_clips": 9,
+  "by_role": {
+   "other": 9
+  },
+  "by_kind": {
+   "instrument": 9
+  }
+ },
+ "sections": [
+  {
+   "role": "intro",
+   "start_bar": 1,
+   "bars": 17,
+   "source": "inferred",
+   "layers_median": 9,
+   "layers_max": 9,
+   "roles": [
+    "other"
+   ]
+  }
+ ],
+ "density": {
+  "layers_per_bar": [
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   7,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   7,
+   1
+  ],
+  "median": 9,
+  "max": 9,
+  "notes_per_bar_by_role": {
+   "other": 6.0
+  }
+ },
+ "clip_bars": {
+  "1.0": 96,
+  "2.0": 16,
+  "7.0": 4
+ },
+ "fx": {
+  "chains": [],
+  "type_frequency": {}
+ },
+ "automation": [],
+ "routing": {
+  "buses": 0,
+  "sends": 0,
+  "sidechains": 0
+ },
+ "synth_ranges": [
+  {
+   "plugin": "sid",
+   "cutoff_hz": 16384,
+   "filter": "7",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "sid",
+   "cutoff_hz": 16384,
+   "filter": "7",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "sid",
+   "cutoff_hz": 16384,
+   "filter": "7",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "sid",
+   "cutoff_hz": 16384,
+   "filter": "7",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "sid",
+   "cutoff_hz": 16384,
+   "filter": "7",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "7",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "7",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "7",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "7",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  }
+ ],
+ "provenance": {
+  "url": "https://raw.githubusercontent.com/LMMS/lmms/master/data/projects/demos/Skiessi/Skiessi-C64.mmpz",
+  "page_url": "https://lmms.io/lsp/index.php?action=show&file=472",
+  "author": "Janne (Skiessi)",
+  "title": "Skiessi-C64.mmpz",
+  "licence": "CC (by sa)",
+  "licence_class": "by-sa",
+  "licence_lsp": "Creative Commons (by)",
+  "accessed": "2026-11-16",
+  "sha256": "2a0dac964aeb1d995da0ef8be19694452212691cc39c5d046be47f3b27bcd126",
+  "bytes": 5029,
+  "format": "lmms",
+  "parser": "tools/dawstudy/lmms.py",
+  "kept": "statistics only",
+  "genre_source": "LSP subcategory",
+  "lmms_version": "0.9.0"
+ }
+}

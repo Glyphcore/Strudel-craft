@@ -1,0 +1,255 @@
+{
+ "source": "LMMS repository data/projects (ref master) + LMMS Sharing Platform pages",
+ "accessed": "2026-11-16",
+ "analysed": [
+  {
+   "file": "Alf42red-Mauiwowi.mmpz",
+   "dir": "demos",
+   "licence": "CC (by-sa)",
+   "genre": "funk",
+   "genre_raw": "Funk",
+   "stats": "funk/alf42red-mauiwowi.stats.json",
+   "bars": 33,
+   "tempo": 102.0
+  },
+  {
+   "file": "EsoXLB-CPU.mmpz",
+   "dir": "demos",
+   "licence": "Artistic 2.0",
+   "genre": "eurodance",
+   "genre_raw": "Eurodance",
+   "stats": "eurodance/esoxlb-cpu.stats.json",
+   "bars": 120,
+   "tempo": 128.0
+  },
+  {
+   "file": "Farbro-Tectonic.mmpz",
+   "dir": "demos",
+   "licence": "CC (by)",
+   "genre": "misc",
+   "genre_raw": "Misc",
+   "stats": "misc/farbro-tectonic.stats.json",
+   "bars": 136,
+   "tempo": 140.0
+  },
+  {
+   "file": "Impulslogik-Zen.mmpz",
+   "dir": "demos",
+   "licence": "Artistic 2.0",
+   "genre": "trance",
+   "genre_raw": "Trance",
+   "stats": "trance/impulslogik-zen.stats.json",
+   "bars": 128,
+   "tempo": 140.0
+  },
+  {
+   "file": "Jousboxx-BuzzerBeater.mmpz",
+   "dir": "demos",
+   "licence": "CC BY-SA 4.0",
+   "genre": "unclassified",
+   "genre_raw": null,
+   "stats": "unclassified/jousboxx-buzzerbeater.stats.json",
+   "bars": 114,
+   "tempo": 128.0
+  },
+  {
+   "file": "Momo64-esp.mmpz",
+   "dir": "demos",
+   "licence": "Artistic 2.0",
+   "genre": "covers",
+   "genre_raw": "Covers",
+   "stats": "covers/momo64-esp.stats.json",
+   "bars": 176,
+   "tempo": 138.0
+  },
+  {
+   "file": "Oglsdl-Dr8v2.mmpz",
+   "dir": "demos",
+   "licence": "Artistic 2.0",
+   "genre": "classical",
+   "genre_raw": "Classical",
+   "stats": "classical/oglsdl-dr8v2.stats.json",
+   "bars": 105,
+   "tempo": 120.0
+  },
+  {
+   "file": "Oglsdl-PpTrip.mmpz",
+   "dir": "demos",
+   "licence": "Artistic 2.0",
+   "genre": "pop",
+   "genre_raw": "Pop",
+   "stats": "pop/oglsdl-pptrip.stats.json",
+   "bars": 39,
+   "tempo": 140.0
+  },
+  {
+   "file": "Saber-FinalStep.mmpz",
+   "dir": "demos",
+   "licence": "BSD",
+   "genre": "unclassified",
+   "genre_raw": null,
+   "stats": "unclassified/saber-finalstep.stats.json",
+   "bars": 73,
+   "tempo": 140.0
+  },
+  {
+   "file": "Settel-InnerRecreation.mmpz",
+   "dir": "demos",
+   "licence": "Artistic 2.0",
+   "genre": "misc",
+   "genre_raw": "Misc",
+   "stats": "misc/settel-innerrecreation.stats.json",
+   "bars": 182,
+   "tempo": 148.0
+  },
+  {
+   "file": "Socceroos-Progress.mmpz",
+   "dir": "demos",
+   "licence": "Artistic 2.0",
+   "genre": "ambient",
+   "genre_raw": "Ambient",
+   "stats": "ambient/socceroos-progress.stats.json",
+   "bars": 192,
+   "tempo": 200.0
+  },
+  {
+   "file": "TameAnderson-MakeMe.mmpz",
+   "dir": "demos",
+   "licence": "Artistic 2.0",
+   "genre": "hiphop",
+   "genre_raw": "HipHop",
+   "stats": "hiphop/tameanderson-makeme.stats.json",
+   "bars": 145,
+   "tempo": 140.0
+  },
+  {
+   "file": "Thomasso-AxeFromThe80s.mmpz",
+   "dir": "demos",
+   "licence": "Artistic 2.0",
+   "genre": "metal",
+   "genre_raw": "Metal",
+   "stats": "metal/thomasso-axefromthe80s.stats.json",
+   "bars": 136,
+   "tempo": 140.0
+  },
+  {
+   "file": "CapDan-ReggaeTry.mmpz",
+   "dir": "demos/CapDan",
+   "licence": "Artistic 2.0",
+   "genre": "reggae",
+   "genre_raw": "Reggae",
+   "stats": "reggae/capdan-reggaetry.stats.json",
+   "bars": 32,
+   "tempo": 180.0
+  },
+  {
+   "file": "CapDan-ReggaetonTry.mmpz",
+   "dir": "demos/CapDan",
+   "licence": "Artistic 2.0",
+   "genre": "reggae",
+   "genre_raw": "Reggae",
+   "stats": "reggae/capdan-reggaetontry.stats.json",
+   "bars": 54,
+   "tempo": 180.0
+  },
+  {
+   "file": "CapDan-TwilightArea-OriginalByAlf42red.mmpz",
+   "dir": "demos/CapDan",
+   "licence": "CC (by-sa)",
+   "genre": "dnb",
+   "genre_raw": "Drum'n'Bass",
+   "stats": "dnb/capdan-twilightarea-originalbyalf42red.stats.json",
+   "bars": 105,
+   "tempo": 170.0
+  },
+  {
+   "file": "CapDan-ZeroSumGame-OriginalByZakarra.mmpz",
+   "dir": "demos/CapDan",
+   "licence": "Artistic 2.0",
+   "genre": "trance",
+   "genre_raw": "Trance",
+   "stats": "trance/capdan-zerosumgame-originalbyzakarra.stats.json",
+   "bars": 139,
+   "tempo": 144.0
+  },
+  {
+   "file": "Skiessi-C64.mmpz",
+   "dir": "demos/Skiessi",
+   "licence": "CC (by sa)",
+   "genre": "chiptune",
+   "genre_raw": "Chiptune",
+   "stats": "chiptune/skiessi-c64.stats.json",
+   "bars": 17,
+   "tempo": 127.0
+  },
+  {
+   "file": "Skiessi-Onion.mmpz",
+   "dir": "demos/Skiessi",
+   "licence": "CC (by-sa)",
+   "genre": "misc",
+   "genre_raw": "Misc",
+   "stats": "misc/skiessi-onion.stats.json",
+   "bars": 121,
+   "tempo": 140.0
+  },
+  {
+   "file": "Crunk(Demo).mmp",
+   "dir": "shorties",
+   "licence": "Artistic 2.0",
+   "genre": "ambient",
+   "genre_raw": "Ambient",
+   "stats": "ambient/crunk-demo.stats.json",
+   "bars": 8,
+   "tempo": 130.0
+  },
+  {
+   "file": "DirtyLove.mmpz",
+   "dir": "shorties",
+   "licence": "CC-BY-SA",
+   "genre": "unclassified",
+   "genre_raw": null,
+   "stats": "unclassified/dirtylove.stats.json",
+   "bars": 67,
+   "tempo": 177.0
+  }
+ ],
+ "refused": [
+  {
+   "file": "Greippi - Krem Kaakkuja (Second Flight Remix)",
+   "dir": "demos",
+   "licence": "CC (by)",
+   "licence_lsp": "Creative Commons (by-nd)",
+   "reason": "the LSP page licence is not allowed (conflict with LICENSES.TXT: the stricter one wins)"
+  },
+  {
+   "file": "Namitryus-K-Project.mmpz",
+   "dir": "demos",
+   "licence": "CC (by-nc)",
+   "reason": "licence not allowed or unknown (RESEARCH_ETHICS.md 1)"
+  },
+  {
+   "file": "Popsip-Electric Dancer.mmpz",
+   "dir": "demos",
+   "licence": "Creative Commons (by-nc)",
+   "reason": "licence not allowed or unknown (RESEARCH_ETHICS.md 1)"
+  },
+  {
+   "file": "Root84-Initialize.mmpz",
+   "dir": "demos",
+   "licence": "Yellow openmusic",
+   "reason": "licence not allowed or unknown (RESEARCH_ETHICS.md 1)"
+  },
+  {
+   "file": "Thaledric-Armageddon.mmpz",
+   "dir": "demos",
+   "licence": "Creative Commons (by-nc-sa)",
+   "reason": "licence not allowed or unknown (RESEARCH_ETHICS.md 1)"
+  },
+  {
+   "file": "unfa-Spoken.mmpz",
+   "dir": "demos",
+   "licence": "CC (by-nc)",
+   "reason": "licence not allowed or unknown (RESEARCH_ETHICS.md 1)"
+  }
+ ]
+}

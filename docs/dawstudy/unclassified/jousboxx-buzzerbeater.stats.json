@@ -1,0 +1,1902 @@
+{
+ "schema": "dawstudy-stats@1",
+ "format": "lmms",
+ "tempo": 128.0,
+ "meter": [
+  4,
+  4
+ ],
+ "key": null,
+ "length_bars": 114,
+ "length_s": 213.8,
+ "tracks": {
+  "total": 55,
+  "with_clips": 55,
+  "by_role": {
+   "kick": 55
+  },
+  "by_kind": {
+   "instrument": 55
+  }
+ },
+ "sections": [
+  {
+   "role": "breakdown",
+   "start_bar": 1,
+   "bars": 114,
+   "source": "inferred",
+   "layers_median": 9.0,
+   "layers_max": 28,
+   "roles": [
+    "kick"
+   ]
+  }
+ ],
+ "density": {
+  "layers_per_bar": [
+   12,
+   11,
+   11,
+   11,
+   11,
+   11,
+   11,
+   9,
+   18,
+   15,
+   15,
+   15,
+   15,
+   15,
+   15,
+   15,
+   13,
+   0,
+   0,
+   0,
+   12,
+   0,
+   0,
+   0,
+   15,
+   3,
+   3,
+   3,
+   15,
+   3,
+   3,
+   3,
+   18,
+   5,
+   5,
+   5,
+   17,
+   5,
+   5,
+   7,
+   20,
+   5,
+   5,
+   5,
+   20,
+   5,
+   5,
+   5,
+   21,
+   10,
+   13,
+   9,
+   25,
+   9,
+   9,
+   9,
+   0,
+   0,
+   11,
+   0,
+   0,
+   0,
+   11,
+   0,
+   0,
+   0,
+   19,
+   5,
+   5,
+   5,
+   19,
+   5,
+   5,
+   5,
+   28,
+   9,
+   9,
+   9,
+   24,
+   9,
+   9,
+   9,
+   18,
+   5,
+   5,
+   5,
+   17,
+   5,
+   5,
+   7,
+   20,
+   5,
+   5,
+   5,
+   20,
+   5,
+   5,
+   5,
+   22,
+   10,
+   11,
+   9,
+   25,
+   9,
+   9,
+   9,
+   18,
+   15,
+   16,
+   15,
+   15,
+   15,
+   15,
+   13
+  ],
+  "median": 9.0,
+  "max": 28,
+  "notes_per_bar_by_role": {
+   "kick": 16.0
+  }
+ },
+ "clip_bars": {
+  "1.0": 516,
+  "2.0": 10,
+  "6.0": 10,
+  "7.0": 26,
+  "8.0": 37,
+  "9.0": 4,
+  "16.0": 2
+ },
+ "fx": {
+  "chains": [
+   {
+    "role": "kick",
+    "chain": [
+     "eq",
+     "compressor",
+     "eq",
+     "reverb",
+     "eq",
+     "limiter"
+    ]
+   },
+   {
+    "role": "kick",
+    "chain": [
+     "sidechain"
+    ]
+   },
+   {
+    "role": "kick",
+    "chain": [
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "filter",
+     "eq",
+     "gain",
+     "compressor",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "eq",
+     "gain"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "gain",
+     "eq",
+     "gain"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "eq",
+     "reverb"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "distortion",
+     "eq",
+     "modulation",
+     "reverb",
+     "eq",
+     "eq",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "eq",
+     "stereo"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "distortion",
+     "eq",
+     "distortion",
+     "eq",
+     "gain",
+     "gain"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "gain",
+     "stereo",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "gain",
+     "modulation",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "distortion"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "distortion"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "distortion"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "eq",
+     "compressor",
+     "gain",
+     "limiter",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "eq",
+     "other"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "reverb",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "gain",
+     "reverb",
+     "eq",
+     "stereo",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "other"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "other"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "other"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "other",
+     "other",
+     "distortion",
+     "reverb",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "delay",
+     "modulation",
+     "stereo",
+     "reverb",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "other",
+     "distortion"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "other",
+     "distortion"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "other",
+     "distortion"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "compressor",
+     "eq",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "compressor",
+     "other",
+     "reverb",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "distortion",
+     "other",
+     "eq",
+     "reverb",
+     "gain",
+     "gain"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "eq",
+     "eq",
+     "distortion",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "eq",
+     "eq",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "distortion",
+     "reverb",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "distortion",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "distortion",
+     "delay",
+     "reverb",
+     "gain"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "eq",
+     "filter"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "other",
+     "reverb",
+     "eq"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "distortion",
+     "eq"
+    ]
+   }
+  ],
+  "type_frequency": {
+   "compressor": 5,
+   "delay": 2,
+   "distortion": 15,
+   "eq": 33,
+   "filter": 2,
+   "gain": 10,
+   "limiter": 2,
+   "modulation": 3,
+   "other": 11,
+   "reverb": 12,
+   "sidechain": 1,
+   "stereo": 4
+  }
+ },
+ "automation": [
+  {
+   "target": "volume",
+   "shape": "flat",
+   "start_bar": 107,
+   "end_bar": 107
+  },
+  {
+   "target": "volume",
+   "shape": "flat",
+   "start_bar": 1,
+   "end_bar": 1
+  },
+  {
+   "target": "volume",
+   "shape": "flat",
+   "start_bar": 17,
+   "end_bar": 17
+  },
+  {
+   "target": "volume",
+   "shape": "flat",
+   "start_bar": 1,
+   "end_bar": 1
+  },
+  {
+   "target": "volume",
+   "shape": "flat",
+   "start_bar": 67,
+   "end_bar": 67
+  },
+  {
+   "target": "volume",
+   "shape": "flat",
+   "start_bar": 75,
+   "end_bar": 75
+  },
+  {
+   "target": "volume",
+   "shape": "flat",
+   "start_bar": 83,
+   "end_bar": 83
+  },
+  {
+   "target": "mute",
+   "shape": "step",
+   "start_bar": 1,
+   "end_bar": 1
+  },
+  {
+   "target": "mute",
+   "shape": "flat",
+   "start_bar": 41,
+   "end_bar": 41
+  },
+  {
+   "target": "mute",
+   "shape": "flat",
+   "start_bar": 57,
+   "end_bar": 57
+  },
+  {
+   "target": "mute",
+   "shape": "flat",
+   "start_bar": 91,
+   "end_bar": 91
+  },
+  {
+   "target": "mute",
+   "shape": "step",
+   "start_bar": 48,
+   "end_bar": 48
+  },
+  {
+   "target": "mute",
+   "shape": "flat",
+   "start_bar": 50,
+   "end_bar": 50
+  },
+  {
+   "target": "mute",
+   "shape": "flat",
+   "start_bar": 2,
+   "end_bar": 2
+  },
+  {
+   "target": "mute",
+   "shape": "step",
+   "start_bar": 98,
+   "end_bar": 98
+  },
+  {
+   "target": "mute",
+   "shape": "flat",
+   "start_bar": 100,
+   "end_bar": 100
+  },
+  {
+   "target": "mute",
+   "shape": "flat",
+   "start_bar": 17,
+   "end_bar": 17
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 1,
+   "end_bar": 17
+  },
+  {
+   "target": "other",
+   "shape": "flat",
+   "start_bar": 41,
+   "end_bar": 41
+  },
+  {
+   "target": "other",
+   "shape": "flat",
+   "start_bar": 41,
+   "end_bar": 41
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 17,
+   "end_bar": 41
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 17,
+   "end_bar": 41
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 67,
+   "end_bar": 91
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 67,
+   "end_bar": 91
+  },
+  {
+   "target": "other",
+   "shape": "flat",
+   "start_bar": 91,
+   "end_bar": 91
+  },
+  {
+   "target": "other",
+   "shape": "flat",
+   "start_bar": 91,
+   "end_bar": 91
+  },
+  {
+   "target": "cutoff",
+   "shape": "flat",
+   "start_bar": 41,
+   "end_bar": 41
+  },
+  {
+   "target": "cutoff",
+   "shape": "rise",
+   "start_bar": 17,
+   "end_bar": 25
+  },
+  {
+   "target": "resonance",
+   "shape": "curve",
+   "start_bar": 33,
+   "end_bar": 41
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 59,
+   "end_bar": 67
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 67,
+   "end_bar": 75
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 75,
+   "end_bar": 83
+  },
+  {
+   "target": "other",
+   "shape": "curve",
+   "start_bar": 59,
+   "end_bar": 67
+  },
+  {
+   "target": "other",
+   "shape": "curve",
+   "start_bar": 59,
+   "end_bar": 67
+  },
+  {
+   "target": "other",
+   "shape": "curve",
+   "start_bar": 67,
+   "end_bar": 75
+  },
+  {
+   "target": "other",
+   "shape": "curve",
+   "start_bar": 67,
+   "end_bar": 75
+  },
+  {
+   "target": "other",
+   "shape": "curve",
+   "start_bar": 75,
+   "end_bar": 82
+  },
+  {
+   "target": "other",
+   "shape": "curve",
+   "start_bar": 75,
+   "end_bar": 82
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 41,
+   "end_bar": 44
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 41,
+   "end_bar": 44
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 45,
+   "end_bar": 48
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 45,
+   "end_bar": 48
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 49,
+   "end_bar": 52
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 49,
+   "end_bar": 52
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 53,
+   "end_bar": 56
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 53,
+   "end_bar": 56
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 91,
+   "end_bar": 94
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 91,
+   "end_bar": 94
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 95,
+   "end_bar": 98
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 95,
+   "end_bar": 98
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 99,
+   "end_bar": 102
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 99,
+   "end_bar": 102
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 103,
+   "end_bar": 106
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 103,
+   "end_bar": 106
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 41,
+   "end_bar": 44
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 45,
+   "end_bar": 48
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 49,
+   "end_bar": 52
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 53,
+   "end_bar": 56
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 91,
+   "end_bar": 94
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 95,
+   "end_bar": 98
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 99,
+   "end_bar": 102
+  },
+  {
+   "target": "other",
+   "shape": "lfo",
+   "start_bar": 103,
+   "end_bar": 106
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 17,
+   "end_bar": 41
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 17,
+   "end_bar": 41
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 17,
+   "end_bar": 41
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 17,
+   "end_bar": 41
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 17,
+   "end_bar": 41
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 17,
+   "end_bar": 41
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 67,
+   "end_bar": 91
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 67,
+   "end_bar": 91
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 67,
+   "end_bar": 91
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 67,
+   "end_bar": 91
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 67,
+   "end_bar": 91
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 67,
+   "end_bar": 91
+  },
+  {
+   "target": "cutoff",
+   "shape": "lfo",
+   "start_bar": 17,
+   "end_bar": 41
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 59,
+   "end_bar": 67
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 67,
+   "end_bar": 75
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 75,
+   "end_bar": 82
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 83,
+   "end_bar": 89
+  },
+  {
+   "target": "cutoff",
+   "shape": "rise",
+   "start_bar": 17,
+   "end_bar": 25
+  },
+  {
+   "target": "cutoff",
+   "shape": "flat",
+   "start_bar": 1,
+   "end_bar": 1
+  },
+  {
+   "target": "wet",
+   "shape": "curve",
+   "start_bar": 56,
+   "end_bar": 59
+  },
+  {
+   "target": "wet",
+   "shape": "curve",
+   "start_bar": 56,
+   "end_bar": 59
+  },
+  {
+   "target": "volume",
+   "shape": "curve",
+   "start_bar": 67,
+   "end_bar": 75
+  },
+  {
+   "target": "volume",
+   "shape": "curve",
+   "start_bar": 67,
+   "end_bar": 75
+  },
+  {
+   "target": "volume",
+   "shape": "curve",
+   "start_bar": 75,
+   "end_bar": 82
+  },
+  {
+   "target": "volume",
+   "shape": "curve",
+   "start_bar": 75,
+   "end_bar": 82
+  },
+  {
+   "target": "wet",
+   "shape": "curve",
+   "start_bar": 105,
+   "end_bar": 107
+  },
+  {
+   "target": "wet",
+   "shape": "curve",
+   "start_bar": 105,
+   "end_bar": 107
+  },
+  {
+   "target": "wet",
+   "shape": "rise",
+   "start_bar": 113,
+   "end_bar": 115
+  },
+  {
+   "target": "wet",
+   "shape": "rise",
+   "start_bar": 113,
+   "end_bar": 115
+  },
+  {
+   "target": "wet",
+   "shape": "flat",
+   "start_bar": 41,
+   "end_bar": 44
+  },
+  {
+   "target": "wet",
+   "shape": "flat",
+   "start_bar": 41,
+   "end_bar": 44
+  },
+  {
+   "target": "wet",
+   "shape": "flat",
+   "start_bar": 1,
+   "end_bar": 4
+  },
+  {
+   "target": "wet",
+   "shape": "flat",
+   "start_bar": 1,
+   "end_bar": 4
+  },
+  {
+   "target": "volume",
+   "shape": "rise",
+   "start_bar": 9,
+   "end_bar": 17
+  },
+  {
+   "target": "volume",
+   "shape": "rise",
+   "start_bar": 51,
+   "end_bar": 59
+  },
+  {
+   "target": "volume",
+   "shape": "rise",
+   "start_bar": 99,
+   "end_bar": 107
+  },
+  {
+   "target": "volume",
+   "shape": "rise",
+   "start_bar": 107,
+   "end_bar": 115
+  },
+  {
+   "target": "cutoff",
+   "shape": "rise",
+   "start_bar": 9,
+   "end_bar": 17
+  },
+  {
+   "target": "cutoff",
+   "shape": "rise",
+   "start_bar": 51,
+   "end_bar": 59
+  },
+  {
+   "target": "cutoff",
+   "shape": "rise",
+   "start_bar": 99,
+   "end_bar": 107
+  },
+  {
+   "target": "cutoff",
+   "shape": "rise",
+   "start_bar": 107,
+   "end_bar": 115
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 9,
+   "end_bar": 17
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 51,
+   "end_bar": 59
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 99,
+   "end_bar": 107
+  },
+  {
+   "target": "other",
+   "shape": "rise",
+   "start_bar": 107,
+   "end_bar": 115
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 17,
+   "end_bar": 25
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 17,
+   "end_bar": 25
+  },
+  {
+   "target": "cutoff",
+   "shape": "fall",
+   "start_bar": 1,
+   "end_bar": 9
+  },
+  {
+   "target": "cutoff",
+   "shape": "fall",
+   "start_bar": 1,
+   "end_bar": 9
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 9,
+   "end_bar": 17
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 9,
+   "end_bar": 17
+  },
+  {
+   "target": "cutoff",
+   "shape": "rise",
+   "start_bar": 33,
+   "end_bar": 41
+  },
+  {
+   "target": "cutoff",
+   "shape": "rise",
+   "start_bar": 33,
+   "end_bar": 41
+  },
+  {
+   "target": "cutoff",
+   "shape": "rise",
+   "start_bar": 75,
+   "end_bar": 83
+  },
+  {
+   "target": "cutoff",
+   "shape": "rise",
+   "start_bar": 75,
+   "end_bar": 83
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 83,
+   "end_bar": 90
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 83,
+   "end_bar": 90
+  },
+  {
+   "target": "cutoff",
+   "shape": "rise",
+   "start_bar": 99,
+   "end_bar": 107
+  },
+  {
+   "target": "cutoff",
+   "shape": "rise",
+   "start_bar": 99,
+   "end_bar": 107
+  },
+  {
+   "target": "cutoff",
+   "shape": "fall",
+   "start_bar": 107,
+   "end_bar": 109
+  },
+  {
+   "target": "cutoff",
+   "shape": "fall",
+   "start_bar": 107,
+   "end_bar": 109
+  },
+  {
+   "target": "cutoff",
+   "shape": "fall",
+   "start_bar": 50,
+   "end_bar": 57
+  },
+  {
+   "target": "cutoff",
+   "shape": "fall",
+   "start_bar": 100,
+   "end_bar": 107
+  },
+  {
+   "target": "cutoff",
+   "shape": "fall",
+   "start_bar": 50,
+   "end_bar": 54
+  },
+  {
+   "target": "cutoff",
+   "shape": "fall",
+   "start_bar": 100,
+   "end_bar": 104
+  },
+  {
+   "target": "other",
+   "shape": "fall",
+   "start_bar": 56,
+   "end_bar": 58
+  },
+  {
+   "target": "other",
+   "shape": "fall",
+   "start_bar": 56,
+   "end_bar": 58
+  },
+  {
+   "target": "other",
+   "shape": "fall",
+   "start_bar": 107,
+   "end_bar": 109
+  },
+  {
+   "target": "other",
+   "shape": "fall",
+   "start_bar": 107,
+   "end_bar": 109
+  },
+  {
+   "target": "other",
+   "shape": "fall",
+   "start_bar": 115,
+   "end_bar": 117
+  },
+  {
+   "target": "other",
+   "shape": "fall",
+   "start_bar": 115,
+   "end_bar": 117
+  },
+  {
+   "target": "other",
+   "shape": "fall",
+   "start_bar": 41,
+   "end_bar": 42
+  },
+  {
+   "target": "other",
+   "shape": "fall",
+   "start_bar": 41,
+   "end_bar": 42
+  },
+  {
+   "target": "other",
+   "shape": "fall",
+   "start_bar": 1,
+   "end_bar": 2
+  },
+  {
+   "target": "other",
+   "shape": "fall",
+   "start_bar": 1,
+   "end_bar": 2
+  },
+  {
+   "target": "cutoff",
+   "shape": "rise",
+   "start_bar": 83,
+   "end_bar": 91
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 33,
+   "end_bar": 34
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 34,
+   "end_bar": 35
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 35,
+   "end_bar": 36
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 36,
+   "end_bar": 37
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 37,
+   "end_bar": 38
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 38,
+   "end_bar": 39
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 39,
+   "end_bar": 40
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 40,
+   "end_bar": 41
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 83,
+   "end_bar": 84
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 84,
+   "end_bar": 85
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 85,
+   "end_bar": 86
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 86,
+   "end_bar": 87
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 87,
+   "end_bar": 88
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 88,
+   "end_bar": 89
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 89,
+   "end_bar": 90
+  },
+  {
+   "target": "volume",
+   "shape": "lfo",
+   "start_bar": 90,
+   "end_bar": 91
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 33,
+   "end_bar": 40
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 83,
+   "end_bar": 90
+  },
+  {
+   "target": "resonance",
+   "shape": "curve",
+   "start_bar": 33,
+   "end_bar": 40
+  },
+  {
+   "target": "resonance",
+   "shape": "curve",
+   "start_bar": 83,
+   "end_bar": 90
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 48,
+   "end_bar": 50
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 33,
+   "end_bar": 40
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 98,
+   "end_bar": 100
+  },
+  {
+   "target": "cutoff",
+   "shape": "flat",
+   "start_bar": 1,
+   "end_bar": 1
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 48,
+   "end_bar": 50
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 98,
+   "end_bar": 100
+  }
+ ],
+ "routing": {
+  "buses": 45,
+  "sends": 46,
+  "sidechains": 0
+ },
+ "synth_ranges": [
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 100,
+   "decay_ms": 780,
+   "release_ms": 380
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 100,
+   "decay_ms": 780,
+   "release_ms": 380
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 3000,
+   "decay_ms": 1320,
+   "release_ms": 860
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 3000,
+   "decay_ms": 1320,
+   "release_ms": 860
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 260,
+   "decay_ms": 1320,
+   "release_ms": 860
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 260,
+   "decay_ms": 1320,
+   "release_ms": 860
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 2280,
+   "decay_ms": 360,
+   "release_ms": 540
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 3610,
+   "release_ms": 0
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 200,
+   "decay_ms": 3610,
+   "release_ms": 0
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 330,
+   "decay_ms": 2500,
+   "release_ms": 2430
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 310,
+   "decay_ms": 2240,
+   "release_ms": 2000
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 340,
+   "decay_ms": 2730,
+   "release_ms": 2990
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 250,
+   "decay_ms": 3320,
+   "release_ms": 70
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 250,
+   "decay_ms": 3320,
+   "release_ms": 70
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 170,
+   "decay_ms": 360,
+   "release_ms": 740
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 100,
+   "decay_ms": 360,
+   "release_ms": 740
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 1500,
+   "release_ms": 0
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 1500,
+   "release_ms": 0
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 200,
+   "decay_ms": 500,
+   "release_ms": 880
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 330,
+   "decay_ms": 500,
+   "release_ms": 740
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 3060,
+   "decay_ms": 60,
+   "release_ms": 0
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 1560,
+   "release_ms": 0
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 8192,
+   "filter": "0",
+   "attack_ms": 200,
+   "decay_ms": 1590,
+   "release_ms": 0
+  },
+  {
+   "plugin": "kicker",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 1590,
+   "release_ms": 0
+  }
+ ],
+ "provenance": {
+  "url": "https://raw.githubusercontent.com/LMMS/lmms/master/data/projects/demos/Jousboxx-BuzzerBeater.mmpz",
+  "page_url": "https://github.com/LMMS/lmms/pull/3482#issuecomment-293609866",
+  "author": "Jousboxx",
+  "title": "Jousboxx-BuzzerBeater.mmpz",
+  "licence": "CC BY-SA 4.0",
+  "licence_class": "by-sa",
+  "licence_lsp": null,
+  "accessed": "2026-11-16",
+  "sha256": "7ad6909f877a605823280b9b1583bdb401ed05c582a1c3f5a56eaa2bb8eb8e93",
+  "bytes": 43235,
+  "format": "lmms",
+  "parser": "tools/dawstudy/lmms.py",
+  "kept": "statistics only",
+  "genre_source": "none (unclassified)",
+  "lmms_version": null
+ }
+}

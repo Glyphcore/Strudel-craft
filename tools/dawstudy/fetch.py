@@ -4,6 +4,7 @@ outside the repo, is hashed, parsed and deleted in the same run; the repo keeps 
 <out>/fetch-log.json (analysed and refused entries with reasons).
 
   fetch.py lmms-repo --dirs demos demos/CapDan demos/Skiessi shorties --out docs/dawstudy [--delay 120] [--ref master]
+  fetch.py restage --from docs/dawstudy --to SCRATCH_DIR     (re-download analysed projects for a render / re-stat batch; delete after)
 
 Source lmms-repo: the LMMS repository ships demo projects with a LICENSES.TXT per folder (file, licence, LSP page). The licence
 there is classified (common.licence_class, fail closed); allowed files are downloaded from raw.githubusercontent.com; the genre
@@ -49,7 +50,25 @@ def lsp_meta(url):
 def slug(s):
     return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")[:60]
 
+def restage(src, to):
+    """Re-download every analysed project of a stats tree (provenance url, sha256 verified) into TO/<genre>/ with a .prov.json sidecar
+    and write TO/manifest.json for batch.mjs (render: true). TO must be a scratch directory outside the repo; delete it after the batch."""
+    os.makedirs(to, exist_ok=True); inputs = {}
+    for g in sorted(os.listdir(src)):
+        d = os.path.join(src, g)
+        if not os.path.isdir(d): continue
+        for fn in sorted(os.listdir(d)):
+            if not fn.endswith(".stats.json"): continue
+            p = json.load(open(os.path.join(d, fn)))["provenance"]; data = get(p["url"])
+            if hashlib.sha256(data).hexdigest() != p["sha256"]: print("sha256 changed, skipped: %s" % p["title"]); continue
+            od = os.path.join(to, g); os.makedirs(od, exist_ok=True); f = os.path.join(od, slug(os.path.splitext(p["title"])[0]) + os.path.splitext(p["title"])[1])
+            open(f, "wb").write(data); open(f + ".prov.json", "w").write(json.dumps(p)); inputs.setdefault(g, []).append(f)
+    man = {"batch": "restage", "out": os.path.join(to, "out"), "inputs": [{"kind": "daw-project", "files": fs, "genre": g, "render": True} for g, fs in inputs.items()]}
+    json.dump(man, open(os.path.join(to, "manifest.json"), "w"), indent=1); print("restaged %d projects -> %s" % (sum(map(len, inputs.values())), to))
+
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] == "restage":
+        restage(sys.argv[sys.argv.index("--from") + 1], sys.argv[sys.argv.index("--to") + 1]); return 0
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("source", choices=["lmms-repo"]); ap.add_argument("--dirs", nargs="+", required=True); ap.add_argument("--out", required=True)
     ap.add_argument("--delay", type=float, default=120.0); ap.add_argument("--ref", default="master"); ap.add_argument("--limit", type=int, default=0)

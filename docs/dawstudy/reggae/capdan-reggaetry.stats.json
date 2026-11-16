@@ -1,0 +1,184 @@
+{
+ "schema": "dawstudy-stats@1",
+ "format": "lmms",
+ "tempo": 180.0,
+ "meter": [
+  4,
+  4
+ ],
+ "key": null,
+ "length_bars": 32,
+ "length_s": 42.7,
+ "tracks": {
+  "total": 9,
+  "with_clips": 9,
+  "by_role": {
+   "bass": 1,
+   "hat": 2,
+   "keys": 1,
+   "kick": 1,
+   "pad": 2,
+   "snare": 2
+  },
+  "by_kind": {
+   "instrument": 9
+  }
+ },
+ "sections": [
+  {
+   "role": "intro",
+   "start_bar": 1,
+   "bars": 8,
+   "source": "inferred",
+   "layers_median": 4.0,
+   "layers_max": 5,
+   "roles": [
+    "hat",
+    "kick",
+    "snare"
+   ]
+  },
+  {
+   "role": "peak",
+   "start_bar": 9,
+   "bars": 20,
+   "source": "inferred",
+   "layers_median": 7.5,
+   "layers_max": 8,
+   "roles": [
+    "bass",
+    "hat",
+    "keys",
+    "kick",
+    "pad",
+    "snare"
+   ]
+  },
+  {
+   "role": "outro",
+   "start_bar": 29,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 6.0,
+   "layers_max": 6,
+   "roles": [
+    "hat",
+    "keys",
+    "kick",
+    "snare"
+   ]
+  }
+ ],
+ "density": {
+  "layers_per_bar": [
+   4,
+   4,
+   4,
+   4,
+   5,
+   5,
+   4,
+   4,
+   8,
+   8,
+   8,
+   7,
+   8,
+   8,
+   8,
+   7,
+   8,
+   8,
+   8,
+   8,
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   6,
+   6,
+   6,
+   6
+  ],
+  "median": 7.0,
+  "max": 8,
+  "notes_per_bar_by_role": {
+   "bass": 3.5,
+   "hat": 7.0,
+   "keys": 2.125,
+   "kick": 5.0,
+   "pad": 1.75,
+   "snare": 4.0
+  }
+ },
+ "clip_bars": {
+  "2.0": 71,
+  "3.0": 2,
+  "4.0": 15
+ },
+ "fx": {
+  "chains": [],
+  "type_frequency": {}
+ },
+ "automation": [],
+ "routing": {
+  "buses": 6,
+  "sends": 4,
+  "sidechains": 0
+ },
+ "synth_ranges": [
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  }
+ ],
+ "provenance": {
+  "url": "https://raw.githubusercontent.com/LMMS/lmms/master/data/projects/demos/CapDan/CapDan-ReggaeTry.mmpz",
+  "page_url": "https://lmms.io/lsp/index.php?action=show&file=1369",
+  "author": "Der Daniel (CapDan)",
+  "title": "CapDan-ReggaeTry.mmpz",
+  "licence": "Artistic 2.0",
+  "licence_class": "artistic",
+  "licence_lsp": "Artistic License 2.0",
+  "accessed": "2026-11-16",
+  "sha256": "206e6c710df7af42a8cc8bd3869ac35282ed288811e2aeab813b5a986dcfb8b1",
+  "bytes": 3175,
+  "format": "lmms",
+  "parser": "tools/dawstudy/lmms.py",
+  "kept": "statistics only",
+  "genre_source": "LSP subcategory",
+  "lmms_version": "0.4.10"
+ }
+}

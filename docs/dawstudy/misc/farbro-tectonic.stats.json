@@ -1,0 +1,743 @@
+{
+ "schema": "dawstudy-stats@1",
+ "format": "lmms",
+ "tempo": 140.0,
+ "meter": [
+  4,
+  4
+ ],
+ "key": null,
+ "length_bars": 136,
+ "length_s": 233.1,
+ "tracks": {
+  "total": 21,
+  "with_clips": 21,
+  "by_role": {
+   "hat": 6,
+   "keys": 1,
+   "kick": 2,
+   "lead": 1,
+   "other": 3,
+   "pad": 3,
+   "perc": 3,
+   "snare": 2
+  },
+  "by_kind": {
+   "instrument": 21
+  }
+ },
+ "sections": [
+  {
+   "role": "intro",
+   "start_bar": 1,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 0.0,
+   "layers_max": 2,
+   "roles": [
+    "other",
+    "pad"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 5,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 0.0,
+   "layers_max": 1,
+   "roles": [
+    "keys"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 9,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 0.0,
+   "layers_max": 2,
+   "roles": [
+    "other",
+    "pad"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 13,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 0.0,
+   "layers_max": 1,
+   "roles": [
+    "hat"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 17,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 1.0,
+   "layers_max": 4,
+   "roles": [
+    "hat",
+    "other",
+    "pad"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 21,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 1.0,
+   "layers_max": 2,
+   "roles": [
+    "hat"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 25,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 3.5,
+   "layers_max": 6,
+   "roles": [
+    "hat",
+    "keys",
+    "other",
+    "pad",
+    "snare"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 29,
+   "bars": 12,
+   "source": "inferred",
+   "layers_median": 3.0,
+   "layers_max": 6,
+   "roles": [
+    "hat",
+    "other",
+    "pad",
+    "snare"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 41,
+   "bars": 8,
+   "source": "inferred",
+   "layers_median": 5.0,
+   "layers_max": 8,
+   "roles": [
+    "hat",
+    "kick",
+    "other",
+    "pad",
+    "snare"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 49,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 1.0,
+   "layers_max": 4,
+   "roles": [
+    "hat",
+    "other",
+    "pad"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 53,
+   "bars": 8,
+   "source": "inferred",
+   "layers_median": 2.0,
+   "layers_max": 13,
+   "roles": [
+    "hat",
+    "keys",
+    "kick",
+    "other",
+    "pad",
+    "perc",
+    "snare"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 61,
+   "bars": 12,
+   "source": "inferred",
+   "layers_median": 5.0,
+   "layers_max": 7,
+   "roles": [
+    "hat",
+    "kick",
+    "lead",
+    "other",
+    "pad",
+    "snare"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 73,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 1.0,
+   "layers_max": 3,
+   "roles": [
+    "hat",
+    "other",
+    "pad"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 77,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 1.0,
+   "layers_max": 2,
+   "roles": [
+    "hat"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 81,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 4.0,
+   "layers_max": 8,
+   "roles": [
+    "hat",
+    "kick",
+    "lead",
+    "other",
+    "pad"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 85,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 4.0,
+   "layers_max": 5,
+   "roles": [
+    "hat",
+    "kick",
+    "other"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 89,
+   "bars": 16,
+   "source": "inferred",
+   "layers_median": 5.0,
+   "layers_max": 10,
+   "roles": [
+    "hat",
+    "keys",
+    "kick",
+    "lead",
+    "other",
+    "pad",
+    "snare"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 105,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 1.0,
+   "layers_max": 5,
+   "roles": [
+    "hat",
+    "keys",
+    "other",
+    "pad"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 109,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 1.0,
+   "layers_max": 13,
+   "roles": [
+    "hat",
+    "kick",
+    "other",
+    "perc",
+    "snare"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 113,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 2.0,
+   "layers_max": 14,
+   "roles": [
+    "hat",
+    "keys",
+    "kick",
+    "lead",
+    "other",
+    "pad",
+    "perc",
+    "snare"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 117,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 2.0,
+   "layers_max": 3,
+   "roles": [
+    "hat",
+    "other"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 121,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 5.0,
+   "layers_max": 10,
+   "roles": [
+    "hat",
+    "keys",
+    "kick",
+    "lead",
+    "other",
+    "pad",
+    "snare"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 125,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 5.5,
+   "layers_max": 6,
+   "roles": [
+    "hat",
+    "kick",
+    "other",
+    "snare"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 129,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 2.0,
+   "layers_max": 6,
+   "roles": [
+    "hat",
+    "other",
+    "pad"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 133,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 6.5,
+   "layers_max": 11,
+   "roles": [
+    "hat",
+    "kick",
+    "other",
+    "perc",
+    "snare"
+   ]
+  }
+ ],
+ "density": {
+  "layers_per_bar": [
+   2,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   2,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   4,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   2,
+   6,
+   3,
+   4,
+   3,
+   3,
+   3,
+   3,
+   5,
+   6,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   4,
+   8,
+   5,
+   5,
+   5,
+   5,
+   5,
+   5,
+   6,
+   4,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   13,
+   12,
+   2,
+   3,
+   2,
+   4,
+   3,
+   3,
+   4,
+   7,
+   5,
+   5,
+   5,
+   6,
+   5,
+   6,
+   7,
+   3,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   2,
+   8,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   5,
+   10,
+   5,
+   5,
+   5,
+   5,
+   5,
+   5,
+   6,
+   10,
+   5,
+   5,
+   5,
+   5,
+   5,
+   5,
+   5,
+   5,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   13,
+   14,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   3,
+   10,
+   5,
+   5,
+   5,
+   5,
+   6,
+   5,
+   6,
+   6,
+   2,
+   2,
+   2,
+   3,
+   4,
+   11,
+   9
+  ],
+  "median": 3.0,
+  "max": 14,
+  "notes_per_bar_by_role": {
+   "hat": 1.0,
+   "keys": 64.0,
+   "kick": 4.0,
+   "lead": 32.0,
+   "other": 39.0,
+   "pad": 47.0,
+   "perc": 1.0,
+   "snare": 4.0
+  }
+ },
+ "clip_bars": {
+  "1.0": 84,
+  "2.0": 30,
+  "3.0": 1,
+  "7.0": 1,
+  "8.0": 7,
+  "12.0": 1,
+  "16.0": 3,
+  "23.0": 1,
+  "24.0": 5,
+  "96.0": 1
+ },
+ "fx": {
+  "chains": [
+   {
+    "role": "other",
+    "chain": [
+     "other",
+     "delay",
+     "modulation",
+     "other"
+    ]
+   },
+   {
+    "role": "pad",
+    "chain": [
+     "eq",
+     "reverb"
+    ]
+   },
+   {
+    "role": "other",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "lead",
+    "chain": [
+     "reverb",
+     "modulation",
+     "other"
+    ]
+   },
+   {
+    "role": "hat",
+    "chain": [
+     "reverb"
+    ]
+   }
+  ],
+  "type_frequency": {
+   "delay": 1,
+   "eq": 1,
+   "modulation": 2,
+   "other": 2,
+   "reverb": 4
+  }
+ },
+ "automation": [
+  {
+   "target": "volume",
+   "shape": "rise",
+   "start_bar": 1,
+   "end_bar": 9
+  },
+  {
+   "target": "volume",
+   "shape": "rise",
+   "start_bar": 71,
+   "end_bar": 74
+  },
+  {
+   "target": "volume",
+   "shape": "rise",
+   "start_bar": 71,
+   "end_bar": 74
+  },
+  {
+   "target": "volume",
+   "shape": "flat",
+   "start_bar": 33,
+   "end_bar": 33
+  },
+  {
+   "target": "pan",
+   "shape": "rise",
+   "start_bar": 32,
+   "end_bar": 32
+  },
+  {
+   "target": "pan",
+   "shape": "fall",
+   "start_bar": 121,
+   "end_bar": 129
+  },
+  {
+   "target": "volume",
+   "shape": "rise",
+   "start_bar": 121,
+   "end_bar": 129
+  },
+  {
+   "target": "pan",
+   "shape": "fall",
+   "start_bar": 126,
+   "end_bar": 129
+  }
+ ],
+ "routing": {
+  "buses": 11,
+  "sends": 0,
+  "sidechains": 0
+ },
+ "synth_ranges": [
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 4096,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2000,
+   "release_ms": 2200
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 4096,
+   "filter": "7",
+   "attack_ms": 0,
+   "decay_ms": 3980,
+   "release_ms": 1100
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 1024,
+   "filter": "6",
+   "attack_ms": 0,
+   "decay_ms": 1900,
+   "release_ms": 1070
+  },
+  {
+   "plugin": "bitinvader",
+   "cutoff_hz": 8192,
+   "filter": "7",
+   "attack_ms": 120,
+   "decay_ms": 1250,
+   "release_ms": 500
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 512,
+   "filter": "6",
+   "attack_ms": 0,
+   "decay_ms": 0,
+   "release_ms": 350
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 512,
+   "filter": "6",
+   "attack_ms": 0,
+   "decay_ms": 0,
+   "release_ms": 350
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 2048,
+   "filter": "7",
+   "attack_ms": 250,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  }
+ ],
+ "provenance": {
+  "url": "https://raw.githubusercontent.com/LMMS/lmms/master/data/projects/demos/Farbro-Tectonic.mmpz",
+  "page_url": "https://lmms.io/lsp/index.php?action=show&file=1327",
+  "author": "Mats (affe)",
+  "title": "Farbro-Tectonic.mmpz",
+  "licence": "CC (by)",
+  "licence_class": "by",
+  "licence_lsp": "Creative Commons (by)",
+  "accessed": "2026-11-16",
+  "sha256": "a73cd65eb6b458843eaa0dd568fad54112df0484399b663d5d821c3fd3adc373",
+  "bytes": 25160,
+  "format": "lmms",
+  "parser": "tools/dawstudy/lmms.py",
+  "kept": "statistics only",
+  "genre_source": "LSP subcategory",
+  "lmms_version": "0.4.9"
+ }
+}

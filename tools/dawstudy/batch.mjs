@@ -28,11 +28,14 @@ function renderAndTriage(f, s, h, inp) {
   const has = b => { try { execFileSync('sh', ['-c', `command -v ${b}`]); return true } catch { return false } }
   if (!/\.mmpz?$/i.test(f) || !has('lmms')) { console.log(`render skipped for ${path.basename(f)}: ${/\.mmpz?$/i.test(f) ? 'lmms not installed' : 'no headless renderer for this format'}`); return null }
   const wav = path.join(fs.mkdtempSync(path.join(OUT, '.render-')), 'r.wav'); const tj = path.join(OUT, 'triage', h.slice(0, 16) + '.render.triage.json')
+  if (!fs.existsSync(path.dirname(wav))) fs.mkdirSync(path.dirname(wav), { recursive: true })
   fs.mkdirSync(path.dirname(tj), { recursive: true })
   try {
-    execFileSync(path.join(LAB, 'engine/load/gate.sh'), ['heavy', '--', 'lmms', '--render', f, '--output', wav, '--format', 'wav'], { stdio: 'ignore', env: { ...process.env, QT_QPA_PLATFORM: 'offscreen' } })
+    if (!fs.existsSync(wav)) {}
+    execFileSync(path.join(LAB, 'engine/load/gate.sh'), ['heavy', '--', 'timeout', '900', 'lmms', ...(process.getuid?.() === 0 ? ['--allowroot'] : []), 'render', f, '-o', wav, '-f', 'wav'], { stdio: 'ignore', env: { ...process.env, QT_QPA_PLATFORM: 'offscreen' } })
     execFileSync('python3', [path.join(LAB, 'engine/dawstudy/triage.py'), wav, '--out', tj, '--bpm', String(s.tempo), '--offset', '0', '--source-kind', 'rendered-project', ...(inp.genre ? ['--genre', inp.genre] : [])], { stdio: 'ignore' })
-  } finally { fs.rmSync(path.dirname(wav), { recursive: true, force: true }) }
+  } catch (e) { console.log(`render or triage failed for ${path.basename(f)}: ${String(e.message).split('\n')[0]}`) } finally { fs.rmSync(path.dirname(wav), { recursive: true, force: true }) }
+  if (!fs.existsSync(tj)) { console.log(`render failed for ${path.basename(f)}`); return null }
   const t = JSON.parse(fs.readFileSync(tj, 'utf8'))
   const pb = s.sections.slice(1).map(x => x.start_bar), tb = t.sections.slice(1).map(x => x.start_bar)
   t.project = { sha256: h, url: s.provenance?.url, licence: s.provenance?.licence, licence_class: s.provenance?.licence_class }

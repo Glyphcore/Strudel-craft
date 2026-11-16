@@ -1,0 +1,602 @@
+{
+ "schema": "dawstudy-stats@1",
+ "format": "lmms",
+ "tempo": 140.0,
+ "meter": [
+  1,
+  1
+ ],
+ "key": null,
+ "length_bars": 121,
+ "length_s": 207.4,
+ "tracks": {
+  "total": 24,
+  "with_clips": 23,
+  "by_role": {
+   "bass": 2,
+   "hat": 6,
+   "other": 10,
+   "pad": 1,
+   "snare": 4
+  },
+  "by_kind": {
+   "instrument": 24
+  }
+ },
+ "sections": [
+  {
+   "role": "intro",
+   "start_bar": 1,
+   "bars": 8,
+   "source": "inferred",
+   "layers_median": 1.0,
+   "layers_max": 1,
+   "roles": [
+    "pad"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 9,
+   "bars": 20,
+   "source": "inferred",
+   "layers_median": 3.0,
+   "layers_max": 4,
+   "roles": [
+    "hat",
+    "other",
+    "pad"
+   ]
+  },
+  {
+   "role": "body",
+   "start_bar": 29,
+   "bars": 76,
+   "source": "inferred",
+   "layers_median": 18.0,
+   "layers_max": 22,
+   "roles": [
+    "bass",
+    "hat",
+    "other",
+    "pad",
+    "snare"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 105,
+   "bars": 16,
+   "source": "inferred",
+   "layers_median": 3.0,
+   "layers_max": 4,
+   "roles": [
+    "hat",
+    "other",
+    "pad"
+   ]
+  },
+  {
+   "role": "outro",
+   "start_bar": 121,
+   "bars": 1,
+   "source": "inferred",
+   "layers_median": 1,
+   "layers_max": 1,
+   "roles": [
+    "pad"
+   ]
+  }
+ ],
+ "density": {
+  "layers_per_bar": [
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   3,
+   4,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   4,
+   13,
+   12,
+   12,
+   12,
+   12,
+   12,
+   12,
+   12,
+   11,
+   11,
+   11,
+   11,
+   12,
+   12,
+   12,
+   13,
+   12,
+   10,
+   10,
+   10,
+   10,
+   10,
+   11,
+   14,
+   12,
+   11,
+   11,
+   11,
+   11,
+   11,
+   11,
+   13,
+   19,
+   18,
+   18,
+   18,
+   18,
+   18,
+   18,
+   18,
+   18,
+   18,
+   18,
+   18,
+   18,
+   18,
+   18,
+   18,
+   19,
+   18,
+   18,
+   18,
+   18,
+   18,
+   18,
+   20,
+   22,
+   19,
+   19,
+   19,
+   19,
+   19,
+   19,
+   20,
+   19,
+   18,
+   18,
+   18,
+   18,
+   18,
+   18,
+   19,
+   4,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   1,
+   1
+  ],
+  "median": 11,
+  "max": 22,
+  "notes_per_bar_by_role": {
+   "bass": 6.625,
+   "hat": 2.0,
+   "other": 2.0,
+   "pad": 4.0,
+   "snare": 2.0
+  }
+ },
+ "clip_bars": {
+  "1.0": 814,
+  "2.0": 10,
+  "3.0": 2,
+  "4.0": 76,
+  "5.0": 2,
+  "8.0": 3,
+  "9.0": 4,
+  "11.0": 1
+ },
+ "fx": {
+  "chains": [
+   {
+    "role": "pad",
+    "chain": [
+     "eq",
+     "other",
+     "modulation"
+    ]
+   },
+   {
+    "role": "other",
+    "chain": [
+     "other",
+     "modulation"
+    ]
+   },
+   {
+    "role": "other",
+    "chain": [
+     "other",
+     "other",
+     "eq",
+     "modulation",
+     "reverb",
+     "delay",
+     "stereo"
+    ]
+   },
+   {
+    "role": "hat",
+    "chain": [
+     "delay"
+    ]
+   },
+   {
+    "role": "hat",
+    "chain": [
+     "delay"
+    ]
+   },
+   {
+    "role": "hat",
+    "chain": [
+     "eq",
+     "stereo"
+    ]
+   },
+   {
+    "role": "other",
+    "chain": [
+     "modulation",
+     "delay"
+    ]
+   },
+   {
+    "role": "bass",
+    "chain": [
+     "modulation",
+     "stereo"
+    ]
+   },
+   {
+    "role": "bass",
+    "chain": [
+     "modulation",
+     "stereo"
+    ]
+   },
+   {
+    "role": "other",
+    "chain": [
+     "other",
+     "other",
+     "eq",
+     "modulation",
+     "reverb",
+     "delay",
+     "stereo",
+     "stereo"
+    ]
+   },
+   {
+    "role": "other",
+    "chain": [
+     "other",
+     "other",
+     "eq",
+     "other",
+     "delay",
+     "stereo",
+     "stereo"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "modulation",
+     "reverb",
+     "stereo",
+     "stereo"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "limiter",
+     "compressor",
+     "reverb"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "delay",
+     "stereo"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "stereo"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "reverb",
+     "modulation",
+     "stereo"
+    ]
+   }
+  ],
+  "type_frequency": {
+   "compressor": 1,
+   "delay": 7,
+   "eq": 5,
+   "limiter": 1,
+   "modulation": 9,
+   "other": 5,
+   "reverb": 6,
+   "stereo": 10
+  }
+ },
+ "automation": [],
+ "routing": {
+  "buses": 8,
+  "sends": 22,
+  "sidechains": 0
+ },
+ "synth_ranges": [
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 2048,
+   "filter": "0",
+   "attack_ms": 500,
+   "decay_ms": 5000,
+   "release_ms": 1300
+  },
+  {
+   "plugin": "bitinvader",
+   "cutoff_hz": 4096,
+   "filter": "7",
+   "attack_ms": 50,
+   "decay_ms": 1500,
+   "release_ms": 100
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 1024,
+   "filter": "7",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 8192,
+   "filter": "3",
+   "attack_ms": 50,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 8192,
+   "filter": "1",
+   "attack_ms": 50,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 4096,
+   "filter": "4",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 1,
+   "filter": "4",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "7",
+   "attack_ms": 0,
+   "decay_ms": 1250,
+   "release_ms": 0
+  },
+  {
+   "plugin": "lb302",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "lb302",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 512,
+   "filter": "7",
+   "attack_ms": 0,
+   "decay_ms": 0,
+   "release_ms": 450
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 8192,
+   "filter": "2",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 8192,
+   "filter": "2",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 4096,
+   "filter": "7",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  }
+ ],
+ "provenance": {
+  "url": "https://raw.githubusercontent.com/LMMS/lmms/master/data/projects/demos/Skiessi/Skiessi-Onion.mmpz",
+  "page_url": "https://lmms.io/lsp/index.php?action=show&file=405",
+  "author": "Janne (Skiessi)",
+  "title": "Skiessi-Onion.mmpz",
+  "licence": "CC (by-sa)",
+  "licence_class": "by-sa",
+  "licence_lsp": "Creative Commons (by)",
+  "accessed": "2026-11-16",
+  "sha256": "d35dea46a8981f8bccc7573865b824e5a809b99146f1835fa2012b7eb5c6cb49",
+  "bytes": 26919,
+  "format": "lmms",
+  "parser": "tools/dawstudy/lmms.py",
+  "kept": "statistics only",
+  "genre_source": "LSP subcategory",
+  "lmms_version": "0.4.0"
+ }
+}

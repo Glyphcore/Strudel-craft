@@ -1,0 +1,124 @@
+{
+ "schema": "dawstudy-stats@1",
+ "format": "lmms",
+ "tempo": 130.0,
+ "meter": [
+  4,
+  4
+ ],
+ "key": null,
+ "length_bars": 8,
+ "length_s": 14.8,
+ "tracks": {
+  "total": 4,
+  "with_clips": 4,
+  "by_role": {
+   "bass": 1,
+   "kick": 1,
+   "other": 1,
+   "snare": 1
+  },
+  "by_kind": {
+   "instrument": 4
+  }
+ },
+ "sections": [
+  {
+   "role": "peak",
+   "start_bar": 1,
+   "bars": 8,
+   "source": "inferred",
+   "layers_median": 4.0,
+   "layers_max": 4,
+   "roles": [
+    "bass",
+    "kick",
+    "other",
+    "snare"
+   ]
+  }
+ ],
+ "density": {
+  "layers_per_bar": [
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4
+  ],
+  "median": 4.0,
+  "max": 4,
+  "notes_per_bar_by_role": {
+   "bass": 4.0,
+   "kick": 2.0,
+   "other": 3.0,
+   "snare": 2.0
+  }
+ },
+ "clip_bars": {
+  "4.0": 8
+ },
+ "fx": {
+  "chains": [
+   {
+    "role": "bass",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "other",
+    "chain": [
+     "reverb"
+    ]
+   }
+  ],
+  "type_frequency": {
+   "reverb": 2
+  }
+ },
+ "automation": [],
+ "routing": {
+  "buses": 3,
+  "sends": 0,
+  "sidechains": 0
+ },
+ "synth_ranges": [
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "papu",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  }
+ ],
+ "provenance": {
+  "url": "https://raw.githubusercontent.com/LMMS/lmms/master/data/projects/shorties/Crunk%28Demo%29.mmp",
+  "page_url": "https://lmms.io/lsp/?action=show&file=4093",
+  "author": "Musicmaker (DerWeisbecker)",
+  "title": "Crunk(Demo).mmp",
+  "licence": "Artistic 2.0",
+  "licence_class": "artistic",
+  "licence_lsp": "Artistic License 2.0",
+  "accessed": "2026-11-16",
+  "sha256": "1272b070991bd49cba4cd2dd262c80cb7fb7fb9f641e3d53c4c0f1603e4300e8",
+  "bytes": 16302,
+  "format": "lmms",
+  "parser": "tools/dawstudy/lmms.py",
+  "kept": "statistics only",
+  "genre_source": "LSP subcategory",
+  "lmms_version": "0.4.15"
+ }
+}

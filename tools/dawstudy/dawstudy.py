@@ -85,13 +85,18 @@ def forms_md(P):
         L.append("- %s by %s (%s) %s sha256 %s" % (s["title"], s["author"], s["licence"], s["page_url"], (s["sha256"] or "")[:16]))
     return "\n".join(L) + "\n"
 
+def _keys(o):
+    if isinstance(o, dict): return set(o) | set().union(*[_keys(v) for v in o.values()]) if o else set()
+    if isinstance(o, list): return set().union(*[_keys(v) for v in o]) if o else set()
+    return set()
+
 def check(d):
     bad = 0; files = sorted(glob.glob(os.path.join(d, "**", "*.stats.json"), recursive=True))
     for f in files:
         s = json.load(open(f)); errs = []
         if s.get("schema") != common.SCHEMA: errs.append("schema")
         errs += common.check_provenance(s.get("provenance"))
-        if any(k in json.dumps(s) for k in ('"pitch"', '"key_number"', '"notes_list"')): errs.append("note data present")
+        if _keys(s) & {"pitch", "pitches", "key_number", "notes_list", "melody", "midi"}: errs.append("note data present")
         if errs: bad += 1; print("FAIL %s: %s" % (f, "; ".join(errs)))
     print("%d stats files, %d invalid" % (len(files), bad))
     return 1 if bad or not files else 0

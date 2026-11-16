@@ -38,7 +38,7 @@ DEVICE_WORDS = [
     ("modulation", r"chorus|flanger|phaser|ensemble|vibrato|tremolo|rotary|autopan"),
     ("stereo", r"stereo|width|imager|utility|haas|spread"),
     ("gate", r"gate\b|transient|shaper"),
-    ("pitch", r"pitch|tune|vocoder|formant|frequency ?shift"),
+    ("pitch_fx", r"pitch|tune|vocoder|formant|frequency ?shift"),
     ("amp_cab", r"cab|cabinet|amp ?sim|guitar ?rig|amplitube"),
     ("gain", r"gain|amplifier|volume|trim"),
 ]

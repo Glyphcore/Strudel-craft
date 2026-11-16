@@ -1,0 +1,414 @@
+{
+ "schema": "dawstudy-stats@1",
+ "format": "lmms",
+ "tempo": 140.0,
+ "meter": [
+  4,
+  4
+ ],
+ "key": null,
+ "length_bars": 136,
+ "length_s": 233.1,
+ "tracks": {
+  "total": 13,
+  "with_clips": 13,
+  "by_role": {
+   "bass": 1,
+   "hat": 2,
+   "kick": 1,
+   "other": 5,
+   "perc": 3,
+   "snare": 1
+  },
+  "by_kind": {
+   "instrument": 13
+  }
+ },
+ "sections": [
+  {
+   "role": "intro",
+   "start_bar": 1,
+   "bars": 20,
+   "source": "inferred",
+   "layers_median": 0.0,
+   "layers_max": 1,
+   "roles": [
+    "other"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 21,
+   "bars": 4,
+   "source": "inferred",
+   "layers_median": 1.0,
+   "layers_max": 3,
+   "roles": [
+    "kick",
+    "perc",
+    "snare"
+   ]
+  },
+  {
+   "role": "body",
+   "start_bar": 25,
+   "bars": 36,
+   "source": "inferred",
+   "layers_median": 3.5,
+   "layers_max": 6,
+   "roles": [
+    "bass",
+    "hat",
+    "kick",
+    "other",
+    "snare"
+   ]
+  },
+  {
+   "role": "breakdown",
+   "start_bar": 61,
+   "bars": 12,
+   "source": "inferred",
+   "layers_median": 3.0,
+   "layers_max": 4,
+   "roles": [
+    "bass",
+    "hat",
+    "kick",
+    "perc"
+   ]
+  },
+  {
+   "role": "body",
+   "start_bar": 73,
+   "bars": 44,
+   "source": "inferred",
+   "layers_median": 3.0,
+   "layers_max": 6,
+   "roles": [
+    "bass",
+    "hat",
+    "kick",
+    "other",
+    "snare"
+   ]
+  },
+  {
+   "role": "body",
+   "start_bar": 117,
+   "bars": 20,
+   "source": "inferred",
+   "layers_median": 4.0,
+   "layers_max": 5,
+   "roles": [
+    "bass",
+    "hat",
+    "kick",
+    "other",
+    "snare"
+   ]
+  }
+ ],
+ "density": {
+  "layers_per_bar": [
+   1,
+   0,
+   1,
+   0,
+   1,
+   0,
+   0,
+   1,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   3,
+   1,
+   1,
+   2,
+   5,
+   2,
+   5,
+   2,
+   4,
+   2,
+   6,
+   3,
+   6,
+   3,
+   6,
+   3,
+   6,
+   3,
+   5,
+   3,
+   5,
+   3,
+   5,
+   2,
+   5,
+   2,
+   5,
+   2,
+   5,
+   2,
+   5,
+   3,
+   5,
+   3,
+   5,
+   3,
+   5,
+   3,
+   5,
+   1,
+   1,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   4,
+   4,
+   6,
+   3,
+   6,
+   3,
+   6,
+   3,
+   6,
+   3,
+   6,
+   3,
+   5,
+   3,
+   5,
+   3,
+   5,
+   3,
+   5,
+   2,
+   5,
+   2,
+   5,
+   2,
+   5,
+   2,
+   5,
+   3,
+   5,
+   3,
+   5,
+   3,
+   4,
+   3,
+   4,
+   2,
+   2,
+   2,
+   3,
+   2,
+   2,
+   2,
+   3,
+   2,
+   2,
+   2,
+   3,
+   5,
+   3,
+   5,
+   3,
+   5,
+   3,
+   5,
+   3,
+   5,
+   3,
+   5,
+   3,
+   5,
+   3,
+   5,
+   3,
+   5,
+   3,
+   5
+  ],
+  "median": 3.0,
+  "max": 6,
+  "notes_per_bar_by_role": {
+   "bass": 5.0,
+   "hat": 4.0,
+   "kick": 3.0,
+   "other": 8.0,
+   "perc": 4.5,
+   "snare": 2.0
+  }
+ },
+ "clip_bars": {
+  "1.0": 421
+ },
+ "fx": {
+  "chains": [
+   {
+    "role": "bus",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "delay"
+    ]
+   }
+  ],
+  "type_frequency": {
+   "delay": 1,
+   "reverb": 1
+  }
+ },
+ "automation": [],
+ "routing": {
+  "buses": 2,
+  "sends": 0,
+  "sidechains": 0
+ },
+ "synth_ranges": [
+  {
+   "plugin": "zynaddsubfx",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "zynaddsubfx",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  }
+ ],
+ "provenance": {
+  "url": "https://raw.githubusercontent.com/LMMS/lmms/master/data/projects/demos/Thomasso-AxeFromThe80s.mmpz",
+  "page_url": "https://lmms.io/lsp/index.php?action=show&file=474",
+  "author": "Tom H (thomasso)",
+  "title": "Thomasso-AxeFromThe80s.mmpz",
+  "licence": "Artistic 2.0",
+  "licence_class": "artistic",
+  "licence_lsp": "Artistic License 2.0",
+  "accessed": "2026-11-16",
+  "sha256": "00aebf48415e74240f8f263380303fae1567b3677179956e67825e9ebc202fc7",
+  "bytes": 17375,
+  "format": "lmms",
+  "parser": "tools/dawstudy/lmms.py",
+  "kept": "statistics only",
+  "genre_source": "LSP subcategory",
+  "lmms_version": "0.4.3"
+ }
+}

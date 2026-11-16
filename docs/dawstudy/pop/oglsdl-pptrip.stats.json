@@ -1,0 +1,282 @@
+{
+ "schema": "dawstudy-stats@1",
+ "format": "lmms",
+ "tempo": 140.0,
+ "meter": [
+  8,
+  4
+ ],
+ "key": null,
+ "length_bars": 39,
+ "length_s": 133.7,
+ "tracks": {
+  "total": 18,
+  "with_clips": 14,
+  "by_role": {
+   "bass": 1,
+   "hat": 1,
+   "keys": 1,
+   "kick": 1,
+   "other": 9,
+   "snare": 1
+  },
+  "by_kind": {
+   "audio": 1,
+   "instrument": 17
+  }
+ },
+ "sections": [
+  {
+   "role": "intro",
+   "start_bar": 1,
+   "bars": 39,
+   "source": "inferred",
+   "layers_median": 8,
+   "layers_max": 11,
+   "roles": [
+    "bass",
+    "hat",
+    "keys",
+    "kick",
+    "other",
+    "snare"
+   ]
+  }
+ ],
+ "density": {
+  "layers_per_bar": [
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   7,
+   11,
+   8,
+   8,
+   8,
+   5,
+   5,
+   1,
+   1,
+   10,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   9,
+   7,
+   7,
+   10,
+   7,
+   7,
+   7,
+   7,
+   9,
+   8,
+   8,
+   8,
+   8,
+   8,
+   8,
+   2
+  ],
+  "median": 8,
+  "max": 11,
+  "notes_per_bar_by_role": {
+   "bass": 12.0,
+   "hat": 32.0,
+   "keys": 36.0,
+   "kick": 16.0,
+   "other": 20.0,
+   "snare": 8.0
+  }
+ },
+ "clip_bars": {
+  "0.5": 83,
+  "1.0": 224
+ },
+ "fx": {
+  "chains": [
+   {
+    "role": "other",
+    "chain": [
+     "stereo",
+     "modulation",
+     "other",
+     "other",
+     "delay",
+     "stereo"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "reverb"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "modulation",
+     "reverb"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "modulation",
+     "modulation",
+     "delay"
+    ]
+   },
+   {
+    "role": "bus",
+    "chain": [
+     "reverb",
+     "reverb",
+     "delay"
+    ]
+   }
+  ],
+  "type_frequency": {
+   "delay": 3,
+   "modulation": 3,
+   "other": 1,
+   "reverb": 3,
+   "stereo": 1
+  }
+ },
+ "automation": [
+  {
+   "target": "resonance",
+   "shape": "lfo",
+   "start_bar": 13,
+   "end_bar": 20
+  },
+  {
+   "target": "cutoff",
+   "shape": "lfo",
+   "start_bar": 32,
+   "end_bar": 39
+  },
+  {
+   "target": "resonance",
+   "shape": "lfo",
+   "start_bar": 32,
+   "end_bar": 39
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 13,
+   "end_bar": 20
+  },
+  {
+   "target": "cutoff",
+   "shape": "curve",
+   "start_bar": 32,
+   "end_bar": 39
+  }
+ ],
+ "routing": {
+  "buses": 4,
+  "sends": 0,
+  "sidechains": 0
+ },
+ "synth_ranges": [
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 250,
+   "decay_ms": 2500,
+   "release_ms": 1250
+  },
+  {
+   "plugin": "audiofileprocessor",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "zynaddsubfx",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": null,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 1620,
+   "release_ms": 2360
+  },
+  {
+   "plugin": "zynaddsubfx",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "bitinvader",
+   "cutoff_hz": 8192,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 3360,
+   "release_ms": 3640
+  },
+  {
+   "plugin": "zynaddsubfx",
+   "cutoff_hz": 16384,
+   "filter": "0",
+   "attack_ms": 0,
+   "decay_ms": 2500,
+   "release_ms": 500
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 1024,
+   "filter": "6",
+   "attack_ms": 280,
+   "decay_ms": 2940,
+   "release_ms": 1210
+  },
+  {
+   "plugin": "tripleoscillator",
+   "cutoff_hz": 4096,
+   "filter": "7",
+   "attack_ms": 300,
+   "decay_ms": 650,
+   "release_ms": 750
+  }
+ ],
+ "provenance": {
+  "url": "https://raw.githubusercontent.com/LMMS/lmms/master/data/projects/demos/Oglsdl-PpTrip.mmpz",
+  "page_url": "https://lmms.io/lsp/index.php?action=show&file=1156",
+  "author": "\u00dcmit (oglsdl)",
+  "title": "Oglsdl-PpTrip.mmpz",
+  "licence": "Artistic 2.0",
+  "licence_class": "artistic",
+  "licence_lsp": "Artistic License 2.0",
+  "accessed": "2026-11-16",
+  "sha256": "fa13f49053c9c2dca1defe24826baa01cf1e56edc8d91351760bdb00199cef16",
+  "bytes": 31327,
+  "format": "lmms",
+  "parser": "tools/dawstudy/lmms.py",
+  "kept": "statistics only",
+  "genre_source": "LSP subcategory",
+  "lmms_version": "0.4.5"
+ }
+}

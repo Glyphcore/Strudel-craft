@@ -340,6 +340,8 @@ a detuned pair (`.add(note("0,0.18"))`), `neuroBass` gets its grit from FM (rati
 three track demos also swap the supersaw racks for a native saw pair after the hook (`.s("sawtooth").add(note("-0.08,0.08"))`) and use edm `subDrop`
 (no shape) for impacts; on the site the supersaw racks play as written.
 
+Centroids here are power-weighted (long-term spectrum); the catalog `centroid_hz` is magnitude-weighted and the genre score uses librosa's per-frame magnitude-weighted centroid (docs/tracks/dnb-electro-tutorial/README.md section 4).
+
 The envelope range metric is computed for every item (`env_range_db` in report.json) and checked only where a class sets `env_range_min_db`.
 Measured results of the first audit of the new items are in the table below (same standard, the audit run of #122).
 

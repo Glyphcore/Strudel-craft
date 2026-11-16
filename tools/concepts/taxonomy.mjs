@@ -93,7 +93,7 @@ export function rackTaxonomy(name, def, cls, ingId) {
 const GROUPS = {
   role: { title: 'Role', description: 'what the entry is in a mix: drums, bass, keys, pad, lead, vox, fx, form' },
   genre: { title: 'Genre', description: 'genre family the entry belongs to' },
-  feel: { title: 'Feel', description: 'groove and attitude: boom-bap, trap, hyphy, cloud, lazy' },
+  feel: { title: 'Feel', description: 'groove and attitude: boom-bap, trap, hyphy, cloud, lazy, liquid, neuro, jump-up, electro-house, techno, trance, big-room (and the feels of the other genre packs)' },
   tempo: { title: 'Tempo feel', description: 'how the rhythm sits against the beat, not a speed' },
   mood: { title: 'Mood', description: 'emotional tint' },
   technique: { title: 'Technique', description: 'production move the entry shows' },

@@ -16,5 +16,5 @@ if [ "$KIND" = pack ]; then
   EXTRA=(--packs "$SC/site/packs.lock.json" --hooks "$HK")
 else IN="$HERE/$NAME.standalone.strudel.js"; EXTRA=(); fi
 python3 "$CLI/chunk_render.py" "$IN" "$OUT" --bars "$BARS" --chunk 8 --preroll 2 --jobs "${JOBS:-1}" ${EXTRA[@]+-- "${EXTRA[@]}"}
-python3 "$LAB/engine/master/master.py" "$OUT/mix.wav" "$OUT/master.wav" --preset "$PRE" --report "$OUT/master.json"
+python3 "$LAB/engine/master/master.py" "$OUT/mix.wav" "$OUT/master.wav" --preset "$PRE" --ceiling "${CEILING:--1.0}" --report "$OUT/master.json"
 python3 "$LAB/engine/genre/score.py" "$OUT/master.wav" "$LAB/docs/genres/$G.json" --out "$OUT/score.json" --md "$OUT/score.md" --bpm "$BPM" --form "$HERE/form.$NAME.json"

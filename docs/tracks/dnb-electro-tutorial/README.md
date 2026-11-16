@@ -78,14 +78,24 @@ Arrangement map (bars, 1-based; a gate `a..b` is half-open, `25b..57b` = bars 25
 A club track uses 16 / 32-bar blocks: `atoms.hs.mapIntro` .. `mapOutro` (160 bars) and `hs.phrase8` give the gates.
 
 ## 4. Render, master, score (measured, 2026-11-16)
-| program | length | master | true peak | crest | LRA | centroid | low end < 150 Hz | onsets / bar | section span | genre score |
-|---|---|---|---|---|---|---|---|---|---|---|
-| DnB tutorial (`--preset dnb`, docs/genres/dnb.json) | 176.6 s | -8.0 LUFS | -1.03 dBTP | 8.2 dB | 2.8 LU (miss, min 3) | 2288 Hz | 0.55 | 6.4 | 3.9 dB | 8 / 9 |
-| electro (`--preset electro`) | 75.0 s | -9.5 | -1.01 | 9.5 | 1.6 (miss, min 2) | 3248 | 0.70 (miss, max 0.65) | 12.0 | 2.8 | 7 / 9 |
-| house / techno / trance (`--preset house`) | 105.0 s | -9.1 | -1.01 | 8.8 | 1.9 (miss, min 2) | 3462 (miss, max 3200) | 0.69 | 12.4 | 5.1 | 7 / 9 |
+Masters at `--ceiling -2.0` (render.sh `CEILING=-2.0`; at -1.0 the 112 kbit/s mp3s decoded at -0.0 to +0.6 dBTP), mp3 at 192 kbit/s
+(`MP3_BITRATE=192k engine/audio/publish_audio.sh`). Master WAV numbers from `engine/genre/score.py`; decoded mp3 numbers from
+`ffmpeg -af ebur128=peak=true` (its LRA algorithm differs from score.py's).
+
+| program | length | master WAV: LUFS / dBTP / crest / LRA | centroid | low end < 150 Hz | onsets / bar | section span | genre score | decoded mp3: LUFS / dBTP / LRA |
+|---|---|---|---|---|---|---|---|---|
+| DnB tutorial (`--preset dnb`, docs/genres/dnb.json) | 176.6 s | -8.4 / -2.02 / 7.6 dB / 1.7 LU (miss, min 3) | 2287 Hz | 0.54 | 6.4 | 2.8 dB (miss, min 3) | 7 / 9 | -8.7 / -1.80 / 1.6 |
+| electro (`--preset electro`) | 75.0 s | -9.9 / -2.01 / 8.9 / 1.4 (miss, min 2) | 3232 | 0.69 (miss, max 0.65) | 12.0 | 2.4 | 7 / 9 | -10.1 / -1.49 / 1.4 |
+| house / techno / trance (`--preset house`) | 105.0 s | -9.5 / -2.01 / 8.3 / 1.9 (miss, min 2) | 3465 (miss, max 3200) | 0.68 | 12.1 | 4.9 | 7 / 9 | -9.8 / -1.59 / 1.9 |
+
 Tempo 174 / 128 / 128 bpm passed with `--bpm`. Standalone and pack versions give identical `strudel events` (6087 / 2531 / 3445 events, same hash).
-The LRA misses come from the master limiter (the DnB mix measures 6.9 LU before it); targets marked (G) in the genre files are guesses. mp3s:
+The LRA and DnB section-span misses come from the master limiter (the DnB mix measures 6.9 LU before it, and the -2.0 ceiling limits harder); targets marked (G) in the genre files are guesses. mp3s:
 suno-track-lab `audio/dnb-electro-tutorial/` (dnb_tutorial_master, electro_master, house_master).
+
+Centroid measures (they differ by design, so compare like with like): the genre score (`engine/genre/score.py`, the table above) is librosa's
+spectral centroid, magnitude-weighted per 2048-point frame and averaged over frames; the catalog `centroid_hz` (tools/concepts/build.mjs) is
+magnitude-weighted over 4096-point blocks; the rack audit (`tools/racks/audit.mjs`) and the neuroBass numbers in #122 are power-weighted over the
+long-term spectrum. Power weighting leans to the loudest partials, so it reads lower on bass (neuro-bass: about 700 Hz power-weighted, 1118 Hz in the catalog).
 
 ```
 docs/tracks/dnb-electro-tutorial/render.sh /tmp/dnb track standalone     # chunked CLI render, master --preset dnb, genre score vs docs/genres/dnb.json

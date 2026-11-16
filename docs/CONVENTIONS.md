@@ -94,7 +94,8 @@ A feel template fills named slots. Template v1 (data: `tools/concepts/families/f
 | groove | - | `groove` (hook: the feel's preset for any extra voice, `.hook(atoms.feel.groove)`) |
 
 Feels shipped: `feel-boombap` (pocket), `feel-lazy` (lazy drag), `feel-trap` (rolling trap), `feel-hyphy` (bouncy hyphy), `feel-cloud`
-(cloud / wave). Every feel ingredient has the same 25 atom names, so:
+(cloud / wave). Pack glyphcore/dnb-electro adds `feel-liquid`, `feel-neuro`, `feel-jumpup`, `feel-electrohouse`, `feel-techno`, `feel-trance`,
+`feel-bigroom` (section 11); the tag group **feel** (pack taxonomy) lists all of them. Every feel ingredient has the same 25 atom names, so:
 - **Pick a feel** = one line, `atoms.import("pack:glyphcore/phonk:feel-trap", { as: "feel" })`; the rest of the program (binds
   `hooks.bind("kick", atoms.feel.kickRack)`, lanes `kick: s(atoms.feel.kick).velocity(atoms.feel.kickVel).use("kick", { mode: "swap" })`)
   is the same for every feel (Syntax view, "Pick a feel").

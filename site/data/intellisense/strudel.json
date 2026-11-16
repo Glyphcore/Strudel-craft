@@ -616,6 +616,34 @@
    "category": "site api"
   },
   {
+   "label": "strudelCraft.perform.presets.apply",
+   "method": false,
+   "detail": "apply(id | preset)",
+   "info": "Apply a Perform preset (built-in or yours) by id, or a preset object: sets the pad bank, control board, keyboard map and takeover in one go. Built-in ids: beatpad-4x4, mixer-lanes, macro-knobs, minimal. Your own tabs stay.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.perform.presets.list",
+   "method": false,
+   "detail": "list() -> [{id, title, about, builtin}]",
+   "info": "The Perform presets: built-ins from data/perform/presets.json plus the ones saved in this browser (sc.perform.presets).",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.perform.presets.save",
+   "method": false,
+   "detail": "save(title) -> preset",
+   "info": "Save the current Perform configuration (bank, board, keys, takeover) as a named user preset.",
+   "category": "site api"
+  },
+  {
+   "label": "strudelCraft.perform.presets.exportJSON",
+   "method": false,
+   "detail": "exportJSON() -> string",
+   "info": "All user presets as one perform-presets@1 JSON document; importJSON(text) takes it (or one preset, or a list) back, renaming clashing ids.",
+   "category": "site api"
+  },
+  {
    "label": "strudelCraft.lanesUI.toggleTag",
    "method": false,
    "detail": "toggleTag(tag, 'mute' | 'solo') -> boolean",

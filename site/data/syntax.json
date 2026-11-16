@@ -67,9 +67,11 @@
     },
     {
       "id": "pads", "title": "Pads and the control board", "needs": "perform",
-      "explain": "Perform (key 5) holds pad banks and control boards as tabs. In Perform mode a pad press is quantised (bar by default) and journaled; Edit mode opens the pad sheet to set its target, mode, quantise and choke, and lays the board out (sizes, move, place, remove). Boards show every control with its mapping; tap Map... to remap, or Learn and move a control to write one hooks.map(...) line into the playing editor (Unlearn removes it). \"Rec lane\" records the next control you move for 1/2/4 bars as an automation lane; the looper strip records, overdubs and replays pad takes; \"Tabs ...\" adds, renames and reorders tabs and switches scenes (rows/columns); \"Save to library\" stores a bank, board, take or lane as a component.",
+      "explain": "Perform (key 5) holds pad banks and control boards as tabs. In Perform mode a pad press is quantised (bar by default) and journaled; Edit mode opens the pad sheet to set its target, mode, quantise and choke, and lays the board out (sizes, move, place, remove). Boards show every control with its mapping; tap Map... to remap, or Learn and move a control to write one hooks.map(...) line into the playing editor (Unlearn removes it). \"Rec lane\" records the next control you move for 1/2/4 bars as an automation lane; the looper strip records, overdubs and replays pad takes; \"Tabs ...\" adds, renames and reorders tabs and switches scenes (rows/columns); \"Save to library\" stores a bank, board, take or lane as a component. \"Presets\" applies a whole configuration in one tap (Beatpad 4x4, Mixer faders per lane, Macro knobs for the hooks, Minimal): pad bank, board, keyboard map and takeover; \"Save current as preset\" keeps yours in this browser, Export / Import move them as JSON (perform-presets@1). \"Outputs and sources\" under every tab lists each pad and control; tap one to see the code line it reads or writes and a one-line explanation (a tap pad makes 2 journal entries per hit, on and off, and says so when no code reads it), then use Go to code or Show in graph. The press never scrolls the editor.",
       "examples": [
-        { "title": "Open Perform", "action": "perform" }
+        { "title": "Open Perform", "action": "perform" },
+        { "title": "Apply a preset from code", "code": "strudelCraft.perform.presets.apply('beatpad-4x4')\n$: s(\"bd*4, hh*8\").bank(\"RolandTR909\")" },
+        { "title": "Save and export your presets", "code": "strudelCraft.perform.presets.save('My pads')\nconsole.log(strudelCraft.perform.presets.exportJSON())\n$: s(\"bd ~ sd ~\")" }
       ]
     },
     {

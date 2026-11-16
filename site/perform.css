@@ -108,3 +108,22 @@
 .pc-range-form .scm-acts{grid-column:1/-1}
 .pc-rf{display:flex;flex-direction:column;gap:2px}
 .pc-val{cursor:text}
+/* presets sheet + outputs and sources (docs/PERFORM_PRESETS.md) */
+.pf-presets{min-height:44px;padding:0 14px}
+.pf-pres{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.pf-pre{display:flex;gap:6px;align-items:stretch}.pf-pre[data-on=on] .pf-pre-apply{border-color:var(--sig-2)}
+.pf-pre-apply{flex:1;min-height:44px;text-align:left;display:grid;grid-template-columns:1fr auto;gap:0 8px;padding:6px 12px}
+.pf-pre-sub{font-size:.7rem;color:var(--dim);align-self:center}.pf-pre-about{grid-column:1/-1;font-size:.78rem;color:var(--dim)}
+.pf-pre-x{min-height:44px;min-width:44px}
+.pf-imp{width:100%;font-family:var(--mono);font-size:.78rem}.pf-filebtn{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;cursor:pointer}
+.pp-orph{position:absolute;top:4px;right:6px;font-size:.8rem;color:#fff;font-weight:700}
+.pf-out{margin-top:10px;border:1px solid var(--line-2);border-radius:var(--r2);padding:0 10px}
+.pf-out summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-size:.85rem}
+.pf-outs{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:4px}
+.pf-o[data-orphan=on] .pf-o-name{border-color:var(--warn)}
+.pf-o-name{width:100%;min-height:44px;display:flex;gap:8px;align-items:center;text-align:left;padding:0 10px}
+.pf-o-tag{font-family:var(--mono);font-size:.72rem;color:var(--dim);margin-left:auto}.pf-o-warn{font-size:.7rem;color:var(--warn);border:1px solid var(--warn);border-radius:99px;padding:0 6px}
+.pf-o-src{padding:6px 10px 10px}.pf-o-note{margin:0 0 6px;font-size:.8rem;color:var(--dim)}
+.pf-o-line{display:block;font-family:var(--mono);font-size:.74rem;overflow-wrap:anywhere;margin-bottom:6px}.pf-o-line.none{color:var(--warn)}
+.pf-graph-glow{outline:2px solid var(--sig-2);outline-offset:2px}
+@media (prefers-reduced-motion:no-preference){.pf-graph-glow{transition:outline-color .2s}}

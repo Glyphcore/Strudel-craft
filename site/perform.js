@@ -5,6 +5,8 @@
    persisted model (localStorage "sc.perform"); the views re-render from it. Loaded on first open of Perform or on first Play;
    its stylesheet (perform.css) loads with it, never with the shell. */
 import * as N from './numfmt.js';
+import * as PP from './perform-presets.js';
+import * as PO from './perform-outputs.js';
 const sc = window.strudelCraft;
 const $ = (s, r = document) => r.querySelector(s);
 const h = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (v == null || v === false) continue; if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? '' : v); } e.append(...kids.flat().filter((x) => x != null)); return e; };
@@ -24,7 +26,8 @@ M.automation ||= {}; for (const b of Object.values(M.boards)) b.size ||= {};
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(M)); } catch (e) { /* full */ } };
 
 /* ---------------- engines ---------------- */
-const controls = sc.controls.create({ strict: false });
+const CM = { pads: { settings: { takeover: M.takeover || 'pickup' } } }; // takeover for hardware / input events (a preset sets it)
+const controls = sc.controls.create({ strict: false, model: CM });
 for (const [n, s] of Object.entries(M.controls)) { try { controls.declare(n, s); if (s.value !== undefined) controls.set(n, s.value); } catch (e) { /* skip */ } }
 (M.maps || []).forEach((m) => { try { controls.map(m.control, m.dest, m); } catch (e) { /* skip */ } });
 for (const [id, l] of Object.entries(M.automation)) controls.addLane(id, l);
@@ -306,6 +309,9 @@ function padState(bank, pos) {
   if (Tk.rec && c >= Tk.rec.from && on) return { state: 'recording', pad };
   return { state: on ? 'on' : 'loaded', pad };
 }
+const orphanPad = (pad) => PO.isOrphan(pad, PO.findSource(pad.target, codeTexts()));
+const warned = new Set(); // one toast per orphan pad per session, never while the pad is held
+function warnOrphan(bank, pos) { const pad = bank.pads.find((p) => p.pos === pos); const k = bank.id + '/' + pos; if (!pad || warned.has(k) || !orphanPad(pad)) return; warned.add(k); ui().toast(`${pad.label || pad.target.ref}: ${pad.target.kind === 'tap' ? '2 hits per press (on, off)' : 'press recorded'}, no code reads it (see Outputs)`, { kind: 'info', ms: 3500 }); }
 function renderBank(host, bank) {
   const scenes = bank.scenes === 'row' || bank.scenes === 'col' ? bank.scenes : null;
   const grid = h('div', { class: 'pp-grid', style: `--cols:${bank.cols + (scenes === 'row' ? 1 : 0)}`, role: 'grid', 'aria-label': 'Pads ' + bank.id });
@@ -318,7 +324,7 @@ function renderBank(host, bank) {
         'aria-label': `Pad ${pos} ${pad ? (pad.label || pad.target.ref) : 'empty'}, ${st.state}${st.beats ? ', ' + st.beats + ' beats' : ''}` },
         h('span', { class: 'pp-mark', 'aria-hidden': 'true' }, STATE_MARK[st.state]),
         h('span', { class: 'pp-label' }, pad ? (pad.label || pad.target.ref) : ''),
-        h('span', { class: 'pp-ref' }, pad ? `${pad.target.kind}:${pad.target.ref}` : '+'),
+        h('span', { class: 'pp-ref' }, pad ? `${pad.target.kind}:${pad.target.ref}` : '+'), pad && orphanPad(pad) ? h('span', { class: 'pp-orph', title: 'No code reads this pad: see Outputs below', 'aria-hidden': 'true' }, '∅') : null,
         st.state === 'queued' ? h('span', { class: 'pp-beats' }, st.beats + ' beats') : null);
       row.append(b);
     }
@@ -334,7 +340,7 @@ function renderBank(host, bank) {
   host.append(grid);
 }
 const lat = [], work = []; // ms: pointerdown event time -> journal entry written; pointerdown handler start -> journal entry written (main-thread work)
-function press(bank, pos, vel, t0) { const w0 = performance.now(); if (!bank.pads.find((p) => p.pos === pos)) return; pads.press(`${bank.id}/${pos}`, nowCycle(), vel); journalChanged(); if (t0 != null) { const t1 = performance.now(); lat.push(t1 - t0); work.push(t1 - w0); if (lat.length > 500) { lat.shift(); work.shift(); } } }
+function press(bank, pos, vel, t0) { const w0 = performance.now(); if (!bank.pads.find((p) => p.pos === pos)) return; warnOrphan(bank, pos); pads.press(`${bank.id}/${pos}`, nowCycle(), vel); journalChanged(); if (t0 != null) { const t1 = performance.now(); lat.push(t1 - t0); work.push(t1 - w0); if (lat.length > 500) { lat.shift(); work.shift(); } } }
 function release(bank, pos) { if (!bank.pads.find((p) => p.pos === pos)) return; pads.release(`${bank.id}/${pos}`, nowCycle()); journalChanged(); }
 let jT = 0; function journalChanged() { const j = pads.resolve(); sc.perform.journal = j; bridge(j); window.dispatchEvent(new CustomEvent('pads:journal', { detail: j })); cancelAnimationFrame(jT); jT = requestAnimationFrame(renderPadsOnly); }
 function renderPadsOnly() { const t = curTab(); if (t.kind !== 'bank') return; const host = $('#pfBody'); if (!host) return; host.querySelectorAll('.pp-pad').forEach((b) => { const st = padState(M.banks[t.id], b.dataset.pos); if (b.dataset.state === st.state && st.state !== 'queued') return; b.dataset.state = st.state; b.querySelector('.pp-mark').textContent = STATE_MARK[st.state]; let bt = b.querySelector('.pp-beats'); if (st.state === 'queued') { if (!bt) { bt = h('span', { class: 'pp-beats' }); b.append(bt); } bt.textContent = st.beats + ' beats'; } else if (bt) bt.remove(); const pad = st.pad; b.setAttribute('aria-label', `Pad ${b.dataset.pos} ${pad ? (pad.label || pad.target.ref) : 'empty'}, ${st.state}${st.beats ? ', ' + st.beats + ' beats' : ''}`); }); }
@@ -542,6 +548,117 @@ function renderInline() {
     for (const [k, c] of have) if (!keep.has(k)) c.remove();
   }
 }
+/* ---------------- presets (docs/PERFORM_PRESETS.md): one tap configures bank, board, keys and takeover ---------------- */
+let BUILTIN = []; PP.loadBuiltins().then((l) => { BUILTIN = l; if (presetDlg) openPresets(true); });
+const allPresets = () => [...BUILTIN, ...PP.store.list()];
+const clone = (x) => JSON.parse(JSON.stringify(x));
+const codeTexts = () => [['rack', 'code'], ['stack', 'stackCode']].map(([view, id]) => ({ view, id, text: (document.getElementById(id) || {}).value || '' }));
+function upsertTab(kind, id, name) { const i = M.tabs.findIndex((t) => t.kind === kind && t.id === id); if (i >= 0) { M.tabs[i].name = name; return i; } M.tabs.push({ kind, id, name }); return M.tabs.length - 1; }
+function applyPreset(p) {
+  const bad = PP.validate(p); if (bad) { ui().toast('Preset: ' + bad, { kind: 'error' }); return false; }
+  let first = null;
+  if (p.board) {
+    const ctl = controls.list(); const ctx = { lanes: PP.laneNames(codeTexts().map((t) => t.text).join('\n')), all: ctl.map((c) => c.name), mapped: ctl.filter((c) => c.maps.length).map((c) => c.name), knobs: ctl.filter((c) => /knob|encoder/.test(c.type)).map((c) => c.name) };
+    const r = PP.resolveCells(p.board.cells, ctx); const lines = [];
+    for (const d of r.declare) { try { if (!controls.has(d.name)) controls.declare(d.name, d.spec); labels.set(d.name, d.label); if (d.dest && !controls.maps().some((m) => m.control === d.name && m.dest === d.dest)) { controls.map(d.name, d.dest); lines.push(mapLine(d.name, d.dest)); } } catch (e) { /* keep going */ } }
+    if (lines.length) codeEdit((t) => lines.filter((l) => !t.includes(l)).join('\n') + '\n' + t);
+    const size = {}; const sz = (p.board.size || {}); for (const n of r.names) if (sz[n] || sz['*']) size[n] = sz[n] || sz['*'];
+    const id = 'pn-' + p.id; M.boards[id] = { id, cells: r.names, size }; first = upsertTab('board', id, p.title + (p.bank ? ' board' : ''));
+    persistControls();
+  }
+  if (p.bank) { const id = 'pb-' + p.id; M.banks[id] = { id, rows: p.bank.rows, cols: p.bank.cols, ...(p.bank.scenes ? { scenes: p.bank.scenes } : {}), pads: clone(p.bank.pads || []) }; first = upsertTab('bank', id, p.title); }
+  if (p.keys) M.keys = { ...p.keys }; else delete M.keys;
+  M.takeover = p.takeover || 'pickup'; CM.pads.settings.takeover = M.takeover; if (p.perform != null) M.perform = !!p.perform; M.preset = p.id;
+  rebuildPads(); select(first, false); ui().toast(`Preset applied: ${p.title}`, { kind: 'ok' }); return true;
+}
+function snapshot(title) { // the current configuration as a preset (first-class: same shape as the built-ins)
+  const t = curTab(); const bank = t.kind === 'bank' ? M.banks[t.id] : M.banks[(M.tabs.find((x) => x.kind === 'bank') || {}).id];
+  const board = t.kind === 'board' ? M.boards[t.id] : M.boards[(M.tabs.find((x) => x.kind === 'board') || {}).id];
+  const p = { id: PP.slugId(title), title: title.slice(0, 40), about: 'Saved from the Perform view.', perform: !!M.perform, takeover: M.takeover || 'pickup' };
+  if (M.keys) p.keys = { ...M.keys };
+  if (bank) p.bank = { rows: bank.rows, cols: bank.cols, ...(bank.scenes ? { scenes: bank.scenes } : {}), pads: clone(bank.pads) };
+  if (board) p.board = { cells: board.cells.slice(), ...(Object.keys(board.size || {}).length ? { size: { ...board.size } } : {}) };
+  return p;
+}
+let presetDlg = null;
+function download(name, text) { const a = h('a', { href: URL.createObjectURL(new Blob([text], { type: 'application/json' })), download: name }); document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
+async function importDialog() {
+  const ta = h('textarea', { id: 'pfImpText', class: 'scm-input pf-imp', rows: 8, spellcheck: 'false', 'aria-label': 'Preset JSON' });
+  const file = h('input', { type: 'file', accept: 'application/json,.json', class: 'sr', id: 'pfImpFile', 'aria-label': 'Choose a preset file' });
+  file.addEventListener('change', async () => { const f = file.files[0]; if (f) ta.value = await f.text(); });
+  return new Promise((res) => {
+    let d; const done = (v) => { d.close(); d.remove(); res(v); };
+    const f = h('form', { class: 'scm-body', method: 'dialog' }, h('label', { class: 'scm-lab', for: 'pfImpText' }, 'Paste preset JSON (a preset, a list, or an export file)'), ta, h('label', { class: 'ghost pf-filebtn', for: 'pfImpFile' }, 'Choose file…'), file,
+      h('div', { class: 'scm-acts' }, h('button', { type: 'button', class: 'ghost', onclick: () => done(null) }, 'Cancel'), h('button', { type: 'submit', class: 'scm-ok', id: 'pfImpOk' }, 'Import')));
+    f.addEventListener('submit', (e) => { e.preventDefault(); done(ta.value); });
+    d = dlg('Import presets', f); d.addEventListener('cancel', (e) => { e.preventDefault(); done(null); }); ta.focus();
+  });
+}
+async function openPresets(refresh) {
+  if (presetDlg) { presetDlg.close(); presetDlg.remove(); presetDlg = null; if (!refresh) return; }
+  const user = new Set(PP.store.list().map((p) => p.id));
+  const row = (p) => h('li', { class: 'pf-pre', 'data-id': p.id, 'data-on': M.preset === p.id ? 'on' : null },
+    h('button', { type: 'button', class: 'pf-pre-apply', 'data-preset': p.id, onclick: () => { if (applyPreset(p)) close(); } }, h('b', {}, p.title), h('span', { class: 'pf-pre-sub' }, p.builtin ? 'built in' : 'yours'), h('span', { class: 'pf-pre-about' }, p.about || '')),
+    user.has(p.id) ? h('button', { type: 'button', class: 'ghost pf-pre-x', 'aria-label': `Export ${p.title}`, onclick: () => download(`${p.id}.preset.json`, JSON.stringify(PP.exportDoc([p]), null, 1)) }, 'Export') : null,
+    user.has(p.id) ? h('button', { type: 'button', class: 'ghost pf-pre-x', 'aria-label': `Delete ${p.title}`, onclick: async () => { if (await ui().askYesNo({ title: 'Delete preset', message: `Delete "${p.title}"?`, okText: 'Delete', danger: true })) { PP.store.remove(p.id); openPresets(true); } } }, 'Delete') : null);
+  const close = () => { if (presetDlg) { presetDlg.close(); presetDlg.remove(); presetDlg = null; } };
+  const list = allPresets();
+  const body = h('div', { class: 'scm-body' }, h('p', { class: 'scm-msg' }, 'One tap sets the pad bank, control board, keys and takeover. Your own tabs stay.'),
+    h('ul', { class: 'pf-pres', id: 'pfPresets' }, ...list.map(row)),
+    h('div', { class: 'pf-row' },
+      h('button', { type: 'button', class: 'ghost', id: 'pfPreSave', onclick: async () => { const n = await ui().ask({ title: 'Save preset', label: 'Name', value: curTab().name, okText: 'Save' }); if (!n || !n.trim()) return; const p = snapshot(n.trim()); const taken = new Set(allPresets().filter((x) => x.builtin).map((x) => x.id)); if (taken.has(p.id)) p.id += '-mine'; if (!PP.store.put(p)) { ui().toast('Could not save (storage full)', { kind: 'error' }); return; } M.preset = p.id; save(); ui().toast(`Preset saved: ${p.title}`, { kind: 'ok' }); openPresets(true); } }, 'Save current as preset…'),
+      h('button', { type: 'button', class: 'ghost', id: 'pfPreImport', onclick: async () => { const t = await importDialog(); if (t == null) return; const r = PP.parseImport(t, new Set(allPresets().map((x) => x.id))); r.presets.forEach((p) => PP.store.put(p)); ui().toast(r.presets.length ? `Imported ${r.presets.length} preset${r.presets.length > 1 ? 's' : ''}${r.errors.length ? ' (' + r.errors.length + ' skipped)' : ''}` : r.errors[0], { kind: r.presets.length ? 'ok' : 'error' }); openPresets(true); } }, 'Import…'),
+      h('button', { type: 'button', class: 'ghost', id: 'pfPreExport', disabled: !user.size, onclick: () => download('perform-presets.json', JSON.stringify(PP.exportDoc(PP.store.list()), null, 1)) }, 'Export all')),
+    h('div', { class: 'scm-acts' }, h('button', { type: 'button', class: 'ghost', onclick: close }, 'Close')));
+  presetDlg = dlg('Perform presets', body); presetDlg.addEventListener('cancel', (e) => { e.preventDefault(); close(); });
+}
+
+/* ---------------- outputs: every pad and control shows its source (tap to reveal), never scrolls on press ---------------- */
+const REVEAL = new Set(); // output keys whose source is open
+function gotoLine(src) { // the deliberate jump: the target button on a row (a press on the row itself never moves the editor)
+  try { sc.intellisense.refMarks(src.id, { id: 'pf-src', primary: [src.from, src.to], related: [], scroll: true }); ui().toast(`${src.view === 'stack' ? 'Stack' : 'Rack'} line ${src.line}`, { kind: 'info', ms: 1800 }); } catch (e) { ui().toast('Open the editor to see the line', { kind: 'info' }); }
+}
+function graphGlow(label) { // highlight the matching node on the graph (when it is mounted); returns whether one was found
+  document.querySelectorAll('.pf-graph-glow').forEach((x) => x.classList.remove('pf-graph-glow', 'ref-glow'));
+  const heads = [...document.querySelectorAll('.gn-head')].filter((b) => { const n = b.querySelector('b'); return n && n.textContent.trim() === label; });
+  heads.forEach((b) => { const n = b.closest('.gn') || b; n.classList.add('pf-graph-glow', 'ref-glow'); }); return heads.length > 0;
+}
+async function showInGraph(label) {
+  const had = graphGlow(label); if (had) { ui().toast(`Graph node "${label}" is highlighted`, { kind: 'info', ms: 2200 }); return; }
+  if (window.__sc && window.__sc.setView) { window.__sc.setView('graph'); for (let i = 0; i < 20; i++) { await new Promise((r) => setTimeout(r, 150)); if (graphGlow(label)) return; } }
+  ui().toast(`No graph node named "${label}": nothing in the code makes one`, { kind: 'info' });
+}
+function outputsOf(t) {
+  const texts = codeTexts(); const out = [];
+  if (t.kind === 'bank') for (const pad of M.banks[t.id].pads) {
+    const src = PO.findSource(pad.target, texts); const label = pad.label || pad.target.ref;
+    out.push({ key: `${t.id}/${pad.pos}`, name: label, tag: `${pad.pos} · ${pad.target.kind}:${pad.target.ref}`, src, orphan: PO.isOrphan(pad, src), note: PO.explainPad(pad, src), graph: pad.target.ref });
+  }
+  else for (const n of boardNames(M.boards[t.id])) {
+    try { const id = controls.resolve(n); const s = controls.declare(id); const site = [...(SITES.rack || []), ...(SITES.stack || [])].find((x) => x.id === id); const maps = controls.maps().filter((m) => m.control.split(':')[0] === id).map((m) => m.dest);
+      out.push({ key: `${t.id}/${id}`, name: labels.get(id) || controls.labelOf(id) || n, tag: s.type, site, siteId: site ? id : null, src: null, orphan: false, note: site ? `Control at ${site.path || 'the code'}${maps.length ? '; mapped to ' + maps.join(', ') : ''}.` : maps.length ? `Control sent to ${maps.join(', ')} by hooks.map.` : 'Control with no site in the code; map it (Map…) to make it do something.' }); } catch (e) { /* undeclared */ }
+  }
+  return out;
+}
+function renderOutputs(host, t) {
+  const outs = outputsOf(t); const orphans = outs.filter((o) => o.orphan).length;
+  const d = h('details', { class: 'pf-out', id: 'pfOutputs', open: outs.length && (orphans || REVEAL.size) ? true : null }, h('summary', {}, `Outputs and sources (${outs.length}${orphans ? ', ' + orphans + ' not read by the code' : ''})`));
+  const ul = h('ul', { class: 'pf-outs' });
+  for (const o of outs) {
+    const open = REVEAL.has(o.key);
+    const reveal = h('button', { type: 'button', id: 'pfob-' + o.key.replace(/\W/g, '_'), class: 'pf-o-name', 'aria-expanded': String(open), 'aria-controls': 'pfo-' + o.key.replace(/\W/g, '_'), onclick: () => { if (REVEAL.has(o.key)) REVEAL.delete(o.key); else REVEAL.add(o.key); render(); } }, h('b', {}, o.name), h('span', { class: 'pf-o-tag' }, o.tag), o.orphan ? h('span', { class: 'pf-o-warn', title: 'Nothing in the code reads this' }, 'unread') : null);
+    const detail = h('div', { class: 'pf-o-src', id: 'pfo-' + o.key.replace(/\W/g, '_'), hidden: !open },
+      h('p', { class: 'pf-o-note' }, o.note),
+      o.src ? h('code', { class: 'pf-o-line' }, `${o.src.view === 'stack' ? 'Stack' : 'Rack'} L${o.src.line}: ${o.src.text.slice(0, 160)}`) : o.siteId ? null : h('code', { class: 'pf-o-line none' }, 'no source line'),
+      h('div', { class: 'pf-row' },
+        o.src || o.siteId ? h('button', { type: 'button', class: 'ghost pf-o-go', 'aria-label': `Go to code for ${o.name}`, onclick: () => (o.siteId && sc.refs ? sc.refs.gotoCode(o.siteId) : gotoLine(o.src)) }, '⌖ Go to code') : null,
+        o.graph ? h('button', { type: 'button', class: 'ghost pf-o-graph', onclick: () => showInGraph(o.graph) }, 'Show in graph') : null));
+    ul.append(h('li', { class: 'pf-o', 'data-key': o.key, 'data-orphan': o.orphan ? 'on' : null }, reveal, detail));
+  }
+  if (!outs.length) ul.append(h('li', { class: 'pc-empty' }, 'No outputs on this tab yet.'));
+  d.append(ul); host.append(d);
+}
+
 /* ---------------- tabs + view ---------------- */
 function render() {
   const root = $('#perform'); if (!root) return; const t = curTab();
@@ -551,7 +668,7 @@ function render() {
   strip.addEventListener('click', (e) => { const b = e.target.closest('[role=tab]'); if (b) select(+b.dataset.i); });
   strip.addEventListener('keydown', (e) => { const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key]; if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); select(e.key === 'Home' ? 0 : M.tabs.length - 1, true); return; } if (!d) return; e.preventDefault(); e.stopPropagation(); if (e.altKey) move(d); else { const i0 = +(e.target.closest('[role=tab]')?.dataset.i ?? M.active); select((i0 + d + M.tabs.length) % M.tabs.length, true); } });
   const bank = t.kind === 'bank' ? M.banks[t.id] : null;
-  const tools = h('div', { class: 'pf-tools' }, h('details', { class: 'pf-more' }, h('summary', {}, 'Tabs ⋯'), h('div', { class: 'pf-menu' },
+  const tools = h('div', { class: 'pf-tools' }, h('button', { type: 'button', class: 'pf-presets', id: 'pfPresetBtn', 'aria-haspopup': 'dialog', onclick: () => openPresets() }, 'Presets'), h('details', { class: 'pf-more' }, h('summary', {}, 'Tabs ⋯'), h('div', { class: 'pf-menu' },
     h('button', { type: 'button', class: 'ghost', onclick: () => addTab('bank') }, '+ Bank'), h('button', { type: 'button', class: 'ghost', onclick: () => addTab('board') }, '+ Board'),
     h('button', { type: 'button', class: 'ghost', onclick: renameTab }, 'Rename'), h('button', { type: 'button', class: 'ghost', onclick: dupTab }, 'Duplicate'),
     h('button', { type: 'button', class: 'ghost', 'aria-label': 'Move tab left', onclick: () => move(-1) }, '◀'), h('button', { type: 'button', class: 'ghost', 'aria-label': 'Move tab right', onclick: () => move(1) }, '▶'),
@@ -562,6 +679,7 @@ function render() {
   const body = h('div', { id: 'pfBody', class: 'pf-body', role: 'tabpanel', 'aria-labelledby': 'pft' + M.active, tabindex: 0 });
   if (bank) { renderBank(body, bank); renderLooper(body); body.append(h('p', { class: 'pf-hint' }, M.perform ? 'Perform: tap or hold pads (keys 1-4, Q-R, A-F, Z-V). Empty pads open the pad sheet.' : 'Edit: tap a pad to set its target, mode, quantise, choke, colour and label.')); }
   else renderBoard(body, M.boards[t.id]);
+  renderOutputs(body, t);
   const a = document.activeElement && root.contains(document.activeElement) ? document.activeElement : null; const keep = a && (a.id ? '#' + CSS.escape(a.id) : a.dataset.ctl ? `[data-ctl="${CSS.escape(a.dataset.ctl)}"]` : null);
   root.replaceChildren(strip, tools, body); const back = keep && root.querySelector(keep); if (back) back.focus({ preventScroll: true });
 }
@@ -576,11 +694,12 @@ async function delTab() { if (M.tabs.length < 2) { ui().toast('Keep at least one
 /* ---------------- keyboard via the input registry ---------------- */
 const isPerformView = () => document.getElementById('main')?.dataset.view === 'perform' && curTab().kind === 'bank' && M.perform;
 let routerOff = null;
+const keyMap = () => { const m = { ...sc.pads.defaultKeyboardMap }; if (M.keys) { for (const k of Object.keys(m)) if (/^kbd:(Digit|Key)/.test(k) && !k.startsWith('kbd:Bracket')) delete m[k]; for (const [c, v] of Object.entries(M.keys)) m['kbd:' + c] = v; } return m; }; // a preset's keys replace the letter/digit map
 function wireInput() {
   if (routerOff) return; const input = sc.input;
   input.register(sc.pads.keyboardProvider({ target: document, perform: isPerformView }));
   routerOff = input.subscribe((ev) => {
-    if (ev.provider !== 'keyboard') return; const t = sc.pads.defaultKeyboardMap[ev.control]; if (!t || !isPerformView()) return;
+    if (ev.provider !== 'keyboard') return; const t = keyMap()[ev.control]; if (!t || !isPerformView()) return;
     const bank = M.banks[curTab().id]; if (t.startsWith('action:')) { if (ev.type === 'on') select((M.active + (t.endsWith('next') ? 1 : -1) + M.tabs.length) % M.tabs.length); return; }
     (ev.type === 'on' ? press : release)(bank, t, ev.velocity);
     const b = document.querySelector(`.pp-pad[data-pos="${t}"]`); if (b) b.classList.toggle('pp-hit', ev.type === 'on');
@@ -604,7 +723,10 @@ setInterval(() => {
 /* ---------------- boot ---------------- */
 rebuildPads();
 sc.perform = { model: () => M, render, renderInline, controls, sites: (v) => SITES[v] || [], pads: () => pads, journal: [], latency: lat, work, glue: bindStrudel, looper: () => Tk.looper, take: Tk, lanes: A, applyLane, applyTake,
-  capturing: (e) => isPerformView() && !e.ctrlKey && !e.metaKey && !e.altKey && /^(Digit[1-4]|Key[QWERASDFZXCV]|Bracket(Left|Right))$/.test(e.code) && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) && !e.target.isContentEditable };
+  capturing: (e) => isPerformView() && !e.ctrlKey && !e.metaKey && !e.altKey && ('kbd:' + e.code) in keyMap() && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) && !e.target.isContentEditable };
+sc.perform.presets = { list: () => allPresets().map(({ id, title, about, builtin }) => ({ id, title, about, builtin: !!builtin })), apply: (p) => applyPreset(typeof p === 'string' ? allPresets().find((x) => x.id === p) || { id: p } : p),
+  save: (title) => { const p = snapshot(String(title)); PP.store.put(p); M.preset = p.id; save(); return p; }, exportJSON: () => JSON.stringify(PP.exportDoc(PP.store.list()), null, 1),
+  importJSON: (text) => { const r = PP.parseImport(text, new Set(allPresets().map((x) => x.id))); r.presets.forEach((p) => PP.store.put(p)); return r; }, open: openPresets };
 bindStrudel(); window.addEventListener('strudel:ready', bindStrudel); wireInput();
 if (sc.binder) { for (const v of ['rack', 'stack']) { SITES[v] = sc.binder.sites(v); SITES[v].forEach(ensureSite); } }
 render(); renderInline();

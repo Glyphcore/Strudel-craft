@@ -176,6 +176,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/site/graph.mjs          # Graph view (#52); tests/site/graph_zoom.mjs, graph_scroll.mjs for the gestures
     node tests/site/graph_soak.mjs     # Graph view open/close soak: no growth after GC across 50 rounds (#52 stability)
     node tests/site/perform.mjs        # Perform view, learn/map, lanes, looper (#55)
+    node tests/site/perform_presets.mjs # Perform presets + outputs/sources, the 2-hit tap pad
     node tests/site/word_intellisense.mjs  # word() completions from data/intellisense/words.json (#44)
     node tests/site/vox.mjs            # vocal banks and voxBank()
     node tests/site/voxbrowser.mjs     # Banks browser and bank-aware word() completions at 360px (#85)
@@ -551,6 +552,13 @@ Alt+arrows reorder) of pad banks and control boards; "Tabs ⋯" adds, renames, d
   continuous `signal`; controls found in the playing program appear in a strip under that editor in source order, same components.
 - Model persisted in `localStorage` `sc.perform` (so it is in history). Not built: "Send to pad" (a control is not a pad target kind).
 - Test: `node tests/site/perform.mjs` (also part of `tests/site/smoke.mjs`); metrics under `perform` in `docs/screens/metrics.json`.
+
+**Presets and outputs** (`perform-presets.js`, `perform-outputs.js`, `data/perform/presets.json`; docs/PERFORM_PRESETS.md). The `Presets` button opens a sheet: one tap applies a built-in
+(Beatpad 4x4, Mixer faders per lane, Macro knobs for the hooks, Minimal) or one of yours, setting pad bank, control board, keyboard map (`M.keys`, replaces the letter/digit keys) and takeover (`jump`
+or `pickup` for hardware/input events); it adds or replaces its own tabs (`pb-<id>`, `pn-<id>`) and keeps yours. Save current as preset, Export / Import (`perform-presets@1` JSON, clashing ids get `-2`)
+and Delete; user presets persist in `localStorage sc.perform.presets`. Code API: `strudelCraft.perform.presets.{list,apply,save,exportJSON,importJSON,open}`. Under every tab,
+`Outputs and sources` lists each pad and control; tapping a row reveals the code line it reads (`Rack L3: ...`), a one-line explanation and two buttons, `Go to code` (the only jump; a press never scrolls the editor) and
+`Show in graph` (highlights the node with that label, switching to Graph if needed). A tap pad is 2 journal entries per hit (`pad:tap`, `pad:tap-end`); one no code reads is marked `∅` / `unread` and toasts once.
 ## Shared model (`model.js`, `data/schema/model.v1.json`)
 Standalone ES module: `parse(text)`, `generate(model)`, `applyOp(model, op)`, `graph(model)`, `layout(model)`, `canonical`, `hash`, `serialize`, `load`, `fromConfig`.
 - Parser: acorn 8.19.0 (MIT, (c) Marijn Haverbeke and others), loaded unmodified as its own file `vendor/acorn-8.19.0.mjs` (licence: `vendor/acorn-LICENSE.txt`), only when `model.js` is imported. No Strudel transpiler code is copied.

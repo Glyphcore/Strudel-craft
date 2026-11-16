@@ -29,3 +29,8 @@ Measure and score a render (no CLI needed, plain Node): `node tools/racks/measur
 add `--score docs/genres/dubstep.json [--strict]` for pass or miss per criterion (exit 1 on a miss; `convention` misses only with `--strict`).
 Duck depth (`--kick` and `--bass` stems): kick onsets from the kick stem; bass envelope = analytic-signal (Hilbert) magnitude smoothed 5 ms; per kick interval the minimum from 10 ms before the onset to 150 ms after against the 90th percentile of the whole interval; median in dB over kicks (`duck_kicks_used`); null with `duck_unavailable` under 4 usable intervals. Held ducks read within 0.3 dB; an exponential release (tau 40 ms) starting at full depth reads 1 to 2 dB shallow (2.5 / 4.8 / 6.8 for true 3 / 6 / 9 dB), so `--score` prints duck as "unreliable, not scored". Same text as RACK_STANDARD.md section 8.
 Test: `node tests/racks/measure.mjs` (synthetic conformance signals, genre files against `docs/genres/genre.schema.json`).
+
+## Sample kit and browser checks (#106)
+- `samples/kit/` is a pinned, synthesized CC0 drum kit (`samples/make_samples.py`, `samples/LICENSE.md`); the audit passes it as `--samples-dir`, so the catalog recipes that need a drum bank (`bd`, `hh`, `sd`, `.bank("RolandTR909")`) render offline instead of being skipped. `--samples-dir DIR` swaps it.
+- Syntax examples that only the browser can evaluate (`strudelCraft.*`, `_pianoroll`, `_punchcard`, `lib:` refs) carry `skip: "noaudio: ..."` in `targets.json` with the reason.
+- `PLAYWRIGHT_DIR=... node tools/racks/alias_chromium.mjs [--json OUT]` measures the aliasing of sine, triangle, sawtooth, square (raw oscillators) and supersaw (site render host) at C7 in headless Chromium with the audit's estimator; numbers in docs/RACK_STANDARD.md section 5.

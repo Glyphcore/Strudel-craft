@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Rack quality audit (docs/RACK_STANDARD.md): renders a standard test phrase per instrument class through every rack with the headless
 // strudel CLI, measures the spectrum and levels, and reports pass or fail against tools/racks/standard.json.
-//   node tools/racks/audit.mjs [--only racks,catalog,syntax] [--item NAME] [--out DIR] [--baseline REPORT.json] [--no-structure]
+//   node tools/racks/audit.mjs [--only racks,catalog,syntax] [--item NAME] [--out DIR] [--baseline REPORT.json] [--no-structure] [--samples-dir KIT]
 //                              [--hooks FILE]... [--catalog FILE] [--syntax FILE] [--jobs N] [--keep] [--quiet]
 // Writes OUT/report.json and OUT/report.md (default OUT = tools/racks/out, gitignored). Exit 0 = no failure, 1 = failures, 2 = usage / CLI missing.
 // Sources audited: hook defs of the given hooks files (default: site/data/racks/hygiene.json, site/data/phonk/racks*.json, racks*.json of every other pack in site/data),
@@ -14,6 +14,7 @@ const optAll = (n) => argv.flatMap((a, i) => (a === n ? [argv[i + 1]] : []));
 const STD = JSON.parse(fs.readFileSync(path.join(HERE, 'standard.json'), 'utf8')); const TGT = JSON.parse(fs.readFileSync(path.join(HERE, 'targets.json'), 'utf8'));
 const OUT = path.resolve(opt('--out', path.join(HERE, 'out'))); const only = (opt('--only', 'racks,catalog,syntax')).split(','); const one = opt('--item', null);
 const jobs = +opt('--jobs', Math.max(1, Math.min(4, os.cpus().length))); const structure = !flag('--no-structure'); const quiet = flag('--quiet');
+const KIT = path.resolve(opt('--samples-dir', path.join(HERE, 'samples', 'kit'))); // pinned synthesized drum kit (samples/LICENSE.md, CC0): sample-bank recipes render offline
 const SR = STD.test.sr, N = STD.test.fft, BIN = SR / N;
 if (!fs.existsSync(path.join(CLI, 'strudel'))) { console.error(`strudel CLI not found at ${CLI} (set STRUDEL_CLI)`); process.exit(2); }
 
@@ -100,7 +101,7 @@ if (only.includes('racks')) for (const [name, def] of Object.entries(merged.defs
     head: structure && TGT.hygiene && t.class !== 'move' && !/^hygiene-/.test(name) ? { found: head, want: 'hygiene-' + t.class } : null });
 }
 if (only.includes('catalog')) for (const r of JSON.parse(fs.readFileSync(opt('--catalog', path.join(ROOT, 'site/data/catalog.json')), 'utf8')).recipes) {
-  const t = TGT.catalog[r.id] || {}; items.push({ kind: 'catalog', id: r.id, cls: t.class || 'demo', code: r.lowered || r.code, bars: t.bars || 2, skip: r.needs_samples ? 'needs a sample bank (not rendered offline)' : t.skip });
+  const t = TGT.catalog[r.id] || {}; items.push({ kind: 'catalog', id: r.id, cls: t.class || 'demo', code: r.lowered || r.code, bars: t.bars || 2, skip: r.needs_samples && !fs.existsSync(KIT) ? 'needs a sample bank (no --samples-dir kit)' : t.skip });
 }
 if (only.includes('syntax')) for (const sec of JSON.parse(fs.readFileSync(opt('--syntax', path.join(ROOT, 'site/data/syntax.json')), 'utf8')).sections) for (const ex of sec.examples || []) {
   const id = `${sec.id}/${ex.title}`; const t = TGT.syntax[id] || {}; items.push({ kind: 'syntax', id, cls: t.class || 'demo', code: ex.code, bars: t.bars || 2, skip: typeof ex.code !== 'string' ? 'no code (UI walkthrough)' : t.skip, site: true });
@@ -113,7 +114,7 @@ const TRACK = path.join(ROOT, 'docs/tracks/night-phonk-demo');
 function render(code, bars, dir, site) {
   return new Promise((res) => {
     fs.mkdirSync(dir, { recursive: true }); const f = path.join(dir, 'in.strudel.js'); fs.writeFileSync(f, code);
-    const args = ['render', f, dir, '--bars', String(bars), '--hooks', hooksPath]; if (site) args.push('--packs', path.join(ROOT, 'site/packs.lock.json'), '--prelude', path.join(TRACK, 'cli-site-base.js'), '--prelude', path.join(ROOT, 'site/prelude/word.js'));
+    const args = ['render', f, dir, '--bars', String(bars), '--hooks', hooksPath]; if (fs.existsSync(KIT)) args.push('--samples-dir', KIT); if (site) args.push('--packs', path.join(ROOT, 'site/packs.lock.json'), '--prelude', path.join(TRACK, 'cli-site-base.js'), '--prelude', path.join(ROOT, 'site/prelude/word.js'));
     const p = spawn(path.join(CLI, 'strudel'), args, { env: { ...process.env, STRUDEL_CRAFT: ROOT } }); let err = ''; p.stdout.on('data', (d) => { err += d; }); p.stderr.on('data', (d) => { err += d; });
     const timer = setTimeout(() => p.kill('SIGKILL'), 900000);
     p.on('close', (rc) => { clearTimeout(timer); const w = path.join(dir, 'mix.wav'); res(rc === 0 && fs.existsSync(w) ? { wav: w } : { error: `exit ${rc}: ` + (err.trim().split('\n').filter((l) => /error|Error|not found|E_[A-Z]/.test(l)).pop() || err.trim().split('\n').pop() || '').slice(0, 200) }); });

@@ -104,12 +104,12 @@ high note, power away from the harmonics (outside 2 % of each, at least 6 bins) 
 | bell | 300-9000 | -30 | -24 | -40 | -45 | -6 | -30 | c7 -40 | `note("g5 ~ bb5 g5 ~ d5 f5 ~")` |
 | pluck | 120-9000 | -30 | -30 | -40 | -45 | -6 | -30 | c7 -40 | `note("c4 eb4 g4 bb4 c5 bb4 g4 eb4")` |
 | stab | 100-10000 | -30 | -30 | -40 | -45 | -6 | -30 | c7 -40 | `note("[c4,eb4,g4] ~ [bb3,d4,f4] ~")` |
-| pad | 100-8000 | -30 | -30 | -40 | -45 | -6 | -24 | c6 -34 | `note("<[c3,eb3,g3,bb3] [bb2,d3,f3,a3]>")` |
+| pad | 100-8000 | -30 | -30 | -40 | -45 | -6 | -24 | c6 -40 | `note("<[c3,eb3,g3,bb3] [bb2,d3,f3,a3]>")` |
 | lead | 150-10000 | -30 | -30 | -40 | -45 | -6 | -30 | c7 -40 | `note("g4 bb4 d5 a4 g4 f4 g4 bb4")` |
 | screech | 250-12000 | -30 | -20 | -40 | -35 | -6 | -30 | - | `note("c5 ~ eb5 g5 ~ bb4 c5 ~")` |
 | keys | 80-8000 | -30 | -30 | -40 | -45 | -6 | -30 | c7 -40 | `note("[c3,g3,eb4] [f3,c4,ab4] [g3,d4,bb4] [c3,g3,eb4]")` |
 | arp | 150-10000 | -30 | -30 | -40 | -45 | -6 | -30 | c7 -40 | `note("[c4 eb4 g4 c5 g4 eb4]*2")` |
-| supersaw | 100-12000 | -30 | -30 | -40 | -45 | -6 | -24 | c6 -34 | `note("<[c3,g3,c4,eb4] [ab2,eb3,ab3,c4]>")` |
+| supersaw | 100-12000 | -30 | -30 | -40 | -45 | -6 | -24 | c6 -40 | `note("<[c3,g3,c4,eb4] [ab2,eb3,ab3,c4]>")` |
 | riser | 150-14000 | -30 | -20 | -40 | -30 | -6 | -30 | - | `s("x/4")` |
 | sweep | 150-14000 | -30 | -20 | -40 | -30 | -6 | -30 | - | `s("x/4")` |
 | reverse | 200-14000 | -30 | -20 | -40 | -30 | -6 | -30 | - | `s("x")` |
@@ -137,7 +137,8 @@ there by physics; the 25 Hz high-pass is for the DC step, not for those.
 | white noise through `hpf(7000)` only | above 16 kHz: -3.6 dB of in-band; above 18 kHz: -7.4 dB of total | hats and noise FX need a low-pass, 24 dB/oct |
 | short note starting at zero phase (e.g. `note("c2*8").s("sawtooth")`, triangle `decay(0.1)`) | 2-20 Hz: -23 to -37 dB of total | the one-sided area of each burst is infrasonic energy; the scope high-pass removes it, a 4-5 ms attack helps on bass |
 | aliasing, steady C7 (2093 Hz), inharmonic vs harmonic power | `sine` -95.5 dB, `square` -59.1, `sawtooth` -54.8, `triangle` -47.0, `supersaw` (default unison) -43.1, one supersaw voice -58 | saw and square are band-limited well enough; the triangle of node-web-audio-api is the weakest (Chromium uses band-limited tables: not measured here, UNVERIFIED); limit -40 dB |
-| `supersaw` with `unison 4`, `detune 0.22` at C6 | -36 to -45 dB across identical renders | the worklet draws its phases outside the CLI's seeded generator, so supersaw renders are not bit-identical; pad and supersaw limit -34 dB |
+| the same aliasing test in headless Chromium 153 (`PLAYWRIGHT_DIR=... node tools/racks/alias_chromium.mjs`, raw OscillatorNodes in an OfflineAudioContext, supersaw through the site render host) | `sine` -95.5 dB, `triangle` -95.6, `sawtooth` -97.2, `square` -96.2, `supersaw` -44.9 | Chromium's band-limited oscillators are 40 to 50 dB cleaner than node-web-audio-api's triangle (-47.0), saw (-54.8) and square (-59.1); the supersaw worklet is the same code in both, so it measures the same (-44.9 vs -43.1 to -45): the -40 dB limit holds in both engines, the CLI numbers are the worst case (#106, was UNVERIFIED) |
+| `supersaw` with `unison 4`, `detune 0.22` at C6 | -36 to -45 dB across identical renders before #105; identical renders (same sha256 of mix.wav, 3 runs) since | the worklet draws its phases from Math.random in the AudioWorkletGlobalScope, outside the CLI's seeded generator; `render-worker.mjs` now adds a seed module to the context before superdough's own worklets (no superdough change), so supersaw renders are bit-identical; pad and supersaw limit back to -40 dB |
 | `shape` on a filtered saw chord (`grit`) | DC -42 dBFS | an odd shaper on an asymmetric wave makes DC; superdough has no filter after the shaper, so the bus or master high-pass removes it |
 | supersaw pad, chords from Bb2, default `spread` | side energy below 120 Hz: -22 dB of total with a 120 Hz high-pass, -27.7 dB with 180 Hz | pad scope high-pass is 180 Hz; superdough cannot narrow only the low band of one voice |
 | `.noise(x)` on an oscillator voice | the render worker crashed on some racks (`tom`, `rimshot`, `impact`) | superdough 1.3.0 teardown order (docs/KNOWN_ISSUES.md, #92); guarded in the CLI's `lib/boot.mjs` as on the site |

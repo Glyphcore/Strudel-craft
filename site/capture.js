@@ -126,6 +126,7 @@ async function waitTicking(ms = 4000) {
      down instead of pooled and the live context never gets one back.
    - live -> offline: a hap whose pooled node belongs to the live context throws InvalidAccessError; the failed call consumed (popped) that
      stale node, so the hap is retried (up to 64 times) until the pool hands out a fresh offline node. */
+const process_timers = (() => { try { return (new URLSearchParams(location.search).get('timers') || localStorage.getItem('sc.flag.timers') || 'det') !== 'real'; } catch (e) { return true; } })(); /* flag timers=real: the superdough ended events as before (A/B for #115) */
 function collectNodes(ctx) {
   const prev = AudioNode.prototype.connect, prevD = AudioNode.prototype.disconnect, seen = new Set();
   AudioNode.prototype.connect = function (dest, ...rest) { if (this.context === ctx) seen.add(this); if (dest instanceof AudioNode && dest.context === ctx) seen.add(dest); return prev.call(this, dest, ...rest); };
@@ -133,7 +134,35 @@ function collectNodes(ctx) {
      a ringing tail (the vowel filters: five bandpass biquads, Q 40-140) was cut at a load-dependent instant, so renders differed by -22 dB. Offline nodes keep their connections
      until the render is over (the context is discarded), which makes the tail, and the render, independent of main-thread speed (#108). */
   AudioNode.prototype.disconnect = function (...a) { if (this.context === ctx) return undefined; return prevD.apply(this, a); };
-  return { seen, restore() { if (AudioNode.prototype.connect !== prev) AudioNode.prototype.connect = prev; if (AudioNode.prototype.disconnect !== prevD) AudioNode.prototype.disconnect = prevD; } };
+  /* superdough fills a reverb's ConvolverNode asynchronously (reverbGen: a nested OfflineAudioContext, oncomplete sets convolver.buffer), so a render that does not wait
+     starts that reverb at a load-dependent frame: the -16..-35 dB residual between whole-take renders (#115; stripping room/roomsize from the haps gives -126 dB, every
+     hap alone is bit-identical). Convolvers of the render's context are collected; ready() resolves when each has its buffer, and is awaited before the render starts and
+     before each chunk resumes. */
+  const prevC = BaseAudioContext.prototype.createConvolver, convs = [];
+  BaseAudioContext.prototype.createConvolver = function (...a) { const c = prevC.apply(this, a); if (this === ctx) convs.push(c); return c; };
+  const ready = async (maxMs = 15000) => { const t0 = performance.now(); let waited = 0; while (convs.some((c) => !c.buffer) && performance.now() - t0 < maxMs) { await new Promise((r) => setTimeout(r, 2)); waited++; } await new Promise((r) => setTimeout(r, 0)); return { convolvers: convs.length, waited }; };
+  const timers = process_timers ? emulateTimers(ctx) : null;
+  return { seen, ready, timers, restore() { if (timers) timers.restore(); if (AudioNode.prototype.connect !== prev) AudioNode.prototype.connect = prev; if (AudioNode.prototype.disconnect !== prevD) AudioNode.prototype.disconnect = prevD; if (BaseAudioContext.prototype.createConvolver !== prevC) BaseAudioContext.prototype.createConvolver = prevC; } };
+}
+/* superdough runs part of its sound design from `ended` events on the main thread: webAudioTimeout (a ConstantSourceNode stopped at T whose onended runs the callback) drives
+   the ducker (orbit duck: reads currentTime and the gain value when the event arrives, ramps from there), modulators and the voices' own release timeouts. In a realtime context
+   the event arrives about at T; in an offline context the render runs ahead of the main thread, so the callback saw a load-dependent currentTime and gain: two renders of one
+   recipe differed (-16..-35 dB, x4 throttle worse; stripping duckorbit from the haps gives -125 dB, #115). For the render's context the `onended` handler of a source whose
+   stop time is known is taken over: it runs while the render is suspended at the first render quantum at or after T, in stop-time order, so currentTime and parameter values are
+   what they would be in an ideal realtime run. Nodes without a known stop time keep the real event. at(sec, fn) puts a render-suspend point (chunk boundary) in the same ordered list. */
+function emulateTimers(ctx) {
+  const SP = AudioScheduledSourceNode.prototype, dOn = Object.getOwnPropertyDescriptor(SP, 'onended'), dStop = SP.stop; if (!dOn || !dOn.set || !dStop) return { at() { throw new Error('no source-node timers'); }, flush() {}, restore() {}, stats: {} };
+  const sr = ctx.sampleRate, Q = 128, fr = (T) => Math.max(0, Math.ceil(T * sr / Q - 1e-6) * Q), pos = () => Math.round(ctx.currentTime * sr);
+  const info = new WeakMap(), pend = [], armed = new Set(), chunk = new Map(), stats = { taken: 0, run: 0, late: 0 }; let seq = 0;
+  const arm = (q) => { if (armed.has(q)) return; if (q <= pos()) return; armed.add(q); ctx.suspend(q / sr).then(() => fire(q)).catch(() => { armed.delete(q); for (const e of pend) if (e.q === q) { e.q = -1; stats.late++; } }); };
+  const queue = (node, i) => { if (i.e) i.e.cancel = true; const T = i.T; const e = { q: fr(T), seq: seq++, node, cancel: false }; i.e = e; pend.push(e); dOn.set.call(node, null); stats.taken++; arm(e.q); };
+  const runDue = () => { for (let again = true; again;) { again = false; pend.sort((a, b) => a.q - b.q || a.seq - b.seq); const p = pos();
+    for (let k = 0; k < pend.length; k++) { const e = pend[k]; if (e.q > p) break; pend.splice(k, 1); k--; if (e.cancel) continue; const i = info.get(e.node), h = i && i.h; i.e = null; if (h) { stats.run++; try { h.call(e.node, new Event('ended')); } catch (err) { /* a cleanup that throws must not stop the render */ } again = true; } } } };
+  const fire = async (q) => { try { runDue(); const fn = chunk.get(q); chunk.delete(q); let go = true; if (fn) go = (await fn()) !== false; runDue(); if (go) await ctx.resume(); } catch (e) { /* the render promise reports it */ } };
+  Object.defineProperty(SP, 'onended', { configurable: true, enumerable: dOn.enumerable, get() { if (this.context !== ctx) return dOn.get.call(this); const i = info.get(this); return i && i.h ? i.h : dOn.get.call(this); },
+    set(h) { if (this.context !== ctx) return dOn.set.call(this, h); let i = info.get(this); if (!i) info.set(this, (i = {})); if (i.e && !h) { i.e.cancel = true; i.e = null; } i.h = h || null; dOn.set.call(this, h ? function (ev) { stats.real = stats.real || {}; const k = this.constructor.name; stats.real[k] = (stats.real[k] || 0) + 1; return h.call(this, ev); } : h); if (h && i.T != null && !i.e) queue(this, i); } });
+  SP.stop = function (T) { if (this.context === ctx) { let i = info.get(this); if (!i) info.set(this, (i = {})); i.T = T == null ? ctx.currentTime : Math.max(0, +T); if (i.h) queue(this, i); } return dStop.call(this, T); };
+  return { at(sec, fn) { const q = fr(sec); chunk.set(q, fn); arm(q); }, flush: runDue, stats, restore() { if (SP.stop !== dStop) SP.stop = dStop; Object.defineProperty(SP, 'onended', dOn); } };
 }
 function unpool(nodes) { let n = 0; for (const node of nodes) for (const sym of Object.getOwnPropertySymbols(node)) { try { delete node[sym]; n++; } catch (e) { /* frozen */ } } return n; }
 
@@ -436,7 +465,7 @@ async function renderRecipeInline(recipe, o = {}) {
 const yieldNow = () => (globalThis.scheduler && typeof globalThis.scheduler.yield === 'function' ? globalThis.scheduler.yield() : new Promise((r) => setTimeout(r, 0)));
 const abortErr = () => Object.assign(new Error('Render cancelled'), { name: 'AbortError' });
 export const CHUNK_S = 2, LEAD_S = 0.25;
-async function renderRecipeCore(recipe, { sr: rateIn, onProgress = null, signal = null, chunk = CHUNK_S, warm: doWarm = !HOST } = {}) {
+async function renderRecipeCore(recipe, { sr: rateIn, onProgress = null, signal = null, chunk = CHUNK_S, warm: doWarm = !HOST, dbg = null } = {}) {
   const W = window, T = sc.transport, S = recipe.state;
   if (!S) throw new Error('This take has no code-state, so it cannot be rendered');
   if (st.rendering) throw new Error('A render is already running');
@@ -475,7 +504,11 @@ async function renderRecipeCore(recipe, { sr: rateIn, onProgress = null, signal 
     const haps = []; for (let c = start; c < end - 1e-9; c = Math.min(end, Math.floor(c + 1))) { const c1 = Math.min(end, Math.floor(c + 1)); for (const h of info.pattern.queryArc(c, c1, { _cps: cps })) if (h.hasOnset()) haps.push(h); if (signal && signal.aborted) throw abortErr(); await yieldNow(); }
     haps.sort((a, b) => a.whole.begin.valueOf() - b.whole.begin.valueOf());
     let fails = 0, retries = 0, warm = 0;
-    const items = haps.map((h) => { h.ensureObjectValue && h.ensureObjectValue(); return { h, t: (h.whole.begin.valueOf() - start) / cps }; });
+    let items = haps.map((h, i) => { h.ensureObjectValue && h.ensureObjectValue(); return { h, i, t: (h.whole.begin.valueOf() - start) / cps }; });
+    /* debug (tests/site/hap_diff.mjs, #115): dbg.only = hap indices to voice (time and length unchanged), dbg.list = also return each hap's sound and parameters */
+    const hapInfo = dbg && dbg.list ? items.map(({ h, i, t }) => ({ i, t: +t.toFixed(4), v: JSON.parse(JSON.stringify(h.value, (k, x) => (typeof x === 'function' ? undefined : x))) })) : null;
+    if (dbg && dbg.strip) for (const x of items) { x.h = Object.create(x.h); const v = { ...x.h.value }; for (const k of dbg.strip) delete v[k]; Object.defineProperty(x.h, 'value', { value: v }); } /* leave parameters out (find the one that varies) */
+    if (dbg && dbg.only) { const keep = new Set(dbg.only); items = items.filter((x) => keep.has(x.i)); }
     let f = 0, r = 0, idx = 0;
     const voice = async (h, t) => {
       for (let k = 0; ; k++) {
@@ -484,7 +517,7 @@ async function renderRecipeCore(recipe, { sr: rateIn, onProgress = null, signal 
       }
     };
     /* voices for every hap before `until` (seconds from the render start), yielding every ~8 ms */
-    const schedule = async (until) => { let y0 = performance.now(); while (idx < items.length && items[idx].t < until) { const { h, t } = items[idx++]; await voice(h, t); if (performance.now() - y0 > 8) { await yieldNow(); y0 = performance.now(); if (signal && signal.aborted) throw abortErr(); } } if (col) { unpool(col.seen); col.seen.clear(); } }; /* offline nodes lose their pool key at once: released offline nodes are torn down, never pooled, so no live voice gets one */
+    const schedule = async (until) => { let y0 = performance.now(); while (idx < items.length && items[idx].t < until) { const { h, t } = items[idx++]; await voice(h, t); if (performance.now() - y0 > 8) { await yieldNow(); y0 = performance.now(); if (signal && signal.aborted) throw abortErr(); } } if (col) { unpool(col.seen); col.seen.clear(); await col.ready(); } }; /* offline nodes lose their pool key at once: released offline nodes are torn down, never pooled, so no live voice gets one */
     const use = async (ctx) => { W.setAudioContext(ctx); W.setSuperdoughAudioController(null); swapped = true;
       /* the worklets' Math.random (supersaw phases and other audio-thread randomness) lives in the context's AudioWorkletGlobalScope: a module
          loaded before superdough's own seeds it with the recipe seed, so those phases repeat render after render */
@@ -505,12 +538,15 @@ async function renderRecipeCore(recipe, { sr: rateIn, onProgress = null, signal 
     const step = Math.max(0.5, +chunk || CHUNK_S), dur = total / rate; let failed = null;
     await schedule(step + LEAD_S);
     for (let k = 1; k * step < dur; k++) {
-      off.suspend(k * step).then(async () => {
+      const chunkFn = async () => {
         try { await yieldNow(); /* ended-voice events before the next chunk */ if (signal && signal.aborted) throw abortErr(); onProgress && onProgress(Math.min(1, (k * step) / dur)); await schedule((k + 1) * step + LEAD_S); }
-        catch (e) { failed = e; } finally { if (!failed) off.resume(); }
-      });
+        catch (e) { failed = e; return false; }
+      };
+      if (col.timers) col.timers.at(k * step, chunkFn);
+      else off.suspend(k * step).then(async () => { if ((await chunkFn()) !== false) off.resume(); });
     }
     const cancelled = new Promise((_, no) => { if (signal) signal.addEventListener('abort', () => no(abortErr()), { once: true }); });
+    if (col.timers) col.timers.flush();
     const buf = await Promise.race([off.startRendering(), cancelled, new Promise((_, no) => { const iv = setInterval(() => { if (failed) { clearInterval(iv); no(failed); } }, 50); off.addEventListener('complete', () => clearInterval(iv)); })]);
     fails = f; retries = r; col.restore(); unpool(col.seen); onProgress && onProgress(1);
     await new Promise((r) => setTimeout(r, 300)); /* let the offline onended cleanups run while the offline context is still current */
@@ -519,7 +555,7 @@ async function renderRecipeCore(recipe, { sr: rateIn, onProgress = null, signal 
     if (tail) { const tl = buf.getChannelData(0), tr = buf.numberOfChannels > 1 ? buf.getChannelData(1) : tl; for (let i = 0; i < tail && i < frames; i++) { L[i] += tl[frames + i]; R[i] += tr[frames + i]; } }
     const db = S.settings && S.settings.masterDb != null ? S.settings.masterDb : (T.masterDb || 0); const g = db <= -60 ? 0 : Math.pow(10, db / 20); /* master level, so renders match realtime takes */
     if (g !== 1) for (let i = 0; i < frames; i++) { L[i] = Math.fround(L[i] * g); R[i] = Math.fround(R[i] * g); }
-    return { L, R, sr: rate, haps: haps.length, fails, retries, warm };
+    return { L, R, sr: rate, haps: haps.length, fails, retries, warm, ...(hapInfo ? { hapInfo } : {}), ...(dbg && col && col.timers ? { timerStats: { ...col.timers.stats } } : {}) };
   } finally {
     if (rnd) Math.random = rnd;
     if (prevJ && sc.hooks) { sc.hooks.journal.length = 0; sc.hooks.journal.push(...prevJ); try { sc.hooks.undef('__scPerformTouch'); } catch (e) { /* cache bust */ } }
@@ -566,7 +602,7 @@ async function renderViaHost0(recipe, o = {}) {
   return new Promise((ok, no) => {
     HS.pending.set(id, { ok, no, onProgress: o.onProgress });
     if (o.signal) o.signal.addEventListener('abort', () => { f.contentWindow.postMessage({ type: 'sc-host-cancel', id }, location.origin); }, { once: true });
-    f.contentWindow.postMessage({ type: 'sc-host-render', id, recipe: JSON.parse(JSON.stringify(recipe)), o: { sr: o.sr, chunk: o.chunk, maps: o.maps || null, vox: o.vox || null } }, location.origin);
+    f.contentWindow.postMessage({ type: 'sc-host-render', id, recipe: JSON.parse(JSON.stringify(recipe)), o: { sr: o.sr, chunk: o.chunk, maps: o.maps || null, vox: o.vox || null, dbg: o.dbg || null } }, location.origin);
   });
 }
 if (HOST) {
@@ -580,7 +616,7 @@ if (HOST) {
       const T = sc.transport, code = d.recipe.state && d.recipe.state.source ? d.recipe.state.source.code : '';
       if (d.o.maps) for (const m of d.o.maps) await T.loadSampleMap(m); else if (T.ensureSamples) await T.ensureSamples(code);
       if (d.o.vox && window.voxBank) for (const u of d.o.vox) await window.voxBank(u);
-      let last = 0; const out = await renderRecipe(d.recipe, { sr: d.o.sr, chunk: d.o.chunk, signal: ac.signal, onProgress: (p) => { const now = performance.now(); if (p >= 1 || now - last > 200) { last = now; post({ type: 'sc-host-progress', id: d.id, p }); } } });
+      let last = 0; const out = await renderRecipe(d.recipe, { sr: d.o.sr, chunk: d.o.chunk, dbg: d.o.dbg, signal: ac.signal, onProgress: (p) => { const now = performance.now(); if (p >= 1 || now - last > 200) { last = now; post({ type: 'sc-host-progress', id: d.id, p }); } } });
       post({ type: 'sc-host-done', id: d.id, out }, [out.L.buffer, out.R.buffer]);
     } catch (err) { post({ type: 'sc-host-error', id: d.id, message: err.message || String(err), name: err.name }); } finally { jobs.delete(d.id); }
   });

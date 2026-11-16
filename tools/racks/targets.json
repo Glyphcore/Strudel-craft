@@ -752,6 +752,69 @@
   "dubstep/Growl on a bus: band-split drive (.split)": {
    "class": "demo",
    "bars": 2
+  },
+  "visuals/Piano roll under its line": {
+   "skip": "noaudio: painter-only example (_pianoroll / _punchcard draw in the browser); the notes are the same as the plain program"
+  },
+  "visuals/Two bands: piano roll and scope": {
+   "skip": "noaudio: painter-only example (_pianoroll / _punchcard draw in the browser); the notes are the same as the plain program"
+  },
+  "visuals/Punchcard and spiral": {
+   "skip": "noaudio: painter-only example (_pianoroll / _punchcard draw in the browser); the notes are the same as the plain program"
+  },
+  "pads/Apply a preset from code": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "pads/A pad with no reader plays an audition voice; a bare tap(\"kick\") is the reader": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "pads/Save and export your presets": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "library/Bind a saved fragment into a slot (needs warmth@1)": {
+   "skip": "noaudio: needs a component saved in a browser profile (lib: ref)"
+  },
+  "workspace/Add a palette action": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "workspace/Loop cycles 4 to 8": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "workspace/Load a layout": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "workspace/Install as an app": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "copy/Make a share link from code": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "copy/Copy the Rack program as a recipe (controls and state)": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "capture/Render 8 cycles offline while the program keeps playing (progress bar and Cancel in the panel)": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "capture/Record 12 bars from bar 9, or from bar 9 to the end of track (the last gate section here: bar 17), typed or by API": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "capture/Live capture that checks itself: dropouts and tap gaps flag the take, Re-render offline replaces it": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "capture/Arm a 4-cycle take with audio, events and code-state": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "capture/Events and code-state only (no audio)": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "capture/Set up an exact 8-cycle render": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "capture/Hooks for lane captures: beforeRender and addTake": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
+  },
+  "atoms/Migrate: extract (toolkit and `strudel atoms extract` CLI)": {
+   "skip": "noaudio: calls window.strudelCraft.* (site API, browser only); the audio of the program lines is covered by the other items"
   }
  }
 }

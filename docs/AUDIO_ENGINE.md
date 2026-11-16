@@ -135,15 +135,31 @@ between runs, the pairs do not). Per played minute.
   Cause found for `vowel` (and any voice whose tail outlives its gain envelope): superdough tears a voice down from an `ended` callback (disconnect) on the main thread, some time
   after the render has passed the voice's end, so a ringing tail (five bandpass biquads, Q 40-140) was cut at a load-dependent instant; synthetic vowel runs differed by -22..-28 dB
   and are -146 dB (bit-identical) once offline nodes keep their connections until the render ends (`collectNodes` in capture.js now no-ops `disconnect` for the render's context).
-  The determinism row of record_offline.mjs passes since. Still open: even so, whole-take host renders differ by -16..-18 dB (uniform over the take, mostly 120-2000 Hz, source not found;
-  per-voice re-seeding of Math.random did not change it).
+  The determinism row of record_offline.mjs passes since.
+  #115, per-hap diff (`tests/site/hap_diff.mjs`, night phonk v2, cycles 17..21, 380 haps in 23 groups of sound + parameter set, render host, transport stopped, fresh
+  OfflineAudioContext per render, residual = energy of a - b relative to a):
+  - every group's first hap rendered alone twice, under x1 and x4 throttle: bit-identical for 21 of 23 groups; the two `vowel` groups (`vs_a_pp`, `vs_o_pp`) -144..-148 dB (float
+    rounding of the five-biquad bank). So no single voice is nondeterministic (reverb, `lpenv`, `vib`, `hcutoff`, `shape`, `vs_*`, `vox_*`, noise, compressor, `bus` all clean alone).
+  - the residual is an interaction. Whole window x1: -33 dB between two runs, x4: -11..-17 dB. Bisecting by hap range (0-8 clean, 8-16 -36, 16-40 clean) then stripping
+    parameters from the haps (`--strip`) found two causes, with the stripped result in brackets: `room`/`roomsize` (-126 dB) and `duckorbit`/`duckattack`/`duckdepth` (-125 dB);
+    `delay` was a smaller third (-59 dB) that went away with the second fix.
+  - Cause 1, reverb IR: superdough fills each reverb's ConvolverNode asynchronously (`reverbGen`, a nested OfflineAudioContext whose `oncomplete` sets `convolver.buffer`), nobody
+    waited, so the reverb started at a load-dependent frame. The CLI always had `reverbsReady()`. Fix (capture.js `collectNodes`): convolvers of the render's context are collected and
+    awaited before the render starts and before each chunk resumes.
+  - Cause 2, superdough's timeouts: `webAudioTimeout` is a ConstantSourceNode stopped at T whose `onended` runs the callback (the orbit ducker reads `currentTime` and the gain value
+    there and ramps from it; modulators and voice release use it too). Offline, the render runs ahead of the main thread, so the callback saw a load-dependent `currentTime`.
+    Fix (capture.js `emulateTimers`): for the render's context the `onended` handler of a source whose stop time is known is taken over and run while the render is suspended at the
+    first render quantum at or after T, in stop-time order (one `suspend()` per distinct quantum, chunk boundaries share the list); sources without a known stop keep the real event
+    (counted in `timerStats.real`, 0 in this program). Flag `?timers=real` / `localStorage sc.flag.timers=real` turns it off for A/B. No Strudel / superdough code is touched.
+  - Result, unthrottled whole window (3 runs): -122.8, -123.1, -122.9 dB (float rounding; bit-identical for the sums that matter), against -26..-35 dB before. x1 vs x4: -123.0 dB.
+    Under x4 two of three renders of the whole window still differ by -32 dB from the third (haps 0-190 four runs: -123 to -124 dB; haps 190-380: one run in four at -79 dB); the
+    remaining x4 cause is not found (stripping shape, delay, compressor does not remove it; `timerStats` shows no real-event fallbacks, 0 late timers). So the `underLoad` wait and flag stay.
   Live take flag: the "no false negative" judge counts missing onsets by the soft rule (strict alone misses 17-23 % of a clean take).
   Product behaviour (#108): a render made under a busy main thread is off (attached render under x4: 0.66-0.70 on the above-120 Hz 5 ms-hop level, `rerender` of the same recipe
   afterwards 0.88). Renders attached to a take (record, rerender) therefore wait until the main thread is calm (longest gap between 10 ms timer ticks over 500 ms <= 45 ms), at most
   about 10 s; then they render anyway and the take gets `outputs.render.underLoad {gapMs, waitedMs}`, an "under load" chip and a "Rendered under load ... Re-render offline" row. Cancel
   works while waiting, the transport is untouched. record_offline.mjs asserts: attached render waited and matches, or is flagged underLoad (after >= 9 s wait).
-  Tracked follow-up: #115 (per-hap render diff, twice each, x1 and x4, to find the remaining -16..-18 dB between whole-take renders, 120-2000 Hz; candidates reverb IR, worklet
-  envelope/LFO port messages, node pooling, `hcutoff:25` second-run hang, bus compressor). When it is fixed the wait and flag can go.
+  Tracked: #115 (x1 fixed above; the x4 remainder keeps the wait and flag).
 
 - Offline renders repeat: two renders of the same recipe in the render host are within 1.5 dB on 99 % of 10 ms blocks (92 % before the
   worklet seed and the noise prefill).

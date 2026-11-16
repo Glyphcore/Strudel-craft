@@ -180,7 +180,7 @@
    "peak_max_db": -6,
    "alias": {
     "note": "c6",
-    "max_db": -34
+    "max_db": -40
    },
    "phrase": "note(\"<[c3,eb3,g3,bb3] [bb2,d3,f3,a3]>\")",
    "bars": 4,
@@ -253,7 +253,7 @@
    "peak_max_db": -6,
    "alias": {
     "note": "c6",
-    "max_db": -34
+    "max_db": -40
    },
    "phrase": "note(\"<[c3,g3,c4,eb4] [ab2,eb3,ab3,c4]>\")",
    "bars": 4,

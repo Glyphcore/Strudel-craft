@@ -162,7 +162,8 @@
     "scalar",
     "param"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "duckdepth": {
    "args": [
@@ -284,7 +285,8 @@
     "param",
     "mini"
    ],
-   "from": "shipped"
+   "from": "shipped",
+   "wire": true
   },
   "hpsustain": {
    "args": [

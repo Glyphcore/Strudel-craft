@@ -103,7 +103,7 @@ function hitLimit() {
 function tick() {
   const now = performance.now(), dt = st.last ? (now - st.last) / 1000 : 0; st.last = now;
   const p = playing();
-  if (p && !st.wasPlaying) { st.elapsed = 0; st.extra = 0; const s = sch(); if (st.loop && s && s.now() < st.start) seek(st.start); }
+  if (p && !st.wasPlaying) { st.elapsed = 0; st.extra = 0; const s = sch(); if (s && st.start > 0 && s.now() < st.start) seek(st.start); } /* a fresh run begins at Start (loop or not; Start 0 = the beginning), also for Record and live takes */
   if (!p && st.fading) { clearInterval(fadeT); st.fading = false; }
   st.wasPlaying = p;
   /* the clamp counts played time only: audio-clock time while the context runs, from the background clock (bgplay.js); paused,

@@ -185,6 +185,9 @@ const Engine = {
     try { await loadPerform(); window.strudelCraft.perform && window.strudelCraft.perform.glue(); } catch (e) { /* perform tools optional: ctl()/hooks.map() need them */ }
     if ((needsSamples || needsSamplesFor(code)) && !this.samplesLoaded) { say('Loading sample banks'); await loadSampleMaps((m, err) => audioNotice(m, err ? 'error' : 'info')); }
     await resumeAudio();
+    /* superdough loads its AudioWorklets (shape, distort, crush, coarse, ladder...) only on the first 'mousedown'; a keyboard / programmatic Play never fires it and
+       every voice with such an effect (sub808 shape, kick) then fails in getTrigger (silent live, #108). Load once per context here. */
+    try { const wc = window.getAudioContext && window.getAudioContext(); if (wc && window.loadWorklets && !wc.__scWorklets) { wc.__scWorklets = window.loadWorklets().catch(() => { wc.__scWorklets = null; }); } if (wc && wc.__scWorklets) await wc.__scWorklets; } catch (e) { /* effects unavailable */ }
     this.state.evalError = undefined;
     unmuteBus();
     await ensureCode(code);

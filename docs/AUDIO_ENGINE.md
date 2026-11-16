@@ -111,22 +111,22 @@ between runs, the pairs do not). Per played minute.
   was the raw 19-23 % level match). What is left is +1.9 dB broadband: above 120 Hz the two agree to +0.4..+0.7 dB (86 % of loud 5 ms
   hops within 3 dB, 95 % of 50 ms blocks), the 35-60 Hz sub band is +3.3 / +4.1 dB louder in Chrome (the program's `sub808`: sine, `shape` 0.45,
   `penv` slides; peaks are equal to 0.7 %, so it is not a gain mismatch but the same oscillator and waveshaper sounding different in the two
-  engines; Chrome is the product, so the CLI reference is the one that differs). The test therefore asserts: soft onsets >= 90 %, p95 <= 5 ms,
+  engines; Chrome is the product, so the CLI reference is the one that differs. #108 checked the obvious cause: the `shape` worklet runs in both engines (the CLI loads worklets on node-web-audio-api; the live page did not until #108, the offline host always did), so it is an engine difference of node-web-audio-api vs Chrome in the sine + shape + 25 Hz hpf chain, documented here, not an alignment bug; the track sound is unchanged). The test therefore asserts: soft onsets >= 90 %, p95 <= 5 ms,
   |drift| <= 0.5 ms/s, 0 dropouts, level within 3 dB on >= 85 % of loud hops above 120 Hz after master compensation, and |sub offset| <= 5 dB (measured 1.7-1.8).
   Windows differ: the same check on the cycle-18 window (the live take's) gives 63-69 % at 5 ms hops, 68-94 % at 50 ms; the level target is
   asserted on the cycle-17 window only.
-- Live takes (cycle 18, 4 cycles) do not match the CLI reference: at x1 with a clean self-check the take is uncorrelated with the reference
-  window (0 strict onsets, -16 dB level, lows 45-60 dB down), at x4 and with a 700 ms stall likewise (level -12..-19 dB, 5-17 of 29 onsets).
-  After `transport.stop()` + `play()` the scheduler starts at cycle 0 (the range 16..16 is not honoured as a start), Record `at: 18` waits for cycle
-  18 to arrive, and what it records is not what the offline render of cycle 18 plays. Not resolved here; the live x4 "no false negative" box
-  and "its reference render" row of record_offline.mjs fail until it is (tracked in the new issue linked from #104). Live vs offline of the same program
-  is the open question, not the engine comparison above.
-| take vs CLI render | self-check | onsets soft / strict of 29 | level offset (broadband, after master) | dropouts | drift ms/s |
-|---|---|---|---|---|---|
-| offline, cycle 17 | n/a | 29 / 23-24 | +1.9 dB | 0 | 0.05-0.18 |
-| live x1, cycle 18 | ok (clean) | 6 / 0 | -16.4 dB | 0 | 0 |
-| live x4, cycle 18 | flagged (tap gap 256) / ok in one run | 13 / 10 and 12 / 1 | -18.7 / -12.3 dB | 4 | 0.16 |
-| live x1 + 700 ms stall | flagged (re-anchor, up to 25 dropped) | - / 1 | -12.9 dB | 15 | - |
+- Live takes vs the CLI reference (#108, root causes found and fixed):
+  1. superdough loads its AudioWorklets (shape, distort, crush, coarse, ladder, supersaw) only on the first `mousedown`; the harness's `.click()` and a
+     keyboard Play never fire it, so every live voice with such an effect failed in `getTrigger` ("AudioWorklet does not have a valid
+     AudioWorkletGlobalScope") and was silent: the night phonk `sub808` (`shape` 0.45) and kick vanished live (20-60 Hz at -81 dB against -19 dB in the
+     render, whole cycles 5-11 dB low). `Engine.load` now awaits `loadWorklets()` once per context. The offline host always loaded them, which is why
+     only live takes differed. Level after the fix: +0.2 to +1.6 dB against the CLI render (was -12 to -19), sub offset +1.2..+1.5 dB.
+  2. The scheduler starts at cycle 0 after `stop()` + `play()`; `range.start` was honoured only with Loop on. A fresh run now seeks to Start whenever
+     Start > 0 (loop or not), within one tick (<= 100 ms). The live x1 take at `at: 17` no longer waits 30 s.
+  Live x1/x4 at cycle 17 now: 28-29 of 29 onsets by the soft rule, p95 5 ms, 0 dropouts, drift <= 0.3 ms/s. Window 17 is the validated one; the take
+  rows of record_offline.mjs use it (the 18 window of the old numbers was a workaround for the start bug). A take under x4 is flagged by its self-check
+  (27 dropped events, tap gaps) whenever the glitch metric shows loss.
+  Open: the 5 ms-hop level match above 120 Hz on the host render made right after a throttled take is 0.61-0.83 (0.82-0.87 unthrottled), see #108.
 
 - Offline renders repeat: two renders of the same recipe in the render host are within 1.5 dB on 99 % of 10 ms blocks (92 % before the
   worklet seed and the noise prefill).

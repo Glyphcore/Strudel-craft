@@ -75,23 +75,24 @@ check('Cancel stops an offline render and stores nothing', cancel.result === nul
 
 /* 4 + 5. live takes: seek to cycle 16, record cycles 17..21 under throttling; then a take with a forced stall */
 const cdp = await ctx.newCDPSession(page);
-/* the take starts at cycle LAT (2 cycles after the seek point, inside the reference's 15..23); Record starts the transport itself */
-const LAT = AT + 1;
+/* the take starts at cycle LAT = AT (2 cycles after the seek point, inside the reference's 15..23); Record starts the transport itself */
+const LAT = AT; /* the same window the offline render is validated on; the seek starts the run at LAT - 2 (transport-range.js honours Start on every fresh run, #108) */
 const live = async (stall) => { await page.evaluate(() => { const T = window.strudelCraft.transport; if (T.playing) T.stop(); }); await page.waitForTimeout(800);
   await page.evaluate((c) => Object.assign(window.strudelCraft.range.state, { start: c }), LAT - 2); await page.evaluate(() => window.strudelCraft.transport.play());
   await page.waitForFunction(() => window.__sc.S.playing && !window.__sc.S.busy, null, { timeout: 120000 });
   if (THR > 1 && !stall) await cdp.send('Emulation.setCPUThrottlingRate', { rate: THR });
-  const r = await page.evaluate(async ({ n, at, stall, PCM }) => { const pcm = eval(PCM); const C = window.strudelCraft.capture; C.configure({ source: 'live', audio: true, events: true, code: true, autoFix: false });
+  const r = await page.evaluate(async ({ n, at, stall, PCM, arg0 }) => { const pcm = eval(PCM); const C = window.strudelCraft.capture; C.configure({ source: 'live', audio: true, events: true, code: true, autoFix: false });
     if (stall) { const iv = setInterval(() => { if (C.state.phase === 'recording' && window.strudelCraft.capture.state.recAudio0 != null) { clearInterval(iv); setTimeout(() => { const t = performance.now(); while (performance.now() - t < 700) { /* a frozen main thread */ } }, 1500); } }, 20); }
     const rec = await C.record({}, { mode: 'cycles', n, at, name: stall ? 'stalled' : 'live' }); if (!rec) return { error: 'no take' };
-    return { check: rec.recipe.outputs.capture.check, id: rec.recipe.id, hasRender: !!rec.audio.render, cap: pcm(rec, 'capture'), render: rec.audio.render ? pcm(rec, 'render') : null, start: rec.recipe.timing.start }; }, { n: N, at: LAT, stall, PCM });
+    return { check: rec.recipe.outputs.capture.check, id: rec.recipe.id, hasRender: !!rec.audio.render, cap: pcm(rec, 'capture'), render: rec.audio.render ? pcm(rec, 'render') : null, start: rec.recipe.timing.start, recipe: arg0 ? rec.recipe : undefined }; }, { n: N, at: LAT, stall, PCM, arg0: !!arg('--dump', null) });
   if (THR > 1 && !stall) await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
   return r; };
-const L4 = await live(false); if (arg('--dump', null) && L4.cap) fs.writeFileSync(arg('--dump', null) + '/live_x4.f32', Buffer.from(fromB64(L4.cap.b64).buffer)); if (arg('--dump', null)) fs.writeFileSync(arg('--dump', null) + '/live_x4.json', JSON.stringify({ start: L4.start, check: L4.check }));
+const L4 = await live(false); if (arg('--dump', null) && L4.cap) fs.writeFileSync(arg('--dump', null) + '/live_x4.f32', Buffer.from(fromB64(L4.cap.b64).buffer)); if (arg('--dump', null)) fs.writeFileSync(arg('--dump', null) + '/live_x4.json', JSON.stringify({ start: L4.start, check: L4.check, recipe: L4.recipe }));
 if (L4.error) check(`live take under x${THR} throttling`, false, L4.error);
 else { const gl = compare(refWin(L4.start, L4.cap.frames, L4.cap.sr), { x: fromB64(L4.cap.b64), sr: L4.cap.sr }); report.liveThrottled = { check: L4.check, glitch: gl };
   const bad = gl.dropouts > 0 || gl.missingOnsets > 0.15 * gl.refOnsets || Math.abs(gl.driftMsPerS) > 0.5; report.liveThrottledWindow = L4.start;
   check(`live take under x${THR} throttling carries a self-check with no false negative (flagged whenever the glitch metric shows dropouts, > 15 % missing onsets or drift)`, !!L4.check && (!bad || !L4.check.ok), JSON.stringify({ check: L4.check, glitch: gl }));
+  if (L4.render && arg('--dump', null)) fs.writeFileSync(arg('--dump', null) + '/live_render.f32', Buffer.from(fromB64(L4.render.b64).buffer));
   if (L4.render) { const gr = compare(refWin(L4.start, L4.render.frames, L4.render.sr), { x: fromB64(L4.render.b64), sr: L4.render.sr }); report.liveThrottledRender = gr; check('its reference render (offline, host) matches the CLI render', SAME(gr), JSON.stringify(gr)); } }
 const LS = await live(true);
 if (LS.error) check('live take with a forced stall', false, LS.error);

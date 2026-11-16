@@ -182,7 +182,8 @@ const Engine = {
     return this.ready;
   },
   get scheduler() { return this.repl && this.repl.scheduler; },
-  async play(code, needsSamples, say) {
+  /* everything a program needs before it can be evaluated (engine, hooks, perform glue, sample maps, resumed context, worklets); Quick play (quickplay.js) reuses it */
+  async prepare(code, needsSamples, say) {
     say('Loading engine'); await this.load();
     try { if (!window.strudelCraft.hooks && window.strudelCraft.installHooks) window.strudelCraft.installHooks(); await applyRanges(); } catch (e) { /* hooks optional */ }
     try { await loadPerform(); window.strudelCraft.perform && window.strudelCraft.perform.glue(); } catch (e) { /* perform tools optional: ctl()/hooks.map() need them */ }
@@ -191,6 +192,9 @@ const Engine = {
     /* superdough loads its AudioWorklets (shape, distort, crush, coarse, ladder...) only on the first 'mousedown'; a keyboard / programmatic Play never fires it and
        every voice with such an effect (sub808 shape, kick) then fails in getTrigger (silent live, #108). Load once per context here. */
     try { const wc = window.getAudioContext && window.getAudioContext(); if (wc && window.loadWorklets && !wc.__scWorklets) { wc.__scWorklets = window.loadWorklets().catch(() => { wc.__scWorklets = null; }); } if (wc && wc.__scWorklets) await wc.__scWorklets; } catch (e) { /* effects unavailable */ }
+  },
+  async play(code, needsSamples, say) {
+    await this.prepare(code, needsSamples, say);
     this.state.evalError = undefined;
     unmuteBus();
     await ensureCode(code);
@@ -464,7 +468,7 @@ async function play(src = currentSource()) {
     if (!Engine.started) S.playing = false;
   } finally { btn.classList.remove('busy'); S.busy = false; syncTransport(); }
 }
-function stop() { Engine.stop(); S.playing = false; S.playingId = null; clearInterval(AudioSt.watch); try { window.strudelCraft.bg && window.strudelCraft.bg.onStop(); } catch (e) { /* optional */ } say('Stopped'); Viz.stopSoon(); syncTransport(); syncAudioState(); }
+function stop() { try { window.strudelCraft.quickplay && window.strudelCraft.quickplay.stop('fast'); } catch (e) { /* optional */ } Engine.stop(); S.playing = false; S.playingId = null; clearInterval(AudioSt.watch); try { window.strudelCraft.bg && window.strudelCraft.bg.onStop(); } catch (e) { /* optional */ } say('Stopped'); Viz.stopSoon(); syncTransport(); syncAudioState(); }
 function toggle() { if (S.playing) stop(); else play(); }
 function syncTransport() {
   if ($('#liveChip')) syncLiveChip();
@@ -616,11 +620,13 @@ function renderList(keepId) {
         el('span', { class: 'tt' }, el('span', { class: 't' }, r.title), e.folder || (e.tags || []).length ? el('span', { class: 'sub' }, [e.folder, (e.tags || []).filter((x) => !['verified', 'unverified'].includes(x) && !(e.folder || '').split('/').includes(x)).slice(0, 2).join(' ')].filter(Boolean).join(' · ')) : null),
         el('span', { class: foreign.has(r.pack) ? 'pk ns' : 'ns own', title: 'Pack ' + (r.pack || 'glyphcore/shim') }, foreign.has(r.pack) ? r.pack : (r.pack || 'glyphcore/shim').replace(/^glyphcore\//, '')),
         el('span', { class: 'k' + (r.verified ? ' ok' : '') }, r.verified ? 'ok' : r.needs_samples ? 'smp' : '·')),
+      el('button', { type: 'button', class: 'qp', 'data-qp': 'recipe:' + r.id, 'aria-pressed': 'false', 'aria-label': 'Quick play ' + r.title, title: 'Quick play: audition here, nothing is loaded or opened' }, el('i', { class: 'qp-i', 'aria-hidden': 'true' })),
       el('button', { type: 'button', class: 'add', 'data-add': r.id, 'aria-pressed': inStack ? 'true' : 'false', disabled: !r.expr, 'aria-label': (inStack ? 'Remove ' : 'Add ') + r.title + (inStack ? ' from stack' : ' to stack'), title: r.expr ? 'Stack (A)' : 'Uses top-level statements: solo only' }, inStack ? '−' : '+'));
   }));
   $('#count').textContent = `${S.filtered.length} / ${S.recipes.length} recipes`;
   const n = S.chips.size + (S.vonly ? 1 : 0); $('#filterCount').textContent = n ? String(n) : '';
   renderSelection(false);
+  try { window.strudelCraft.quickplay && window.strudelCraft.quickplay.sync(); } catch (e) { /* optional */ }
 }
 function select(i, { scroll = true, audition = true } = {}) {
   if (!S.filtered.length) return;
@@ -888,6 +894,7 @@ async function boot() {
   $('#themeBtn').addEventListener('click', toggleTheme); $('#helpBtn').addEventListener('click', openHelp); $('#helpClose').addEventListener('click', () => $('#help').close());
   $('#help').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); });
   $('#list').addEventListener('click', (e) => {
+    const qb = e.target.closest('.qp'); if (qb) { const r = byId(qb.dataset.qp.slice(7)); if (r) import('./quickplay.js').then((m) => m.press(qb, () => ({ key: qb.dataset.qp, title: r.title, code: recipeCode(r), bpm: r.bpm_hint, samples: !!r.needs_samples }))).catch((err) => say('Quick play could not load: ' + err.message, true)); return; }
     const add = e.target.closest('.add'); if (add) { toggleStack(add.dataset.add); return; }
     const row = e.target.closest('.row'); if (row) { const i = +row.dataset.i; if (i === S.sel && !S.playing) play(); else select(i, { scroll: false }); }
   });
@@ -968,5 +975,5 @@ window.strudelCraft.transport = { play: () => play(), stop: () => stop(), toggle
   async ensureSamples(code) { await Engine.load(); if (needsSamplesFor(code) && !Engine.samplesLoaded) await loadSampleMaps(); },
   async warm() { await Engine.load(); try { if (!window.strudelCraft.hooks && window.strudelCraft.installHooks) window.strudelCraft.installHooks(); await applyRanges(); await loadPerform(); } catch (e) { /* optional */ } } };
 window.strudelCraft.engineState = () => ({ ...Engine.state, scheduler: Engine.scheduler, playing: S.playing, srcView: S.srcView || 'rack' });
-window.__sc = { S, Engine, Bus, unmuteBus, currentSource, programTempo, play, stop, select, setView, History, toggleStack, holdLink: () => { S.linkHold = true; }, audio: { resume: resumeAudio, get state() { const c = audioCtx(); return c ? c.state : 'none'; }, get peak() { return AudioSt.lastPeak; }, needsSamplesFor } };
+window.__sc = { S, Engine, Bus, unmuteBus, muteBus, protectCode, ensureCode, hasOwnTempo, currentSource, programTempo, play, stop, select, setView, History, toggleStack, holdLink: () => { S.linkHold = true; }, audio: { resume: resumeAudio, get state() { const c = audioCtx(); return c ? c.state : 'none'; }, get peak() { return AudioSt.lastPeak; }, needsSamplesFor } };
 document.addEventListener('DOMContentLoaded', boot);

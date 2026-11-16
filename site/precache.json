@@ -410,6 +410,7 @@
   "prelude/word.js",
   "pwa.css",
   "pwa.js",
+  "quickplay.js",
   "recipe.js",
   "record-length.js",
   "refs.js",

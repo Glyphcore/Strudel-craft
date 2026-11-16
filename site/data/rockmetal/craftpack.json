@@ -16,8 +16,8 @@
       "title": "Rock and metal racks",
       "description": "Chain-only hook defs: gtrClean, gtrCrunch, gtrHigh, palmMute, chugHigh, gtrLead, gtrHarmonic, feedbackSwell, bassFinger, bassPick, rockKick, metalKick, rockSnare, rockHat, rockRide, crashCym, rockTom, organ, rockStrings, vowelVox",
       "load": "manual",
-      "hash": "sha256:f98f960d54039b26bb0db1aa7731b909c077a9f616a7dc8854f173cf86ea1f89",
-      "bytes": 11322
+      "hash": "sha256:faa9cd61a795692537d1f4294edbab458a3423110883a9251929488e988ae5b5",
+      "bytes": 11323
     },
     {
       "id": "atoms-rockmetal",

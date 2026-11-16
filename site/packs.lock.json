@@ -7,7 +7,7 @@
       "id": "glyphcore/shim",
       "version": "1.0.0",
       "source": "file:.",
-      "manifest": "sha256:403d424ec93ba02436d38c4511f8af5233dcf7e8f0661d63a5f3c8e797d49ff9",
+      "manifest": "sha256:fba51916144336eadea6a7fd22a82638c90e86c447c16e759b437d670f04d1db",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}
@@ -61,7 +61,7 @@
       "id": "glyphcore/rockmetal",
       "version": "1.0.0",
       "source": "file:data/rockmetal",
-      "manifest": "sha256:d931b8c2373b53b6e9f5c7af5ea5c0f0f7c0edcf10ee58f6562daa8f953bee26",
+      "manifest": "sha256:38a547a1e04e9079e14457ca7dc4d13013ba2c9cc3f908bf245984aa2fe6e84f",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}

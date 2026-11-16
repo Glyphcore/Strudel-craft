@@ -392,3 +392,75 @@ stages (supersaw, shape, distort, tremolo, crush, the filter LFO) cost 15-45x a 
 waits). On the site (Chromium) they are cheap. Consequence for long headless renders: spend worklets where they are the sound and build the rest
 natively (the tutorial track, docs/tracks/edm-dubstep-tutorial/, does this and says so in its lesson 0).
 
+
+## 10. Industrial, rock / metal and EDM-depth racks (#155 #156 #157)
+New class **guitar** (glyphcore/rockmetal): band 70-8000 Hz, below <= -24, above <= -20, >18k <= -40, peak <= -6, side<120 <= -30, no alias
+test (amp tiers regrow harmonics after the pre-drive cab filter, as growl); hygiene-guitar 70 / 7000 Hz. Every other new rack uses an existing
+class with its existing thresholds; **no threshold was loosened**. Per-role choices: mechanical hits are  (inharmonic FM fails an
+alias test by design, and perc has none), chain / shatter / open chain , hiss and servo-down , servo whine , slams and
+the press , beds , riddim / growl / clank basses  over the  lane.
+Fixes the audit forced (first run -> fix): hats chainRattle, metalShatter, openChain below (high-pass 3.2-4 kHz -> 5 kHz, the hat band);
+slamImpact side<120 (a room on a 45 Hz hit put side energy under 120 Hz: dry now); rustBed below (brown noise, high-pass 250 -> 500 Hz);
+pressBass below and sub20 (24 dB high-pass 45 Hz, 8 ms attack); palmMute below and peak (24 dB high-pass 100 Hz, gain 0.28 -> 0.18);
+gtrCrunch peak (gain 0.18 -> 0.1); gtrHigh DC -59.8 and peak -4.0 (gain 0.2 -> 0.12: DC -67.7, peak -7.8); gtrLead alias (vibrato in the rack
+smeared the harmonics past the test window: vibrato moved to the lane); tapeStop below (note C4, high-pass 300 Hz); mbMid peak (the Web Audio
+compressor's auto make-up: postgain 0.5).
+Measured (rack audit, class test phrases, CLI, 2026-11-16; all 55 pass):
+
+| item | class | below | above | sub20 | >18k | DC | peak | crest | corr | side<120 | alias | result |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| serialFM | growl | -33.5 | -85 | -50 | -98.6 | -71.9 | -7.7 | 15.7 | 1 | -140 | - | pass |
+| fmFormant | growl | -47.4 | -59.5 | -60 | -65.4 | -110.9 | -16.6 | 14.3 | 1 | -140 | - | pass |
+| formantChop | vox | -47.3 | -39.4 | -103.6 | -78.6 | -140 | -15.8 | 16.1 | 1 | -140 | - | pass |
+| tapeStop | sweep | -43.1 | -59.2 | -140 | -94.1 | -140 | -20.6 | 16.7 | 1 | -140 | - | pass |
+| stutterGate | move | - | - | -58.9 | -76.2 | -140 | -11.6 | 15.8 | 1 | -140 | - | pass |
+| mbLow | move | - | - | -58.2 | -88.8 | -87.1 | -6.7 | 9.5 | 1 | -140 | - | pass |
+| mbMid | move | - | - | -75.1 | -116.8 | -87 | -6.6 | 13.4 | 1 | -140 | - | pass |
+| mbHigh | move | - | - | -114.8 | -96.2 | -133.9 | -6.8 | 17.3 | 1 | -140 | - | pass |
+| tapeStopMove | move | - | - | -70.9 | -77 | -97.4 | -10 | 14.5 | 1 | -140 | - | pass |
+| breakerClang | perc | -29.2 | -26.9 | -101.9 | -85.7 | -140 | -8 | 15.3 | 0.999 | -53.3 | - | pass |
+| metalImpact | perc | -29.9 | -46.8 | -78.3 | -106.9 | -126.5 | -12.6 | 12.9 | 0.997 | -44.6 | - | pass |
+| anvil | perc | -80.3 | -57.4 | -128.2 | -139.9 | -106.6 | -12.2 | 10.9 | 1 | -140 | - | pass |
+| pipeHit | perc | -52 | -56.3 | -122.7 | -124.9 | -128.3 | -14.1 | 11.1 | 1 | -140 | - | pass |
+| relayClick | perc | -140 | -39.8 | -140 | -125.3 | -140 | -21.8 | 19.2 | 1 | -140 | - | pass |
+| ratchet | perc | -140 | -57.4 | -140 | -140 | -140 | -28.9 | 17.5 | 1 | -140 | - | pass |
+| chainRattle | hat | -34.2 | -41.3 | -140 | -59.3 | -140 | -15.4 | 13.9 | 1 | -140 | - | pass |
+| metalShatter | hat | -34.4 | -36.1 | -140 | -53.9 | -140 | -14.8 | 14.7 | 1 | -140 | - | pass |
+| hydraulicHiss | sweep | -129.7 | -37.7 | -140 | -68.6 | -140 | -16.7 | 14 | 1 | -140 | - | pass |
+| servoWhine | screech | -65.7 | -49.2 | -140 | -77 | -140 | -15.8 | 17.2 | 1 | -140 | - | pass |
+| servoDown | sweep | -41 | -95.6 | -140 | -128.6 | -140 | -18.8 | 15.5 | 1 | -140 | - | pass |
+| doorSlam | impact | -53.4 | -92.3 | -55 | -140 | -140 | -11 | 8.1 | 1 | -140 | - | pass |
+| stampPress | impact | -53.4 | -68.8 | -63.2 | -140 | -140 | -4 | 10.8 | 1 | -140 | - | pass |
+| slamImpact | impact | -45 | -77.5 | -55.8 | -140 | -140 | -10.7 | 7.9 | 1 | -140 | - | pass |
+| rustBed | texture | -45.9 | -62.2 | -129.5 | -93 | -123.5 | -31.4 | 13 | 1 | -140 | - | pass |
+| factoryAmb | texture | -48.1 | -123.1 | -140 | -140 | -132 | -33.4 | 12 | 0.975 | -92.4 | - | pass |
+| stampKick | kick | -42.9 | -95.5 | -55.5 | -140 | -140 | -11.3 | 7.3 | 1 | -140 | - | pass |
+| clangSnare | snare | -38 | -28.9 | -114.6 | -72.1 | -140 | -7.4 | 16.1 | 1 | -140 | - | pass |
+| metalClap | snare | -117.3 | -67.6 | -140 | -129.9 | -140 | -22.5 | 15.1 | 1 | -140 | - | pass |
+| openChain | hat | -34.1 | -41.5 | -140 | -59.2 | -140 | -16.1 | 14.5 | 1 | -140 | - | pass |
+| indSub | sub | -28.2 | -64.8 | -35 | -87.6 | -95.2 | -11.5 | 6.3 | 1 | -140 | - | pass |
+| indRiddim | growl | -38.3 | -81.9 | -91.8 | -108.8 | -115.5 | -8.7 | 17.2 | 1 | -140 | - | pass |
+| metalGrowl | growl | -50.6 | -66.1 | -67.6 | -72 | -132.6 | -21.5 | 12.6 | 1 | -140 | - | pass |
+| clankBass | growl | -30.4 | -73.2 | -93.7 | -129 | -93.3 | -7.5 | 13.4 | 1 | -140 | - | pass |
+| pressBass | bass | -45.9 | -58.1 | -61.2 | -82.9 | -91.5 | -6.1 | 13.2 | 1 | -140 | -55 | pass |
+| hissRiser | riser | -100 | -27 | -140 | -59 | -135.7 | -15.1 | 15.3 | 1 | -140 | - | pass |
+| gtrClean | guitar | -29.1 | -47.6 | -64.3 | -89.9 | -135.7 | -7.5 | 13 | 1 | -39.2 | - | pass |
+| gtrCrunch | guitar | -31.2 | -50.1 | -65.7 | -92.8 | -140 | -10.6 | 14.5 | 1 | -140 | - | pass |
+| gtrHigh | guitar | -39.5 | -65.2 | -51.7 | -93.6 | -67.7 | -7.8 | 13.5 | 1 | -140 | - | pass |
+| palmMute | guitar | -30.5 | -86.1 | -87.9 | -129.7 | -140 | -9 | 15 | 1 | -140 | - | pass |
+| chugHigh | guitar | -26.5 | -90.6 | -40.7 | -110.2 | -72.8 | -6.7 | 14.4 | 1 | -140 | - | pass |
+| gtrLead | lead | -63.2 | -45.8 | -111.1 | -80.1 | -112.3 | -16.6 | 13.6 | 0.986 | -91.3 | -61.4 | pass |
+| gtrHarmonic | bell | -54.7 | -101.4 | -124.2 | -137.7 | -126 | -17.4 | 8.4 | 0.972 | -105.3 | -74.6 | pass |
+| feedbackSwell | lead | -90.3 | -140 | -139.3 | -140 | -130.4 | -35.6 | 6.6 | 1 | -140 | -43.6 | pass |
+| bassFinger | bass | -34.8 | -65.7 | -46.2 | -140 | -84.1 | -12.7 | 8.6 | 1 | -140 | -53.9 | pass |
+| bassPick | bass | -35.2 | -30.6 | -46.3 | -100.1 | -93.4 | -13 | 13.3 | 1 | -140 | -56.7 | pass |
+| rockKick | kick | -44.1 | -86.8 | -56.1 | -136.3 | -140 | -10.9 | 7.7 | 1 | -140 | - | pass |
+| metalKick | kick | -41.4 | -77 | -50.6 | -127.2 | -140 | -11.3 | 8.5 | 1 | -140 | - | pass |
+| rockSnare | snare | -41.2 | -29.8 | -109.6 | -72 | -140 | -9.6 | 15 | 0.999 | -59.7 | - | pass |
+| rockHat | hat | -42.5 | -30.3 | -140 | -48.9 | -140 | -16.7 | 13.6 | 1 | -140 | - | pass |
+| rockRide | hat | -34.4 | -36.1 | -140 | -53.9 | -140 | -19.8 | 12.7 | 1 | -140 | - | pass |
+| crashCym | hat | -34.6 | -30.6 | -140 | -48.7 | -140 | -18.4 | 11.4 | 1 | -140 | - | pass |
+| rockTom | perc | -36.5 | -102.3 | -71.3 | -137.9 | -140 | -11.8 | 8.4 | 1 | -140 | - | pass |
+| organ | keys | -53 | -52.9 | -98.1 | -94.5 | -92.7 | -6.5 | 10.9 | 1 | -140 | -71.3 | pass |
+| rockStrings | pad | -84.5 | -50.5 | -126.2 | -92.4 | -122.6 | -14.2 | 14.7 | 1 | -140 | -71.4 | pass |
+| vowelVox | vox | -75 | -68.1 | -139.8 | -119.9 | -128.9 | -33.6 | 9.2 | 1 | -140 | - | pass |

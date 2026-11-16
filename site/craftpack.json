@@ -12,7 +12,7 @@
       "format": "recipes@1",
       "version": "1.0.0",
       "path": "data/catalog.json",
-      "hash": "sha256:c182951a4185f72df2f69de0d05a297f4eef33f6c53d64aa8fe9be138080b4be",
+      "hash": "sha256:d38af091babd57684e189828e40b4e2976859313eb71be715040f70b3a93b380",
       "load": "eager",
       "bytes": 147931
     },
@@ -153,8 +153,8 @@
       "version": "1.0.0",
       "path": "data/recipes/rockmetal.json",
       "load": "lazy",
-      "hash": "sha256:caad5dc66e0a9103b204c7cd7a2f4e7f3f38502d53ab41322dfaedf1f06b4164",
-      "bytes": 25534
+      "hash": "sha256:5ae31f091180c8f6d47980e395b6c62e56f0b742191217cd2fff1be1f0a6f9fe",
+      "bytes": 25536
     },
     {
       "id": "strudel-docs",

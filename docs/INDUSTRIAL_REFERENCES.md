@@ -59,6 +59,9 @@ default). Dovetails: a clang or ratchet on `ind.pickup`, the hiss riser ending e
 long as the build), the vacuum muting everything but the riser, slamImpact on the downbeat, servoDown after it. Length at 140 bpm: 64
 bars = 1:49.7; double drop 2 or add an 8-bar outro for a 2:30 track (FORM_PROFILES.md industrial).
 
+Composition ids: ARR-02 (map), TR-01 / TR-02 / TEN-04 (pickup, riser and impact, the gap), LAY-02 / LAY-03 (hit grammar as the layer
+ladder), MOT-08 (riddim call / response by displacement), ARR-04 (switch-up drop 2).
+
 ## 4. Approach guide: "industrial riddim, in the style associated with Excision" (form and approach only)
 What can be said with sources, and with which label (RESEARCH_ETHICS 5; no song, riff, rhythm or preset of any artist is reproduced):
 - **Tempo and feel**: 140-150 bpm half-time (kick on 1, snare on 3), the drop carried by the bass's rhythm, not by melody. *Genre

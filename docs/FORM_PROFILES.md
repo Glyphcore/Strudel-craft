@@ -22,7 +22,7 @@ Genres with no licensed project (phonk, dubstep / industrial, house / electro, t
 
 ## 2. How to make a similar form (Craft arrangement maps, forms as gates)
 Each guide is a gate map (atoms) plus a layer ladder (lanes per section) and the transition grammar. Labels: **measured** (docs/dawstudy,
-n given), **producer-reported** (cited reference doc), **design call** (ours), **UNVERIFIED**. Composition ids: docs/COMPOSITION.md.
+n given), **producer-reported** (cited reference doc), **design call** (ours), **UNVERIFIED**. Composition ids: docs/COMPOSITION.md (ARR-01 forms as gates and ARR-02 genre section maps apply to every guide).
 
 ### 2.1 Industrial riddim / heavy dubstep (glyphcore/industrial)
 - Map (design call on genre convention, EDM_REFERENCES 3): intro 8, build 8, drop 16, break 8, build 8, drop 16 (switch-up) = 64 bars;
@@ -30,10 +30,11 @@ n given), **producer-reported** (cited reference doc), **design call** (ours), *
   8-bar outro.
 - Layer ladder (lanes, LAY-03 with industrial 0.85): intro 2-5 (texture bed, servo, sparse hits), build 4-8 (kit enters, hiss riser,
   ratchet), drop 7-12 (kick, snare, chain, sub, riddim, 1-2 hit lanes), break 3-6.
-- Transitions (DOV / TEN ids): riser ending on the drop, the vacuum (half bar of silence except the riser), pickup clang, slam on the 1;
+- Transitions (TR-02 riser and impact, TEN-04 the gap, TR-01 pickup fill, TR-03 drop-out bar): riser ending on the drop, the vacuum (half bar of silence except the riser), pickup clang, slam on the 1;
   call / response bass `ind.riddimLine` / `ind.riddimAlt`; hit density by section (`hits1` -> `hits4` -> `hitsGap`, `hits7` on phrase ends).
-- Composition fundamentals: motif = the riddim rhythm (MOT ids, repeat before varying); foreshadow the drop bass filtered in the intro
-  (FOR ids); contrast = the break drops the low end entirely (CON / LAY ids); density from the hit grammar, not from more bass layers.
+- Composition fundamentals: motif = the riddim rhythm (repeat, then MOT-08 rhythmic displacement, MOT-06 fragmentation); foreshadow the drop
+  bass filtered in the intro (FS-02); contrast = the break drops the low end entirely (LAY-08 contrast by subtraction); density from the hit
+  grammar (LAY-02 layer ladder, LAY-03), not from more bass layers; second drop = ARR-04 switch-up; map = ARR-01 / ARR-02.
 - Approach guide (artist style): docs/INDUSTRIAL_REFERENCES.md section 4 ("industrial riddim, in the style associated with Excision"):
   form and approach only, each claim labelled; his own sound-design chain is UNVERIFIED (no source).
 

@@ -33,12 +33,12 @@ displacement (the cell 1/16 late), octave, or swapping the last half bar; a chug
 Measured form data for rock and metal: see docs/FORM_PROFILES.md (licensed LMMS projects found for metal: see DAW_STUDY_SOURCES.md).
 
 ## 4. Composition fundamentals (rock / metal; ids from docs/COMPOSITION.md)
-- **Motif**: the riff cell is the motif; repeat it until it is learned, then vary one parameter at a time (rhythm displacement, last half
-  bar, register). A chorus that reuses the verse riff an octave up or on a new tier (crunch -> high gain) is development, not a new idea.
-- **Density**: layers rise verse -> pre -> chorus (guitar tier, crash ride instead of hats, doubled bass); the bridge / breakdown drops to
+- **Motif**: the riff cell is the motif; repeat it until it is learned, then vary one parameter at a time (MOT-08 rhythmic displacement,
+  MOT-07 extension of the last half bar, MOT-01 transposition / register). A chorus that reuses the verse riff an octave up or on a new tier (crunch -> high gain) is development, not a new idea.
+- **Density** (LAY-02, LAY-03, EN-01): layers rise verse -> pre -> chorus (guitar tier, crash ride instead of hats, doubled bass); the bridge / breakdown drops to
   2-3 layers with the kick locked to the chug. Targets in suno-track-lab engine/composer density.py (`rock`, `metal`; design call).
-- **Foreshadowing**: the intro plays the chorus riff on the clean tier or filtered; the pre-chorus introduces the chorus chord on its last bar.
-- **Contrast**: verse dry and tight (palm mutes, closed hats), chorus open (ringing power chords, ride / crash, organ or strings), breakdown
+- **Foreshadowing** (FS-02, FS-03): the intro plays the chorus riff on the clean tier or filtered; the pre-chorus introduces the chorus chord on its last bar.
+- **Contrast** (LAY-08, TEN-02): verse dry and tight (palm mutes, closed hats), chorus open (ringing power chords, ride / crash, organ or strings), breakdown
   half-time; a solo over the verse changes with the rhythm section held.
 
 ## 5. Mix and master

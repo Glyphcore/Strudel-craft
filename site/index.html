@@ -57,8 +57,8 @@ const NAME = { 'engine/index.js': 'controls engine', 'atoms-site.js': 'atoms', '
   'copycode.css': 'copy code styles', 'capture.css': 'Record panel styles' };
 const q = (u, n) => u + (n ? '?retry=' + n : '');
 const sheet = (h, n) => new Promise((ok) => document.head.append(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: q(h, n), onload: () => ok(null), onerror: () => ok(h) })));
-async function load(mods, css, n) {
-  const failed = (await Promise.all(css.map((h) => sheet(h, n)))).filter(Boolean); /* styled before their widgets appear */
+async function load(mods, css, n, sheets = css.map((h) => sheet(h, n))) {
+  const failed = (await Promise.all(sheets)).filter(Boolean); /* styled before their widgets appear */
   for (const u of mods) { try { await import('./' + q(u, n)); } catch (e) { failed.push(u); console.error('[boot] ' + u + ': ' + e.message); } await new Promise((ok) => setTimeout(ok, 0)); /* one task per module: no long task */ }
   sc.lazyFailed = failed;
   if (failed.length) {
@@ -68,7 +68,8 @@ async function load(mods, css, n) {
   } else if (n && sc.ui) sc.ui.toast('Loaded. Everything is back.', { kind: 'ok' });
 }
 let go; const start = new Promise((ok) => { go = ok; });
-sc.booted = start.then(() => { for (const u of LATER) document.head.append(Object.assign(document.createElement('link'), { rel: 'modulepreload', href: u })); return load(LATER, CSS, 0); });
+sc.booted = start.then(() => { const sheets = CSS.map((h) => sheet(h, 0)); /* stylesheets first, then the module preloads (request order as before) */
+  for (const u of LATER) document.head.append(Object.assign(document.createElement('link'), { rel: 'modulepreload', href: u })); return load(LATER, CSS, 0, sheets); });
 sc.shellPainted.then(go);
 /* the bold display face and the mono face are not needed for the first frame (font-display: swap would show the fallback anyway): fetched after it */
 sc.shellPainted.then(() => { try { for (const [fam, url, weight] of [['Chakra Petch', 'fonts/ChakraPetch-700.woff2', '700'], ['JetBrains Mono', 'fonts/JetBrainsMono.woff2', '400 700']]) { const f = new FontFace(fam, `url(${url}) format("woff2")`, { weight, style: 'normal', display: 'swap' }); document.fonts.add(f); f.load().catch(() => {}); } } catch (e) { /* no Font Loading API: system fallback fonts */ } });

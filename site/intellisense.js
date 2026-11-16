@@ -87,7 +87,10 @@ function shapeOptions(p, ctx, items) {
 
 /* 2. catalog presets */
 const catalog = packs().catalog().catch(() => ({ recipes: [] }));
-api.register({ id: 'catalog', items: async () => (await catalog).recipes.filter((r) => r.expr).map((r) => ({ label: r.id, category: 'presets', detail: r.title, info: r.intent + '\n' + r.expr, apply: r.expr })) });
+/* a preset inserts its plain Strudel expression (works anywhere); recipes that use Craft syntax also offer `<id>.craft`, the authored Craft program (docs/LOWERING.md) */
+api.register({ id: 'catalog', items: async () => (await catalog).recipes.flatMap((r) => [
+  ...(r.expr ? [{ label: r.id, category: 'presets', detail: r.title + (r.lowered ? ' (Strudel)' : ''), info: r.intent + '\n' + r.expr, apply: r.expr }] : []),
+  ...(r.lowered ? [{ label: r.id + '.craft', category: 'presets', detail: r.title + ' (Craft)', info: r.intent + '\n' + r.code, apply: r.code }] : [])]) });
 
 /* 3. runtime discovery after Strudel loads: exported globals, Pattern methods, loaded sounds */
 let runtime = [];

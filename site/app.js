@@ -609,6 +609,14 @@ function select(i, { scroll = true, audition = true } = {}) {
   renderSelection(true);
   if (audition && S.playing && S.view === 'rack') play();
 }
+/* the plain Strudel form of a recipe as it stands: the generated lowering for the catalog text, else the editor text with atoms inlined (an edit has no stored lowering) */
+function strudelForm(r) { return S.edits[r.id] != null ? plain(S.edits[r.id]) : (r.lowered || plain(r.code)); }
+/* both forms of the catalog code, Craft and Strudel (site/forms.js); Insert puts the chosen form in the editor, as an edit that Revert undoes */
+function formsBlock(r) {
+  const F = window.strudelCraft.forms; if (!F) return null;
+  return F.render({ craft: r.code, lowered: r.lowered, lowered_note: r.lowered_note, lowered_check: r.lowered_check }, { insert: (code, which) => {
+    const ta = $('#code'); ta.value = code; ta.dispatchEvent(new Event('input')); say('Inserted the ' + (which === 'craft' ? 'Craft' : 'Strudel') + ' form into the editor'); } });
+}
 function renderSelection(updateHash) {
   const r = cur(); const code = $('#code'); const ins = $('#inspector');
   if (!r) { code.value = ''; ins.replaceChildren(el('p', {}, 'Nothing selected.')); syncTransport(); return; }
@@ -629,9 +637,10 @@ function renderSelection(updateHash) {
     r.notes ? el('p', { html: mdInline(r.notes) }) : null,
     r.needs_samples ? el('p', {}, 'Loads drum-machine sample banks on first play (network).') : null,
     el('div', { class: 'acts' },
-      el('button', { type: 'button', class: 'ghost', onclick: (e) => copyText(plain(recipeCode(r)), e.currentTarget) }, 'Copy ', el('kbd', {}, 'C')),
-      el('a', { class: 'btn ghost', href: strudelUrl(recipeCode(r)), target: '_blank', rel: 'noopener' }, 'strudel.cc ', el('kbd', {}, 'O')),
+      el('button', { type: 'button', class: 'ghost', title: 'Copy the program in the editor as written (Craft form)', onclick: (e) => copyText(recipeCode(r), e.currentTarget) }, 'Copy ', el('kbd', {}, 'C')),
+      el('a', { class: 'btn ghost', href: strudelUrl(strudelForm(r)), target: '_blank', rel: 'noopener', title: 'Opens the plain Strudel form' }, 'strudel.cc ', el('kbd', {}, 'O')),
       r.expr ? el('button', { type: 'button', class: 'ghost', onclick: () => toggleStack(r.id) }, inStack ? 'Unstack' : 'Stack', ' ', el('kbd', {}, 'A')) : null),
+    formsBlock(r),
     el('p', { class: 'src' }, 'Source: ', el('a', { href: r.source, rel: 'noopener', target: '_blank' }, r.source.replace(/^https?:\/\//, '')))].filter(Boolean));
   if (updateHash && S.view === 'rack') history.replaceState(null, '', '#r/' + r.id);
   syncTransport();
@@ -740,7 +749,7 @@ const KEYS = [
   ['[  ]', 'Tempo −1 / +1 BPM (Shift: ±10)'], ['−  =', 'Master −1 / +1 dB'], ['A', 'Add / remove selected recipe in the stack'],
   ['1 - 7', 'Rack / Stack / Ref / Practice / Perform / Syntax / Graph'], ['/', 'Search recipes'], ['Esc', 'Clear search, close dialog, leave a field'],
   ['Ctrl/⌘ + Enter', 'Run the code in the editor'], ['Ctrl/⌘ + Z', 'Undo knob or stack change (Shift: redo)'],
-  ['C', 'Copy code'], ['O', 'Open in strudel.cc'], ['T', 'Toggle theme'], ['H', 'Version history (undo, timeline, diff, search)'], ['?', 'This cheat sheet'],
+  ['C', 'Copy code (Craft form as written)'], ['O', 'Open in strudel.cc'], ['T', 'Toggle theme'], ['H', 'Version history (undo, timeline, diff, search)'], ['?', 'This cheat sheet'],
 ];
 const KEY_WIDGET = '[data-keys="own"], [role="menu"], [role="menuitem"], [aria-haspopup="menu"], [aria-haspopup="true"]';
 const WIDGET_KEYS = new Set(['Enter', ' ', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Escape']);
@@ -778,8 +787,8 @@ function onKey(e) {
     1: () => setView('rack'), 2: () => setView('stack'), 3: () => setView('ref'), 4: () => setView('practice'), 5: () => setView('perform'), 6: () => setView('syntax'), 7: () => setView('graph'),
     '/': () => { const q = $('#q'); if (S.view === 'ref') $('#refQ').focus(); else if (S.view === 'practice') $('#pracQ').focus(); else { q.focus(); q.select(); } },
     Escape: () => { if (S.q || S.chips.size || S.vonly) clearFilters(); },
-    c: () => { const s = currentSource(); if (s) copyText(plain(S.view === 'stack' ? stackText() : recipeCode(cur()))); },
-    o: () => { const code = S.view === 'stack' ? stackText() : cur() && recipeCode(cur()); if (code) window.open(strudelUrl(code), '_blank', 'noopener'); },
+    c: () => { const s = currentSource(); if (s) copyText(S.view === 'stack' ? plain(stackText()) : recipeCode(cur())); },
+    o: () => { const code = S.view === 'stack' ? stackText() : cur() && strudelForm(cur()); if (code) window.open(strudelUrl(code), '_blank', 'noopener'); },
     t: toggleTheme, '?': openHelp,
   }[k];
   if (!act) return;

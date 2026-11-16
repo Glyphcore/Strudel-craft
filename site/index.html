@@ -27,6 +27,7 @@
 <script>/* #59: resolves once the first frame with recipes is on screen (app.js fires sc:shell, then its largest-contentful-paint entry), max 4 s */
 (function(){var sc=window.strudelCraft=window.strudelCraft||{};sc.shellPainted=new Promise(function(ok){var go=function(){setTimeout(ok,0)};addEventListener('sc:shell',function(){var t=performance.now();try{new PerformanceObserver(function(l,o){if(l.getEntries().some(function(e){return e.startTime>=t})){o.disconnect();go()}}).observe({type:'largest-contentful-paint',buffered:true})}catch(e){}setTimeout(go,600)},{once:true});setTimeout(ok,4000)})})();</script>
 <script src="ui.js" defer></script>
+<script src="forms.js" defer></script>
 <script src="app.js" defer></script>
 <script type="module" src="packs.js"></script>
 <link rel="stylesheet" href="workspace.css">

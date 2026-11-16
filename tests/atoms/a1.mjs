@@ -36,11 +36,11 @@ assert.deepEqual(A.types().map((t) => t.id), ['mini', 'sound', 'bank', 'note', '
 
 // Box: no-op on existing code
 {
-  const codes = catalog.recipes.map((r) => r.code).filter(Boolean);
+  const codes = catalog.recipes.map((r) => r.lowered || r.code).filter(Boolean);
   let bad = 0;
   for (const c of codes) { const r = A.compile(c, null); if (r.code !== c) bad++; }
   assert.equal(bad, 0);
-  box(`No-op: all ${codes.length} catalog recipe programs compile unchanged (compile(code).code === code), 0 failures`);
+  box(`No-op: all ${codes.length} catalog recipe programs (plain form; Craft forms with atoms inline by design) compile unchanged (compile(code).code === code), 0 failures`);
 }
 
 // Box: substitution and quotes (ATOMS section 1 example)

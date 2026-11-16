@@ -136,6 +136,8 @@ and decides how to run it (dry/wet, every N cycles, parallel). With no open bind
 `use-opts`: `{ mode, else, quant, ns }`. The first `use` of a slot name declares it; conflicting opts on a later `use` -> `E_SLOT_CONFLICT`.
 
 ### 4.2b In-place hooks and the standard library (#94)
+
+Plain-Strudel form: `.hook("rack | groove")` can be written out as plain chain steps (what strudel.cc needs); slots, gates (`hooks.bind`, `.use`) and taps cannot. The Rack inspector and Syntax view show both forms with the reason where there is none: docs/LOWERING.md.
 `pat.hook("name")`, `pat.hook("a | b(0.3)")`: applies a hook expression directly, with no slot, binding or gate. It is resolved at query time,
 so a later `hooks.def` of the same name takes over an existing pattern; params take their defaults or the arguments in the expression (gated
 `hooks.set` values do not split it: use a slot for a move that changes over time). In a def it is a chain step: `["hook", "hygiene-pad"]`.

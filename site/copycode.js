@@ -207,7 +207,7 @@ function attachEditor(view) {
   host.classList.add('cc-host'); host.prepend(button(view)); return true; /* first in tab order: reached before the editor, which keeps Tab for indent */
 }
 function attachSyntax(root = document.getElementById('syntax')) {
-  if (!root) return; root.querySelectorAll('.sx-ex').forEach((f) => { if (!f.querySelector('pre') || f.querySelector(':scope > .cc-btn')) return; f.classList.add('cc-host'); f.append(button(f)); });
+  if (!root) return; root.querySelectorAll('.sx-ex').forEach((f) => { if (!f.querySelector('pre') || f.querySelector(':scope > .cc-btn') || f.querySelector('.fm')) return; /* .fm examples (site/forms.js) carry their own Copy per form */ f.classList.add('cc-host'); f.append(button(f)); });
 }
 function attach() { const a = attachEditor('rack'), b = attachEditor('stack'); attachSyntax(); return a && b; }
 

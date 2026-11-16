@@ -13,14 +13,14 @@ Each concept family is one JSON file, `tools/concepts/families/<family>.json`. `
 | `site/data/phonk/racks-hiphop.json` | hooks@1 chain-only defs (instrument racks, dovetail moves) | site (pack hooks adapter, #91), CLI `--hooks`, rack audit |
 | `site/data/phonk/atoms-<id>.json` | atoms@1 (`hh.` patterns and form gates, `dt.` dovetail atoms) | `atoms.import("pack:glyphcore/phonk:atoms-hiphop")` |
 | `site/data/phonk/feel-<id>.json` | atoms@1, one per feel template (section 5) | `atoms.import("pack:glyphcore/phonk:feel-trap", { as: "feel" })` |
-| `site/data/catalog.json` recipes with `origin: "concepts"` | plain Strudel, lowered from the same racks, atoms and grooves (opens on strudel.cc) | Rack / catalog browser |
+| `site/data/catalog.json` recipes with `origin: "concepts"` | `code` = the Craft form (atoms + `.hook("rack \| groove")`), `lowered` = plain Strudel generated from the same racks, atoms and grooves (opens on strudel.cc), `lowered_check` = event equality (docs/LOWERING.md) | Rack inspector (both forms as tabs) |
 | `site/data/syntax.json` section `feels` | hooks / atoms / pack programs | Syntax view |
 | `tools/racks/targets.json` | the class of every new rack, recipe and Syntax example | `node tools/racks/audit.mjs` |
 | `site/data/phonk/craftpack.json` | the ingredient list (hashes by `packs.py hash --write`) | packs loader, lock |
 
 DRY rules: a rack chain is written once (its catalog recipe is lowered from it); a pattern is an atom and recipes cite it as `@name`
 (own family) or `@ns:name` (another family); a fade table is one atom that the fade racks cite with `{ "$atomBody": "xfadeOut" }`; groove
-presets live once in `site/engine/groove.js` and the catalog gets their plain-Strudel lowering. `--check` exits 1 when any output is stale.
+presets live once in `site/engine/groove.js` and the catalog gets their plain-Strudel lowering (`lowered`; the Craft form stays in `code`). `--check` exits 1 when any output is stale.
 
 ## 2. Components (hip-hop, trap, hyphy)
 C minor throughout so components combine; one cycle is one bar of 4/4 on a 16-step grid. New racks (class in brackets, all start with
@@ -126,11 +126,13 @@ by default (HOOKS_SYNTAX 4.3). Lane selections (`tagged(...).mute(gate)`) are al
    to override the audit phrase or skip with a reason.
 3. Atoms: add to `atoms` (`type` from `site/data/atoms/types.json`, `body`, `doc`, `params` for gates with a point).
 4. Recipes: add to `recipes` (`id`, `title`, `intent`, `labels` from the catalog or a new label in build.mjs `NEWLABELS`, `class`, `cpm`,
-   `bars`, `voices[]` of `{ src, pat, rack, args, vel, groove, move, more }`, patterns as `@atom` / `@ns:atom`). Plain Strudel only.
+   `bars`, `voices[]` of `{ src, pat, rack, args, vel, groove, move, more }`, patterns as `@atom` / `@ns:atom`). The builder writes both forms:
+   `code` (Craft: `atoms.ns.name` for a whole-string ref, one `.hook("rack \| groove \| move")`) and `lowered` (plain Strudel); never write either by hand.
 5. Syntax examples: add to `syntax` (`title`, `code`, `bars`); site syntax, packs and hooks allowed.
 6. A feel: add to `feels` in feels.json (`title`, `tempo`, `cpm`, `groove` preset, `doc`, `labels`, `voices` for every template voice).
    A new template voice is one entry in `template.voices` / `template.src`, and every feel must then fill it (silence is `{ "pat": "~" }`).
 7. Run `node tools/concepts/build.mjs --render` (every recipe must come back `verified`), `python3 tools/packs/packs.py hash site/data/phonk --write`,
+   `python3 tools/packs/shim.py`, `node tools/lowering/build.mjs` (verifies Craft = Strudel events, annotates the Syntax examples; docs/LOWERING.md),
    `python3 tools/packs/shim.py`, `node tools/pwa/precache.mjs`, then `node tools/racks/audit.mjs` (0 failures) and
    `node tools/concepts/build.mjs --check` (exit 0).
-8. Docs follow code: this file (tables above), site/README.md, docs/CONCEPT_DAG.md, the #56 tracker.
+8. Docs follow code: this file (tables above), docs/LOWERING.md, site/README.md, docs/CONCEPT_DAG.md, the #56 tracker.

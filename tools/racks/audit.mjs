@@ -97,7 +97,7 @@ if (only.includes('racks')) for (const [name, def] of Object.entries(merged.defs
     head: structure && TGT.hygiene && t.class !== 'move' && !/^hygiene-/.test(name) ? { found: head, want: 'hygiene-' + t.class } : null });
 }
 if (only.includes('catalog')) for (const r of JSON.parse(fs.readFileSync(opt('--catalog', path.join(ROOT, 'site/data/catalog.json')), 'utf8')).recipes) {
-  const t = TGT.catalog[r.id] || {}; items.push({ kind: 'catalog', id: r.id, cls: t.class || 'demo', code: r.code, bars: t.bars || 2, skip: r.needs_samples ? 'needs a sample bank (not rendered offline)' : t.skip });
+  const t = TGT.catalog[r.id] || {}; items.push({ kind: 'catalog', id: r.id, cls: t.class || 'demo', code: r.lowered || r.code, bars: t.bars || 2, skip: r.needs_samples ? 'needs a sample bank (not rendered offline)' : t.skip });
 }
 if (only.includes('syntax')) for (const sec of JSON.parse(fs.readFileSync(opt('--syntax', path.join(ROOT, 'site/data/syntax.json')), 'utf8')).sections) for (const ex of sec.examples || []) {
   const id = `${sec.id}/${ex.title}`; const t = TGT.syntax[id] || {}; items.push({ kind: 'syntax', id, cls: t.class || 'demo', code: ex.code, bars: t.bars || 2, skip: typeof ex.code !== 'string' ? 'no code (UI walkthrough)' : t.skip, site: true });

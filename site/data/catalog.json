@@ -1756,7 +1756,14 @@
    "id": "boom-bap-kick",
    "title": "Boom-bap kick",
    "intent": "Round, knocking kick on 1, the a of 2 and the and of 3.",
-   "code": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75)",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 12,
+    "hash": "8d6c540f5c"
+   },
    "notes": "",
    "labels": [
     "hip-hop",
@@ -1780,7 +1787,14 @@
    "id": "clap-backbeat",
    "title": "Clap backbeat",
    "intent": "Band-passed noise clap on 2 and 4.",
-   "code": "setcpm(90/4)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9)",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomSnare).hook(\"clap\")",
+   "lowered": "setcpm(90/4)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 8,
+    "hash": "d68bfc9525"
+   },
    "notes": "",
    "labels": [
     "hip-hop",
@@ -1803,7 +1817,14 @@
    "id": "trap-hats-rolls",
    "title": "Trap hats with rolls",
    "intent": "16th hats with accents; every second bar ends in triplet, 32nd and 64th-triplet rolls.",
-   "code": "setcpm(140/4)\n$: s(\"<[x*16] [x x x x x x x x x x x x [x x x] [x x x] [x x x x] [x x x x x x]]>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).velocity(\"[1 .55 .8 .55]*4\")",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.trapHats).hook(\"hat(0.03)\").velocity(atoms.hh.rollVel)",
+   "lowered": "setcpm(140/4)\n$: s(\"<[x*16] [x x x x x x x x x x x x [x x x] [x x x] [x x x x] [x x x x x x]]>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).velocity(\"[1 .55 .8 .55]*4\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 88,
+    "hash": "6d297c87f5"
+   },
    "notes": "",
    "labels": [
     "trap",
@@ -1827,7 +1848,14 @@
    "id": "open-hat-offbeat",
    "title": "Open hat on the offbeat",
    "intent": "Long open hat between the beats.",
-   "code": "setcpm(90/4)\n$: s(\"~ x ~ x\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.22).sustain(0).gain(0.3)",
+   "code": "setcpm(90/4)\n$: s(\"~ x ~ x\").hook(\"openHat\")",
+   "lowered": "setcpm(90/4)\n$: s(\"~ x ~ x\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.22).sustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 8,
+    "hash": "d319f32393"
+   },
    "notes": "",
    "labels": [
     "hip-hop",
@@ -1850,7 +1878,14 @@
    "id": "finger-snaps",
    "title": "Finger snaps",
    "intent": "Short narrow snaps on every and (hyphy and West Coast).",
-   "code": "setcpm(100/4)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(80).lpf(8000).s(\"white\").bpf(2400).bpq(2).lpf(5000).decay(0.05).sustain(0).gain(0.8)",
+   "code": "setcpm(100/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.hyphySnap).hook(\"snap\")",
+   "lowered": "setcpm(100/4)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(80).lpf(8000).s(\"white\").bpf(2400).bpq(2).lpf(5000).decay(0.05).sustain(0).gain(0.8)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "9ab020bbea"
+   },
    "notes": "",
    "labels": [
     "hyphy",
@@ -1874,7 +1909,14 @@
    "id": "trap-808-line",
    "title": "Trap 808 line",
    "intent": "Sine 808 that follows the trap kick, soft attack, drive for small speakers.",
-   "code": "setcpm(140/4)\n$: note(\"<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>\").hpf(25).s(\"sine\").attack(0.004).pdecay(0.14).decay(0.6).sustain(0.7).release(0.1).shape(0.45).lpf(600).gain(0.45).postgain(0.87)",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.trap808).hook(\"sub808\")",
+   "lowered": "setcpm(140/4)\n$: note(\"<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>\").hpf(25).s(\"sine\").attack(0.004).pdecay(0.14).decay(0.6).sustain(0.7).release(0.1).shape(0.45).lpf(600).gain(0.45).postgain(0.87)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 12,
+    "hash": "f9d5f7f82d"
+   },
    "notes": "",
    "labels": [
     "trap",
@@ -1898,7 +1940,14 @@
    "id": "boom-bap-bass",
    "title": "Boom-bap bass",
    "intent": "Dark triangle bass locked to the boom-bap kick.",
-   "code": "setcpm(90/4)\n$: note(\"c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5)",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.boomBass).hook(\"bbBass\")",
+   "lowered": "setcpm(90/4)\n$: note(\"c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "dd21b95058"
+   },
    "notes": "",
    "labels": [
     "boom-bap",
@@ -1921,7 +1970,14 @@
    "id": "rhodes-keys",
    "title": "Electric-piano keys",
    "intent": "Cm7 to Abmaj7 on FM keys.",
-   "code": "setcpm(90/4)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22)",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.boomChords).hook(\"rhodes\")",
+   "lowered": "setcpm(90/4)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "6347a5caa6"
+   },
    "notes": "",
    "labels": [
     "hip-hop",
@@ -1945,7 +2001,14 @@
    "id": "trap-bell-melody",
    "title": "Trap bell melody",
    "intent": "Bell line over i VI VII V.",
-   "code": "setcpm(140/4)\n$: note(\"c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~\").hpf(300).lpf(8000).s(\"sine\").fm(1.5).fmh(4).decay(0.5).sustain(0).gain(0.3)",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.trapBell).hook(\"trapBell\")",
+   "lowered": "setcpm(140/4)\n$: note(\"c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~\").hpf(300).lpf(8000).s(\"sine\").fm(1.5).fmh(4).decay(0.5).sustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 32,
+    "hash": "dc1983b904"
+   },
    "notes": "",
    "labels": [
     "trap",
@@ -1969,7 +2032,14 @@
    "id": "cloud-pad",
    "title": "Cloud pad",
    "intent": "Slow major-seventh pad, low end left to the bass.",
-   "code": "setcpm(70/4)\n$: note(\"<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"triangle\").attack(1.2).sustain(0.8).release(2.5).lpf(1800).gain(0.16)",
+   "code": "setcpm(70/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.cloudChords).hook(\"airPad\")",
+   "lowered": "setcpm(70/4)\n$: note(\"<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"triangle\").attack(1.2).sustain(0.8).release(2.5).lpf(1800).gain(0.16)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "b33666de4b"
+   },
    "notes": "",
    "labels": [
     "cloud",
@@ -1993,7 +2063,14 @@
    "id": "chopped-chords",
    "title": "Chopped chord stabs",
    "intent": "MPC-style chopped chord rhythm (3+3+4+2+4) as saw stabs.",
-   "code": "setcpm(90/4)\n$: note(\"[c4,eb4,g4] ~ ~ [c4,eb4,g4] ~ ~ [bb3,d4,f4] ~ ~ ~ [ab3,c4,eb4] ~ [ab3,c4,eb4] ~ ~ ~\").hpf(120).lpf(8000).s(\"sawtooth\").attack(0.003).decay(0.14).sustain(0).lpf(1600).lpenv(2.5).lpdecay(0.12).gain(0.2)",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.chops).hook(\"chopStab\")",
+   "lowered": "setcpm(90/4)\n$: note(\"[c4,eb4,g4] ~ ~ [c4,eb4,g4] ~ ~ [bb3,d4,f4] ~ ~ ~ [ab3,c4,eb4] ~ [ab3,c4,eb4] ~ ~ ~\").hpf(120).lpf(8000).s(\"sawtooth\").attack(0.003).decay(0.14).sustain(0).lpf(1600).lpenv(2.5).lpdecay(0.12).gain(0.2)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 60,
+    "hash": "0ccfd0f12f"
+   },
    "notes": "",
    "labels": [
     "hip-hop",
@@ -2017,7 +2094,14 @@
    "id": "hyphy-lead",
    "title": "Hyphy lead riff",
    "intent": "Bright square riff with quick vibrato on the bounce.",
-   "code": "setcpm(100/4)\n$: note(\"c5 ~ ~ eb5 ~ ~ g5 ~ f5 ~ eb5 ~ c5 ~ ~ ~\").hpf(150).lpf(8000).s(\"square\").lpf(2800).lpenv(1).attack(0.01).decay(0.2).sustain(0.5).release(0.15).vib(6).vibmod(0.15).gain(0.26)",
+   "code": "setcpm(100/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.hyphyLead).hook(\"hyphyLead\")",
+   "lowered": "setcpm(100/4)\n$: note(\"c5 ~ ~ eb5 ~ ~ g5 ~ f5 ~ eb5 ~ c5 ~ ~ ~\").hpf(150).lpf(8000).s(\"square\").lpf(2800).lpenv(1).attack(0.01).decay(0.2).sustain(0.5).release(0.15).vib(6).vibmod(0.15).gain(0.26)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 24,
+    "hash": "5ba16ff0cd"
+   },
    "notes": "",
    "labels": [
     "hyphy",
@@ -2040,7 +2124,14 @@
    "id": "vox-tag-synth",
    "title": "Vox tag (no samples)",
    "intent": "A vowel-filtered saw 'hey' at the end of the bar, for a producer-tag slot.",
-   "code": "setcpm(90/4)\n$: note(\"~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ <c4 g4> ~\").hpf(150).lpf(8000).s(\"sawtooth\").vowel(\"o\").attack(0.01).decay(0.25).sustain(0).lpf(3000).gain(0.35)",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.tag).hook(\"voxTag\")",
+   "lowered": "setcpm(90/4)\n$: note(\"~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ <c4 g4> ~\").hpf(150).lpf(8000).s(\"sawtooth\").vowel(\"o\").attack(0.01).decay(0.25).sustain(0).lpf(3000).gain(0.35)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 4,
+    "hash": "b6d66eb782"
+   },
    "notes": "",
    "labels": [
     "hip-hop",
@@ -2064,7 +2155,14 @@
    "id": "vinyl-bed",
    "title": "Vinyl hiss bed",
    "intent": "Quiet band-limited pink-noise bed under a beat.",
-   "code": "setcpm(90/4)\n$: s(\"x\").hpf(200).lpf(12500).ftype(\"24db\").s(\"pink\").hpf(1500).lpf(8000).sustain(1).gain(0.06)",
+   "code": "setcpm(90/4)\n$: s(\"x\").hook(\"vinyl\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x\").hpf(200).lpf(12500).ftype(\"24db\").s(\"pink\").hpf(1500).lpf(8000).sustain(1).gain(0.06)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 4,
+    "hash": "5b92ffb9e1"
+   },
    "notes": "",
    "labels": [
     "lofi",
@@ -2087,7 +2185,14 @@
    "id": "downlifter",
    "title": "Downlifter",
    "intent": "Falling noise sweep after an impact.",
-   "code": "setcpm(90/4)\n$: s(\"x ~\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").hpf(400).attack(0.005).decay(2).sustain(0).lpf(1200).lpenv(3).lpattack(0.001).lpdecay(2).lpsustain(0).gain(0.3)",
+   "code": "setcpm(90/4)\n$: s(\"x ~\").hook(\"downlifter\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x ~\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").hpf(400).attack(0.005).decay(2).sustain(0).lpf(1200).lpenv(3).lpattack(0.001).lpdecay(2).lpsustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 4,
+    "hash": "039b7705d4"
+   },
    "notes": "",
    "labels": [
     "riser",
@@ -2110,7 +2215,14 @@
    "id": "boom-bap-beat",
    "title": "Boom-bap beat",
    "intent": "Kick, clap, hats, bass and keys in the pocket.",
-   "code": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.05).sustain(0).gain(0.45)\n$: note(\"c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22)",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick\")\n$: s(atoms.hh.boomSnare).hook(\"clap\")\n$: s(atoms.hh.boomHats).hook(\"hat\")\n$: note(atoms.hh.boomBass).hook(\"bbBass\")\n$: note(atoms.hh.boomChords).hook(\"rhodes\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.05).sustain(0).gain(0.45)\n$: note(\"c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 88,
+    "hash": "3910f846b5"
+   },
    "notes": "",
    "labels": [
     "boom-bap",
@@ -2134,7 +2246,14 @@
    "id": "trap-beat",
    "title": "Trap beat",
    "intent": "Half-time clap, rolling hats, 808, bells.",
-   "code": "setcpm(140/4)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>\").hpf(30).lpf(7000).hpf(30).lpf(7000).s(\"sine\").freq(55).penv(36).pdecay(0.04).decay(0.28).sustain(0).noise(0.12).shape(0.4).gain(0.8).hpf(40)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9)\n$: s(\"<[x*16] [x x x x x x x x x x x x [x x x] [x x x] [x x x x] [x x x x x x]]>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).velocity(\"[1 .55 .8 .55]*4\")\n$: note(\"<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>\").velocity(\"0.6\").hpf(25).s(\"sine\").attack(0.004).pdecay(0.14).decay(0.6).sustain(0.7).release(0.1).shape(0.45).lpf(600).gain(0.45).postgain(0.87)\n$: note(\"c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~\").hpf(300).lpf(8000).s(\"sine\").fm(1.5).fmh(4).decay(0.5).sustain(0).gain(0.3)",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.trapKick).hook(\"knock808\")\n$: s(atoms.hh.trapClap).hook(\"clap\")\n$: s(atoms.hh.trapHats).hook(\"hat(0.03)\").velocity(atoms.hh.rollVel)\n$: note(atoms.hh.trap808).velocity(\"0.6\").hook(\"sub808\")\n$: note(atoms.hh.trapBell).hook(\"trapBell\")",
+   "lowered": "setcpm(140/4)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>\").hpf(30).lpf(7000).hpf(30).lpf(7000).s(\"sine\").freq(55).penv(36).pdecay(0.04).decay(0.28).sustain(0).noise(0.12).shape(0.4).gain(0.8).hpf(40)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9)\n$: s(\"<[x*16] [x x x x x x x x x x x x [x x x] [x x x] [x x x x] [x x x x x x]]>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).velocity(\"[1 .55 .8 .55]*4\")\n$: note(\"<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>\").velocity(\"0.6\").hpf(25).s(\"sine\").attack(0.004).pdecay(0.14).decay(0.6).sustain(0.7).release(0.1).shape(0.45).lpf(600).gain(0.45).postgain(0.87)\n$: note(\"c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~\").hpf(300).lpf(8000).s(\"sine\").fm(1.5).fmh(4).decay(0.5).sustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 148,
+    "hash": "cd0b404cb0"
+   },
    "notes": "",
    "labels": [
     "trap",
@@ -2158,7 +2277,14 @@
    "id": "hyphy-bounce-stomp",
    "title": "Hyphy bounce into stomp",
    "intent": "Two bars of bounce (3+3+4+3+3 kick, claps, snaps), two bars of stomp (kick and clap on every beat).",
-   "code": "setcpm(100/4)\n$: s(\"<[x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]!2 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75)\n$: s(\"<[~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~]!2 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(80).lpf(8000).s(\"white\").bpf(2400).bpq(2).lpf(5000).decay(0.05).sustain(0).gain(0.8).mask(\"<1 1 0 0>\")\n$: note(\"c5 ~ ~ eb5 ~ ~ g5 ~ f5 ~ eb5 ~ c5 ~ ~ ~\").hpf(150).lpf(8000).s(\"square\").lpf(2800).lpenv(1).attack(0.01).decay(0.2).sustain(0.5).release(0.15).vib(6).vibmod(0.15).gain(0.26)",
+   "code": "setcpm(100/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(\"<[x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]!2 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hook(\"bbKick\")\n$: s(\"<[~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~]!2 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hook(\"clap\")\n$: s(atoms.hh.hyphySnap).hook(\"snap\").mask(\"<1 1 0 0>\")\n$: note(atoms.hh.hyphyLead).hook(\"hyphyLead\")",
+   "lowered": "setcpm(100/4)\n$: s(\"<[x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]!2 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75)\n$: s(\"<[~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~]!2 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(80).lpf(8000).s(\"white\").bpf(2400).bpq(2).lpf(5000).decay(0.05).sustain(0).gain(0.8).mask(\"<1 1 0 0>\")\n$: note(\"c5 ~ ~ eb5 ~ ~ g5 ~ f5 ~ eb5 ~ c5 ~ ~ ~\").hpf(150).lpf(8000).s(\"square\").lpf(2800).lpenv(1).attack(0.01).decay(0.2).sustain(0.5).release(0.15).vib(6).vibmod(0.15).gain(0.26)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 62,
+    "hash": "d8dc5bfa57"
+   },
    "notes": "",
    "labels": [
     "hyphy",
@@ -2182,7 +2308,14 @@
    "id": "hook-drop-bar",
    "title": "Drop bar before the hook",
    "intent": "Drums play three bars and drop out for the fourth, so the hook lands on an empty bar's pickup.",
-   "code": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).mask(\"<1 1 1 0>\")\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mask(\"<1 1 1 0>\")\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22)",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick\").mask(\"<1 1 1 0>\")\n$: s(atoms.hh.boomSnare).hook(\"clap\").mask(\"<1 1 1 0>\")\n$: note(atoms.hh.boomChords).hook(\"rhodes\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).mask(\"<1 1 1 0>\")\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mask(\"<1 1 1 0>\")\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 31,
+    "hash": "bb81aee231"
+   },
    "notes": "Plain Strudel uses .mask(\"<1 1 1 0>\"); with hooks the same form is the gate atom hh.dropBar (tagged(\"drums\").mute(atoms.hh.dropBar)).",
    "labels": [
     "sections",
@@ -2206,7 +2339,14 @@
    "id": "drop-last-beat",
    "title": "Drop the beat on beat 4",
    "intent": "Every 4th bar the drums stop for the last beat: a gap that pulls into the next section.",
-   "code": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).mask(\"<1 1 1 [1 1 1 0]>\")\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mask(\"<1 1 1 [1 1 1 0]>\")\n$: note(\"c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5)",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick\").mask(\"<1 1 1 [1 1 1 0]>\")\n$: s(atoms.hh.boomSnare).hook(\"clap\").mask(\"<1 1 1 [1 1 1 0]>\")\n$: note(atoms.hh.boomBass).hook(\"bbBass\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).mask(\"<1 1 1 [1 1 1 0]>\")\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mask(\"<1 1 1 [1 1 1 0]>\")\n$: note(\"c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 35,
+    "hash": "e325478b69"
+   },
    "notes": "Plain Strudel masks the last quarter of every 4th bar; with hooks it is the gate atom hh.lastBeat (bar.beat points, 20.4b..21b).",
    "labels": [
     "sections",
@@ -2230,7 +2370,14 @@
    "id": "beat-switch",
    "title": "Beat switch",
    "intent": "Two bars boom-bap, then the same harmony over a trap kit: the beat switches, the song does not.",
-   "code": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).mask(\"<1 1 0 0>\")\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mask(\"<1 1 0 0>\")\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>\").hpf(30).lpf(7000).hpf(30).lpf(7000).s(\"sine\").freq(55).penv(36).pdecay(0.04).decay(0.28).sustain(0).noise(0.12).shape(0.4).gain(0.8).hpf(40).mask(\"<0 0 1 1>\")\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mask(\"<0 0 1 1>\")\n$: s(\"<[x*16] [x x x x x x x x x x x x [x x x] [x x x] [x x x x] [x x x x x x]]>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).mask(\"<0 0 1 1>\")\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22)",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick\").mask(\"<1 1 0 0>\")\n$: s(atoms.hh.boomSnare).hook(\"clap\").mask(\"<1 1 0 0>\")\n$: s(atoms.hh.trapKick).hook(\"knock808\").mask(\"<0 0 1 1>\")\n$: s(atoms.hh.trapClap).hook(\"clap\").mask(\"<0 0 1 1>\")\n$: s(atoms.hh.trapHats).hook(\"hat(0.03)\").mask(\"<0 0 1 1>\")\n$: note(atoms.hh.boomChords).hook(\"rhodes\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).mask(\"<1 1 0 0>\")\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mask(\"<1 1 0 0>\")\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>\").hpf(30).lpf(7000).hpf(30).lpf(7000).s(\"sine\").freq(55).penv(36).pdecay(0.04).decay(0.28).sustain(0).noise(0.12).shape(0.4).gain(0.8).hpf(40).mask(\"<0 0 1 1>\")\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mask(\"<0 0 1 1>\")\n$: s(\"<[x*16] [x x x x x x x x x x x x [x x x] [x x x] [x x x x] [x x x x x x]]>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).mask(\"<0 0 1 1>\")\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 78,
+    "hash": "06aff2e9c5"
+   },
    "notes": "Plain Strudel alternates kits with masks; with hooks: hooks.bind(\"kick\", \"bbKick\", \"<29b\") and hooks.bind(\"kick\", \"knock808\", atoms.hh.switch).",
    "labels": [
     "sections",
@@ -2254,7 +2401,14 @@
    "id": "switch-up",
    "title": "Switch-up (same kit, new pattern)",
    "intent": "Kit and harmony stay; kick and bass flip to the bounce pattern every 4 bars.",
-   "code": "setcpm(95/4)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~]!4 [x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]!4>\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9)\n$: note(\"<[c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~]!4 [c2 ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~ ~ c2 ~ ~]!4>\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5)",
+   "code": "setcpm(95/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(\"<[x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~]!4 [x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]!4>\").hook(\"bbKick\")\n$: s(atoms.hh.boomSnare).hook(\"clap\")\n$: note(\"<[c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~]!4 [c2 ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~ ~ c2 ~ ~]!4>\").hook(\"bbBass\")",
+   "lowered": "setcpm(95/4)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~]!4 [x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ x ~ ~]!4>\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9)\n$: note(\"<[c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~]!4 [c2 ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~ ~ c2 ~ ~]!4>\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 36,
+    "hash": "cb443b30f4"
+   },
    "notes": "",
    "labels": [
     "sections",
@@ -2278,7 +2432,14 @@
    "id": "dovetail-pickup-fill",
    "title": "Pickup fill into the next section",
    "intent": "Three bars of beat; in the fourth, a clap roll on beat 4 leads into the downbeat.",
-   "code": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).mask(\"<1 1 1 [1 1 1 0]>\")\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mask(\"<1 1 1 [1 1 1 0]>\")\n$: s(\"<~ ~ ~ [~ ~ ~ [x x x x]]>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).velocity(\"<1 1 1 [1 1 1 [.4 .6 .8 1]]>\")",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick\").mask(\"<1 1 1 [1 1 1 0]>\")\n$: s(atoms.hh.boomSnare).hook(\"clap\").mask(\"<1 1 1 [1 1 1 0]>\")\n$: s(\"<~ ~ ~ [~ ~ ~ [x x x x]]>\").hook(\"clap\").velocity(\"<1 1 1 [1 1 1 [.4 .6 .8 1]]>\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).mask(\"<1 1 1 [1 1 1 0]>\")\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mask(\"<1 1 1 [1 1 1 0]>\")\n$: s(\"<~ ~ ~ [~ ~ ~ [x x x x]]>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).velocity(\"<1 1 1 [1 1 1 [.4 .6 .8 1]]>\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 23,
+    "hash": "35ee3392be"
+   },
    "notes": "With hooks the fill is gated by dt.pickup({ at: \"5b\" }) (the last beat before bar 5) on a slot whose else is silence.",
    "labels": [
     "dovetail",
@@ -2302,7 +2463,14 @@
    "id": "dovetail-808-pickup",
    "title": "808 pickup",
    "intent": "The 808 plays a two-note pickup in the last beat of every 4th bar, so the next downbeat feels caught.",
-   "code": "setcpm(140/4)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>\").hpf(30).lpf(7000).hpf(30).lpf(7000).s(\"sine\").freq(55).penv(36).pdecay(0.04).decay(0.28).sustain(0).noise(0.12).shape(0.4).gain(0.8).hpf(40)\n$: note(\"<[c2@10 c2@6]!3 [c2@10 c2@4 g1 bb1]>\").velocity(\"0.6\").hpf(25).s(\"sine\").attack(0.004).pdecay(0.14).decay(0.6).sustain(0.7).release(0.1).shape(0.45).lpf(600).gain(0.45).postgain(0.87)",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.trapKick).hook(\"knock808\")\n$: note(\"<[c2@10 c2@6]!3 [c2@10 c2@4 g1 bb1]>\").velocity(\"0.6\").hook(\"sub808\")",
+   "lowered": "setcpm(140/4)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>\").hpf(30).lpf(7000).hpf(30).lpf(7000).s(\"sine\").freq(55).penv(36).pdecay(0.04).decay(0.28).sustain(0).noise(0.12).shape(0.4).gain(0.8).hpf(40)\n$: note(\"<[c2@10 c2@6]!3 [c2@10 c2@4 g1 bb1]>\").velocity(\"0.6\").hpf(25).s(\"sine\").attack(0.004).pdecay(0.14).decay(0.6).sustain(0.7).release(0.1).shape(0.45).lpf(600).gain(0.45).postgain(0.87)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 22,
+    "hash": "6c7df1b450"
+   },
    "notes": "",
    "labels": [
     "dovetail",
@@ -2326,7 +2494,14 @@
    "id": "dovetail-overlapping-tail",
    "title": "Overlapping tail",
    "intent": "The pad section ends after bar 2 but its release and room ring into bar 3, where the keys enter: no hole between sections.",
-   "code": "setcpm(80/4)\n$: note(\"<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"triangle\").attack(1.2).sustain(0.8).release(2.5).lpf(1800).gain(0.16).release(1.6).room(0.5).mask(\"<1 1 0 0>\")\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22).mask(\"<0 0 1 1>\")",
+   "code": "setcpm(80/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.cloudChords).hook(\"airPad | tailHold\").room(0.5).mask(\"<1 1 0 0>\")\n$: note(atoms.hh.boomChords).hook(\"rhodes\").mask(\"<0 0 1 1>\")",
+   "lowered": "setcpm(80/4)\n$: note(\"<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"triangle\").attack(1.2).sustain(0.8).release(2.5).lpf(1800).gain(0.16).release(1.6).room(0.5).mask(\"<1 1 0 0>\")\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22).mask(\"<0 0 1 1>\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "a72d4f2a35"
+   },
    "notes": "The hooks split rule gives the same overlap: a note that starts before a gate boundary rings through it.",
    "labels": [
     "dovetail",
@@ -2350,7 +2525,14 @@
    "id": "dovetail-call-response",
    "title": "Call and response handoff",
    "intent": "The lead calls in the first half of each bar, the keys answer in the second: two parts share one space.",
-   "code": "setcpm(100/4)\n$: note(\"c5 ~ ~ eb5 ~ ~ g5 ~ f5 ~ eb5 ~ c5 ~ ~ ~\").hpf(150).lpf(8000).s(\"square\").lpf(2800).lpenv(1).attack(0.01).decay(0.2).sustain(0.5).release(0.15).vib(6).vibmod(0.15).gain(0.26).mask(\"1 0\")\n$: note(\"[c4,eb4,g4] ~ ~ [c4,eb4,g4] ~ ~ [bb3,d4,f4] ~ ~ ~ [ab3,c4,eb4] ~ [ab3,c4,eb4] ~ ~ ~\").hpf(120).lpf(8000).s(\"sawtooth\").attack(0.003).decay(0.14).sustain(0).lpf(1600).lpenv(2.5).lpdecay(0.12).gain(0.2).mask(\"0 1\")",
+   "code": "setcpm(100/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\natoms.import(\"pack:glyphcore/phonk:atoms-dovetail\")\n$: note(atoms.hh.hyphyLead).hook(\"hyphyLead\").mask(atoms.dt.callMask)\n$: note(atoms.hh.chops).hook(\"chopStab\").mask(atoms.dt.answerMask)",
+   "lowered": "setcpm(100/4)\n$: note(\"c5 ~ ~ eb5 ~ ~ g5 ~ f5 ~ eb5 ~ c5 ~ ~ ~\").hpf(150).lpf(8000).s(\"square\").lpf(2800).lpenv(1).attack(0.01).decay(0.2).sustain(0.5).release(0.15).vib(6).vibmod(0.15).gain(0.26).mask(\"1 0\")\n$: note(\"[c4,eb4,g4] ~ ~ [c4,eb4,g4] ~ ~ [bb3,d4,f4] ~ ~ ~ [ab3,c4,eb4] ~ [ab3,c4,eb4] ~ ~ ~\").hpf(120).lpf(8000).s(\"sawtooth\").attack(0.003).decay(0.14).sustain(0).lpf(1600).lpenv(2.5).lpdecay(0.12).gain(0.2).mask(\"0 1\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 36,
+    "hash": "340b04920e"
+   },
    "notes": "",
    "labels": [
     "dovetail",
@@ -2374,7 +2556,14 @@
    "id": "dovetail-crossfade",
    "title": "Equal-power crossfade between sections",
    "intent": "Over bar 4 the pad fades out on a cos table while the keys fade in on a sin table: constant loudness through the change.",
-   "code": "setcpm(90/4)\n$: note(\"<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"triangle\").attack(1.2).sustain(0.8).release(2.5).lpf(1800).gain(0.16).velocity(\"<1 1 1 [[1 .98 .92 .83 .71 .56 .38 .2]] 0>\")\n$: note(\"[c3,eb3,g3,bb3]*4\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22).velocity(\"<0 0 0 [[.2 .38 .56 .71 .83 .92 .98 1]] 1>\")",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.cloudChords).hook(\"airPad\").velocity(\"<1 1 1 [[1 .98 .92 .83 .71 .56 .38 .2]] 0>\")\n$: note(\"[c3,eb3,g3,bb3]*4\").hook(\"rhodes\").velocity(\"<0 0 0 [[.2 .38 .56 .71 .83 .92 .98 1]] 1>\")",
+   "lowered": "setcpm(90/4)\n$: note(\"<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"triangle\").attack(1.2).sustain(0.8).release(2.5).lpf(1800).gain(0.16).velocity(\"<1 1 1 [[1 .98 .92 .83 .71 .56 .38 .2]] 0>\")\n$: note(\"[c3,eb3,g3,bb3]*4\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22).velocity(\"<0 0 0 [[.2 .38 .56 .71 .83 .92 .98 1]] 1>\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 80,
+    "hash": "06e4f355eb"
+   },
    "notes": "",
    "labels": [
     "dovetail",
@@ -2398,7 +2587,14 @@
    "id": "dovetail-riser-impact",
    "title": "Riser, impact, downlifter",
    "intent": "A two-bar riser ends exactly on the downbeat, the impact lands on the one, the downlifter falls after it.",
-   "code": "setcpm(90/4)\n$: s(\"<~ ~ x ~>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(6).release(0.3).hpf(300).lpf(900).lpenv(3.5).lpattack(7).gain(0.3).attack(4.5).lpattack(5)\n$: s(\"<x ~ ~ ~>\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(30).pdecay(0.2).decay(2.5).sustain(0).noise(0.25).gain(0.7).hpf(35)\n$: s(\"<x ~ ~ ~>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").hpf(400).attack(0.005).decay(2).sustain(0).lpf(1200).lpenv(3).lpattack(0.001).lpdecay(2).lpsustain(0).gain(0.3)",
+   "code": "setcpm(90/4)\n$: s(\"<~ ~ x ~>\").hook(\"riser\").attack(4.5).lpattack(5)\n$: s(\"<x ~ ~ ~>\").hook(\"impact\").hpf(35)\n$: s(\"<x ~ ~ ~>\").hook(\"downlifter\")",
+   "lowered": "setcpm(90/4)\n$: s(\"<~ ~ x ~>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(6).release(0.3).hpf(300).lpf(900).lpenv(3.5).lpattack(7).gain(0.3).attack(4.5).lpattack(5)\n$: s(\"<x ~ ~ ~>\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(30).pdecay(0.2).decay(2.5).sustain(0).noise(0.25).gain(0.7).hpf(35)\n$: s(\"<x ~ ~ ~>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").hpf(400).attack(0.005).decay(2).sustain(0).lpf(1200).lpenv(3).lpattack(0.001).lpdecay(2).lpsustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 3,
+    "hash": "9b18a404dd"
+   },
    "notes": "With hooks: dt.rise({ at: \"5b\", len: 2 }), dt.hit({ at: \"5b\" }).",
    "labels": [
     "dovetail",
@@ -2422,7 +2618,14 @@
    "id": "dovetail-ducked-transition",
    "title": "Ducked transition",
    "intent": "The pad bed ducks under the impact on the one and breathes back over a bar.",
-   "code": "setcpm(90/4)\n$: note(\"<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"triangle\").attack(1.2).sustain(0.8).release(2.5).lpf(1800).gain(0.16).orbit(2)\n$: s(\"<x ~>\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(30).pdecay(0.2).decay(2.5).sustain(0).noise(0.25).gain(0.7).hpf(35).duckorbit(2).duckattack(0.6).duckdepth(0.8)",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: note(atoms.hh.cloudChords).hook(\"airPad\").orbit(2)\n$: s(\"<x ~>\").hook(\"impact\").hpf(35).duckorbit(2).duckattack(0.6).duckdepth(0.8)",
+   "lowered": "setcpm(90/4)\n$: note(\"<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"triangle\").attack(1.2).sustain(0.8).release(2.5).lpf(1800).gain(0.16).orbit(2)\n$: s(\"<x ~>\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(30).pdecay(0.2).decay(2.5).sustain(0).noise(0.25).gain(0.7).hpf(35).duckorbit(2).duckattack(0.6).duckdepth(0.8)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 18,
+    "hash": "b2463fc41d"
+   },
    "notes": "",
    "labels": [
     "dovetail",
@@ -2446,7 +2649,14 @@
    "id": "dovetail-delay-throw",
    "title": "Delay throw",
    "intent": "The last hit of every 4th bar is thrown into a dotted-8th delay that rings into the next bar.",
-   "code": "setcpm(90/4)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).delay(\"<0 0 0 [0 0 0 .6]>\").delaytime(0.375).delayfeedback(0.55)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75)",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomSnare).hook(\"clap\").delay(\"<0 0 0 [0 0 0 .6]>\").delaytime(0.375).delayfeedback(0.55)\n$: s(atoms.hh.boomKick).hook(\"bbKick\")",
+   "lowered": "setcpm(90/4)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).delay(\"<0 0 0 [0 0 0 .6]>\").delaytime(0.375).delayfeedback(0.55)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 20,
+    "hash": "980888eeca"
+   },
    "notes": "",
    "labels": [
     "dovetail",
@@ -2470,7 +2680,14 @@
    "id": "dovetail-turnaround",
    "title": "Turnaround bar",
    "intent": "Three bars of the loop, then a turnaround bar on the V that pulls back into bar 1.",
-   "code": "setcpm(90/4)\n$: note(\"<[c3,eb3,g3,bb3]!3 [g2,b2,d3,f3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22)\n$: note(\"<c2!3 g1>\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5)",
+   "code": "setcpm(90/4)\n$: note(\"<[c3,eb3,g3,bb3]!3 [g2,b2,d3,f3]>\").hook(\"rhodes\")\n$: note(\"<c2!3 g1>\").hook(\"bbBass\")",
+   "lowered": "setcpm(90/4)\n$: note(\"<[c3,eb3,g3,bb3]!3 [g2,b2,d3,f3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22)\n$: note(\"<c2!3 g1>\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 20,
+    "hash": "563d5635a8"
+   },
    "notes": "",
    "labels": [
     "dovetail",
@@ -2494,7 +2711,15 @@
    "id": "groove-mpc-swing",
    "title": "MPC swing on 16ths",
    "intent": "16th hats at 58 % swing: every second 16th sits late, the downbeats stay put.",
-   "code": "setcpm(90/4)\n$: s(\"x*16\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).swingBy(0.16, 8).velocity(\"[1 .6]*8\")",
+   "code": "setcpm(90/4)\n$: s(\"x*16\").hook(\"hat(0.03) | groove-swing(58)\").velocity(\"[1 .6]*8\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x*16\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).swingBy(0.16, 8).velocity(\"[1 .6]*8\")",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs)",
+    "hash": "33ea3380ef"
+   },
    "notes": "",
    "labels": [
     "swing",
@@ -2518,7 +2743,15 @@
    "id": "groove-lazy-snare",
    "title": "Lazy snare (push and pull per voice)",
    "intent": "Kick slightly early, snare dragged 12 % of a 16th, hats straight: the backbeat sits behind the beat.",
-   "code": "setcpm(86/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).early(0.001875)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).late(0.0075)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.05).sustain(0).gain(0.45)",
+   "code": "setcpm(86/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick | groove-push(-3)\")\n$: s(atoms.hh.boomSnare).hook(\"clap | groove-push(12)\")\n$: s(atoms.hh.boomHats).hook(\"hat\")",
+   "lowered": "setcpm(86/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).early(0.001875)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).late(0.0075)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.05).sustain(0).gain(0.45)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 3 differs)",
+    "hash": "056154861d"
+   },
    "notes": "",
    "labels": [
     "swing",
@@ -2542,7 +2775,15 @@
    "id": "groove-humanize",
    "title": "Humanize (seeded timing and velocity)",
    "intent": "Hats with 4 % timing spread and 15 % velocity spread; deterministic, so an offline render repeats exactly.",
-   "code": "setcpm(90/4)\n$: s(\"x*8\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.05).sustain(0).gain(0.45).mul(velocity(rand.late(3.37).range(0.85, 1))).late(rand.late(3).range(0, 0.005).segment(16)).early(0.0025)",
+   "code": "setcpm(90/4)\n$: s(\"x*8\").hook(\"hat | groove-human(4, 0.15, 3)\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x*8\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.05).sustain(0).gain(0.45).mul(velocity(rand.late(3.37).range(0.85, 1))).late(rand.late(3).range(0, 0.005).segment(16)).early(0.0025)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (32 Craft, 31 Strudel))",
+    "hash": "59addbee29"
+   },
    "notes": "",
    "labels": [
     "human-feel",
@@ -2565,7 +2806,14 @@
    "id": "groove-drag-vs-rush",
    "title": "Drag vs rush",
    "intent": "The same clap twice: dragged (+10 %) in the left ear, rushed (-10 %) in the right.",
-   "code": "setcpm(90/4)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).late(0.00625).pan(0.1)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).early(0.00625).pan(0.9)",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomSnare).hook(\"clap | groove-push(10)\").pan(0.1)\n$: s(atoms.hh.boomSnare).hook(\"clap | groove-push(-10)\").pan(0.9)",
+   "lowered": "setcpm(90/4)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).late(0.00625).pan(0.1)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).early(0.00625).pan(0.9)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "c0d7afdd1b"
+   },
    "notes": "",
    "labels": [
     "human-feel",
@@ -2588,7 +2836,15 @@
    "id": "groove-drift",
    "title": "Tempo drift",
    "intent": "A keys part whose timing wanders slowly (smooth over four bars), like a player without a click.",
-   "code": "setcpm(80/4)\n$: note(\"[c3,eb3,g3,bb3]*4\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22).swingBy(0.12, 8).mul(velocity(rand.late(2.37).range(0.92, 1))).late(rand.late(2).range(0, 0.00625).segment(16)).late(perlin.late(2).range(0, 0.00625).slow(4).segment(16)).early(0.003125)",
+   "code": "setcpm(80/4)\n$: note(\"[c3,eb3,g3,bb3]*4\").hook(\"rhodes | groove-cloud(2)\")",
+   "lowered": "setcpm(80/4)\n$: note(\"[c3,eb3,g3,bb3]*4\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22).swingBy(0.12, 8).mul(velocity(rand.late(2.37).range(0.92, 1))).late(rand.late(2).range(0, 0.00625).segment(16)).late(perlin.late(2).range(0, 0.00625).slow(4).segment(16)).early(0.003125)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs)",
+    "hash": "be40895c9e"
+   },
    "notes": "",
    "labels": [
     "human-feel",
@@ -2611,8 +2867,16 @@
    "id": "feel-boombap",
    "title": "Feel: boom-bap pocket",
    "intent": "swing 57 on 16ths, snare and keys a little behind, vinyl bed (86-94 bpm).",
-   "code": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).swingBy(0.14, 8).mul(velocity(rand.late(1.37).range(0.88, 1))).late(rand.late(1).range(0, 0.00375).segment(16)).late(perlin.late(1).range(0, 0.00125).slow(4).segment(16)).early(0.0025)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).swingBy(0.14, 8).mul(velocity(rand.late(2.37).range(0.88, 1))).late(rand.late(2).range(0, 0.00375).segment(16)).late(perlin.late(2).range(0, 0.00125).slow(4).segment(16)).early(0.0025).late(0.0025)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x\").velocity(\"[1 .6]*8\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.04).sustain(0).gain(0.45).swingBy(0.14, 8).mul(velocity(rand.late(4.37).range(0.88, 1))).late(rand.late(4).range(0, 0.00375).segment(16)).late(perlin.late(4).range(0, 0.00125).slow(4).segment(16)).early(0.0025)\n$: note(\"c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5).swingBy(0.14, 8).mul(velocity(rand.late(6.37).range(0.88, 1))).late(rand.late(6).range(0, 0.00375).segment(16)).late(perlin.late(6).range(0, 0.00125).slow(4).segment(16)).early(0.0025).late(0.001875)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22).swingBy(0.14, 8).mul(velocity(rand.late(7.37).range(0.88, 1))).late(rand.late(7).range(0, 0.00375).segment(16)).late(perlin.late(7).range(0, 0.00125).slow(4).segment(16)).early(0.0025).late(0.00375)\n$: s(\"x\").hpf(200).lpf(12500).ftype(\"24db\").s(\"pink\").hpf(1500).lpf(8000).sustain(1).gain(0.06)",
-   "notes": "Plain-Strudel lowering of the feel template glyphcore/phonk:feel-boombap (racks and grooves expanded). With the pack: atoms.import(\"pack:glyphcore/phonk:feel-boombap\", { as: \"feel\" }).",
+   "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick | groove-pocket(1)\")\n$: s(atoms.hh.boomSnare).hook(\"clap | groove-pocket(2) | groove-push(4)\")\n$: s(atoms.hh.boomHats).velocity(\"[1 .6]*8\").hook(\"hat(0.04) | groove-pocket(4)\")\n$: note(atoms.hh.boomBass).hook(\"bbBass | groove-pocket(6) | groove-push(3)\")\n$: note(atoms.hh.boomChords).hook(\"rhodes | groove-pocket(7) | groove-push(6)\")\n$: s(\"x\").hook(\"vinyl\")",
+   "lowered": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).swingBy(0.14, 8).mul(velocity(rand.late(1.37).range(0.88, 1))).late(rand.late(1).range(0, 0.00375).segment(16)).late(perlin.late(1).range(0, 0.00125).slow(4).segment(16)).early(0.0025)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).swingBy(0.14, 8).mul(velocity(rand.late(2.37).range(0.88, 1))).late(rand.late(2).range(0, 0.00375).segment(16)).late(perlin.late(2).range(0, 0.00125).slow(4).segment(16)).early(0.0025).late(0.0025)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x\").velocity(\"[1 .6]*8\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.04).sustain(0).gain(0.45).swingBy(0.14, 8).mul(velocity(rand.late(4.37).range(0.88, 1))).late(rand.late(4).range(0, 0.00375).segment(16)).late(perlin.late(4).range(0, 0.00125).slow(4).segment(16)).early(0.0025)\n$: note(\"c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5).swingBy(0.14, 8).mul(velocity(rand.late(6.37).range(0.88, 1))).late(rand.late(6).range(0, 0.00375).segment(16)).late(perlin.late(6).range(0, 0.00125).slow(4).segment(16)).early(0.0025).late(0.001875)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22).swingBy(0.14, 8).mul(velocity(rand.late(7.37).range(0.88, 1))).late(rand.late(7).range(0, 0.00375).segment(16)).late(perlin.late(7).range(0, 0.00125).slow(4).segment(16)).early(0.0025).late(0.00375)\n$: s(\"x\").hpf(200).lpf(12500).ftype(\"24db\").s(\"pink\").hpf(1500).lpf(8000).sustain(1).gain(0.06)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (92 Craft, 93 Strudel))",
+    "hash": "7c6d43cfb8"
+   },
+   "notes": "Craft form of the feel template glyphcore/phonk:feel-boombap (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-boombap\", { as: \"feel\" }).",
    "labels": [
     "boom-bap",
     "hip-hop",
@@ -2635,8 +2899,16 @@
    "id": "feel-lazy",
    "title": "Feel: lazy drag",
    "intent": "everything behind the beat (push 8), kick a little ahead of the rest, snare dragged furthest, slow drift (78-86 bpm).",
-   "code": "setcpm(82/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).swingBy(0.1, 8).mul(velocity(rand.late(1.37).range(0.9, 1))).late(rand.late(1).range(0, 0.005).segment(16)).late(perlin.late(1).range(0, 0.00375).slow(4).segment(16)).late(0.000625).early(0.00625)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).swingBy(0.1, 8).mul(velocity(rand.late(2.37).range(0.9, 1))).late(rand.late(2).range(0, 0.005).segment(16)).late(perlin.late(2).range(0, 0.00375).slow(4).segment(16)).late(0.000625).late(0.00375)\n$: s(\"x*8\").velocity(\"[1 .7]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.05).sustain(0).gain(0.45).swingBy(0.1, 8).mul(velocity(rand.late(4.37).range(0.9, 1))).late(rand.late(4).range(0, 0.005).segment(16)).late(perlin.late(4).range(0, 0.00375).slow(4).segment(16)).late(0.000625)\n$: note(\"c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5).swingBy(0.1, 8).mul(velocity(rand.late(6.37).range(0.9, 1))).late(rand.late(6).range(0, 0.005).segment(16)).late(perlin.late(6).range(0, 0.00375).slow(4).segment(16)).late(0.000625)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22).swingBy(0.1, 8).mul(velocity(rand.late(7.37).range(0.9, 1))).late(rand.late(7).range(0, 0.005).segment(16)).late(perlin.late(7).range(0, 0.00375).slow(4).segment(16)).late(0.000625).late(0.0025)\n$: s(\"x\").hpf(200).lpf(12500).ftype(\"24db\").s(\"pink\").hpf(1500).lpf(8000).sustain(1).gain(0.06)",
-   "notes": "Plain-Strudel lowering of the feel template glyphcore/phonk:feel-lazy (racks and grooves expanded). With the pack: atoms.import(\"pack:glyphcore/phonk:feel-lazy\", { as: \"feel\" }).",
+   "code": "setcpm(82/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick | groove-lazy(1) | groove-push(-10)\")\n$: s(atoms.hh.boomSnare).hook(\"clap | groove-lazy(2) | groove-push(6)\")\n$: s(\"x*8\").velocity(\"[1 .7]*4\").hook(\"hat(0.05) | groove-lazy(4)\")\n$: note(atoms.hh.boomBass).hook(\"bbBass | groove-lazy(6)\")\n$: note(atoms.hh.boomChords).hook(\"rhodes | groove-lazy(7) | groove-push(4)\")\n$: s(\"x\").hook(\"vinyl\")",
+   "lowered": "setcpm(82/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).swingBy(0.1, 8).mul(velocity(rand.late(1.37).range(0.9, 1))).late(rand.late(1).range(0, 0.005).segment(16)).late(perlin.late(1).range(0, 0.00375).slow(4).segment(16)).late(0.000625).early(0.00625)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).swingBy(0.1, 8).mul(velocity(rand.late(2.37).range(0.9, 1))).late(rand.late(2).range(0, 0.005).segment(16)).late(perlin.late(2).range(0, 0.00375).slow(4).segment(16)).late(0.000625).late(0.00375)\n$: s(\"x*8\").velocity(\"[1 .7]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.05).sustain(0).gain(0.45).swingBy(0.1, 8).mul(velocity(rand.late(4.37).range(0.9, 1))).late(rand.late(4).range(0, 0.005).segment(16)).late(perlin.late(4).range(0, 0.00375).slow(4).segment(16)).late(0.000625)\n$: note(\"c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5).swingBy(0.1, 8).mul(velocity(rand.late(6.37).range(0.9, 1))).late(rand.late(6).range(0, 0.005).segment(16)).late(perlin.late(6).range(0, 0.00375).slow(4).segment(16)).late(0.000625)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22).swingBy(0.1, 8).mul(velocity(rand.late(7.37).range(0.9, 1))).late(rand.late(7).range(0, 0.005).segment(16)).late(perlin.late(7).range(0, 0.00375).slow(4).segment(16)).late(0.000625).late(0.0025)\n$: s(\"x\").hpf(200).lpf(12500).ftype(\"24db\").s(\"pink\").hpf(1500).lpf(8000).sustain(1).gain(0.06)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (89 Craft, 88 Strudel))",
+    "hash": "613c25d58c"
+   },
+   "notes": "Craft form of the feel template glyphcore/phonk:feel-lazy (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-lazy\", { as: \"feel\" }).",
    "labels": [
     "boom-bap",
     "human-feel",
@@ -2659,8 +2931,16 @@
    "id": "feel-trap",
    "title": "Feel: rolling trap",
    "intent": "straight grid, velocity life on the hats and rolls, 808 and pad tight (130-150 bpm (half-time)).",
-   "code": "setcpm(140/4)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>\").hpf(30).lpf(7000).hpf(30).lpf(7000).s(\"sine\").freq(55).penv(36).pdecay(0.04).decay(0.28).sustain(0).noise(0.12).shape(0.4).gain(0.8).hpf(40).mul(velocity(rand.late(1.37).range(0.82, 1))).late(rand.late(1).range(0, 0.001875).segment(16)).early(0.000938)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mul(velocity(rand.late(2.37).range(0.82, 1))).late(rand.late(2).range(0, 0.001875).segment(16)).early(0.000938)\n$: s(\"<[x*16] [x x x x x x x x x x x x [x x x] [x x x] [x x x x] [x x x x x x]]>\").velocity(\"[1 .55 .8 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).mul(velocity(rand.late(4.37).range(0.82, 1))).late(rand.late(4).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~\").hpf(300).lpf(8000).s(\"sine\").fm(1.5).fmh(4).decay(0.5).sustain(0).gain(0.3).mul(velocity(rand.late(5.37).range(0.82, 1))).late(rand.late(5).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>\").velocity(\"0.6\").hpf(25).s(\"sine\").attack(0.004).pdecay(0.14).decay(0.6).sustain(0.7).release(0.1).shape(0.45).lpf(600).gain(0.45).postgain(0.87).mul(velocity(rand.late(6.37).range(0.96, 1))).late(rand.late(6).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"<[c4,eb4,g4] [ab3,c4,eb4] [bb3,d4,f4] [g3,b3,d4]>\").hpf(180).lpf(6000).s(\"triangle\").attack(1.2).sustain(0.8).release(2.5).lpf(1800).gain(0.16).mul(velocity(rand.late(7.37).range(0.96, 1))).late(rand.late(7).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"<~ ~ ~ x>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").hpf(400).attack(0.005).decay(2).sustain(0).lpf(1200).lpenv(3).lpattack(0.001).lpdecay(2).lpsustain(0).gain(0.3)",
-   "notes": "Plain-Strudel lowering of the feel template glyphcore/phonk:feel-trap (racks and grooves expanded). With the pack: atoms.import(\"pack:glyphcore/phonk:feel-trap\", { as: \"feel\" }).",
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.trapKick).hook(\"knock808 | groove-rolling(1)\")\n$: s(atoms.hh.trapClap).hook(\"clap | groove-rolling(2)\")\n$: s(atoms.hh.trapHats).velocity(atoms.hh.rollVel).hook(\"hat(0.03) | groove-rolling(4)\")\n$: note(atoms.hh.trapBell).hook(\"trapBell | groove-rolling(5)\")\n$: note(atoms.hh.trap808).velocity(\"0.6\").hook(\"sub808 | groove-straight(6)\")\n$: note(atoms.hh.trapChords).hook(\"airPad | groove-straight(7)\")\n$: s(\"<~ ~ ~ x>\").hook(\"downlifter\")",
+   "lowered": "setcpm(140/4)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>\").hpf(30).lpf(7000).hpf(30).lpf(7000).s(\"sine\").freq(55).penv(36).pdecay(0.04).decay(0.28).sustain(0).noise(0.12).shape(0.4).gain(0.8).hpf(40).mul(velocity(rand.late(1.37).range(0.82, 1))).late(rand.late(1).range(0, 0.001875).segment(16)).early(0.000938)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mul(velocity(rand.late(2.37).range(0.82, 1))).late(rand.late(2).range(0, 0.001875).segment(16)).early(0.000938)\n$: s(\"<[x*16] [x x x x x x x x x x x x [x x x] [x x x] [x x x x] [x x x x x x]]>\").velocity(\"[1 .55 .8 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).mul(velocity(rand.late(4.37).range(0.82, 1))).late(rand.late(4).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~\").hpf(300).lpf(8000).s(\"sine\").fm(1.5).fmh(4).decay(0.5).sustain(0).gain(0.3).mul(velocity(rand.late(5.37).range(0.82, 1))).late(rand.late(5).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>\").velocity(\"0.6\").hpf(25).s(\"sine\").attack(0.004).pdecay(0.14).decay(0.6).sustain(0.7).release(0.1).shape(0.45).lpf(600).gain(0.45).postgain(0.87).mul(velocity(rand.late(6.37).range(0.96, 1))).late(rand.late(6).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"<[c4,eb4,g4] [ab3,c4,eb4] [bb3,d4,f4] [g3,b3,d4]>\").hpf(180).lpf(6000).s(\"triangle\").attack(1.2).sustain(0.8).release(2.5).lpf(1800).gain(0.16).mul(velocity(rand.late(7.37).range(0.96, 1))).late(rand.late(7).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"<~ ~ ~ x>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").hpf(400).attack(0.005).decay(2).sustain(0).lpf(1200).lpenv(3).lpattack(0.001).lpdecay(2).lpsustain(0).gain(0.3)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (160 Craft, 161 Strudel))",
+    "hash": "27e5b43dd4"
+   },
+   "notes": "Craft form of the feel template glyphcore/phonk:feel-trap (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-trap\", { as: \"feel\" }).",
    "labels": [
     "trap",
     "hip-hop",
@@ -2683,8 +2963,16 @@
    "id": "feel-hyphy",
    "title": "Feel: bouncy hyphy",
    "intent": "light swing, claps rushing a hair, snaps on the ands, bounce kick and a square lead (98-106 bpm).",
-   "code": "setcpm(100/4)\n$: s(\"x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ x ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).swingBy(0.06, 8).mul(velocity(rand.late(1.37).range(0.85, 1))).late(rand.late(1).range(0, 0.0025).segment(16)).early(0.003125)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).swingBy(0.06, 8).mul(velocity(rand.late(2.37).range(0.85, 1))).late(rand.late(2).range(0, 0.0025).segment(16)).early(0.003125).early(0.001875)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(80).lpf(8000).s(\"white\").bpf(2400).bpq(2).lpf(5000).decay(0.05).sustain(0).gain(0.8).swingBy(0.06, 8).mul(velocity(rand.late(3.37).range(0.85, 1))).late(rand.late(3).range(0, 0.0025).segment(16)).early(0.003125)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x\").velocity(\"[1 .5]*8\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).swingBy(0.06, 8).mul(velocity(rand.late(4.37).range(0.85, 1))).late(rand.late(4).range(0, 0.0025).segment(16)).early(0.003125)\n$: note(\"c5 ~ ~ eb5 ~ ~ g5 ~ f5 ~ eb5 ~ c5 ~ ~ ~\").hpf(150).lpf(8000).s(\"square\").lpf(2800).lpenv(1).attack(0.01).decay(0.2).sustain(0.5).release(0.15).vib(6).vibmod(0.15).gain(0.26).swingBy(0.06, 8).mul(velocity(rand.late(5.37).range(0.85, 1))).late(rand.late(5).range(0, 0.0025).segment(16)).early(0.003125)\n$: note(\"c2 ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~ ~ c2 ~ ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5).swingBy(0.06, 8).mul(velocity(rand.late(6.37).range(0.85, 1))).late(rand.late(6).range(0, 0.0025).segment(16)).early(0.003125)\n$: note(\"[c4,eb4,g4] ~ ~ [c4,eb4,g4] ~ ~ [bb3,d4,f4] ~ ~ ~ [ab3,c4,eb4] ~ [ab3,c4,eb4] ~ ~ ~\").hpf(120).lpf(8000).s(\"sawtooth\").attack(0.003).decay(0.14).sustain(0).lpf(1600).lpenv(2.5).lpdecay(0.12).gain(0.2).swingBy(0.06, 8).mul(velocity(rand.late(7.37).range(0.85, 1))).late(rand.late(7).range(0, 0.0025).segment(16)).early(0.003125)",
-   "notes": "Plain-Strudel lowering of the feel template glyphcore/phonk:feel-hyphy (racks and grooves expanded). With the pack: atoms.import(\"pack:glyphcore/phonk:feel-hyphy\", { as: \"feel\" }).",
+   "code": "setcpm(100/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.hyphyKick).hook(\"bbKick | groove-bounce(1)\")\n$: s(atoms.hh.hyphyClap).hook(\"clap | groove-bounce(2) | groove-push(-3)\")\n$: s(atoms.hh.hyphySnap).hook(\"snap | groove-bounce(3)\")\n$: s(atoms.hh.boomHats).velocity(\"[1 .5]*8\").hook(\"hat(0.03) | groove-bounce(4)\")\n$: note(atoms.hh.hyphyLead).hook(\"hyphyLead | groove-bounce(5)\")\n$: note(\"c2 ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~ ~ c2 ~ ~\").hook(\"bbBass | groove-bounce(6)\")\n$: note(atoms.hh.chops).hook(\"chopStab | groove-bounce(7)\")",
+   "lowered": "setcpm(100/4)\n$: s(\"x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ x ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).swingBy(0.06, 8).mul(velocity(rand.late(1.37).range(0.85, 1))).late(rand.late(1).range(0, 0.0025).segment(16)).early(0.003125)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).swingBy(0.06, 8).mul(velocity(rand.late(2.37).range(0.85, 1))).late(rand.late(2).range(0, 0.0025).segment(16)).early(0.003125).early(0.001875)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(80).lpf(8000).s(\"white\").bpf(2400).bpq(2).lpf(5000).decay(0.05).sustain(0).gain(0.8).swingBy(0.06, 8).mul(velocity(rand.late(3.37).range(0.85, 1))).late(rand.late(3).range(0, 0.0025).segment(16)).early(0.003125)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x\").velocity(\"[1 .5]*8\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).swingBy(0.06, 8).mul(velocity(rand.late(4.37).range(0.85, 1))).late(rand.late(4).range(0, 0.0025).segment(16)).early(0.003125)\n$: note(\"c5 ~ ~ eb5 ~ ~ g5 ~ f5 ~ eb5 ~ c5 ~ ~ ~\").hpf(150).lpf(8000).s(\"square\").lpf(2800).lpenv(1).attack(0.01).decay(0.2).sustain(0.5).release(0.15).vib(6).vibmod(0.15).gain(0.26).swingBy(0.06, 8).mul(velocity(rand.late(5.37).range(0.85, 1))).late(rand.late(5).range(0, 0.0025).segment(16)).early(0.003125)\n$: note(\"c2 ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~ ~ c2 ~ ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5).swingBy(0.06, 8).mul(velocity(rand.late(6.37).range(0.85, 1))).late(rand.late(6).range(0, 0.0025).segment(16)).early(0.003125)\n$: note(\"[c4,eb4,g4] ~ ~ [c4,eb4,g4] ~ ~ [bb3,d4,f4] ~ ~ ~ [ab3,c4,eb4] ~ [ab3,c4,eb4] ~ ~ ~\").hpf(120).lpf(8000).s(\"sawtooth\").attack(0.003).decay(0.14).sustain(0).lpf(1600).lpenv(2.5).lpdecay(0.12).gain(0.2).swingBy(0.06, 8).mul(velocity(rand.late(7.37).range(0.85, 1))).late(rand.late(7).range(0, 0.0025).segment(16)).early(0.003125)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs)",
+    "hash": "8345117aa5"
+   },
+   "notes": "Craft form of the feel template glyphcore/phonk:feel-hyphy (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-hyphy\", { as: \"feel\" }).",
    "labels": [
     "hyphy",
     "driving",
@@ -2707,8 +2995,16 @@
    "id": "feel-cloud",
    "title": "Feel: cloud / wave",
    "intent": "loose and floating: swing 56, everything a little late, slow drift, big pad (60-75 bpm).",
-   "code": "setcpm(70/4)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>\").hpf(30).lpf(7000).hpf(30).lpf(7000).s(\"sine\").freq(55).penv(36).pdecay(0.04).decay(0.28).sustain(0).noise(0.12).shape(0.4).gain(0.8).hpf(40).swingBy(0.12, 8).mul(velocity(rand.late(1.37).range(0.92, 1))).late(rand.late(1).range(0, 0.00625).segment(16)).late(perlin.late(1).range(0, 0.00625).slow(4).segment(16)).early(0.003125)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).swingBy(0.12, 8).mul(velocity(rand.late(2.37).range(0.92, 1))).late(rand.late(2).range(0, 0.00625).segment(16)).late(perlin.late(2).range(0, 0.00625).slow(4).segment(16)).early(0.003125).late(0.00375)\n$: s(\"x*8\").velocity(\"[.9 .5]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.04).sustain(0).gain(0.45).swingBy(0.12, 8).mul(velocity(rand.late(4.37).range(0.92, 1))).late(rand.late(4).range(0, 0.00625).segment(16)).late(perlin.late(4).range(0, 0.00625).slow(4).segment(16)).early(0.003125)\n$: note(\"c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~\").hpf(300).lpf(8000).s(\"sine\").fm(1.5).fmh(4).decay(0.5).sustain(0).gain(0.3).swingBy(0.12, 8).mul(velocity(rand.late(5.37).range(0.92, 1))).late(rand.late(5).range(0, 0.00625).segment(16)).late(perlin.late(5).range(0, 0.00625).slow(4).segment(16)).early(0.003125).late(0.00375)\n$: note(\"<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>\").velocity(\"0.6\").hpf(25).s(\"sine\").attack(0.004).pdecay(0.14).decay(0.6).sustain(0.7).release(0.1).shape(0.45).lpf(600).gain(0.45).postgain(0.87).swingBy(0.12, 8).mul(velocity(rand.late(6.37).range(0.92, 1))).late(rand.late(6).range(0, 0.00625).segment(16)).late(perlin.late(6).range(0, 0.00625).slow(4).segment(16)).early(0.003125)\n$: note(\"<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"triangle\").attack(1.2).sustain(0.8).release(2.5).lpf(1800).gain(0.16).swingBy(0.12, 8).mul(velocity(rand.late(7.37).range(0.92, 1))).late(rand.late(7).range(0, 0.00625).segment(16)).late(perlin.late(7).range(0, 0.00625).slow(4).segment(16)).early(0.003125).late(0.00625)\n$: s(\"x\").hpf(200).lpf(12500).ftype(\"24db\").s(\"pink\").hpf(1500).lpf(8000).sustain(1).gain(0.06)",
-   "notes": "Plain-Strudel lowering of the feel template glyphcore/phonk:feel-cloud (racks and grooves expanded). With the pack: atoms.import(\"pack:glyphcore/phonk:feel-cloud\", { as: \"feel\" }).",
+   "code": "setcpm(70/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.trapKick).hook(\"knock808 | groove-cloud(1)\")\n$: s(atoms.hh.trapClap).hook(\"clap | groove-cloud(2) | groove-push(6)\")\n$: s(\"x*8\").velocity(\"[.9 .5]*4\").hook(\"hat(0.04) | groove-cloud(4)\")\n$: note(atoms.hh.trapBell).hook(\"trapBell | groove-cloud(5) | groove-push(6)\")\n$: note(atoms.hh.trap808).velocity(\"0.6\").hook(\"sub808 | groove-cloud(6)\")\n$: note(atoms.hh.cloudChords).hook(\"airPad | groove-cloud(7) | groove-push(10)\")\n$: s(\"x\").hook(\"vinyl\")",
+   "lowered": "setcpm(70/4)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>\").hpf(30).lpf(7000).hpf(30).lpf(7000).s(\"sine\").freq(55).penv(36).pdecay(0.04).decay(0.28).sustain(0).noise(0.12).shape(0.4).gain(0.8).hpf(40).swingBy(0.12, 8).mul(velocity(rand.late(1.37).range(0.92, 1))).late(rand.late(1).range(0, 0.00625).segment(16)).late(perlin.late(1).range(0, 0.00625).slow(4).segment(16)).early(0.003125)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).swingBy(0.12, 8).mul(velocity(rand.late(2.37).range(0.92, 1))).late(rand.late(2).range(0, 0.00625).segment(16)).late(perlin.late(2).range(0, 0.00625).slow(4).segment(16)).early(0.003125).late(0.00375)\n$: s(\"x*8\").velocity(\"[.9 .5]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.04).sustain(0).gain(0.45).swingBy(0.12, 8).mul(velocity(rand.late(4.37).range(0.92, 1))).late(rand.late(4).range(0, 0.00625).segment(16)).late(perlin.late(4).range(0, 0.00625).slow(4).segment(16)).early(0.003125)\n$: note(\"c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~\").hpf(300).lpf(8000).s(\"sine\").fm(1.5).fmh(4).decay(0.5).sustain(0).gain(0.3).swingBy(0.12, 8).mul(velocity(rand.late(5.37).range(0.92, 1))).late(rand.late(5).range(0, 0.00625).segment(16)).late(perlin.late(5).range(0, 0.00625).slow(4).segment(16)).early(0.003125).late(0.00375)\n$: note(\"<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>\").velocity(\"0.6\").hpf(25).s(\"sine\").attack(0.004).pdecay(0.14).decay(0.6).sustain(0.7).release(0.1).shape(0.45).lpf(600).gain(0.45).postgain(0.87).swingBy(0.12, 8).mul(velocity(rand.late(6.37).range(0.92, 1))).late(rand.late(6).range(0, 0.00625).segment(16)).late(perlin.late(6).range(0, 0.00625).slow(4).segment(16)).early(0.003125)\n$: note(\"<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"triangle\").attack(1.2).sustain(0.8).release(2.5).lpf(1800).gain(0.16).swingBy(0.12, 8).mul(velocity(rand.late(7.37).range(0.92, 1))).late(rand.late(7).range(0, 0.00625).segment(16)).late(perlin.late(7).range(0, 0.00625).slow(4).segment(16)).early(0.003125).late(0.00625)\n$: s(\"x\").hpf(200).lpf(12500).ftype(\"24db\").s(\"pink\").hpf(1500).lpf(8000).sustain(1).gain(0.06)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (111 Craft, 113 Strudel))",
+    "hash": "7ce6918e31"
+   },
+   "notes": "Craft form of the feel template glyphcore/phonk:feel-cloud (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-cloud\", { as: \"feel\" }).",
    "labels": [
     "cloud",
     "floaty",

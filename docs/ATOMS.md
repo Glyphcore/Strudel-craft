@@ -362,7 +362,7 @@ result with the original (and event lists when the host passes `opts.events`).
 
 Also: `parse(type, string, env) -> { atom, args } | null` (find the atom and args whose output equals a string; used by the editor
 suggestion and by `extract` on later runs so new strings join existing atoms), and `inline(code)` = `compile` with formatting kept,
-used by "Open in strudel.cc" and "Copy", because `atoms` does not exist outside this toolkit.
+used by "Open in strudel.cc", because `atoms` does not exist outside this toolkit. The Rack inspector and the Syntax view show this inlined text as the Strudel tab next to the Craft form, with a Copy button each (docs/LOWERING.md).
 
 ## 12. CLI
 

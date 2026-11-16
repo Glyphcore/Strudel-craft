@@ -1,0 +1,58 @@
+# Lowering: the Craft form and the Strudel form of one program
+
+Owner: `daw-sme`. Tracker: Strudel-craft#56 (the "both forms" request).
+Craft adds syntax on top of Strudel (atoms, `.hook("rack | groove")`, slots and gates, taps, lanes, controls). The **Craft form** is what an
+author writes and the source of truth. The **Strudel form** is the same program with that syntax compiled away: what the engine evaluates
+and what strudel.cc needs. Every place that shows a recipe's code shows both, never only the lowered one.
+
+## 1. Where both forms are shown
+| place | what |
+|---|---|
+| Rack inspector (recipe selected) | `Craft` / `Strudel` tabs, a state badge, one line saying how the forms relate, **Copy** and **Insert into editor** for the open tab. The editor itself holds the Craft form. The inspector's Copy (C) copies the editor as written; strudel.cc (O) opens the Strudel form |
+| Syntax view | the same component on every example (tabs, badge, note, Copy, Insert into editor); "Load and play" still loads the Craft form |
+| Intellisense (catalog provider) | `<id>` inserts the plain Strudel expression (works anywhere), `<id>.craft` inserts the Craft program |
+| `tools/concepts/build.mjs` output | catalog recipes carry both; `tools/lowering/build.mjs` verifies them |
+
+Insert into editor: the open tab decides. Craft is the default tab, so the default insert is the Craft form; open the Strudel tab to insert the lowered one.
+Both buttons put the text in the editor as an edit; Revert restores the recipe.
+
+## 2. Data (no hand-kept duplicates)
+Catalog recipe (`recipes@1`) and Syntax example (`syntax@1`), all fields optional and generated:
+- `code`: the Craft form (for a recipe without Craft syntax this is the only text).
+- `lowered`: the plain Strudel text, present **only when it differs** from `code`.
+- `lowered_note`: instead of `lowered`, the reason there is no plain form (it needs the Craft runtime).
+- `lowered_check`: `{ equal, approx?, cycles, events, reason?, hash }`, the build-time event comparison; `hash` ties it to the exact texts.
+Neither `lowered` nor `lowered_note`: no Craft syntax is used and the two forms are identical (the Strudel tab says so).
+
+## 3. What lowers, what cannot (`tools/lowering/lower.mjs`)
+| Craft syntax | Strudel form |
+|---|---|
+| `atom()`, `atoms.import()`, `atoms.ns.name` | inlined by the atoms compiler (`site/engine/atoms.js`, the same pass as Copy / strudel.cc) |
+| `.hook("rack(args) \| groove-x(n)")`, `hygiene-*` | the chain steps written out (`.hpf(30).lpf(7000)...`) |
+| `.groove({ swing, push, jitter, vel, drift })` and `groove-*` hooks | `.swingBy / .late / .mul(velocity(rand...))`: **approximate**, see 4 |
+| `hooks.def / bind / let / set`, `.use()` slots and gates | none: resolved by the Craft runtime while it plays |
+| `.tap / .wire`, lanes (`.tags`, `tagged`, `.split / .send / ret`) | none: they read other lanes live / compile to audio buses |
+| `ctl()`, `slider()`, `strudelCraft.*`, `word()`, `syl()`, vox banks | none: Craft runtime / prelude |
+The tab states the reason in these words, never an empty pane.
+
+## 4. Verification and drift
+`node tools/lowering/build.mjs [--check] [--verify] [--no-verify]` evaluates both forms with `strudel events` (hooks, packs lock without the shim pin, prelude)
+for 4 cycles and compares the events (layer names ignored, numbers rounded to 1e-5). Result `equal: true` is stored. A pair that differs fails the build (exit 1,
+listed in `drift`). The one known exception is a groove: plain Strudel shifts onsets but not note lengths and its random jitter is a different sequence, so a
+recipe whose Craft form uses a groove is stored `approx: true` with the reason and shown as "lowered, approximate". `--check` exits 1 on stale output or drift;
+`tests/site/forms.mjs` runs it with `--verify`.
+
+## 5. Pipeline (after a concept or Syntax change)
+```
+node tools/concepts/build.mjs --render        # writes code (Craft) + lowered for the concept recipes
+python3 tools/packs/packs.py hash site/data/phonk --write
+python3 tools/packs/shim.py
+node tools/lowering/build.mjs                 # annotates syntax.json, verifies, writes lowered_check
+python3 tools/packs/shim.py; node tools/pwa/precache.mjs
+```
+`tools/racks/audit.mjs` renders `lowered || code` of each catalog recipe (the audit has no pack imports).
+
+## 6. Adding a feature
+A new piece of Craft syntax needs (1) a rule in `tools/lowering/lower.mjs` (a lowering, or a `BLOCKERS` entry with its reason), (2) a row in section 3,
+(3) a Syntax example showing it, (4) `node tools/lowering/build.mjs`. A feature with no row here has no plain form by default only if a blocker matches;
+otherwise the build treats the program as plain, which `strudel events` catches (the Craft form would fail to evaluate).

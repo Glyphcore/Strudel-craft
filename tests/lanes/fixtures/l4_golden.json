@@ -365,5 +365,251 @@
   "hash": "7cd1d9bf43657c4f9296416e4ac1fa7802b6ce7ffa0a8b3ae44d59356e8fde27",
   "gen": true
  },
- "_doc": "graph / canonical-model / hash digests of every non-lane document (46 recipes, hooks fixtures, dup lane fixture) computed with site/model.js of origin/main at 3c77681, before #77; tests/lanes/l4.mjs checks the current build against them"
+ "_doc": "graph / canonical-model / hash digests of every non-lane document (46 recipes, hooks fixtures, dup lane fixture) computed with site/model.js of origin/main at 3c77681, before #77; tests/lanes/l4.mjs checks the current build against them",
+ "recipe:boom-bap-kick": {
+  "graph": "d75a1a130bc4b9f4",
+  "model": "1f5c880f39264998",
+  "hash": "1f5c880f39264998e5d53b4868e68e565f8595bab8cc86d727e1b06e061b391c",
+  "gen": true
+ },
+ "recipe:clap-backbeat": {
+  "graph": "d75a1a130bc4b9f4",
+  "model": "5fd04a053c85028f",
+  "hash": "5fd04a053c85028fec8277df3bd55dcd14451caedf96658a372baba79f5a0f75",
+  "gen": true
+ },
+ "recipe:trap-hats-rolls": {
+  "graph": "fc4aa49858ca240d",
+  "model": "dfb700482a5c68d1",
+  "hash": "dfb700482a5c68d1e32c37d031317e8a780ea2eca5762000643e1adeb596b035",
+  "gen": true
+ },
+ "recipe:open-hat-offbeat": {
+  "graph": "d75a1a130bc4b9f4",
+  "model": "9563572ef14feba9",
+  "hash": "9563572ef14feba9918076d8e3c07f939d6726f40c768d1baa19a5eec1a72e82",
+  "gen": true
+ },
+ "recipe:finger-snaps": {
+  "graph": "d75a1a130bc4b9f4",
+  "model": "4930685d901b651a",
+  "hash": "4930685d901b651af785c5419b210831e0adde7cd00e821b5677aefecade7515",
+  "gen": true
+ },
+ "recipe:trap-808-line": {
+  "graph": "ecdba0fea54e8b93",
+  "model": "476fe676b9226701",
+  "hash": "476fe676b9226701bbaf8dc22afa25ca96477cd8682eb683439693cd915903c0",
+  "gen": true
+ },
+ "recipe:boom-bap-bass": {
+  "graph": "ecdba0fea54e8b93",
+  "model": "365fc07e03f7a833",
+  "hash": "365fc07e03f7a833d7a3e6b56875f8498aca94980ef1737646827a7b3e7cea18",
+  "gen": true
+ },
+ "recipe:rhodes-keys": {
+  "graph": "ecdba0fea54e8b93",
+  "model": "fc2506489e5555bf",
+  "hash": "fc2506489e5555bfc77131f8335d19756b0116687cbbcf583a83c214380e11dd",
+  "gen": true
+ },
+ "recipe:trap-bell-melody": {
+  "graph": "ecdba0fea54e8b93",
+  "model": "1bfc3656c10cf9b4",
+  "hash": "1bfc3656c10cf9b441ff2d60b9b97929fe8a49797b5ff3ae9cf536f0420b6a9a",
+  "gen": true
+ },
+ "recipe:cloud-pad": {
+  "graph": "ecdba0fea54e8b93",
+  "model": "bc2a50478a4fb573",
+  "hash": "bc2a50478a4fb5730a3a32a264a2a97dde19c2fd17965b7961ad6c887e93318f",
+  "gen": true
+ },
+ "recipe:chopped-chords": {
+  "graph": "ecdba0fea54e8b93",
+  "model": "5bbd8517071532a4",
+  "hash": "5bbd8517071532a4ebb6d3e1ea7c9b3e027767b4464381837dc847755456d8bb",
+  "gen": true
+ },
+ "recipe:hyphy-lead": {
+  "graph": "ecdba0fea54e8b93",
+  "model": "b09b9af6969ce214",
+  "hash": "b09b9af6969ce21435bcef6d2b5e1465e041077c8941b075fe48455d9f8c136b",
+  "gen": true
+ },
+ "recipe:vox-tag-synth": {
+  "graph": "ecdba0fea54e8b93",
+  "model": "2f474c8682458b37",
+  "hash": "2f474c8682458b377c8c0c409ed3279924a87ed34a141ba73dccdf132b2751f9",
+  "gen": true
+ },
+ "recipe:vinyl-bed": {
+  "graph": "d75a1a130bc4b9f4",
+  "model": "045cbac0d6961401",
+  "hash": "045cbac0d69614016fbc372b3b15d35cc4e6e2a69f185d0bddc63f583feda5f9",
+  "gen": true
+ },
+ "recipe:downlifter": {
+  "graph": "d75a1a130bc4b9f4",
+  "model": "37fd5ed05b862005",
+  "hash": "37fd5ed05b862005d79b0e415e45435729be88bf221c644478b02b6392f5e209",
+  "gen": true
+ },
+ "recipe:boom-bap-beat": {
+  "graph": "f13e73235d06d8b4",
+  "model": "2b8d8b9fdebd7e48",
+  "hash": "2b8d8b9fdebd7e48fa46faf61f29a25e0e05be706b560e56405b71ca7ecbddb4",
+  "gen": true
+ },
+ "recipe:trap-beat": {
+  "graph": "bf13a7b2716d0be4",
+  "model": "f178961702988d93",
+  "hash": "f178961702988d93d7186d4cb8c9afdab4025ff6c56351e7cab5886ed1648d18",
+  "gen": true
+ },
+ "recipe:hyphy-bounce-stomp": {
+  "graph": "ca145a1767504b84",
+  "model": "40ee0dcf04a0ae1c",
+  "hash": "40ee0dcf04a0ae1c114c6346f42f5b6d6c059beb7fa052b9a54951d2d1567bcb",
+  "gen": true
+ },
+ "recipe:hook-drop-bar": {
+  "graph": "9e1bb718c7eaf411",
+  "model": "7d55baa2d5bae07a",
+  "hash": "7d55baa2d5bae07af1e7c808265b7402c5c9ed7473a110ad2f5e739b33f1205e",
+  "gen": true
+ },
+ "recipe:drop-last-beat": {
+  "graph": "9e1bb718c7eaf411",
+  "model": "722462711c4a1186",
+  "hash": "722462711c4a1186f7afd90360c23b8437f9a5193f83f7e3c950eb62bd505b73",
+  "gen": true
+ },
+ "recipe:beat-switch": {
+  "graph": "c5d66a6a1f00ec5a",
+  "model": "4f227650f4915ca3",
+  "hash": "4f227650f4915ca3d3ee89c017f1d89ca1a3ae715a056425f0e17f135dc2bcaa",
+  "gen": true
+ },
+ "recipe:switch-up": {
+  "graph": "f7bbd58b066403ec",
+  "model": "e8cadcc6554c8986",
+  "hash": "e8cadcc6554c8986072adc4012c2e5714fa916d039d27e7675154d88a7a68558",
+  "gen": true
+ },
+ "recipe:dovetail-pickup-fill": {
+  "graph": "be6a2ae5e3bb9681",
+  "model": "6dd6b3a6e1b9398b",
+  "hash": "6dd6b3a6e1b9398b5eaa1d51c54e666269189a2938c9bcee693d77f7fccfa901",
+  "gen": true
+ },
+ "recipe:dovetail-808-pickup": {
+  "graph": "47e571d5df817fdd",
+  "model": "cb79f0e5359513fb",
+  "hash": "cb79f0e5359513fb832f9b3d33314fb993a8cbd3680b09ed7d4c454f6828b1c0",
+  "gen": true
+ },
+ "recipe:dovetail-overlapping-tail": {
+  "graph": "4471762dd844c8fd",
+  "model": "91ae6d5290c601ab",
+  "hash": "91ae6d5290c601ab626cb5b8164f63ebc19830d5b0961ab1ad83dcb000a7333f",
+  "gen": true
+ },
+ "recipe:dovetail-call-response": {
+  "graph": "a7a5c731824c36a6",
+  "model": "9dabd490e6106491",
+  "hash": "9dabd490e6106491130a442e838afbcba0b0c246ea1251ec97d0fde5d5520d16",
+  "gen": true
+ },
+ "recipe:dovetail-crossfade": {
+  "graph": "c4242d714ce0579b",
+  "model": "884f3e706d67cd67",
+  "hash": "884f3e706d67cd678d852f553e30a717f5e333b01b7bddd0bd1cb38995a00c94",
+  "gen": true
+ },
+ "recipe:dovetail-riser-impact": {
+  "graph": "3b8a3cc05a5584b1",
+  "model": "81c1f3bb2ada833f",
+  "hash": "81c1f3bb2ada833f774d5e06c75f17b153be0d9859278b4abef05086f23479d6",
+  "gen": true
+ },
+ "recipe:dovetail-ducked-transition": {
+  "graph": "b69cec5efef7f80a",
+  "model": "618d07684144f2fa",
+  "hash": "618d07684144f2fa0df7e75d615a96bf55887cf6cbad5ec746aed69d32f8f4f6",
+  "gen": true
+ },
+ "recipe:dovetail-delay-throw": {
+  "graph": "e56606b73917c4d0",
+  "model": "d4deaee203ccd299",
+  "hash": "d4deaee203ccd299e35c41454112513f4aae94fe09461e0825a061021a6a1c9b",
+  "gen": true
+ },
+ "recipe:dovetail-turnaround": {
+  "graph": "823d496ad52a4252",
+  "model": "eb8b39e4e33f30e0",
+  "hash": "eb8b39e4e33f30e0d8212fa13af0908cdbbeff9a6007b709694e9cc08bbc3de9",
+  "gen": true
+ },
+ "recipe:groove-mpc-swing": {
+  "graph": "fc4aa49858ca240d",
+  "model": "c345bc23f4c484d6",
+  "hash": "c345bc23f4c484d636ad9420c763df2dc1a2d4253bf5ab37364fc67220e690aa",
+  "gen": true
+ },
+ "recipe:groove-lazy-snare": {
+  "graph": "0ff5b8a6f7b14acd",
+  "model": "bbf004670a72c5f1",
+  "hash": "bbf004670a72c5f18983944663306628c3ca22ef7619dba8c93841e80c175c49",
+  "gen": true
+ },
+ "recipe:groove-humanize": {
+  "graph": "d75a1a130bc4b9f4",
+  "model": "941981f1f3700919",
+  "hash": "941981f1f37009191e1971fdaf594d045941ac57e8bece593567fe2cb0dd891b",
+  "gen": true
+ },
+ "recipe:groove-drag-vs-rush": {
+  "graph": "3f4762a3dbf2d4c3",
+  "model": "a873f5f60611cbd6",
+  "hash": "a873f5f60611cbd667d93fadfa7b32687d357d279b4e7164c85d8b3ef199972f",
+  "gen": true
+ },
+ "recipe:groove-drift": {
+  "graph": "ecdba0fea54e8b93",
+  "model": "a43d0afc79e6ee13",
+  "hash": "a43d0afc79e6ee1379d23107f9a07e5397f601165c70c1fe4a8f9ea396ec978c",
+  "gen": true
+ },
+ "recipe:feel-boombap": {
+  "graph": "7143b82c7f5dcff4",
+  "model": "242ec53166541dad",
+  "hash": "242ec53166541dad67018e7a0760ef445a59bc2392b4542abc90eba87dc5ebc6",
+  "gen": true
+ },
+ "recipe:feel-lazy": {
+  "graph": "7143b82c7f5dcff4",
+  "model": "f69f298a29b4f78c",
+  "hash": "f69f298a29b4f78cd9ae9239070e2b0511fd1512bd9b92038b3ab7cce7d1f015",
+  "gen": true
+ },
+ "recipe:feel-trap": {
+  "graph": "b9e9a5c512100ed8",
+  "model": "2a3afc88e439404a",
+  "hash": "2a3afc88e439404a719354a4a4112698dbb40d8e847c92381aa7e47e470dbb59",
+  "gen": true
+ },
+ "recipe:feel-hyphy": {
+  "graph": "744083336c3040b4",
+  "model": "77765c46bccefb8b",
+  "hash": "77765c46bccefb8bcfba809e4a7074e0da6f651e54a771e8c449ecfa54ffade9",
+  "gen": true
+ },
+ "recipe:feel-cloud": {
+  "graph": "b9e9a5c512100ed8",
+  "model": "e6ec7f25bf5aea1b",
+  "hash": "e6ec7f25bf5aea1b78459a1e2e1335f2325c7b0077487f338b3ccd6bb542eb17",
+  "gen": true
+ }
 }

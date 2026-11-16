@@ -14,7 +14,7 @@
 import fs from 'node:fs'; import path from 'node:path'; import os from 'node:os'; import { spawnSync } from 'node:child_process'; import { fileURLToPath, pathToFileURL } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..'); const HERE = path.join(ROOT, 'tools/concepts');
 const imp = (p) => import(pathToFileURL(path.join(ROOT, p)).href);
-const A = await imp('site/engine/atoms.js'); const AC = await imp('site/engine/atoms-consumers.js'); const { HYGIENE } = await imp('site/engine/hygiene.js'); const G = await imp('site/engine/groove.js');
+const L = await imp('tools/lowering/lower.mjs'); const A = await imp('site/engine/atoms.js'); const AC = await imp('site/engine/atoms-consumers.js'); const { HYGIENE } = await imp('site/engine/hygiene.js'); const G = await imp('site/engine/groove.js');
 A.loadTypes(fs.readFileSync(path.join(ROOT, 'site/data/atoms/types.json'), 'utf8'));
 const argv = process.argv.slice(2); const flag = (n) => argv.includes(n); const opt = (n) => { const i = argv.indexOf(n); return i >= 0 ? argv[i + 1] : null; };
 const CHECK = flag('--check'), RENDER = flag('--render'), CHANGED = flag('--changed'), ONLY = opt('--only') ? new Set(opt('--only').split(',')) : null;
@@ -39,34 +39,8 @@ const quoted = (s, f, where) => s.replace(/"([^"]*)"/g, (_, x) => JSON.stringify
 const own = {}; for (const f of fams) for (const [n, d] of Object.entries(f.racks || {})) { if (own[n]) die(`rack ${n} defined twice`); own[n] = { fam: f, def: d }; }
 const resolveDef = (f, def) => JSON.parse(JSON.stringify(def.chain), (k, v) => (v && typeof v === 'object' && '$atomBody' in v ? { $mini: atomBody(famNs(f), v.$atomBody, 'rack') } : v));
 const ownDefs = Object.fromEntries(Object.entries(own).map(([n, { fam, def }]) => [n, { ...(def.params ? { params: def.params } : {}), chain: resolveDef(fam, def) }]));
-const phonk = ['racks.json', 'racks-v2.json'].reduce((o, f) => ({ ...o, ...rd(path.join(PH, f)).defs }), {});
-const ALL = { ...HYGIENE, ...G.GROOVES, ...phonk, ...ownDefs };
-const parseExpr = (e) => e.split('|').map((t) => t.trim()).filter(Boolean).map((t) => { const m = /^([\w-]+)(?:\((.*)\))?$/.exec(t); if (!m) die(`bad hook expression "${e}"`); return { name: m[1], args: m[2] ? m[2].split(',').map((x) => Number(x.trim())) : [] }; });
-function expand(expr) { // hook expression -> plain chain steps with params substituted
-  const out = [];
-  for (const t of parseExpr(expr)) {
-    const def = ALL[t.name]; if (!def) die(`unknown rack or hook "${t.name}"`); if (!def.chain) die(`"${t.name}" is not chain-only`);
-    const names = Object.keys(def.params || {}); const vals = Object.fromEntries(names.map((k, i) => [k, t.args[i] ?? def.params[k].default]));
-    const sub = (x) => Array.isArray(x) ? x.map(sub) : x && typeof x === 'object' ? ('$param' in x ? vals[x.$param] : '$expr' in x ? Function(...names, `return (${x.$expr.replace(/[^\w\s.+\-*/()]/g, '')})`)(...names.map((k) => vals[k])) : '$mini' in x ? { $mini: x.$mini } : Object.fromEntries(Object.entries(x).map(([k, v]) => [k, sub(v)]))) : x;
-    for (const [m, ...a] of def.chain) { if (m === 'hook') out.push(...expand(a[0])); else out.push([m, ...a.map(sub)]); }
-  }
-  return out;
-}
-const r6 = (x) => Math.round(x * 1e6) / 1e6;
-function lowerGroove(obj) { // the plain-Strudel version of one .groove(...) step (opens on strudel.cc)
-  const o = G.normalise([obj]); let s = ''; const seed = (k) => (o.seed || k ? `.late(${r6(o.seed + k)})` : '');
-  if (o.swing !== 50) s += `.swingBy(${r6(2 * o.swing / 100 - 1)}, ${o.grid / 2})`;
-  if (o.vel) s += `.mul(velocity(rand${seed(0.37)}.range(${r6(1 - o.vel)}, 1)))`;
-  const J = o.jitter / 1600, D = o.drift / 1600, off = o.push / 1600 - J - D;
-  if (o.jitter) s += `.late(rand${seed(0)}.range(0, ${r6(2 * J)}).segment(16))`;
-  if (o.drift) s += `.late(perlin${seed(0)}.range(0, ${r6(2 * D)}).slow(4).segment(16))`;
-  if (off > 1e-9) s += `.late(${r6(off)})`; else if (off < -1e-9) s += `.early(${r6(-off)})`;
-  return s;
-}
-const fmt = (v) => (typeof v === 'number' ? String(v) : typeof v === 'string' ? JSON.stringify(v) : v && v.$mini !== undefined ? JSON.stringify(v.$mini) : JSON.stringify(v));
-function plain(steps, where) {
-  return steps.map(([m, ...a]) => { if (m === 'groove') return lowerGroove(a[0]); if (m === 'wire') die(`${where}: a wire step cannot be lowered to plain Strudel`); return `.${m}(${a.map(fmt).join(', ')})`; }).join('');
-}
+const LW = await L.createLowering({ defs: ownDefs, die }); // racks, hygiene and grooves -> plain steps (tools/lowering/lower.mjs, shared with the Syntax lowering)
+const { expand, plain } = LW;
 
 // ---------- recipes ----------
 function voiceCode(v, f, where) {
@@ -78,8 +52,26 @@ function voiceCode(v, f, where) {
   if (v.more) c += quoted(v.more, f, where);
   return c;
 }
+// The authored Craft form of the same voices (the source of truth): whole-string atom refs stay atoms.<ns>.<name>, rack | groove | move stay one .hook("..."),
+// the imports are written out. recipeCode returns both: `code` is the plain Strudel lowering (what renders and opens on strudel.cc), `craft` the Craft program.
+const NSID = Object.fromEntries(fams.filter((f) => f.atomsIngredient).map((f) => [f.atomsIngredient.ns, f.atomsIngredient.id]));
+const WHOLE = /^@(?:([a-z]\w*):)?([A-Za-z]\w*)$/;
+function craftPat(str, f, where, used) { // a whole-string atom ref -> atoms.ns.name; anything else -> the literal mini string with atoms inlined
+  const m = WHOLE.exec(str); if (!m) return JSON.stringify(pat(str, f, where));
+  const ns = m[1] || famNs(f); atomBody(ns, m[2], where); used.add(ns); return `atoms.${ns}.${m[2]}`;
+}
+function craftVoice(v, f, where, used) {
+  let c = `${v.src}(${craftPat(v.pat, f, where, used)})`;
+  if (v.vel) c += `.velocity(${craftPat(v.vel, f, where, used)})`;
+  const steps = [v.rack && v.rack + (v.args || ''), v.groove, v.move].filter(Boolean); if (steps.length) c += `.hook(${JSON.stringify(steps.join(' | '))})`;
+  if (v.more) c += v.more.replace(/"([^"]*)"/g, (_, x) => craftPat(x, f, where, used));
+  return c;
+}
 function recipeCode(r, f) {
-  const lines = r.voices.map((v) => voiceCode(v, f, r.id)); return { code: (r.cpm ? `setcpm(${r.cpm}/4)\n` : '') + lines.map((l) => '$: ' + l).join('\n'), expr: lines.length === 1 && !r.cpm ? lines[0] : null };
+  const lines = r.voices.map((v) => voiceCode(v, f, r.id)); const used = new Set(); const craftLines = r.voices.map((v) => craftVoice(v, f, r.id, used));
+  const head = (r.cpm ? `setcpm(${r.cpm}/4)\n` : '');
+  const imports = [...used].map((ns) => `atoms.import("pack:${PACK}:${NSID[ns]}")`).join('\n'); // default namespace = the ingredient's own (hh, dt)
+  return { code: head + lines.map((l) => '$: ' + l).join('\n'), expr: lines.length === 1 && !r.cpm ? lines[0] : null, craft: head + (imports ? imports + '\n' : '') + craftLines.map((l) => '$: ' + l).join('\n') };
 }
 const T = rd(path.join(HERE, 'families', 'feels.json')).template; // the feel template is shared data
 const feelVoices = (fe) => T.voices.map((v, i) => { const x = fe.voices[v] || { pat: '~' }; const gr = x.groove === false ? null : `${x.groove || fe.groove}(${i + 1})${x.push ? ` | groove-push(${x.push})` : ''}`; return { name: v, src: T.src[v], pat: x.pat, vel: x.vel, rack: x.rack, args: x.args, grooveExpr: gr }; });
@@ -89,7 +81,7 @@ for (const f of fams) {
   for (const s of f.syntax || []) syntax.push(s);
   for (const [id, fe] of Object.entries(f.feels || {})) {
     const vs = feelVoices(fe).filter((v) => v.pat !== '~' && v.rack); const r = { id: `feel-${id}`, title: `Feel: ${fe.title.toLowerCase()}`, intent: `${fe.doc} (${fe.tempo}).`, labels: fe.labels, class: 'demo', cpm: fe.cpm, bars: 2,
-      notes: `Plain-Strudel lowering of the feel template glyphcore/phonk:feel-${id} (racks and grooves expanded). With the pack: atoms.import("pack:glyphcore/phonk:feel-${id}", { as: "feel" }).`,
+      notes: `Craft form of the feel template glyphcore/phonk:feel-${id} (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import("pack:glyphcore/phonk:feel-${id}", { as: "feel" }).`,
       voices: vs.map((v) => ({ src: v.src, pat: v.pat, vel: v.vel, rack: v.rack, args: v.args, groove: v.grooveExpr })) };
     recipes.push({ fam: f, r, ...recipeCode(r, f) });
   }
@@ -152,12 +144,13 @@ function render(r, code) {
   else { const s = wavStats(wav); const err = (p.stderr || '').split('\n').find((l) => /\berror\b/i.test(l) && !/stop time|time value \(-?[\d.]+\) cannot be negative/i.test(l)); out = { verified: s.peak > 1e-4 && !err, ...s, error: err || (s.peak > 1e-4 ? null : 'silent') }; }
   fs.rmSync(d, { recursive: true, force: true }); return out;
 }
-const catRecipes = recipes.map(({ fam, r, code, expr }) => {
+const catRecipes = recipes.map(({ fam, r, code, expr, craft }) => {
   const old = prev.get(r.id); let res;
-  if ((RENDER && (!ONLY || ONLY.has(r.id))) || (CHANGED && !CHECK && !(old && old.code === code && old.origin === 'concepts'))) { res = render(r, code); process.stderr.write(`${res.verified ? 'OK  ' : 'FAIL'} ${r.id} rms=${res.rms_dbfs} cen=${res.centroid_hz} ${res.error || ''}\n`); }
-  else if (old && old.code === code && old.origin === 'concepts') res = { verified: old.verified, rms_dbfs: old.rms_dbfs, centroid_hz: old.centroid_hz, peak: old.peak, error: old.error };
+  if ((RENDER && (!ONLY || ONLY.has(r.id))) || (CHANGED && !CHECK && !(old && (old.lowered || old.code) === code && old.origin === 'concepts'))) { res = render(r, code); process.stderr.write(`${res.verified ? 'OK  ' : 'FAIL'} ${r.id} rms=${res.rms_dbfs} cen=${res.centroid_hz} ${res.error || ''}\n`); }
+  else if (old && (old.lowered || old.code) === code && old.origin === 'concepts') res = { verified: old.verified, rms_dbfs: old.rms_dbfs, centroid_hz: old.centroid_hz, peak: old.peak, error: old.error };
   else res = { verified: false, rms_dbfs: null, centroid_hz: null, peak: 0, error: 'not rendered' };
-  return { id: r.id, title: r.title, intent: r.intent, code, notes: r.notes || '', labels: r.labels, source: 'docs/CONVENTIONS.md', unverified: [], origin: 'concepts', family: fam.family, needs_samples: false, expr, bpm_hint: r.cpm || null, verified: res.verified, rms_dbfs: res.rms_dbfs, centroid_hz: res.centroid_hz, peak: res.peak, error: res.error };
+  const lowered = craft !== code ? code : null; const keep = old && old.origin === 'concepts' && old.code === craft && old.lowered === lowered && old.lowered_check ? { lowered_check: old.lowered_check } : {}; // lowered_check is (re)written by tools/lowering/build.mjs after the packs are hashed
+  return { id: r.id, title: r.title, intent: r.intent, code: craft, ...(lowered ? { lowered } : {}), ...keep, notes: r.notes || '', labels: r.labels, source: 'docs/CONVENTIONS.md', unverified: [], origin: 'concepts', family: fam.family, needs_samples: false, expr, bpm_hint: r.cpm || null, verified: res.verified, rms_dbfs: res.rms_dbfs, centroid_hz: res.centroid_hz, peak: res.peak, error: res.error };
 });
 
 // ---------- write / check ----------
@@ -171,9 +164,11 @@ const labelIds = new Set(cat.labels.map((l) => l.id)); for (const r of catRecipe
 cat.recipes = [...cat.recipes.filter((r) => r.origin !== 'concepts'), ...catRecipes]; { const ids = cat.recipes.map((r) => r.id); if (new Set(ids).size !== ids.length) die('duplicate catalog id'); }
 put('site/data/catalog.json', JSON.stringify(cat, null, 1).replace(/"(peak|rms_dbfs|bpm_hint)": (-?\d+)(,?)\n/g, '"$1": $2.0$3\n')); // same text as engine/strudel/build_catalog.py (Python floats)
 const synText = fs.readFileSync(path.join(ROOT, 'site/data/syntax.json'), 'utf8');
+const oldEx = new Map(JSON.parse(synText).sections.flatMap((s) => s.examples).map((e) => [e.title, e]));
 const sec = { id: 'feels', title: 'Feels: hip-hop, trap, hyphy; grooves; dovetails', needs: 'hooks', explain: 'Genre kits as data (docs/CONVENTIONS.md). Components are racks (band-scoped hook defs) and pattern atoms; forms are gate atoms (hh.intro, hh.verse, hh.hook, hh.dropBar, hh.lastBeat, hh.switch, hh.bounce, hh.stomp); dovetails are gate atoms with a point param (dt.pickup, dt.rise, dt.hit, dt.tail), mask and fade-table atoms and move racks (fadeOut, fadeIn, throw, tailHold, duckUnder). Groove is one method, .groove(swing, push, jitter, vel, drift, seed, grid): swing in MPC percent, push / jitter / drift in percent of a 16th, deterministic per seed; presets groove-straight, -pocket, -lazy, -bounce, -rolling, -cloud, -swing(pct), -push(pct), -human(jitter, vel, seed). A feel template (feel-boombap, feel-lazy, feel-trap, feel-hyphy, feel-cloud of pack glyphcore/phonk) fills the slots drums, top, bass, harmony, fx and groove; a track picks one with one atoms.import line and overrides a slot with one bind. Sub-bar gates on a slot need quant: 0 on the slot.', examples: syntax.map((s) => ({ title: s.title, code: s.code })) };
 // syntax.json is hand-formatted: splice this one section (one line per example) in front of the tracks section, the rest stays byte-identical
-const q = JSON.stringify; const secText = `    {\n      "id": ${q(sec.id)}, "title": ${q(sec.title)}, "needs": ${q(sec.needs)},\n      "explain": ${q(sec.explain)},\n      "examples": [\n${sec.examples.map((e) => `        { "title": ${q(e.title)}, "code": ${q(e.code)} }`).join(',\n')}\n      ]\n    },\n`;
+const q = JSON.stringify; const secText = `    {\n      "id": ${q(sec.id)}, "title": ${q(sec.title)}, "needs": ${q(sec.needs)},\n      "explain": ${q(sec.explain)},\n      "examples": [\n${sec.examples.map((e) => { const o = oldEx.get(e.title); const x = o && o.code === e.code ? o : {}; /* lowered / lowered_note / lowered_check belong to tools/lowering/build.mjs: kept while the code is unchanged */
+        return `        { "title": ${q(e.title)}, "code": ${q(e.code)}${['lowered', 'lowered_note', 'lowered_check'].filter((k) => x[k] !== undefined).map((k) => `, ${q(k)}: ${q(x[k])}`).join('')} }`; }).join(',\n')}\n      ]\n    },\n`;
 const fi = synText.indexOf('      "id": "feels"'), ti = synText.indexOf('    {\n      "id": "tracks"'); if (ti < 0) die('syntax.json: tracks section not found');
 const synOut = fi >= 0 ? synText.slice(0, synText.lastIndexOf('    {\n', fi)) + secText + synText.slice(ti) : synText.slice(0, ti) + secText + synText.slice(ti);
 JSON.parse(synOut); put('site/data/syntax.json', synOut);

@@ -51,11 +51,17 @@ async function render() {
     return `<section class="sx-sec" id="sx-${s.id}" aria-labelledby="sxh-${s.id}"><h3 id="sxh-${s.id}">${esc(s.title)} <span class="sx-badge" data-built="${built}">${built ? 'built' : 'coming'}</span></h3>
     <p>${esc(s.explain)}</p>
     ${(s.examples || []).map((e, i) => { const coming = e.coming || !built; return `<figure class="sx-ex">
-      ${e.code ? `<pre><code>${esc(e.code)}</code></pre>` : ''}
+      ${e.code ? `<div class="sx-fm" data-sec="${s.id}" data-i="${i}"></div>` : ''}
       ${e.flow ? `<ol class="sx-flow" aria-label="Signal flow">${e.flow.map((f) => `<li><b>${esc(f[0])}</b><span>${esc(f[1])}</span></li>`).join('')}</ol>` : ''}
       ${e.explain ? `<p class="sx-exnote">${esc(e.explain)}</p>` : ''}
       <figcaption><span>${esc(e.title)}</span>${coming ? '<span class="sx-badge" data-built="false">coming</span>' : `<button type="button" class="sx-run" data-sec="${s.id}" data-i="${i}">${e.action ? 'Open' : e.noplay ? 'Load' : 'Load and play'}</button>`}</figcaption></figure>`; }).join('')}
     </section>`; }).join('')}`;
+  /* both forms of every example: Craft (as authored) and Strudel (generated lowering, or the reason there is none); site/forms.js */
+  root.querySelectorAll('.sx-fm').forEach((h) => { const sec = d.sections.find((x) => x.id === h.dataset.sec), ex = sec.examples[+h.dataset.i]; const F = sc.forms;
+    if (!F) { h.innerHTML = `<pre><code>${esc(ex.code)}</code></pre>`; return; }
+    h.replaceWith(F.render({ craft: ex.code, lowered: ex.lowered, lowered_note: ex.lowered_note, lowered_check: ex.lowered_check }, { insert: (code, which) => {
+      window.__sc.setView('rack'); const ta = document.getElementById('code'); ta.value = code; ta.dispatchEvent(new Event('input'));
+      sc.ui && sc.ui.toast(`Inserted the ${which === 'craft' ? 'Craft' : 'Strudel'} form of "${ex.title}" into the Rack editor. Revert restores the recipe.`, { kind: 'ok' }); } })); });
   root.querySelectorAll('.sx-toc a').forEach((a) => a.addEventListener('click', (ev) => { ev.preventDefault(); $('#sx-' + a.dataset.sx).scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }));
   if (root.dataset.bound) return; root.dataset.bound = '1'; /* one delegated handler: render() runs again on strudel:ready and Retry */
   root.addEventListener('click', async (ev) => {

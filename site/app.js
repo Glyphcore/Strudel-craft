@@ -601,7 +601,7 @@ function renderList(keepId) {
         el('span', { class: 'n', 'aria-hidden': 'true' }, String(S.recipes.indexOf(r) + 1).padStart(2, '0')),
         st ? S.orgMod.ico(st) : null,
         el('span', { class: 'tt' }, el('span', { class: 't' }, r.title), e.folder || (e.tags || []).length ? el('span', { class: 'sub' }, [e.folder, (e.tags || []).filter((x) => !['verified', 'unverified'].includes(x) && !(e.folder || '').split('/').includes(x)).slice(0, 2).join(' ')].filter(Boolean).join(' · ')) : null),
-        el('span', { class: 'pk ns' + (foreign.has(r.pack) ? '' : ' own'), title: 'Pack ' + (r.pack || 'glyphcore/shim') }, foreign.has(r.pack) ? r.pack : (r.pack || 'glyphcore/shim').replace(/^glyphcore\//, '')),
+        el('span', { class: foreign.has(r.pack) ? 'pk ns' : 'ns own', title: 'Pack ' + (r.pack || 'glyphcore/shim') }, foreign.has(r.pack) ? r.pack : (r.pack || 'glyphcore/shim').replace(/^glyphcore\//, '')),
         el('span', { class: 'k' + (r.verified ? ' ok' : '') }, r.verified ? 'ok' : r.needs_samples ? 'smp' : '·')),
       el('button', { type: 'button', class: 'add', 'data-add': r.id, 'aria-pressed': inStack ? 'true' : 'false', disabled: !r.expr, 'aria-label': (inStack ? 'Remove ' : 'Add ') + r.title + (inStack ? ' from stack' : ' to stack'), title: r.expr ? 'Stack (A)' : 'Uses top-level statements: solo only' }, inStack ? '−' : '+'));
   }));

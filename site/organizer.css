@@ -50,7 +50,8 @@
 .row .tt{overflow:hidden}
 .row .tt .t,.row .tt .sub{max-width:100%}
 .row .tt .t{flex:none}
-.row .pk.ns{color:var(--text);border-color:var(--line-2)}
+.row .ns{flex:none;max-width:14ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono);font-size:.62rem;letter-spacing:.02em;color:var(--dim);border:1px solid var(--line-2);border-radius:var(--r1);padding:1px 5px}
+.row .pk.ns{color:var(--text)}
 /* dialogs */
 .org-form{display:grid;gap:12px}
 .org-form small{color:var(--faint);font-size:.72rem}

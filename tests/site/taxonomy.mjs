@@ -107,7 +107,7 @@ await page.selectOption('#org .org-sort', 'name'); const firstNames = await page
 check('sort by name orders the list', firstNames.join() === [...firstNames].sort().join(), firstNames.join());
 await page.selectOption('#org .org-sort', 'catalog');
 // badge + style on each row
-const rowInfo = await page.$$eval('#list li[data-id]', (ls) => ls.map((l) => ({ pk: !!l.querySelector('.pk'), ico: !!l.querySelector('.tx-ico svg'), c: l.querySelector('.tx-ico')?.dataset.color })));
+const rowInfo = await page.$$eval('#list li[data-id]', (ls) => ls.map((l) => ({ pk: !!l.querySelector('.ns'), ico: !!l.querySelector('.tx-ico svg'), c: l.querySelector('.tx-ico')?.dataset.color })));
 check('every row has a pack badge and a style icon', rowInfo.length > 0 && rowInfo.every((r) => r.pk && r.ico), String(rowInfo.length));
 check('rows use more than 4 distinct colours (different tags, different looks)', new Set(rowInfo.map((r) => r.c)).size >= 5, [...new Set(rowInfo.map((r) => r.c))].join());
 // distinct folder styles and the chip link

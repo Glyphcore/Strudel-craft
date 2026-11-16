@@ -1,8 +1,8 @@
 {
-  "date": "2026-11-14T05:48:38.672Z",
-  "base": "http://127.0.0.1:38203/Strudel-craft/",
+  "date": "2026-11-16T09:11:05.274Z",
+  "base": "http://127.0.0.1:45059/Strudel-craft/",
   "cdnModules": 66,
-  "files": 374,
+  "files": 412,
   "checks": [
     {
       "name": "site/precache.json is fresh (node tools/pwa/precache.mjs --check)",
@@ -12,7 +12,7 @@
     {
       "name": "install (first visit, no Play): every precache.json file is in the sc-offline-1 snapshot",
       "ok": true,
-      "detail": "374 files; missing: "
+      "detail": "412 files; missing: "
     },
     {
       "name": "install: every pinned CDN entry and its import graph is cached (Strudel bundle, CodeMirror, jsdiff)",
@@ -27,7 +27,7 @@
     {
       "name": "offline reload: app, recipes and CodeMirror editor",
       "ok": true,
-      "detail": "{\"rows\":46,\"editor\":\"cm6\",\"title\":\"Four-on-the-floor\",\"controlled\":true}"
+      "detail": "{\"rows\":89,\"editor\":\"cm6\",\"title\":\"Four-on-the-floor\",\"controlled\":true}"
     },
     {
       "name": "offline Play: engine loads from the snapshot, audio runs on the bgplay worker clock",

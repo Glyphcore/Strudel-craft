@@ -21,7 +21,7 @@ if (!process.argv.includes('--no-pin')) await ctx.addInitScript(() => { setInter
 const page = await ctx.newPage();
 await page.goto(BASE); await page.waitForFunction(() => window.__sc && window.strudelCraft && window.strudelCraft.packs && window.strudelCraft.capture, null, { timeout: 90000 });
 await page.evaluate(async () => { const P = window.strudelCraft.packs; await P.ready; await P.load('glyphcore/phonk:atoms'); await P.load('glyphcore/phonk:presets'); window.__sc.setView('syntax'); });
-for (let k = 0; k < 5; k++) { await page.waitForFunction(() => document.querySelectorAll('#sx-tracks .sx-run').length > 1, null, { timeout: 60000 }); await page.waitForTimeout(500); if (await page.evaluate(() => { const b = document.querySelectorAll('#sx-tracks .sx-run')[1]; if (!b) return false; b.click(); return true; })) break; }
+for (let k = 0; k < 5; k++) { await page.evaluate(() => window.strudelCraft.syntax && window.strudelCraft.syntax.go('tracks')); await page.waitForFunction(() => document.querySelectorAll('#sx-tracks .sx-run').length > 1, null, { timeout: 60000 }); await page.waitForTimeout(500); if (await page.evaluate(() => { const b = document.querySelectorAll('#sx-tracks .sx-run')[1]; if (!b) return false; b.click(); return true; })) break; }
 await page.waitForFunction(() => window.__sc.S.playing && !window.__sc.S.busy && window.__sc.Engine.started, null, { timeout: 120000 });
 await page.evaluate(() => { window.strudelCraft.transport.stop(); }); await page.waitForTimeout(1500); /* transport stopped, as in the issue */
 const cdp = await ctx.newCDPSession(page);

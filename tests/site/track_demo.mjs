@@ -27,7 +27,7 @@ await page.goto(BASE); await page.waitForFunction(() => window.__sc && window.__
 const pk = await page.evaluate(async () => { const P = window.strudelCraft.packs; await P.ready; await P.load('glyphcore/phonk:atoms'); await P.load('glyphcore/phonk:presets');
   const p = P.list().find((x) => x.id === 'glyphcore/phonk'); return p ? { state: p.state, ings: p.ingredients.map((i) => `${i.id}:${i.state}`) } : null; });
 check('glyphcore/phonk is in the site lock; atoms and presets load', pk && pk.state === 'ready' && pk.ings.includes('atoms:ready') && pk.ings.includes('presets:ready'), JSON.stringify(pk));
-await page.evaluate(() => window.__sc.setView('syntax')); const btn = page.locator('#sx-tracks .sx-run').nth(V2 ? 1 : 0); await btn.waitFor({ timeout: 30000 }); await btn.scrollIntoViewIfNeeded();
+await page.evaluate(() => window.__sc.setView('syntax')); await page.waitForFunction(() => window.strudelCraft.syntax && window.strudelCraft.syntax.go('tracks'), null, { timeout: 30000 }); const btn = page.locator('#sx-tracks .sx-run').nth(V2 ? 1 : 0); await btn.waitFor({ timeout: 30000 }); await btn.scrollIntoViewIfNeeded();
 const title = await page.locator('#sx-tracks figcaption span').nth(V2 ? 1 : 0).textContent(); check(`Syntax entry "${TITLE}" is listed`, title === TITLE, title);
 await btn.tap(); await page.waitForTimeout(3000);
 await page.waitForFunction(() => { const s = window.__sc.S; return (!s.busy && s.playing && window.__sc.Engine.started) || document.querySelector('#status').classList.contains('err'); }, null, { timeout: 90000 }).catch(() => {});

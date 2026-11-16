@@ -66,6 +66,7 @@ async function playAndSyntax(tag, page) {
   check(`[${tag}] Play: sound on the master and the scope drawn`, r.state === 'running' && r.peak > 0.01 && r.scope > 200, JSON.stringify(r));
   await page.tap('#playBtn').catch(() => {});
   await page.evaluate(() => document.activeElement && document.activeElement.blur()); await page.keyboard.press('6');
+  await page.waitForFunction(() => (window.strudelCraft.syntax && window.strudelCraft.syntax.go('slots')) || document.querySelector('#syntax .sx-error'), null, { timeout: 20000 }).catch(() => {});
   await page.waitForFunction(() => document.querySelectorAll('#syntax .sx-ex').length > 0 || document.querySelector('#syntax .sx-error'), null, { timeout: 20000 }).catch(() => {});
   const sx = await page.evaluate(() => ({ view: document.querySelector('#main').dataset.view, examples: document.querySelectorAll('#syntax .sx-ex').length, error: document.querySelector('#syntax .sx-error')?.textContent || null, packErrors: (window.strudelCraft.packs?.errors?.() || []).map((e) => e.code + ' ' + e.message).slice(0, 3) }));
   check(`[${tag}] Syntax (key 6) lists examples`, sx.view === 'syntax' && sx.examples >= 20 && !sx.error, JSON.stringify(sx));
@@ -118,7 +119,7 @@ for (const old of OLD_BUILDS) {
   const a = await page.evaluate(() => ({ error: document.querySelector('#syntax .sx-error')?.textContent.trim().slice(0, 140), retry: !!document.querySelector('#syntax .sx-retry'), examples: document.querySelectorAll('#syntax .sx-ex').length }));
   check('[syntax-fail] pin mismatch: error state names E_PACK_HASH, Retry button, bundled examples', /E_PACK_HASH/.test(a.error || '') && a.retry && a.examples >= 3, JSON.stringify(a));
   breakSyntax = false; await page.tap('#syntax .sx-retry');
-  await page.waitForFunction(() => !document.querySelector('#syntax .sx-error') && document.querySelectorAll('#syntax .sx-ex').length >= 20, null, { timeout: 20000 }).catch(() => {});
+  await page.waitForFunction(() => !document.querySelector('#syntax .sx-error') && document.querySelectorAll('#syntax .sx-sec').length >= 20, null, { timeout: 20000 }).catch(() => {});
   const b = await page.evaluate(() => ({ error: !!document.querySelector('#syntax .sx-error'), examples: document.querySelectorAll('#syntax .sx-ex').length }));
   check('[syntax-fail] Retry loads the full examples once the data matches', !b.error && b.examples >= 20, JSON.stringify(b));
   await ctx.close();

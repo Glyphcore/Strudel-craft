@@ -380,10 +380,31 @@ dialog.scm{width:min(420px,calc(100vw - 24px))}
 @media (prefers-reduced-motion:reduce){.tk-wip .tk-dot,.tk-changed{animation:none}}
 .tk-err{flex-basis:100%;font-family:var(--mono);font-size:.7rem;color:var(--warn)}
 .toasts:popover-open{margin:0;border:0;padding:0;background:transparent;overflow:visible;inset:auto auto calc(var(--tp,120px) + 12px + env(safe-area-inset-bottom)) 50%}
-.syntax{padding:0 0 16px}.syntax>.panel-head{position:sticky;top:0}
+.syntax{padding:0 0 16px}.syntax>.panel-head{position:static}
 .sx-sub{color:var(--dim);font-size:.78rem}
-.sx-toc{display:flex;gap:6px;overflow-x:auto;padding:8px 14px;scrollbar-width:none}.sx-toc a{white-space:nowrap;min-height:44px;display:inline-flex;align-items:center;padding:0 12px;border:1px solid var(--line-2);border-radius:var(--r2);font-size:.78rem;color:var(--text);text-decoration:none}
-.sx-sec{padding:12px 14px;border-top:1px solid var(--line-2)}.sx-sec h3{margin:0 0 6px;display:flex;align-items:center;gap:8px;font-size:1rem}.sx-sec p{margin:0 0 10px;color:var(--text);line-height:1.5;max-width:70ch}
+/* Syntax navigation (#150): sticky search + jump strip, collapsed families, lazy section bodies */
+.sx-bar{position:sticky;top:calc(var(--top) + env(safe-area-inset-top,0px));z-index:6;background:var(--bg);border-bottom:1px solid var(--line-2);padding:8px 14px 0}
+.sx-find{display:flex;gap:8px}.sx-search{flex:1;min-width:0;min-height:44px;font-size:1rem;padding:0 12px;color:var(--text);background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--r2)}.sx-search:focus-visible{outline:2px solid var(--sig-2);outline-offset:1px}
+.sx-clear{min-height:44px;min-width:64px}.sx-count{margin:6px 0 0;color:var(--text);font-size:.78rem}
+.sx-jump{display:flex;gap:6px;overflow-x:auto;padding:6px 0 8px;scrollbar-width:none;overscroll-behavior-x:contain}.sx-jump::-webkit-scrollbar{display:none}
+.sx-jump a{flex:none;white-space:nowrap;min-height:44px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;border:1px solid var(--line-2);border-radius:var(--r2);font-size:.78rem;color:var(--text);text-decoration:none;text-transform:capitalize}.sx-jump a b{font-family:var(--mono);font-weight:600;color:var(--sig-2)}
+.sx-lists{padding:0 14px}.sx-chips{display:flex;gap:6px;overflow-x:auto;align-items:center;padding:8px 0 0;scrollbar-width:none}.sx-chips::-webkit-scrollbar{display:none}
+.sx-lab{flex:none;font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text)}
+.sx-go{flex:none;min-height:44px;max-width:60vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-color:var(--sig-2);color:var(--text)}
+.sx-grp{border-top:1px solid var(--line-2);margin-top:8px;--tx:var(--sig-2)}.sx-grp:first-child{margin-top:0}.sx-grp[hidden],.sx-sec[hidden]{display:none}.sx-gh{margin:0;font-size:inherit;color:inherit}
+.sx-ghead{width:100%;min-height:48px;display:flex;align-items:center;gap:10px;padding:0 14px;border:0;border-radius:0;background:transparent;color:var(--text);text-align:left;font-size:.9rem;font-weight:600;border-left:3px solid var(--tx)}
+.sx-ghead:focus-visible,.sx-head:focus-visible,.sx-pin:focus-visible,.sx-go:focus-visible,.sx-jump a:focus-visible{outline:2px solid var(--sig-2);outline-offset:-2px}
+.sx-gt{flex:1;text-transform:capitalize}.sx-gn{font-family:var(--mono);font-size:.74rem;color:var(--text);padding:2px 8px;border-radius:99px;background:var(--tx-bg,var(--panel-2));border:1px solid var(--line-2)}
+.sx-chev{width:9px;height:9px;border-right:2px solid var(--text);border-bottom:2px solid var(--text);transform:rotate(-45deg);transition:transform .16s}.sx-ghead[aria-expanded=true] .sx-chev{transform:rotate(45deg)}
+@media (prefers-reduced-motion:reduce){.sx-chev{transition:none}}
+.sx-gico .tx-ico{width:24px;height:24px}
+.sx-sec{border-top:1px solid var(--line-2);border-left:3px solid var(--tx,var(--sig-2));content-visibility:auto;contain-intrinsic-size:auto 52px;scroll-margin-top:calc(var(--top) + 150px)}
+.sx-sec>h3{margin:0;display:flex;align-items:stretch;font-size:.95rem}.sx-head{flex:1;min-width:0;min-height:48px;display:flex;align-items:center;gap:8px;padding:6px 8px 6px 12px;border:0;border-radius:0;background:transparent;color:var(--text);text-align:left;font-size:.9rem;font-weight:500}
+.sx-title{overflow-wrap:anywhere}.sx-head[aria-expanded=true] .sx-title{font-weight:700}
+.sx-pin{flex:none;width:48px;min-height:48px;display:grid;place-items:center;border:0;border-radius:0;background:transparent;color:var(--text)}.sx-pin svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6}.sx-pin[aria-pressed=true]{color:var(--sig-2)}.sx-pin[aria-pressed=true] svg{fill:currentColor}
+.sx-body{padding:4px 14px 12px}.sx-body p{margin:0 0 10px;color:var(--text);line-height:1.5;max-width:70ch}
+.sx-orghost{padding:8px 14px 0}
+@media (min-width:900px){.sx-bar{padding:10px 20px 0}.sx-jump{flex-wrap:wrap;overflow:visible}.sx-jump a{min-height:36px}.sx-lists{padding:0 20px}}
 .sx-badge{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border-radius:var(--r1);border:1px solid var(--sig-2);color:var(--sig-2)}
 .sx-badge[data-built=false]{border-color:var(--warn);color:var(--warn)}
 .sx-ex{margin:0 0 10px;border:1px solid var(--line-2);border-radius:var(--r2);overflow:hidden;background:var(--panel-2)}

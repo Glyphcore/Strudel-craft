@@ -77,7 +77,7 @@ await page.goto(ORIGIN + '/index.html#r/' + P.id); await page.waitForSelector(`#
 const f2 = page.locator('#inspector .fm'); await f2.locator('.fm-tab[data-f=strudel]').tap();
 ok('plain recipe: the Strudel tab says both forms are identical and has the same code', /Identical to the Craft form/.test(await f2.locator('.fm-panel[data-f=strudel] .fm-note').textContent()) && (await f2.locator('.fm-panel[data-f=strudel] pre').textContent()) === P.code && (await f2.locator('.fm-badge').textContent()) === 'identical');
 // Syntax view
-await page.evaluate(() => window.__sc.setView('syntax')); await page.waitForSelector('#syntax .sx-ex .fm', { timeout: 30000 });
+await page.evaluate(() => window.__sc.setView('syntax')); await page.waitForFunction(() => window.strudelCraft.syntax && window.strudelCraft.syntax.go('slots'), null, { timeout: 30000 }); await page.waitForSelector('#syntax .sx-ex .fm', { timeout: 30000 });
 const rt = syn.sections.flatMap((s) => s.examples).find((e) => e.lowered_note), lo = syn.sections.flatMap((s) => s.examples).find((e) => e.lowered && e.lowered_check && e.lowered_check.equal);
 const fig = (title) => page.locator('#syntax .sx-ex', { has: page.locator('figcaption span', { hasText: title }) }).first();
 const a = fig(rt.title); await a.scrollIntoViewIfNeeded(); await a.locator('.fm-tab[data-f=strudel]').tap();

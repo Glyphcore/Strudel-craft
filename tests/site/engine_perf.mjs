@@ -38,7 +38,7 @@ await page.goto(BASE); await page.waitForFunction(() => window.__sc && window.__
 await page.evaluate(async () => { const P = window.strudelCraft.packs; await P.ready; await P.load('glyphcore/phonk:atoms'); await P.load('glyphcore/phonk:presets'); });
 await page.evaluate(() => window.__sc.setView('syntax')); const NTH = PROG === 'v2' ? 1 : 0;
 /* the Syntax view re-renders on strudel:ready; click the entry from inside the page, retried until the program plays */
-for (let k = 0; k < 5; k++) { await page.waitForFunction((n) => document.querySelectorAll('#sx-tracks .sx-run').length > n, NTH, { timeout: 150000 }); await page.waitForTimeout(500);
+for (let k = 0; k < 5; k++) { await page.evaluate(() => window.strudelCraft.syntax && window.strudelCraft.syntax.go('tracks')); await page.waitForFunction((n) => document.querySelectorAll('#sx-tracks .sx-run').length > n, NTH, { timeout: 150000 }); await page.waitForTimeout(500);
   if (await page.evaluate((n) => { const b = document.querySelectorAll('#sx-tracks .sx-run')[n]; if (!b) return false; b.click(); return true; }, NTH)) break; }
  await page.waitForFunction(() => { const s = window.__sc.S; return (!s.busy && s.playing && window.__sc.Engine.started) || document.querySelector('#status').classList.contains('err'); }, null, { timeout: 120000 }).catch(() => {});
 await page.waitForTimeout(6000); /* warm: samples and vox banks fetched and decoded */

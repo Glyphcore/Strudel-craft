@@ -84,7 +84,7 @@ ok('share link loads the code into Rack', (await p2.evaluate(() => document.getE
 await page.evaluate(() => window.__sc.setView('stack')); await page.waitForSelector('#stackCode ~ .cm-editor .cc-btn');
 await page.tap('#stackCode ~ .cm-editor .cc-btn'); await page.waitForTimeout(300);
 ok('stack button copies the stack doc', (await clip()) === (await page.evaluate(() => document.getElementById('stackCode').cmView.state.doc.toString())));
-await page.evaluate(() => window.__sc.setView('syntax')); await page.waitForSelector('#syntax .sx-ex .fm-copy', { state: 'attached', timeout: 20000 });
+await page.evaluate(() => window.__sc.setView('syntax')); await page.waitForFunction(() => window.strudelCraft.syntax && window.strudelCraft.syntax.go('slots'), null, { timeout: 30000 }); await page.waitForSelector('#syntax .sx-ex .fm-copy', { state: 'attached', timeout: 20000 });
 const sx = page.locator('#syntax .sx-ex:has(pre)').first(); await sx.scrollIntoViewIfNeeded(); await sx.locator('.fm-copy').tap(); await page.waitForTimeout(300);
 ok('syntax example Copy (Craft form, site/forms.js) copies the example', (await clip()) === (await sx.locator('.fm-panel[data-f=craft] pre').textContent()));
 const pal = await page.evaluate(() => window.strudelCraft.palette.filter('copy code').map((x) => x.title));

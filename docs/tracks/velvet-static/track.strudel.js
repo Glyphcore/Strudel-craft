@@ -32,9 +32,9 @@ const hole = (...bs) => rl((i) => (bs.includes(i + 1) ? '[1 0]' : '1'))   // sec
 const fall = (hz, ...bs) => rl((i) => (bs.includes(i + 1) ? Math.round(hz * 0.4) : bs.includes(i + 2) ? Math.round(hz * 0.7) : hz))   // filter closes into these bars
 const TR = "<0!96 2!64>"   // drop 2, bridge, outro sit a whole tone up (Gm)
 const H = hole(32, 96)
-const dlh = rl((i) => (i >= 64 && i < 88 ? 0.36 : i >= 128 && i < 144 ? 0.24 : 0.3))   // the same for the hat racks (their own level 0.3)
-const dlt = rl((i) => (i >= 64 && i < 88 ? 0.48 : i >= 128 && i < 144 ? 0.32 : 0.4))
-const dl = rl((i) => (i >= 64 && i < 88 ? 1.2 : i >= 128 && i < 144 ? 0.8 : 1))   // float and bridge drum level, as data
+const dlh = rl((i) => (i >= 64 && i < 88 ? 0.36 : i >= 128 && i < 144 ? 0.1 : 0.3))   // the same for the hat racks (their own level 0.3)
+const dlt = rl((i) => (i >= 64 && i < 88 ? 0.48 : i >= 128 && i < 144 ? 0.14 : 0.4))
+const dl = rl((i) => (i >= 64 && i < 88 ? 1.2 : i >= 128 && i < 144 ? 0.35 : 1))   // float and bridge drum level, as data
 const fade = (from) => rl((i) => (i >= from - 1 ? Math.max(0, 1 - (i - from + 2) / 16).toFixed(2) : 1))   // 16-bar fade to silence, as data
 const lv = (a, b) => rl((i) => (i < 16 ? a : i < 128 ? 1 : i < 144 ? b : Math.max(0, 1 - (i - 143) / 16).toFixed(2)))   // level data: intro a, bridge b, outro fades out
 const swell = rl((i) => (i >= 24 && i < 32 ? (0.3 + 0.1 * (i - 24)).toFixed(2) : 1))
@@ -128,7 +128,7 @@ snarlB: note(atoms.vs.snarl).use("snarl").orbit(2).lpf(saw.range(250, 900).slow(
 snarlF: note(atoms.vs.snarl).use("snarl").orbit(2).lpf(420).velocity(1).mask(on('77-86')).dry(0).send("bus2", 1)
 
 // == harmony (orbit 3, one reverb and one delay for the whole bus) ==
-cloud: note(atoms.vs.chords).add(note(TR)).use("cloud").orbit(3).room(0.55).roomsize(5).lpf(fall(1700, 144)).postgain(1.3).mask(on('intro', 'bridge', 'outro')).velocity(lv(0.85, 1)).dry(0).send("master", 1)
+cloud: note(atoms.vs.chords).add(note(TR)).use("cloud").orbit(3).room(0.55).roomsize(5).lpf(fall(1700, 144)).postgain(1.3).mask(on('intro', 'bridge', 'outro')).velocity(lv(0.65, 0.32)).dry(0).send("master", 1)
 cloudR: note(atoms.vs.chordsRel).use("cloud").orbit(3).room(0.7).roomsize(5).postgain(1).mask(on('65-86')).dry(0).send("master", 1)
 cloudP: note(atoms.vs.pivot).use("cloud").orbit(3).room(0.7).roomsize(5).mask(on('87-88')).dry(0).send("master", 1)
 padB: note(atoms.vs.chords).use("pad").orbit(3).room(0.35).roomsize(5).lpf(atoms.ec.open8).postgain(1.1).mask(on('17-32')).mask(H).dry(0).send("master", 1)
@@ -136,12 +136,12 @@ padB2: note(atoms.vs.chordsB2).use("pad").orbit(3).room(0.4).roomsize(5).lpf(ato
 pad: note(atoms.vs.chords).add(note(TR)).use("pad").orbit(3).room(0.35).roomsize(5).lpf(fall(2600, 64, 128)).mask(on('33-64', '97-128')).mask(H).dry(0).send("master", 1)
 keys: note(atoms.vs.chords).add(note(TR)).struct(atoms.vs.keys).use("keys").orbit(3).room(0.3).roomsize(5).postgain(0.7).late(0.007).mask(on('97-128')).dry(0).send("master", 1)
 arp: note(atoms.vs.arp).add(note(TR)).use("arp").orbit(3).room(0.3).roomsize(5).delay(0.2).delaytime(0.2586).delayfeedback(0.35).groove({ swing: 56, jitter: 2, vel: 0.15, seed: 9 }).late(0.005).mask(on('41-64', '97-128')).mask(H).dry(0).send("master", 1)
-ooh: s("<vs_o_pp vs_o_pp vs_o_pp vs_o_pp>/2").note(atoms.vs.ooh).add(note(TR)).use("ooh").orbit(3).room(0.5).roomsize(5).postgain(1.3).mask(on('3-16', '129-144')).velocity(lv(0.85, 1)).dry(0).send("master", 1)
+ooh: s("<vs_o_pp vs_o_pp vs_o_pp vs_o_pp>/2").note(atoms.vs.ooh).add(note(TR)).use("ooh").orbit(3).room(0.5).roomsize(5).postgain(1.3).mask(on('3-16', '129-144')).velocity(lv(0.65, 0.32)).dry(0).send("master", 1)
 oohA: s("vs_a_pp").note(atoms.vs.oohR).use("ooh").orbit(3).room(0.6).roomsize(5).postgain(0.54).mask(on('65-86')).dry(0).send("master", 1)
 
 // foreshadowing (docs/COMPOSITION.md FS-01, FS-05, MOT-05): "teaser" = a filtered fragment of the motif in the build; "callback" = the motif in augmentation (slow(2)) in the outro
 // == melody (orbit 3): one motif. The lead states it, the chop answers it an octave down, the snarl keeps its rhythm ==
-leadI: note(atoms.vs.lead).add(note(TR)).use("lead").lpf(saw.range(1200, 6500).slow(16)).orbit(3).room(0.35).roomsize(5).delay(0.25).delaytime(0.2586).delayfeedback(0.35).postgain(1.3).mask(on('intro', 'bridge')).velocity(lv(0.85, 0.7)).dry(0).send("master", 1)
+leadI: note(atoms.vs.lead).add(note(TR)).use("lead").lpf(saw.range(1200, 6500).slow(16)).orbit(3).room(0.35).roomsize(5).delay(0.25).delaytime(0.2586).delayfeedback(0.35).postgain(1.3).mask(on('intro', 'bridge')).velocity(lv(0.65, 0.24)).dry(0).send("master", 1)
 lead: note(atoms.vs.lead).add(note(TR)).use("lead").lpf(fall(6500, 64, 128)).orbit(3).room(0.3).roomsize(5).delay(0.25).delaytime(0.2586).delayfeedback(0.35).mask(on('33-36', '41-64', '97-128')).mask(H).dry(0).send("master", 1)
 chop: note(atoms.vs.lead).sub(note(12)).add(note(TR)).s("vox_la vox_na vox_da vox_la").use("chop").orbit(3).room(0.4).roomsize(5).delay(0.25).delaytime(0.2586).delayfeedback(0.35).late(0.016).mask(on(37, 38, 39, 40, 45, 46, 47, 48, 53, 54, 55, 56, 61, 62, 63, 64, 101, 102, 103, 104, 109, 110, 111, 112, 117, 118, 119, 120, 125, 126, 127, 128)).mask(H).dry(0).send("master", 1)
 teaser: note(atoms.vs.lead).linger(0.25).use("lead").lpf(900).velocity(0.6).orbit(3).room(0.5).roomsize(5).mask(on('25-31')).dry(0).send("master", 1)
@@ -156,7 +156,7 @@ pitchUp: s("x").slow(8).hook("pitchRiser(11.03)").orbit(5).mask(on('89-96')).dry
 rev: s("x").hook("reverseSwell(1.38)").orbit(5).mask(on(16, 64, 96, 128, 144)).dry(0).send("master", 1)
 impact: s("x").hook("impactBoom").orbit(5).postgain(0.1).mask(on(33, 97)).dry(0).send("master", 1)
 crash: s("x").hook("crash").orbit(5).postgain(0.15).mask(on(33, 49, 97, 129)).dry(0).send("master", 1)
-down: s("x").hook("downSweep").orbit(5).mask(on(65, 89, 129, 145)).dry(0).send("master", 1)
+down: s("x").hook("downSweep").orbit(5).postgain(0.5).mask(on(65, 89, 129, 145)).dry(0).send("master", 1)
 
 // == the track's own bus stage (no limiter on the file): two returns, each a compressor ==
 // `master` takes every lane on orbits 1, 3, 4, 5 (drums, music, snare room, fx), sent whole (dry 0). `bus2` takes the bass lanes (sub, snarl) and sits on orbit 2,

@@ -12,6 +12,7 @@ const GATEKEYS = ['from', 'until', 'windows', 'period', 'when', 'latch', 'quant'
 const NUMRE = '\\d+(?:\\.\\d+)?(?:/\\d+)?';
 const TAPREF = /^(?:((?:[\w-]+:)?[\w$*-]+)\/)?([A-Za-z][\w-]*)(?::([A-Za-z]\w*))?$/;
 import { HYGIENE } from './hygiene.js';
+import { blankComments } from './comments.js';
 import { GROOVES, installGroove } from './groove.js';
 const METHODS = ['use', 'wrap', 'ns', 'tap', 'wire', 'hook'];
 
@@ -19,15 +20,16 @@ const METHODS = ['use', 'wrap', 'ns', 'tap', 'wire', 'hook'];
 // tap(...) into single-quoted ones, so Strudel's transpiler does not turn gates ("@3b"), hook expressions ("a | b") or slot names
 // into mini-notation. Strings inside nested calls (s("bd*4") inside a wrap callback) are left alone.
 export function protect(src) {
+  const text = blankComments(src); // scan the masked text (comments are spaces, same offsets); edits land on the original
   const re = /(?:\bhooks\s*\.\s*[A-Za-z]+|\.\s*(?:use|wrap|ns|tap|wire|hook|tags|mute|solo)|\btap|\bctl|\btagged|\bcapture|\brecall|\.\s*from)\s*\(/g; const edits = new Map(); let m;
-  while ((m = re.exec(src))) {
+  while ((m = re.exec(text))) {
     let i = m.index + m[0].length; let depth = 1;
-    while (i < src.length && depth > 0) {
-      const ch = src[i];
-      if (ch === '/' && src[i + 1] === '/') { while (i < src.length && src[i] !== '\n') i++; continue; }
-      if (ch === '/' && src[i + 1] === '*') { const e = src.indexOf('*/', i + 2); i = e < 0 ? src.length : e + 2; continue; }
+    while (i < text.length && depth > 0) {
+      const ch = text[i];
+      if (ch === '/' && text[i + 1] === '/') { while (i < text.length && text[i] !== '\n') i++; continue; }
+      if (ch === '/' && text[i + 1] === '*') { const e = text.indexOf('*/', i + 2); i = e < 0 ? text.length : e + 2; continue; }
       if (ch === '"' || ch === "'" || ch === '`') {
-        const st = i; i++; while (i < src.length && src[i] !== ch) { if (src[i] === '\\') i++; i++; }
+        const st = i; i++; while (i < text.length && text[i] !== ch) { if (text[i] === '\\') i++; i++; }
         if (ch === '"' && depth === 1) edits.set(st, i);
         i++; continue;
       }

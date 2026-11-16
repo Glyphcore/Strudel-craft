@@ -4,12 +4,14 @@
 /* Node-aware accept (docs/CONTROL_BINDING.md section 10): one change that replaces the node under the caret and merges with what
    is already there. doc/pos: document and caret; text: suggestion; opts.from: start of the typed prefix (popup) or null (ghost text:
    text continues the node). Returns { from, to, insert, caret, noop }. */
+import { blankComments } from './engine/comments.js';
 const ID = /[\w$]/, TOKQ = /[^\s"'`\[\]<>{},()|*!@%?:~]/;
 function inQuote(doc, pos) { const ls = doc.lastIndexOf('\n', pos - 1) + 1; let q = null; for (let i = ls; i < pos; i++) { const c = doc[i]; if (q) { if (c === '\\') i++; else if (c === q) q = null; } else if (c === '"' || c === "'" || c === '`') q = c; } return q; }
 export function mergeAccept(doc, pos, text, { from = null } = {}) {
-  const q = inQuote(doc, pos); const cls = q ? TOKQ : ID; const ghost = from == null;
+  const md = blankComments(doc); /* comments are spaces: an apostrophe or `.fx(` inside one is not code */
+  const q = inQuote(md, pos); const cls = q ? TOKQ : ID; const ghost = from == null;
   let a = ghost ? pos : from; let b = pos; if (!ghost) while (b < doc.length && cls.test(doc[b])) b++; /* popup: the whole node under the caret is replaced */
-  const le = doc.indexOf('\n', b); const rest = doc.slice(b, le < 0 ? doc.length : le);
+  const le = doc.indexOf('\n', b); const rest = md.slice(b, le < 0 ? doc.length : le);
   /* chain calls already present later in the statement are not re-inserted */
   let full = text.replace(/\.([A-Za-z_$][\w$]*)\(([^()]*)\)/g, (m, name) => (rest.startsWith(m) || !new RegExp('\\.' + name + '\\(').test(rest) ? m : ''));
   let h = 0; if (!ghost) while (h < full.length && cls.test(full[h])) h++;

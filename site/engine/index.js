@@ -7,6 +7,7 @@ import * as timeMod from './time.js';
 import { validate } from './validate.js';
 import * as hooksMod from './hooks.js';
 import * as lanesMod from './lanes.js';
+import { blankComments, inComment } from './comments.js';
 
 const sc = (globalThis.strudelCraft = globalThis.strudelCraft || {});
 const registry = createRegistry();
@@ -23,6 +24,7 @@ sc.engine = { time: timeMod, validate };
 sc.outer = sc.outer || []; // functions (haps, [begin, end, controls]) -> haps run by the outermost-query wrapper below, before the control maps (lanes selections)
 sc.hooksLib = { ...hooksMod, protect: (src) => { try { sc.lanes?.reset?.(); } catch (e) { /* selections stay */ } if (sc.lanes?.prepare) src = sc.lanes.prepare(src).code; return hooksMod.protect(src); } }; // lanes.prepare: .split/.merge/.send/ret compile to plain Strudel on superdough buses (docs/LANES.md 5); a coded E_LANE_* / E_BUS_RANGE error propagates to the evaluation // protect() runs before every evaluation: selections of the previous program are dropped, the new program re-registers its own
 sc.lanesLib = lanesMod;
+sc.blankComments = blankComments; sc.inComment = inComment; // comment-blind program text for every regex pass (site/app.js noComments, copy code, tempo, samples)
 // capture / recall / .from (docs/LANES.md 6, issue #76) load lazily the first time a program names them; app.js awaits this before every evaluation
 sc.lanesCaptureEnsure = async (src) => {
   if (sc.lanesCapture || !sc.lanes || !/\bcapture\s*\(|\brecall\s*\(|\.\s*from\s*\(/.test(String(src))) return sc.lanesCapture || null;

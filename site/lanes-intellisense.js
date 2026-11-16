@@ -9,11 +9,12 @@
      enumFor(method, argIndex, model) -> string[]  options for a literal editor (combobox) on those arguments */
 import { facetsOf, defaultWhat, FACETS } from './engine/lanes-data.js';
 import { scan } from './engine/lanes.js';
+import { blankComments } from './engine/comments.js';
 
 const IDENT = /[\w$]/;
 // scan the text before the caret: the stack of open brackets, with `.split(` / `.merge(` openings and arrow functions that start inside them
 export function branchContext(text) {
-  const st = []; let q = null;
+  text = blankComments(text); const st = []; let q = null;
   for (let i = 0; i < text.length; i++) {
     const c = text[i];
     if (q) { if (c === '\\') i++; else if (c === q) q = null; continue; }

@@ -9,6 +9,7 @@
      3 loop      the transport Loop range end, when Loop is on
      4 period    the longest lane pattern period (arrange([n, pat], ...) totals, <a b c> alternations, .slow(n)), at least 1 bar
    The result is an exclusive end bar ("33" = the take stops where bar 33 begins, so bar 32 is the last bar). Typing a value overrides it. */
+import { blankComments } from './engine/comments.js';
 export const MAX_MIN = 20;
 export const MIN_CYCLES = 1 / 16;
 export const UNITS = ['bars', 'cycles', 'seconds'];
@@ -77,6 +78,7 @@ export function pointToCycle(raw, { cpb = 1, bpb = 4, cps = 0 } = {}) {
 
 /* static lane period in cycles from program text: arrange([n, pat], ...) totals, <a b c> items, .slow(n); >= 1 */
 export function arrangeBars(src) {
+  src = blankComments(src);
   const m = /\barrange\s*\(/.exec(src); if (!m) return null;
   let i = m.index + m[0].length, depth = 0, tot = 0, start = -1, first = true;
   for (let k = i; k < src.length; k++) {
@@ -88,7 +90,7 @@ export function arrangeBars(src) {
   return null;
 }
 export function lanePeriod(code) {
-  const src = String(code || ''); let p = 1;
+  const src = blankComments(code || ''); let p = 1;
   const layers = src.split(/^(?=\s*(?:\$|[A-Za-z_]\w*)\s*:)/m);
   for (const L of layers) { const a = arrangeBars(L); if (a) p = Math.max(p, a); }
   for (const m of src.matchAll(/<([^<>]*)>/g)) p = Math.max(p, m[1].trim().split(/\s+/).filter(Boolean).length);

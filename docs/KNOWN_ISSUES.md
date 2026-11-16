@@ -26,3 +26,12 @@ behave as before. Nothing in Strudel or superdough is modified.
 **Test.** `node tests/site/disconnect_repro.mjs [--site DIR] [--expect-errors]` (Playwright, 360x780, real taps): the two-lane fixture alone, the
 two-lane fixture inside the v1 track (`tests/site/fixtures/word_lanes_send_load.strudel.js`, from bar 1) and the v1 track from drop 2. On the
 build before the fix (`git archive bffd843 site`) the last two report disconnect errors; on main all three report 0 page errors.
+
+## Comments broke the linter (fixed)
+A `//` comment after a comma inside `.split(a => ..., // note\n b => ...)` made the lanes pass read the comment as the start of the next branch
+(`E_LANE_SOURCE: branch 2 must be written x => x.effect(...) (got // ...)`), and a trailing comment swallowed the `)` the compiler appended. The same raw-text
+reading let a `tap(` or an apostrophe inside a comment confuse `hooks.protect`, the editor's signature context and ghost text, and let `setcpm(` or
+`<a b c>` in a comment change the tempo / record length. Root cause: argument splitting and regex scans ran on raw text. Fix: one shared masker
+(`site/engine/comments.js`, `blankComments`) used by every text pass; see site/README.md "Comments in program text". Tests: `node tests/site/comments.mjs`
+and `node engine/strudel-cli/test/comments_test.mjs` (Glyphcore/suno-track-lab). A comment inside a rewritten `.split` statement is dropped from the compiled
+code (it never reaches Strudel); comments elsewhere are kept byte for byte.

@@ -1,4 +1,4 @@
-// Lanes L1: the event layer (docs/LANES.md sections 3, 4, 5.4, 8; issue #74). One standalone ES module, no imports, no DOM; the site and
+// Lanes L1: the event layer (docs/LANES.md sections 3, 4, 5.4, 8; issue #74). One ES module (imports only ./comments.js), no DOM; the site and
 // the CLI share it. Two halves:
 //   - pure text: scan(src), compile(src) -> { code, map, graph }, check(src, { strict }), parseSelector(str). Lane graph + diagnostics.
 //   - runtime: install(S, hooks, { outer }) adds Pattern.prototype.tags, the globals tagged() and lanes, and applies selections to the
@@ -6,6 +6,8 @@
 // L2 (#75): the audio layer is a text-to-text compile pass (audioPass, prepare): .split / .merge / .send / ret / .wire("p", "bus:name") and group
 // tagged().send become plain Strudel on superdough's own buses (bus, busgain, dry, s("bus"), bmod). Nothing here touches superdough; capture is a later phase.
 
+import { blankComments } from './comments.js';
+export { blankComments };
 const code = (c, m) => Object.assign(new Error(`${c}: ${m}`), { code: c });
 const isObj = (x) => x !== null && typeof x === 'object' && (Object.getPrototypeOf(x) === Object.prototype || Object.getPrototypeOf(x) === null);
 const sortKeys = (x) => (Array.isArray(x) ? x.map(sortKeys) : isObj(x) ? Object.fromEntries(Object.keys(x).sort().filter((k) => x[k] !== undefined).map((k) => [k, sortKeys(x[k])])) : x);
@@ -62,13 +64,14 @@ function walk(src, cb) {
 }
 const strLit = (t) => { t = t.trim(); const m = /^(["'`])((?:\\.|(?!\1)[^\\])*)\1$/s.exec(t); return m ? m[2].replace(/\\(.)/g, '$1') : null; };
 function splitArgs(txt) {
+  txt = blankComments(txt);
   const out = []; let cur = ''; let start = 0;
   walk(txt, (i, ch, d, end) => { if (ch === ',' && d === 0) { out.push(txt.slice(start, i)); start = i + 1; } });
   out.push(txt.slice(start)); return out.map((x) => x.trim()).filter((x) => x !== '');
 }
 // statements: [{ start, end, text, line }]. A statement ends at `;` or at a newline outside brackets unless the next line continues it.
 export function statements(src) {
-  const out = []; let start = 0; const lineAt = (p) => src.slice(0, p).split('\n').length;
+  src = blankComments(src); const out = []; let start = 0; const lineAt = (p) => src.slice(0, p).split('\n').length;
   const push = (end) => {
     let text = src.slice(start, end); let off = 0; for (;;) { const m = /^\s*(?:\/\/[^\n]*|\/\*[\s\S]*?\*\/)/.exec(text); if (!m) break; text = text.slice(m[0].length); off += m[0].length; } // leading comments belong to no statement
     if (text.trim()) { const lead = text.length - text.trimStart().length; out.push({ start: start + off + lead, end, text: text.trim(), line: lineAt(start + off + lead) }); } start = end;
@@ -84,7 +87,7 @@ export function statements(src) {
 }
 // method calls `.name(args)` and bare calls `name(args)` inside a text: [{ name, bare, depth, args: [text], at }]
 export function calls(text) {
-  const out = [];
+  text = blankComments(text); const out = [];
   walk(text, (i, ch, d) => {
     if (ch !== '(') return; let j = i - 1; while (j >= 0 && /\s/.test(text[j])) j--; let e = j; while (j >= 0 && /[\w$]/.test(text[j])) j--; if (e === j) return;
     const name = text.slice(j + 1, e + 1); let k = j; while (k >= 0 && /\s/.test(text[k])) k--; const bare = text[k] !== '.';
@@ -129,8 +132,8 @@ const QUICK = /\bsplit\s*\(|\bmerge\s*\(|\bsend\s*\(|\bret\s*\(|bus:|\.\s*bus\s*
 const BODY = /^(?:(?:\$|[A-Za-z_]\w*)\s*:(?!:)|(?:const|let|var)\s+[\w$]+\s*=(?!=))\s*/;
 
 // -> { code, map, diag, audio }. Statements that use none of the audio features are copied byte for byte.
-function audioPass(text, g, o = {}) {
-  const diag = []; const sts = statements(text); const laneAt = new Map(g.lanes.map((l) => [l.line, l]));
+function audioPass(orig, g, o = {}) {
+  const text = blankComments(orig); const diag = []; const sts = statements(text); const laneAt = new Map(g.lanes.map((l) => [l.line, l]));
   const add = (level, c, msg, line, extra = {}) => diag.push({ level, code: c, msg, ...(line ? { line } : {}), ...extra });
   const info = sts.map((st) => { const m = BODY.exec(st.text); const off = m ? m[0].length : 0; let body = st.text.slice(off); let semi = ''; if (body.endsWith(';')) { body = body.slice(0, -1); semi = ';'; } return { st, off, body, semi, tagged: /^tagged\s*\(/.test(st.text), lane: laneAt.get(st.line) }; });
   for (const x of info) for (const c of calls(x.st.text)) if (!c.bare && c.name === 'bus') { const v = num(c.args[0] || ''); if (v != null && v >= BUS.lane0) add('error', 'E_BUS_RANGE', `.bus(${v}) is in the range the compiler allocates (>= ${BUS.lane0}); user buses are 0..${BUS.lane0 - 1}`, x.st.line); }
@@ -150,7 +153,7 @@ function audioPass(text, g, o = {}) {
   const NAMED = Object.fromEntries([...names].sort().map((n, i) => [n, BUS.named0 + i])); let next = BUS.lane0; const allocated = [];
   const audio = { buses: { named: NAMED, lane: allocated }, splits: [], sends: [], returns: [], wires: [] }; const lanesOf = [];
   const out = []; const map = []; let pos = 0; let outLen = 0; let changed = false;
-  const put = (from, to, t) => { const keep = text.slice(pos, from); map.push({ from: pos, to: outLen, length: keep.length }); out.push(keep, t); outLen += keep.length + t.length; pos = to; changed = true; };
+  const put = (from, to, t) => { const keep = orig.slice(pos, from); map.push({ from: pos, to: outLen, length: keep.length }); out.push(keep, t); outLen += keep.length + t.length; pos = to; changed = true; };
   for (const x of info) {
     const { st } = x; const line = st.line; const lane = x.lane; const stEnd = st.start + st.text.length;
     if (x.tagged) { // the send ops are compiled away; the other ops stay
@@ -175,7 +178,7 @@ function audioPass(text, g, o = {}) {
     lanesOf.push({ lid, line, rets: ctx.rets, sends: ctx.sends.map((s) => s.name) });
     put(st.start, stEnd, st.text.slice(0, x.off) + nb + x.semi);
   }
-  map.push({ from: pos, to: outLen, length: text.length - pos }); out.push(text.slice(pos));
+  map.push({ from: pos, to: outLen, length: text.length - pos }); out.push(orig.slice(pos));
   const featured = audio.splits.length + audio.sends.length + audio.returns.length + audio.wires.length > 0;
   if (featured && o.host && (o.host.busSound === false || o.host.busControl === false)) add('error', 'E_LANE_HOST', `this host's superdough has no ${o.host.busSound === false ? '"bus" sound' : '`bus` control'} (older than 1.3.0); the audio split is refused and is never replaced by .layer`, (audio.splits[0] || audio.sends[0] || audio.returns[0] || audio.wires[0]).line);
   const retNames = new Set([...audio.returns.map((r) => r.bus), ...audio.wires.map((w) => w.bus)]);
@@ -199,7 +202,7 @@ function audioPass(text, g, o = {}) {
     if (!owner || (owner.id === l.id && l.readsIn?.[r])) continue;
     add('error', 'E_LANE_CROSS', `lane "${l.id}" reads "${r}", a tap published inside a split branch of lane "${owner.id}"; branch names are private to their branch (publish it from the lane chain with { export: true } or add a send)`, l.readLine?.[r] || l.line, { lanes: [l.id, owner.id] });
   }
-  return { code: changed ? out.join('') : text, map: changed ? map : [{ from: 0, to: 0, length: text.length }], diag, audio: featured ? audio : null };
+  return { code: changed ? out.join('') : orig, map: changed ? map : [{ from: 0, to: 0, length: text.length }], diag, audio: featured ? audio : null };
 }
 
 // Rewrites one expression (a lane body). Order: arguments of ordinary calls first (so stack(a.split(f), b) works), .wire to a bus, .send collected, then the first
@@ -276,7 +279,7 @@ const num = (t) => { const v = strLit(t) ?? t; return /^-?\d+(\.\d+)?$|^-?\.\d+$
 
 // -> { lanes, mode, selections, tags }  (the lane graph, section 8; deterministic: source order, sorted sets)
 export function scan(src) {
-  const sts = statements(String(src)); const lanes = []; const selections = []; let mode = 'open'; let anon = 0;
+  src = blankComments(src); const sts = statements(src); const lanes = []; const selections = []; let mode = 'open'; let anon = 0;
   for (const st of sts) {
     const m = LANE.exec(st.text);
     if (m && !/^(default|case)\b/.test(st.text)) {
@@ -330,7 +333,7 @@ export function check(src, o = {}) {
   }
   for (const s of g.selections) { try { parseSelector(s.selector ?? ''); } catch (e) { add('error', 'E_BAD_SELECTOR', e.message.replace(/^E_\w+: /, ''), {}); } }
   for (const d of o.audio || (typeof src === 'string' ? audioPass(src, g, o).diag : [])) diag.push(d);
-  if (typeof src === 'string') for (const f of EXT) for (const d of f(src, o) || []) diag.push(d);
+  if (typeof src === 'string') for (const f of EXT) for (const d of f(blankComments(src), o) || []) diag.push(d);
   const errors = diag.filter((d) => d.level === 'error'); const warnings = diag.filter((d) => d.level === 'warn');
   return { errors, warnings, ok: !errors.length, fail: errors.length > 0 || (!!o.strict && warnings.length > 0) };
 }

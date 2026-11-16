@@ -340,6 +340,7 @@
   "engine/atoms-migrate.js",
   "engine/atoms.js",
   "engine/bind.js",
+  "engine/comments.js",
   "engine/controls.js",
   "engine/groove.js",
   "engine/hooks.js",

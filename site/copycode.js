@@ -6,6 +6,7 @@
    Copy with controls and state (a recipe v1 JSON with includes {code} only; see schemas/recipe.v1.json).
    API: window.strudelCraft.copycode = { copy(target, mode), text(target), link(code), decode(hash), loadHash(hash), recipe(target), attach() }
    target: 'rack' | 'stack' | a .sx-ex figure; mode: 'code' | 'selection' | 'link' | 'recipe'. Palette: Copy > Copy code (and the three variants). */
+import { blankComments } from './engine/comments.js';
 import { FORMAT, VERSION, STRUDEL, SUPERDOUGH, collectDeps } from './recipe.js';
 const sc = (window.strudelCraft = window.strudelCraft || {});
 const toast = (m, o) => sc.ui && sc.ui.toast(m, o);
@@ -128,7 +129,7 @@ async function recipe(t = visible()) {
   return JSON.stringify({ format: FORMAT, version: VERSION, id: 'rc' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: String(title).trim().replace(/[^\w.-]+/g, '-').slice(0, 60) || 'take', created: new Date().toISOString(),
     includes: { audio: false, events: false, code: true }, timing: { cps: +(+cps).toFixed(6), start: 0, stop: 1, cycles: 1, loop: true, mode: 'cycles', exact: false },
     random: { seed: (Math.random() * 2 ** 31) | 0, note: 'Math.random is seeded with this value during offline renders' },
-    state: { source: { kind, title, code, resolved, atoms: [...new Set(code.match(/\batoms\.[\w.]+/g) || [])] }, controls: !fig && C ? C.toModel() : null, sites, perform: lsj('perform'),
+    state: { source: { kind, title, code, resolved, atoms: [...new Set(blankComments(code).match(/\batoms\.[\w.]+/g) || [])] }, controls: !fig && C ? C.toModel() : null, sites, perform: lsj('perform'),
       settings: { tempo: lsj('tempo'), masterDb: sc.transport ? sc.transport.masterDb : null, follow: lsj('follow'), range: { start: lsj('range.start'), end: lsj('range.end'), loop: lsj('range.loop'), unit: lsj('range.unit') } } },
     events: null, deps, outputs: {} }, null, 2);
 }

@@ -46,6 +46,7 @@ api.params = () => shapes;
 shapes.then((P) => { api.__paramsSync = P; });
 /* argument context: innermost open call at pos, its arg index and whether the cursor is inside a string */
 function argContext(text, pos) {
+  const SC = window.strudelCraft; if (SC.blankComments) { if (SC.inComment(text, pos)) return null; text = SC.blankComments(text); } /* comments are blank (same offsets); no signature or completion inside one, and a quote or paren in a comment is not code */
   const st = []; let q = null; const from = Math.max(0, pos - 4000);
   for (let i = from; i < pos; i++) {
     const c = text[i];

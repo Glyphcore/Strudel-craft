@@ -145,7 +145,10 @@ const PRELUDES = ['prelude/word.js'];
 /* Sample maps are needed whenever the program names a sound that is not a built-in synth (edited Rack code and typed Stack code too, not only
    recipes flagged needs_samples): missing maps meant a silent Play. Loading them is cheap (JSON only; audio files are fetched lazily). */
 const SYNTHS = new Set(['sine', 'sin', 'sawtooth', 'saw', 'square', 'sqr', 'triangle', 'tri', 'supersaw', 'pulse', 'white', 'pink', 'brown', 'noise', 'crackle', 'user', 'bytebeat', '~', '-', '_']);
+/* Comment-blind view of program text (same length, comments blanked; engine/comments.js). Every regex pass over the program reads this, never the raw text. */
+function noComments(t) { t = String(t == null ? '' : t); const f = window.strudelCraft && window.strudelCraft.blankComments; return f ? f(t) : t.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' ')).replace(/\/\/.*$/gm, (m) => ' '.repeat(m.length)); }
 function needsSamplesFor(code) {
+  code = noComments(code);
   if (/\.bank\s*\(/.test(code || '')) return true;
   const re = /(?:^|[^\w$])(?:s|sound)\s*\(\s*(["'`])([\s\S]*?)\1/g; let m;
   while ((m = re.exec(code || ''))) for (const w of m[2].split(/[^\w#.]+/)) { const n = w.split(/[:.]/)[0]; if (n && !/^\d/.test(n) && !SYNTHS.has(n) && !/^z_|^gm_|^vox/.test(n)) return true; }
@@ -404,10 +407,10 @@ const Viz = {
 
 /* ---------- transport ---------- */
 let tempoK, masterK;
-function hasOwnTempo(code) { return /set(cpm|cps|bpm)\s*\(/.test(code); }
+function hasOwnTempo(code) { return /set(cpm|cps|bpm)\s*\(/.test(noComments(code)); }
 /* The program's own tempo (setcpm/setcps/setbpm, first call outside comments) in BPM, or null. Argument: plain arithmetic only (128.8 / 4). */
 function programTempo(code) {
-  const m = /^[^\n]*?\bset(cpm|cps|bpm)\s*\(\s*([-+*/().\d\s]+?)\s*\)/m.exec(String(code).replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, ''));
+  const m = /^[^\n]*?\bset(cpm|cps|bpm)\s*\(\s*([-+*/().\d\s]+?)\s*\)/m.exec(noComments(code));
   if (!m) return null; let v; try { v = Function('"use strict";return (' + m[2] + ')')(); } catch (e) { return null; }
   if (!(v > 0) || !isFinite(v)) return null; const bpm = m[1] === 'cpm' ? v * 4 : m[1] === 'cps' ? v * 240 : v;
   return +bpm.toFixed(3);
@@ -423,8 +426,10 @@ function withTempo(code) {
   syncTempo(code);
   if (!S.tempoOv) return hasOwnTempo(code) ? code : `setcpm(${S.tempo}/4)\n` + code;
   const t = S.tempo; const re = /setcpm\s*\((?:[^()]|\([^()]*\))*\)/g;
-  if (re.test(code)) return code.replace(re, `setcpm(${t}/4)`);
-  if (/set(cps|bpm)\s*\(/.test(code)) return code; // leave unusual tempo calls alone
+  const masked = noComments(code); let out = ''; let pos = 0; let hit = false; let m; // match on the comment-blind text, splice into the original (same offsets)
+  while ((m = re.exec(masked))) { hit = true; out += code.slice(pos, m.index) + `setcpm(${t}/4)`; pos = m.index + m[0].length; }
+  if (hit) return out + code.slice(pos);
+  if (/set(cps|bpm)\s*\(/.test(masked)) return code; // leave unusual tempo calls alone
   return `setcpm(${t}/4)\n` + code;
 }
 function recipeCode(r) { return S.edits[r.id] != null ? S.edits[r.id] : r.code; }

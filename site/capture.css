@@ -116,3 +116,6 @@ body.cap-open .pal-fab{display:none}
 .cap-flag b{color:var(--warn);text-transform:uppercase;letter-spacing:.08em;font-size:.66rem;margin-right:4px}
 .cap-flag button{min-height:44px;margin-left:6px;padding:0 12px;border:1px solid var(--warn);color:var(--warn);background:transparent;border-radius:var(--r2);font-size:.72rem;font-weight:700}
 @media (prefers-reduced-motion:reduce){.cap-bar i{transition:none}}
+/* a toast never covers the open Record sheet's controls (#139): the sheet docks above the transport where toasts sit, so they move to the top edge while it is open */
+body.cap-open .toasts{bottom:auto;top:calc(8px + env(safe-area-inset-top))}
+body.cap-open .toasts:popover-open{inset:calc(8px + env(safe-area-inset-top)) auto auto 50%}

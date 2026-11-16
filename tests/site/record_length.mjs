@@ -46,12 +46,14 @@ await p.screenshot({ path: path.join(REPO, 'docs/screens/phone-390-record-length
 // typed 12 bars -> offline take, exact frames, no editor scroll
 await p.click('#capLen', { clickCount: 3 }); await p.keyboard.type('12'); await p.keyboard.press('Tab');
 await C(() => window.strudelCraft.capture.configure({ source: 'offline', name: 'twelve' }));
-await p.waitForTimeout(500); const sy0 = await C(() => window.scrollY); await p.click('#capRec'); await p.waitForTimeout(150);
+const scr = () => C(() => ({ y: window.scrollY, e: (document.getElementById('code') || {}).scrollTop || 0 }));
+await p.waitForTimeout(500); const ctl0 = await scr(); await p.waitForTimeout(150); const ctl1 = await scr(); /* control: the same 150 ms without a press */
+const sy0 = await scr(); await p.click('#capRec'); await p.waitForTimeout(150); const sy1 = await scr(); /* sampled right after the press, not after the take (the page drifts later on its own) */
 const t0 = Date.now(); let rec = null; while (Date.now() - t0 < 240000 && !rec) { rec = await C(async () => { const l = await window.strudelCraft.capture.list(); const t = l.find((x) => x.name.startsWith('twelve')); return t && t.outputs.render ? t : null; }); if (!rec) await p.waitForTimeout(500); }
 ok('typed 12 bars -> offline take', !!rec); if (rec) {
   const t = rec.timing; ok('timing: cycles 12, bars 12, startBar 1, unit bars, cpb 1, bpb 4', t.cycles === 12 && t.bars === 12 && t.startBar === 1 && t.unit === 'bars' && t.cpb === 1 && t.bpb === 4, JSON.stringify(t));
   ok('frames = round(12 / cps * sr) exactly', rec.outputs.render.frames === Math.round(12 / t.cps * rec.outputs.render.sr) && Math.abs(t.cps - 128.8 / 240) < 1e-4, `${rec.outputs.render.frames} cps ${t.cps}`);
-  { const sy1 = await C(() => window.scrollY); ok('pressing Record did not scroll the page', sy1 === sy0, sy0 + ' -> ' + sy1); }
+  { ok('pressing Record did not scroll the page or the editor (sampled 150 ms after the press)', sy1.y === sy0.y && sy1.e === sy0.e, JSON.stringify({ sy0, sy1 })); ok('control: 150 ms without a press also does not move them (so the check is meaningful)', ctl1.y === ctl0.y && ctl1.e === ctl0.e, JSON.stringify({ ctl0, ctl1 })); }
   const o = await C(async (id) => { const m = await import('./recipe.js'); const full = await window.strudelCraft.capture.get(id); const r = JSON.parse(JSON.stringify(full.recipe)); for (const k of ['bars', 'startBar', 'bpb', 'cpb', 'unit', 'toEnd', 'endRule']) delete r.timing[k]; r.id = 'old-cycle-recipe'; r.name = 'old-cycle';
     let valid = true; try { m.validate(r); } catch (e) { valid = e.message; } await window.strudelCraft.capture.putTake({ id: r.id, recipe: r, audio: full.audio }); const rm = await window.strudelCraft.capture.remake(r.id, { silent: true });
     return { valid, match: rm && rm.match, sha: rm && rm.sha256, want: r.outputs.render.sha256 }; }, rec.id);
@@ -79,7 +81,11 @@ async function tapRepro(page, how) {
 }
 {
   const viewports = [[390, 844], [360, 740]];
-  for (const [w, h] of viewports) { await p.setViewportSize({ width: w, height: h }); await p.waitForTimeout(300); await tapRepro(p, 'touch'); await tapRepro(p, 'mouse');
+  for (const [w, h] of viewports) { await p.setViewportSize({ width: w, height: h }); await p.waitForTimeout(300);
+    await p.evaluate(() => { window.strudelCraft.ui.toast('Rendered take. Download', { kind: 'ok', ms: 60000, onClick: () => {} }); window.strudelCraft.ui.toast('Something needs attention', { kind: 'error', ms: 60000 }); }); await p.waitForTimeout(300);
+    const hit = await p.evaluate(() => { const sel = ['#capLen', '.cap-stepb[data-step="-1"]', '.cap-stepb[data-step="1"]', '#capToEnd', '.cap-chip[data-chip="4"]', '.cap-chip[data-chip="8"]', '.cap-chip[data-chip="16"]', '.cap-chip[data-chip="32"]', '#capStart', 'input[name="cap-unit"][value="bars"] + span']; return sel.map((q) => { const e = document.querySelector(q); const r = e.getBoundingClientRect(); const t = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return { q, ok: !!t && (t === e || e.contains(t) || (t.closest && t.closest('label') === e.closest('label') && e.closest('label')) ) && !t.closest('.toast') }; }).filter((x) => !x.ok).map((x) => x.q); });
+    ok(`${w}x${h}: with action and error toasts showing, every Length control is hit at its centre (no toast on top)`, !hit.length, hit.join(','));
+    await tapRepro(p, 'touch'); await tapRepro(p, 'mouse');
     const fit = await p.evaluate(() => { const s = document.getElementById('capSheet').getBoundingClientRect(); return { right: s.right, sw: document.documentElement.scrollWidth }; }); ok(`${w}x${h}: sheet fits the width`, fit.right <= w && fit.sw <= w, JSON.stringify(fit)); }
   await p.setViewportSize({ width: 390, height: 780 });
   // configure({toEnd}) wins over a typed invalid length; readout follows a tempo edit

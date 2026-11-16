@@ -396,9 +396,9 @@ natively (the tutorial track, docs/tracks/edm-dubstep-tutorial/, does this and s
 ## 10. Industrial, rock / metal and EDM-depth racks (#155 #156 #157)
 New class **guitar** (glyphcore/rockmetal): band 70-8000 Hz, below <= -24, above <= -20, >18k <= -40, peak <= -6, side<120 <= -30, no alias
 test (amp tiers regrow harmonics after the pre-drive cab filter, as growl); hygiene-guitar 70 / 7000 Hz. Every other new rack uses an existing
-class with its existing thresholds; **no threshold was loosened**. Per-role choices: mechanical hits are  (inharmonic FM fails an
-alias test by design, and perc has none), chain / shatter / open chain , hiss and servo-down , servo whine , slams and
-the press , beds , riddim / growl / clank basses  over the  lane.
+class with its existing thresholds; **no threshold was loosened**. Per-role choices: mechanical hits are `perc` (inharmonic FM fails an alias test by design, and perc has none), chain / shatter / open chain
+`hat`, hiss and servo-down `sweep`, servo whine `screech`, slams and the press `impact`, beds `texture`, riddim / growl / clank basses `growl`
+over the `sub` lane.
 Fixes the audit forced (first run -> fix): hats chainRattle, metalShatter, openChain below (high-pass 3.2-4 kHz -> 5 kHz, the hat band);
 slamImpact side<120 (a room on a 45 Hz hit put side energy under 120 Hz: dry now); rustBed below (brown noise, high-pass 250 -> 500 Hz);
 pressBass below and sub20 (24 dB high-pass 45 Hz, 8 ms attack); palmMute below and peak (24 dB high-pass 100 Hz, gain 0.28 -> 0.18);

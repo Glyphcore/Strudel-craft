@@ -3,7 +3,10 @@
 Three programs on pack `glyphcore/dnb-electro` (#122, #123) and the EDM foundations of `glyphcore/edm`. Every production technique is written
 out as syntax: sidechain (`sidechain(orbit, depth, release)` on the kick, `ducked(orbit)` on what it ducks: superdough `duckorbit`), risers,
 impacts, crashes and downlifters on gated binds, filter moves on section gates, the gap before each drop, chops on a gated slot, and bus processing
-on `ret()` returns. Sources: docs/DNB_ELECTRO_REFERENCES.md. Conventions: docs/CONVENTIONS.md 8-10.
+on `ret()` returns. Sources: docs/DNB_ELECTRO_REFERENCES.md. Conventions: docs/CONVENTIONS.md 9-11.
+Every voice in the three programs is native (no `shape`, `distort` or `supersaw` AudioWorklet stage): the supersaw racks are played as a saw pair
+after the hook (`.s("sawtooth").add(note("-0.08,0.08"))`) and impacts use `subDrop`, because worklet voices render 20-250x slower in the headless CLI
+(measured, #140). Delete those two calls to hear the racks' supersaw on the site.
 
 | file | what |
 |---|---|
@@ -20,7 +23,7 @@ Arrangement map (bars, 1-based; a gate `a..b` is half-open, `25b..57b` = bars 25
 |---|---|---|---|
 | 1-16 | intro | Rhodes comp, liquid pad (both low-passed at 700 Hz); strings from 9; the amen-style break from 9, high-passed at 700 Hz | `tone` = `[["lpf", 700]]` on `dnb.intro`; `btone` = `[["hpf", 700]]` before bar 17 |
 | 17-24 | build 1 | + snare roll (`ec.roll8`, density doubling, velocity `ec.rollVel8`), noise riser over 8 bars | `tone` = `thinBuild` (high-pass 30 -> 800 Hz bar by bar); the gap 24.3b..25b mutes all but the riser |
-| 25-56 | drop 1 (liquid) | two-step kick + snare, ghosts on 2.5 / 4.5 (pushed 3 %), shaker, sub (F1 Db2 Bb1 C2), Rhodes, pad; ride and rolling bass from 41; vocal chops from 33; strings from 41 | `impactBoom` + `crash` on bar 25; the liquid groove `groove-swing(54) | groove-human(2.5, 0.15, seed)` on kick, snare and ghosts; the kick ducks orbit 2 (pad, keys, strings, chops, mid-bass) by 0.5 |
+| 25-56 | drop 1 (liquid) | two-step kick + snare, ghosts on 2.5 / 4.5 (pushed 3 %), shaker, sub (F1 Db2 Bb1 C2), Rhodes, pad; ride and rolling bass from 41; vocal chops from 33; strings from 41 | `subDrop` + `crash` on bar 25; the liquid groove `groove-swing(54) | groove-human(2.5, 0.15, seed)` on kick, snare and ghosts; the kick ducks orbit 2 (pad, keys, strings, chops, mid-bass) by 0.5 |
 | 57-72 | breakdown | pad, strings, vocal chops; sub back from 65; the break returns at 69-72, low-passed at 1.8 kHz and chopped (`dnb.chops`) | `downSweep` on 57; `chop` slot = `.bite(16, dnb.chops)` |
 | 73-80 | build 2 | the break in jungle chops (`dnb.chopsWild`), reese whose low-pass opens (`filterBuild`), riser, 16th / 32nd ghost roll in 77-80 (`ec.roll4`) | `thinBuild` on the harmony, gap 80.3b..81b |
 | 81-112 | drop 2 (neuro) | two-step, rolling ghosts and 8th hats on the tight groove (`groove-human(0.5, 0.05, seed)`); 81-96 the neuro riff (FM growl) with the sub tracking its notes; 97-112 reese + sub + pad + Rhodes + strings; the chopped break layered from 89 (high-passed at 260 Hz); chops from 105 | impact + crash on 81, crash on 97; `chop` slot on 89-112 |
@@ -43,9 +46,10 @@ Arrangement map (bars, 1-based; a gate `a..b` is half-open, `25b..57b` = bars 25
    `hooks.bind("chop", [["bite", 16, { $mini: atoms.dnb.chops }]], "69b..73b, 89b..113b")` cuts every break lane into 16 slices and re-sequences them by
    the same order, so kick, snare and ride stay together.
 5. **Build 2: jungle chops and a reese opening.** A second chop order (`dnb.chopsWild`: doubled slices, a reversed beat, a closing roll) on the build
-   gate; the reese (two detuned saws, no stereo spread, 100 Hz high-pass at 24 dB/oct) opens with `filterBuild`.
-6. **Drop 2: neuro and multiband by layers.** The neuro riff is `neuroBass`: an FM saw with a sub-octave modulator (`fmh 0.5`), a resonant snap, a vowel
-   formant, then serial drive (`shape` into `distort`; superdough runs filters first, so the drive sees a band-limited signal). A mono sine sub plays the
+   gate; the reese (a saw played as a pair 18 cents apart, `.add(note("0,0.18"))`, mono, 100 Hz high-pass at 24 dB/oct) opens with `filterBuild`.
+6. **Drop 2: neuro and multiband by layers.** The neuro riff is `neuroBass`: an FM saw with a sub-octave modulator (index 2.5, `fmh 0.5`), a resonant snap
+   and a vowel formant; the grit is FM sidebands and resonance. Serial drive would be `glyphcore/edm` `drive(amt)` on top (superdough runs filters first, so
+   a drive sees a band-limited signal); the headless render leaves it out because drive is an AudioWorklet stage (#140). A mono sine sub plays the
    same notes (`subN`); the mid layers (neuro, reese, rolling, wobble) share a glued bus: `ret("bassbus").compressor("-22:4:6:.005:.12")` fed by
    `tagged("mid").send("bassbus", 0.5)`. The split is by layers (sub / mid), so no crossover filter smears the sub.
 7. **Halftime: same tempo, half the backbeat.** Kick on 1, snare on 3; the jump-up wobble keeps 3+3+2 notes running at full speed, each note re-opening
@@ -68,7 +72,7 @@ Arrangement map (bars, 1-based; a gate `a..b` is half-open, `25b..57b` = bars 25
 | 9-16 | techno | + rumble (mono sine in the kick's gaps) and rolling bass (every free 16th) on the drive groove (`groove-human(0.8, 0.08, seed)`), offbeat ride; crash on 9 |
 | 17-24 | trance breakdown | no kick; supersaw chords low-passed at 900 Hz, pluck arp with a dotted-8th echo; downlifter |
 | 25-32 | uplifting build | roll (`ec.roll8`), chords under `filterBuild`, gated pad from 29, 8-bar riser, gap |
-| 33-40 | trance drop | kick ducks orbit 3 (bass, gated pad, arp, chords) by 0.5; impact + crash; 4-bar 16th / 32nd roll and a 2-bar riser into 41 |
+| 33-40 | trance drop | kick ducks orbit 3 (bass, gated pad, arp, chords) by 0.5; `subDrop` + crash; 4-bar 16th / 32nd roll and a 2-bar riser into 41 |
 | 41-48 | big-room drop | the kick slot swaps to `bigKick | sidechain(3, 0.65, 0.16)` (`hooks.slot("kick", { mode: "swap" })` and a gated bind); stripped to kick, clap, offbeat hat and the lead motif |
 | 49-56 | house outro | the house groove again |
 A club track uses 16 / 32-bar blocks: `atoms.hs.mapIntro` .. `mapOutro` (160 bars) and `hs.phrase8` give the gates.

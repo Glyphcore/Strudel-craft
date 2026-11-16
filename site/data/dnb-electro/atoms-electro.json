@@ -212,6 +212,20 @@
    ],
    "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
   },
+  "a0ek7f7": {
+   "name": "el.ehStabLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[~ ~ [f3,ab3,c4,f4] ~ ~ ~ [f3,ab3,c4,f4] ~ ~ ~ [f3,ab3,c4,f4] ~ ~ ~ [f3,ab3,c4,f4] ~] [~ ~ [db3,f3,ab3,db4] ~ ~ ~ [db3,f3,ab3,db4] ~ ~ ~ [db3,f3,ab3,db4] ~ ~ ~ [db3,f3,ab3,db4] ~] [~ ~ [eb3,g3,bb3,eb4] ~ ~ ~ [eb3,g3,bb3,eb4] ~ ~ ~ [eb3,g3,bb3,eb4] ~ ~ ~ [eb3,g3,bb3,eb4] ~] [~ ~ [c3,eb3,g3,c4] ~ ~ ~ [c3,eb3,g3,c4] ~ ~ ~ [c3,eb3,g3,c4] ~ ~ ~ [c3,eb3,g3,c4] ~]>",
+   "doc": "the electro chords as offbeat stabs, one chord per bar (a note pattern: the feel template's top voice plays notes)",
+   "folder": "electro/keys",
+   "tags": [
+    "keys",
+    "electro",
+    "pattern"
+   ],
+   "hash": "sha256:576a8fcc1ca44dea72858aba87ad0210b49360e47f149e048f62b34c14b18947"
+  },
   "ajm5tpu": {
    "name": "el.intro",
    "type": "gate",

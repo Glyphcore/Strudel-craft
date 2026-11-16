@@ -60,10 +60,6 @@
      0
     ],
     [
-     "shape",
-     0.2
-    ],
-    [
      "lpf",
      3000
     ],
@@ -353,7 +349,7 @@
   },
   "filterBass": {
    "class": "bass",
-   "doc": "electro house filtered saw bass: resonant low-pass with a 3-octave envelope, then drive",
+   "doc": "electro house filtered saw bass: resonant low-pass with a 3-octave envelope (add glyphcore/edm drive(amt) for grit)",
    "chain": [
     [
      "hook",
@@ -390,10 +386,6 @@
     [
      "lpdecay",
      0.15
-    ],
-    [
-     "distort",
-     0.3
     ],
     [
      "gain",
@@ -531,6 +523,11 @@
    "type": "mini",
    "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
    "doc": "stabs on the offbeats, where the pump has let go"
+  },
+  "ehStabLine": {
+   "type": "mini",
+   "body": "<[~ ~ [f3,ab3,c4,f4] ~ ~ ~ [f3,ab3,c4,f4] ~ ~ ~ [f3,ab3,c4,f4] ~ ~ ~ [f3,ab3,c4,f4] ~] [~ ~ [db3,f3,ab3,db4] ~ ~ ~ [db3,f3,ab3,db4] ~ ~ ~ [db3,f3,ab3,db4] ~ ~ ~ [db3,f3,ab3,db4] ~] [~ ~ [eb3,g3,bb3,eb4] ~ ~ ~ [eb3,g3,bb3,eb4] ~ ~ ~ [eb3,g3,bb3,eb4] ~ ~ ~ [eb3,g3,bb3,eb4] ~] [~ ~ [c3,eb3,g3,c4] ~ ~ ~ [c3,eb3,g3,c4] ~ ~ ~ [c3,eb3,g3,c4] ~ ~ ~ [c3,eb3,g3,c4] ~]>",
+   "doc": "the electro chords as offbeat stabs, one chord per bar (a note pattern: the feel template's top voice plays notes)"
   },
   "intro": {
    "type": "gate",
@@ -757,7 +754,7 @@
      "move": "ducked(3)"
     }
    ],
-   "bars": 4
+   "bars": 2
   },
   {
    "id": "clap-build",

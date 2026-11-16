@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Render a dnb-electro track demo headless, master it and score it against its genre (#124).
 #   docs/tracks/dnb-electro-tutorial/render.sh OUT_DIR [track|electro|house] [standalone|pack] [BARS]
-# chunked CLI render (suno-track-lab engine/strudel-cli/chunk_render.py: 8-bar chunks, 2 bars pre-roll) -> OUT/mix.wav
+# chunked CLI render (suno-track-lab engine/strudel-cli/chunk_render.py: 8-bar chunks, 2 bars pre-roll; JOBS=n chunks at a time, default 1) -> OUT/mix.wav
 # -> engine/master/master.py --preset dnb|electro|house -> OUT/master.wav (+ master.json) -> engine/genre/score.py -> OUT/score.json, score.md
 # pack = the pack version with the site lock (atoms.import) and both packs' racks as one hooks config; standalone = the generated paste-ready file.
 set -euo pipefail
@@ -15,6 +15,6 @@ if [ "$KIND" = pack ]; then
   python3 -c 'import json,sys; a={"model":1,"defs":{}}; [a["defs"].update({k:v for k,v in json.load(open(f))["defs"].items() if k not in a["defs"]}) for f in sys.argv[2:]]; json.dump(a, open(sys.argv[1], "w"))' "$HK" "$SC/site/data/dnb-electro/racks-dnb-electro.json" "$SC/site/data/edm/racks-edm-core.json"
   EXTRA=(--packs "$SC/site/packs.lock.json" --hooks "$HK")
 else IN="$HERE/$NAME.standalone.strudel.js"; EXTRA=(); fi
-python3 "$CLI/chunk_render.py" "$IN" "$OUT" --bars "$BARS" --chunk 8 --preroll 2 ${EXTRA[@]+-- "${EXTRA[@]}"}
+python3 "$CLI/chunk_render.py" "$IN" "$OUT" --bars "$BARS" --chunk 8 --preroll 2 --jobs "${JOBS:-1}" ${EXTRA[@]+-- "${EXTRA[@]}"}
 python3 "$LAB/engine/master/master.py" "$OUT/mix.wav" "$OUT/master.wav" --preset "$PRE" --report "$OUT/master.json"
 python3 "$LAB/engine/genre/score.py" "$OUT/master.wav" "$LAB/docs/genres/$G.json" --out "$OUT/score.json" --md "$OUT/score.md" --bpm "$BPM" --form "$HERE/form.$NAME.json"

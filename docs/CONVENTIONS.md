@@ -181,7 +181,7 @@ brings every def it needs. A pack hook def may only use the chain steps listed i
 ## 10. Drum and bass, electro, house / techno / trance / big room (pack `glyphcore/dnb-electro`, #122)
 Sources and what each taught: docs/DNB_ELECTRO_REFERENCES.md. F minor throughout (F1 = 43.7 Hz), one cycle = one bar on 16 steps, tempo by
 `setcpm(bpm/4)`. The shared EDM foundations of `glyphcore/edm` (docs/EDM_REFERENCES.md: `sidechain(orbit, depth, release)` on the kick and
-`ducked(orbit)` on its targets, `noiseRiser(len)`, `impactBoom`, `crash`, `downSweep`, `filterBuild`, `thinBuild`, `ott`, `wobble`, atoms `ec.roll8`,
+`ducked(orbit)` on its targets, `noiseRiser(len)`, `impactBoom`, `subDrop`, `crash`, `downSweep`, `filterBuild`, `thinBuild`, `ott`, `wobble`, atoms `ec.roll8`,
 `ec.rollVel8`, `ec.roll4`, `ec.open8`, `ec.thin8`, gates `ec.rise4/8/16`, `ec.hit`) are used, never redefined.
 
 | component | atoms | rack (class) | note |
@@ -193,8 +193,8 @@ Sources and what each taught: docs/DNB_ELECTRO_REFERENCES.md. F minor throughout
 | chops | `dnb.chops`, `dnb.chopsWild` | - | slice orders for `.bite(16, ...)` on every lane of the break (same order on a sample: `.slice(16, ...)`) |
 | hats | `dnb.hats`, `dnb.shaker`, `dnb.shakerVel`, `dnb.rideVel` | `dnbHat`, `dnbShaker`, `ride` (hat) | |
 | sub | `dnb.sub` (F1, Db2, Bb1, C2) | `dnbSub` (sub) | mono sine, 5 ms attack, held |
-| reese | `dnb.sub` (the same notes) | `reese` (reese) | unison 2, `spread 0`, own 100 Hz high-pass at 24 dB/oct: the sub keeps the fundamental |
-| neuro | `dnb.neuro` | `neuroBass` (growl) | FM saw (`fmh 0.5`), resonant snap, vowel, then shape into distort (serial drive) |
+| reese | `dnb.sub` (the same notes) | `reese` (reese) | a saw played as a detuned pair (`.add(note("0,0.18"))`, 18 cents), own 100 Hz high-pass at 24 dB/oct: the sub keeps the fundamental |
+| neuro | `dnb.neuro` | `neuroBass` (growl) | FM saw (index 2.5, `fmh 0.5`), resonant snap, vowel; serial drive = edm `drive(amt)` on top (a worklet stage, #140) |
 | rolling bass | `dnb.rolling` | `rollingBass` (bass) | offbeat 16ths following the chords |
 | jump-up wobble | `dnb.wobble` | `jumpWobble` (growl) | 3+3+2 notes that re-open the filter envelope; edm `wobble(sync)` is the LFO alternative |
 | liquid harmony | `dnb.chords`, `dnb.comp`, `dnb.strings` | `liquidRhodes` (keys), `liquidPad`, `strings` (pad) | Fm9 Dbmaj9 Bbm9 Cm7, two bars each |
@@ -211,7 +211,7 @@ plus `drops`, `builds`, `noDrums`, `vacuum` (the last half bar before each drop:
 160-bar club map of 32-bar blocks (`hs.mapIntro` 1-32, `mapDrop1` 33-64, `mapBreak` 65-80, `mapBuild` 81-96, `mapDrop2` 97-128, `mapOutro` 129-160, `hs.phrase8`
 the last bar of every 8-bar phrase). Tension and release grammar (with the edm atoms): a build thins the low end (`thinBuild` on a `tone` slot), the
 roll doubles (`ec.roll8`), the riser is one note as long as the build (`s("x/8").use("rise")` with `noiseRiser(len)` bound on the build gate), the gap
-mutes everything but the riser (`tagged("!rise").mute(atoms.dnb.vacuum)`), the drop starts with `impactBoom` and `crash` on one-bar gates; release =
+mutes everything but the riser (`tagged("!rise").mute(atoms.dnb.vacuum)`), the drop starts with an impact (`subDrop` in the tracks, `impactBoom` where drive is fine) and `crash` on one-bar gates; release =
 a `downSweep` and the filters closing on the breakdown gate.
 
 ## 11. Feel templates of glyphcore/dnb-electro (#123)

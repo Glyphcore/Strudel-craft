@@ -1,5 +1,6 @@
 // DnB tutorial (#124): F minor, 174 bpm, 128 bars = 2:56.6. One lesson per section (README.md); every technique is in the open:
 // sidechain (glyphcore/edm sidechain on the kick, orbit 2 ducked), filter moves (gated binds), risers / impacts / gap on gates, bus glue on the mid-bass.
+// Every voice is native (no shape / distort / supersaw AudioWorklet stage) so the headless CLI renders it in reasonable time (#140).
 // intro 1-16 | build 17-24 | drop 1 (liquid) 25-56 | breakdown 57-72 | build 2 73-80 | drop 2 (neuro) 81-112 | halftime 113-120 | outro 121-128
 setcpm(174 / 4)
 atoms.import("pack:glyphcore/dnb-electro:atoms-dnb")
@@ -19,7 +20,7 @@ hooks.bind("rtone", "filterBuild", atoms.dnb.build2)                            
 hooks.bind("chop", [["bite", 16, { $mini: atoms.dnb.chops }]], "69b..73b, 89b..113b"); hooks.bind("chop", [["bite", 16, { $mini: atoms.dnb.chopsWild }]], atoms.dnb.build2)
 
 // == transitions: riser ends on the drop, impact on it, crash marks the phrase, downlifter into the quiet parts ==
-hooks.bind("rise", "noiseRiser(11)", "17b..25b, 73b..81b"); hooks.bind("hit", "impactBoom", "25b..26b, 81b..82b")
+hooks.bind("rise", "noiseRiser(11)", "17b..25b, 73b..81b"); hooks.bind("hit", "subDrop", "25b..26b, 81b..82b")
 hooks.bind("crash", "crash", "25b..26b, 41b..42b, 81b..82b, 97b..98b, 121b..122b"); hooks.bind("sweep", "downSweep", "57b..58b, 113b..114b")
 
 // == drums ==
@@ -45,7 +46,7 @@ sub: note(atoms.dnb.sub).hook("dnbSub").orbit(3).tags("low")
 subN: note(atoms.dnb.neuro).hook("dnbSub").orbit(3).tags("lowN")
 subW: note(atoms.dnb.wobble).hook("dnbSub").orbit(3).tags("lowW")
 rolling: note(atoms.dnb.rolling).hook("rollingBass").velocity(0.8).orbit(2).tags("mid")
-reese: note(atoms.dnb.sub).hook("reese").use("rtone").orbit(2).tags("mid")
+reese: note(atoms.dnb.sub).add(note("0,0.18")).hook("reese").use("rtone").orbit(2).tags("mid")   // the reese is a pair of saws 18 cents apart
 neuro: note(atoms.dnb.neuro).hook("neuroBass").orbit(2).tags("mid")
 wobble: note(atoms.dnb.wobble).hook("jumpWobble").orbit(2).tags("mid")
 

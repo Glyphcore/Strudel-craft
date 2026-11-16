@@ -9,7 +9,7 @@ atoms.import("pack:glyphcore/edm:atoms-edm-core")
 // == moves on gates ==
 hooks.bind("open", "filterBuild", atoms.hs.build); hooks.bind("open", [["lpf", 900]], atoms.hs.breakdown)
 hooks.bind("rise", "noiseRiser(15)", "25b..33b"); hooks.bind("rise2", "noiseRiser(3.75)", "39b..41b")
-hooks.bind("hit", "impactBoom", "33b..34b, 41b..42b"); hooks.bind("crash", "crash", "9b..10b, 33b..34b, 41b..42b, 49b..50b"); hooks.bind("sweep", "downSweep", "17b..18b")
+hooks.bind("hit", "subDrop", "33b..34b, 41b..42b"); hooks.bind("crash", "crash", "9b..10b, 33b..34b, 41b..42b, 49b..50b"); hooks.bind("sweep", "downSweep", "17b..18b")
 hooks.bind("kick", "houseKick | sidechain(3, 0.5, 0.14)", "<41b, @49b"); hooks.bind("kick", "bigKick | sidechain(3, 0.65, 0.16)", atoms.hs.drop2)
 hooks.slot("kick", { mode: "swap" })
 
@@ -28,10 +28,10 @@ rolling: note(atoms.hs.rolling).hook("houseBass | groove-human(0.8, 0.08, 5)").v
 rumble: note(atoms.hs.rumble).hook("rumble").tags("techno")
 
 // == harmony and lead ==
-chords: note(atoms.hs.chords).hook("bigChords | ducked(3)").use("open").tags("chords", "wet")
-gate: note(atoms.hs.chords).hook("gatePad | ducked(3)").tags("gate", "wet")
+chords: note(atoms.hs.chords).hook("bigChords | ducked(3)").s("sawtooth").add(note("-0.08,0.08")).use("open").tags("chords", "wet")   // native saw pair, not the supersaw worklet: headless renders (#140); drop .s(...).add(...) for the rack's supersaw
+gate: note(atoms.hs.chords).hook("gatePad | ducked(3)").s("sawtooth").add(note("-0.08,0.08")).tags("gate", "wet")   // native saw pair, not the supersaw worklet: headless renders (#140); drop .s(...).add(...) for the rack's supersaw
 arp: note(atoms.hs.arp).hook("pluck | ducked(3)").delay(0.3).delaytime(0.352).delayfeedback(0.35).tags("arp", "wet")
-lead: note(atoms.hs.lead).hook("roomLead | ducked(3)").tags("lead", "wet")
+lead: note(atoms.hs.lead).hook("roomLead | ducked(3)").s("sawtooth").add(note("-0.06,0.06")).tags("lead", "wet")   // native saw pair, not the supersaw worklet: headless renders (#140); drop .s(...).add(...) for the rack's supersaw
 
 // == fx and buses ==
 rise: s("x/8").use("rise", { else: "silence" }).tags("rise")

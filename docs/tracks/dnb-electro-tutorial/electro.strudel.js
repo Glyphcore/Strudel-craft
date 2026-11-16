@@ -8,7 +8,7 @@ atoms.import("pack:glyphcore/edm:atoms-edm-core")
 // == moves on gates: the build thins the funk kit and opens the house bass; the riser ends on each drop ==
 hooks.bind("thin", "thinBuild", atoms.el.build); hooks.bind("open", "filterBuild", atoms.el.build)
 hooks.bind("rise", "noiseRiser(15)", "9b..17b"); hooks.bind("rise4", "noiseRiser(7.5)", "29b..33b")
-hooks.bind("hit", "impactBoom", "17b..18b, 33b..34b"); hooks.bind("crash", "crash", "17b..18b, 33b..34b"); hooks.bind("sweep", "downSweep", "25b..26b")
+hooks.bind("hit", "subDrop", "17b..18b, 33b..34b"); hooks.bind("crash", "crash", "17b..18b, 33b..34b"); hooks.bind("sweep", "downSweep", "25b..26b")
 
 // == electro-funk (intro, build, break) ==
 fkick: s(atoms.el.kick).hook("boom808").use("thin").tags("funk")
@@ -24,7 +24,7 @@ kick: s(atoms.el.ehKick).hook("houseKick | sidechain(3, 0.8, 0.18)").tags("house
 clap: s(atoms.el.ehClap).hook("clap808").tags("house")
 ohat: s(atoms.el.ehHat).hook("offHat").tags("house")
 bass: note(atoms.el.ehBass).hook("filterBass | ducked(3)").use("open").tags("hbass")
-stabs: note(atoms.el.chords).struct(atoms.el.ehStabs).hook("sawStab | ducked(3)").tags("house", "wet")
+stabs: note(atoms.el.chords).struct(atoms.el.ehStabs).hook("sawStab | ducked(3)").s("sawtooth").add(note("-0.08,0.08")).tags("house", "wet")   // native saw pair, not the supersaw worklet: headless renders (#140); drop .s(...).add(...) for the rack's supersaw
 build: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook("clap808").tags("build")
 
 // == fx and buses ==

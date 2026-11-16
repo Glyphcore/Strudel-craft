@@ -26,8 +26,8 @@ atom("ec.roll4", { type: "mini", body: "<x*8 x*16 x*16 x*32>" })
 atom("ec.rollVel4", { type: "mini", body: "<.45 .62 .8 1>" })
 // == glyphcore/dnb-electro:racks-dnb-electro (12 defs used, inlined) ==
 hooks.def("ride", {"chain":[["hook","hygiene-hat"],["s","white"],["hpf",7500],["decay",0.3],["sustain",0],["gain",0.16]],"folder":"house/racks/drums","tags":["drums","rack","house"]})
-hooks.def("houseKick", {"chain":[["hook","hygiene-kick"],["s","sine"],["freq",55],["attack",0.001],["penv",26],["pdecay",0.04],["decay",0.28],["sustain",0],["shape",0.3],["lpf",6000],["gain",0.8]],"folder":"house/racks/drums","tags":["drums","rack","house"]})
-hooks.def("bigKick", {"chain":[["hook","hygiene-kick"],["s","sine"],["freq",50],["attack",0.001],["penv",32],["pdecay",0.06],["decay",0.4],["sustain",0],["shape",0.45],["lpf",5000],["gain",0.78]],"folder":"house/racks/drums","tags":["drums","rack","house"]})
+hooks.def("houseKick", {"chain":[["hook","hygiene-kick"],["s","sine"],["freq",55],["attack",0.001],["penv",26],["pdecay",0.04],["decay",0.28],["sustain",0],["lpf",6000],["gain",0.8]],"folder":"house/racks/drums","tags":["drums","rack","house"]})
+hooks.def("bigKick", {"chain":[["hook","hygiene-kick"],["s","sine"],["freq",50],["attack",0.001],["penv",32],["pdecay",0.06],["decay",0.4],["sustain",0],["lpf",5000],["gain",0.78]],"folder":"house/racks/drums","tags":["drums","rack","house"]})
 hooks.def("houseClap", {"chain":[["hook","hygiene-snare"],["s","white"],["bpf",1500],["bpq",1],["attack",0.002],["decay",0.16],["sustain",0],["gain",0.9]],"folder":"house/racks/drums","tags":["drums","rack","house"]})
 hooks.def("offHat", {"chain":[["hook","hygiene-hat"],["s","white"],["hpf",7500],["decay",0.12],["sustain",0],["gain",0.3]],"folder":"house/racks/drums","tags":["drums","rack","house"]})
 hooks.def("closedHat", {"chain":[["hook","hygiene-hat"],["s","white"],["hpf",8500],["decay",0.025],["sustain",0],["gain",0.3]],"folder":"house/racks/drums","tags":["drums","rack","house"]})
@@ -41,7 +41,7 @@ hooks.def("roomLead", {"chain":[["hook","hygiene-lead"],["s","supersaw"],["uniso
 hooks.def("crash", {"chain":[["hook","hygiene-hat"],["s","white"],["hpf",5000],["decay",1.6],["sustain",0],["gain",0.22]],"folder":"edm/core/racks/drums","tags":["drums","rack","edm"]})
 hooks.def("noiseRiser", {"params":{"len":{"min":0.5,"max":30,"default":6.86}},"chain":[["hook","hygiene-riser"],["s","white"],["attack",{"$param":"len"}],["sustain",1],["release",0.2],["hpf",300],["lpf",700],["lpenv",4],["lpattack",{"$param":"len"}],["lpsustain",1],["gain",0.28]],"folder":"edm/core/racks/fx","tags":["fx","rack","edm"]})
 hooks.def("downSweep", {"chain":[["hook","hygiene-sweep"],["s","white"],["attack",0.005],["decay",2],["sustain",0],["hpf",300],["lpf",1000],["lpenv",3.5],["lpattack",0.001],["lpdecay",1.8],["lpsustain",0],["gain",0.3]],"folder":"edm/core/racks/fx","tags":["fx","rack","edm"]})
-hooks.def("impactBoom", {"chain":[["hook","hygiene-impact"],["s","sine"],["note","c1"],["penv",24],["pdecay",0.25],["decay",2.2],["sustain",0],["shape",0.25],["lpf",3000],["gain",0.7]],"folder":"edm/core/racks/fx","tags":["fx","rack","edm"]})
+hooks.def("subDrop", {"chain":[["hook","hygiene-impact"],["s","sine"],["note","c1"],["penv",24],["pdecay",1],["decay",2.5],["sustain",0],["lpf",400],["gain",0.6]],"folder":"edm/core/racks/fx","tags":["fx","rack","edm"]})
 hooks.def("sidechain", {"params":{"orbit":{"min":1,"max":16,"default":2},"depth":{"min":0,"max":1,"default":0.5},"release":{"min":0.02,"max":1,"default":0.2}},"chain":[["duckorbit",{"$param":"orbit"}],["duckdepth",{"$param":"depth"}],["duckattack",{"$param":"release"}]],"folder":"edm/core/moves","tags":["fx","rack","edm"]})
 hooks.def("ducked", {"params":{"orbit":{"min":1,"max":16,"default":2}},"chain":[["orbit",{"$param":"orbit"}]],"folder":"edm/core/moves","tags":["fx","rack","edm"]})
 hooks.def("filterBuild", {"chain":[["lpf",{"$mini":"<300 450 700 1000 1500 2300 3600 6000>"}]],"folder":"edm/core/moves","tags":["fx","rack","edm"]})
@@ -49,7 +49,7 @@ hooks.def("filterBuild", {"chain":[["lpf",{"$mini":"<300 450 700 1000 1500 2300 
 // == moves on gates ==
 hooks.bind("open", "filterBuild", atoms.hs.build); hooks.bind("open", [["lpf", 900]], atoms.hs.breakdown)
 hooks.bind("rise", "noiseRiser(15)", "25b..33b"); hooks.bind("rise2", "noiseRiser(3.75)", "39b..41b")
-hooks.bind("hit", "impactBoom", "33b..34b, 41b..42b"); hooks.bind("crash", "crash", "9b..10b, 33b..34b, 41b..42b, 49b..50b"); hooks.bind("sweep", "downSweep", "17b..18b")
+hooks.bind("hit", "subDrop", "33b..34b, 41b..42b"); hooks.bind("crash", "crash", "9b..10b, 33b..34b, 41b..42b, 49b..50b"); hooks.bind("sweep", "downSweep", "17b..18b")
 hooks.bind("kick", "houseKick | sidechain(3, 0.5, 0.14)", "<41b, @49b"); hooks.bind("kick", "bigKick | sidechain(3, 0.65, 0.16)", atoms.hs.drop2)
 hooks.slot("kick", { mode: "swap" })
 
@@ -68,10 +68,10 @@ rolling: note(atoms.hs.rolling).hook("houseBass | groove-human(0.8, 0.08, 5)").v
 rumble: note(atoms.hs.rumble).hook("rumble").tags("techno")
 
 // == harmony and lead ==
-chords: note(atoms.hs.chords).hook("bigChords | ducked(3)").use("open").tags("chords", "wet")
-gate: note(atoms.hs.chords).hook("gatePad | ducked(3)").tags("gate", "wet")
+chords: note(atoms.hs.chords).hook("bigChords | ducked(3)").s("sawtooth").add(note("-0.08,0.08")).use("open").tags("chords", "wet")   // native saw pair, not the supersaw worklet: headless renders (#140); drop .s(...).add(...) for the rack's supersaw
+gate: note(atoms.hs.chords).hook("gatePad | ducked(3)").s("sawtooth").add(note("-0.08,0.08")).tags("gate", "wet")   // native saw pair, not the supersaw worklet: headless renders (#140); drop .s(...).add(...) for the rack's supersaw
 arp: note(atoms.hs.arp).hook("pluck | ducked(3)").delay(0.3).delaytime(0.352).delayfeedback(0.35).tags("arp", "wet")
-lead: note(atoms.hs.lead).hook("roomLead | ducked(3)").tags("lead", "wet")
+lead: note(atoms.hs.lead).hook("roomLead | ducked(3)").s("sawtooth").add(note("-0.06,0.06")).tags("lead", "wet")   // native saw pair, not the supersaw worklet: headless renders (#140); drop .s(...).add(...) for the rack's supersaw
 
 // == fx and buses ==
 rise: s("x/8").use("rise", { else: "silence" }).tags("rise")

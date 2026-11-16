@@ -23,22 +23,22 @@ atom("el.vacuum", { type: "gate", body: "16.3b..17b, 32.3b..33b" })
 atom("ec.roll8", { type: "mini", body: "<x*4!2 x*8!2 x*16!3 x*32>" })
 atom("ec.rollVel8", { type: "mini", body: "<.35 .42 .5 .58 .66 .76 .88 1>" })
 // == glyphcore/dnb-electro:racks-dnb-electro (11 defs used, inlined) ==
-hooks.def("boom808", {"chain":[["hook","hygiene-kick"],["s","sine"],["freq",47],["attack",0.002],["penv",14],["pdecay",0.06],["decay",0.7],["sustain",0],["shape",0.2],["lpf",3000],["gain",0.8]],"folder":"house/racks/drums","tags":["drums","rack","house"]})
+hooks.def("boom808", {"chain":[["hook","hygiene-kick"],["s","sine"],["freq",47],["attack",0.002],["penv",14],["pdecay",0.06],["decay",0.7],["sustain",0],["lpf",3000],["gain",0.8]],"folder":"house/racks/drums","tags":["drums","rack","house"]})
 hooks.def("clap808", {"chain":[["hook","hygiene-snare"],["s","white"],["bpf",1100],["bpq",1.5],["attack",0.002],["decay",0.2],["sustain",0],["gain",0.95]],"folder":"house/racks/drums","tags":["drums","rack","house"]})
 hooks.def("hat808", {"chain":[["hook","hygiene-hat"],["s","white"],["hpf",8000],["decay",0.03],["sustain",0],["gain",0.35]],"folder":"house/racks/drums","tags":["drums","rack","house"]})
 hooks.def("cowbell808", {"chain":[["hook","hygiene-bell"],["s","square"],["bpf",900],["bpq",1.2],["attack",0.001],["decay",0.22],["sustain",0],["gain",0.18]],"folder":"house/racks/lead","tags":["lead","rack","house"]})
 hooks.def("electroBass", {"chain":[["hook","hygiene-bass"],["s","square"],["attack",0.003],["decay",0.18],["sustain",0.2],["release",0.05],["lpf",600],["lpq",5],["lpenv",2.5],["lpdecay",0.12],["gain",0.38]],"folder":"house/racks/bass","tags":["bass","rack","house"]})
 hooks.def("vocoLead", {"chain":[["hook","hygiene-lead"],["s","sawtooth"],["vowel","a"],["attack",0.01],["sustain",0.7],["release",0.1],["lpf",3200],["vib",5],["vibmod",0.04],["gain",0.3]],"folder":"house/racks/lead","tags":["lead","rack","house"]})
 hooks.def("robotStab", {"chain":[["hook","hygiene-stab"],["s","square"],["vowel","e"],["attack",0.003],["decay",0.15],["sustain",0],["lpf",2400],["lpenv",2],["lpdecay",0.1],["gain",0.16]],"folder":"house/racks/keys","tags":["keys","rack","house"]})
-hooks.def("filterBass", {"chain":[["hook","hygiene-bass"],["s","sawtooth"],["attack",0.004],["sustain",0.5],["release",0.08],["lpf",500],["lpq",8],["lpenv",3],["lpdecay",0.15],["distort",0.3],["gain",0.28]],"folder":"house/racks/bass","tags":["bass","rack","house"]})
+hooks.def("filterBass", {"chain":[["hook","hygiene-bass"],["s","sawtooth"],["attack",0.004],["sustain",0.5],["release",0.08],["lpf",500],["lpq",8],["lpenv",3],["lpdecay",0.15],["gain",0.28]],"folder":"house/racks/bass","tags":["bass","rack","house"]})
 hooks.def("sawStab", {"chain":[["hook","hygiene-supersaw"],["s","supersaw"],["unison",7],["detune",0.35],["spread",0.6],["attack",0.003],["decay",0.28],["sustain",0],["lpf",5000],["lpenv",1],["lpdecay",0.2],["gain",0.13]],"folder":"house/racks/keys","tags":["keys","rack","house"]})
-hooks.def("houseKick", {"chain":[["hook","hygiene-kick"],["s","sine"],["freq",55],["attack",0.001],["penv",26],["pdecay",0.04],["decay",0.28],["sustain",0],["shape",0.3],["lpf",6000],["gain",0.8]],"folder":"house/racks/drums","tags":["drums","rack","house"]})
+hooks.def("houseKick", {"chain":[["hook","hygiene-kick"],["s","sine"],["freq",55],["attack",0.001],["penv",26],["pdecay",0.04],["decay",0.28],["sustain",0],["lpf",6000],["gain",0.8]],"folder":"house/racks/drums","tags":["drums","rack","house"]})
 hooks.def("offHat", {"chain":[["hook","hygiene-hat"],["s","white"],["hpf",7500],["decay",0.12],["sustain",0],["gain",0.3]],"folder":"house/racks/drums","tags":["drums","rack","house"]})
 // == glyphcore/edm:racks-edm-core (8 defs used, inlined) ==
 hooks.def("crash", {"chain":[["hook","hygiene-hat"],["s","white"],["hpf",5000],["decay",1.6],["sustain",0],["gain",0.22]],"folder":"edm/core/racks/drums","tags":["drums","rack","edm"]})
 hooks.def("noiseRiser", {"params":{"len":{"min":0.5,"max":30,"default":6.86}},"chain":[["hook","hygiene-riser"],["s","white"],["attack",{"$param":"len"}],["sustain",1],["release",0.2],["hpf",300],["lpf",700],["lpenv",4],["lpattack",{"$param":"len"}],["lpsustain",1],["gain",0.28]],"folder":"edm/core/racks/fx","tags":["fx","rack","edm"]})
 hooks.def("downSweep", {"chain":[["hook","hygiene-sweep"],["s","white"],["attack",0.005],["decay",2],["sustain",0],["hpf",300],["lpf",1000],["lpenv",3.5],["lpattack",0.001],["lpdecay",1.8],["lpsustain",0],["gain",0.3]],"folder":"edm/core/racks/fx","tags":["fx","rack","edm"]})
-hooks.def("impactBoom", {"chain":[["hook","hygiene-impact"],["s","sine"],["note","c1"],["penv",24],["pdecay",0.25],["decay",2.2],["sustain",0],["shape",0.25],["lpf",3000],["gain",0.7]],"folder":"edm/core/racks/fx","tags":["fx","rack","edm"]})
+hooks.def("subDrop", {"chain":[["hook","hygiene-impact"],["s","sine"],["note","c1"],["penv",24],["pdecay",1],["decay",2.5],["sustain",0],["lpf",400],["gain",0.6]],"folder":"edm/core/racks/fx","tags":["fx","rack","edm"]})
 hooks.def("sidechain", {"params":{"orbit":{"min":1,"max":16,"default":2},"depth":{"min":0,"max":1,"default":0.5},"release":{"min":0.02,"max":1,"default":0.2}},"chain":[["duckorbit",{"$param":"orbit"}],["duckdepth",{"$param":"depth"}],["duckattack",{"$param":"release"}]],"folder":"edm/core/moves","tags":["fx","rack","edm"]})
 hooks.def("ducked", {"params":{"orbit":{"min":1,"max":16,"default":2}},"chain":[["orbit",{"$param":"orbit"}]],"folder":"edm/core/moves","tags":["fx","rack","edm"]})
 hooks.def("filterBuild", {"chain":[["lpf",{"$mini":"<300 450 700 1000 1500 2300 3600 6000>"}]],"folder":"edm/core/moves","tags":["fx","rack","edm"]})
@@ -47,7 +47,7 @@ hooks.def("thinBuild", {"chain":[["hpf",{"$mini":"<30 50 80 130 200 320 500 800>
 // == moves on gates: the build thins the funk kit and opens the house bass; the riser ends on each drop ==
 hooks.bind("thin", "thinBuild", atoms.el.build); hooks.bind("open", "filterBuild", atoms.el.build)
 hooks.bind("rise", "noiseRiser(15)", "9b..17b"); hooks.bind("rise4", "noiseRiser(7.5)", "29b..33b")
-hooks.bind("hit", "impactBoom", "17b..18b, 33b..34b"); hooks.bind("crash", "crash", "17b..18b, 33b..34b"); hooks.bind("sweep", "downSweep", "25b..26b")
+hooks.bind("hit", "subDrop", "17b..18b, 33b..34b"); hooks.bind("crash", "crash", "17b..18b, 33b..34b"); hooks.bind("sweep", "downSweep", "25b..26b")
 
 // == electro-funk (intro, build, break) ==
 fkick: s(atoms.el.kick).hook("boom808").use("thin").tags("funk")
@@ -63,7 +63,7 @@ kick: s(atoms.el.ehKick).hook("houseKick | sidechain(3, 0.8, 0.18)").tags("house
 clap: s(atoms.el.ehClap).hook("clap808").tags("house")
 ohat: s(atoms.el.ehHat).hook("offHat").tags("house")
 bass: note(atoms.el.ehBass).hook("filterBass | ducked(3)").use("open").tags("hbass")
-stabs: note(atoms.el.chords).struct(atoms.el.ehStabs).hook("sawStab | ducked(3)").tags("house", "wet")
+stabs: note(atoms.el.chords).struct(atoms.el.ehStabs).hook("sawStab | ducked(3)").s("sawtooth").add(note("-0.08,0.08")).tags("house", "wet")   // native saw pair, not the supersaw worklet: headless renders (#140); drop .s(...).add(...) for the rack's supersaw
 build: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook("clap808").tags("build")
 
 // == fx and buses ==

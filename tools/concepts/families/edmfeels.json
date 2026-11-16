@@ -178,7 +178,7 @@
      "rack": "offHat"
     },
     "top": {
-     "pat": "@el:ehStabs",
+     "pat": "@el:ehStabLine",
      "rack": "sawStab"
     },
     "bass": {

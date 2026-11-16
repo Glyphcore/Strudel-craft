@@ -332,6 +332,14 @@ threshold changed (`git diff tools/racks/standard.json` only adds entries).
 | `break` | catalog breaks (`amen-style-break`, `amen-chops`, `jungle-chops`, `think-style-break`) | `hygiene-break` 30-14000 | a whole kit on one bus (kick, snare, ride): the kick's low end and the ride's top octave are both the sound, so the band is wide; `above` -20 as for hats; peak -3 as for drums |
 | `gate` | `gatePad` (`trance-gate`) | `hygiene-gate` 120-9000 | a supersaw that a 16-step gate opens and closes: the supersaw limits (side<120 -24, alias c6 -34) plus a new check, **envelope range** = p95 - p10 of 10 ms RMS levels over the active span (dB); a gate must open and close by at least 15 dB (a sustained supersaw pad measures a few dB) |
 
+Render cost (measured, headless CLI, host load 80-93 on 4 cores; #140): 16 kicks in one bar render in 2.3 s as a plain sine and in 585 s with
+`shape(0.25)`; a five-note chord renders in 2.1 s as `sawtooth` and in 86 s as `supersaw` (unison 1). `shape`, `distort` and `supersaw` run as
+AudioWorklets, which the offline render pays per render quantum. One `impactBoom` (a sine with `shape 0.25`) in a two-bar window took the render from 4 s to 77 s of CPU. So the dnb-electro racks have no
+worklet stage except the supersaw chord racks (`sawStab`, `bigChords`, `gatePad`, `roomLead`): kicks and subs are plain sines, the reese is a saw played as
+a detuned pair (`.add(note("0,0.18"))`), `neuroBass` gets its grit from FM (index 2.5) and resonance, drive is the optional edm `drive(amt)` move. The
+three track demos also swap the supersaw racks for a native saw pair after the hook (`.s("sawtooth").add(note("-0.08,0.08"))`) and use edm `subDrop`
+(no shape) for impacts; on the site the supersaw racks play as written.
+
 The envelope range metric is computed for every item (`env_range_db` in report.json) and checked only where a class sets `env_range_min_db`.
 Measured results of the first audit of the new items are in the table below (same standard, the audit run of #122).
 

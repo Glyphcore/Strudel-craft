@@ -28,7 +28,7 @@
  "racks": {
   "houseKick": {
    "class": "kick",
-   "doc": "house / techno kick: sine at 55 Hz, 26-semitone knock, 0.28 s, light drive",
+   "doc": "house / techno kick: sine at 55 Hz, 26-semitone knock, 0.28 s",
    "chain": [
     [
      "hook",
@@ -63,10 +63,6 @@
      0
     ],
     [
-     "shape",
-     0.3
-    ],
-    [
      "lpf",
      6000
     ],
@@ -78,7 +74,7 @@
   },
   "bigKick": {
    "class": "kick",
-   "doc": "big-room kick: deeper (50 Hz), longer knock and tail, more drive",
+   "doc": "big-room kick: deeper (50 Hz), longer knock and tail",
    "chain": [
     [
      "hook",
@@ -111,10 +107,6 @@
     [
      "sustain",
      0
-    ],
-    [
-     "shape",
-     0.45
     ],
     [
      "lpf",
@@ -835,7 +827,7 @@
      "rack": "bigChords"
     }
    ],
-   "bars": 4
+   "bars": 2
   },
   {
    "id": "trance-gate",
@@ -854,7 +846,7 @@
      "rack": "gatePad"
     }
    ],
-   "bars": 4
+   "bars": 2
   },
   {
    "id": "big-room-drop",
@@ -930,7 +922,7 @@
      "move": "ducked(3)"
     }
    ],
-   "bars": 4
+   "bars": 2
   }
  ],
  "syntax": [

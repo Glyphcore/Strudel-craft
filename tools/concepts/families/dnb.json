@@ -152,10 +152,6 @@
      0
     ],
     [
-     "shape",
-     0.25
-    ],
-    [
      "lpf",
      5000
     ],
@@ -294,10 +290,6 @@
      0
     ],
     [
-     "shape",
-     0.35
-    ],
-    [
      "hpf",
      45
     ],
@@ -313,7 +305,7 @@
   },
   "breakSnare": {
    "class": "snare",
-   "doc": "break snare: higher, crackier body (A3) with more drive than dnbSnare",
+   "doc": "break snare: higher, crackier body (A3) than dnbSnare",
    "chain": [
     [
      "hook",
@@ -346,10 +338,6 @@
     [
      "hpf",
      200
-    ],
-    [
-     "shape",
-     0.2
     ],
     [
      "lpf",
@@ -457,7 +445,7 @@
   },
   "dnbSub": {
    "class": "sub",
-   "doc": "DnB sub: mono sine, 5 ms attack, held, light shape for small speakers, low-passed at 250 Hz",
+   "doc": "DnB sub: mono sine, 5 ms attack, held, low-passed at 250 Hz",
    "chain": [
     [
      "hook",
@@ -484,10 +472,6 @@
      0.08
     ],
     [
-     "shape",
-     0.15
-    ],
-    [
      "lpf",
      250
     ],
@@ -503,7 +487,7 @@
   },
   "reese": {
    "class": "reese",
-   "doc": "reese mid layer: two detuned saws (unison 2, detune 0.18, no stereo spread) on the sub's notes, high-passed at 100 Hz (24 dB/oct) so the sub keeps the fundamental; the beating of the pair is the movement",
+   "doc": "reese mid layer: a dark saw on the sub's notes, high-passed at 100 Hz (24 dB/oct) so the sub keeps the fundamental; play it as a detuned pair, note(...).add(note(\"0,0.18\")) (two oscillators 18 cents apart: the slow beating is the movement)",
    "chain": [
     [
      "hook",
@@ -511,7 +495,7 @@
     ],
     [
      "s",
-     "supersaw"
+     "sawtooth"
     ],
     [
      "hpf",
@@ -520,18 +504,6 @@
     [
      "ftype",
      "24db"
-    ],
-    [
-     "unison",
-     2
-    ],
-    [
-     "detune",
-     0.18
-    ],
-    [
-     "spread",
-     0
     ],
     [
      "attack",
@@ -559,13 +531,13 @@
     ],
     [
      "gain",
-     0.4
+     0.3
     ]
    ]
   },
   "neuroBass": {
    "class": "growl",
-   "doc": "neuro bass: FM saw (index 1.5, ratio 0.5 = sub-octave growl), resonant low-pass with a snap, vowel formant, then serial drive (shape into distort)",
+   "doc": "neuro bass: FM saw (index 2.5, ratio 0.5 = sub-octave growl), resonant low-pass with a snap, vowel formant; serial drive is a move on top (glyphcore/edm drive(amt): shape / distort run as AudioWorklets, #140)",
    "chain": [
     [
      "hook",
@@ -577,7 +549,7 @@
     ],
     [
      "fm",
-     1.5
+     2.5
     ],
     [
      "fmh",
@@ -601,7 +573,7 @@
     ],
     [
      "lpq",
-     6
+     8
     ],
     [
      "lpenv",
@@ -616,16 +588,8 @@
      "o"
     ],
     [
-     "shape",
-     0.45
-    ],
-    [
-     "distort",
-     0.4
-    ],
-    [
      "gain",
-     0.22
+     0.6
     ]
    ]
   },
@@ -722,10 +686,6 @@
     [
      "lpsustain",
      0
-    ],
-    [
-     "shape",
-     0.3
     ],
     [
      "gain",
@@ -1362,7 +1322,8 @@
     {
      "src": "note",
      "pat": "@sub",
-     "rack": "reese"
+     "rack": "reese",
+     "more": ".add(note(\"0,0.18\"))"
     }
    ],
    "bars": 4
@@ -1370,7 +1331,7 @@
   {
    "id": "neuro-bass",
    "title": "Neuro bass",
-   "intent": "FM saw with a sub-octave modulator, resonant snap, vowel formant, then serial drive (shape into distort): a 16th neuro riff.",
+   "intent": "FM saw with a sub-octave modulator, resonant snap and vowel formant on a 16th neuro riff (serial drive is the edm drive move on top).",
    "labels": [
     "dnb",
     "neuro",
@@ -1560,7 +1521,8 @@
     {
      "src": "note",
      "pat": "@sub",
-     "rack": "reese"
+     "rack": "reese",
+     "more": ".add(note(\"0,0.18\"))"
     }
    ],
    "bars": 4
@@ -1606,7 +1568,7 @@
   {
    "title": "Multiband by layers: sub + reese + neuro on a glued bass bus",
    "bars": 4,
-   "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\nkick: s(atoms.dnb.kick).hook(\"dnbKick\").tags(\"drums\")\nsnare: s(atoms.dnb.snare).hook(\"dnbSnare\").tags(\"drums\")\nsub: note(atoms.dnb.sub).hook(\"dnbSub\").tags(\"low\")          // 40-120 Hz, mono, clean\nreese: note(atoms.dnb.sub).hook(\"reese\").tags(\"mid\")       // same notes from 100 Hz up\nneuro: note(atoms.dnb.neuro).hook(\"neuroBass\").velocity(0.8).tags(\"mid\")\nbassbus: ret(\"bassbus\").compressor(\"-22:4:6:.005:.12\").gain(0.6)   // bus processing: parallel glue on the mid layers\ntagged(\"mid\").send(\"bassbus\", 0.5)"
+   "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\nkick: s(atoms.dnb.kick).hook(\"dnbKick\").tags(\"drums\")\nsnare: s(atoms.dnb.snare).hook(\"dnbSnare\").tags(\"drums\")\nsub: note(atoms.dnb.sub).hook(\"dnbSub\").tags(\"low\")          // 40-120 Hz, mono, clean\nreese: note(atoms.dnb.sub).add(note(\"0,0.18\")).hook(\"reese\").tags(\"mid\")   // the same notes from 100 Hz up, a pair 18 cents apart\nneuro: note(atoms.dnb.neuro).hook(\"neuroBass\").velocity(0.8).tags(\"mid\")\nbassbus: ret(\"bassbus\").compressor(\"-22:4:6:.005:.12\").gain(0.6)   // bus processing: parallel glue on the mid layers\ntagged(\"mid\").send(\"bassbus\", 0.5)"
   },
   {
    "title": "Chop a real break (needs a break sample)",

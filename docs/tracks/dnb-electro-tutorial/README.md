@@ -47,8 +47,8 @@ Arrangement map (bars, 1-based; a gate `a..b` is half-open, `25b..57b` = bars 25
    the same order, so kick, snare and ride stay together.
 5. **Build 2: jungle chops and a reese opening.** A second chop order (`dnb.chopsWild`: doubled slices, a reversed beat, a closing roll) on the build
    gate; the reese (a saw played as a pair 18 cents apart, `.add(note("0,0.18"))`, mono, 100 Hz high-pass at 24 dB/oct) opens with `filterBuild`.
-6. **Drop 2: neuro and multiband by layers.** The neuro riff is `neuroBass`: an FM saw with a sub-octave modulator (index 2.5, `fmh 0.5`), a resonant snap
-   and a vowel formant; the grit is FM sidebands and resonance. Serial drive would be `glyphcore/edm` `drive(amt)` on top (superdough runs filters first, so
+6. **Drop 2: neuro and multiband by layers.** The neuro riff is `neuroBass`: an FM saw (ratio 1, index 4) high-passed at 110 Hz, a resonant snap
+   and a vowel `a` formant: a modulated mid bass whose energy sits at 0.5-2 kHz; the grit is FM sidebands and resonance. Serial drive would be `glyphcore/edm` `drive(amt)` on top (superdough runs filters first, so
    a drive sees a band-limited signal); the headless render leaves it out because drive is an AudioWorklet stage (#140). A mono sine sub plays the
    same notes (`subN`); the mid layers (neuro, reese, rolling, wobble) share a glued bus: `ret("bassbus").compressor("-22:4:6:.005:.12")` fed by
    `tagged("mid").send("bassbus", 0.5)`. The split is by layers (sub / mid), so no crossover filter smears the sub.
@@ -80,7 +80,7 @@ A club track uses 16 / 32-bar blocks: `atoms.hs.mapIntro` .. `mapOutro` (160 bar
 ## 4. Render, master, score (measured, 2026-11-16)
 | program | length | master | true peak | crest | LRA | centroid | low end < 150 Hz | onsets / bar | section span | genre score |
 |---|---|---|---|---|---|---|---|---|---|---|
-| DnB tutorial (`--preset dnb`, docs/genres/dnb.json) | 176.6 s | -8.0 LUFS | -1.02 dBTP | 8.0 dB | 2.6 LU (miss, min 3) | 2321 Hz | 0.58 | 6.4 | 3.7 dB | 8 / 9 |
+| DnB tutorial (`--preset dnb`, docs/genres/dnb.json) | 176.6 s | -8.0 LUFS | -1.03 dBTP | 8.2 dB | 2.8 LU (miss, min 3) | 2288 Hz | 0.55 | 6.4 | 3.9 dB | 8 / 9 |
 | electro (`--preset electro`) | 75.0 s | -9.5 | -1.01 | 9.5 | 1.6 (miss, min 2) | 3248 | 0.70 (miss, max 0.65) | 12.0 | 2.8 | 7 / 9 |
 | house / techno / trance (`--preset house`) | 105.0 s | -9.1 | -1.01 | 8.8 | 1.9 (miss, min 2) | 3462 (miss, max 3200) | 0.69 | 12.4 | 5.1 | 7 / 9 |
 Tempo 174 / 128 / 128 bpm passed with `--bpm`. Standalone and pack versions give identical `strudel events` (6087 / 2531 / 3445 events, same hash).

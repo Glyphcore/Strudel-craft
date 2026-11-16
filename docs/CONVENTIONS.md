@@ -175,7 +175,7 @@ racks go into one hooks@1 ingredient (`racksIngredient`, `racksTitle`, `racksDoc
 `// racks: pack:<pack>:<ingredient>` comment, because the site installs a pack's hook defs when the program text names the pack (#91). A feel's `groove`
 is a preset name (the voice seed is appended) or an expression with `$seed` (`"groove-swing(54) | groove-human(2.5, 0.15, $seed)"`). `--jobs N` renders
 N recipes at a time. Self-containment rule: a feel template only names racks of its own pack, so `atoms.import("pack:P:feel-x", { as: "feel" })` alone
-brings every def it needs. A pack hook def may only use the chain steps listed in `site/data/hooks-steps.json` (PACK_SPEC 5.2); dnb-electro added
+brings every def it needs. The tags of the generated packs (glyphcore/dnb-electro, glyphcore/edm) carry no `style` of their own: they use the site's category defaults (#120); the builder writes their `taxonomy` block (groups, priority, tags, folder descriptions) into the manifest. A feel family may set `"taxonomy": { ..., "feels": "feels" }` so its feel-* recipes sit in `<folder>/feels/<id>`. A pack hook def may only use the chain steps listed in `site/data/hooks-steps.json` (PACK_SPEC 5.2); dnb-electro added
 `fmdecay`, `fmsustain`, `ftype`, `spread` (scalars) and the `mini` shape on `struct` (the trance gate).
 
 ## 10. Drum and bass, electro, house / techno / trance / big room (pack `glyphcore/dnb-electro`, #122)
@@ -194,7 +194,7 @@ Sources and what each taught: docs/DNB_ELECTRO_REFERENCES.md. F minor throughout
 | hats | `dnb.hats`, `dnb.shaker`, `dnb.shakerVel`, `dnb.rideVel` | `dnbHat`, `dnbShaker`, `ride` (hat) | |
 | sub | `dnb.sub` (F1, Db2, Bb1, C2) | `dnbSub` (sub) | mono sine, 8 ms attack, held |
 | reese | `dnb.sub` (the same notes) | `reese` (reese) | a saw played as a detuned pair (`.add(note("0,0.18"))`, 18 cents), own 100 Hz high-pass at 24 dB/oct: the sub keeps the fundamental |
-| neuro | `dnb.neuro` | `neuroBass` (growl) | FM saw (index 2.5, `fmh 0.5`), resonant snap, vowel; serial drive = edm `drive(amt)` on top (a worklet stage, #140) |
+| neuro | `dnb.neuro` | `neuroBass` (growl) | a modulated mid bass over a sub: FM saw (ratio 1, index 4) from 110 Hz, resonant snap, vowel a (energy at 0.5-2 kHz); serial drive = edm `drive(amt)` on top (a worklet stage, #140) |
 | rolling bass | `dnb.rolling` | `rollingBass` (bass) | offbeat 16ths following the chords |
 | jump-up wobble | `dnb.wobble` (F2 up; a sub plays it an octave down) | `jumpWobble` (growl) | 3+3+2 notes that re-open the filter envelope; edm `wobble(sync)` is the LFO alternative |
 | liquid harmony | `dnb.chords`, `dnb.comp`, `dnb.strings` | `liquidRhodes` (keys), `liquidPad`, `strings` (pad) | Fm9 Dbmaj9 Bbm9 Cm7, two bars each |

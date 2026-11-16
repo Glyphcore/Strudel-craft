@@ -13,7 +13,7 @@ export const uniq = (a) => [...new Set(a.filter(Boolean))];
 /* families of other packs register their own folder root and genre tags (family data "taxonomy": { folder, genres }), so a new genre needs no code here:
    tools/concepts/build.mjs calls registerFamily for every family that has it (glyphcore/edm: edm-core -> edm/core, dubstep -> edm/dubstep) */
 const FAMS = {}, BY_NS = {}, BY_ING = {};
-export function registerFamily(f) { const t = f.taxonomy; if (!t) return; const reg = { folder: t.folder, genres: t.genres || [], tag: t.tag || null };
+export function registerFamily(f) { const t = f.taxonomy; if (!t) return; const reg = { folder: t.folder, genres: t.genres || [], tag: t.tag || null, feels: t.feels || null }; // feels: a sub-folder for the family's feel-* recipes ("feels" -> <folder>/feels/<id>)
   FAMS[f.family] = reg; if (f.atomsIngredient) BY_NS[f.atomsIngredient.ns] = reg; if (f.racksIngredient) BY_ING[f.racksIngredient] = reg;
   for (const g of reg.genres) GENRE_OF[g] = g; if (reg.tag) GENRE_OF[reg.tag] = reg.tag; }
 
@@ -45,6 +45,7 @@ export function recipeTaxonomy(r) {
   else if (fam === 'groove') folder = 'groove/' + (/swing|mpc/.test(r.id) ? 'swing' : /drag|lazy/.test(r.id) ? 'push' : 'human');
   else if (fam === 'feels') folder = 'hiphop/' + (subgenre(labels) || 'general') + '/feel';
   else if (fam === 'hiphop') folder = `hiphop/${subgenre(labels) || 'general'}/${role || 'drums'}`;
+  else if (FAMS[fam] && FAMS[fam].feels && /^feel-/.test(r.id)) folder = `${FAMS[fam].folder}/${FAMS[fam].feels}/${r.id.replace(/^feel-/, '')}`;
   else if (FAMS[fam]) folder = `${FAMS[fam].folder}/${role || 'misc'}`;
   else if (r.origin === 'RECIPES.md' || r.origin === 'new' || !fam) folder = role ? `strudel/${role}` : 'strudel/misc';
   const status = [];

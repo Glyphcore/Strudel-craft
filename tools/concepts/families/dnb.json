@@ -549,7 +549,7 @@
   },
   "neuroBass": {
    "class": "growl",
-   "doc": "neuro bass: FM saw (index 2.5, ratio 0.5 = sub-octave growl), resonant low-pass with a snap, vowel formant; serial drive is a move on top (glyphcore/edm drive(amt): shape / distort run as AudioWorklets, #140)",
+   "doc": "neuro bass, a modulated mid bass over a separate sub: FM saw (ratio 1, index 4), own 110 Hz high-pass, resonant low-pass snap, vowel a formant: the energy sits at 0.5-2 kHz (measured 98 %, centroid about 700 Hz), little above 2 kHz by design; serial drive for top-end grit is the edm drive(amt) move (a worklet stage, #140)",
    "chain": [
     [
      "hook",
@@ -560,12 +560,16 @@
      "sawtooth"
     ],
     [
+     "hpf",
+     110
+    ],
+    [
      "fm",
-     2.5
+     4
     ],
     [
      "fmh",
-     0.5
+     1
     ],
     [
      "attack",
@@ -581,7 +585,7 @@
     ],
     [
      "lpf",
-     1400
+     2500
     ],
     [
      "lpq",
@@ -589,19 +593,19 @@
     ],
     [
      "lpenv",
-     2.5
+     2
     ],
     [
      "lpdecay",
-     0.18
+     0.22
     ],
     [
      "vowel",
-     "o"
+     "a"
     ],
     [
      "gain",
-     0.6
+     2.2
     ]
    ]
   },

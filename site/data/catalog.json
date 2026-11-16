@@ -4398,9 +4398,9 @@
    "needs_samples": false,
    "bpm_hint": 174.0,
    "verified": true,
-   "rms_dbfs": -35.4,
-   "centroid_hz": 732,
-   "peak": 0.0908,
+   "rms_dbfs": -23.0,
+   "centroid_hz": 1118,
+   "peak": 0.3299,
    "folder": "dnb/bass",
    "tags": [
     "bass",
@@ -5430,7 +5430,7 @@
    "rms_dbfs": -18.9,
    "centroid_hz": 3759,
    "peak": 0.4515,
-   "folder": "dnb-electro/misc",
+   "folder": "dnb-electro/feels/liquid",
    "tags": [
     "dnb",
     "liquid",
@@ -5455,15 +5455,15 @@
    "needs_samples": false,
    "bpm_hint": 174.0,
    "verified": true,
-   "rms_dbfs": -23.5,
-   "centroid_hz": 5742,
-   "peak": 0.356,
-   "folder": "dnb-electro/misc",
+   "rms_dbfs": -21.0,
+   "centroid_hz": 4554,
+   "peak": 0.4216,
+   "folder": "dnb-electro/feels/neuro",
    "tags": [
     "dnb",
     "neuro",
     "verified",
-    "approx"
+    "lowered"
    ],
    "stackable": false,
    "has_lowered": true,
@@ -5486,7 +5486,7 @@
    "rms_dbfs": -23.4,
    "centroid_hz": 4566,
    "peak": 0.3884,
-   "folder": "dnb-electro/misc",
+   "folder": "dnb-electro/feels/jumpup",
    "tags": [
     "dnb",
     "jump-up",
@@ -5514,7 +5514,7 @@
    "rms_dbfs": -21.8,
    "centroid_hz": 4571,
    "peak": 0.3122,
-   "folder": "dnb-electro/misc",
+   "folder": "dnb-electro/feels/electrohouse",
    "tags": [
     "electro",
     "house",
@@ -5542,7 +5542,7 @@
    "rms_dbfs": -20.9,
    "centroid_hz": 4616,
    "peak": 0.3315,
-   "folder": "dnb-electro/drums",
+   "folder": "dnb-electro/feels/techno",
    "tags": [
     "drums",
     "techno",
@@ -5571,7 +5571,7 @@
    "rms_dbfs": -20.7,
    "centroid_hz": 4301,
    "peak": 0.4022,
-   "folder": "dnb-electro/drums",
+   "folder": "dnb-electro/feels/trance",
    "tags": [
     "drums",
     "trance",
@@ -5600,7 +5600,7 @@
    "rms_dbfs": -21.7,
    "centroid_hz": 4708,
    "peak": 0.3379,
-   "folder": "dnb-electro/drums",
+   "folder": "dnb-electro/feels/bigroom",
    "tags": [
     "drums",
     "big-room",

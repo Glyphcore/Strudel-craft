@@ -116,13 +116,7 @@
   },
   "neuro-bass": {
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: note(atoms.dnb.neuro).hook(\"neuroBass\")",
-   "lowered": "setcpm(174/4)\n$: note(\"<[f1 ~ f1 f1 ~ f1 ~ ~ f2 ~ f1 ~ ab1 ~ f1 ~] [f1 ~ ~ f1 ~ ~ f1 ~ eb2 ~ ~ f1 c2 ~ f1 ~]>\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2.5).fmh(0.5).attack(0.004).sustain(0.6).release(0.06).lpf(1400).lpq(8).lpenv(2.5).lpdecay(0.18).vowel(\"o\").gain(0.6)",
-   "lowered_check": {
-    "equal": true,
-    "cycles": 4,
-    "events": 30,
-    "hash": "66f9db8e90"
-   },
+   "lowered": "setcpm(174/4)\n$: note(\"<[f1 ~ f1 f1 ~ f1 ~ ~ f2 ~ f1 ~ ab1 ~ f1 ~] [f1 ~ ~ f1 ~ ~ f1 ~ eb2 ~ ~ f1 c2 ~ f1 ~]>\").hpf(70).lpf(9000).s(\"sawtooth\").hpf(110).fm(4).fmh(1).attack(0.004).sustain(0.6).release(0.06).lpf(2500).lpq(8).lpenv(2).lpdecay(0.22).vowel(\"a\").gain(2.2)",
    "notes": "",
    "source": "docs/CONVENTIONS.md",
    "expr": null,

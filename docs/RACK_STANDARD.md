@@ -334,9 +334,9 @@ threshold changed (`git diff tools/racks/standard.json` only adds entries).
 
 Render cost (measured, headless CLI, host load 80-93 on 4 cores; #140): 16 kicks in one bar render in 2.3 s as a plain sine and in 585 s with
 `shape(0.25)`; a five-note chord renders in 2.1 s as `sawtooth` and in 86 s as `supersaw` (unison 1). `shape`, `distort` and `supersaw` run as
-AudioWorklets, which the offline render pays per render quantum. One `impactBoom` (a sine with `shape 0.25`) in a two-bar window took the render from 4 s to 77 s of CPU. So the dnb-electro racks have no
+AudioWorklets; that the offline render pays for them per render quantum is UNVERIFIED (our reading, open in #140). One `impactBoom` (a sine with `shape 0.25`) in a two-bar window took the render from 4 s to 77 s of CPU. So the dnb-electro racks have no
 worklet stage except the supersaw chord racks (`sawStab`, `bigChords`, `gatePad`, `roomLead`): kicks and subs are plain sines, the reese is a saw played as
-a detuned pair (`.add(note("0,0.18"))`), `neuroBass` gets its grit from FM (index 2.5) and resonance, drive is the optional edm `drive(amt)` move. The
+a detuned pair (`.add(note("0,0.18"))`), `neuroBass` gets its grit from FM (ratio 1, index 4), resonance and a vowel formant (a modulated mid bass, energy at 0.5-2 kHz), drive is the optional edm `drive(amt)` move. The
 three track demos also swap the supersaw racks for a native saw pair after the hook (`.s("sawtooth").add(note("-0.08,0.08"))`) and use edm `subDrop`
 (no shape) for impacts; on the site the supersaw racks play as written.
 

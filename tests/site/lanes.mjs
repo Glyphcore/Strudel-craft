@@ -101,7 +101,7 @@ if (want('alloc')) {
   const siteSha = async (source) => {
     const page = await browser.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
     try {
-      await page.goto(BASE); await page.waitForSelector('#list li[data-id]'); await page.click('#list li[data-id="minor-arp"] .row');
+      await page.goto(BASE); await page.waitForSelector('#list li[data-id]'); await page.waitForFunction(() => window.strudelCraft && window.strudelCraft.capture, null, { timeout: 90000 }); await page.click('#list li[data-id="minor-arp"] .row');
       await page.evaluate((c) => { const ta = document.getElementById('code'); ta.value = c; ta.dispatchEvent(new Event('input', { bubbles: true })); document.activeElement.blur(); }, source);
       return await page.evaluate(async () => { const rec = await window.strudelCraft.capture.renderExact(2); const o = rec.recipe.outputs.render; return { sha: o.sha256, frames: o.frames, fails: o.fails }; });
     } finally { await page.close(); }
@@ -141,7 +141,7 @@ if (want('e2e')) {
   page.on('pageerror', (e) => errs.push(String(e))); page.on('console', (m) => { if (m.type() === 'error') errs.push(m.text()); });
   const CODE = 'drums: s("bd*4, hh*8").lpf(4000)\n  .split(dry => dry,\n         wet => wet.room(0.9).rsize(6).lpf(900),\n         grit => grit.crush(5).hpf(2000).gain(0.4))';
   try {
-    await page.goto(BASE); await page.waitForSelector('#list li[data-id]'); await page.click('#list li[data-id="minor-arp"] .row');
+    await page.goto(BASE); await page.waitForSelector('#list li[data-id]'); await page.waitForFunction(() => window.strudelCraft && window.strudelCraft.capture, null, { timeout: 90000 }); await page.click('#list li[data-id="minor-arp"] .row');
     await page.evaluate((c) => { const ta = document.getElementById('code'); ta.value = c; ta.dispatchEvent(new Event('input', { bubbles: true })); document.activeElement.blur(); }, CODE);
     await page.evaluate(() => window.__sc.play());
     await page.waitForFunction(() => window.__sc.S.playing && window.__sc.Engine.started, null, { timeout: 90000 });

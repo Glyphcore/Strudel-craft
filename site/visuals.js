@@ -72,17 +72,28 @@ const VC = { pat: null, cycles: new Map(), TTL: 4000, queries: 0 };
 function cachedHaps(pat, t, back) {
   if (VC.pat !== pat) { VC.pat = pat; VC.cycles.clear(); }
   const now = performance.now(), c0 = Math.max(0, Math.floor(t - back)), c1 = Math.floor(t + (back > 1 ? 2 : 0)), cur = Math.floor(t), out = [];
-  for (let c = c0; c <= c1; c++) {
-    let e = VC.cycles.get(c);
-    if (!e || (c >= cur && now - e.at > VC.TTL)) { let hs = []; try { hs = pat.queryArc(c, c + 1); } catch (err) { hs = []; } VC.queries++; e = { at: now, haps: hs }; VC.cycles.set(c, e); }
-    for (const h of e.haps) if (c === c0 || !h.whole || h.hasOnset()) out.push(h);
-  }
+  let q = 0; /* at most one cycle query per run (the current cycle first): a cold cache fills over a few runs instead of one 4-cycle stall */
+  const need = (c) => { const e = VC.cycles.get(c); return !e || (c >= cur && now - e.at > VC.TTL); };
+  const order = []; for (let c = c0; c <= c1; c++) order.push(c); order.sort((x, y) => Math.abs(x - cur) - Math.abs(y - cur));
+  for (const c of order) if (q < 1 && need(c)) { let hs = []; try { hs = pat.queryArc(c, c + 1); } catch (err) { hs = []; } VC.queries++; q++; VC.cycles.set(c, { at: now, haps: hs }); }
+  for (let c = c0; c <= c1; c++) { const e = VC.cycles.get(c); if (e) for (const h of e.haps) if (c === c0 || !h.whole || h.hasOnset()) out.push(h); }
   for (const c of VC.cycles.keys()) if (c < c0 - 1 || c > c1 + 1) VC.cycles.delete(c);
   return out;
 }
+/* Frame budget (docs/AUDIO_ENGINE.md W1b). The painters (.pianoroll(), .scope(), ...) and the highlight cost a measured 5-60 ms per run on a loaded phone, and the
+   audio scheduler shares the main thread. The visuals measure their own cost (EMA of the last runs, cache refreshes included) and the rAF gap; while the page is
+   stressed (rAF gap EMA > 40 ms, or a run costing more than 40 ms) they take at most DUTY_STRESSED (2 %) of the time, i.e. they run once per cost / 0.02 ms (a 40 ms run: every 2 s);
+   otherwise at most DUTY_FREE (50 %). Flag ?vis=every restores a run on every frame (A/B). */
+const VB = { cost: 0, last: 0, rafAt: 0, gap: 16, ran: 0, skipped: 0, stressed: false, DUTY_FREE: 0.5, DUTY_STRESSED: 0.02 };
 function frame() {
   raf = requestAnimationFrame(frame);
   if (document.hidden) return; /* hidden: no painting or highlighting */
+  const tn = performance.now();
+  if (VB.rafAt) VB.gap = 0.9 * VB.gap + 0.1 * Math.min(1000, tn - VB.rafAt); VB.rafAt = tn; VB.stressed = VB.gap > 40 || VB.cost > 40;
+  if (FLAG_VIS !== 'every' && FLAG_VIS !== 'requery' && VB.last && tn - VB.last < VB.cost / (VB.stressed ? VB.DUTY_STRESSED : VB.DUTY_FREE)) { VB.skipped++; return; }
+  runFrame(); const d = performance.now() - tn; VB.cost = VB.ran ? 0.7 * VB.cost + 0.3 * d : d; VB.ran++; VB.last = tn;
+}
+function runFrame() {
   const st = sc.engineState && sc.engineState(); if (!st || !st.playing || !st.pattern || !st.scheduler) { clearHighlight(); return; }
   let t; try { t = st.scheduler.now(); } catch (e) { return; }
   let haps = [];
@@ -174,4 +185,4 @@ function registerIntellisense() {
 }
 if (!registerIntellisense()) { const iv = setInterval(() => { if (registerIntellisense()) clearInterval(iv); }, 300); setTimeout(() => clearInterval(iv), 20000); }
 
-sc.visuals = { flag: FLAG_VIS, cacheStats: () => ({ queries: VC.queries, cycles: VC.cycles.size }), list: VIS, attach(api) { cmApi = api; const es = sc.engineState && sc.engineState(); if (lastIdle && !(es && es.playing)) idlePaint(lastIdle); }, canvas: (id) => widgetCanvases.get(id) };
+sc.visuals = { flag: FLAG_VIS, cacheStats: () => ({ queries: VC.queries, cycles: VC.cycles.size }), budget: () => ({ ran: VB.ran, skipped: VB.skipped, costMs: +VB.cost.toFixed(1), gapMs: +VB.gap.toFixed(1), stressed: VB.stressed }), list: VIS, attach(api) { cmApi = api; const es = sc.engineState && sc.engineState(); if (lastIdle && !(es && es.playing)) idlePaint(lastIdle); }, canvas: (id) => widgetCanvases.get(id) };

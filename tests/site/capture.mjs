@@ -81,13 +81,15 @@ ok('recording survives tab switches', mid === 'recording' && fr > 2, `${mid} ${f
 await page.evaluate(() => { window.__connects = []; const c = AudioNode.prototype.connect; AudioNode.prototype.connect = function (d, ...a) { if (d && d === d.context.destination) window.__connects.push(this.constructor.name + (this.numberOfOutputs === 0 ? ':0out' : '')); return c.call(this, d, ...a); }; });
 const probe = (arm) => page.evaluate(async (arm) => {
   const sc = window.strudelCraft, ctx = sc.transport.bus.ctx; const an = ctx.createAnalyser(); an.fftSize = 2048;
-  if (!sc.transport.playing) await window.__sc.play();
+  /* both runs start from the same musical position (stop, rewind, play), so the programs' own level moves (a different bar is a different level) do not read as a tap effect */
+  if (sc.transport.playing) { sc.transport.stop(); await new Promise((r) => setTimeout(r, 500)); }
+  Object.assign(sc.range.state, { start: 0 }); await window.__sc.play();
   await new Promise((r) => setTimeout(r, 600));
-  if (arm) { sc.capture.configure({ source: 'live', mode: 'free', audio: true, events: false, code: false }); sc.capture.record(); await new Promise((r) => setTimeout(r, 800)); }
+  if (arm) sc.capture.configure({ source: 'live', mode: 'free', audio: true, events: false, code: false }); if (arm) sc.capture.record(); await new Promise((r) => setTimeout(r, 800)); /* the same 800 ms either way */
   const tapNode = sc.capture.state.tap; const before = window.__connects.length;
   /* measure the signal that reaches the destination: the master bus node output, sampled the same way in both runs */
   sc.transport.bus.node.connect(an); const buf = new Float32Array(an.fftSize); let peak = 0, sum = 0, n = 0;
-  for (let k = 0; k < 40; k++) { an.getFloatTimeDomainData(buf); for (const x of buf) { peak = Math.max(peak, Math.abs(x)); sum += x * x; n++; } await new Promise((r) => setTimeout(r, 40)); }
+  for (let k = 0; k < 150; k++) { an.getFloatTimeDomainData(buf); for (const x of buf) { peak = Math.max(peak, Math.abs(x)); sum += x * x; n++; } await new Promise((r) => setTimeout(r, 40)); } /* 6 s: whole loops of the demo pattern */
   try { sc.transport.bus.node.disconnect(an); } catch (e) { /* gone */ }
   const info = { peak, rms: Math.sqrt(sum / n), tapOutputs: tapNode ? (tapNode.numberOfOutputs ?? 'script') : null, destCons: window.__connects.slice(), sink: !!sc.capture.state.sink };
   if (arm) { sc.capture.stop(); await new Promise((r) => setTimeout(r, 1500)); }

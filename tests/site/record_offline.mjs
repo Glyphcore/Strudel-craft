@@ -11,7 +11,11 @@
    Usage: node tests/site/record_offline.mjs --ref REF_DIR/mix.wav [--ref-from 15] [--throttle 4] [--json OUT.json]
    (REF: tests/site/ref_render.sh REF_DIR v2 16 8 renders cycles 15..23.) PASS/FAIL lines, exit 1 on any FAIL. */
 import { createRequire } from 'module'; import http from 'http'; import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
-import { compare, mono, readWav } from './lib/glitch.mjs';
+import { compare as compare0, features, highpass, mono, onsets, readWav } from './lib/glitch.mjs';
+/* broadband numbers plus the same level metric above 120 Hz (hi) and the sub band's own offset (subOffsetDb = broadband offset of what is left below 120 Hz) */
+const compare = (ref, cand) => { const g = compare0(ref, cand); const hr = { x: highpass(ref.x, ref.sr, 120), sr: ref.sr }, hc = { x: highpass(cand.x, cand.sr, 120), sr: cand.sr }; const h = compare0(hr, hc, { lag: Math.round(g.lagMs / 5) });
+  const lr = { x: Float32Array.from(ref.x, (v, i) => v - hr.x[i]), sr: ref.sr }, lc = { x: Float32Array.from(cand.x, (v, i) => v - hc.x[i]), sr: cand.sr }; const l = compare0(lr, lc, { lag: Math.round(g.lagMs / 5) });
+  return { ...g, hiLevelWithin3dB: h.levelWithin3dB, hiLevel50: h.levelWithin3dB50ms, hiLevelOffsetDb: h.levelOffsetDb, subOffsetDb: l.levelOffsetDb }; };
 const require = createRequire(import.meta.url); const { chromium } = require('playwright');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'), PREFIX = '/Strudel-craft/';
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -26,7 +30,8 @@ await new Promise((r) => server.listen(0, '127.0.0.1', r)); const BASE = `http:/
 let fails = 0; const report = {}; const check = (n, ok, d = '') => { if (!ok) fails++; console.log(`${ok ? 'PASS' : 'FAIL'}  ${n}${d ? '  -- ' + d : ''}`); };
 const W = readWav(fs.readFileSync(REF)); const CPS = +arg('--cps', 128.8 / 240); /* the program's own setcpm(128.8 / 4) wins on the site; ref_render.sh keeps it too */
 const refWin = (c0, frames, sr) => { const a = Math.round((c0 - REF_FROM) / CPS * W.sr), b = a + Math.round(frames / sr * W.sr); return { x: mono(W.L.subarray(a, b), W.R.subarray(a, b)), sr: W.sr }; };
-const fromB64 = (b64) => new Float32Array(Uint8Array.from(Buffer.from(b64, 'base64')).buffer);
+let MG = 1; /* the site's master level (default -6 dB): a take is post master, the CLI render is not; candidates are brought back to unity before comparing */
+const fromB64 = (b64) => { const x = new Float32Array(Uint8Array.from(Buffer.from(b64, 'base64')).buffer); if (MG !== 1) for (let i = 0; i < x.length; i++) x[i] *= MG; return x; };
 const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
 const ctx = await browser.newContext({ viewport: { width: 360, height: 780 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, userAgent: 'Mozilla/5.0 (Linux; Android 14; SM-S901B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36' });
 await ctx.route(/api\.github\.com/, (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: r.request().url().includes('/issues/') ? JSON.stringify({ title: 'Live tracker', body: '## Site\n- [x] done' }) : '[]' }));
@@ -36,6 +41,7 @@ await page.goto(BASE); await page.waitForFunction(() => window.__sc && window.st
 await page.evaluate(async () => { const P = window.strudelCraft.packs; await P.ready; await P.load('glyphcore/phonk:atoms'); await P.load('glyphcore/phonk:presets'); window.__sc.setView('syntax'); });
 for (let k = 0; k < 5; k++) { await page.waitForFunction(() => document.querySelectorAll('#sx-tracks .sx-run').length > 1, null, { timeout: 60000 }); await page.waitForTimeout(500); if (await page.evaluate(() => { const b = document.querySelectorAll('#sx-tracks .sx-run')[1]; if (!b) return false; b.click(); return true; })) break; }
 await page.waitForFunction(() => window.__sc.S.playing && !window.__sc.S.busy && window.__sc.Engine.started, null, { timeout: 120000 }); await page.waitForTimeout(5000);
+MG = 10 ** (-(await page.evaluate(() => window.strudelCraft.transport.masterDb)) / 20); report.masterGainComp = +(20 * Math.log10(MG)).toFixed(2);
 /* the take's mono PCM as base64 + its recipe facts */
 const PCM = `(rec, kind) => { const a = rec.audio[kind]; const m = new Float32Array(a.L.length); for (let i = 0; i < m.length; i++) m[i] = 0.5 * (a.L[i] + a.R[i]); const b = new Uint8Array(m.buffer); let s = ''; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return { b64: btoa(s), sr: a.sr, frames: a.L.length }; }`;
 
@@ -51,8 +57,13 @@ check('offline render ran while the transport kept playing (never stopped)', !of
 check('offline render reported progress', off.progress && off.progress.length >= 2, (off.progress || []).join(' | '));
 check('offline length is sample-exact: round(4 / cps * sr)', off.frames === Math.round(N / off.cps * off.sr) && off.mode === 'offline', `${off.frames} vs ${Math.round(N / off.cps * off.sr)}`);
 const g1 = compare(refWin(AT, off.pcm.frames, off.pcm.sr), { x: fromB64(off.pcm.b64), sr: off.pcm.sr }); report.offline = g1; report.offlineLive = off.live; report.offlineMs = off.ms; report.hostBootMs = off.hostBootMs;
-const SAME = (g) => g.matched >= 0.7 * g.refOnsets && g.onsetDevP95Ms <= 5 && Math.abs(g.driftMsPerS) <= 0.5 && g.dropouts === 0 && g.levelWithin3dBAligned >= 0.7; /* Chrome vs node-web-audio-api on clean renders: measured 76-88 % onsets matched, 75-85 % of loud hops within 3 dB after the offset */
-check('offline render matches the CLI render (onsets >= 70 % matched, p95 <= 5 ms, |drift| <= 0.5 ms/s, 0 dropouts, level within 3 dB after the median offset on >= 70 % of loud 5 ms hops)', SAME(g1), JSON.stringify(g1));
+/* targets (docs/AUDIO_ENGINE.md 5): onsets >= 90 % (soft match: strict detector or a >= 3 dB rise, see lib/glitch.mjs), p95 <= 5 ms, |drift| <= 0.5 ms/s, 0 dropouts, level within 3 dB on >= 85 % of loud 5 ms hops above 120 Hz with the master level compensated and no other offset (measured 86-89 %), sub band offset |<= 5 dB| (measured +3 dB: Chrome's sine sub with shape and pitch envelope is louder than node-web-audio-api's) */
+const SAME = (g) => g.matchedSoft >= 0.9 * g.refOnsets && g.onsetDevP95Ms <= 5 && Math.abs(g.driftMsPerS) <= 0.5 && g.dropouts === 0 && g.hiLevelWithin3dB >= 0.85 && Math.abs(g.subOffsetDb) <= 5;
+check('offline render matches the CLI render (onsets >= 90 % matched, p95 <= 5 ms, |drift| <= 0.5 ms/s, 0 dropouts, level within 3 dB on >= 85 % of loud 5 ms hops above 120 Hz, master compensated, |sub offset| <= 5 dB)', SAME(g1), JSON.stringify(g1));
+
+/* negative control for the soft onset match: the reference itself with 60 ms silenced at every 4th onset must not count as matching (dropout metric > 0, soft match < 90 %) */
+{ const rw = refWin(AT, off.pcm.frames, off.pcm.sr), y = Float32Array.from(rw.x), F = features(rw.x, rw.sr), os = onsets(F); os.forEach((t, i) => { if (i % 4 === 1) y.fill(0, Math.round(t * rw.sr) - 100, Math.round((t + 0.06) * rw.sr)); });
+  const n = compare0(rw, { x: y, sr: rw.sr }); report.negativeControl = n; check('negative control: a reference with silenced onsets is not accepted (soft onset match < 90 %, dropouts > 0)', n.matchedSoft < 0.9 * n.refOnsets && n.dropouts > 0, JSON.stringify({ refOnsets: n.refOnsets, matched: n.matched, matchedSoft: n.matchedSoft, dropouts: n.dropouts })); }
 
 /* 2. determinism */
 const again = await page.evaluate(async ({ n, at, id }) => { const C = window.strudelCraft.capture; const rec = await C.recordOffline(n, { at, name: 'offline-again' }); const a = await C.get(id); const env = (x) => x.recipe.outputs.render.envelope; let bad = 0, cnt = 0; const e1 = env(a), e2 = env(rec); for (let i = 0; i < Math.min(e1.length, e2.length); i++) { if (e1[i] < -50 && e2[i] < -50) continue; cnt++; if (Math.abs(e1[i] - e2[i]) > 1.5) bad++; } return { same: rec.recipe.outputs.render.sha256 === a.recipe.outputs.render.sha256, within: cnt ? 1 - bad / cnt : 0 }; }, { n: N, at: AT, id: off.id });
@@ -76,7 +87,7 @@ const live = async (stall) => { await page.evaluate(() => { const T = window.str
     return { check: rec.recipe.outputs.capture.check, id: rec.recipe.id, hasRender: !!rec.audio.render, cap: pcm(rec, 'capture'), render: rec.audio.render ? pcm(rec, 'render') : null, start: rec.recipe.timing.start }; }, { n: N, at: LAT, stall, PCM });
   if (THR > 1 && !stall) await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
   return r; };
-const L4 = await live(false);
+const L4 = await live(false); if (arg('--dump', null) && L4.cap) fs.writeFileSync(arg('--dump', null) + '/live_x4.f32', Buffer.from(fromB64(L4.cap.b64).buffer)); if (arg('--dump', null)) fs.writeFileSync(arg('--dump', null) + '/live_x4.json', JSON.stringify({ start: L4.start, check: L4.check }));
 if (L4.error) check(`live take under x${THR} throttling`, false, L4.error);
 else { const gl = compare(refWin(L4.start, L4.cap.frames, L4.cap.sr), { x: fromB64(L4.cap.b64), sr: L4.cap.sr }); report.liveThrottled = { check: L4.check, glitch: gl };
   const bad = gl.dropouts > 0 || gl.missingOnsets > 0.15 * gl.refOnsets || Math.abs(gl.driftMsPerS) > 0.5; report.liveThrottledWindow = L4.start;

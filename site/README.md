@@ -554,7 +554,7 @@ Alt+arrows reorder) of pad banks and control boards; "Tabs ⋯" adds, renames, d
 - Test: `node tests/site/perform.mjs` (also part of `tests/site/smoke.mjs`); metrics under `perform` in `docs/screens/metrics.json`.
 
 **Presets and outputs** (`perform-presets.js`, `perform-outputs.js`, `data/perform/presets.json`; docs/PERFORM_PRESETS.md). The `Presets` button opens a sheet: one tap applies a built-in
-(Beatpad 4x4, Mixer faders per lane, Macro knobs for the hooks, Minimal) or one of yours, setting pad bank, control board, keyboard map (`M.keys`, replaces the letter/digit keys) and takeover (`jump`
+(Beatpad 4x4, Mixer faders per lane (each `hooks.map('mix_<lane>', '<lane>.gain')`: a lane-qualified dest changes only that `lane:` label's events), Macro knobs for the hooks, Minimal) or one of yours, setting pad bank, control board, keyboard map (`M.keys`, replaces the letter/digit keys) and takeover (`jump`
 or `pickup` for hardware/input events); it adds or replaces its own tabs (`pb-<id>`, `pn-<id>`) and keeps yours. Save current as preset, Export / Import (`perform-presets@1` JSON, clashing ids get `-2`)
 and Delete; user presets persist in `localStorage sc.perform.presets`. Code API: `strudelCraft.perform.presets.{list,apply,save,exportJSON,importJSON,open}`. Under every tab,
 `Outputs and sources` lists each pad and control; tapping a row reveals the code line it reads (`Rack L3: ...`), a one-line explanation and two buttons, `Go to code` (the only jump; a press never scrolls the editor) and

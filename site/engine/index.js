@@ -67,12 +67,18 @@ if (!regControls()) { const later = () => regControls(); if (typeof document !==
 // Maps apply to events: the outermost queryArc on a pattern passes its haps through every controls engine that has maps (unmapped: no-op).
 // Pattern.prototype.queryArc is wrapped once; nested queries (hooks internals, signals) are not re-mapped.
 const mapKeyMemo = new Map(); const mapKey = (d) => { if (mapKeyMemo.has(d)) return mapKeyMemo.get(d); const k = mapKey0(d); mapKeyMemo.set(d, k); return k; }; // per hap per query before: a pattern built and queried each call
-const mapKey0 = (d) => { try { const h = globalThis.reify({})[d](1).queryArc(0, 0)[0]; const k = h && h.value && Object.keys(h.value)[0]; return k || d; } catch { return d; } };
-const rangeOfDest = (d) => { const H = sc.hooks, r = H?.ranges?.[mapKey(d)] || H?.ranges?.[d] || H?.ranges?.[H?.canon ? H.canon(d) : d]; return r ? [r.min, r.max] : null; };
+const bare = (d) => String(d).replace(/^[A-Za-z_]\w*\./, '');
+const mapKey0 = (d0) => { const d = bare(d0); try { const h = globalThis.reify({})[d](1).queryArc(0, 0)[0]; const k = h && h.value && Object.keys(h.value)[0]; return k || d; } catch { return d; } };
+const rangeOfDest = (d0) => { const d = bare(d0); const H = sc.hooks, r = H?.ranges?.[mapKey(d)] || H?.ranges?.[d] || H?.ranges?.[H?.canon ? H.canon(d) : d]; return r ? [r.min, r.max] : null; };
 let qDepth = 0;
 const wrapQuery = () => { const P = globalThis.Pattern?.prototype; if (!P || P.__scMaps || typeof P.queryArc !== 'function') return; P.__scMaps = true; const orig = P.queryArc;
   P.queryArc = function (...a) { qDepth++; try { const haps = orig.apply(this, a); if (qDepth > 1) return haps; let out = haps; for (const f of sc.outer) out = f(out, a); for (const c of instances) if (c.maps().length) out = c.applyMaps(out, { key: mapKey, rangeOf: rangeOfDest }); return out; } finally { qDepth--; } }; };
 wrapQuery(); globalThis.addEventListener?.('strudel:ready', wrapQuery);
+// Lane labels (`kick: pat`, evaluated as pat.p('kick')) stamp their events with context.lane, so a lane-qualified map dest ("kick.gain") touches that lane only (docs/PERFORM_PRESETS.md).
+const wrapP = () => { const P = globalThis.Pattern?.prototype; if (!P || P.__scLaneP) return; P.__scLaneP = true; let orig = P.p; // accessor: the repl (re)defines Pattern.prototype.p itself, after load
+  const stamp = function (id) { const s = typeof id === 'string' && /^[A-Za-z_]\w*$/.test(id) && typeof this.withHap === 'function' ? this.withHap((h) => (h.context?.lane === id ? h : h.setContext({ ...h.context, lane: id }))) : this; return orig.call(s, id); };
+  Object.defineProperty(P, 'p', { configurable: true, enumerable: false, get: () => (orig ? stamp : undefined), set: (f) => { orig = f; } }); };
+wrapP(); globalThis.addEventListener?.('strudel:ready', wrapP);
 export default sc;
 
 // AST-bound control sites + the one settle scheduler (docs/CONTROL_BINDING.md); app.js wires the run phases.

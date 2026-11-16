@@ -270,7 +270,8 @@ export function createControls({ registry = createRegistry(), model = {}, time =
     return haps.map((h) => {
       const v = h.value; if (!v || typeof v !== 'object' || typeof h.withValue !== 'function') return h;
       const c0 = h.whole ? h.whole.begin : h.part.begin, cycle = +c0.valueOf(); let out = v;
-      for (const d of ds) { const k = key(d); const nv = resolveDest(d, cycle, typeof v[k] === 'number' ? v[k] : undefined);
+      for (const d of ds) { const q = /^([A-Za-z_]\w*)\.([A-Za-z_]\w*)$/.exec(d); // lane-qualified dest "kick.gain": only events stamped with that lane (hap.context.lane) are touched
+        if (q && h.context?.lane !== q[1]) continue; const k = key(q ? q[2] : d); const nv = resolveDest(d, cycle, typeof v[k] === 'number' ? v[k] : undefined);
         if (typeof nv === 'number' && !Number.isNaN(nv) && nv !== out[k]) out = { ...out, [k]: nv }; }
       return out === v ? h : h.withValue(() => out);
     });

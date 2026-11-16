@@ -162,7 +162,7 @@
   {
    "id": "mixer-lanes",
    "title": "Mixer faders per lane",
-   "about": "One fader per lane label in the program (kick:, bass:, ...), each mapped to <lane>.gain with a hooks.map line.",
+   "about": "One fader per lane label in the program (kick:, bass:, ...), each mapped to <lane>.gain with a hooks.map line (the fader changes that lane's events only; the lane-qualified dest is 'kick.gain').",
    "perform": true,
    "takeover": "pickup",
    "board": {

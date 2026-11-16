@@ -5,7 +5,7 @@
                               toast(message, {kind: 'info'|'ok'|'error', ms}) } */
 (() => {
   const sc = (window.strudelCraft = window.strudelCraft || {});
-  const h = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v); } e.append(...kids); return e; };
+  const h = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (v == null || v === false) continue; if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v); } e.append(...kids); return e; };
   let n = 0;
   function modal({ title, message, label, value, okText = 'OK', cancelText = 'Cancel', input = false, danger = false }) {
     return new Promise((resolve) => {

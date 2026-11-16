@@ -2,6 +2,8 @@
 // `STRUDEL_CRAFT=$PWD node tests/hooks/pad_reader.mjs` (needs SUNO_LAB like the other hooks tests; STRUDEL_CRAFT picks the hooks.js under test)
 import assert from 'node:assert/strict';
 import { boot, pass } from './harness.mjs';
+import { fileURLToPath } from 'node:url';
+process.env.STRUDEL_CRAFT ||= fileURLToPath(new URL('../..', import.meta.url)).replace(/\/$/, ''); // the hooks.js under test = this checkout unless overridden
 const { g } = await boot(); const hooks = g.hooks; const w = (s) => process.stderr.write(s + '\n');
 const bd = () => g.s(g.mini('bd*4')); // 4 events per cycle
 const ev = (p, a, b) => p.queryArc(a, b, { _cps: 1 }).filter((h) => h.hasOnset());

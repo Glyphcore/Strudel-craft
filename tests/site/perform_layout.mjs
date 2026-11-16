@@ -40,6 +40,15 @@ for (const [W, H] of [[390, 844], [360, 740]]) {
     check(`${W}x${H} ${id}: no horizontal overflow`, !r.over);
     if (shots) await page.screenshot({ path: path.join(shots, `${W}x${H}-${id}.png`) });
   }
+  { // toast pointer events: status toasts (info, ok) never capture a tap and show no X; error, sticky and actionable ones do
+    const t = await page.evaluate(() => { const ui = window.strudelCraft.ui; document.querySelectorAll('.toasts .toast').forEach((x) => x.remove());
+      const spec = [['info', { kind: 'info', ms: 20000 }], ['ok', { kind: 'ok', ms: 20000 }], ['error', { kind: 'error', ms: 20000 }], ['sticky', { kind: 'info', sticky: true }], ['act', { kind: 'ok', ms: 20000, onClick: () => {} }]];
+      return spec.map(([name, o]) => { document.querySelectorAll('.toasts .toast').forEach((x) => x.remove()); const x = ui.toast(name + ' one', o); const b = x.querySelector('.toast-x'); return { text: name, pe: getComputedStyle(x).pointerEvents, x: b ? getComputedStyle(b).display : 'none', attr: x.getAttribute('data-live') }; }); });
+    const by = Object.fromEntries(t.map((r) => [r.text, r]));
+    check('status toasts (info, ok): pointer-events none, no X, no data-live attribute', ['info', 'ok'].every((k) => by[k] && by[k].pe === 'none' && by[k].x === 'none' && by[k].attr === null), JSON.stringify(t));
+    check('error, sticky and actionable toasts: pointer-events auto', ['error', 'sticky', 'act'].every((k) => by[k] && by[k].pe === 'auto'), JSON.stringify(t));
+    await page.evaluate(() => document.querySelectorAll('.toasts .toast').forEach((x) => x.remove()));
+  }
   await ctx.close();
 }
 console.log(JSON.stringify(nums)); check('no console errors', errors.length === 0, errors.slice(0, 3).join(' | '));

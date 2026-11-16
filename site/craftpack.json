@@ -72,9 +72,9 @@
       "format": "syntax@1",
       "version": "1.0.0",
       "path": "data/syntax.json",
-      "hash": "sha256:5f2ab01aaf5607598ee66a98eacb39dbdce14ec405da2e80558c3b8bfa6e713a",
+      "hash": "sha256:8a480f7e794a20463bc3bce92b4920c9c1437834b3b9256e27664ec37414155b",
       "load": "eager",
-      "bytes": 102300
+      "bytes": 103109
     },
     {
       "id": "plugins",

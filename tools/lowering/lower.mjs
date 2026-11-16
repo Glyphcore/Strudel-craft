@@ -19,8 +19,9 @@ const rd = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
 // first match wins; each says why plain Strudel cannot hold it
 export const BLOCKERS = [
   [/\.(?:tap|wire)\s*\(|\btap\s*\(/, 'taps', 'taps and wires read another lane live (the Craft runtime); plain Strudel cannot read another pattern as a control'],
-  [/\.(?:tags|split|merge|send)\s*\(|\btagged\s*\(|\bret\b\s*[:(.]/, 'lanes', 'lanes (tags, selections, buses, sends) are compiled by the Craft lane engine to audio buses; strudel.cc has no lanes'],
-  [/\b(?:ctl|slider)\s*\(|\bcontrols\.|\bhooks\.map\s*\(/, 'controls', 'controls (ctl, slider, hooks.map) are bound to knobs, faders and automation by the Craft runtime; a plain pattern has no live control'],
+  [/\.(?:split|merge|send)\s*\(|\bret\b\s*[:(.]/, 'buses', 'splits, sends and returns (.split, .merge, .send, ret) are compiled by the Craft lane engine to audio buses with the source rendered once; strudel.cc has no buses'],
+  [/\.tags\s*\(|\btagged\s*\(/, 'tags', 'lane tags and selections (.tags, tagged().mute / solo / fx) choose events by lane while the program plays, through the Craft lane engine; plain Strudel has no tags or selections'],
+  [/\bctl\s*\(|\bcontrols\.|\bhooks\.map\s*\(/, 'controls', 'controls (ctl, hooks.map) are bound to knobs, faders and automation by the Craft runtime; a plain pattern has no live control'],
   [/\b(?:word|syl)\s*\(|\bvoxBank\s*\(|\bvox\s*\(/, 'prelude', 'word() and vox banks come from the Craft prelude (sample banks the site loads); strudel.cc does not have them'],
   [/\bstrudelCraft\s*\.|\bperf\s*\(|\bvisual\w*\s*\(|\bpads?\./, 'runtime', 'this calls the Craft site API (strudelCraft.*, perform, visuals); it runs inside this site only and has no plain Strudel form'],
   [/\bhooks\.inst\s*\(|lib:/, 'library', 'this instances or binds a component from the browser library (hooks.inst, lib:); only the Craft runtime can read the library'],
@@ -68,8 +69,9 @@ export async function createLowering({ defs = {}, die = (m) => { throw new Error
     return s;
   }
   const fmt = (v) => (typeof v === 'number' ? String(v) : typeof v === 'string' ? JSON.stringify(v) : v && v.$mini !== undefined ? JSON.stringify(v.$mini) : JSON.stringify(v));
+  let sink = null; // collects the groove lowerings that reach the output (a bind that a later swap bind replaces never does)
   function plain(steps, where) {
-    return steps.map(([m, ...a]) => { if (m === 'groove') return lowerGroove(a[0]); if (m === 'wire') die(`${where}: a wire step cannot be lowered to plain Strudel`); return `.${m}(${a.map(fmt).join(', ')})`; }).join('');
+    return steps.map(([m, ...a]) => { if (m === 'groove') { const g = lowerGroove(a[0]); if (sink) sink.push(g); return g; } if (m === 'wire') die(`${where}: a wire step cannot be lowered to plain Strudel`); return `.${m}(${a.map(fmt).join(', ')})`; }).join('');
   }
   const atomsPlain = (code) => { const env = A.buildEnv(code, { imports }); return A.compile(code, env).code; };
   // ---- static hooks: hooks.def / hooks.bind (no gate) / .use("slot") written out as the chain steps they stand for ----
@@ -118,13 +120,22 @@ export async function createLowering({ defs = {}, die = (m) => { throw new Error
     try { ({ code: out, local } = staticHooks(out)); } catch (e) { if (e instanceof Runtime) return run('hooks', e.message); return run('hooks', /bad hook expression/.test(e.message) ? `a binding uses a decorator or library reference (${e.message.replace(/^bad hook expression /, '')}), which only the Craft runtime resolves` : `a hook here has no chain form (${e.message}); it runs in the Craft runtime only`); }
     try {
       out = out.replace(/\.hook\s*\(\s*(["'])((?:(?!\1).)*)\1\s*\)/g, (_, q, expr) => plain(expand(expr, local), 'hook'));
-      out = out.replace(/\.groove\s*\(\s*(\{[^{}]*\})\s*\)/g, (_, o) => lowerGroove(Function(`return (${o})`)()));
+      out = out.replace(/\.groove\s*\(\s*(\{[^{}]*\})\s*\)/g, (_, o) => { const g = lowerGroove(Function(`return (${o})`)()); if (sink) sink.push(g); return g; });
     } catch (e) { return run('hook', `a hook in this program has no chain form (${e.message}); it runs in the Craft runtime only`); }
     if (/\.(?:hook|groove)\s*\(/.test(strip(out))) return run('hook', 'a hook or groove call here takes a computed argument; it runs in the Craft runtime only');
     if (noGroove) return { state: 'lowered', lowered: out.trim() + '\n', craft: stripGroove(/\batoms?\b/.test(code) ? atomsPlain(code) : code).trim() + '\n' };
     return out.trim() === code.trim() ? { state: 'plain', lowered: null } : { state: 'lowered', lowered: out.replace(/^\n+/, '').replace(/\n{3,}/g, '\n\n').trimEnd() + '\n'.repeat(code.endsWith('\n') ? 1 : 0) };
   }
-  const noGrooveOf = (code) => { const r = lower(code, { noGroove: true }); return r.state === 'lowered' ? { craft: r.craft, lowered: r.lowered } : null; };
+  // The grooves a Craft program really contains, as the plain text each one lowers to (.swingBy / .late / .mul(velocity(rand...)) steps), from `.hook("... | groove-x(n)")`,
+  // `hooks.bind(slot, "... | groove-x")` and `.groove({...})`. Empty when the program has no groove.
+  function grooveStrings(code) { sink = []; try { lower(code); return sink.filter(Boolean); } finally { sink = null; } }
+  // The pair to compare when a groove is the only allowed difference: the Craft form with its grooves stripped, and the STORED lowered text with exactly the
+  // groove lowerings removed. null when the Craft form has no groove, or a groove lowering is not in the stored text (then the stored text drifted).
+  const noGrooveOf = (code, storedLowered) => {
+    const gs = grooveStrings(code); if (!gs.length || typeof storedLowered !== 'string') return null; let low = storedLowered;
+    for (const g of new Set(gs)) { if (!low.includes(g)) return null; low = low.split(g).join(''); }
+    return { craft: stripGroove(/\batoms?\b/.test(code) ? atomsPlain(code) : code).trim() + '\n', lowered: low.trim() + '\n' };
+  };
   return { A, AC, G, ALL, imports, expand, plain, lowerGroove, fmt, lower, atomsPlain, noGrooveOf };
 }
 

@@ -11,6 +11,7 @@
 import fs from 'node:fs'; import path from 'node:path'; import crypto from 'node:crypto';
 import { ROOT, createLowering, verify, hasCli, classify } from './lower.mjs';
 const argv = process.argv.slice(2); const flag = (n) => argv.includes(n); const CHECK = flag('--check'), FORCE = flag('--verify'), NOVER = flag('--no-verify') || !hasCli();
+const DROOT = process.env.LOWERING_DATA_ROOT || ROOT; // tests point this at a scratch copy of catalog.json, syntax.json and docs/LOWERING.md
 const rd = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, f), 'utf8'));
 const LW = await createLowering({}); const hooksDefs = LW.ALL;
 const sha = (a, b) => crypto.createHash('sha1').update(a + '\0' + (b || '')).digest('hex').slice(0, 10);
@@ -21,7 +22,7 @@ function check(id, craft, lowered, old) { // -> lowered_check | undefined
   if (NOVER) return old && old.hash === h ? old : undefined;
   const v = verify(craft, lowered, { defs: hooksDefs });
   if (!v.equal) { // the documented groove difference only: with the grooves taken out of both forms the events must be identical, else it is drift
-    const ng = LW.noGrooveOf(craft); const v2 = ng && verify(ng.craft, ng.lowered, { defs: hooksDefs });
+    const ng = LW.noGrooveOf(craft, lowered); /* the stored text, never a regenerated one */ const v2 = ng && verify(ng.craft, ng.lowered, { defs: hooksDefs });
     if (v2 && v2.equal) { approx.push(id); return { equal: false, approx: true, cycles: v.cycles, reason: 'a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (' + v.reason.split(':')[0] + '); with the groove taken out of both forms the events are identical', hash: h }; }
   }
   if (!v.equal) { drift.push(`${id}: ${v.reason}`); return { equal: false, cycles: v.cycles, reason: v.reason, hash: h }; }
@@ -29,17 +30,17 @@ function check(id, craft, lowered, old) { // -> lowered_check | undefined
 }
 
 // ---------- catalog ----------
-const catText = fs.readFileSync(path.join(ROOT, 'site/data/catalog.json'), 'utf8'); const cat = JSON.parse(catText);
+const catText = fs.readFileSync(path.join(DROOT, 'site/data/catalog.json'), 'utf8'); const cat = JSON.parse(catText);
 for (const r of cat.recipes) {
   stats.catalog.total++; const c = classify(r.code);
   if (r.lowered) { stats.catalog.lowered++; const lc = check('catalog ' + r.id, r.code, r.lowered, r.lowered_check); if (lc) r.lowered_check = lc; else delete r.lowered_check; }
   else { stats.catalog.identical++; if (c.state !== 'plain') drift.push(`catalog ${r.id}: uses ${c.state === 'sugar' ? 'sugar' : c.kind} but has no "lowered" (regenerate: node tools/concepts/build.mjs)`); delete r.lowered_check; }
 }
 const catOut = JSON.stringify(cat, null, 1).replace(/"(peak|rms_dbfs|bpm_hint)": (-?\d+)(,?)\n/g, '"$1": $2.0$3\n'); // same text as tools/concepts/build.mjs
-if (catOut !== catText) { stale.push('site/data/catalog.json'); if (!CHECK) fs.writeFileSync(path.join(ROOT, 'site/data/catalog.json'), catOut); }
+if (catOut !== catText) { stale.push('site/data/catalog.json'); if (!CHECK) fs.writeFileSync(path.join(DROOT, 'site/data/catalog.json'), catOut); }
 
 // ---------- syntax (one example per line; only lines that change are rewritten) ----------
-const synText = fs.readFileSync(path.join(ROOT, 'site/data/syntax.json'), 'utf8'); const lines = synText.split('\n'); let seen = 0, sec = null;
+const synText = fs.readFileSync(path.join(DROOT, 'site/data/syntax.json'), 'utf8'); const lines = synText.split('\n'); let seen = 0, sec = null;
 const q = JSON.stringify; const objText = (e) => '{ ' + Object.entries(e).map(([k, v]) => `${q(k)}: ${q(v)}`).join(', ') + ' }';
 for (let i = 0; i < lines.length; i++) {
   const sm = /^      "id": "([^"]+)"/.exec(lines[i]); if (sm) sec = sm[1];
@@ -56,17 +57,17 @@ for (let i = 0; i < lines.length; i++) {
 const total = JSON.parse(synText).sections.flatMap((s) => s.examples).filter((e) => typeof e.code === 'string').length;
 if (seen !== total) { console.error(`lowering: processed ${seen} Syntax example lines but syntax.json has ${total} examples with code (a multi-line example?)`); process.exit(2); }
 const synOut = lines.join('\n'); JSON.parse(synOut);
-if (synOut !== synText) { stale.push('site/data/syntax.json'); if (!CHECK) fs.writeFileSync(path.join(ROOT, 'site/data/syntax.json'), synOut); }
+if (synOut !== synText) { stale.push('site/data/syntax.json'); if (!CHECK) fs.writeFileSync(path.join(DROOT, 'site/data/syntax.json'), synOut); }
 
 // ---------- the counts, generated into docs/LOWERING.md (never typed) ----------
-const exAll = JSON.parse(fs.readFileSync(path.join(ROOT, 'site/data/syntax.json'), 'utf8')).sections.flatMap((s) => s.examples); const noCode = exAll.filter((e) => typeof e.code !== 'string').length;
+const exAll = JSON.parse(fs.readFileSync(path.join(DROOT, 'site/data/syntax.json'), 'utf8')).sections.flatMap((s) => s.examples); const noCode = exAll.filter((e) => typeof e.code !== 'string').length;
 const byWhy = {}; for (const e of exAll) if (e.lowered_note) { const k = e.lowered_note.split(/[:(;]| \(|, /)[0].replace(/^(?:the|a|an|this) /i, '').slice(0, 70); byWhy[k] = (byWhy[k] || 0) + 1; }
 const apx = (xs) => xs.filter((e) => e.lowered_check && e.lowered_check.approx).length;
 const countsMd = ['<!-- counts:start (generated by node tools/lowering/build.mjs; do not edit) -->',
   `Catalog: ${stats.catalog.total} recipes; ${stats.catalog.lowered} have a distinct Strudel form (${apx(cat.recipes)} approximate: grooves), ${stats.catalog.identical} are identical (no Craft syntax).`,
   `Syntax examples: ${stats.syntax.total} with code (${noCode} more are UI walkthroughs without code); ${stats.syntax.lowered} lowered (${apx(exAll)} approximate), ${stats.syntax.runtime} with no plain form, ${stats.syntax.identical} identical.`,
   'No plain form, by reason:', ...Object.entries(byWhy).sort((a, b) => b[1] - a[1]).map(([k, n]) => `- ${n}: ${k}`), '<!-- counts:end -->'].join('\n');
-{ const f = path.join(ROOT, 'docs/LOWERING.md'); const cur = fs.readFileSync(f, 'utf8'); const next = cur.replace(/<!-- counts:start[\s\S]*?<!-- counts:end -->/, () => countsMd);
+{ const f = path.join(DROOT, 'docs/LOWERING.md'); const cur = fs.readFileSync(f, 'utf8'); const next = cur.replace(/<!-- counts:start[\s\S]*?<!-- counts:end -->/, () => countsMd);
   if (next !== cur) { stale.push('docs/LOWERING.md'); if (!CHECK) fs.writeFileSync(f, next); } }
 stats.syntax.noCode = noCode;
 console.log(JSON.stringify({ check: CHECK, stale, drift, approx, stats }, null, 1));

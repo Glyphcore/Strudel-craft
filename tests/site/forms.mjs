@@ -3,7 +3,7 @@
 // each Copy puts exactly that form on the clipboard, Insert into editor puts Craft in the editor by default and the Strudel form from the Strudel tab;
 // a plain recipe says both forms are identical; a Syntax example that needs the Craft runtime says why (Copy Strudel disabled), a lowered one copies its plain form;
 // no horizontal overflow at 390 px; data: every catalog recipe with a lowered form carries a passing check, and the hap-equality build check (tools/lowering/build.mjs --check) passes.
-import http from 'node:http'; import fs from 'node:fs'; import path from 'node:path'; import { createRequire } from 'node:module'; import { fileURLToPath } from 'node:url'; import { spawnSync } from 'node:child_process';
+import http from 'node:http'; import os from 'node:os'; import fs from 'node:fs'; import path from 'node:path'; import { createRequire } from 'node:module'; import { fileURLToPath } from 'node:url'; import { spawnSync } from 'node:child_process';
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'); const ROOT = path.join(REPO, 'site'); const require = createRequire(import.meta.url);
 let chromium; try { ({ chromium } = require('playwright')); } catch { ({ chromium } = require(process.env.PLAYWRIGHT_DIR || '/opt/node-tools/node_modules/playwright')); }
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.css': 'text/css', '.woff2': 'font/woff2' };
@@ -25,6 +25,23 @@ ok('intellisense: <id> offers r.lowered || r.expr, so every lowered recipe has i
 const docMd = fs.readFileSync(path.join(REPO, 'docs/LOWERING.md'), 'utf8'); const st = JSON.parse(spawnSync('node', [path.join(REPO, 'tools/lowering/build.mjs'), '--check', '--no-verify'], { encoding: 'utf8' }).stdout || '{}').stats;
 ok('docs/LOWERING.md counts are the tool\'s counts', st && docMd.includes(`${st.syntax.total} with code`) && docMd.includes(`${st.syntax.lowered} lowered`) && docMd.includes(`${st.catalog.lowered} have a distinct Strudel form`), JSON.stringify(st));
 ok('docs/LOWERING.md states the uncovered cases (take / library views, edited-recipe strudel.cc link)', /take and library views/.test(docMd) && /edited/.test(docMd));
+// drift is never hidden: inject the two critic drifts (an edited gain in a plain recipe, an extra .gain in a groove recipe) into a scratch copy of the data; the build must fail on both
+{
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'lowering-drift-')); fs.mkdirSync(path.join(tmp, 'site/data'), { recursive: true }); fs.mkdirSync(path.join(tmp, 'docs'));
+  for (const f of ['site/data/syntax.json', 'docs/LOWERING.md']) fs.copyFileSync(path.join(REPO, f), path.join(tmp, f));
+  const c2 = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/catalog.json'), 'utf8')); const get = (id) => c2.recipes.find((r) => r.id === id);
+  const run = () => { fs.writeFileSync(path.join(tmp, 'site/data/catalog.json'), JSON.stringify(c2, null, 1).replace(/"(peak|rms_dbfs|bpm_hint)": (-?\d+)(,?)\n/g, '"$1": $2.0$3\n')); return spawnSync('node', [path.join(REPO, 'tools/lowering/build.mjs'), '--check'], { encoding: 'utf8', env: { ...process.env, LOWERING_DATA_ROOT: tmp, STRUDEL_CRAFT: REPO } }); };
+  const cliOk = fs.existsSync((process.env.STRUDEL_CLI || '/home/user/suno-track-lab/engine/strudel-cli') + '/strudel');
+  if (cliOk) {
+    const a = get('chopped-chords'), b = get('groove-mpc-swing'); const a0 = a.lowered, b0 = b.lowered;
+    a.lowered = a0.replace('.gain(0.2)', '.gain(0.9*0.2)'); const r1 = run(); const o1 = JSON.parse(r1.stdout || '{}');
+    ok('drift injected into a plain recipe (.gain(0.2) -> .gain(0.9*0.2)) fails the check', r1.status === 1 && (o1.drift || []).some((d) => d.startsWith('catalog chopped-chords')), (r1.stdout || r1.stderr).slice(0, 160));
+    a.lowered = a0; b.lowered = b0 + '.gain(0.37)'; const r2 = run(); const o2 = JSON.parse(r2.stdout || '{}');
+    ok('drift injected into a groove recipe (+ .gain(0.37)) is not labelled approximate: the check fails', r2.status === 1 && (o2.drift || []).some((d) => d.startsWith('catalog groove-mpc-swing')) && !(o2.approx || []).includes('catalog groove-mpc-swing'), (r2.stdout || r2.stderr).slice(0, 160));
+    b.lowered = b0; const r3 = run(); ok('the untouched copy passes', r3.status === 0, (r3.stdout || r3.stderr).slice(0, 160));
+  } else ok('drift injection (skipped: no CLI)', true);
+  fs.rmSync(tmp, { recursive: true, force: true });
+}
 const lb = spawnSync('node', [path.join(REPO, 'tools/lowering/build.mjs'), '--check', '--verify'], { encoding: 'utf8', env: { ...process.env, STRUDEL_CRAFT: REPO } });
 const noCli = /ENOENT|no such/.test(lb.stderr || '') || !fs.existsSync((process.env.STRUDEL_CLI || '/home/user/suno-track-lab/engine/strudel-cli') + '/strudel');
 ok('hap equality: tools/lowering/build.mjs --check --verify re-runs every Craft/Strudel pair through `strudel events` (exit 0)', lb.status === 0 || noCli, noCli ? 'skipped: no CLI' : (lb.stdout || lb.stderr).slice(0, 300));

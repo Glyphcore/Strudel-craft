@@ -9,6 +9,13 @@
    "rev": 1,
    "body": "<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>",
    "doc": "kick pattern",
+   "folder": "feels/cloud/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "cloud",
+    "pattern"
+   ],
    "hash": "sha256:f3d32a15b80c7e2ef192f8c3c55a9114f23a83d2e804c028e4da579e6623a382"
   },
   "aj7wrc1": {
@@ -17,6 +24,14 @@
    "rev": 1,
    "body": "1",
    "doc": "kick accents (velocity)",
+   "folder": "feels/cloud/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "cloud",
+    "accents",
+    "pattern"
+   ],
    "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
   },
   "antguul": {
@@ -25,6 +40,13 @@
    "rev": 1,
    "body": "knock808 | groove-cloud(1)",
    "doc": "kick rack and groove",
+   "folder": "feels/cloud/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "cloud",
+    "rack-slot"
+   ],
    "hash": "sha256:eea0fa025a1c77b2e73641f5f3855de334a8bf23731fbca01b5d753d79d71f2a"
   },
   "a8cm7d9": {
@@ -33,6 +55,13 @@
    "rev": 1,
    "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
    "doc": "snare pattern",
+   "folder": "feels/cloud/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "cloud",
+    "pattern"
+   ],
    "hash": "sha256:525fd0444781900288d0ac6c5358b9391d694346d05e7bca8b3001885e70932c"
   },
   "as4iwhs": {
@@ -41,6 +70,14 @@
    "rev": 1,
    "body": "1",
    "doc": "snare accents (velocity)",
+   "folder": "feels/cloud/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "cloud",
+    "accents",
+    "pattern"
+   ],
    "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
   },
   "a4r0ire": {
@@ -49,6 +86,13 @@
    "rev": 1,
    "body": "clap | groove-cloud(2) | groove-push(6)",
    "doc": "snare rack and groove",
+   "folder": "feels/cloud/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "cloud",
+    "rack-slot"
+   ],
    "hash": "sha256:2c62f33acfb0f4d30101fab9056258e66ae67c49ddd4307fbdfe9ec019ee3729"
   },
   "ag56pws": {
@@ -57,6 +101,13 @@
    "rev": 1,
    "body": "~",
    "doc": "perc pattern",
+   "folder": "feels/cloud/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "cloud",
+    "pattern"
+   ],
    "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
   },
   "aq7piqv": {
@@ -65,6 +116,14 @@
    "rev": 1,
    "body": "1",
    "doc": "perc accents (velocity)",
+   "folder": "feels/cloud/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "cloud",
+    "accents",
+    "pattern"
+   ],
    "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
   },
   "a1bwvbb": {
@@ -73,6 +132,13 @@
    "rev": 1,
    "body": "groove-cloud(3)",
    "doc": "perc rack and groove",
+   "folder": "feels/cloud/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "cloud",
+    "rack-slot"
+   ],
    "hash": "sha256:3defd9986a71ad243cc1423e0627c462a6fd0d6ae2db2823871b83b37880503d"
   },
   "a3vuhgq": {
@@ -81,6 +147,13 @@
    "rev": 1,
    "body": "x*8",
    "doc": "hats pattern",
+   "folder": "feels/cloud/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "cloud",
+    "pattern"
+   ],
    "hash": "sha256:c2845fc5d1dfae91f61227e9f77fbff665ea294e5367dbd32a4f511e758525ec"
   },
   "a394ph9": {
@@ -89,6 +162,14 @@
    "rev": 1,
    "body": "[.9 .5]*4",
    "doc": "hats accents (velocity)",
+   "folder": "feels/cloud/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "cloud",
+    "accents",
+    "pattern"
+   ],
    "hash": "sha256:11623d4eb26872ea247a07212e139fc7c7323817349ebc310d154e8ce28da473"
   },
   "aik77mh": {
@@ -97,6 +178,13 @@
    "rev": 1,
    "body": "hat(0.04) | groove-cloud(4)",
    "doc": "hats rack and groove",
+   "folder": "feels/cloud/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "cloud",
+    "rack-slot"
+   ],
    "hash": "sha256:bb955c35104c540d0b051f4f0fb0b5d931b382f1c6206a0f14b55c3ba0432112"
   },
   "apnnhy3": {
@@ -105,6 +193,13 @@
    "rev": 1,
    "body": "c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~",
    "doc": "top pattern",
+   "folder": "feels/cloud/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "cloud",
+    "pattern"
+   ],
    "hash": "sha256:614d5953a33774642c2c76496006851dc0b80f1c6b46d23e4c135f8bb3b26807"
   },
   "a06ydu6": {
@@ -113,6 +208,14 @@
    "rev": 1,
    "body": "1",
    "doc": "top accents (velocity)",
+   "folder": "feels/cloud/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "cloud",
+    "accents",
+    "pattern"
+   ],
    "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
   },
   "aai71uc": {
@@ -121,6 +224,13 @@
    "rev": 1,
    "body": "trapBell | groove-cloud(5) | groove-push(6)",
    "doc": "top rack and groove",
+   "folder": "feels/cloud/drums",
+   "tags": [
+    "drums",
+    "feel",
+    "cloud",
+    "rack-slot"
+   ],
    "hash": "sha256:521425599fe5495980160f74528a01a4a0ad483c88869e44ca2e88ead1f0b42d"
   },
   "aqot3xf": {
@@ -129,6 +239,13 @@
    "rev": 1,
    "body": "<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>",
    "doc": "bass pattern",
+   "folder": "feels/cloud/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "cloud",
+    "pattern"
+   ],
    "hash": "sha256:edc3e5a93ab9b050764d4f48a04439c29394844c262efdfe47ad7d9b32e30798"
   },
   "a8goifq": {
@@ -137,6 +254,14 @@
    "rev": 1,
    "body": "0.6",
    "doc": "bass accents (velocity)",
+   "folder": "feels/cloud/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "cloud",
+    "accents",
+    "pattern"
+   ],
    "hash": "sha256:1532f1aff42451a18dac7878102031a20fc1e75a0842a8e1cb4f37e7bc0e37c9"
   },
   "alg144s": {
@@ -145,6 +270,13 @@
    "rev": 1,
    "body": "sub808 | groove-cloud(6)",
    "doc": "bass rack and groove",
+   "folder": "feels/cloud/bass",
+   "tags": [
+    "bass",
+    "feel",
+    "cloud",
+    "rack-slot"
+   ],
    "hash": "sha256:367069f3fd84df9cfd4d6dceddd4b85e9f4177962afbcd27effcff5d05ca80ab"
   },
   "aqj1opi": {
@@ -153,6 +285,13 @@
    "rev": 1,
    "body": "<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>",
    "doc": "harmony pattern",
+   "folder": "feels/cloud/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "cloud",
+    "pattern"
+   ],
    "hash": "sha256:b7f2f3f1904ebc6af68a72b04b707539fa10621279e9d33ce86840be7c4cfd26"
   },
   "akac19l": {
@@ -161,6 +300,14 @@
    "rev": 1,
    "body": "1",
    "doc": "harmony accents (velocity)",
+   "folder": "feels/cloud/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "cloud",
+    "accents",
+    "pattern"
+   ],
    "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
   },
   "a35kx8l": {
@@ -169,6 +316,13 @@
    "rev": 1,
    "body": "airPad | groove-cloud(7) | groove-push(10)",
    "doc": "harmony rack and groove",
+   "folder": "feels/cloud/keys",
+   "tags": [
+    "keys",
+    "feel",
+    "cloud",
+    "rack-slot"
+   ],
    "hash": "sha256:264dcac98e15216c62e9472533a5ef7282b41ddf831042ac2cf9e82e0d252dfa"
   },
   "aaotl6m": {
@@ -177,6 +331,13 @@
    "rev": 1,
    "body": "x",
    "doc": "fx pattern",
+   "folder": "feels/cloud/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "cloud",
+    "pattern"
+   ],
    "hash": "sha256:857b6b1c9bbefde11ebf65bcc7763f81dbb7ffac3ab6a7cb7b65e74c6a468988"
   },
   "adfuo7l": {
@@ -185,6 +346,14 @@
    "rev": 1,
    "body": "1",
    "doc": "fx accents (velocity)",
+   "folder": "feels/cloud/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "cloud",
+    "accents",
+    "pattern"
+   ],
    "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
   },
   "acwz8v1": {
@@ -193,6 +362,13 @@
    "rev": 1,
    "body": "vinyl",
    "doc": "fx rack and groove",
+   "folder": "feels/cloud/fx",
+   "tags": [
+    "fx",
+    "feel",
+    "cloud",
+    "rack-slot"
+   ],
    "hash": "sha256:7d514af99e4cb541f16315adbe7cca5a8cfa8b87163701c42eaf9b539cbc0d51"
   },
   "agibw72": {
@@ -201,6 +377,13 @@
    "rev": 1,
    "body": "groove-cloud(0)",
    "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "folder": "feels/cloud/groove",
+   "tags": [
+    "groove",
+    "feel",
+    "cloud",
+    "rack-slot"
+   ],
    "hash": "sha256:f2ab8e4ac96586928e0919c278e957e230a9ad21ba4a8ea95d9ce3751e684708"
   }
  }

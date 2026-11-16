@@ -12,9 +12,9 @@
       "format": "recipes@1",
       "version": "1.0.0",
       "path": "data/catalog.json",
-      "hash": "sha256:1122cb7025c40971588544a716e1c0381ce364a17d6b4b7af1686bf47354cb69",
+      "hash": "sha256:7f3c0b77118a5296d3067a0cd2b9e20c6ade99950531269f97ebada3605b80ba",
       "load": "eager",
-      "bytes": 109978
+      "bytes": 121003
     },
     {
       "id": "strudel-docs",
@@ -106,5 +106,383 @@
       "load": "eager",
       "bytes": 8980
     }
-  ]
+  ],
+  "taxonomy": {
+    "version": 1,
+    "groups": {
+      "technique": {
+        "title": "Technique",
+        "description": "production move the entry shows"
+      },
+      "status": {
+        "title": "Status",
+        "description": "measured or lowered state written by the builds"
+      },
+      "arrangement": {
+        "title": "Arrangement"
+      },
+      "bass": {
+        "title": "Bass"
+      },
+      "texture": {
+        "title": "Texture"
+      },
+      "genre": {
+        "title": "Genre",
+        "description": "genre family the entry belongs to"
+      },
+      "mood": {
+        "title": "Mood",
+        "description": "emotional tint"
+      },
+      "dynamics": {
+        "title": "Dynamics"
+      },
+      "harmony": {
+        "title": "Harmony"
+      },
+      "dovetail": {
+        "title": "Dovetail"
+      },
+      "drums": {
+        "title": "Drums"
+      },
+      "feel": {
+        "title": "Feel",
+        "description": "groove and attitude: boom-bap, trap, hyphy, cloud, lazy"
+      },
+      "form": {
+        "title": "Form",
+        "description": "song sections and gates"
+      },
+      "tempo": {
+        "title": "Tempo feel",
+        "description": "how the rhythm sits against the beat, not a speed"
+      },
+      "fx": {
+        "title": "Fx"
+      },
+      "groove": {
+        "title": "Groove"
+      },
+      "keys": {
+        "title": "Keys"
+      },
+      "lead": {
+        "title": "Lead"
+      },
+      "motif": {
+        "title": "Motif"
+      },
+      "pad": {
+        "title": "Pad"
+      },
+      "space": {
+        "title": "Space"
+      },
+      "vox": {
+        "title": "Vox"
+      }
+    },
+    "priority": [
+      "drums",
+      "bass",
+      "keys",
+      "pad",
+      "lead",
+      "vox",
+      "fx",
+      "form",
+      "groove",
+      "dovetail",
+      "genre",
+      "feel",
+      "tempo",
+      "mood",
+      "technique",
+      "status"
+    ],
+    "tags": {
+      "accents": {
+        "group": "technique"
+      },
+      "approx": {
+        "group": "status",
+        "description": "plain Strudel form is approximate (grooves)"
+      },
+      "arpeggio": {
+        "group": "technique"
+      },
+      "arrangement": {
+        "group": "arrangement"
+      },
+      "automation-drift": {
+        "group": "technique"
+      },
+      "bass": {
+        "group": "bass",
+        "description": "bass and 808 lines"
+      },
+      "bell-like": {
+        "group": "texture"
+      },
+      "boom-bap": {
+        "group": "genre",
+        "description": "dusty knock and pocket"
+      },
+      "breakdown": {
+        "group": "arrangement"
+      },
+      "bright": {
+        "group": "mood"
+      },
+      "build": {
+        "group": "dynamics"
+      },
+      "build-drop": {
+        "group": "technique"
+      },
+      "call-response": {
+        "group": "technique"
+      },
+      "chord-progression": {
+        "group": "harmony"
+      },
+      "cloud": {
+        "group": "genre",
+        "description": "airy washed rap"
+      },
+      "crescendo": {
+        "group": "technique"
+      },
+      "dark": {
+        "group": "mood"
+      },
+      "delay-echo": {
+        "group": "technique"
+      },
+      "dovetail": {
+        "group": "dovetail",
+        "description": "how sections interlock"
+      },
+      "driving": {
+        "group": "mood"
+      },
+      "drone": {
+        "group": "texture"
+      },
+      "drums": {
+        "group": "drums",
+        "description": "kick, snare, clap, hats, percussion"
+      },
+      "dry-tight": {
+        "group": "technique"
+      },
+      "dynamics": {
+        "group": "dynamics"
+      },
+      "euclid": {
+        "group": "technique"
+      },
+      "fade-out": {
+        "group": "technique"
+      },
+      "feel": {
+        "group": "feel",
+        "description": "a feel template entry"
+      },
+      "filter-sweep": {
+        "group": "technique"
+      },
+      "floaty": {
+        "group": "mood"
+      },
+      "fm": {
+        "group": "technique"
+      },
+      "form": {
+        "group": "form",
+        "description": "sections, gates and arrangement"
+      },
+      "formant": {
+        "group": "technique"
+      },
+      "four-floor": {
+        "group": "tempo"
+      },
+      "fx": {
+        "group": "fx",
+        "description": "risers, impacts, space, texture"
+      },
+      "gritty": {
+        "group": "texture"
+      },
+      "groove": {
+        "group": "groove",
+        "description": "timing: swing, push, jitter, drift"
+      },
+      "half-time": {
+        "group": "tempo"
+      },
+      "hiphop": {
+        "group": "technique"
+      },
+      "human-feel": {
+        "group": "technique"
+      },
+      "hyphy": {
+        "group": "genre",
+        "description": "bay-area bounce and stomp"
+      },
+      "hypnotic": {
+        "group": "mood"
+      },
+      "intro-reveal": {
+        "group": "arrangement"
+      },
+      "keys": {
+        "group": "keys",
+        "description": "chords, stabs and chops"
+      },
+      "layers-in": {
+        "group": "arrangement"
+      },
+      "lead": {
+        "group": "lead",
+        "description": "melody, bells, plucks"
+      },
+      "lofi": {
+        "group": "texture"
+      },
+      "low-end": {
+        "group": "texture"
+      },
+      "lowered": {
+        "group": "status",
+        "description": "has a plain Strudel form with equal events"
+      },
+      "minor": {
+        "group": "harmony"
+      },
+      "motif": {
+        "group": "motif"
+      },
+      "movement": {
+        "group": "dynamics"
+      },
+      "needs-samples": {
+        "group": "status",
+        "description": "needs a sample bank (network)"
+      },
+      "offbeat": {
+        "group": "tempo"
+      },
+      "pad": {
+        "group": "pad",
+        "description": "sustained washes"
+      },
+      "phaser": {
+        "group": "technique"
+      },
+      "pluck": {
+        "group": "texture"
+      },
+      "polyrhythm": {
+        "group": "tempo"
+      },
+      "probability": {
+        "group": "technique"
+      },
+      "reverb-big": {
+        "group": "technique"
+      },
+      "riser": {
+        "group": "technique"
+      },
+      "sections": {
+        "group": "arrangement"
+      },
+      "sidechain": {
+        "group": "technique"
+      },
+      "space": {
+        "group": "space"
+      },
+      "sparse": {
+        "group": "mood"
+      },
+      "stereo": {
+        "group": "technique"
+      },
+      "swing": {
+        "group": "technique"
+      },
+      "syncopated": {
+        "group": "tempo"
+      },
+      "tense": {
+        "group": "mood"
+      },
+      "texture-moving": {
+        "group": "texture"
+      },
+      "texture-vocal-like": {
+        "group": "texture"
+      },
+      "transition": {
+        "group": "technique"
+      },
+      "trap": {
+        "group": "genre",
+        "description": "rolling hats, half-time, 808"
+      },
+      "tremolo": {
+        "group": "technique"
+      },
+      "unverified": {
+        "group": "status",
+        "description": "not rendered or not checked"
+      },
+      "verified": {
+        "group": "status",
+        "description": "rendered headless with sound"
+      },
+      "voicing": {
+        "group": "harmony"
+      },
+      "vox": {
+        "group": "vox",
+        "description": "vocal-like and word content"
+      },
+      "wide": {
+        "group": "texture"
+      }
+    },
+    "folders": {
+      "dovetail": {
+        "description": "How sections interlock"
+      },
+      "groove": {
+        "description": "Timing feel"
+      },
+      "hiphop": {
+        "description": "Hip-hop, trap and hyphy components"
+      },
+      "hiphop/boom-bap": {
+        "description": "Boom-bap: dusty knock and pocket"
+      },
+      "hiphop/cloud": {
+        "description": "Cloud rap: airy pads"
+      },
+      "hiphop/hyphy": {
+        "description": "Hyphy: bounce and stomp"
+      },
+      "hiphop/trap": {
+        "description": "Trap: rolling hats, half-time, held 808"
+      },
+      "strudel": {
+        "description": "Plain Strudel recipes"
+      }
+    }
+  }
 }

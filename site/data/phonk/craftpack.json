@@ -41,8 +41,8 @@
       "title": "Phonk atoms",
       "description": "22 typed atoms under ph.: chords, 808 line and glide, lead, counter, cowbell, drum rhythms, section gates",
       "load": "eager",
-      "hash": "sha256:19e5965087e38fbb177b3aaa3741d4013017f36ab2a2089435d9a2190fb7051d",
-      "bytes": 4874
+      "hash": "sha256:793e5e20c52abb3d0600bbe7ea15df9a977403e4482458c3f55867f46460a0bc",
+      "bytes": 6732
     },
     {
       "id": "racks",
@@ -53,8 +53,8 @@
       "title": "Phonk racks",
       "description": "Instrument rigs as chain-only hook defs: kick808, snareNoise, hat, cowbell, sub808, hazePad, deepLead, wideLead, echoPluck, formant, chop, riser, reverseHit, impact, tape; moves murk, thin, grit, pump",
       "load": "manual",
-      "hash": "sha256:523c6b3805e2c6bc1c5ead1abe7c9b0656ad441792b947874af37301553e6470",
-      "bytes": 6564
+      "hash": "sha256:e1cf362f68157457ebcb3d97dc24e7745d5e9df3949f9599daeb77820d303b3f",
+      "bytes": 8162
     },
     {
       "id": "atoms-v2",
@@ -65,8 +65,8 @@
       "title": "Phonk atoms v2",
       "description": "under ph2.: confrontation rhythms (toms, rim, stab, stut, heart), 808 slides and the v2 section gates",
       "load": "eager",
-      "hash": "sha256:3f01089d8b27f47fc751cd5cdcdac13888c1812541d8a6beb042619eec9a2d50",
-      "bytes": 5460
+      "hash": "sha256:ad372758623c71db2a3e1b3c568b5c752ddcce88f6e15f1ab948bb3a703ef747",
+      "bytes": 7531
     },
     {
       "id": "racks-v2",
@@ -77,8 +77,8 @@
       "title": "Phonk racks v2",
       "description": "pumpHard (kick-synced duckorbit pump), tom, rimshot, slam, open, swellPad",
       "load": "manual",
-      "hash": "sha256:a0f9dc33a53513e6de036ecb0bd4c7c94563bdfb4e6306496e5a097a03c2ce60",
-      "bytes": 1683
+      "hash": "sha256:598aa61166b77229e769718b70dc96577c103ea699667f345b2ec41eb2897ddc",
+      "bytes": 2391
     },
     {
       "id": "presets",
@@ -89,8 +89,8 @@
       "title": "Phonk presets",
       "description": "Track demo: night phonk (the paste-ready standalone program)",
       "load": "manual",
-      "hash": "sha256:b1cce38669908bb3ed4a679500b6adc252a75ac07ce9ec87b2353487f733864d",
-      "bytes": 24023
+      "hash": "sha256:4abeff637c0402a7146d18c982887f3690400bfa05971e73ed701edcb5539c5f",
+      "bytes": 24189
     },
     {
       "id": "racks-hiphop",
@@ -101,8 +101,8 @@
       "title": "Hip-hop and dovetail racks",
       "description": "Chain-only hook defs: bbKick, knock808, clap, snap, openHat, bbBass, rhodes, trapBell, airPad, hyphyLead, chopStab, voxTag, vinyl, downlifter, fadeOut, fadeIn, throw, tailHold, duckUnder",
       "load": "manual",
-      "hash": "sha256:35f0da86e97508d286fca659011d93ede4dfef1382fa9e5c924ec843f9eb8116",
-      "bytes": 6058
+      "hash": "sha256:305fbb1834f66f50c35e5da9ecb52c1fe09cc966293c40c728d199ea534706fe",
+      "bytes": 7782
     },
     {
       "id": "atoms-hiphop",
@@ -113,8 +113,8 @@
       "title": "Hip-hop atoms",
       "description": "glyphcore/phonk hip-hop atoms (hh.): boom-bap, trap and hyphy drum patterns, hats and rolls, 808 and bass lines, chords, chops, tags; song-form gates (intro, verse, hook, bridge, outro, drop-in, drop bar, last-beat drop, beat switch, bounce, stomp).",
       "load": "eager",
-      "hash": "sha256:4eaffae4d4228edd00fd5c353f54e9e532376ce61f3f15dd11202e57c9ed374a",
-      "bytes": 8958
+      "hash": "sha256:f197e33194334bd6ecf8eed0b1301834ba92d3aaed1ab944f5d301378dcf2869",
+      "bytes": 12327
     },
     {
       "id": "atoms-dovetail",
@@ -125,8 +125,8 @@
       "title": "Dovetail atoms",
       "description": "glyphcore/phonk dovetail atoms (dt.): gate atoms with a point param for pickups, rises, hits and tails; masks for call-and-response handoffs; equal-power fade tables; a turnaround.",
       "load": "eager",
-      "hash": "sha256:ae33e7f3750327ddf99735fc709f88a1b734d7144c61ff7608544aa09f5a885b",
-      "bytes": 4045
+      "hash": "sha256:44a8a3491a6d2cfd0f60608bdea710b997c373d512402ae2e54cc9bf8d430db2",
+      "bytes": 5266
     },
     {
       "id": "feel-boombap",
@@ -137,8 +137,8 @@
       "title": "Feel: Boom-bap pocket",
       "description": "Feel template \"Boom-bap pocket\" (86-94 bpm): swing 57 on 16ths, snare and keys a little behind, vinyl bed. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove).",
       "load": "eager",
-      "hash": "sha256:bab30eb0e5a162eb64fc5e6f7479b4388c1ee7276fcd9ce62f1e99b3b83908dc",
-      "bytes": 6005
+      "hash": "sha256:75ac45db3356068eec3b6529ed304d074e71759e3a5702c25bb8b7088ce0e42b",
+      "bytes": 8865
     },
     {
       "id": "feel-lazy",
@@ -149,8 +149,8 @@
       "title": "Feel: Lazy drag",
       "description": "Feel template \"Lazy drag\" (78-86 bpm): everything behind the beat (push 8), kick a little ahead of the rest, snare dragged furthest, slow drift. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove).",
       "load": "eager",
-      "hash": "sha256:64c44e893442687241ff625e3724264256ba2440d1b43f9c5840a21eda0e0fb8",
-      "bytes": 5998
+      "hash": "sha256:20be5f926e8ba1a9fcf56021500b0413c031dc3fc60bc0273f220a0188df793a",
+      "bytes": 9083
     },
     {
       "id": "feel-trap",
@@ -161,8 +161,8 @@
       "title": "Feel: Rolling trap",
       "description": "Feel template \"Rolling trap\" (130-150 bpm (half-time)): straight grid, velocity life on the hats and rolls, 808 and pad tight. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove).",
       "load": "eager",
-      "hash": "sha256:07b778e01dc022e6b6dd88297bb837147de263603eb77d165dd2cf2b3a1de917",
-      "bytes": 6156
+      "hash": "sha256:b9094ef2767204dd72f445b4299916a6eeaf6998bd53129934ad0a0976d8b114",
+      "bytes": 8841
     },
     {
       "id": "feel-hyphy",
@@ -173,8 +173,8 @@
       "title": "Feel: Bouncy hyphy",
       "description": "Feel template \"Bouncy hyphy\" (98-106 bpm): light swing, claps rushing a hair, snaps on the ands, bounce kick and a square lead. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove).",
       "load": "eager",
-      "hash": "sha256:9510b84fcfdcb5264e591e6d7fde7159060a20d00eec6b6945d1e51a76348f84",
-      "bytes": 6142
+      "hash": "sha256:5bc374841af3c1346411d2fe676f1f585a922f96f64411c53e9822710c3dca09",
+      "bytes": 8877
     },
     {
       "id": "feel-cloud",
@@ -185,8 +185,225 @@
       "title": "Feel: Cloud / wave",
       "description": "Feel template \"Cloud / wave\" (60-75 bpm): loose and floating: swing 56, everything a little late, slow drift, big pad. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove).",
       "load": "eager",
-      "hash": "sha256:d6fd41f433a62bee105704b32778bc8f8c0fa6d24ab9091e6a7d169c0eca295e",
-      "bytes": 6107
+      "hash": "sha256:1c510c157660f963866fbbb1859e8ca0419b86bfa84525fe13b3c3ab0ece73e4",
+      "bytes": 8842
+    },
+    {
+      "id": "grooves",
+      "kind": "hooks",
+      "format": "hooks@1",
+      "version": "1.0.0",
+      "path": "grooves.json",
+      "title": "Groove presets",
+      "description": "Chain-only hook defs, the standard-library presets as pack content: groove-straight, groove-pocket, groove-lazy, groove-bounce, groove-rolling, groove-cloud, groove-swing, groove-push, groove-human",
+      "load": "manual",
+      "hash": "sha256:0ad30186fd262d17b0fd808ce5bcf10f7956b412e678135dc92c457f49f65e37",
+      "bytes": 4033
     }
-  ]
+  ],
+  "taxonomy": {
+    "version": 1,
+    "groups": {
+      "technique": {
+        "title": "Technique",
+        "description": "production move the entry shows"
+      },
+      "bass": {
+        "title": "Bass"
+      },
+      "genre": {
+        "title": "Genre",
+        "description": "genre family the entry belongs to"
+      },
+      "dovetail": {
+        "title": "Dovetail"
+      },
+      "drums": {
+        "title": "Drums"
+      },
+      "feel": {
+        "title": "Feel",
+        "description": "groove and attitude: boom-bap, trap, hyphy, cloud, lazy"
+      },
+      "form": {
+        "title": "Form",
+        "description": "song sections and gates"
+      },
+      "fx": {
+        "title": "Fx"
+      },
+      "groove": {
+        "title": "Groove"
+      },
+      "keys": {
+        "title": "Keys"
+      },
+      "lead": {
+        "title": "Lead"
+      },
+      "pad": {
+        "title": "Pad"
+      },
+      "status": {
+        "title": "Status",
+        "description": "measured or lowered state written by the builds"
+      },
+      "vox": {
+        "title": "Vox"
+      }
+    },
+    "priority": [
+      "drums",
+      "bass",
+      "keys",
+      "pad",
+      "lead",
+      "vox",
+      "fx",
+      "form",
+      "groove",
+      "dovetail",
+      "genre",
+      "feel",
+      "technique",
+      "status"
+    ],
+    "tags": {
+      "accents": {
+        "group": "technique"
+      },
+      "bass": {
+        "group": "bass",
+        "description": "bass and 808 lines"
+      },
+      "boom-bap": {
+        "group": "genre",
+        "description": "dusty knock and pocket"
+      },
+      "cloud": {
+        "group": "genre",
+        "description": "airy washed rap"
+      },
+      "dovetail": {
+        "group": "dovetail",
+        "description": "how sections interlock"
+      },
+      "drums": {
+        "group": "drums",
+        "description": "kick, snare, clap, hats, percussion"
+      },
+      "feel": {
+        "group": "feel",
+        "description": "a feel template entry"
+      },
+      "form": {
+        "group": "form",
+        "description": "sections, gates and arrangement"
+      },
+      "fx": {
+        "group": "fx",
+        "description": "risers, impacts, space, texture"
+      },
+      "gate": {
+        "group": "technique",
+        "description": "a section gate atom"
+      },
+      "groove": {
+        "group": "groove",
+        "description": "timing: swing, push, jitter, drift"
+      },
+      "hip-hop": {
+        "group": "genre",
+        "description": "hip-hop family"
+      },
+      "human-feel": {
+        "group": "technique"
+      },
+      "hyphy": {
+        "group": "genre",
+        "description": "bay-area bounce and stomp"
+      },
+      "keys": {
+        "group": "keys",
+        "description": "chords, stabs and chops"
+      },
+      "lazy": {
+        "group": "technique"
+      },
+      "lead": {
+        "group": "lead",
+        "description": "melody, bells, plucks"
+      },
+      "pad": {
+        "group": "pad",
+        "description": "sustained washes"
+      },
+      "pattern": {
+        "group": "technique",
+        "description": "a mini-notation pattern atom"
+      },
+      "phonk": {
+        "group": "genre",
+        "description": "night phonk kit"
+      },
+      "rack": {
+        "group": "technique",
+        "description": "a hook def (instrument rack or move)"
+      },
+      "rack-slot": {
+        "group": "technique",
+        "description": "a hook expression for a slot"
+      },
+      "swing": {
+        "group": "technique"
+      },
+      "transition": {
+        "group": "technique"
+      },
+      "trap": {
+        "group": "genre",
+        "description": "rolling hats, half-time, 808"
+      },
+      "unverified": {
+        "group": "status",
+        "description": "not rendered or not checked"
+      },
+      "vox": {
+        "group": "vox",
+        "description": "vocal-like and word content"
+      }
+    },
+    "folders": {
+      "dovetail": {
+        "description": "How sections interlock"
+      },
+      "feels": {
+        "description": "Feel templates (one import fills the slots)"
+      },
+      "grooves": {
+        "description": "Groove presets as hooks"
+      },
+      "hiphop": {
+        "description": "Hip-hop, trap and hyphy components"
+      },
+      "hiphop/boom-bap": {
+        "description": "Boom-bap: dusty knock and pocket"
+      },
+      "hiphop/cloud": {
+        "description": "Cloud rap: airy pads"
+      },
+      "hiphop/hyphy": {
+        "description": "Hyphy: bounce and stomp"
+      },
+      "hiphop/trap": {
+        "description": "Trap: rolling hats, half-time, held 808"
+      },
+      "phonk": {
+        "description": "Night phonk kit"
+      },
+      "racks": {
+        "description": "Instrument racks (hook defs)"
+      }
+    }
+  }
 }

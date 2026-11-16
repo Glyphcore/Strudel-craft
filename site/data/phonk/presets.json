@@ -30,7 +30,12 @@
    "needs": [
     "glyphcore/vox:index"
    ],
-   "source": "docs/tracks/night-phonk-demo/track.standalone.strudel.js"
+   "source": "docs/tracks/night-phonk-demo/track.standalone.strudel.js",
+   "folder": "phonk/tracks/misc",
+   "tags": [
+    "phonk",
+    "unverified"
+   ]
   },
   {
    "id": "night-phonk-demo-v2",
@@ -43,7 +48,12 @@
    "needs": [
     "glyphcore/vox:index"
    ],
-   "source": "docs/tracks/night-phonk-demo/track.v2.standalone.strudel.js"
+   "source": "docs/tracks/night-phonk-demo/track.v2.standalone.strudel.js",
+   "folder": "phonk/tracks/misc",
+   "tags": [
+    "phonk",
+    "unverified"
+   ]
   }
  ]
 }

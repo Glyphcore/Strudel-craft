@@ -111,6 +111,214 @@
    "items": {
     "$ref": "#/$defs/ingredient"
    }
+  },
+  "taxonomy": {
+   "type": "object",
+   "additionalProperties": false,
+   "patternProperties": {
+    "^x-": {}
+   },
+   "description": "folders, tags and tag styles of the pack (PACK_SPEC 5.3)",
+   "properties": {
+    "version": {
+     "const": 1
+    },
+    "groups": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "title": {
+        "type": "string",
+        "maxLength": 40
+       },
+       "description": {
+        "type": "string",
+        "maxLength": 300
+       },
+       "style": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "color": {
+          "enum": [
+           "amber",
+           "orange",
+           "red",
+           "rose",
+           "violet",
+           "indigo",
+           "blue",
+           "cyan",
+           "teal",
+           "green",
+           "lime",
+           "slate"
+          ]
+         },
+         "icon": {
+          "type": "string",
+          "pattern": "^[a-z]{2,12}$",
+          "description": "key of site/engine/taxonomy.js ICONS"
+         },
+         "pattern": {
+          "enum": [
+           "none",
+           "stripe",
+           "dots"
+          ]
+         },
+         "badge": {
+          "type": "string",
+          "maxLength": 3
+         }
+        }
+       }
+      }
+     }
+    },
+    "priority": {
+     "type": "array",
+     "maxItems": 64,
+     "items": {
+      "type": "string"
+     },
+     "description": "tag or group names, strongest first: the folder takes the appearance of the first one it holds"
+    },
+    "tags": {
+     "type": "object",
+     "propertyNames": {
+      "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
+     },
+     "additionalProperties": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "group": {
+        "type": "string"
+       },
+       "title": {
+        "type": "string",
+        "maxLength": 40
+       },
+       "description": {
+        "type": "string",
+        "maxLength": 300
+       },
+       "style": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "color": {
+          "enum": [
+           "amber",
+           "orange",
+           "red",
+           "rose",
+           "violet",
+           "indigo",
+           "blue",
+           "cyan",
+           "teal",
+           "green",
+           "lime",
+           "slate"
+          ]
+         },
+         "icon": {
+          "type": "string",
+          "pattern": "^[a-z]{2,12}$",
+          "description": "key of site/engine/taxonomy.js ICONS"
+         },
+         "pattern": {
+          "enum": [
+           "none",
+           "stripe",
+           "dots"
+          ]
+         },
+         "badge": {
+          "type": "string",
+          "maxLength": 3
+         }
+        }
+       }
+      }
+     }
+    },
+    "folders": {
+     "type": "object",
+     "propertyNames": {
+      "type": "string",
+      "maxLength": 80,
+      "pattern": "^[a-z0-9][a-z0-9-]*(/[a-z0-9][a-z0-9-]*){0,7}$",
+      "description": "slash path in the pack's folder tree, lowercase segments, e.g. hiphop/trap/drums (PACK_SPEC 5.3)"
+     },
+     "additionalProperties": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "title": {
+        "type": "string",
+        "maxLength": 40
+       },
+       "description": {
+        "type": "string",
+        "maxLength": 300
+       },
+       "tags": {
+        "type": "array",
+        "maxItems": 24,
+        "uniqueItems": true,
+        "items": {
+         "type": "string",
+         "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
+        },
+        "description": "lowercase kebab tags; the pack's taxonomy.tags is the controlled vocabulary, other tags are allowed and warn (W_PACK_TAG)"
+       },
+       "style": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "color": {
+          "enum": [
+           "amber",
+           "orange",
+           "red",
+           "rose",
+           "violet",
+           "indigo",
+           "blue",
+           "cyan",
+           "teal",
+           "green",
+           "lime",
+           "slate"
+          ]
+         },
+         "icon": {
+          "type": "string",
+          "pattern": "^[a-z]{2,12}$",
+          "description": "key of site/engine/taxonomy.js ICONS"
+         },
+         "pattern": {
+          "enum": [
+           "none",
+           "stripe",
+           "dots"
+          ]
+         },
+         "badge": {
+          "type": "string",
+          "maxLength": 3
+         }
+        }
+       }
+      }
+     }
+    }
+   }
   }
  },
  "$defs": {
@@ -284,6 +492,12 @@
     "options": {
      "type": "object",
      "description": "kind-specific switches, defined by the kind sub-schema ($defs.options)"
+    },
+    "folder": {
+     "type": "string",
+     "maxLength": 80,
+     "pattern": "^[a-z0-9][a-z0-9-]*(/[a-z0-9][a-z0-9-]*){0,7}$",
+     "description": "slash path in the pack's folder tree, lowercase segments, e.g. hiphop/trap/drums (PACK_SPEC 5.3)"
     }
    },
    "allOf": [

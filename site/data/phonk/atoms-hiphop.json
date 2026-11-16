@@ -9,6 +9,13 @@
    "rev": 1,
    "body": "x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~",
    "doc": "boom-bap kick: 1, the a of 2, the and of 3",
+   "folder": "hiphop/boom-bap/drums",
+   "tags": [
+    "drums",
+    "hip-hop",
+    "boom-bap",
+    "pattern"
+   ],
    "hash": "sha256:b128547ab09ad6e9d613dcb93bf44de2c79b0f4c8a228b1fde3473b25edbe62b"
   },
   "ams0z01": {
@@ -17,6 +24,13 @@
    "rev": 1,
    "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
    "doc": "backbeat on 2 and 4",
+   "folder": "hiphop/boom-bap/drums",
+   "tags": [
+    "drums",
+    "hip-hop",
+    "boom-bap",
+    "pattern"
+   ],
    "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
   },
   "a39y3pa": {
@@ -25,6 +39,13 @@
    "rev": 1,
    "body": "x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x",
    "doc": "8ths with a 16th pickup into the next bar",
+   "folder": "hiphop/boom-bap/drums",
+   "tags": [
+    "drums",
+    "hip-hop",
+    "boom-bap",
+    "pattern"
+   ],
    "hash": "sha256:055047f96adbeefbf60dc6bb9275bfcab7802266bb1fc08c607a47c4f194411b"
   },
   "a7pz1d6": {
@@ -33,6 +54,13 @@
    "rev": 1,
    "body": "<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>",
    "doc": "trap kick over two bars, half-time",
+   "folder": "hiphop/trap/drums",
+   "tags": [
+    "drums",
+    "hip-hop",
+    "trap",
+    "pattern"
+   ],
    "hash": "sha256:f3d32a15b80c7e2ef192f8c3c55a9114f23a83d2e804c028e4da579e6623a382"
   },
   "arl1jya": {
@@ -41,6 +69,13 @@
    "rev": 1,
    "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
    "doc": "half-time clap on 3",
+   "folder": "hiphop/trap/drums",
+   "tags": [
+    "drums",
+    "hip-hop",
+    "trap",
+    "pattern"
+   ],
    "hash": "sha256:525fd0444781900288d0ac6c5358b9391d694346d05e7bca8b3001885e70932c"
   },
   "asayiim": {
@@ -49,6 +84,13 @@
    "rev": 1,
    "body": "<[x*16] [x x x x x x x x x x x x [x x x] [x x x] [x x x x] [x x x x x x]]>",
    "doc": "16th hats, every second bar ends in triplet, 32nd and 64th-triplet rolls",
+   "folder": "hiphop/trap/drums",
+   "tags": [
+    "drums",
+    "hip-hop",
+    "trap",
+    "pattern"
+   ],
    "hash": "sha256:ea8190d98d95cfe7e4836460d789cccdca7ac15a13f2356b96d3a10e29848301"
   },
   "a1x1vdr": {
@@ -57,6 +99,12 @@
    "rev": 1,
    "body": "[1 .55 .8 .55]*4",
    "doc": "hat accent: downbeats strong, 16ths soft (velocity)",
+   "folder": "hiphop/general/drums",
+   "tags": [
+    "drums",
+    "hip-hop",
+    "pattern"
+   ],
    "hash": "sha256:2987720b479b59799be7f370481b751c3198606f9ea10fea9982a05f4915b5c1"
   },
   "az0kbx0": {
@@ -65,6 +113,13 @@
    "rev": 1,
    "body": "<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>",
    "doc": "808 line that follows the trap kick, each note held to the next (legato, as an 808 rings); C2 root for small speakers and no short bursts below 20 Hz",
+   "folder": "hiphop/trap/bass",
+   "tags": [
+    "bass",
+    "hip-hop",
+    "trap",
+    "pattern"
+   ],
    "hash": "sha256:edc3e5a93ab9b050764d4f48a04439c29394844c262efdfe47ad7d9b32e30798"
   },
   "aseivr5": {
@@ -73,6 +128,13 @@
    "rev": 1,
    "body": "x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ x ~ ~",
    "doc": "hyphy bounce kick: 3+3+4+3+3",
+   "folder": "hiphop/hyphy/drums",
+   "tags": [
+    "drums",
+    "hip-hop",
+    "hyphy",
+    "pattern"
+   ],
    "hash": "sha256:f2aae42db516b75060dc1bdf28bb7e6d52d546a3e34c971936c1371c59f3debb"
   },
   "at6nm8d": {
@@ -81,6 +143,13 @@
    "rev": 1,
    "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
    "doc": "clap on 2 and 4",
+   "folder": "hiphop/hyphy/drums",
+   "tags": [
+    "drums",
+    "hip-hop",
+    "hyphy",
+    "pattern"
+   ],
    "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
   },
   "agv1pyr": {
@@ -89,6 +158,13 @@
    "rev": 1,
    "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
    "doc": "snaps on every and",
+   "folder": "hiphop/hyphy/drums",
+   "tags": [
+    "drums",
+    "hip-hop",
+    "hyphy",
+    "pattern"
+   ],
    "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
   },
   "aqw8nze": {
@@ -97,6 +173,13 @@
    "rev": 1,
    "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
    "doc": "stomp: kick on every beat",
+   "folder": "hiphop/hyphy/drums",
+   "tags": [
+    "drums",
+    "hip-hop",
+    "hyphy",
+    "pattern"
+   ],
    "hash": "sha256:0217ca393e7b9e240d8b3ffed67e975f3934d9a9f1303a227193b90afe293ac5"
   },
   "aarb6ki": {
@@ -105,6 +188,13 @@
    "rev": 1,
    "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
    "doc": "stomp: clap with every kick",
+   "folder": "hiphop/hyphy/drums",
+   "tags": [
+    "drums",
+    "hip-hop",
+    "hyphy",
+    "pattern"
+   ],
    "hash": "sha256:0217ca393e7b9e240d8b3ffed67e975f3934d9a9f1303a227193b90afe293ac5"
   },
   "asf0kz1": {
@@ -113,6 +203,13 @@
    "rev": 1,
    "body": "c5 ~ ~ eb5 ~ ~ g5 ~ f5 ~ eb5 ~ c5 ~ ~ ~",
    "doc": "hyphy lead riff on the bounce",
+   "folder": "hiphop/hyphy/lead",
+   "tags": [
+    "lead",
+    "hip-hop",
+    "hyphy",
+    "pattern"
+   ],
    "hash": "sha256:3417fb70808df3240ed60cdccb737ef3abc85549de3c062c1a9e243427c5106c"
   },
   "an9sm9b": {
@@ -121,6 +218,13 @@
    "rev": 1,
    "body": "c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~",
    "doc": "bass with the boom-bap kick",
+   "folder": "hiphop/boom-bap/bass",
+   "tags": [
+    "bass",
+    "hip-hop",
+    "boom-bap",
+    "pattern"
+   ],
    "hash": "sha256:6d3f7579036f97f7782290954d057f657326466e43a8498e90e41f992259bdce"
   },
   "aihfb6n": {
@@ -129,6 +233,13 @@
    "rev": 1,
    "body": "<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>",
    "doc": "Cm7 to Abmaj7, one bar each",
+   "folder": "hiphop/boom-bap/keys",
+   "tags": [
+    "keys",
+    "hip-hop",
+    "boom-bap",
+    "pattern"
+   ],
    "hash": "sha256:6c7fb99033f92c749dab049d0538c23f2b21b92f277b1d91c77ce1859509ee43"
   },
   "arrabfj": {
@@ -137,6 +248,13 @@
    "rev": 1,
    "body": "<[c4,eb4,g4] [ab3,c4,eb4] [bb3,d4,f4] [g3,b3,d4]>",
    "doc": "i VI VII V in C minor",
+   "folder": "hiphop/trap/keys",
+   "tags": [
+    "keys",
+    "hip-hop",
+    "trap",
+    "pattern"
+   ],
    "hash": "sha256:9493e6c8f40a6c8561e0d8c84070b56f3221ff571fffc8233ebf9e50de2e9097"
   },
   "aoyfpul": {
@@ -145,6 +263,13 @@
    "rev": 1,
    "body": "c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~",
    "doc": "bell melody over the trap chords",
+   "folder": "hiphop/trap/lead",
+   "tags": [
+    "lead",
+    "hip-hop",
+    "trap",
+    "pattern"
+   ],
    "hash": "sha256:614d5953a33774642c2c76496006851dc0b80f1c6b46d23e4c135f8bb3b26807"
   },
   "abdqalo": {
@@ -153,6 +278,12 @@
    "rev": 1,
    "body": "[c4,eb4,g4] ~ ~ [c4,eb4,g4] ~ ~ [bb3,d4,f4] ~ ~ ~ [ab3,c4,eb4] ~ [ab3,c4,eb4] ~ ~ ~",
    "doc": "chopped chord rhythm (3+3+4+2+4)",
+   "folder": "hiphop/general/keys",
+   "tags": [
+    "keys",
+    "hip-hop",
+    "pattern"
+   ],
    "hash": "sha256:0404ba240b606a267ce833c092e5de67d506365bc1b07a25dfd3a195f0c7eedc"
   },
   "alts3g3": {
@@ -161,6 +292,13 @@
    "rev": 1,
    "body": "<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>",
    "doc": "Ebmaj7 Cm7 Abmaj7 Bbmaj7: slow cloud loop",
+   "folder": "hiphop/cloud/keys",
+   "tags": [
+    "keys",
+    "hip-hop",
+    "cloud",
+    "pattern"
+   ],
    "hash": "sha256:b7f2f3f1904ebc6af68a72b04b707539fa10621279e9d33ce86840be7c4cfd26"
   },
   "as63crt": {
@@ -169,6 +307,12 @@
    "rev": 1,
    "body": "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ <c4 g4> ~",
    "doc": "a tag at the end of the bar",
+   "folder": "hiphop/general/vox",
+   "tags": [
+    "vox",
+    "hip-hop",
+    "pattern"
+   ],
    "hash": "sha256:86943c877585ae60a011fff062e00d875a999c6885fb1f2abf7e53fe5598dfa0"
   },
   "al32x59": {
@@ -177,6 +321,12 @@
    "rev": 1,
    "body": "<~ ~ ~ x>",
    "doc": "an fx hit at the top of every 4th bar",
+   "folder": "hiphop/general/fx",
+   "tags": [
+    "fx",
+    "hip-hop",
+    "pattern"
+   ],
    "hash": "sha256:9c96c2ec200a6319260bd773fb53cf2832c7bd492523bbbc0cb3369b9eab3efb"
   },
   "aiizhzz": {
@@ -185,6 +335,12 @@
    "rev": 1,
    "body": "<5b",
    "doc": "intro: bars 1-4 (form: intro 4, verse 16, hook 8, verse 16, hook 8, bridge 4, hook 8, outro 4 = 68 bars)",
+   "folder": "hiphop/general/form",
+   "tags": [
+    "form",
+    "hip-hop",
+    "gate"
+   ],
    "hash": "sha256:b948ae980edbfbd849f063e9a8b9cfa15558699316509a0409a9b997a7164b97"
   },
   "a5yh8fe": {
@@ -193,6 +349,12 @@
    "rev": 1,
    "body": "@5b",
    "doc": "drop-in: the beat enters after the intro",
+   "folder": "hiphop/general/form",
+   "tags": [
+    "form",
+    "hip-hop",
+    "gate"
+   ],
    "hash": "sha256:50dc819b4a1e4af374d20182401b4b4af4ffc8764f00ec295ce95d27a7cc76d7"
   },
   "aehu674": {
@@ -201,6 +363,12 @@
    "rev": 1,
    "body": "5b..21b, 29b..45b",
    "doc": "verses 1 and 2",
+   "folder": "hiphop/general/form",
+   "tags": [
+    "form",
+    "hip-hop",
+    "gate"
+   ],
    "hash": "sha256:481ffbe569d9cbebb3576456f3f1c69c3b78c99a31eb1c1e169fa7f4c1988f13"
   },
   "afe25ss": {
@@ -209,6 +377,12 @@
    "rev": 1,
    "body": "21b..29b, 45b..53b, 57b..65b",
    "doc": "hooks 1-3",
+   "folder": "hiphop/general/form",
+   "tags": [
+    "form",
+    "hip-hop",
+    "gate"
+   ],
    "hash": "sha256:6083120c1f63c9ca092e0a2c6ecdaa57872054ee172770f8db3dbb5844953939"
   },
   "ax4ef4a": {
@@ -217,6 +391,12 @@
    "rev": 1,
    "body": "53b..57b",
    "doc": "bridge",
+   "folder": "hiphop/general/form",
+   "tags": [
+    "form",
+    "hip-hop",
+    "gate"
+   ],
    "hash": "sha256:31fecdf9261e14795335b5c9fbf7cd5ff7731d7923b1fba0439f35a012675229"
   },
   "abwwqfi": {
@@ -225,6 +405,12 @@
    "rev": 1,
    "body": "@65b",
    "doc": "outro",
+   "folder": "hiphop/general/form",
+   "tags": [
+    "form",
+    "hip-hop",
+    "gate"
+   ],
    "hash": "sha256:9789a874f1625bc87f32a795eb020b1558ee30f2cffeba8bbfa1beb5e844a7f8"
   },
   "a8rapor": {
@@ -233,6 +419,12 @@
    "rev": 1,
    "body": "20b..21b, 44b..45b, 56b..57b",
    "doc": "drums out for the bar before each hook",
+   "folder": "hiphop/general/form",
+   "tags": [
+    "form",
+    "hip-hop",
+    "gate"
+   ],
    "hash": "sha256:718de24c8fe38bf6cab7249dbea764826ec4b78b9e06bec9d472b0654bcb375b"
   },
   "axl8faf": {
@@ -241,6 +433,12 @@
    "rev": 1,
    "body": "20.4b..21b, 44.4b..45b, 56.4b..57b",
    "doc": "drop the beat for the last beat before each hook",
+   "folder": "hiphop/general/form",
+   "tags": [
+    "form",
+    "hip-hop",
+    "gate"
+   ],
    "hash": "sha256:0c3e1c8615dc7303cde145117de1fadcab9d72bf0390dc7d5911cd1024c872f2"
   },
   "awi0zqb": {
@@ -249,6 +447,12 @@
    "rev": 1,
    "body": "@29b",
    "doc": "beat switch: the second verse changes kit and feel",
+   "folder": "hiphop/general/form",
+   "tags": [
+    "form",
+    "hip-hop",
+    "gate"
+   ],
    "hash": "sha256:aa77690a830e82db08167e4b5a0927e1d41c4fd8179dd82b0f5d307705c6eeff"
   },
   "ap2qjmj": {
@@ -257,6 +461,12 @@
    "rev": 1,
    "body": "21b..25b, 57b..61b",
    "doc": "hyphy bounce: first half of hooks 1 and 3",
+   "folder": "hiphop/general/form",
+   "tags": [
+    "form",
+    "hip-hop",
+    "gate"
+   ],
    "hash": "sha256:bf2b26f1d3c6793ed5aa991378aee4169eb5fdef5f5309e5be8901819999f481"
   },
   "aya60no": {
@@ -265,6 +475,12 @@
    "rev": 1,
    "body": "25b..29b, 61b..65b",
    "doc": "hyphy stomp: second half of hooks 1 and 3, kick and clap on every beat",
+   "folder": "hiphop/general/form",
+   "tags": [
+    "form",
+    "hip-hop",
+    "gate"
+   ],
    "hash": "sha256:d1facb80f097dfd39596b8a98a578445ad2c3e854dda0d3699c27e47f6440dfe"
   }
  }

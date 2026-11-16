@@ -1,0 +1,281 @@
+{
+ "model": 1,
+ "meta": {
+  "id": "glyphcore/phonk:grooves",
+  "doc": "Groove presets (docs/CONVENTIONS.md section 4): the same defs as the standard library in site/engine/groove.js, shipped as pack content so they have a namespace, a folder and tags. A program or pack def of the same name wins."
+ },
+ "defs": {
+  "groove-straight": {
+   "params": {
+    "seed": {
+     "min": 0,
+     "max": 65535,
+     "default": 0
+    }
+   },
+   "chain": [
+    [
+     "groove",
+     {
+      "jitter": 1,
+      "vel": 0.04,
+      "seed": {
+       "$param": "seed"
+      }
+     }
+    ]
+   ],
+   "folder": "grooves/presets",
+   "tags": [
+    "groove",
+    "rack-slot",
+    "human-feel"
+   ]
+  },
+  "groove-pocket": {
+   "params": {
+    "seed": {
+     "min": 0,
+     "max": 65535,
+     "default": 0
+    }
+   },
+   "chain": [
+    [
+     "groove",
+     {
+      "swing": 57,
+      "jitter": 3,
+      "vel": 0.12,
+      "drift": 1,
+      "seed": {
+       "$param": "seed"
+      }
+     }
+    ]
+   ],
+   "folder": "grooves/presets",
+   "tags": [
+    "groove",
+    "rack-slot",
+    "human-feel"
+   ]
+  },
+  "groove-lazy": {
+   "params": {
+    "seed": {
+     "min": 0,
+     "max": 65535,
+     "default": 0
+    }
+   },
+   "chain": [
+    [
+     "groove",
+     {
+      "swing": 55,
+      "push": 8,
+      "jitter": 4,
+      "vel": 0.1,
+      "drift": 3,
+      "seed": {
+       "$param": "seed"
+      }
+     }
+    ]
+   ],
+   "folder": "grooves/presets",
+   "tags": [
+    "groove",
+    "rack-slot",
+    "human-feel"
+   ]
+  },
+  "groove-bounce": {
+   "params": {
+    "seed": {
+     "min": 0,
+     "max": 65535,
+     "default": 0
+    }
+   },
+   "chain": [
+    [
+     "groove",
+     {
+      "swing": 53,
+      "push": -3,
+      "jitter": 2,
+      "vel": 0.15,
+      "seed": {
+       "$param": "seed"
+      }
+     }
+    ]
+   ],
+   "folder": "grooves/presets",
+   "tags": [
+    "groove",
+    "rack-slot",
+    "human-feel"
+   ]
+  },
+  "groove-rolling": {
+   "params": {
+    "seed": {
+     "min": 0,
+     "max": 65535,
+     "default": 0
+    }
+   },
+   "chain": [
+    [
+     "groove",
+     {
+      "jitter": 1.5,
+      "vel": 0.18,
+      "seed": {
+       "$param": "seed"
+      }
+     }
+    ]
+   ],
+   "folder": "grooves/presets",
+   "tags": [
+    "groove",
+    "rack-slot",
+    "human-feel"
+   ]
+  },
+  "groove-cloud": {
+   "params": {
+    "seed": {
+     "min": 0,
+     "max": 65535,
+     "default": 0
+    }
+   },
+   "chain": [
+    [
+     "groove",
+     {
+      "swing": 56,
+      "push": 5,
+      "jitter": 5,
+      "vel": 0.08,
+      "drift": 5,
+      "seed": {
+       "$param": "seed"
+      }
+     }
+    ]
+   ],
+   "folder": "grooves/presets",
+   "tags": [
+    "groove",
+    "rack-slot",
+    "human-feel"
+   ]
+  },
+  "groove-swing": {
+   "params": {
+    "pct": {
+     "min": 50,
+     "max": 75,
+     "default": 58
+    },
+    "grid": {
+     "min": 2,
+     "max": 64,
+     "default": 16
+    }
+   },
+   "chain": [
+    [
+     "groove",
+     {
+      "swing": {
+       "$param": "pct"
+      },
+      "grid": {
+       "$param": "grid"
+      }
+     }
+    ]
+   ],
+   "folder": "grooves/builders",
+   "tags": [
+    "groove",
+    "rack-slot",
+    "human-feel",
+    "swing"
+   ]
+  },
+  "groove-push": {
+   "params": {
+    "pct": {
+     "min": -50,
+     "max": 50,
+     "default": 0
+    }
+   },
+   "chain": [
+    [
+     "groove",
+     {
+      "push": {
+       "$param": "pct"
+      }
+     }
+    ]
+   ],
+   "folder": "grooves/builders",
+   "tags": [
+    "groove",
+    "rack-slot",
+    "human-feel"
+   ]
+  },
+  "groove-human": {
+   "params": {
+    "jitter": {
+     "min": 0,
+     "max": 25,
+     "default": 3
+    },
+    "vel": {
+     "min": 0,
+     "max": 0.5,
+     "default": 0.1
+    },
+    "seed": {
+     "min": 0,
+     "max": 65535,
+     "default": 0
+    }
+   },
+   "chain": [
+    [
+     "groove",
+     {
+      "jitter": {
+       "$param": "jitter"
+      },
+      "vel": {
+       "$param": "vel"
+      },
+      "seed": {
+       "$param": "seed"
+      }
+     }
+    ]
+   ],
+   "folder": "grooves/builders",
+   "tags": [
+    "groove",
+    "rack-slot",
+    "human-feel"
+   ]
+  }
+ }
+}

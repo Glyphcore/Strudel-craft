@@ -15,7 +15,8 @@ const TAPRE = /(\btap\(\s*)(["'`])([^"'`]+)\2/g;
 // meta holds name, kind, rev, hash, parent, tags only (no personal data); layout is not part of a record.
 function record(model, meta) {
   const r = clone(model); delete r.layout;
-  const keep = { name: meta.name, kind: meta.kind, ...(meta.parent ? { parent: meta.parent } : {}), ...(meta.tags && meta.tags.length ? { tags: [...meta.tags] } : {}) };
+  const keep = { name: meta.name, kind: meta.kind, ...(meta.parent ? { parent: meta.parent } : {}), ...(meta.tags && meta.tags.length ? { tags: [...meta.tags] } : {}),
+    ...(meta.folder ? { folder: meta.folder } : {}), ...(meta.aliases && meta.aliases.length ? { aliases: [...meta.aliases] } : {}) }; // folder, tags and aliases are part of the hash like tags always were
   r.meta = keep; if (meta.exports) r.exports = clone(meta.exports);
   r.meta.hash = modelHash(r); r.meta.rev = meta.rev;
   return r;
@@ -25,25 +26,28 @@ export const verify = (rec, ref) => {
   return rec;
 };
 
+const byAlias = (store, name, rev) => { const m = store.list().find((x) => (x.aliases || []).includes(name)); return m ? store.get(m.name, rev) : undefined; };
+
 export function createLibrary(store = defaultStore()) {
   const lib = {
     store,
-    save(model, { name, kind, exports, tags } = {}) {
+    save(model, { name, kind, exports, tags, folder, aliases } = {}) {
       if (!name || !kind) throw fail('E_BAD_ARG', 'save needs name and kind');
       const revs = store.revs(name), last = revs[revs.length - 1];
       if (last) { // identical content: hash it with the latest record's parent; equal -> existing rev, nothing stored
-        const same = record(model, { name, kind, exports: exports ?? model.exports, tags, parent: last.parent, rev: last.rev });
+        const same = record(model, { name, kind, exports: exports ?? model.exports, tags, folder, aliases, parent: last.parent, rev: last.rev });
         if (same.meta.hash === last.hash) return { name, rev: last.rev, hash: last.hash };
       }
-      const rec = record(model, { name, kind, exports: exports ?? model.exports, tags, parent: last && last.hash, rev: revs.length + 1 });
+      const rec = record(model, { name, kind, exports: exports ?? model.exports, tags, folder, aliases, parent: last && last.hash, rev: revs.length + 1 });
       const r = store.put(rec); return { name, rev: r.rev, hash: r.hash };
     },
-    get: (name, rev) => store.get(name, rev),
+    // an older name still resolves: a component whose meta.aliases lists `name` answers for it (docs/PACK_SPEC.md 9.3 rule 5; lib: refs keep working after a rename or move)
+    get: (name, rev) => store.get(name, rev) || byAlias(store, name, rev),
     list: (filter) => store.list(filter),
     revs: (name) => store.revs(name),
     extract: (model, nodeIds, opts) => extract(model, nodeIds, opts),
     embed: (model) => embed(model, (n, r) => store.get(n, r)),
-    lookup: (n, r) => store.get(n, r),
+    lookup: (n, r) => store.get(n, r) || byAlias(store, n, r),
   };
   return lib;
 }

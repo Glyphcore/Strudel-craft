@@ -55,6 +55,12 @@
      "gain",
      0.75
     ]
+   ],
+   "folder": "racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "hip-hop"
    ]
   },
   "knock808": {
@@ -71,6 +77,12 @@
      "hpf",
      40
     ]
+   ],
+   "folder": "racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "hip-hop"
    ]
   },
   "clap": {
@@ -107,6 +119,12 @@
      "gain",
      0.9
     ]
+   ],
+   "folder": "racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "hip-hop"
    ]
   },
   "snap": {
@@ -143,6 +161,12 @@
      "gain",
      0.8
     ]
+   ],
+   "folder": "racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "hip-hop"
    ]
   },
   "openHat": {
@@ -171,6 +195,12 @@
      "gain",
      0.3
     ]
+   ],
+   "folder": "racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "hip-hop"
    ]
   },
   "bbBass": {
@@ -207,6 +237,12 @@
      "gain",
      0.5
     ]
+   ],
+   "folder": "racks/bass",
+   "tags": [
+    "bass",
+    "rack",
+    "hip-hop"
    ]
   },
   "rhodes": {
@@ -251,6 +287,12 @@
      "gain",
      0.22
     ]
+   ],
+   "folder": "racks/keys",
+   "tags": [
+    "keys",
+    "rack",
+    "hip-hop"
    ]
   },
   "trapBell": {
@@ -283,6 +325,12 @@
      "gain",
      0.3
     ]
+   ],
+   "folder": "racks/lead",
+   "tags": [
+    "lead",
+    "rack",
+    "hip-hop"
    ]
   },
   "airPad": {
@@ -315,6 +363,12 @@
      "gain",
      0.16
     ]
+   ],
+   "folder": "racks/pad",
+   "tags": [
+    "pad",
+    "rack",
+    "hip-hop"
    ]
   },
   "hyphyLead": {
@@ -363,6 +417,12 @@
      "gain",
      0.26
     ]
+   ],
+   "folder": "racks/lead",
+   "tags": [
+    "lead",
+    "rack",
+    "hip-hop"
    ]
   },
   "chopStab": {
@@ -403,6 +463,12 @@
      "gain",
      0.2
     ]
+   ],
+   "folder": "racks/keys",
+   "tags": [
+    "keys",
+    "rack",
+    "hip-hop"
    ]
   },
   "voxTag": {
@@ -439,6 +505,12 @@
      "gain",
      0.35
     ]
+   ],
+   "folder": "racks/vox",
+   "tags": [
+    "vox",
+    "rack",
+    "hip-hop"
    ]
   },
   "vinyl": {
@@ -467,6 +539,12 @@
      "gain",
      0.06
     ]
+   ],
+   "folder": "racks/fx",
+   "tags": [
+    "fx",
+    "rack",
+    "hip-hop"
    ]
   },
   "downlifter": {
@@ -519,6 +597,12 @@
      "gain",
      0.3
     ]
+   ],
+   "folder": "racks/fx",
+   "tags": [
+    "fx",
+    "rack",
+    "hip-hop"
    ]
   },
   "fadeOut": {
@@ -529,6 +613,13 @@
       "$mini": "[1 .98 .92 .83 .71 .56 .38 .2]"
      }
     ]
+   ],
+   "folder": "dovetail/moves",
+   "tags": [
+    "dovetail",
+    "rack",
+    "transition",
+    "hip-hop"
    ]
   },
   "fadeIn": {
@@ -539,6 +630,13 @@
       "$mini": "[.2 .38 .56 .71 .83 .92 .98 1]"
      }
     ]
+   ],
+   "folder": "dovetail/moves",
+   "tags": [
+    "dovetail",
+    "rack",
+    "transition",
+    "hip-hop"
    ]
   },
   "throw": {
@@ -564,6 +662,13 @@
       "$param": "fb"
      }
     ]
+   ],
+   "folder": "dovetail/moves",
+   "tags": [
+    "dovetail",
+    "rack",
+    "transition",
+    "hip-hop"
    ]
   },
   "tailHold": {
@@ -572,6 +677,13 @@
      "release",
      1.6
     ]
+   ],
+   "folder": "dovetail/moves",
+   "tags": [
+    "dovetail",
+    "rack",
+    "transition",
+    "hip-hop"
    ]
   },
   "duckUnder": {
@@ -598,6 +710,13 @@
       "r": 0.6
      }
     ]
+   ],
+   "folder": "dovetail/moves",
+   "tags": [
+    "dovetail",
+    "rack",
+    "transition",
+    "hip-hop"
    ]
   }
  }

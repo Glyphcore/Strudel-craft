@@ -47,6 +47,12 @@
      "gain",
      0.8
     ]
+   ],
+   "folder": "racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "phonk"
    ]
   },
   "snareNoise": {
@@ -83,6 +89,12 @@
      "gain",
      0.9
     ]
+   ],
+   "folder": "racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "phonk"
    ]
   },
   "hat": {
@@ -120,6 +132,12 @@
      "gain",
      0.45
     ]
+   ],
+   "folder": "racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "phonk"
    ]
   },
   "cowbell": {
@@ -152,6 +170,12 @@
      "gain",
      0.28
     ]
+   ],
+   "folder": "racks/lead",
+   "tags": [
+    "lead",
+    "rack",
+    "phonk"
    ]
   },
   "sub808": {
@@ -200,6 +224,11 @@
      "postgain",
      0.87
     ]
+   ],
+   "folder": "racks/misc",
+   "tags": [
+    "rack",
+    "phonk"
    ]
   },
   "hazePad": {
@@ -257,6 +286,12 @@
      "gain",
      0.2
     ]
+   ],
+   "folder": "racks/pad",
+   "tags": [
+    "pad",
+    "rack",
+    "phonk"
    ]
   },
   "deepLead": {
@@ -305,6 +340,12 @@
      "gain",
      0.38
     ]
+   ],
+   "folder": "racks/lead",
+   "tags": [
+    "lead",
+    "rack",
+    "phonk"
    ]
   },
   "wideLead": {
@@ -351,6 +392,12 @@
      "gain",
      0.27
     ]
+   ],
+   "folder": "racks/lead",
+   "tags": [
+    "lead",
+    "rack",
+    "phonk"
    ]
   },
   "echoPluck": {
@@ -391,6 +438,11 @@
      "gain",
      0.4
     ]
+   ],
+   "folder": "racks/misc",
+   "tags": [
+    "rack",
+    "phonk"
    ]
   },
   "formant": {
@@ -419,6 +471,12 @@
      "gain",
      0.36
     ]
+   ],
+   "folder": "racks/vox",
+   "tags": [
+    "vox",
+    "rack",
+    "phonk"
    ]
   },
   "chop": {
@@ -443,6 +501,12 @@
      "gain",
      0.32
     ]
+   ],
+   "folder": "racks/vox",
+   "tags": [
+    "vox",
+    "rack",
+    "phonk"
    ]
   },
   "riser": {
@@ -483,6 +547,11 @@
      "gain",
      0.3
     ]
+   ],
+   "folder": "racks/misc",
+   "tags": [
+    "rack",
+    "phonk"
    ]
   },
   "reverseHit": {
@@ -515,6 +584,11 @@
      "gain",
      0.3
     ]
+   ],
+   "folder": "racks/misc",
+   "tags": [
+    "rack",
+    "phonk"
    ]
   },
   "impact": {
@@ -555,6 +629,11 @@
      "gain",
      0.7
     ]
+   ],
+   "folder": "racks/misc",
+   "tags": [
+    "rack",
+    "phonk"
    ]
   },
   "tape": {
@@ -571,6 +650,12 @@
      "gain",
      0.05
     ]
+   ],
+   "folder": "racks/fx",
+   "tags": [
+    "fx",
+    "rack",
+    "phonk"
    ]
   },
   "murk": {
@@ -581,6 +666,13 @@
       "$mini": "<500 600 750 900 750 600>"
      }
     ]
+   ],
+   "folder": "dovetail/moves",
+   "tags": [
+    "dovetail",
+    "rack",
+    "transition",
+    "phonk"
    ]
   },
   "thin": {
@@ -598,6 +690,13 @@
       "$param": "hz"
      }
     ]
+   ],
+   "folder": "dovetail/moves",
+   "tags": [
+    "dovetail",
+    "rack",
+    "transition",
+    "phonk"
    ]
   },
   "grit": {
@@ -615,6 +714,13 @@
       "$param": "amt"
      }
     ]
+   ],
+   "folder": "dovetail/moves",
+   "tags": [
+    "dovetail",
+    "rack",
+    "transition",
+    "phonk"
    ]
   },
   "pump": {
@@ -641,6 +747,13 @@
       "r": 0.18
      }
     ]
+   ],
+   "folder": "dovetail/moves",
+   "tags": [
+    "dovetail",
+    "rack",
+    "transition",
+    "phonk"
    ]
   }
  }

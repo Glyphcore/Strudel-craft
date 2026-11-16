@@ -212,6 +212,30 @@
     "family": {
      "type": "string",
      "description": "concept family the recipe was generated from (tools/concepts)"
+    },
+    "folder": {
+     "type": "string",
+     "maxLength": 80,
+     "pattern": "^[a-z0-9][a-z0-9-]*(/[a-z0-9][a-z0-9-]*){0,7}$",
+     "description": "slash path in the pack's folder tree, lowercase segments, e.g. hiphop/trap/drums (PACK_SPEC 5.3)"
+    },
+    "tags": {
+     "type": "array",
+     "maxItems": 24,
+     "uniqueItems": true,
+     "items": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
+     },
+     "description": "lowercase kebab tags; the pack's taxonomy.tags is the controlled vocabulary, other tags are allowed and warn (W_PACK_TAG)"
+    },
+    "aliases": {
+     "type": "array",
+     "maxItems": 16,
+     "items": {
+      "type": "string"
+     },
+     "description": "older ids or names of this item: a bare reference to an alias resolves to this item (PACK_SPEC 9.3 rule 5)"
     }
    }
   }

@@ -13,6 +13,7 @@
 // node tools/racks/audit.mjs (hygiene). Families are data only; adding a concept never needs code here (docs/CONVENTIONS.md section 7).
 import fs from 'node:fs'; import path from 'node:path'; import os from 'node:os'; import { spawnSync } from 'node:child_process'; import { fileURLToPath, pathToFileURL } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..'); const HERE = path.join(ROOT, 'tools/concepts');
+const TX = await import(pathToFileURL(path.join(path.dirname(fileURLToPath(import.meta.url)), 'taxonomy.mjs')).href);
 const imp = (p) => import(pathToFileURL(path.join(ROOT, p)).href);
 const L = await imp('tools/lowering/lower.mjs'); const A = await imp('site/engine/atoms.js'); const AC = await imp('site/engine/atoms-consumers.js'); const { HYGIENE } = await imp('site/engine/hygiene.js'); const G = await imp('site/engine/groove.js');
 A.loadTypes(fs.readFileSync(path.join(ROOT, 'site/data/atoms/types.json'), 'utf8'));
@@ -38,8 +39,8 @@ const quoted = (s, f, where) => s.replace(/"([^"]*)"/g, (_, x) => JSON.stringify
 // ---------- racks: every def a recipe may name ----------
 const own = {}; for (const f of fams) for (const [n, d] of Object.entries(f.racks || {})) { if (own[n]) die(`rack ${n} defined twice`); own[n] = { fam: f, def: d }; }
 const resolveDef = (f, def) => JSON.parse(JSON.stringify(def.chain), (k, v) => (v && typeof v === 'object' && '$atomBody' in v ? { $mini: atomBody(famNs(f), v.$atomBody, 'rack') } : v));
-const ownDefs = Object.fromEntries(Object.entries(own).map(([n, { fam, def }]) => [n, { ...(def.params ? { params: def.params } : {}), chain: resolveDef(fam, def) }]));
-const LW = await L.createLowering({ defs: ownDefs, die }); // racks, hygiene and grooves -> plain steps (tools/lowering/lower.mjs, shared with the Syntax lowering)
+const ownDefs = Object.fromEntries(Object.entries(own).map(([n, { fam, def }]) => [n, { ...(def.params ? { params: def.params } : {}), chain: resolveDef(fam, def), ...TX.rackTaxonomy(n, def, def.class, 'racks-hiphop') }]));
+const LW = await L.createLowering({ defs: Object.fromEntries(Object.entries(ownDefs).map(([n, d]) => [n, { ...d, folder: undefined, tags: undefined }])), die }); // racks, hygiene and grooves -> plain steps (tools/lowering/lower.mjs, shared with the Syntax lowering)
 const { expand, plain } = LW;
 
 // ---------- recipes ----------
@@ -92,8 +93,8 @@ for (const { r } of recipes) targets.catalog[r.id] = { class: r.class || 'demo',
 // ---------- feel ingredients + their Syntax examples ----------
 const feelsFam = fams.find((f) => f.feels); const feelDocs = {};
 const atomsDoc = (fid, ns, doc, items, qualify) => { const taken = new Set(); const atoms = {};
-  for (const [name, a] of Object.entries(items)) { const rec = { name, type: a.type, rev: 1, ...(a.params ? { params: a.params } : {}), body: a.body, ...(a.doc ? { doc: a.doc } : {}) };
-    const id = A.idFor(a.type, qualify ? `${qualify}/${name}` : name, taken); taken.add(id); atoms[id] = { ...rec, hash: A.atomHash(rec) }; }
+  for (const [name, a] of Object.entries(items)) { const rec = { name, type: a.type, rev: 1, ...(a.params ? { params: a.params } : {}), body: a.body, ...(a.doc ? { doc: a.doc } : {}) }; const tx = TX.atomTaxonomy(fid, ns, name, a);
+    const id = A.idFor(a.type, qualify ? `${qualify}/${name}` : name, taken); taken.add(id); atoms[id] = { ...rec, folder: tx.folder, tags: tx.tags, hash: A.atomHash(rec) }; } // folder and tags are not part of the content hash
   const d = { format: 'atoms@1', name: ns, doc, atoms }; AC.verifyIngredient({ data: d }); return d; };
 const nsItems = (ns, items) => Object.fromEntries(Object.entries(items).map(([n, a]) => [`${ns}.${n}`, a]));
 const ingredients = [];
@@ -111,6 +112,9 @@ if (feelsFam) for (const [id, fe] of Object.entries(feelsFam.feels)) {
 const ownRackNames = Object.keys(ownDefs);
 const racksIng = { id: 'racks-hiphop', kind: 'hooks', file: 'racks-hiphop.json', title: 'Hip-hop and dovetail racks', description: `Chain-only hook defs: ${ownRackNames.join(', ')}`, data: { model: 1, meta: { id: `${PACK}:racks-hiphop`, doc: 'Hip-hop, trap and hyphy instrument racks (band-scoped, docs/RACK_STANDARD.md) and dovetail moves (fadeOut, fadeIn, throw, tailHold, duckUnder). Bind into a slot: hooks.bind("kick", "bbKick | groove-pocket(1)").' }, defs: ownDefs } };
 ingredients.unshift(racksIng);
+// the groove presets of site/engine/groove.js as a pack ingredient (hooks@1, chain-only): the pack copy has the same defs as the standard library, plus folder and tags
+const grooveDefs = Object.fromEntries(Object.entries(G.GROOVES).map(([n, d]) => [n, { ...JSON.parse(JSON.stringify(d)), ...TX.rackTaxonomy(n, d, 'groove', 'grooves') }]));
+ingredients.push({ id: 'grooves', kind: 'hooks', file: 'grooves.json', title: 'Groove presets', description: `Chain-only hook defs, the standard-library presets as pack content: ${Object.keys(grooveDefs).join(', ')}`, data: { model: 1, meta: { id: `${PACK}:grooves`, doc: 'Groove presets (docs/CONVENTIONS.md section 4): the same defs as the standard library in site/engine/groove.js, shipped as pack content so they have a namespace, a folder and tags. A program or pack def of the same name wins.' }, defs: grooveDefs } });
 const skeleton = (imports, binds, lanes) => ['setcpm(140/4)', ...imports, ...binds, ...lanes].join('\n');
 const VOICES = T.voices; const lane = (as, v, tag) => `${tag ? tag + '_' : ''}${v}: ${T.src[v]}(atoms.${as}.${v}).velocity(atoms.${as}.${v}Vel).use("${tag ? tag + '/' : ''}${v}", { mode: "swap" })${tag ? `.tags("${tag}")` : ''}`;
 if (feelsFam) {
@@ -161,7 +165,7 @@ const NEWLABELS = [['hip-hop', 'Hip-hop', 'feel', 'boom bap, rap beat, backdrop'
 const cat = rd(path.join(ROOT, 'site/data/catalog.json'));
 for (const [id, title, category, words] of NEWLABELS) if (!cat.labels.some((l) => l.id === id)) cat.labels.push({ id, title, category, words: words.split(', ') });
 const labelIds = new Set(cat.labels.map((l) => l.id)); for (const r of catRecipes) for (const l of r.labels) if (!labelIds.has(l)) die(`recipe ${r.id}: unknown label ${l}`);
-cat.recipes = [...cat.recipes.filter((r) => r.origin !== 'concepts'), ...catRecipes]; { const ids = cat.recipes.map((r) => r.id); if (new Set(ids).size !== ids.length) die('duplicate catalog id'); }
+cat.recipes = [...cat.recipes.filter((r) => r.origin !== 'concepts'), ...catRecipes].map((r) => { const tx = TX.recipeTaxonomy(r); const { folder, tags, ...rest } = r; return { ...rest, folder: tx.folder, tags: tx.tags }; }); // folder and tags are derived (tools/concepts/taxonomy.mjs) { const ids = cat.recipes.map((r) => r.id); if (new Set(ids).size !== ids.length) die('duplicate catalog id'); }
 put('site/data/catalog.json', JSON.stringify(cat, null, 1).replace(/"(peak|rms_dbfs|bpm_hint)": (-?\d+)(,?)\n/g, '"$1": $2.0$3\n')); // same text as engine/strudel/build_catalog.py (Python floats)
 const synText = fs.readFileSync(path.join(ROOT, 'site/data/syntax.json'), 'utf8');
 const oldEx = new Map(JSON.parse(synText).sections.flatMap((s) => s.examples).map((e) => [e.title, e]));

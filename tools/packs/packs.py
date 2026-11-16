@@ -196,7 +196,8 @@ def validate_pack(root):
         mi = re.match(r"^/ingredients/(\d+)(?:/(code|modules))?", ptr)
         if mi and int(mi[1]) in undeclared and (mi[2] or "code" in msg or "modules" in msg):
             continue
-        E.append(("E_PACK_SCHEMA", ptr or "/", msg))
+        E.append((schema_code(ptr, msg), ptr or "/", msg))
+    check_manifest_taxonomy(man, E, W)
 
     seen = set()
     for i, ing in enumerate(ings):
@@ -276,6 +277,58 @@ def check_assets(root, a, where, E):
         E.append(("E_PACK_HASH", f"{where}/files", f"files is {a['files']}, found {len(actual)}"))
 
 
+FOLDER_RE = re.compile(r"^[a-z0-9][a-z0-9-]*(/[a-z0-9][a-z0-9-]*){0,7}$")  # mirrors site/engine/taxonomy.js FOLDER_RE
+TAG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,31}$")  # mirrors TAG_RE
+TAXONOMY = {}  # the pack being validated: {tags: set | None}; set by validate_pack, read by check_entry_taxonomy
+
+
+def schema_code(ptr, msg):
+    """a schema failure on a folder path is E_PACK_FOLDER (PACK_SPEC 13), anything else E_PACK_SCHEMA"""
+    return "E_PACK_FOLDER" if re.search(r"(/folder$|/taxonomy/folders\b)", ptr or "") else "E_PACK_SCHEMA"
+
+
+def check_manifest_taxonomy(man, E, W):
+    tax = man.get("taxonomy")
+    TAXONOMY.clear()
+    TAXONOMY["tags"] = None
+    if not isinstance(tax, dict):
+        return
+    tags = tax.get("tags") if isinstance(tax.get("tags"), dict) else {}
+    TAXONOMY["tags"] = set(tags) if tags else None
+    for g in tax.get("priority") or []:
+        known = set(tags) | set((tax.get("groups") or {}))
+        if isinstance(g, str) and g not in known:
+            W.append(("W_PACK_TAG", "/taxonomy/priority", f"{g!r} is neither a tag nor a group of this taxonomy"))
+    for t, v in tags.items():
+        grp = isinstance(v, dict) and v.get("group")
+        if grp and grp not in (tax.get("groups") or {}):
+            W.append(("W_PACK_TAG", f"/taxonomy/tags/{t}/group", f"group {grp!r} is not declared in taxonomy.groups"))
+
+
+def check_entry_taxonomy(kind, data, ing, E, W):
+    """folder paths of entries (E_PACK_FOLDER is raised by the schema; this checks the vocabulary) and unknown tags (W_PACK_TAG)"""
+    vocab = TAXONOMY.get("tags")
+    if not isinstance(data, dict):
+        return
+    if kind == "recipes":
+        its = [(r.get("id"), r) for r in data.get("recipes") or [] if isinstance(r, dict)]
+    elif kind == "atoms":
+        its = [(a.get("name"), a) for a in (data.get("atoms") or {}).values() if isinstance(a, dict)]
+    elif kind == "hooks":
+        its = [(n, d) for n, d in (data.get("defs") or {}).items() if isinstance(d, dict)]
+    else:
+        return
+    names = [i for i, _ in its]
+    for item, it in its:
+        for a in it.get("aliases") or []:
+            if a in names and a != item:
+                E.append(("E_PACK_ID", f"{ing['path']}#{item}", f"alias {a!r} is also an item id of this ingredient"))
+        if vocab is not None:
+            for t in it.get("tags") or []:
+                if isinstance(t, str) and TAG_RE.match(t) and t not in vocab:
+                    W.append(("W_PACK_TAG", f"{ing['path']}#{item}", f"tag {t!r} is not in the pack taxonomy (free tags are allowed)"))
+
+
 def validate_entry(root, ing, b, raw, kinds, items, E, W, newer):
     kind, fmt = ing.get("kind"), ing.get("format", "")
     k = kinds.get(kind)
@@ -298,7 +351,8 @@ def validate_entry(root, ing, b, raw, kinds, items, E, W, newer):
         # a path error already reported at or below this pointer explains the schema complaint too
         if any(ptr == f or ptr.startswith(f + "/") or f.startswith(ptr + "/") for f in pathflag):
             continue
-        E.append(("E_PACK_SCHEMA", f"{ing['path']}#{ptr or '/'}", msg))
+        E.append((schema_code(ptr, msg), f"{ing['path']}#{ptr or '/'}", msg))
+    check_entry_taxonomy(kind, data, ing, E, W)
     if kind in LIST_ITEMS and isinstance(data, dict):
         key, idk = LIST_ITEMS[kind]
         for it in data.get(key) or []:

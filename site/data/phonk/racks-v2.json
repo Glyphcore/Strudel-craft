@@ -30,6 +30,13 @@
      "duckattack",
      0.23
     ]
+   ],
+   "folder": "dovetail/moves",
+   "tags": [
+    "dovetail",
+    "rack",
+    "transition",
+    "phonk"
    ]
   },
   "tom": {
@@ -70,6 +77,12 @@
      "gain",
      0.85
     ]
+   ],
+   "folder": "racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "phonk"
    ]
   },
   "rimshot": {
@@ -106,6 +119,12 @@
      "gain",
      0.6
     ]
+   ],
+   "folder": "racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "phonk"
    ]
   },
   "slam": {
@@ -114,6 +133,13 @@
      "lpf",
      320
     ]
+   ],
+   "folder": "dovetail/moves",
+   "tags": [
+    "dovetail",
+    "rack",
+    "transition",
+    "phonk"
    ]
   },
   "open": {
@@ -126,6 +152,13 @@
      "room",
      0.5
     ]
+   ],
+   "folder": "dovetail/moves",
+   "tags": [
+    "dovetail",
+    "rack",
+    "transition",
+    "phonk"
    ]
   },
   "swellPad": {
@@ -142,6 +175,13 @@
      "gain",
      0.4
     ]
+   ],
+   "folder": "dovetail/moves",
+   "tags": [
+    "dovetail",
+    "rack",
+    "transition",
+    "phonk"
    ]
   },
   "hush": {
@@ -150,6 +190,13 @@
      "postgain",
      0.5
     ]
+   ],
+   "folder": "dovetail/moves",
+   "tags": [
+    "dovetail",
+    "rack",
+    "transition",
+    "phonk"
    ]
   }
  }

@@ -708,7 +708,15 @@
    "rms_dbfs": null,
    "centroid_hz": null,
    "peak": 0.0,
-   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR909_bd not found! Is it loaded?"
+   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR909_bd not found! Is it loaded?",
+   "folder": "strudel/drums",
+   "tags": [
+    "drums",
+    "four-floor",
+    "driving",
+    "unverified",
+    "needs-samples"
+   ]
   },
   {
    "id": "offbeat-hat",
@@ -730,7 +738,15 @@
    "rms_dbfs": null,
    "centroid_hz": null,
    "peak": 0.0,
-   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR808_hh not found! Is it loaded?"
+   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR808_hh not found! Is it loaded?",
+   "folder": "strudel/drums",
+   "tags": [
+    "drums",
+    "offbeat",
+    "bright",
+    "unverified",
+    "needs-samples"
+   ]
   },
   {
    "id": "euclid-groove",
@@ -752,7 +768,15 @@
    "rms_dbfs": null,
    "centroid_hz": null,
    "peak": 0.0,
-   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR909_bd not found! Is it loaded?"
+   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR909_bd not found! Is it loaded?",
+   "folder": "strudel/drums",
+   "tags": [
+    "drums",
+    "euclid",
+    "syncopated",
+    "unverified",
+    "needs-samples"
+   ]
   },
   {
    "id": "reese-style-detuned-bass",
@@ -778,7 +802,15 @@
    "rms_dbfs": -18.8,
    "centroid_hz": 270,
    "peak": 0.4949,
-   "error": null
+   "error": null,
+   "folder": "strudel/bass",
+   "tags": [
+    "bass",
+    "gritty",
+    "wide",
+    "low-end",
+    "verified"
+   ]
   },
   {
    "id": "sub-bass",
@@ -801,7 +833,14 @@
    "rms_dbfs": -12.8,
    "centroid_hz": 36,
    "peak": 0.4898,
-   "error": null
+   "error": null,
+   "folder": "strudel/bass",
+   "tags": [
+    "bass",
+    "low-end",
+    "dark",
+    "verified"
+   ]
   },
   {
    "id": "pad-swell",
@@ -825,7 +864,16 @@
    "rms_dbfs": -22.1,
    "centroid_hz": 395,
    "peak": 0.28,
-   "error": null
+   "error": null,
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "pad",
+    "floaty",
+    "reverb-big",
+    "chord-progression",
+    "verified"
+   ]
   },
   {
    "id": "filter-sweep-build",
@@ -848,7 +896,15 @@
    "rms_dbfs": -17.8,
    "centroid_hz": 1340,
    "peak": 0.4794,
-   "error": null
+   "error": null,
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "filter-sweep",
+    "build",
+    "movement",
+    "verified"
+   ]
   },
   {
    "id": "riser",
@@ -871,7 +927,15 @@
    "rms_dbfs": -40.7,
    "centroid_hz": 7012,
    "peak": 0.0547,
-   "error": null
+   "error": null,
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "riser",
+    "build",
+    "tense",
+    "verified"
+   ]
   },
   {
    "id": "breakdown-drop-arrangement-over-bars",
@@ -895,7 +959,17 @@
    "rms_dbfs": -21.4,
    "centroid_hz": 452,
    "peak": 0.2583,
-   "error": null
+   "error": null,
+   "folder": "strudel/form",
+   "tags": [
+    "form",
+    "sections",
+    "build-drop",
+    "arrangement",
+    "breakdown",
+    "verified",
+    "needs-samples"
+   ]
   },
   {
    "id": "half-time",
@@ -917,7 +991,15 @@
    "rms_dbfs": null,
    "centroid_hz": null,
    "peak": 0.0,
-   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR808_bd not found! Is it loaded?"
+   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR808_bd not found! Is it loaded?",
+   "folder": "strudel/drums",
+   "tags": [
+    "drums",
+    "half-time",
+    "sparse",
+    "unverified",
+    "needs-samples"
+   ]
   },
   {
    "id": "call-and-response",
@@ -939,7 +1021,14 @@
    "rms_dbfs": -21.6,
    "centroid_hz": 3042,
    "peak": 0.2888,
-   "error": null
+   "error": null,
+   "folder": "strudel/lead",
+   "tags": [
+    "lead",
+    "call-response",
+    "motif",
+    "verified"
+   ]
   },
   {
    "id": "minor-motif",
@@ -961,7 +1050,14 @@
    "rms_dbfs": -21.4,
    "centroid_hz": 637,
    "peak": 0.3426,
-   "error": null
+   "error": null,
+   "folder": "strudel/lead",
+   "tags": [
+    "lead",
+    "motif",
+    "minor",
+    "verified"
+   ]
   },
   {
    "id": "chord-stabs",
@@ -984,7 +1080,15 @@
    "rms_dbfs": -27.8,
    "centroid_hz": 1076,
    "peak": 0.4962,
-   "error": null
+   "error": null,
+   "folder": "strudel/lead",
+   "tags": [
+    "lead",
+    "chord-progression",
+    "voicing",
+    "pluck",
+    "verified"
+   ]
   },
   {
    "id": "sidechain-pump",
@@ -1007,7 +1111,16 @@
    "rms_dbfs": -24.9,
    "centroid_hz": 1024,
    "peak": 0.2583,
-   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound bd not found! Is it loaded?"
+   "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound bd not found! Is it loaded?",
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "sidechain",
+    "dynamics",
+    "driving",
+    "unverified",
+    "needs-samples"
+   ]
   },
   {
    "id": "fade-out",
@@ -1029,7 +1142,14 @@
    "rms_dbfs": -19.0,
    "centroid_hz": 417,
    "peak": 0.3769,
-   "error": null
+   "error": null,
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "fade-out",
+    "dynamics",
+    "verified"
+   ]
   },
   {
    "id": "synth-kick",
@@ -1052,7 +1172,15 @@
    "rms_dbfs": -22.3,
    "centroid_hz": 158,
    "peak": 0.2703,
-   "error": null
+   "error": null,
+   "folder": "strudel/drums",
+   "tags": [
+    "drums",
+    "four-floor",
+    "driving",
+    "low-end",
+    "verified"
+   ]
   },
   {
    "id": "synth-hat-offbeat",
@@ -1074,7 +1202,14 @@
    "rms_dbfs": -34.9,
    "centroid_hz": 10728,
    "peak": 0.2716,
-   "error": null
+   "error": null,
+   "folder": "strudel/drums",
+   "tags": [
+    "drums",
+    "offbeat",
+    "bright",
+    "verified"
+   ]
   },
   {
    "id": "synth-backbeat",
@@ -1096,7 +1231,14 @@
    "rms_dbfs": -40.8,
    "centroid_hz": 3735,
    "peak": 0.1743,
-   "error": null
+   "error": null,
+   "folder": "strudel/drums",
+   "tags": [
+    "drums",
+    "half-time",
+    "sparse",
+    "verified"
+   ]
   },
   {
    "id": "synth-euclid",
@@ -1119,7 +1261,15 @@
    "rms_dbfs": -23.8,
    "centroid_hz": 121,
    "peak": 0.2796,
-   "error": null
+   "error": null,
+   "folder": "strudel/bass",
+   "tags": [
+    "bass",
+    "euclid",
+    "low-end",
+    "hypnotic",
+    "verified"
+   ]
   },
   {
    "id": "syncopated-bass",
@@ -1142,7 +1292,14 @@
    "rms_dbfs": -23.5,
    "centroid_hz": 305,
    "peak": 0.3856,
-   "error": null
+   "error": null,
+   "folder": "strudel/bass",
+   "tags": [
+    "bass",
+    "syncopated",
+    "driving",
+    "verified"
+   ]
   },
   {
    "id": "supersaw-pad",
@@ -1170,7 +1327,15 @@
    "rms_dbfs": -24.8,
    "centroid_hz": 878,
    "peak": 0.3362,
-   "error": null
+   "error": null,
+   "folder": "strudel/pad",
+   "tags": [
+    "pad",
+    "wide",
+    "floaty",
+    "chord-progression",
+    "verified"
+   ]
   },
   {
    "id": "pluck",
@@ -1192,7 +1357,14 @@
    "rms_dbfs": -25.9,
    "centroid_hz": 761,
    "peak": 0.2365,
-   "error": null
+   "error": null,
+   "folder": "strudel/lead",
+   "tags": [
+    "lead",
+    "pluck",
+    "motif",
+    "verified"
+   ]
   },
   {
    "id": "minor-arp",
@@ -1215,7 +1387,15 @@
    "rms_dbfs": -21.9,
    "centroid_hz": 632,
    "peak": 0.2329,
-   "error": null
+   "error": null,
+   "folder": "strudel/lead",
+   "tags": [
+    "lead",
+    "arpeggio",
+    "minor",
+    "motif",
+    "verified"
+   ]
   },
   {
    "id": "chord-progression",
@@ -1238,7 +1418,15 @@
    "rms_dbfs": -17.0,
    "centroid_hz": 660,
    "peak": 0.4823,
-   "error": null
+   "error": null,
+   "folder": "strudel/keys",
+   "tags": [
+    "keys",
+    "chord-progression",
+    "voicing",
+    "minor",
+    "verified"
+   ]
   },
   {
    "id": "root-bass",
@@ -1261,7 +1449,14 @@
    "rms_dbfs": -14.1,
    "centroid_hz": 88,
    "peak": 0.3255,
-   "error": null
+   "error": null,
+   "folder": "strudel/bass",
+   "tags": [
+    "bass",
+    "chord-progression",
+    "low-end",
+    "verified"
+   ]
   },
   {
    "id": "delay-echo",
@@ -1284,7 +1479,15 @@
    "rms_dbfs": -27.0,
    "centroid_hz": 644,
    "peak": 0.1615,
-   "error": null
+   "error": null,
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "delay-echo",
+    "space",
+    "floaty",
+    "verified"
+   ]
   },
   {
    "id": "stereo-jux",
@@ -1308,7 +1511,14 @@
    "rms_dbfs": -24.8,
    "centroid_hz": 691,
    "peak": 0.2777,
-   "error": null
+   "error": null,
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "wide",
+    "stereo",
+    "verified"
+   ]
   },
   {
    "id": "big-reverb",
@@ -1332,7 +1542,16 @@
    "rms_dbfs": -30.2,
    "centroid_hz": 612,
    "peak": 0.2363,
-   "error": null
+   "error": null,
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "reverb-big",
+    "space",
+    "floaty",
+    "sparse",
+    "verified"
+   ]
   },
   {
    "id": "dry-tight",
@@ -1354,7 +1573,14 @@
    "rms_dbfs": -27.2,
    "centroid_hz": 306,
    "peak": 0.2423,
-   "error": null
+   "error": null,
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "dry-tight",
+    "space",
+    "verified"
+   ]
   },
   {
    "id": "phaser-sweep",
@@ -1377,7 +1603,15 @@
    "rms_dbfs": -30.4,
    "centroid_hz": 830,
    "peak": 0.0786,
-   "error": null
+   "error": null,
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "phaser",
+    "movement",
+    "texture-moving",
+    "verified"
+   ]
   },
   {
    "id": "tremolo-pad",
@@ -1400,7 +1634,15 @@
    "rms_dbfs": -24.1,
    "centroid_hz": 952,
    "peak": 0.2388,
-   "error": null
+   "error": null,
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "tremolo",
+    "movement",
+    "floaty",
+    "verified"
+   ]
   },
   {
    "id": "vowel-voice",
@@ -1422,7 +1664,14 @@
    "rms_dbfs": -36.2,
    "centroid_hz": 1190,
    "peak": 0.0794,
-   "error": null
+   "error": null,
+   "folder": "strudel/vox",
+   "tags": [
+    "vox",
+    "formant",
+    "texture-vocal-like",
+    "verified"
+   ]
   },
   {
    "id": "fm-bell",
@@ -1446,7 +1695,16 @@
    "rms_dbfs": -18.2,
    "centroid_hz": 3982,
    "peak": 0.4066,
-   "error": null
+   "error": null,
+   "folder": "strudel/lead",
+   "tags": [
+    "lead",
+    "fm",
+    "bell-like",
+    "bright",
+    "motif",
+    "verified"
+   ]
   },
   {
    "id": "lofi-crunch",
@@ -1468,7 +1726,13 @@
    "rms_dbfs": -22.9,
    "centroid_hz": 4125,
    "peak": 0.25,
-   "error": null
+   "error": null,
+   "folder": "strudel/misc",
+   "tags": [
+    "gritty",
+    "lofi",
+    "verified"
+   ]
   },
   {
    "id": "perlin-drift",
@@ -1491,7 +1755,15 @@
    "rms_dbfs": -21.7,
    "centroid_hz": 854,
    "peak": 0.2994,
-   "error": null
+   "error": null,
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "automation-drift",
+    "movement",
+    "hypnotic",
+    "verified"
+   ]
   },
   {
    "id": "crescendo",
@@ -1514,7 +1786,15 @@
    "rms_dbfs": -33.2,
    "centroid_hz": 633,
    "peak": 0.1371,
-   "error": null
+   "error": null,
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "crescendo",
+    "dynamics",
+    "build",
+    "verified"
+   ]
   },
   {
    "id": "accents",
@@ -1537,7 +1817,15 @@
    "rms_dbfs": -17.5,
    "centroid_hz": 291,
    "peak": 0.422,
-   "error": null
+   "error": null,
+   "folder": "strudel/drums",
+   "tags": [
+    "drums",
+    "accents",
+    "dynamics",
+    "driving",
+    "verified"
+   ]
   },
   {
    "id": "sidechain-synth",
@@ -1560,7 +1848,15 @@
    "rms_dbfs": -19.4,
    "centroid_hz": 695,
    "peak": 0.5799,
-   "error": null
+   "error": null,
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "sidechain",
+    "dynamics",
+    "driving",
+    "verified"
+   ]
   },
   {
    "id": "build-drop",
@@ -1583,7 +1879,15 @@
    "rms_dbfs": -16.9,
    "centroid_hz": 437,
    "peak": 0.6158,
-   "error": null
+   "error": null,
+   "folder": "strudel/form",
+   "tags": [
+    "form",
+    "sections",
+    "build-drop",
+    "arrangement",
+    "verified"
+   ]
   },
   {
    "id": "layers-in",
@@ -1608,7 +1912,15 @@
    "rms_dbfs": -30.0,
    "centroid_hz": 302,
    "peak": 0.3484,
-   "error": null
+   "error": null,
+   "folder": "strudel/form",
+   "tags": [
+    "form",
+    "layers-in",
+    "arrangement",
+    "sections",
+    "verified"
+   ]
   },
   {
    "id": "filter-open-intro",
@@ -1631,7 +1943,15 @@
    "rms_dbfs": -21.6,
    "centroid_hz": 340,
    "peak": 0.2901,
-   "error": null
+   "error": null,
+   "folder": "strudel/form",
+   "tags": [
+    "form",
+    "intro-reveal",
+    "build",
+    "arrangement",
+    "verified"
+   ]
   },
   {
    "id": "random-thin",
@@ -1654,7 +1974,15 @@
    "rms_dbfs": -40.6,
    "centroid_hz": 10623,
    "peak": 0.1448,
-   "error": null
+   "error": null,
+   "folder": "strudel/drums",
+   "tags": [
+    "drums",
+    "probability",
+    "human-feel",
+    "bright",
+    "verified"
+   ]
   },
   {
    "id": "polymeter",
@@ -1678,7 +2006,14 @@
    "rms_dbfs": -21.2,
    "centroid_hz": 344,
    "peak": 0.3197,
-   "error": null
+   "error": null,
+   "folder": "strudel/drums",
+   "tags": [
+    "drums",
+    "polyrhythm",
+    "hypnotic",
+    "verified"
+   ]
   },
   {
    "id": "dark-drone",
@@ -1702,7 +2037,16 @@
    "rms_dbfs": -21.3,
    "centroid_hz": 221,
    "peak": 0.3256,
-   "error": null
+   "error": null,
+   "folder": "strudel/bass",
+   "tags": [
+    "bass",
+    "dark",
+    "drone",
+    "low-end",
+    "movement",
+    "verified"
+   ]
   },
   {
    "id": "sparse-line",
@@ -1725,7 +2069,15 @@
    "rms_dbfs": -31.0,
    "centroid_hz": 650,
    "peak": 0.147,
-   "error": null
+   "error": null,
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "sparse",
+    "floaty",
+    "space",
+    "verified"
+   ]
   },
   {
    "id": "tense-riser",
@@ -1750,7 +2102,15 @@
    "rms_dbfs": -28.9,
    "centroid_hz": 944,
    "peak": 0.134,
-   "error": null
+   "error": null,
+   "folder": "strudel/fx",
+   "tags": [
+    "fx",
+    "tense",
+    "build",
+    "riser",
+    "verified"
+   ]
   },
   {
    "id": "boom-bap-kick",
@@ -1781,7 +2141,16 @@
    "rms_dbfs": -20.0,
    "centroid_hz": 147,
    "peak": 0.3681,
-   "error": null
+   "error": null,
+   "folder": "hiphop/boom-bap/drums",
+   "tags": [
+    "drums",
+    "hiphop",
+    "boom-bap",
+    "syncopated",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "clap-backbeat",
@@ -1811,7 +2180,15 @@
    "rms_dbfs": -44.1,
    "centroid_hz": 2194,
    "peak": 0.0974,
-   "error": null
+   "error": null,
+   "folder": "hiphop/general/drums",
+   "tags": [
+    "drums",
+    "hiphop",
+    "accents",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "trap-hats-rolls",
@@ -1842,7 +2219,16 @@
    "rms_dbfs": -32.9,
    "centroid_hz": 10699,
    "peak": 0.2172,
-   "error": null
+   "error": null,
+   "folder": "hiphop/trap/drums",
+   "tags": [
+    "drums",
+    "trap",
+    "hiphop",
+    "driving",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "open-hat-offbeat",
@@ -1872,7 +2258,15 @@
    "rms_dbfs": -37.1,
    "centroid_hz": 10800,
    "peak": 0.184,
-   "error": null
+   "error": null,
+   "folder": "hiphop/general/drums",
+   "tags": [
+    "drums",
+    "hiphop",
+    "offbeat",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "finger-snaps",
@@ -1903,7 +2297,16 @@
    "rms_dbfs": -42.5,
    "centroid_hz": 3454,
    "peak": 0.1053,
-   "error": null
+   "error": null,
+   "folder": "hiphop/hyphy/drums",
+   "tags": [
+    "drums",
+    "hyphy",
+    "hiphop",
+    "offbeat",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "trap-808-line",
@@ -1934,7 +2337,15 @@
    "rms_dbfs": -15.0,
    "centroid_hz": 76,
    "peak": 0.4893,
-   "error": null
+   "error": null,
+   "folder": "hiphop/trap/bass",
+   "tags": [
+    "bass",
+    "trap",
+    "low-end",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "boom-bap-bass",
@@ -1964,7 +2375,14 @@
    "rms_dbfs": -26.6,
    "centroid_hz": 114,
    "peak": 0.15,
-   "error": null
+   "error": null,
+   "folder": "hiphop/boom-bap/bass",
+   "tags": [
+    "bass",
+    "boom-bap",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "rhodes-keys",
@@ -1995,7 +2413,16 @@
    "rms_dbfs": -28.1,
    "centroid_hz": 280,
    "peak": 0.3105,
-   "error": null
+   "error": null,
+   "folder": "hiphop/general/keys",
+   "tags": [
+    "keys",
+    "hiphop",
+    "chord-progression",
+    "voicing",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "trap-bell-melody",
@@ -2026,7 +2453,16 @@
    "rms_dbfs": -27.0,
    "centroid_hz": 2318,
    "peak": 0.1454,
-   "error": null
+   "error": null,
+   "folder": "hiphop/trap/lead",
+   "tags": [
+    "lead",
+    "trap",
+    "bell-like",
+    "motif",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "cloud-pad",
@@ -2057,7 +2493,15 @@
    "rms_dbfs": -26.6,
    "centroid_hz": 334,
    "peak": 0.1713,
-   "error": null
+   "error": null,
+   "folder": "hiphop/cloud/pad",
+   "tags": [
+    "pad",
+    "cloud",
+    "floaty",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "chopped-chords",
@@ -2088,7 +2532,16 @@
    "rms_dbfs": -36.1,
    "centroid_hz": 2186,
    "peak": 0.1522,
-   "error": null
+   "error": null,
+   "folder": "hiphop/general/lead",
+   "tags": [
+    "lead",
+    "hiphop",
+    "syncopated",
+    "pluck",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "hyphy-lead",
@@ -2118,7 +2571,15 @@
    "rms_dbfs": -28.4,
    "centroid_hz": 2073,
    "peak": 0.1189,
-   "error": null
+   "error": null,
+   "folder": "hiphop/hyphy/lead",
+   "tags": [
+    "lead",
+    "hyphy",
+    "motif",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "vox-tag-synth",
@@ -2149,7 +2610,16 @@
    "rms_dbfs": -43.5,
    "centroid_hz": 680,
    "peak": 0.1093,
-   "error": null
+   "error": null,
+   "folder": "hiphop/general/vox",
+   "tags": [
+    "vox",
+    "hiphop",
+    "formant",
+    "texture-vocal-like",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "vinyl-bed",
@@ -2179,7 +2649,14 @@
    "rms_dbfs": -52.2,
    "centroid_hz": 4786,
    "peak": 0.0097,
-   "error": null
+   "error": null,
+   "folder": "hiphop/general/drums",
+   "tags": [
+    "hiphop",
+    "lofi",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "downlifter",
@@ -2209,7 +2686,15 @@
    "rms_dbfs": -33.8,
    "centroid_hz": 4832,
    "peak": 0.1699,
-   "error": null
+   "error": null,
+   "folder": "hiphop/general/fx",
+   "tags": [
+    "fx",
+    "riser",
+    "filter-sweep",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "boom-bap-beat",
@@ -2240,7 +2725,16 @@
    "rms_dbfs": -18.6,
    "centroid_hz": 5062,
    "peak": 0.6501,
-   "error": null
+   "error": null,
+   "folder": "hiphop/boom-bap/drums",
+   "tags": [
+    "drums",
+    "boom-bap",
+    "hiphop",
+    "syncopated",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "trap-beat",
@@ -2271,7 +2765,16 @@
    "rms_dbfs": -15.0,
    "centroid_hz": 5214,
    "peak": 0.8658,
-   "error": null
+   "error": null,
+   "folder": "hiphop/trap/drums",
+   "tags": [
+    "drums",
+    "trap",
+    "hiphop",
+    "half-time",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "hyphy-bounce-stomp",
@@ -2302,7 +2805,16 @@
    "rms_dbfs": -17.6,
    "centroid_hz": 1131,
    "peak": 0.516,
-   "error": null
+   "error": null,
+   "folder": "hiphop/hyphy/form",
+   "tags": [
+    "form",
+    "hyphy",
+    "sections",
+    "driving",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "hook-drop-bar",
@@ -2333,7 +2845,16 @@
    "rms_dbfs": -20.4,
    "centroid_hz": 375,
    "peak": 0.5341,
-   "error": null
+   "error": null,
+   "folder": "hiphop/general/form",
+   "tags": [
+    "form",
+    "hiphop",
+    "sections",
+    "breakdown",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "drop-last-beat",
@@ -2364,7 +2885,16 @@
    "rms_dbfs": -19.2,
    "centroid_hz": 390,
    "peak": 0.4864,
-   "error": null
+   "error": null,
+   "folder": "hiphop/general/form",
+   "tags": [
+    "form",
+    "hiphop",
+    "sections",
+    "accents",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "beat-switch",
@@ -2395,7 +2925,16 @@
    "rms_dbfs": -18.6,
    "centroid_hz": 4644,
    "peak": 0.6911,
-   "error": null
+   "error": null,
+   "folder": "hiphop/trap/form",
+   "tags": [
+    "form",
+    "trap",
+    "boom-bap",
+    "sections",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "switch-up",
@@ -2426,7 +2965,16 @@
    "rms_dbfs": -18.2,
    "centroid_hz": 356,
    "peak": 0.4864,
-   "error": null
+   "error": null,
+   "folder": "hiphop/hyphy/form",
+   "tags": [
+    "form",
+    "hyphy",
+    "sections",
+    "syncopated",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "dovetail-pickup-fill",
@@ -2457,7 +3005,15 @@
    "rms_dbfs": -20.0,
    "centroid_hz": 551,
    "peak": 0.3681,
-   "error": null
+   "error": null,
+   "folder": "dovetail/pickup",
+   "tags": [
+    "dovetail",
+    "transition",
+    "build",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "dovetail-808-pickup",
@@ -2488,7 +3044,15 @@
    "rms_dbfs": -15.7,
    "centroid_hz": 698,
    "peak": 0.633,
-   "error": null
+   "error": null,
+   "folder": "dovetail/pickup",
+   "tags": [
+    "dovetail",
+    "trap",
+    "low-end",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "dovetail-overlapping-tail",
@@ -2519,7 +3083,15 @@
    "rms_dbfs": -26.9,
    "centroid_hz": 313,
    "peak": 0.2819,
-   "error": null
+   "error": null,
+   "folder": "dovetail/tail",
+   "tags": [
+    "dovetail",
+    "transition",
+    "reverb-big",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "dovetail-call-response",
@@ -2550,7 +3122,15 @@
    "rms_dbfs": -30.8,
    "centroid_hz": 2111,
    "peak": 0.1522,
-   "error": null
+   "error": null,
+   "folder": "dovetail/tail",
+   "tags": [
+    "dovetail",
+    "call-response",
+    "motif",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "dovetail-crossfade",
@@ -2581,7 +3161,15 @@
    "rms_dbfs": -25.4,
    "centroid_hz": 329,
    "peak": 0.3482,
-   "error": null
+   "error": null,
+   "folder": "dovetail/tail",
+   "tags": [
+    "dovetail",
+    "transition",
+    "fade-out",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "dovetail-riser-impact",
@@ -2612,7 +3200,15 @@
    "rms_dbfs": -26.9,
    "centroid_hz": 2982,
    "peak": 0.3586,
-   "error": null
+   "error": null,
+   "folder": "dovetail/tail",
+   "tags": [
+    "dovetail",
+    "riser",
+    "build-drop",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "dovetail-ducked-transition",
@@ -2643,7 +3239,15 @@
    "rms_dbfs": -24.2,
    "centroid_hz": 753,
    "peak": 0.2838,
-   "error": null
+   "error": null,
+   "folder": "dovetail/tail",
+   "tags": [
+    "dovetail",
+    "sidechain",
+    "transition",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "dovetail-delay-throw",
@@ -2674,7 +3278,15 @@
    "rms_dbfs": -20.0,
    "centroid_hz": 514,
    "peak": 0.3681,
-   "error": null
+   "error": null,
+   "folder": "dovetail/tail",
+   "tags": [
+    "dovetail",
+    "delay-echo",
+    "transition",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "dovetail-turnaround",
@@ -2705,7 +3317,15 @@
    "rms_dbfs": -24.3,
    "centroid_hz": 222,
    "peak": 0.3844,
-   "error": null
+   "error": null,
+   "folder": "dovetail/tail",
+   "tags": [
+    "dovetail",
+    "chord-progression",
+    "arrangement",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "groove-mpc-swing",
@@ -2737,7 +3357,16 @@
    "rms_dbfs": -35.0,
    "centroid_hz": 10719,
    "peak": 0.2172,
-   "error": null
+   "error": null,
+   "folder": "groove/swing",
+   "tags": [
+    "groove",
+    "hiphop",
+    "swing",
+    "human-feel",
+    "verified",
+    "approx"
+   ]
   },
   {
    "id": "groove-lazy-snare",
@@ -2769,7 +3398,16 @@
    "rms_dbfs": -20.7,
    "centroid_hz": 7256,
    "peak": 0.5436,
-   "error": null
+   "error": null,
+   "folder": "groove/push",
+   "tags": [
+    "groove",
+    "boom-bap",
+    "swing",
+    "human-feel",
+    "verified",
+    "approx"
+   ]
   },
   {
    "id": "groove-humanize",
@@ -2800,7 +3438,15 @@
    "rms_dbfs": -37.1,
    "centroid_hz": 10376,
    "peak": 0.2236,
-   "error": null
+   "error": null,
+   "folder": "groove/human",
+   "tags": [
+    "groove",
+    "human-feel",
+    "probability",
+    "verified",
+    "approx"
+   ]
   },
   {
    "id": "groove-drag-vs-rush",
@@ -2830,7 +3476,15 @@
    "rms_dbfs": -44.0,
    "centroid_hz": 2162,
    "peak": 0.0966,
-   "error": null
+   "error": null,
+   "folder": "groove/push",
+   "tags": [
+    "groove",
+    "human-feel",
+    "stereo",
+    "verified",
+    "lowered"
+   ]
   },
   {
    "id": "groove-drift",
@@ -2861,7 +3515,15 @@
    "rms_dbfs": -24.1,
    "centroid_hz": 296,
    "peak": 0.3303,
-   "error": null
+   "error": null,
+   "folder": "groove/human",
+   "tags": [
+    "groove",
+    "human-feel",
+    "automation-drift",
+    "verified",
+    "approx"
+   ]
   },
   {
    "id": "feel-boombap",
@@ -2893,7 +3555,17 @@
    "rms_dbfs": -18.9,
    "centroid_hz": 3880,
    "peak": 0.6209,
-   "error": null
+   "error": null,
+   "folder": "hiphop/boom-bap/feel",
+   "tags": [
+    "drums",
+    "boom-bap",
+    "hiphop",
+    "feel",
+    "human-feel",
+    "verified",
+    "approx"
+   ]
   },
   {
    "id": "feel-lazy",
@@ -2925,7 +3597,17 @@
    "rms_dbfs": -19.8,
    "centroid_hz": 3944,
    "peak": 0.5552,
-   "error": null
+   "error": null,
+   "folder": "hiphop/boom-bap/feel",
+   "tags": [
+    "drums",
+    "boom-bap",
+    "feel",
+    "human-feel",
+    "dark",
+    "verified",
+    "approx"
+   ]
   },
   {
    "id": "feel-trap",
@@ -2957,7 +3639,17 @@
    "rms_dbfs": -15.3,
    "centroid_hz": 4575,
    "peak": 0.7925,
-   "error": null
+   "error": null,
+   "folder": "hiphop/trap/feel",
+   "tags": [
+    "drums",
+    "trap",
+    "hiphop",
+    "feel",
+    "half-time",
+    "verified",
+    "approx"
+   ]
   },
   {
    "id": "feel-hyphy",
@@ -2989,7 +3681,17 @@
    "rms_dbfs": -17.8,
    "centroid_hz": 3805,
    "peak": 0.6329,
-   "error": null
+   "error": null,
+   "folder": "hiphop/hyphy/feel",
+   "tags": [
+    "drums",
+    "hyphy",
+    "feel",
+    "driving",
+    "syncopated",
+    "verified",
+    "approx"
+   ]
   },
   {
    "id": "feel-cloud",
@@ -3021,7 +3723,16 @@
    "rms_dbfs": -16.0,
    "centroid_hz": 2308,
    "peak": 0.8811,
-   "error": null
+   "error": null,
+   "folder": "hiphop/cloud/feel",
+   "tags": [
+    "pad",
+    "cloud",
+    "feel",
+    "floaty",
+    "verified",
+    "approx"
+   ]
   }
  ]
 }

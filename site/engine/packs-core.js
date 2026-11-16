@@ -21,6 +21,13 @@ const ITEMS = {
   'hooks': (d) => Object.keys(d.defs || {}).filter((k) => /^[A-Za-z][\w-]*$/.test(k) && !(k in Object.prototype) && !(k in Function.prototype)), // #91: a def is one item; whole-def precedence
   'intellisense': (d) => (d.items || []).map((i) => `${i.category || ''}|${i.label}`),
 };
+// older ids of an item (recipes, atoms, hooks defs: the item's `aliases[]`): a bare reference to an alias resolves to the item (section 9.3 rule 5)
+const ALIASES = {
+  'recipes': (d) => (d.recipes || []).flatMap((r) => (r.aliases || []).map((a) => [a, r.id])),
+  'atoms': (d) => Object.values(d.atoms || {}).flatMap((x) => (x.aliases || []).map((a) => [a, x.name])),
+  'hooks': (d) => Object.entries(d.defs || {}).flatMap(([n, x]) => ((x && x.aliases) || []).map((a) => [a, n])),
+};
+export const itemAliases = (kind, data) => (data && ALIASES[kind] ? ALIASES[kind](data) : []);
 export const itemIds = (kind, data) => (data && ITEMS[kind] ? ITEMS[kind](data) : []);
 
 export const aliasOf = (packId, key) => `${packId.replace('/', '_').replace(/-/g, '_')}__${key}`;
@@ -60,6 +67,12 @@ export function resolve(layers, loaded) {
       }
     }
   }
+  // alias claims: bare alias -> the qualified item it points at; a real item id of the same kind always wins over an alias
+  const aliasClaims = {};
+  for (const p of accepted) for (const ing of loaded[p.id]?.ingredients || []) for (const [alias, id] of itemAliases(ing.kind, ing.data)) {
+    if (claims[ing.kind]?.[alias]) continue;
+    ((aliasClaims[ing.kind] ||= {})[alias] ||= []).push({ pack: p.id, qualified: `${p.id}:${id}`, priority: p.priority, rank: p.rank, seq: p.seq });
+  }
   const resolution = {};
   for (const kind of Object.keys(claims).sort()) {
     const out = (resolution[kind] = {});
@@ -70,6 +83,9 @@ export function resolve(layers, loaded) {
       out[bare] = entry;
       if (entry.shadowed.length) warnings.push({ code: 'W_PACK_SHADOW', message: `${kind}!${bare}: ${entry.winner} wins over ${entry.shadowed.join(', ')}`, kind, name: bare, winner: entry.winner, shadowed: entry.shadowed });
     }
+  }
+  for (const [kind, byAlias] of Object.entries(aliasClaims)) for (const [alias, c] of Object.entries(byAlias)) {
+    c.sort((a, b) => b.priority - a.priority || a.rank - b.rank || a.seq - b.seq); ((resolution[kind] ||= {})[alias]) = { winner: c[0].qualified, shadowed: c.slice(1).map((x) => x.qualified), alias: true };
   }
   warnings.sort((a, b) => cmp(a.kind + a.name, b.kind + b.name));
   return { errors, warnings, resolution };

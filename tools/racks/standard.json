@@ -371,6 +371,20 @@
    "crest_min_db": 1,
    "ultra_max_db": -20,
    "side_low_max_db": -20
+  },
+  "guitar": {
+   "band": [
+    70,
+    8000
+   ],
+   "below_max_db": -24,
+   "above_max_db": -20,
+   "ultra_max_db": -40,
+   "peak_max_db": -6,
+   "side_low_max_db": -30,
+   "phrase": "note(\"[e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [g2,d3,g3] [a2,e3,a3] ~\")",
+   "bars": 2,
+   "doc": "guitar-like voices (glyphcore/rockmetal, #157): low E 82 Hz to a cabinet top near 5-6 kHz; above -20 because amp tiers with drive regrow harmonics after the cab filter (superdough filters run before distort), as for growl"
   }
  }
 }

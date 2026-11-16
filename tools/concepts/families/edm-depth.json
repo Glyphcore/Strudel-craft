@@ -1,0 +1,640 @@
+{
+ "family": "edm-depth",
+ "title": "EDM depth: 16 / 32-bar maps, serial FM and shaping, multiband by layering or bus, resampling, formant chops, stutter and tape stop",
+ "doc": "Deeper EDM families on top of edm-core and dubstep (pack glyphcore/edm, #156; docs/CONVENTIONS.md section 14). New ingredient ids only (racks-edm-depth, atoms-edm-depth, ns ed.); accepted edm-core / dubstep items are untouched. C minor, 140 bpm.",
+ "pack": "glyphcore/edm",
+ "section": {
+  "id": "edm-depth",
+  "title": "EDM depth: maps, FM chains, multiband, resampling, chops, transitions",
+  "explain": "glyphcore/edm depth layer (docs/CONVENTIONS.md 14). Arrangement grammars as gates: ed.m16* (intro 4, build 4, drop 8) and ed.m32* (intro 8, build 8, drop 16 split A / B, the stutter bar, the last beat), ed.phraseEnds, masks. Sound design: serialFM (FM 0.5 -> one shape stage), fmFormant (native talking bass), multiband by layering (moves mbLow, mbMid, mbHigh with one compressor per band) or on a bus with .split; resampling = capture() of a lane window, replayed through a second chain (docs/LANES.md 6); formantChop with vowel and pitch-step atoms; transitions stutterGate, tapeStop, tapeStopMove. Mastering per genre: docs/MASTERING.md and the suno-track-lab master presets.",
+  "needs": "hooks"
+ },
+ "taxonomy": {
+  "folder": "edm/depth",
+  "genres": [
+   "edm"
+  ]
+ },
+ "source": "docs/EDM_REFERENCES.md",
+ "racksIngredient": "racks-edm-depth",
+ "racksTitle": "EDM depth racks",
+ "racksDoc": "Chain-only hook defs of the glyphcore/edm depth layer: serialFM, fmFormant, formantChop, tapeStop (racks) and the moves stutterGate, mbLow, mbMid, mbHigh, tapeStopMove.",
+ "atomsIngredient": {
+  "id": "atoms-edm-depth",
+  "ns": "ed",
+  "title": "EDM depth atoms",
+  "doc": "glyphcore/edm depth atoms (ed.): 16-bar and 32-bar arrangement maps as gates and masks, phrase ends, a fill mask, vocal chop notes, vowels and pitch steps, a growl line. Import with atoms.import(\"pack:glyphcore/edm:atoms-edm-depth\")."
+ },
+ "racks": {
+  "serialFM": {
+   "class": "growl",
+   "doc": "serial FM growl: saw carrier, FM at ratio 0.5 (a sub-octave modulator) with a 6-to-1.5 index envelope, then one shape stage (the only worklet), high-pass 100 Hz; the FM -> waveshaper chain of a heavy bass in one voice within the CLI budget",
+   "chain": [
+    [
+     "hook",
+     "hygiene-growl"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "fm",
+     6
+    ],
+    [
+     "fmh",
+     0.5
+    ],
+    [
+     "fmattack",
+     0.002
+    ],
+    [
+     "fmdecay",
+     0.18
+    ],
+    [
+     "fmsustain",
+     0.25
+    ],
+    [
+     "attack",
+     0.004
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     0.05
+    ],
+    [
+     "hpf",
+     100
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     2600
+    ],
+    [
+     "shape",
+     0.35
+    ],
+    [
+     "gain",
+     0.28
+    ]
+   ]
+  },
+  "fmFormant": {
+   "class": "growl",
+   "doc": "FM formant bass (native): square, FM 2 with a slow index decay, vowel sequence per note (a e o): talking bass without a worklet",
+   "chain": [
+    [
+     "hook",
+     "hygiene-growl"
+    ],
+    [
+     "s",
+     "square"
+    ],
+    [
+     "fm",
+     2
+    ],
+    [
+     "fmh",
+     2
+    ],
+    [
+     "fmdecay",
+     0.3
+    ],
+    [
+     "fmsustain",
+     0.5
+    ],
+    [
+     "vowel",
+     {
+      "$mini": "<a e o e>"
+     }
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     0.05
+    ],
+    [
+     "hpf",
+     100
+    ],
+    [
+     "lpf",
+     3500
+    ],
+    [
+     "gain",
+     0.35
+    ]
+   ]
+  },
+  "formantChop": {
+   "class": "vox",
+   "doc": "formant vocal chop: saw through a vowel, 150 ms, short attack; pitch and vowel come from the pattern (atoms ed.chopNotes, ed.chopVowels)",
+   "chain": [
+    [
+     "hook",
+     "hygiene-vox"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "attack",
+     0.004
+    ],
+    [
+     "decay",
+     0.15
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "release",
+     0.03
+    ],
+    [
+     "hpf",
+     200
+    ],
+    [
+     "lpf",
+     5000
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "tapeStop": {
+   "class": "sweep",
+   "doc": "tape stop: a saw chord falling an octave over 600 ms while its low-pass closes; the native stand-in for a tape-stop on the mix",
+   "chain": [
+    [
+     "hook",
+     "hygiene-sweep"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "note",
+     "c4"
+    ],
+    [
+     "penv",
+     -12
+    ],
+    [
+     "pdecay",
+     0.6
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "decay",
+     0.7
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     300
+    ],
+    [
+     "lpf",
+     3000
+    ],
+    [
+     "lpenv",
+     -2
+    ],
+    [
+     "lpdecay",
+     0.6
+    ],
+    [
+     "gain",
+     0.2
+    ]
+   ]
+  },
+  "stutterGate": {
+   "class": "move",
+   "doc": "stutter: re-trigger the voice as 16ths for the bar it is bound on (a struct gate), the classic pre-drop stutter",
+   "chain": [
+    [
+     "struct",
+     {
+      "$mini": "x*16"
+     }
+    ],
+    [
+     "decay",
+     0.06
+    ],
+    [
+     "sustain",
+     0
+    ]
+   ]
+  },
+  "mbLow": {
+   "class": "move",
+   "doc": "multiband by layering, low band: low-pass 180 Hz (24 dB) and a slow 4:1 compressor; layer it with mbMid and mbHigh on copies of one voice (or use .split for one bus per band)",
+   "chain": [
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     180
+    ],
+    [
+     "compressor",
+     -18
+    ],
+    [
+     "compressorRatio",
+     4
+    ],
+    [
+     "compressorAttack",
+     0.01
+    ],
+    [
+     "compressorRelease",
+     0.12
+    ]
+   ]
+  },
+  "mbMid": {
+   "class": "move",
+   "doc": "multiband by layering, mid band: 180 Hz-2.5 kHz, a fast 6:1 compressor (the OTT-style squash of the body)",
+   "chain": [
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "hpf",
+     180
+    ],
+    [
+     "lpf",
+     2500
+    ],
+    [
+     "compressor",
+     -26
+    ],
+    [
+     "compressorRatio",
+     6
+    ],
+    [
+     "compressorAttack",
+     0.003
+    ],
+    [
+     "compressorRelease",
+     0.08
+    ],
+    [
+     "postgain",
+     0.5
+    ]
+   ]
+  },
+  "mbHigh": {
+   "class": "move",
+   "doc": "multiband by layering, high band: above 2.5 kHz, an 8:1 compressor with a quick release (lifts the fizz)",
+   "chain": [
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "hpf",
+     2500
+    ],
+    [
+     "compressor",
+     -30
+    ],
+    [
+     "compressorRatio",
+     8
+    ],
+    [
+     "compressorAttack",
+     0.002
+    ],
+    [
+     "compressorRelease",
+     0.06
+    ],
+    [
+     "postgain",
+     0.8
+    ]
+   ]
+  },
+  "tapeStopMove": {
+   "class": "move",
+   "doc": "tape-stop move: an octave pitch fall over 500 ms on any voice it is bound on (pitch envelope), for the last beat before a drop",
+   "chain": [
+    [
+     "penv",
+     -12
+    ],
+    [
+     "pdecay",
+     0.5
+    ]
+   ]
+  }
+ },
+ "atoms": {
+  "m16Intro": {
+   "type": "gate",
+   "body": "<5b",
+   "doc": "16-bar map: intro bars 1-4 (intro 4, build 4, drop 8)"
+  },
+  "m16Build": {
+   "type": "gate",
+   "body": "5b..9b",
+   "doc": "16-bar map: build bars 5-8"
+  },
+  "m16Drop": {
+   "type": "gate",
+   "body": "9b..17b",
+   "doc": "16-bar map: drop bars 9-16"
+  },
+  "m32Intro": {
+   "type": "gate",
+   "body": "<9b",
+   "doc": "32-bar map: intro bars 1-8 (intro 8, build 8, drop 16 = 32 bars; the drop splits 8 + 8 for a variation)"
+  },
+  "m32Build": {
+   "type": "gate",
+   "body": "9b..17b",
+   "doc": "32-bar map: build bars 9-16"
+  },
+  "m32Drop": {
+   "type": "gate",
+   "body": "17b..33b",
+   "doc": "32-bar map: drop bars 17-32"
+  },
+  "m32DropA": {
+   "type": "gate",
+   "body": "17b..25b",
+   "doc": "32-bar map: first half of the drop"
+  },
+  "m32DropB": {
+   "type": "gate",
+   "body": "25b..33b",
+   "doc": "32-bar map: second half of the drop (variation: answer bass, extra hits)"
+  },
+  "m32Stutter": {
+   "type": "gate",
+   "body": "16b..17b",
+   "doc": "32-bar map: the last bar of the build (stutter / tape stop / gap)"
+  },
+  "m32LastBeat": {
+   "type": "gate",
+   "body": "16.4b..17b",
+   "doc": "32-bar map: the last beat before the drop"
+  },
+  "phraseEnds": {
+   "type": "gate",
+   "body": "4b..5b, 8b..9b, 12b..13b, 16b..17b, 20b..21b, 24b..25b, 28b..29b, 32b..33b",
+   "doc": "the last bar of every 4-bar phrase (fills every 4, bigger every 8)"
+  },
+  "m16Mask": {
+   "type": "mini",
+   "body": "<0!8 1!8>",
+   "doc": "mask form of the 16-bar drop (plain Strudel)"
+  },
+  "m32Mask": {
+   "type": "mini",
+   "body": "<0!16 1!16>",
+   "doc": "mask form of the 32-bar drop"
+  },
+  "fill4": {
+   "type": "mini",
+   "body": "<0 0 0 1>",
+   "doc": "1 in the 4th bar of every 4: a fill mask"
+  },
+  "chopNotes": {
+   "type": "mini",
+   "body": "c5 ~ eb5 c5 ~ g4 ~ bb4 c5 ~ ~ eb5 ~ f5 eb5 ~",
+   "doc": "vocal chop pitches (C minor)"
+  },
+  "chopVowels": {
+   "type": "mini",
+   "body": "a ~ e a ~ o ~ i a ~ ~ e ~ o a ~",
+   "doc": "vowel per chop (the formant moves with the rhythm)"
+  },
+  "chopStep": {
+   "type": "mini",
+   "body": "<0 3 7 5>",
+   "doc": "pitch step of the whole chop phrase per bar (semitones)"
+  },
+  "growl": {
+   "type": "mini",
+   "body": "c2 ~ c2 c2 ~ ~ eb2 ~ c2 ~ ~ c2 ~ g1 ~ ~",
+   "doc": "bass line for the FM depth demos"
+  },
+  "stutterRoll": {
+   "type": "mini",
+   "body": "x*16",
+   "doc": "16th stutter on the last bar"
+  }
+ },
+ "recipes": [
+  {
+   "id": "ed-serial-fm",
+   "title": "Serial FM into a waveshaper",
+   "intent": "FM at ratio 0.5 with a falling index, then one shape stage.",
+   "labels": [
+    "edm",
+    "growl",
+    "fm"
+   ],
+   "class": "growl",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@growl",
+     "rack": "serialFM"
+    }
+   ]
+  },
+  {
+   "id": "ed-multiband-layers",
+   "title": "Multiband by layering (OTT-style)",
+   "intent": "One growl played three times through low, mid and high band moves.",
+   "labels": [
+    "edm",
+    "compression",
+    "growl"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@growl",
+     "rack": "fmFormant",
+     "move": "mbLow"
+    },
+    {
+     "src": "note",
+     "pat": "@growl",
+     "rack": "fmFormant",
+     "move": "mbMid"
+    },
+    {
+     "src": "note",
+     "pat": "@growl",
+     "rack": "fmFormant",
+     "move": "mbHigh"
+    }
+   ]
+  },
+  {
+   "id": "ed-vocal-chops",
+   "title": "Formant vocal chops",
+   "intent": "Pitched chops whose vowel moves with the rhythm, the whole phrase.",
+   "labels": [
+    "edm",
+    "formant",
+    "texture-vocal-like"
+   ],
+   "class": "vox",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@chopNotes",
+     "rack": "formantChop",
+     "more": ".vowel(\"@chopVowels\").add(note(\"@chopStep\"))"
+    }
+   ]
+  },
+  {
+   "id": "ed-stutter-tapestop",
+   "title": "Stutter and tape stop before the drop",
+   "intent": "A bar of 16th stutter on the bass, then a tape-stop fall on the last.",
+   "labels": [
+    "edm",
+    "transition",
+    "build-drop"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 3,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "<@growl ~ @growl>",
+     "rack": "fmFormant"
+    },
+    {
+     "src": "note",
+     "pat": "<~ [c3,eb3,g3]*16 ~>",
+     "rack": "formantChop",
+     "more": ".vowel(\"a\")"
+    },
+    {
+     "src": "note",
+     "pat": "<~ [~ ~ ~ [c3,eb3,g3]] ~>",
+     "rack": "tapeStop"
+    }
+   ]
+  },
+  {
+   "id": "ed-map16",
+   "title": "16-bar arrangement grammar",
+   "intent": "Intro 4, build 4, drop 8 with masks.",
+   "labels": [
+    "edm",
+    "arrangement",
+    "build-drop"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 16,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@growl",
+     "rack": "fmFormant",
+     "more": ".mask(\"@m16Mask\")"
+    },
+    {
+     "src": "note",
+     "pat": "<c4!4 c4!4 ~!8>",
+     "rack": "formantChop",
+     "more": ".vowel(\"o\").mask(\"<1!8 0!8>\")"
+    }
+   ]
+  }
+ ],
+ "syntax": [
+  {
+   "title": "32-bar map: drop A / B, stutter bar, last beat",
+   "bars": 34,
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-depth\")\nhooks.bind(\"bass\", \"fmFormant\")\nhooks.bind(\"bass\", \"stutterGate\", atoms.ed.m32Stutter)\nhooks.bind(\"bass\", \"tapeStopMove\", atoms.ed.m32LastBeat)\nbass: note(atoms.ed.growl).use(\"bass\", { quant: 0 }).tags(\"low\")\nchop: note(atoms.ed.chopNotes).hook(\"formantChop\").vowel(atoms.ed.chopVowels).mask(\"<0!24 1!8>\")   // drop B adds the chops\ntagged(\"low\").mute(atoms.ed.m32Intro)"
+  },
+  {
+   "title": "Multiband OTT-style on a bus (.split, one compressor per band)",
+   "bars": 2,
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-depth\")\nbass: note(atoms.ed.growl).hook(\"fmFormant\")\n  .split(low => low.lpf(180).compressor(\"-18:4:6:0.01:0.12\"),\n         mid => mid.hpf(180).lpf(2500).compressor(\"-26:6:6:0.003:0.08\"),\n         high => high.hpf(2500).compressor(\"-30:8:6:0.002:0.06\").gain(0.8))"
+  },
+  {
+   "title": "Resampling: capture a bass, replay it through a second chain",
+   "bars": 4,
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-depth\")\n// bounce in place: capture bars 1-2 of the FM bass as audio (CLI: strudel capture IN --name bounce -o bounce.wav;\n// site: the capture picker), then load bounce.wav as a sample and process it again (a second rack): resampling\nbass: note(atoms.ed.growl).hook(\"serialFM\").mask(\"<1 1 0 0>\")\ncapture(\"bounce\", \"bass\", { window: \"1b..3b\", what: [\"audio\"] })"
+  }
+ ]
+}

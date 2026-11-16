@@ -1,0 +1,390 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"Industrial half-time\" (135-145 bpm): heavier and sparser: half-time kit, two anvil hits a bar, metal growl. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/industrial:feel-indhalftime\", { as: \"feel\" }).",
+ "atoms": {
+  "ac0tvxq": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "kick pattern",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:de06729586e457eea6ecbfade8323300f60d93d4dc29d6160834b42c3eb44211"
+  },
+  "aw9yldt": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ax39o0d": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "stampKick | groove-human(1, 0.08, 1)",
+   "doc": "kick rack and groove",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:b32ccc8eb87f0c7b51671d9a0fc441d04fe2d3f0bf8f8772a7997cbb97cc899f"
+  },
+  "a42sl7x": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
+   "doc": "snare pattern",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:525fd0444781900288d0ac6c5358b9391d694346d05e7bca8b3001885e70932c"
+  },
+  "at1b2zk": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a9ty1lm": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "clangSnare | groove-human(1, 0.08, 2)",
+   "doc": "snare rack and groove",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:72dada6dd069158da82c51d02c142b508e061da95b5c3a8de54934c7c1cd1455"
+  },
+  "a3reguk": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~",
+   "doc": "perc pattern",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:17be65d63927e5ac8559997e06b14f788dff6c4172724e85ec84b67a8f1b0245"
+  },
+  "ak0lszr": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "perc accents (velocity)",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a5a5z8n": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "anvil | groove-human(1, 0.08, 3)",
+   "doc": "perc rack and groove",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:db48ebea62d21d5036bc6d494e90c5e99933c005b3d848d72a23e74b4a9673fa"
+  },
+  "axjvvuy": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "hats pattern",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
+  },
+  "a2vcq1p": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "hats accents (velocity)",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a9jqgs9": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "openChain | groove-human(1, 0.08, 4)",
+   "doc": "hats rack and groove",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:c649d85d9999a5ca68ab4a617386351aa010bd0ad5b3c55763458876d57941d0"
+  },
+  "auwqb0b": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c5 ~ ~ ~",
+   "doc": "top pattern",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:37ff2232b3b32d2a4443829460f7ae5878ffd7bc85ec08f7a6058fcd758ab04e"
+  },
+  "a7xmxda": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "agpnp6c": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "servoWhine | groove-human(1, 0.08, 5)",
+   "doc": "top rack and groove",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:8c15e8f7207fd17eec70a182de518909ddc3cff68afd65a057cd45c77af967b5"
+  },
+  "aeb0uv7": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "c2 ~ ~ ~ c2 c2 ~ ~ eb2 ~ ~ ~ c2 ~ ~ ~",
+   "doc": "bass pattern",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "bass",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:eb28a0d6aa9ee38dcc1bc74f43ed0ebd235858b123cee1a04b8b280acc6b891e"
+  },
+  "a2ybxh2": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "bass accents (velocity)",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "bass",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "adegbbg": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "metalGrowl | groove-human(1, 0.08, 6)",
+   "doc": "bass rack and groove",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "bass",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:0878cbd440ba487b405fd1fd54e8c3bfd79db51d754ff4eef02212ebf4b12ae3"
+  },
+  "ai2zks6": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "c3",
+   "doc": "harmony pattern",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "keys",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:14ab704d526a89ba6417135fe7c1d9c6e555ffa4e7b8d2e52b60750ae261c7e7"
+  },
+  "a6wyb7t": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "keys",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "asmd3dx": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "rustBed | groove-human(1, 0.08, 7)",
+   "doc": "harmony rack and groove",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "keys",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:1bdade6865b67b10a1f69ee71bd98de0f7b3b5c5c2f34590b4e1cff25dee3c7d"
+  },
+  "alk9qce": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "fx pattern",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "fx",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "amhkb1t": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "fx",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "apb9zgd": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(1, 0.08, 8)",
+   "doc": "fx rack and groove",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "fx",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:046349d0805748cfe15a78b131c04299f2479abe5c925e85960cb5cdb852ad26"
+  },
+  "ay9c7by": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(1, 0.08, 0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "folder": "industrial/feel/indhalftime",
+   "tags": [
+    "groove",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:c202b0e5d083ed3c57f9a968152ca853699cb16d1caff265a19968f28b33e428"
+  }
+ }
+}

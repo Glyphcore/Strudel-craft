@@ -1,0 +1,270 @@
+{
+ "format": "atoms@1",
+ "name": "ed",
+ "doc": "glyphcore/edm depth atoms (ed.): 16-bar and 32-bar arrangement maps as gates and masks, phrase ends, a fill mask, vocal chop notes, vowels and pitch steps, a growl line. Import with atoms.import(\"pack:glyphcore/edm:atoms-edm-depth\").",
+ "atoms": {
+  "arvgq9i": {
+   "name": "ed.m16Intro",
+   "type": "gate",
+   "rev": 1,
+   "body": "<5b",
+   "doc": "16-bar map: intro bars 1-4 (intro 4, build 4, drop 8)",
+   "folder": "edm/depth/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:b948ae980edbfbd849f063e9a8b9cfa15558699316509a0409a9b997a7164b97"
+  },
+  "az9zums": {
+   "name": "ed.m16Build",
+   "type": "gate",
+   "rev": 1,
+   "body": "5b..9b",
+   "doc": "16-bar map: build bars 5-8",
+   "folder": "edm/depth/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:8fe5d7d352c96fe5d451b94bbf8ce778a44fcc164cd313d03b1368d64b25876f"
+  },
+  "acqzzu9": {
+   "name": "ed.m16Drop",
+   "type": "gate",
+   "rev": 1,
+   "body": "9b..17b",
+   "doc": "16-bar map: drop bars 9-16",
+   "folder": "edm/depth/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:aa0305afd10ee27dfcc6697b7de6b51e1fc03d26b846d76ba7a1b74ca8d95527"
+  },
+  "a2ifpto": {
+   "name": "ed.m32Intro",
+   "type": "gate",
+   "rev": 1,
+   "body": "<9b",
+   "doc": "32-bar map: intro bars 1-8 (intro 8, build 8, drop 16 = 32 bars; the drop splits 8 + 8 for a variation)",
+   "folder": "edm/depth/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:682b3ed43b8fee4e7d78096fb5a20f11794c51be308eca61f576be2f3ed74611"
+  },
+  "a2mewq2": {
+   "name": "ed.m32Build",
+   "type": "gate",
+   "rev": 1,
+   "body": "9b..17b",
+   "doc": "32-bar map: build bars 9-16",
+   "folder": "edm/depth/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:aa0305afd10ee27dfcc6697b7de6b51e1fc03d26b846d76ba7a1b74ca8d95527"
+  },
+  "aqk8gfb": {
+   "name": "ed.m32Drop",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..33b",
+   "doc": "32-bar map: drop bars 17-32",
+   "folder": "edm/depth/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:c33f20398486d2f9485b281c74da91992318b0af0f9836c4688b99a5fe618dc4"
+  },
+  "a75ipoy": {
+   "name": "ed.m32DropA",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..25b",
+   "doc": "32-bar map: first half of the drop",
+   "folder": "edm/depth/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:e67adbd7795bc1c1f3791c53d05bf0d02a7d534c9cbc1129aefcd96ca4a33de1"
+  },
+  "a6vj3zz": {
+   "name": "ed.m32DropB",
+   "type": "gate",
+   "rev": 1,
+   "body": "25b..33b",
+   "doc": "32-bar map: second half of the drop (variation: answer bass, extra hits)",
+   "folder": "edm/depth/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:ea8541ea2cf91679ff0443ad8b4e8369bf4540db6b851780c02185a53a4ff351"
+  },
+  "aestxof": {
+   "name": "ed.m32Stutter",
+   "type": "gate",
+   "rev": 1,
+   "body": "16b..17b",
+   "doc": "32-bar map: the last bar of the build (stutter / tape stop / gap)",
+   "folder": "edm/depth/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:33bc611dbb5abb1837cd6958f13c0b211812aafbee8371412fb22594496fbdbb"
+  },
+  "ae17p3y": {
+   "name": "ed.m32LastBeat",
+   "type": "gate",
+   "rev": 1,
+   "body": "16.4b..17b",
+   "doc": "32-bar map: the last beat before the drop",
+   "folder": "edm/depth/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:1f725f0677b4c60bbfb8e378c98bffdd477d19830557bc490a77560e2c521572"
+  },
+  "ab29q0r": {
+   "name": "ed.phraseEnds",
+   "type": "gate",
+   "rev": 1,
+   "body": "4b..5b, 8b..9b, 12b..13b, 16b..17b, 20b..21b, 24b..25b, 28b..29b, 32b..33b",
+   "doc": "the last bar of every 4-bar phrase (fills every 4, bigger every 8)",
+   "folder": "edm/depth/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:11d1da794f96652235be52e0bcb0f2b0e721ffe8905bf84f101907f71f77f19f"
+  },
+  "a0yt6ik": {
+   "name": "ed.m16Mask",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0!8 1!8>",
+   "doc": "mask form of the 16-bar drop (plain Strudel)",
+   "folder": "edm/depth/misc",
+   "tags": [
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:6fab2cddac8d8837e8b05c3b280f3a90f5c1682db30b1486db98f3fe512c6c99"
+  },
+  "a99cz6q": {
+   "name": "ed.m32Mask",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0!16 1!16>",
+   "doc": "mask form of the 32-bar drop",
+   "folder": "edm/depth/misc",
+   "tags": [
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:d65d06f65dbe2de7e02f1dc36cf4b96f1b754282501e62297c92ce9db85cf626"
+  },
+  "axhojvz": {
+   "name": "ed.fill4",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0 0 0 1>",
+   "doc": "1 in the 4th bar of every 4: a fill mask",
+   "folder": "edm/depth/misc",
+   "tags": [
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:5118a36546127239c95cb863107e30e0eb6db3db242c892edc57c50de456b464"
+  },
+  "aji3tcx": {
+   "name": "ed.chopNotes",
+   "type": "mini",
+   "rev": 1,
+   "body": "c5 ~ eb5 c5 ~ g4 ~ bb4 c5 ~ ~ eb5 ~ f5 eb5 ~",
+   "doc": "vocal chop pitches (C minor)",
+   "folder": "edm/depth/keys",
+   "tags": [
+    "keys",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:a923ed8c714773fa5f299c20dc41a8789059cef837c48fe32a4279471704d783"
+  },
+  "apiwlw2": {
+   "name": "ed.chopVowels",
+   "type": "mini",
+   "rev": 1,
+   "body": "a ~ e a ~ o ~ i a ~ ~ e ~ o a ~",
+   "doc": "vowel per chop (the formant moves with the rhythm)",
+   "folder": "edm/depth/keys",
+   "tags": [
+    "keys",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:a5ca82df96d0c711151dc7c6e23991bbfadc9d3a5b915530e00b85e9ebc4bdff"
+  },
+  "al1ou4u": {
+   "name": "ed.chopStep",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0 3 7 5>",
+   "doc": "pitch step of the whole chop phrase per bar (semitones)",
+   "folder": "edm/depth/keys",
+   "tags": [
+    "keys",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:a4726fc296acc8ada0209755860ea4e56c8f04842c0337aa41b65a840052911d"
+  },
+  "a322ot1": {
+   "name": "ed.growl",
+   "type": "mini",
+   "rev": 1,
+   "body": "c2 ~ c2 c2 ~ ~ eb2 ~ c2 ~ ~ c2 ~ g1 ~ ~",
+   "doc": "bass line for the FM depth demos",
+   "folder": "edm/depth/bass",
+   "tags": [
+    "bass",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:4e2019f094052541900eee851d9cbaf2d29d2d13cb2a93c114797933021c4527"
+  },
+  "a8uoz7m": {
+   "name": "ed.stutterRoll",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*16",
+   "doc": "16th stutter on the last bar",
+   "folder": "edm/depth/drums",
+   "tags": [
+    "drums",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:bc74a3b9e12ebc0770e636fb859180836145824d453b6c0c08e954bc49f4cdaf"
+  }
+ }
+}

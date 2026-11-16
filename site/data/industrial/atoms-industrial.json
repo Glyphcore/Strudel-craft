@@ -1,0 +1,565 @@
+{
+ "format": "atoms@1",
+ "name": "ind",
+ "doc": "glyphcore/industrial atoms (ind.): half-time, four-floor and noise kick patterns, chain / relay / ratchet patterns, hit grammars by density (hits1, hits2, hits4, hits7, hitsGap), riddim / growl / clank / sub / rumble lines, the 64-bar form as gates and masks. Import with atoms.import(\"pack:glyphcore/industrial:atoms-industrial\").",
+ "atoms": {
+  "ans1gqd": {
+   "name": "ind.halfKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "half-time kick: 1 and the and of 3",
+   "folder": "industrial/drums",
+   "tags": [
+    "drums",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:de06729586e457eea6ecbfade8323300f60d93d4dc29d6160834b42c3eb44211"
+  },
+  "a6pcdj4": {
+   "name": "ind.halfSnare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
+   "doc": "half-time snare alone on beat 3",
+   "folder": "industrial/drums",
+   "tags": [
+    "drums",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:525fd0444781900288d0ac6c5358b9391d694346d05e7bca8b3001885e70932c"
+  },
+  "avzwaqc": {
+   "name": "ind.fourKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "four on the floor (mechanical techno)",
+   "folder": "industrial/drums",
+   "tags": [
+    "drums",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:0217ca393e7b9e240d8b3ffed67e975f3934d9a9f1303a227193b90afe293ac5"
+  },
+  "aw87r3z": {
+   "name": "ind.backClap",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "clap on 2 and 4",
+   "folder": "industrial/drums",
+   "tags": [
+    "drums",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
+  },
+  "adlldci": {
+   "name": "ind.noiseKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ x ~ ~ ~ ~ x ~ x ~ ~ ~ ~ ~",
+   "doc": "noise-industrial kick: irregular, 1, the a of 1, 3, the and of 3",
+   "folder": "industrial/drums",
+   "tags": [
+    "drums",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:9fa8856c71ef9cf4f0918f60b6e7e938f2a098ca05ed51c09b225f444cb09d1c"
+  },
+  "awaf79o": {
+   "name": "ind.chain16",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*16",
+   "doc": "chain rattle on every 16th",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:bc74a3b9e12ebc0770e636fb859180836145824d453b6c0c08e954bc49f4cdaf"
+  },
+  "a3mm7t6": {
+   "name": "ind.chainVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[.5 .3 .8 .3]*4",
+   "doc": "chain accents: the and of each beat loudest",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:cc3444ebdd1bfc6f4bd2aa650e7fd5abeb21dd2f703a1a7ef1174154e324c091"
+  },
+  "anjapu4": {
+   "name": "ind.offChain",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "open chain on the offbeat 8ths",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
+  },
+  "as2l5zy": {
+   "name": "ind.ratchetFill",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ [x x] [x x] [x x x] [x x x]",
+   "doc": "ratchet run into the next bar (32nds then triplet 32nds)",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:bf2271eea1d5541d757dda7cfd41099252e995fb6bebb3a0a7894597f4922764"
+  },
+  "aqmhvc8": {
+   "name": "ind.relays",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ x ~ ~ ~ ~ x ~ ~ ~ ~ x ~ ~ ~ ~",
+   "doc": "relay ticks in the drum gaps",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:9231d824ac5814d53522d1bb196b15527d97664582832f7f18a53a03d235d31e"
+  },
+  "a7fv98r": {
+   "name": "ind.hits1",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~",
+   "doc": "hit grammar, sparse (1 per bar): one clang on the a of 4, a pickup into the next bar (intros, breakdowns)",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:fb79dbca31d6d3b0fd2c97530fdd30137eef3fa063542ef873e21fab31a21a6f"
+  },
+  "a7puuxq": {
+   "name": "ind.hits2",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~",
+   "doc": "hit grammar, sparse (2 per bar): the a of 1 and the a of 4, answering the kick",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:17be65d63927e5ac8559997e06b14f788dff6c4172724e85ec84b67a8f1b0245"
+  },
+  "a89u2bo": {
+   "name": "ind.hits4",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ x ~ ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "hit grammar, mid (4 per bar): in the gaps of the half-time kick and snare (builds, verse-like drop halves)",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:7d40a628cadc2cb1bf7ceb68f73c5836aaea2be22982462abf3dd6695aff747d"
+  },
+  "a93svel": {
+   "name": "ind.hits7",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ x ~ ~ x ~ x ~ ~ x ~ x ~ ~ x",
+   "doc": "hit grammar, dense (7 per bar): 3+3+2 accents; fills and the last bar of a drop phrase",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:77d6f7d291f5be471313040bcd26785615d22a25a48df8cd76f32da44f043119"
+  },
+  "ap3kjz0": {
+   "name": "ind.hitsGap",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~",
+   "doc": "hits only where the half-time kick and snare are silent (call and response with the drums)",
+   "folder": "industrial/fx",
+   "tags": [
+    "fx",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:4314d567b97d826c310e6c4ffd87ad0a3d39c9eb5836783c7abdf58305921329"
+  },
+  "a2wet8j": {
+   "name": "ind.riddimLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "c2 ~ ~ c2 ~ ~ c2 ~ ~ ~ c2 ~ c2 ~ ~ ~",
+   "doc": "riddim: one note in a 3+3+4+2+4 spacing; repetition and gaps are the hook",
+   "folder": "industrial/bass",
+   "tags": [
+    "bass",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:9a189a018500b5dfdc5c7630037ad70014d89cbc79dbed0b838b2b26dd41953b"
+  },
+  "au2wpoo": {
+   "name": "ind.riddimAlt",
+   "type": "mini",
+   "rev": 1,
+   "body": "c2 ~ c2 ~ ~ c2 ~ ~ eb2 ~ ~ c2 ~ ~ g1 ~",
+   "doc": "riddim answer: the same pulse moving to Eb2 and G1 (second half of a call / response)",
+   "folder": "industrial/bass",
+   "tags": [
+    "bass",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:afc1340ce59dea8b18057befd821a42faf29b39ae7d75bdb0ea01913dc7ff33f"
+  },
+  "aew3lht": {
+   "name": "ind.growlLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "c2 ~ ~ ~ c2 c2 ~ ~ eb2 ~ ~ ~ c2 ~ ~ ~",
+   "doc": "growl line for metalGrowl",
+   "folder": "industrial/bass",
+   "tags": [
+    "bass",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:eb28a0d6aa9ee38dcc1bc74f43ed0ebd235858b123cee1a04b8b280acc6b891e"
+  },
+  "akvsd2t": {
+   "name": "ind.clankLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "c2 ~ ~ ~ ~ ~ c2 ~ ~ ~ ~ ~ c2 ~ ~ ~",
+   "doc": "clank bass on a 3-against-4 spacing (dotted quarters)",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:94394a51df4e52397d1d3ea60a2f0ca21164a737a9c80f0c3ce52f5b0209ca5c"
+  },
+  "a5pq302": {
+   "name": "ind.subLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "c1@10 c1@6",
+   "doc": "sub under the half-time kick, each note held to the next (no envelope sidebands under 20 Hz)",
+   "folder": "industrial/bass",
+   "tags": [
+    "bass",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:aa771f19c0611208ec585148bd719a52d0a01218ea9672cedbe092f9af646597"
+  },
+  "abd06b9": {
+   "name": "ind.rumbleLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ c2 c2 c2 ~ c2 c2 c2 ~ c2 c2 c2 ~ c2 c2 c2",
+   "doc": "press bass rolling in the 16ths the kick leaves free",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:47f589c1709f5a815011509d82ef8241b16399862db5d8d239b7954de6621b66"
+  },
+  "aubcmp9": {
+   "name": "ind.servoLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c5 ~ ~ ~",
+   "doc": "servo whine on the 4 of the bar",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:37ff2232b3b32d2a4443829460f7ae5878ffd7bc85ec08f7a6058fcd758ab04e"
+  },
+  "as8ntpl": {
+   "name": "ind.bed",
+   "type": "mini",
+   "rev": 1,
+   "body": "x",
+   "doc": "one held texture note per bar",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:857b6b1c9bbefde11ebf65bcc7763f81dbb7ffac3ab6a7cb7b65e74c6a468988"
+  },
+  "aag9ncc": {
+   "name": "ind.intro",
+   "type": "gate",
+   "rev": 1,
+   "body": "<9b",
+   "doc": "intro: bars 1-8 (form: intro 8, build 8, drop 1 16, break 8, build 2 8, drop 2 16 = 64 bars)",
+   "folder": "industrial/form",
+   "tags": [
+    "form",
+    "industrial",
+    "gate"
+   ],
+   "hash": "sha256:682b3ed43b8fee4e7d78096fb5a20f11794c51be308eca61f576be2f3ed74611"
+  },
+  "akytcoq": {
+   "name": "ind.build",
+   "type": "gate",
+   "rev": 1,
+   "body": "9b..17b",
+   "doc": "build: bars 9-16",
+   "folder": "industrial/form",
+   "tags": [
+    "form",
+    "industrial",
+    "gate"
+   ],
+   "hash": "sha256:aa0305afd10ee27dfcc6697b7de6b51e1fc03d26b846d76ba7a1b74ca8d95527"
+  },
+  "atumur6": {
+   "name": "ind.drop1",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..33b",
+   "doc": "drop 1: bars 17-32",
+   "folder": "industrial/form",
+   "tags": [
+    "form",
+    "industrial",
+    "gate"
+   ],
+   "hash": "sha256:c33f20398486d2f9485b281c74da91992318b0af0f9836c4688b99a5fe618dc4"
+  },
+  "a155947": {
+   "name": "ind.brk",
+   "type": "gate",
+   "rev": 1,
+   "body": "33b..41b",
+   "doc": "break: bars 33-40",
+   "folder": "industrial/form",
+   "tags": [
+    "form",
+    "industrial",
+    "gate"
+   ],
+   "hash": "sha256:617023ebca66e9349d1bcd979a75157982955f16401d2efa4c3ecfc446faae91"
+  },
+  "ayqdmqg": {
+   "name": "ind.build2",
+   "type": "gate",
+   "rev": 1,
+   "body": "41b..49b",
+   "doc": "build 2: bars 41-48",
+   "folder": "industrial/form",
+   "tags": [
+    "form",
+    "industrial",
+    "gate"
+   ],
+   "hash": "sha256:8c50af24bfda6019715596b38fd6bad553543348ee71e372c72f582173f23ac1"
+  },
+  "atkn927": {
+   "name": "ind.drop2",
+   "type": "gate",
+   "rev": 1,
+   "body": "49b..65b",
+   "doc": "drop 2: bars 49-64 (switch-up: new hit grammar, same kit)",
+   "folder": "industrial/form",
+   "tags": [
+    "form",
+    "industrial",
+    "gate"
+   ],
+   "hash": "sha256:b44a516be8de9c18dd368fc05604b79cf05ecb8da9cccd316fb50b5329d2ed53"
+  },
+  "abjd2z0": {
+   "name": "ind.drops",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..33b, 49b..65b",
+   "doc": "both drops",
+   "folder": "industrial/form",
+   "tags": [
+    "form",
+    "industrial",
+    "gate"
+   ],
+   "hash": "sha256:bbeb1a358271cc1f9d713526a1080f4dc53048a57450ff729ce8de1969d69a5a"
+  },
+  "a3ae9cf": {
+   "name": "ind.notDrops",
+   "type": "gate",
+   "rev": 1,
+   "body": "<17b, 33b..49b",
+   "doc": "everything but the drops",
+   "folder": "industrial/form",
+   "tags": [
+    "form",
+    "industrial",
+    "gate"
+   ],
+   "hash": "sha256:5f1af3c1ccf35362620775d2be9632350a97e848cec3389171f7a9a37c630427"
+  },
+  "ah92o17": {
+   "name": "ind.builds",
+   "type": "gate",
+   "rev": 1,
+   "body": "9b..17b, 41b..49b",
+   "doc": "both builds",
+   "folder": "industrial/form",
+   "tags": [
+    "form",
+    "industrial",
+    "gate"
+   ],
+   "hash": "sha256:386a3b627a8cded368349e7754259a9afe8bcaf8e098e40f17e280979233d6bc"
+  },
+  "afwuhyd": {
+   "name": "ind.vacuum",
+   "type": "gate",
+   "rev": 1,
+   "body": "16.3b..17b, 48.3b..49b",
+   "doc": "the last half bar before each drop: everything but the riser stops",
+   "folder": "industrial/form",
+   "tags": [
+    "form",
+    "industrial",
+    "gate"
+   ],
+   "hash": "sha256:adf839d7ce29944881fd341a59a5714ae952299f1321b21c2c44abfdaec19a34"
+  },
+  "a92imzq": {
+   "name": "ind.pickup",
+   "type": "gate",
+   "rev": 1,
+   "body": "16.4b..17b, 48.4b..49b",
+   "doc": "the last beat before each drop: a clang or ratchet pickup",
+   "folder": "industrial/form",
+   "tags": [
+    "form",
+    "industrial",
+    "gate"
+   ],
+   "hash": "sha256:2d49bf4dfa7c4ba199ff0bc87bed4441828d28cda7cc6577262a08a8428ca5b8"
+  },
+  "a9dp6ok": {
+   "name": "ind.phraseEnd",
+   "type": "gate",
+   "rev": 1,
+   "body": "8b..9b, 16b..17b, 24b..25b, 32b..33b, 40b..41b, 48b..49b, 56b..57b, 64b..65b",
+   "doc": "the last bar of every 8-bar phrase: fills (hits7, ratchetFill)",
+   "folder": "industrial/form",
+   "tags": [
+    "form",
+    "industrial",
+    "gate"
+   ],
+   "hash": "sha256:0253af15de56f16656c6aefb85be80474ff97e83c6fd51179ce5a20d041f7cb1"
+  },
+  "aozdcm5": {
+   "name": "ind.mDrops",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0!16 1!16 0!16 1!16>",
+   "doc": "mask form of ind.drops (plain Strudel)",
+   "folder": "industrial/form",
+   "tags": [
+    "form",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:e58543a94757c7dc5a2e56a650ccf3cfd625dad4fdf322189d8538df3bd60d5e"
+  },
+  "av4te00": {
+   "name": "ind.mBuilds",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0!8 1!8 0!24 1!8 0!16>",
+   "doc": "mask form of ind.builds",
+   "folder": "industrial/form",
+   "tags": [
+    "form",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:1e5e39d64e66ed8874c291b012b4cd76c00b94f9caa1f7ff9c2c4a790636e930"
+  },
+  "a1ny7lw": {
+   "name": "ind.mNotDrops",
+   "type": "mini",
+   "rev": 1,
+   "body": "<1!16 0!16 1!16 0!16>",
+   "doc": "mask form of ind.notDrops",
+   "folder": "industrial/form",
+   "tags": [
+    "form",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:e1993fd799ee5b14781aef63ecc9af15c88ce74f6e898142be848a01946c3c11"
+  },
+  "azoixxk": {
+   "name": "ind.relayNotes",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ c4 ~ ~ ~ ~ c4 ~ ~ ~ ~ c4 ~ ~ ~ ~",
+   "doc": "relay ticks as notes (for the feel's top slot, which is a note lane; the click ignores the pitch)",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:5975bd8a6886400d79ca357cc2084b83af0a15cf0c7170f066d77784dd422db4"
+  },
+  "aytjg75": {
+   "name": "ind.bedNote",
+   "type": "mini",
+   "rev": 1,
+   "body": "c3",
+   "doc": "one held texture note per bar (the feel's harmony slot is a note lane; noise ignores the pitch)",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:14ab704d526a89ba6417135fe7c1d9c6e555ffa4e7b8d2e52b60750ae261c7e7"
+  },
+  "aclq5pz": {
+   "name": "ind.shards",
+   "type": "mini",
+   "rev": 1,
+   "body": "[c6*8]",
+   "doc": "shatter shards as 8th notes for the top slot",
+   "folder": "industrial/misc",
+   "tags": [
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:4e5026fd4f697f57b4d5ab2114e288190029917773f04096e7b4abc73c133ec6"
+  }
+ }
+}

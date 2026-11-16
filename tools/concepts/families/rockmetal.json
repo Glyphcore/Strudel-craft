@@ -1,0 +1,1970 @@
+{
+ "family": "rockmetal",
+ "title": "Rock and metal: synthesized guitar tiers, bass guitar, rock / metal kits, riff grammar, song form, five feels",
+ "doc": "Pack glyphcore/rockmetal (CC0-1.0, docs/CONVENTIONS.md section 13, sources docs/ROCKMETAL_REFERENCES.md). E minor throughout (E2 = 82 Hz power chords, E1 bass), one cycle = one bar of 4/4 on 16 steps. Guitars are native plucked-string approximations with amp tiers; only gtrHigh and chugHigh use one distort stage.",
+ "pack": "glyphcore/rockmetal",
+ "section": {
+  "id": "rockmetal",
+  "title": "Rock and metal: guitars, bass, kits, riffs, forms, feels",
+  "explain": "Pack glyphcore/rockmetal (docs/CONVENTIONS.md 13; sources docs/ROCKMETAL_REFERENCES.md). E minor. Guitar-like voices (class guitar, 70-8000 Hz): gtrClean, gtrCrunch, palmMute (native), gtrHigh, chugHigh (one distort stage, cab low-pass before it); gtrLead, gtrHarmonic, feedbackSwell; bass guitar bassFinger, bassPick; kits rockKick, metalKick, rockSnare, rockHat, rockRide, crashCym, rockTom; organ, rockStrings, vowelVox (no words). Atoms rm.: rock / shuffle / half-time / double-kick / blast / thrash / doom drum patterns, fills, power chords pI .. pbVII, riff cells riffA / riffB / riff (A A A B), chug, gallop, breakdown (3+3+4+2+4), phrygian and doom riffs, bass lines, lead, chords, a 72-bar song form as gates. Five feels: feel-rock, feel-shuffle, feel-rockhalftime, feel-thrash, feel-doom.",
+  "needs": "hooks"
+ },
+ "taxonomy": {
+  "folder": "rockmetal",
+  "genres": [
+   "rock",
+   "metal"
+  ]
+ },
+ "source": "docs/ROCKMETAL_REFERENCES.md",
+ "racksIngredient": "racks-rockmetal",
+ "racksTitle": "Rock and metal racks",
+ "racksDoc": "Chain-only hook defs of glyphcore/rockmetal: guitar tiers (clean, crunch, high gain), palm mutes and chugs, lead, harmonics, feedback, bass guitar, rock / metal drums, organ, strings, vowel voice; every rack starts with its hygiene rack (class guitar is new: docs/RACK_STANDARD.md section 10).",
+ "atomsIngredient": {
+  "id": "atoms-rockmetal",
+  "ns": "rm",
+  "title": "Rock and metal atoms",
+  "doc": "glyphcore/rockmetal atoms (rm.): drum patterns (rock, shuffle, half-time, double kick, blast, thrash, doom), fills, power chords, riff cells and grammar (A A A B), chug, gallop, breakdown, bass and lead lines, chords, the 72-bar song form as gates. Import with atoms.import(\"pack:glyphcore/rockmetal:atoms-rockmetal\")."
+ },
+ "labels": [
+  [
+   "rock",
+   "Rock",
+   "feel",
+   "guitar band, riff, backbeat, power chords"
+  ],
+  [
+   "metal",
+   "Metal",
+   "feel",
+   "heavy, high gain, double kick, chug, riff"
+  ],
+  [
+   "guitar",
+   "Guitar",
+   "timbre",
+   "plucked string, amp, power chord, palm mute"
+  ]
+ ],
+ "racks": {
+  "gtrClean": {
+   "class": "guitar",
+   "doc": "clean guitar: saw + triangle, low-pass 3 kHz with a 2-octave envelope falling in 300 ms (the string losing its highs), 800 ms decay to 20 %, small room; a plucked-string approximation with native voices (superdough has no Karplus-Strong voice)",
+   "chain": [
+    [
+     "hook",
+     "hygiene-guitar"
+    ],
+    [
+     "s",
+     {
+      "$mini": "sawtooth, triangle"
+     }
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "decay",
+     0.8
+    ],
+    [
+     "sustain",
+     0.2
+    ],
+    [
+     "release",
+     0.2
+    ],
+    [
+     "hpf",
+     80
+    ],
+    [
+     "lpf",
+     1500
+    ],
+    [
+     "lpenv",
+     2
+    ],
+    [
+     "lpdecay",
+     0.3
+    ],
+    [
+     "room",
+     0.15
+    ],
+    [
+     "size",
+     0.3
+    ],
+    [
+     "gain",
+     0.22
+    ]
+   ]
+  },
+  "gtrCrunch": {
+   "class": "guitar",
+   "doc": "crunch tier (native): saw + square with low-index FM at ratio 2 (even-harmonic grit, no worklet), a 2 kHz resonant amp-mid hump, high-pass 90 Hz",
+   "chain": [
+    [
+     "hook",
+     "hygiene-guitar"
+    ],
+    [
+     "s",
+     {
+      "$mini": "sawtooth, square"
+     }
+    ],
+    [
+     "fm",
+     0.5
+    ],
+    [
+     "fmh",
+     2
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "decay",
+     0.5
+    ],
+    [
+     "sustain",
+     0.5
+    ],
+    [
+     "release",
+     0.1
+    ],
+    [
+     "hpf",
+     90
+    ],
+    [
+     "lpf",
+     2000
+    ],
+    [
+     "lpq",
+     2
+    ],
+    [
+     "lpenv",
+     1
+    ],
+    [
+     "lpdecay",
+     0.2
+    ],
+    [
+     "gain",
+     0.1
+    ]
+   ]
+  },
+  "gtrHigh": {
+   "class": "guitar",
+   "doc": "high-gain tier: saw + square into one distort stage (the only worklet stage of the pack, RACK_STANDARD 9), cab low-pass 3.2 kHz (24 dB, pre-drive: superdough order), tight high-pass 100 Hz",
+   "chain": [
+    [
+     "hook",
+     "hygiene-guitar"
+    ],
+    [
+     "s",
+     {
+      "$mini": "sawtooth, square"
+     }
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "decay",
+     0.4
+    ],
+    [
+     "sustain",
+     0.7
+    ],
+    [
+     "release",
+     0.08
+    ],
+    [
+     "hpf",
+     100
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     3200
+    ],
+    [
+     "lpq",
+     1.5
+    ],
+    [
+     "distort",
+     1.2
+    ],
+    [
+     "distortvol",
+     0.35
+    ],
+    [
+     "gain",
+     0.2
+    ]
+   ]
+  },
+  "palmMute": {
+   "class": "guitar",
+   "doc": "palm-muted chug (native): crunch voice with a 90 ms decay and a dark 900 Hz low-pass with a fast envelope: the muted string thump",
+   "chain": [
+    [
+     "hook",
+     "hygiene-guitar"
+    ],
+    [
+     "s",
+     {
+      "$mini": "sawtooth, square"
+     }
+    ],
+    [
+     "fm",
+     0.5
+    ],
+    [
+     "fmh",
+     2
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.09
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "hpf",
+     100
+    ],
+    [
+     "lpf",
+     900
+    ],
+    [
+     "lpenv",
+     1.5
+    ],
+    [
+     "lpdecay",
+     0.05
+    ],
+    [
+     "gain",
+     0.18
+    ]
+   ]
+  },
+  "chugHigh": {
+   "class": "guitar",
+   "doc": "high-gain chug: the palm mute through one distort stage, 100 ms",
+   "chain": [
+    [
+     "hook",
+     "hygiene-guitar"
+    ],
+    [
+     "s",
+     {
+      "$mini": "sawtooth, square"
+     }
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.1
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     90
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     1400
+    ],
+    [
+     "distort",
+     1
+    ],
+    [
+     "distortvol",
+     0.4
+    ],
+    [
+     "gain",
+     0.24
+    ]
+   ]
+  },
+  "gtrLead": {
+   "class": "lead",
+   "doc": "lead guitar: saw, resonant 4 kHz low-pass, dotted-8th delay and room; add vibrato on the lane (.vib(5.5).vibmod(0.25)): in the rack it smeared the harmonics past the alias test window",
+   "chain": [
+    [
+     "hook",
+     "hygiene-lead"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "attack",
+     0.01
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     0.2
+    ],
+    [
+     "hpf",
+     200
+    ],
+    [
+     "lpf",
+     4000
+    ],
+    [
+     "lpq",
+     3
+    ],
+    [
+     "delay",
+     0.2
+    ],
+    [
+     "delaytime",
+     0.375
+    ],
+    [
+     "delayfeedback",
+     0.3
+    ],
+    [
+     "room",
+     0.25
+    ],
+    [
+     "gain",
+     0.2
+    ]
+   ]
+  },
+  "gtrHarmonic": {
+   "class": "bell",
+   "doc": "natural harmonic: sine with a long ring (1.2 s), the glassy 12th / 19th-fret overtone",
+   "chain": [
+    [
+     "hook",
+     "hygiene-bell"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "decay",
+     1.2
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     300
+    ],
+    [
+     "lpf",
+     6000
+    ],
+    [
+     "room",
+     0.3
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "feedbackSwell": {
+   "class": "lead",
+   "doc": "feedback swell: sine fading in over 1.5 s with a slow vibrato, held",
+   "chain": [
+    [
+     "hook",
+     "hygiene-lead"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "attack",
+     1.5
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.4
+    ],
+    [
+     "vib",
+     5
+    ],
+    [
+     "vibmod",
+     0.2
+    ],
+    [
+     "hpf",
+     150
+    ],
+    [
+     "lpf",
+     3000
+    ],
+    [
+     "gain",
+     0.22
+    ]
+   ]
+  },
+  "bassFinger": {
+   "class": "bass",
+   "doc": "finger bass: triangle, 1.2 kHz low-pass with a short envelope, 4 ms attack, round",
+   "chain": [
+    [
+     "hook",
+     "hygiene-bass"
+    ],
+    [
+     "s",
+     "triangle"
+    ],
+    [
+     "attack",
+     0.004
+    ],
+    [
+     "decay",
+     0.4
+    ],
+    [
+     "sustain",
+     0.5
+    ],
+    [
+     "release",
+     0.08
+    ],
+    [
+     "hpf",
+     35
+    ],
+    [
+     "lpf",
+     1200
+    ],
+    [
+     "lpenv",
+     1
+    ],
+    [
+     "lpdecay",
+     0.15
+    ],
+    [
+     "gain",
+     0.55
+    ]
+   ]
+  },
+  "bassPick": {
+   "class": "bass",
+   "doc": "pick bass: saw, brighter 1.8 kHz low-pass with a 2-octave snap in 80 ms, 2 ms attack",
+   "chain": [
+    [
+     "hook",
+     "hygiene-bass"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "decay",
+     0.3
+    ],
+    [
+     "sustain",
+     0.5
+    ],
+    [
+     "release",
+     0.06
+    ],
+    [
+     "hpf",
+     35
+    ],
+    [
+     "lpf",
+     900
+    ],
+    [
+     "lpenv",
+     2
+    ],
+    [
+     "lpdecay",
+     0.08
+    ],
+    [
+     "gain",
+     0.4
+    ]
+   ]
+  },
+  "rockKick": {
+   "class": "kick",
+   "doc": "rock kick: sine 55 Hz with a 20-semitone knock in 40 ms, 350 ms",
+   "chain": [
+    [
+     "hook",
+     "hygiene-kick"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "freq",
+     55
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "penv",
+     20
+    ],
+    [
+     "pdecay",
+     0.04
+    ],
+    [
+     "decay",
+     0.35
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     38
+    ],
+    [
+     "lpf",
+     5000
+    ],
+    [
+     "gain",
+     0.85
+    ]
+   ]
+  },
+  "metalKick": {
+   "class": "kick",
+   "doc": "metal kick: tight and clicky for double-kick 16ths: sine 60 Hz, 24-semitone knock in 20 ms, 150 ms",
+   "chain": [
+    [
+     "hook",
+     "hygiene-kick"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "freq",
+     60
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "penv",
+     24
+    ],
+    [
+     "pdecay",
+     0.02
+    ],
+    [
+     "decay",
+     0.15
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     45
+    ],
+    [
+     "lpf",
+     6000
+    ],
+    [
+     "gain",
+     0.8
+    ]
+   ]
+  },
+  "rockSnare": {
+   "class": "snare",
+   "doc": "rock snare: triangle on D3 + white noise, 250 ms, a room",
+   "chain": [
+    [
+     "hook",
+     "hygiene-snare"
+    ],
+    [
+     "s",
+     {
+      "$mini": "triangle, white"
+     }
+    ],
+    [
+     "note",
+     "d3"
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.25
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     150
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     9000
+    ],
+    [
+     "room",
+     0.2
+    ],
+    [
+     "size",
+     0.4
+    ],
+    [
+     "gain",
+     0.5
+    ]
+   ]
+  },
+  "rockHat": {
+   "class": "hat",
+   "doc": "closed hat: noise 6-13 kHz, 40 ms",
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.04
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     6000
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     13000
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "rockRide": {
+   "class": "hat",
+   "doc": "ride: noise 4-12 kHz, 500 ms",
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.5
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     5000
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     12000
+    ],
+    [
+     "gain",
+     0.16
+    ]
+   ]
+  },
+  "crashCym": {
+   "class": "hat",
+   "doc": "crash: noise 4-13 kHz, 1.4 s",
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "decay",
+     1.4
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     5000
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     13000
+    ],
+    [
+     "gain",
+     0.18
+    ]
+   ]
+  },
+  "rockTom": {
+   "class": "perc",
+   "doc": "tom: pitched sine with an 8-semitone knock, 400 ms; pitch from the pattern (fills run high to low)",
+   "chain": [
+    [
+     "hook",
+     "hygiene-perc"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "penv",
+     8
+    ],
+    [
+     "pdecay",
+     0.08
+    ],
+    [
+     "decay",
+     0.4
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     80
+    ],
+    [
+     "lpf",
+     5000
+    ],
+    [
+     "gain",
+     0.7
+    ]
+   ]
+  },
+  "organ": {
+   "class": "keys",
+   "doc": "drawbar-style organ: sine + square, a slight 6 Hz vibrato (a slow rotary), sustained",
+   "chain": [
+    [
+     "hook",
+     "hygiene-keys"
+    ],
+    [
+     "s",
+     {
+      "$mini": "sine, square"
+     }
+    ],
+    [
+     "attack",
+     0.01
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.1
+    ],
+    [
+     "vib",
+     6
+    ],
+    [
+     "vibmod",
+     0.1
+    ],
+    [
+     "hpf",
+     90
+    ],
+    [
+     "lpf",
+     3000
+    ],
+    [
+     "gain",
+     0.15
+    ]
+   ]
+  },
+  "rockStrings": {
+   "class": "pad",
+   "doc": "string pad: saw, 0.4 s attack, 2.5 kHz low-pass, 180 Hz high-pass (the guitars own the low mids)",
+   "chain": [
+    [
+     "hook",
+     "hygiene-pad"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "attack",
+     0.4
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.6
+    ],
+    [
+     "hpf",
+     180
+    ],
+    [
+     "lpf",
+     2500
+    ],
+    [
+     "gain",
+     0.12
+    ]
+   ]
+  },
+  "vowelVox": {
+   "class": "vox",
+   "doc": "voice as instrument (no words): saw through a / o formants with a 5 Hz vibrato",
+   "chain": [
+    [
+     "hook",
+     "hygiene-vox"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "vowel",
+     {
+      "$mini": "<a o>"
+     }
+    ],
+    [
+     "vib",
+     5
+    ],
+    [
+     "vibmod",
+     0.2
+    ],
+    [
+     "attack",
+     0.05
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     0.2
+    ],
+    [
+     "hpf",
+     150
+    ],
+    [
+     "lpf",
+     4000
+    ],
+    [
+     "gain",
+     0.25
+    ]
+   ]
+  }
+ },
+ "atoms": {
+  "kick": {
+   "type": "mini",
+   "body": "x ~ ~ ~ ~ ~ ~ ~ x ~ x ~ ~ ~ ~ ~",
+   "doc": "straight rock kick: 1, 3 and the and of 3"
+  },
+  "snare": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "backbeat on 2 and 4"
+  },
+  "hats": {
+   "type": "mini",
+   "body": "x*8",
+   "doc": "8th hats"
+  },
+  "hatVel": {
+   "type": "mini",
+   "body": "[1 .6]*4",
+   "doc": "hat accents on the beat"
+  },
+  "shuffleHats": {
+   "type": "mini",
+   "body": "[x ~ x]*4",
+   "doc": "shuffle hats: triplet 8ths, the middle one left out"
+  },
+  "shuffleKick": {
+   "type": "mini",
+   "body": "[x ~ ~] [~ ~ ~] [x ~ x] [~ ~ ~]",
+   "doc": "shuffle kick on the triplet grid"
+  },
+  "halfSnare": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
+   "doc": "half-time snare on beat 3"
+  },
+  "halfKick": {
+   "type": "mini",
+   "body": "x ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~",
+   "doc": "half-time kick: 1 and the a of 2"
+  },
+  "doubleKick": {
+   "type": "mini",
+   "body": "x*16",
+   "doc": "double-kick 16ths"
+  },
+  "doubleVel": {
+   "type": "mini",
+   "body": "[1 .8]*8",
+   "doc": "double-kick accents: the downstroke louder"
+  },
+  "blastKick": {
+   "type": "mini",
+   "body": "[x ~]*8",
+   "doc": "blast beat kick: every 8th (kick and snare alternate 16ths)"
+  },
+  "blastSnare": {
+   "type": "mini",
+   "body": "[~ x]*8",
+   "doc": "blast beat snare: the 16ths between the kicks"
+  },
+  "thrashKick": {
+   "type": "mini",
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "thrash skank beat kick on the beats"
+  },
+  "thrashSnare": {
+   "type": "mini",
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "thrash skank beat snare on the offbeat 8ths"
+  },
+  "doomKick": {
+   "type": "mini",
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~",
+   "doc": "doom kick: once a bar, let it ring"
+  },
+  "ride": {
+   "type": "mini",
+   "body": "x*4",
+   "doc": "ride on the quarters"
+  },
+  "crashOne": {
+   "type": "mini",
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~",
+   "doc": "crash on the 1"
+  },
+  "tomFill": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ d3 d3 b2 b2 g2 g2 e2 e2",
+   "doc": "tom fill on beats 3-4, high to low"
+  },
+  "snareFill": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x x x x [x x] [x x] [x x] [x x]",
+   "doc": "snare fill: 16ths then 32nds into the next bar"
+  },
+  "pI": {
+   "type": "mini",
+   "body": "[e2,b2,e3]",
+   "doc": "power chord I (E5)"
+  },
+  "pbIII": {
+   "type": "mini",
+   "body": "[g2,d3,g3]",
+   "doc": "power chord bIII (G5)"
+  },
+  "pIV": {
+   "type": "mini",
+   "body": "[a2,e3,a3]",
+   "doc": "power chord IV (A5)"
+  },
+  "pbVI": {
+   "type": "mini",
+   "body": "[c3,g3,c4]",
+   "doc": "power chord bVI (C5)"
+  },
+  "pbVII": {
+   "type": "mini",
+   "body": "[d3,a3,d4]",
+   "doc": "power chord bVII (D5)"
+  },
+  "pbII": {
+   "type": "mini",
+   "body": "[f2,c3,f3]",
+   "doc": "power chord bII (F5, phrygian colour)"
+  },
+  "riffA": {
+   "type": "mini",
+   "body": "[e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [g2,d3,g3] ~ [a2,e3,a3]",
+   "doc": "riff cell A: I on the 1 and the and of 2, bIII and IV pushed (anticipating the next beat)"
+  },
+  "riffB": {
+   "type": "mini",
+   "body": "[e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [d3,a3,d4] [c3,g3,c4] ~",
+   "doc": "riff cell B: same start, the turnaround falls bVII bVI (the answer)"
+  },
+  "riff": {
+   "type": "mini",
+   "body": "<[e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [g2,d3,g3] ~ [a2,e3,a3]!3 [e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [d3,a3,d4] [c3,g3,c4] ~>",
+   "doc": "4-bar riff: A A A B (call, call, call, answer)"
+  },
+  "chug": {
+   "type": "mini",
+   "body": "e2 e2 ~ e2 ~ e2 e2 ~ e2 ~ e2 e2 ~ ~ ~ ~",
+   "doc": "chug cell on the open low string, rests as part of the rhythm"
+  },
+  "gallop": {
+   "type": "mini",
+   "body": "[e2 ~ e2 e2]*4",
+   "doc": "gallop: an 8th and two 16ths per beat"
+  },
+  "breakdown": {
+   "type": "mini",
+   "body": "e2 ~ ~ e2 ~ ~ e2 ~ ~ ~ e2 ~ e2 ~ ~ ~",
+   "doc": "breakdown grammar: 3+3+4+2+4 sixteenths, on palm mute with the kick locked to it"
+  },
+  "breakdownKick": {
+   "type": "mini",
+   "body": "x ~ ~ x ~ ~ x ~ ~ ~ x ~ x ~ ~ ~",
+   "doc": "breakdown kick in unison with the chug"
+  },
+  "phryg": {
+   "type": "mini",
+   "body": "e2 f2 e2 ~ e2 ~ f2 ~ e2 e2 ~ g2 ~ f2 ~ ~",
+   "doc": "single-note phrygian riff cell: the half step E-F is the menace"
+  },
+  "doomRiff": {
+   "type": "mini",
+   "body": "[e2,b2,e3]@4 [f2,c3,f3]@2 [d3,a3,d4]@2",
+   "doc": "doom riff: one chord per 2 beats, held"
+  },
+  "bassRoot": {
+   "type": "mini",
+   "body": "e1 e1 ~ e1 ~ e1 e1 ~ g1 ~ g1 ~ a1 ~ a1 ~",
+   "doc": "bass guitar on the roots, locked to the kick"
+  },
+  "bassGallop": {
+   "type": "mini",
+   "body": "[e1 ~ e1 e1]*4",
+   "doc": "bass doubling the gallop"
+  },
+  "bassDoom": {
+   "type": "mini",
+   "body": "e1@4 f1@2 d1@2",
+   "doc": "doom bass, held"
+  },
+  "lead": {
+   "type": "mini",
+   "body": "b4 ~ d5 e5 ~ d5 b4 a4 g4 ~ a4 b4 ~ ~ ~ ~",
+   "doc": "lead phrase (own): climbs to the root, falls back through the 7th and 6th"
+  },
+  "harm": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ e5 ~ ~ ~ ~ ~ ~ ~ b5 ~ ~ ~",
+   "doc": "natural harmonics on 2 and 4"
+  },
+  "chords": {
+   "type": "mini",
+   "body": "<[e3,g3,b3] [c3,e3,g3] [d3,f#3,a3] [b2,d3,f#3]>",
+   "doc": "Em C D Bm, one bar each (organ / strings)"
+  },
+  "voxLine": {
+   "type": "mini",
+   "body": "e4 ~ g4 ~ a4 ~ b4 ~ a4 ~ g4 ~ e4 ~ ~ ~",
+   "doc": "wordless vocal line"
+  },
+  "intro": {
+   "type": "gate",
+   "body": "<5b",
+   "doc": "intro: bars 1-4 (form: intro 4, verse 8, pre 4, chorus 8, verse 8, pre 4, chorus 8, bridge / breakdown 8, solo 8, chorus 8, outro 4 = 72 bars)"
+  },
+  "verse1": {
+   "type": "gate",
+   "body": "5b..13b",
+   "doc": "verse 1: bars 5-12"
+  },
+  "pre1": {
+   "type": "gate",
+   "body": "13b..17b",
+   "doc": "pre-chorus 1: bars 13-16"
+  },
+  "chorus1": {
+   "type": "gate",
+   "body": "17b..25b",
+   "doc": "chorus 1: bars 17-24"
+  },
+  "verse2": {
+   "type": "gate",
+   "body": "25b..33b",
+   "doc": "verse 2: bars 25-32"
+  },
+  "pre2": {
+   "type": "gate",
+   "body": "33b..37b",
+   "doc": "pre-chorus 2: bars 33-36"
+  },
+  "chorus2": {
+   "type": "gate",
+   "body": "37b..45b",
+   "doc": "chorus 2: bars 37-44"
+  },
+  "bridge": {
+   "type": "gate",
+   "body": "45b..53b",
+   "doc": "bridge (metal: breakdown): bars 45-52"
+  },
+  "solo": {
+   "type": "gate",
+   "body": "53b..61b",
+   "doc": "solo: bars 53-60"
+  },
+  "chorus3": {
+   "type": "gate",
+   "body": "61b..69b",
+   "doc": "last chorus: bars 61-68"
+  },
+  "outro": {
+   "type": "gate",
+   "body": "69b..73b",
+   "doc": "outro: bars 69-72"
+  },
+  "verses": {
+   "type": "gate",
+   "body": "5b..13b, 25b..33b",
+   "doc": "both verses"
+  },
+  "pres": {
+   "type": "gate",
+   "body": "13b..17b, 33b..37b",
+   "doc": "both pre-choruses"
+  },
+  "choruses": {
+   "type": "gate",
+   "body": "17b..25b, 37b..45b, 61b..69b",
+   "doc": "every chorus"
+  },
+  "notChoruses": {
+   "type": "gate",
+   "body": "<17b, 25b..37b, 45b..61b, 69b..73b",
+   "doc": "everything but the choruses"
+  },
+  "fills": {
+   "type": "gate",
+   "body": "16b..17b, 36b..37b, 44b..45b, 60b..61b",
+   "doc": "the bar before each section change into or out of a chorus: fills"
+  },
+  "crashBars": {
+   "type": "gate",
+   "body": "17b..18b, 37b..38b, 45b..46b, 61b..62b",
+   "doc": "the first bar of each chorus / the breakdown: crash"
+  },
+  "mChoruses": {
+   "type": "mini",
+   "body": "<0!16 1!8 0!12 1!8 0!16 1!8 0!4>",
+   "doc": "mask form of rm.choruses (plain Strudel)"
+  }
+ },
+ "recipes": [
+  {
+   "id": "rm-guitar-tiers",
+   "title": "Guitar tiers: clean, crunch, high gain",
+   "intent": "The same power-chord riff cell through three amp tiers.",
+   "labels": [
+    "rock",
+    "metal",
+    "guitar"
+   ],
+   "class": "demo",
+   "cpm": 120,
+   "bars": 3,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@riffA",
+     "rack": "gtrClean",
+     "more": ".mask(\"<1 0 0>\")"
+    },
+    {
+     "src": "note",
+     "pat": "@riffA",
+     "rack": "gtrCrunch",
+     "more": ".mask(\"<0 1 0>\")"
+    },
+    {
+     "src": "note",
+     "pat": "@riffA",
+     "rack": "gtrHigh",
+     "more": ".mask(\"<0 0 1>\")"
+    }
+   ]
+  },
+  {
+   "id": "rm-palm-mute",
+   "title": "Palm mutes, chug and gallop",
+   "intent": "Muted low-string rhythm.",
+   "labels": [
+    "metal",
+    "guitar",
+    "syncopated"
+   ],
+   "class": "guitar",
+   "cpm": 120,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "<@chug @gallop>",
+     "rack": "palmMute"
+    }
+   ]
+  },
+  {
+   "id": "rm-lead-harmonics",
+   "title": "Lead, harmonics and feedback",
+   "intent": "A vibrato lead phrase with a dotted-8th delay, natural harmonics on 2.",
+   "labels": [
+    "rock",
+    "lead",
+    "guitar"
+   ],
+   "class": "demo",
+   "cpm": 120,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@lead",
+     "rack": "gtrLead",
+     "more": ".vib(5.5).vibmod(0.25)"
+    },
+    {
+     "src": "note",
+     "pat": "@harm",
+     "rack": "gtrHarmonic"
+    },
+    {
+     "src": "note",
+     "pat": "<~ e5>",
+     "rack": "feedbackSwell"
+    }
+   ]
+  },
+  {
+   "id": "rm-bass-guitar",
+   "title": "Bass guitar: finger and pick",
+   "intent": "Roots locked to the kick: finger (round triangle) then pick (saw with.",
+   "labels": [
+    "rock",
+    "bass",
+    "guitar"
+   ],
+   "class": "demo",
+   "cpm": 120,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@bassRoot",
+     "rack": "bassFinger",
+     "more": ".mask(\"<1 0>\")"
+    },
+    {
+     "src": "note",
+     "pat": "@bassRoot",
+     "rack": "bassPick",
+     "more": ".mask(\"<0 1>\")"
+    },
+    {
+     "src": "s",
+     "pat": "@kick",
+     "rack": "rockKick"
+    }
+   ]
+  },
+  {
+   "id": "rm-rock-beat",
+   "title": "Straight rock beat",
+   "intent": "Kick on 1, 3 and the and of 3, snare on 2 and 4, accented 8th hats, a.",
+   "labels": [
+    "rock",
+    "drums"
+   ],
+   "class": "demo",
+   "cpm": 120,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@kick",
+     "rack": "rockKick"
+    },
+    {
+     "src": "s",
+     "pat": "@snare",
+     "rack": "rockSnare"
+    },
+    {
+     "src": "s",
+     "pat": "@hats",
+     "rack": "rockHat",
+     "vel": "@hatVel",
+     "groove": "groove-human(1.5, 0.1, 3)"
+    },
+    {
+     "src": "s",
+     "pat": "<@crashOne ~>",
+     "rack": "crashCym"
+    }
+   ]
+  },
+  {
+   "id": "rm-double-kick",
+   "title": "Double kick under half-time",
+   "intent": "16th double kick with accented downstrokes under a half-time snare.",
+   "labels": [
+    "metal",
+    "drums",
+    "half-time"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@doubleKick",
+     "rack": "metalKick",
+     "vel": "@doubleVel"
+    },
+    {
+     "src": "s",
+     "pat": "@halfSnare",
+     "rack": "rockSnare"
+    },
+    {
+     "src": "s",
+     "pat": "@ride",
+     "rack": "rockRide"
+    }
+   ]
+  },
+  {
+   "id": "rm-blast-thrash",
+   "title": "Blast beat and thrash skank",
+   "intent": "A bar of blast beat (kick and snare alternating 16ths) then a bar of.",
+   "labels": [
+    "metal",
+    "drums"
+   ],
+   "class": "demo",
+   "cpm": 180,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "<@blastKick @thrashKick>",
+     "rack": "metalKick"
+    },
+    {
+     "src": "s",
+     "pat": "<@blastSnare @thrashSnare>",
+     "rack": "rockSnare"
+    },
+    {
+     "src": "s",
+     "pat": "<~ @ride>",
+     "rack": "rockRide"
+    }
+   ]
+  },
+  {
+   "id": "rm-fills",
+   "title": "Tom and snare fills",
+   "intent": "A tom fill high to low on beats 3-4, then a snare fill of 16ths into.",
+   "labels": [
+    "rock",
+    "drums",
+    "transition"
+   ],
+   "class": "demo",
+   "cpm": 120,
+   "bars": 3,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "<@tomFill ~ ~>",
+     "rack": "rockTom"
+    },
+    {
+     "src": "s",
+     "pat": "<~ @snareFill ~>",
+     "rack": "rockSnare"
+    },
+    {
+     "src": "s",
+     "pat": "<~ ~ @crashOne>",
+     "rack": "crashCym"
+    },
+    {
+     "src": "s",
+     "pat": "@kick",
+     "rack": "rockKick"
+    }
+   ]
+  },
+  {
+   "id": "rm-keys-pads",
+   "title": "Organ and strings",
+   "intent": "Em C D Bm on a drawbar-style organ and a string pad high-passed above.",
+   "labels": [
+    "rock",
+    "pad",
+    "chord-progression"
+   ],
+   "class": "demo",
+   "cpm": 120,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@chords",
+     "rack": "organ"
+    },
+    {
+     "src": "note",
+     "pat": "@chords",
+     "rack": "rockStrings"
+    }
+   ]
+  },
+  {
+   "id": "rm-breakdown",
+   "title": "Metal breakdown grammar",
+   "intent": "3+3+4+2+4 chug with the kick in unison, a half-time snare and a crash.",
+   "labels": [
+    "metal",
+    "guitar",
+    "breakdown"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@breakdown",
+     "rack": "palmMute"
+    },
+    {
+     "src": "s",
+     "pat": "@breakdownKick",
+     "rack": "metalKick"
+    },
+    {
+     "src": "s",
+     "pat": "@halfSnare",
+     "rack": "rockSnare"
+    },
+    {
+     "src": "s",
+     "pat": "<@crashOne ~>",
+     "rack": "crashCym"
+    }
+   ]
+  },
+  {
+   "id": "rm-riff-form",
+   "title": "Riff grammar: A A A B",
+   "intent": "A 4-bar riff built from two cells (call three times, answer once).",
+   "labels": [
+    "rock",
+    "guitar",
+    "call-response"
+   ],
+   "class": "demo",
+   "cpm": 120,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@riff",
+     "rack": "gtrCrunch"
+    },
+    {
+     "src": "note",
+     "pat": "@bassRoot",
+     "rack": "bassPick"
+    },
+    {
+     "src": "s",
+     "pat": "@kick",
+     "rack": "rockKick"
+    },
+    {
+     "src": "s",
+     "pat": "@snare",
+     "rack": "rockSnare"
+    }
+   ]
+  },
+  {
+   "id": "rm-doom",
+   "title": "Doom riff",
+   "intent": "One chord per two beats, held; bass held under it; kick once a bar.",
+   "labels": [
+    "metal",
+    "guitar",
+    "drone"
+   ],
+   "class": "demo",
+   "cpm": 70,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@doomRiff",
+     "rack": "gtrCrunch"
+    },
+    {
+     "src": "note",
+     "pat": "@bassDoom",
+     "rack": "bassFinger"
+    },
+    {
+     "src": "s",
+     "pat": "@doomKick",
+     "rack": "rockKick"
+    },
+    {
+     "src": "s",
+     "pat": "@halfSnare",
+     "rack": "rockSnare"
+    }
+   ]
+  }
+ ],
+ "syntax": [
+  {
+   "title": "Pick a rock / metal feel (one import line)",
+   "bars": 2,
+   "code": "setcpm(120/4)\natoms.import(\"pack:glyphcore/rockmetal:feel-rock\", { as: \"feel\" })   // or feel-shuffle, feel-rockhalftime, feel-thrash, feel-doom\nhooks.bind(\"kick\", atoms.feel.kickRack)\nhooks.bind(\"snare\", atoms.feel.snareRack)\nhooks.bind(\"perc\", atoms.feel.percRack)\nhooks.bind(\"hats\", atoms.feel.hatsRack)\nhooks.bind(\"top\", atoms.feel.topRack)\nhooks.bind(\"bass\", atoms.feel.bassRack)\nhooks.bind(\"harmony\", atoms.feel.harmonyRack)\nhooks.bind(\"fx\", atoms.feel.fxRack)\nkick: s(atoms.feel.kick).velocity(atoms.feel.kickVel).use(\"kick\", { mode: \"swap\" })\nsnare: s(atoms.feel.snare).velocity(atoms.feel.snareVel).use(\"snare\", { mode: \"swap\" })\nperc: s(atoms.feel.perc).velocity(atoms.feel.percVel).use(\"perc\", { mode: \"swap\" })\nhats: s(atoms.feel.hats).velocity(atoms.feel.hatsVel).use(\"hats\", { mode: \"swap\" })\ntop: note(atoms.feel.top).velocity(atoms.feel.topVel).use(\"top\", { mode: \"swap\" })\nbass: note(atoms.feel.bass).velocity(atoms.feel.bassVel).use(\"bass\", { mode: \"swap\" })\nharmony: note(atoms.feel.harmony).velocity(atoms.feel.harmonyVel).use(\"harmony\", { mode: \"swap\" })\nfx: s(atoms.feel.fx).velocity(atoms.feel.fxVel).use(\"fx\", { mode: \"swap\" })"
+  },
+  {
+   "title": "Song form as gates (verse, chorus, bridge, solo)",
+   "bars": 20,
+   "code": "setcpm(120/4)\natoms.import(\"pack:glyphcore/rockmetal:atoms-rockmetal\")\nhooks.bind(\"gtr\", \"gtrClean\"); hooks.bind(\"gtr\", \"gtrCrunch\", atoms.rm.choruses)   // the chorus switches amp tier\nkick: s(atoms.rm.kick).hook(\"rockKick\").tags(\"drums\")\nsnare: s(atoms.rm.snare).hook(\"rockSnare\").tags(\"drums\")\nfill: s(atoms.rm.snareFill).hook(\"rockSnare\").mask(\"<0!15 1 0!4>\")\ncrash: s(atoms.rm.crashOne).hook(\"crashCym\").mask(\"<0!16 1 0!3>\")\ngtr: note(atoms.rm.riff).use(\"gtr\")\nbass: note(atoms.rm.bassRoot).hook(\"bassPick\")\ntagged(\"drums\").mute(atoms.rm.intro)"
+  },
+  {
+   "title": "Riff grammar: cells, answer, displacement",
+   "bars": 4,
+   "code": "setcpm(120/4)\natoms.import(\"pack:glyphcore/rockmetal:atoms-rockmetal\")\n// A A A B: call three times, answer once; the chug displaced by a 16th in bar 4 (.late) for tension\ncall: note(atoms.rm.riffA).hook(\"gtrCrunch\").mask(\"<1 1 1 0>\")\nanswer: note(atoms.rm.riffB).hook(\"gtrCrunch\").mask(\"<0 0 0 1>\")\nchug: note(atoms.rm.chug).hook(\"palmMute\").late(\"<0 0 0 0.0625>\")\nkick: s(atoms.rm.kick).hook(\"rockKick\")\nsnare: s(atoms.rm.snare).hook(\"rockSnare\")"
+  },
+  {
+   "title": "Metal breakdown: chug and kick in unison",
+   "bars": 2,
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/rockmetal:atoms-rockmetal\")\nchug: note(atoms.rm.breakdown).hook(\"chugHigh\")\nkick: s(atoms.rm.breakdownKick).hook(\"metalKick\")\nsnare: s(atoms.rm.halfSnare).hook(\"rockSnare\")\ncrash: s(atoms.rm.crashOne).hook(\"crashCym\").mask(\"<1 0>\")"
+  }
+ ],
+ "feels": {
+  "rock": {
+   "title": "Straight rock",
+   "tempo": "100-140 bpm",
+   "cpm": 120,
+   "groove": "groove-human(1.5, 0.1, $seed)",
+   "doc": "kick 1, 3 and the and of 3, backbeat, 8th hats, crunch riff",
+   "labels": [
+    "rock"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@kick",
+     "rack": "rockKick"
+    },
+    "snare": {
+     "pat": "@snare",
+     "rack": "rockSnare"
+    },
+    "perc": {
+     "pat": "~"
+    },
+    "hats": {
+     "pat": "@hats",
+     "rack": "rockHat",
+     "vel": "@hatVel"
+    },
+    "top": {
+     "pat": "@lead",
+     "rack": "gtrLead"
+    },
+    "bass": {
+     "pat": "@bassRoot",
+     "rack": "bassPick"
+    },
+    "harmony": {
+     "pat": "@riffA",
+     "rack": "gtrCrunch"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  },
+  "shuffle": {
+   "title": "Shuffle",
+   "tempo": "90-130 bpm",
+   "cpm": 112,
+   "groove": "groove-human(1.5, 0.1, $seed)",
+   "doc": "triplet-grid shuffle: kick and hats on the triplet grid, backbeat",
+   "labels": [
+    "rock",
+    "swing"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@shuffleKick",
+     "rack": "rockKick"
+    },
+    "snare": {
+     "pat": "@snare",
+     "rack": "rockSnare"
+    },
+    "perc": {
+     "pat": "~"
+    },
+    "hats": {
+     "pat": "@shuffleHats",
+     "rack": "rockHat"
+    },
+    "top": {
+     "pat": "~"
+    },
+    "bass": {
+     "pat": "@bassRoot",
+     "rack": "bassFinger"
+    },
+    "harmony": {
+     "pat": "@chords",
+     "rack": "organ"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  },
+  "rockhalftime": {
+   "title": "Rock / metal half-time",
+   "tempo": "120-160 bpm (felt half)",
+   "cpm": 140,
+   "groove": "groove-push(3) | groove-human(1.5, 0.1, $seed)",
+   "doc": "half-time snare on 3, ride quarters, high-gain riff",
+   "labels": [
+    "metal",
+    "half-time"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@halfKick",
+     "rack": "rockKick"
+    },
+    "snare": {
+     "pat": "@halfSnare",
+     "rack": "rockSnare"
+    },
+    "perc": {
+     "pat": "~"
+    },
+    "hats": {
+     "pat": "@ride",
+     "rack": "rockRide"
+    },
+    "top": {
+     "pat": "~"
+    },
+    "bass": {
+     "pat": "@bassRoot",
+     "rack": "bassPick"
+    },
+    "harmony": {
+     "pat": "@riffA",
+     "rack": "gtrHigh"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  },
+  "thrash": {
+   "title": "Thrash",
+   "tempo": "160-220 bpm",
+   "cpm": 180,
+   "groove": "groove-human(0.8, 0.06, $seed)",
+   "doc": "skank beat (kick on beats, snare on offbeats)",
+   "labels": [
+    "metal"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@thrashKick",
+     "rack": "metalKick"
+    },
+    "snare": {
+     "pat": "@thrashSnare",
+     "rack": "rockSnare"
+    },
+    "perc": {
+     "pat": "~"
+    },
+    "hats": {
+     "pat": "@ride",
+     "rack": "rockRide"
+    },
+    "top": {
+     "pat": "~"
+    },
+    "bass": {
+     "pat": "@bassGallop",
+     "rack": "bassPick"
+    },
+    "harmony": {
+     "pat": "@gallop",
+     "rack": "palmMute"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  },
+  "doom": {
+   "title": "Doom",
+   "tempo": "55-80 bpm",
+   "cpm": 70,
+   "groove": "groove-push(5) | groove-human(2.5, 0.12, $seed)",
+   "doc": "slow and heavy: kick once a bar, snare on 3, held doom riff and bass",
+   "labels": [
+    "metal",
+    "drone"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@doomKick",
+     "rack": "rockKick"
+    },
+    "snare": {
+     "pat": "@halfSnare",
+     "rack": "rockSnare"
+    },
+    "perc": {
+     "pat": "~"
+    },
+    "hats": {
+     "pat": "@ride",
+     "rack": "rockRide"
+    },
+    "top": {
+     "pat": "<~ e5>",
+     "rack": "feedbackSwell"
+    },
+    "bass": {
+     "pat": "@bassDoom",
+     "rack": "bassFinger"
+    },
+    "harmony": {
+     "pat": "@doomRiff",
+     "rack": "gtrCrunch"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  }
+ }
+}

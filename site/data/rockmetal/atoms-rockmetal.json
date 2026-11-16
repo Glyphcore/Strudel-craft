@@ -1,0 +1,813 @@
+{
+ "format": "atoms@1",
+ "name": "rm",
+ "doc": "glyphcore/rockmetal atoms (rm.): drum patterns (rock, shuffle, half-time, double kick, blast, thrash, doom), fills, power chords, riff cells and grammar (A A A B), chug, gallop, breakdown, bass and lead lines, chords, the 72-bar song form as gates. Import with atoms.import(\"pack:glyphcore/rockmetal:atoms-rockmetal\").",
+ "atoms": {
+  "atvv3j2": {
+   "name": "rm.kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ ~ ~ x ~ x ~ ~ ~ ~ ~",
+   "doc": "straight rock kick: 1, 3 and the and of 3",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:2547706041c2abc226c1c25e8c975f2ee1153cd3c35ff7c77a5029fa0e42c2c6"
+  },
+  "axmnv3x": {
+   "name": "rm.snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "backbeat on 2 and 4",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
+  },
+  "apv3igq": {
+   "name": "rm.hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*8",
+   "doc": "8th hats",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:c2845fc5d1dfae91f61227e9f77fbff665ea294e5367dbd32a4f511e758525ec"
+  },
+  "a8bz3s0": {
+   "name": "rm.hatVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[1 .6]*4",
+   "doc": "hat accents on the beat",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:93a6371ce264324d096646da88d0485f1270ae97fc166af785b1f0f52a17ed7b"
+  },
+  "am34n9r": {
+   "name": "rm.shuffleHats",
+   "type": "mini",
+   "rev": 1,
+   "body": "[x ~ x]*4",
+   "doc": "shuffle hats: triplet 8ths, the middle one left out",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:d3e770d30c339b55df33e031929e0dc65590f280871d61dddc906e02ee88eaf6"
+  },
+  "a9ez5yb": {
+   "name": "rm.shuffleKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "[x ~ ~] [~ ~ ~] [x ~ x] [~ ~ ~]",
+   "doc": "shuffle kick on the triplet grid",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:c2d9d766307c803aeed74c5e348f40ce2e4d713b830187378b8a5e8b7476b98d"
+  },
+  "az1aiz6": {
+   "name": "rm.halfSnare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
+   "doc": "half-time snare on beat 3",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:525fd0444781900288d0ac6c5358b9391d694346d05e7bca8b3001885e70932c"
+  },
+  "a32mzf7": {
+   "name": "rm.halfKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~",
+   "doc": "half-time kick: 1 and the a of 2",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:0c64f84974ef8be7b43b95e899d6caebb354964b4bb9c9fcc72652b4421987da"
+  },
+  "aglq4tj": {
+   "name": "rm.doubleKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*16",
+   "doc": "double-kick 16ths",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:bc74a3b9e12ebc0770e636fb859180836145824d453b6c0c08e954bc49f4cdaf"
+  },
+  "akteua8": {
+   "name": "rm.doubleVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[1 .8]*8",
+   "doc": "double-kick accents: the downstroke louder",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:cea3329d351f054ed58fee19a0156174bcfd36d3f8e2e4aa8c37289b6f0f02e5"
+  },
+  "af7wll0": {
+   "name": "rm.blastKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "[x ~]*8",
+   "doc": "blast beat kick: every 8th (kick and snare alternate 16ths)",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:5df7a4dc6b3a4d197c4da6d09211875bac2757015ed617bdffbc5de6beeb5237"
+  },
+  "a794ecn": {
+   "name": "rm.blastSnare",
+   "type": "mini",
+   "rev": 1,
+   "body": "[~ x]*8",
+   "doc": "blast beat snare: the 16ths between the kicks",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:72a1bd8a77e61a4d08323dac93c7b57076431471950061c399aecc710936ce94"
+  },
+  "a2dvk6c": {
+   "name": "rm.thrashKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "thrash skank beat kick on the beats",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:0217ca393e7b9e240d8b3ffed67e975f3934d9a9f1303a227193b90afe293ac5"
+  },
+  "abyk9tz": {
+   "name": "rm.thrashSnare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "thrash skank beat snare on the offbeat 8ths",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
+  },
+  "apyfnx3": {
+   "name": "rm.doomKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~",
+   "doc": "doom kick: once a bar, let it ring",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:d0f80ff33ec6e1db3872b32285cdcb291e1347b4a0b23d477b59a3d5131165dc"
+  },
+  "a305s6y": {
+   "name": "rm.ride",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*4",
+   "doc": "ride on the quarters",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:06d0ab79870e8ade2b3cabbe93bdce7aae87130e1c1e10bb4134eb57d1b4e9af"
+  },
+  "a3l7hip": {
+   "name": "rm.crashOne",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~",
+   "doc": "crash on the 1",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:d0f80ff33ec6e1db3872b32285cdcb291e1347b4a0b23d477b59a3d5131165dc"
+  },
+  "api392d": {
+   "name": "rm.tomFill",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ d3 d3 b2 b2 g2 g2 e2 e2",
+   "doc": "tom fill on beats 3-4, high to low",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:35a139fac04aaa4fb78c3e1b1077c8aec83ea65c986abc2a6481b691e2d72de3"
+  },
+  "aikeqa8": {
+   "name": "rm.snareFill",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x x x x [x x] [x x] [x x] [x x]",
+   "doc": "snare fill: 16ths then 32nds into the next bar",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:876207ecbc84fecccd0c29fba13da433af64207d020e43913504be39088dfb69"
+  },
+  "aygjaej": {
+   "name": "rm.pI",
+   "type": "mini",
+   "rev": 1,
+   "body": "[e2,b2,e3]",
+   "doc": "power chord I (E5)",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:f43307464115299dd62611af76870e40621069d8de5983bac11b7a6c213a1c29"
+  },
+  "a6plnhr": {
+   "name": "rm.pbIII",
+   "type": "mini",
+   "rev": 1,
+   "body": "[g2,d3,g3]",
+   "doc": "power chord bIII (G5)",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:7182f695053b76d351590a7f651f30eb1e7af09f7836dd20f2f27dc976b9ea52"
+  },
+  "aypaeiv": {
+   "name": "rm.pIV",
+   "type": "mini",
+   "rev": 1,
+   "body": "[a2,e3,a3]",
+   "doc": "power chord IV (A5)",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:76cac71fc1576216a6534596dc255a87b085106bf7cbd7dd360d292bf165f251"
+  },
+  "asp23nf": {
+   "name": "rm.pbVI",
+   "type": "mini",
+   "rev": 1,
+   "body": "[c3,g3,c4]",
+   "doc": "power chord bVI (C5)",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:e9a678f4ea26d8bad6e16653d4ac24605a7e38979fbec1df850ef6c8ee47a347"
+  },
+  "azv50l2": {
+   "name": "rm.pbVII",
+   "type": "mini",
+   "rev": 1,
+   "body": "[d3,a3,d4]",
+   "doc": "power chord bVII (D5)",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:14a674ba01660111f5aa3cb20ff2c5079b9b6a1172e69d1f3ebe9fddd9ddb50a"
+  },
+  "ad5l7b0": {
+   "name": "rm.pbII",
+   "type": "mini",
+   "rev": 1,
+   "body": "[f2,c3,f3]",
+   "doc": "power chord bII (F5, phrygian colour)",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:dc08f5ff634a0b9d917b3faf752fa80644c397f39e39cec1bfd7707a2cb78fa8"
+  },
+  "avyc6bw": {
+   "name": "rm.riffA",
+   "type": "mini",
+   "rev": 1,
+   "body": "[e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [g2,d3,g3] ~ [a2,e3,a3]",
+   "doc": "riff cell A: I on the 1 and the and of 2, bIII and IV pushed (anticipating the next beat)",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:e5280c7691f59d956a57e535e7a64d2da019556940d4b8a1c7743040976de3fb"
+  },
+  "awsazet": {
+   "name": "rm.riffB",
+   "type": "mini",
+   "rev": 1,
+   "body": "[e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [d3,a3,d4] [c3,g3,c4] ~",
+   "doc": "riff cell B: same start, the turnaround falls bVII bVI (the answer)",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:e7125d91d79dfc77330a54f90ec786428b3c068d6af8d5fd179172d3e9939476"
+  },
+  "apevk79": {
+   "name": "rm.riff",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [g2,d3,g3] ~ [a2,e3,a3]!3 [e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [d3,a3,d4] [c3,g3,c4] ~>",
+   "doc": "4-bar riff: A A A B (call, call, call, answer)",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:fa0a7f71ab7d28162d333e1c04db809a61d2da63cb811711d8b5bf9cac65e476"
+  },
+  "abnhl4f": {
+   "name": "rm.chug",
+   "type": "mini",
+   "rev": 1,
+   "body": "e2 e2 ~ e2 ~ e2 e2 ~ e2 ~ e2 e2 ~ ~ ~ ~",
+   "doc": "chug cell on the open low string, rests as part of the rhythm",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:89c18d8225c56080e201d63ff4732db4fb46f84c1b47b5f0cb1e2d1f990f8066"
+  },
+  "ak7xseb": {
+   "name": "rm.gallop",
+   "type": "mini",
+   "rev": 1,
+   "body": "[e2 ~ e2 e2]*4",
+   "doc": "gallop: an 8th and two 16ths per beat",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:a6813cf0b5002ef35a194eeafc9a64fc206dbeea00f25ff16ada2308e8ffb243"
+  },
+  "amiuy8r": {
+   "name": "rm.breakdown",
+   "type": "mini",
+   "rev": 1,
+   "body": "e2 ~ ~ e2 ~ ~ e2 ~ ~ ~ e2 ~ e2 ~ ~ ~",
+   "doc": "breakdown grammar: 3+3+4+2+4 sixteenths, on palm mute with the kick locked to it",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:e0128e7b9e84b88a1dda4d1578fa98b4c4a0a4c9012ef871bca77e9bdb914638"
+  },
+  "a9tx8s9": {
+   "name": "rm.breakdownKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ x ~ ~ x ~ ~ ~ x ~ x ~ ~ ~",
+   "doc": "breakdown kick in unison with the chug",
+   "folder": "rockmetal/drums",
+   "tags": [
+    "drums",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:b8ee2bd6f0422a26fb0f78be9247aff27a826755f4770d4d63531c5939c6da4e"
+  },
+  "afcn3uu": {
+   "name": "rm.phryg",
+   "type": "mini",
+   "rev": 1,
+   "body": "e2 f2 e2 ~ e2 ~ f2 ~ e2 e2 ~ g2 ~ f2 ~ ~",
+   "doc": "single-note phrygian riff cell: the half step E-F is the menace",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:54a5808b0e8b6c2eca179eb7dac1cea7bdfc0834675b933a0b670d77e71ecf20"
+  },
+  "aho0ls8": {
+   "name": "rm.doomRiff",
+   "type": "mini",
+   "rev": 1,
+   "body": "[e2,b2,e3]@4 [f2,c3,f3]@2 [d3,a3,d4]@2",
+   "doc": "doom riff: one chord per 2 beats, held",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:f3b9e62a13b927ab68488428388840b9542b636fed0d0d01ee36c7a8f5ccc1e8"
+  },
+  "ad0i9ov": {
+   "name": "rm.bassRoot",
+   "type": "mini",
+   "rev": 1,
+   "body": "e1 e1 ~ e1 ~ e1 e1 ~ g1 ~ g1 ~ a1 ~ a1 ~",
+   "doc": "bass guitar on the roots, locked to the kick",
+   "folder": "rockmetal/bass",
+   "tags": [
+    "bass",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:90a6f51112a0b36709f7a09396231e82835bb6338bc87476acb4e70268253be7"
+  },
+  "ambm20o": {
+   "name": "rm.bassGallop",
+   "type": "mini",
+   "rev": 1,
+   "body": "[e1 ~ e1 e1]*4",
+   "doc": "bass doubling the gallop",
+   "folder": "rockmetal/bass",
+   "tags": [
+    "bass",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:9b01238c4bf870204e8ab5dc9cf7aff6de8298964bc76e0a0017b4c6f0a8973e"
+  },
+  "apla8je": {
+   "name": "rm.bassDoom",
+   "type": "mini",
+   "rev": 1,
+   "body": "e1@4 f1@2 d1@2",
+   "doc": "doom bass, held",
+   "folder": "rockmetal/bass",
+   "tags": [
+    "bass",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:bfde4fd97c1b6669371c641d6a470ceca9e8e3bd87c237cf58b9647e16f071fe"
+  },
+  "araa0h2": {
+   "name": "rm.lead",
+   "type": "mini",
+   "rev": 1,
+   "body": "b4 ~ d5 e5 ~ d5 b4 a4 g4 ~ a4 b4 ~ ~ ~ ~",
+   "doc": "lead phrase (own): climbs to the root, falls back through the 7th and 6th",
+   "folder": "rockmetal/lead",
+   "tags": [
+    "lead",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:51f7ada11c5c29ef4492d3379f6074be2279b7bc1bbdf9757b6a478e7812328d"
+  },
+  "arig00y": {
+   "name": "rm.harm",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ e5 ~ ~ ~ ~ ~ ~ ~ b5 ~ ~ ~",
+   "doc": "natural harmonics on 2 and 4",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:db9d11d1e055f16d555a3f7e34ed5aed4454427a0ad82b30f47ac6a2b570a92d"
+  },
+  "am9vdxf": {
+   "name": "rm.chords",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[e3,g3,b3] [c3,e3,g3] [d3,f#3,a3] [b2,d3,f#3]>",
+   "doc": "Em C D Bm, one bar each (organ / strings)",
+   "folder": "rockmetal/keys",
+   "tags": [
+    "keys",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:387ee18fcae5cdba5d6a0a66831d5ec8d3c0fc2685f6c085c93470530e0a1dd9"
+  },
+  "auazcdb": {
+   "name": "rm.voxLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "e4 ~ g4 ~ a4 ~ b4 ~ a4 ~ g4 ~ e4 ~ ~ ~",
+   "doc": "wordless vocal line",
+   "folder": "rockmetal/misc",
+   "tags": [
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:8af98d238755069fb6f62d6b93ad98ad6646ab2d81cb7bd9ce9b3fc355540538"
+  },
+  "an34jyy": {
+   "name": "rm.intro",
+   "type": "gate",
+   "rev": 1,
+   "body": "<5b",
+   "doc": "intro: bars 1-4 (form: intro 4, verse 8, pre 4, chorus 8, verse 8, pre 4, chorus 8, bridge / breakdown 8, solo 8, chorus 8, outro 4 = 72 bars)",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:b948ae980edbfbd849f063e9a8b9cfa15558699316509a0409a9b997a7164b97"
+  },
+  "ac58kro": {
+   "name": "rm.verse1",
+   "type": "gate",
+   "rev": 1,
+   "body": "5b..13b",
+   "doc": "verse 1: bars 5-12",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:e9d91b5bc818f73f6f517b6e5638456116b516a639412fd88db5be971e0b8bb7"
+  },
+  "a04or0w": {
+   "name": "rm.pre1",
+   "type": "gate",
+   "rev": 1,
+   "body": "13b..17b",
+   "doc": "pre-chorus 1: bars 13-16",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:efd438fadc1fb7026bc449f3759a5dc7487034efe01cf6ec59e46aa5a4f1405d"
+  },
+  "apxd081": {
+   "name": "rm.chorus1",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..25b",
+   "doc": "chorus 1: bars 17-24",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:e67adbd7795bc1c1f3791c53d05bf0d02a7d534c9cbc1129aefcd96ca4a33de1"
+  },
+  "acz7dul": {
+   "name": "rm.verse2",
+   "type": "gate",
+   "rev": 1,
+   "body": "25b..33b",
+   "doc": "verse 2: bars 25-32",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:ea8541ea2cf91679ff0443ad8b4e8369bf4540db6b851780c02185a53a4ff351"
+  },
+  "a0ynk3t": {
+   "name": "rm.pre2",
+   "type": "gate",
+   "rev": 1,
+   "body": "33b..37b",
+   "doc": "pre-chorus 2: bars 33-36",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:ae6ff269cbca48f23646b5fac094710ae974eff8d5140a0ad1d01465e6891a96"
+  },
+  "ap3e754": {
+   "name": "rm.chorus2",
+   "type": "gate",
+   "rev": 1,
+   "body": "37b..45b",
+   "doc": "chorus 2: bars 37-44",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:54d0728fe163037fe2d8a93219bba565f2b601b41c7dbe7409a1c7b08c1f888f"
+  },
+  "ahpprpp": {
+   "name": "rm.bridge",
+   "type": "gate",
+   "rev": 1,
+   "body": "45b..53b",
+   "doc": "bridge (metal: breakdown): bars 45-52",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:fb1c4421a8517ce37ee9ca3b167ebad6e62815b469329d0be60fc76c424e8196"
+  },
+  "apumc6v": {
+   "name": "rm.solo",
+   "type": "gate",
+   "rev": 1,
+   "body": "53b..61b",
+   "doc": "solo: bars 53-60",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:726403301b433406c75932f6272d3a87df7788cf3abbabb6ab4bbade1521518e"
+  },
+  "apddsu3": {
+   "name": "rm.chorus3",
+   "type": "gate",
+   "rev": 1,
+   "body": "61b..69b",
+   "doc": "last chorus: bars 61-68",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:ef5fda420e6d42216b6502563728630c6a5c0df5dc8e716b362c5d2dcdc263ce"
+  },
+  "a5kxprz": {
+   "name": "rm.outro",
+   "type": "gate",
+   "rev": 1,
+   "body": "69b..73b",
+   "doc": "outro: bars 69-72",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:1652145ea53e4b88b7fda8b1d30598bd1954353dc3a2e177a6e59eb6b8a542f7"
+  },
+  "atz19qi": {
+   "name": "rm.verses",
+   "type": "gate",
+   "rev": 1,
+   "body": "5b..13b, 25b..33b",
+   "doc": "both verses",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:32edbba1b944b434424a77ab668668b976adc7a885ee56b85ba065f9340eceef"
+  },
+  "aixde0m": {
+   "name": "rm.pres",
+   "type": "gate",
+   "rev": 1,
+   "body": "13b..17b, 33b..37b",
+   "doc": "both pre-choruses",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:d2627bfeab079a8fe3519ef322cf9b1f1b2bbd45a2a21059ebcf6eae9cd0b1a8"
+  },
+  "aiplj9m": {
+   "name": "rm.choruses",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..25b, 37b..45b, 61b..69b",
+   "doc": "every chorus",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:3909f745e4acc9501e12d910c390f35cd7992c5485bb0a0c5e2df7740eeb37c7"
+  },
+  "a7ywcj3": {
+   "name": "rm.notChoruses",
+   "type": "gate",
+   "rev": 1,
+   "body": "<17b, 25b..37b, 45b..61b, 69b..73b",
+   "doc": "everything but the choruses",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:8c529d00436496bfbbc4b17edc1d508a8dc78884890487757196ea3150bc6e48"
+  },
+  "aoyckby": {
+   "name": "rm.fills",
+   "type": "gate",
+   "rev": 1,
+   "body": "16b..17b, 36b..37b, 44b..45b, 60b..61b",
+   "doc": "the bar before each section change into or out of a chorus: fills",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:daa70375b95dd0babc8c79b99a5afa4e4d55073f95971b0ecd72ec90cf32ea8c"
+  },
+  "afzt6h1": {
+   "name": "rm.crashBars",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..18b, 37b..38b, 45b..46b, 61b..62b",
+   "doc": "the first bar of each chorus / the breakdown: crash",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "gate"
+   ],
+   "hash": "sha256:ee649ea69135988ca622c17ef7a60ed2dfc8489ec8333a84075440dc7c881506"
+  },
+  "alu8bzl": {
+   "name": "rm.mChoruses",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0!16 1!8 0!12 1!8 0!16 1!8 0!4>",
+   "doc": "mask form of rm.choruses (plain Strudel)",
+   "folder": "rockmetal/form",
+   "tags": [
+    "form",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:8abae34db80e6a46c3de14e071b663775b3e2d5712f19e714134dd20d152e07c"
+  }
+ }
+}

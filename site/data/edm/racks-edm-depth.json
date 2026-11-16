@@ -1,0 +1,407 @@
+{
+ "model": 1,
+ "meta": {
+  "id": "glyphcore/edm:racks-edm-depth",
+  "doc": "Chain-only hook defs of the glyphcore/edm depth layer: serialFM, fmFormant, formantChop, tapeStop (racks) and the moves stutterGate, mbLow, mbMid, mbHigh, tapeStopMove."
+ },
+ "defs": {
+  "serialFM": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-growl"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "fm",
+     6
+    ],
+    [
+     "fmh",
+     0.5
+    ],
+    [
+     "fmattack",
+     0.002
+    ],
+    [
+     "fmdecay",
+     0.18
+    ],
+    [
+     "fmsustain",
+     0.25
+    ],
+    [
+     "attack",
+     0.004
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     0.05
+    ],
+    [
+     "hpf",
+     100
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     2600
+    ],
+    [
+     "shape",
+     0.35
+    ],
+    [
+     "gain",
+     0.28
+    ]
+   ],
+   "folder": "edm/depth/racks/bass",
+   "tags": [
+    "bass",
+    "rack",
+    "edm"
+   ]
+  },
+  "fmFormant": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-growl"
+    ],
+    [
+     "s",
+     "square"
+    ],
+    [
+     "fm",
+     2
+    ],
+    [
+     "fmh",
+     2
+    ],
+    [
+     "fmdecay",
+     0.3
+    ],
+    [
+     "fmsustain",
+     0.5
+    ],
+    [
+     "vowel",
+     {
+      "$mini": "<a e o e>"
+     }
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     0.05
+    ],
+    [
+     "hpf",
+     100
+    ],
+    [
+     "lpf",
+     3500
+    ],
+    [
+     "gain",
+     0.35
+    ]
+   ],
+   "folder": "edm/depth/racks/bass",
+   "tags": [
+    "bass",
+    "rack",
+    "edm"
+   ]
+  },
+  "formantChop": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-vox"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "attack",
+     0.004
+    ],
+    [
+     "decay",
+     0.15
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "release",
+     0.03
+    ],
+    [
+     "hpf",
+     200
+    ],
+    [
+     "lpf",
+     5000
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ],
+   "folder": "edm/depth/racks/vox",
+   "tags": [
+    "vox",
+    "rack",
+    "edm"
+   ]
+  },
+  "tapeStop": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-sweep"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "note",
+     "c4"
+    ],
+    [
+     "penv",
+     -12
+    ],
+    [
+     "pdecay",
+     0.6
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "decay",
+     0.7
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     300
+    ],
+    [
+     "lpf",
+     3000
+    ],
+    [
+     "lpenv",
+     -2
+    ],
+    [
+     "lpdecay",
+     0.6
+    ],
+    [
+     "gain",
+     0.2
+    ]
+   ],
+   "folder": "edm/depth/racks/fx",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "stutterGate": {
+   "chain": [
+    [
+     "struct",
+     {
+      "$mini": "x*16"
+     }
+    ],
+    [
+     "decay",
+     0.06
+    ],
+    [
+     "sustain",
+     0
+    ]
+   ],
+   "folder": "edm/depth/moves",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "mbLow": {
+   "chain": [
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     180
+    ],
+    [
+     "compressor",
+     -18
+    ],
+    [
+     "compressorRatio",
+     4
+    ],
+    [
+     "compressorAttack",
+     0.01
+    ],
+    [
+     "compressorRelease",
+     0.12
+    ]
+   ],
+   "folder": "edm/depth/moves",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "mbMid": {
+   "chain": [
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "hpf",
+     180
+    ],
+    [
+     "lpf",
+     2500
+    ],
+    [
+     "compressor",
+     -26
+    ],
+    [
+     "compressorRatio",
+     6
+    ],
+    [
+     "compressorAttack",
+     0.003
+    ],
+    [
+     "compressorRelease",
+     0.08
+    ],
+    [
+     "postgain",
+     0.5
+    ]
+   ],
+   "folder": "edm/depth/moves",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "mbHigh": {
+   "chain": [
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "hpf",
+     2500
+    ],
+    [
+     "compressor",
+     -30
+    ],
+    [
+     "compressorRatio",
+     8
+    ],
+    [
+     "compressorAttack",
+     0.002
+    ],
+    [
+     "compressorRelease",
+     0.06
+    ],
+    [
+     "postgain",
+     0.8
+    ]
+   ],
+   "folder": "edm/depth/moves",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "tapeStopMove": {
+   "chain": [
+    [
+     "penv",
+     -12
+    ],
+    [
+     "pdecay",
+     0.5
+    ]
+   ],
+   "folder": "edm/depth/moves",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  }
+ }
+}

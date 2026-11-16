@@ -15,6 +15,7 @@ export const HYGIENE = Object.freeze({
   'hygiene-snare': scope(120, 10000, steep),
   'hygiene-hat': scope(5000, 14500, steep),
   'hygiene-perc': scope(80, 8000),
+  'hygiene-guitar': scope(70, 7000), // guitar-like voices: low E to the cabinet top (glyphcore/rockmetal, #157); pre-drive scope
   'hygiene-bell': scope(300, 8000),
   'hygiene-pluck': scope(120, 7000),
   'hygiene-stab': scope(120, 8000),

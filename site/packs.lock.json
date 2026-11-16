@@ -7,7 +7,7 @@
       "id": "glyphcore/shim",
       "version": "1.0.0",
       "source": "file:.",
-      "manifest": "sha256:603656d70f7028fc51e2bb772a564fc0923b8ccd1dc565666a163312f2c53d00",
+      "manifest": "sha256:403d424ec93ba02436d38c4511f8af5233dcf7e8f0661d63a5f3c8e797d49ff9",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}
@@ -34,7 +34,7 @@
       "id": "glyphcore/edm",
       "version": "1.0.0",
       "source": "file:data/edm",
-      "manifest": "sha256:c2a84a3f4d9faabda94c95dfb78e0118cbed46922bd3d2ed5e9505199fa88c92",
+      "manifest": "sha256:ec5194f6ef8ac40367c9f8e597aa3b13da5f1dd6ddffd48dfa5a909b455aca89",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}
@@ -44,6 +44,24 @@
       "version": "1.0.0",
       "source": "file:data/dnb-electro",
       "manifest": "sha256:978079fae2dd2c0b5e9cc299ae0fc031769bc5b569f1b7a81c6b96d21b1092cb",
+      "priority": 0,
+      "allowCode": [],
+      "dependencies": {}
+    },
+    {
+      "id": "glyphcore/industrial",
+      "version": "1.0.0",
+      "source": "file:data/industrial",
+      "manifest": "sha256:7178ea006639f9e4c608aaebff6d84037a612c76cb2c4cf95f14c1a4a58ded52",
+      "priority": 0,
+      "allowCode": [],
+      "dependencies": {}
+    },
+    {
+      "id": "glyphcore/rockmetal",
+      "version": "1.0.0",
+      "source": "file:data/rockmetal",
+      "manifest": "sha256:d931b8c2373b53b6e9f5c7af5ea5c0f0f7c0edcf10ee58f6562daa8f953bee26",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}

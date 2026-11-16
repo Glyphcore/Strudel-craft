@@ -377,6 +377,171 @@
   },
   "lfoPump": {
    "class": "move"
+  },
+  "breakerClang": {
+   "class": "perc"
+  },
+  "metalImpact": {
+   "class": "perc"
+  },
+  "anvil": {
+   "class": "perc"
+  },
+  "pipeHit": {
+   "class": "perc"
+  },
+  "relayClick": {
+   "class": "perc"
+  },
+  "ratchet": {
+   "class": "perc"
+  },
+  "chainRattle": {
+   "class": "hat"
+  },
+  "metalShatter": {
+   "class": "hat"
+  },
+  "hydraulicHiss": {
+   "class": "sweep"
+  },
+  "servoWhine": {
+   "class": "screech"
+  },
+  "servoDown": {
+   "class": "sweep"
+  },
+  "doorSlam": {
+   "class": "impact"
+  },
+  "stampPress": {
+   "class": "impact"
+  },
+  "slamImpact": {
+   "class": "impact"
+  },
+  "rustBed": {
+   "class": "texture"
+  },
+  "factoryAmb": {
+   "class": "texture"
+  },
+  "stampKick": {
+   "class": "kick"
+  },
+  "clangSnare": {
+   "class": "snare"
+  },
+  "metalClap": {
+   "class": "snare"
+  },
+  "openChain": {
+   "class": "hat"
+  },
+  "indSub": {
+   "class": "sub"
+  },
+  "indRiddim": {
+   "class": "growl"
+  },
+  "metalGrowl": {
+   "class": "growl"
+  },
+  "clankBass": {
+   "class": "growl"
+  },
+  "pressBass": {
+   "class": "bass"
+  },
+  "hissRiser": {
+   "class": "riser"
+  },
+  "gtrClean": {
+   "class": "guitar"
+  },
+  "gtrCrunch": {
+   "class": "guitar"
+  },
+  "gtrHigh": {
+   "class": "guitar"
+  },
+  "palmMute": {
+   "class": "guitar"
+  },
+  "chugHigh": {
+   "class": "guitar"
+  },
+  "gtrLead": {
+   "class": "lead"
+  },
+  "gtrHarmonic": {
+   "class": "bell"
+  },
+  "feedbackSwell": {
+   "class": "lead"
+  },
+  "bassFinger": {
+   "class": "bass"
+  },
+  "bassPick": {
+   "class": "bass"
+  },
+  "rockKick": {
+   "class": "kick"
+  },
+  "metalKick": {
+   "class": "kick"
+  },
+  "rockSnare": {
+   "class": "snare"
+  },
+  "rockHat": {
+   "class": "hat"
+  },
+  "rockRide": {
+   "class": "hat"
+  },
+  "crashCym": {
+   "class": "hat"
+  },
+  "rockTom": {
+   "class": "perc"
+  },
+  "organ": {
+   "class": "keys"
+  },
+  "rockStrings": {
+   "class": "pad"
+  },
+  "vowelVox": {
+   "class": "vox"
+  },
+  "serialFM": {
+   "class": "growl"
+  },
+  "fmFormant": {
+   "class": "growl"
+  },
+  "formantChop": {
+   "class": "vox"
+  },
+  "tapeStop": {
+   "class": "sweep"
+  },
+  "stutterGate": {
+   "class": "move"
+  },
+  "mbLow": {
+   "class": "move"
+  },
+  "mbMid": {
+   "class": "move"
+  },
+  "mbHigh": {
+   "class": "move"
+  },
+  "tapeStopMove": {
+   "class": "move"
   }
  },
  "catalog": {
@@ -914,6 +1079,178 @@
   "trance-drop": {
    "class": "demo",
    "bars": 2
+  },
+  "ind-breaker-clang": {
+   "class": "perc",
+   "bars": 2
+  },
+  "ind-metal-hits": {
+   "class": "demo",
+   "bars": 2
+  },
+  "ind-small-mechanics": {
+   "class": "demo",
+   "bars": 2
+  },
+  "ind-servo-hydraulic": {
+   "class": "demo",
+   "bars": 2
+  },
+  "ind-slam-stamp": {
+   "class": "demo",
+   "bars": 2
+  },
+  "ind-shatter": {
+   "class": "hat",
+   "bars": 2
+  },
+  "ind-factory-bed": {
+   "class": "demo",
+   "bars": 2
+  },
+  "ind-kit-halftime": {
+   "class": "demo",
+   "bars": 2
+  },
+  "ind-hit-grammar": {
+   "class": "demo",
+   "bars": 4
+  },
+  "ind-riddim-drop": {
+   "class": "demo",
+   "bars": 2
+  },
+  "ind-growl-clank": {
+   "class": "demo",
+   "bars": 2
+  },
+  "ind-mech-techno": {
+   "class": "demo",
+   "bars": 2
+  },
+  "ind-hiss-build": {
+   "class": "demo",
+   "bars": 3
+  },
+  "feel-indriddim": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-indhalftime": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-mechtechno": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-noiseind": {
+   "class": "demo",
+   "bars": 2
+  },
+  "rm-guitar-tiers": {
+   "class": "demo",
+   "bars": 3
+  },
+  "rm-palm-mute": {
+   "class": "guitar",
+   "bars": 2
+  },
+  "rm-high-chug": {
+   "class": "guitar",
+   "bars": 2
+  },
+  "rm-lead-harmonics": {
+   "class": "demo",
+   "bars": 2
+  },
+  "rm-bass-guitar": {
+   "class": "demo",
+   "bars": 2
+  },
+  "rm-rock-beat": {
+   "class": "demo",
+   "bars": 2
+  },
+  "rm-shuffle": {
+   "class": "demo",
+   "bars": 2
+  },
+  "rm-double-kick": {
+   "class": "demo",
+   "bars": 2
+  },
+  "rm-blast-thrash": {
+   "class": "demo",
+   "bars": 2
+  },
+  "rm-fills": {
+   "class": "demo",
+   "bars": 3
+  },
+  "rm-keys-pads": {
+   "class": "demo",
+   "bars": 2
+  },
+  "rm-vowel-vox": {
+   "class": "vox",
+   "bars": 2
+  },
+  "rm-breakdown": {
+   "class": "demo",
+   "bars": 2
+  },
+  "rm-riff-form": {
+   "class": "demo",
+   "bars": 4
+  },
+  "rm-doom": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-rock": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-shuffle": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-rockhalftime": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-thrash": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-doom": {
+   "class": "demo",
+   "bars": 2
+  },
+  "ed-serial-fm": {
+   "class": "growl",
+   "bars": 2
+  },
+  "ed-fm-formant": {
+   "class": "growl",
+   "bars": 2
+  },
+  "ed-multiband-layers": {
+   "class": "demo",
+   "bars": 2
+  },
+  "ed-vocal-chops": {
+   "class": "vox",
+   "bars": 4
+  },
+  "ed-stutter-tapestop": {
+   "class": "demo",
+   "bars": 3
+  },
+  "ed-map16": {
+   "class": "demo",
+   "bars": 16
   }
  },
  "syntax": {
@@ -1152,6 +1489,50 @@
   "dnb-electro/Club map: 32-bar blocks as gates": {
    "class": "demo",
    "bars": 2
+  },
+  "industrial/Pick an industrial feel (one import line)": {
+   "class": "demo",
+   "bars": 2
+  },
+  "industrial/Industrial hits grammar: density by section": {
+   "class": "demo",
+   "bars": 4
+  },
+  "industrial/Industrial form as gates (build, vacuum, slam)": {
+   "class": "demo",
+   "bars": 20
+  },
+  "industrial/Industrial dovetails: clang pickup, ratchet into the drop": {
+   "class": "demo",
+   "bars": 3
+  },
+  "rockmetal/Pick a rock / metal feel (one import line)": {
+   "class": "demo",
+   "bars": 2
+  },
+  "rockmetal/Song form as gates (verse, chorus, bridge, solo)": {
+   "class": "demo",
+   "bars": 20
+  },
+  "rockmetal/Riff grammar: cells, answer, displacement": {
+   "class": "demo",
+   "bars": 4
+  },
+  "rockmetal/Metal breakdown: chug and kick in unison": {
+   "class": "demo",
+   "bars": 2
+  },
+  "edm-depth/32-bar map: drop A / B, stutter bar, last beat": {
+   "class": "demo",
+   "bars": 34
+  },
+  "edm-depth/Multiband OTT-style on a bus (.split, one compressor per band)": {
+   "class": "demo",
+   "bars": 2
+  },
+  "edm-depth/Resampling: capture a bass, replay it through a second chain": {
+   "class": "demo",
+   "bars": 4
   }
  }
 }

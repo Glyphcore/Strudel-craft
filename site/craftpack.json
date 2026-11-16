@@ -12,9 +12,9 @@
       "format": "recipes@1",
       "version": "1.0.0",
       "path": "data/catalog.json",
-      "hash": "sha256:f28f056473c3a4c42b20a7219f418caa329d1625472ead086e373bc6b1b9fe73",
+      "hash": "sha256:c182951a4185f72df2f69de0d05a297f4eef33f6c53d64aa8fe9be138080b4be",
       "load": "eager",
-      "bytes": 122778
+      "bytes": 147931
     },
     {
       "id": "bodies-base",
@@ -65,6 +65,16 @@
       "load": "lazy",
       "hash": "sha256:2a73a67d9d26616dc19508b721f08d9db38ce0777ede3d9286352152fb8c7b05",
       "bytes": 14048
+    },
+    {
+      "id": "bodies-edm-depth",
+      "kind": "x-glyphcore.recipe-bodies",
+      "format": "x-glyphcore.recipe-bodies@1",
+      "version": "1.0.0",
+      "path": "data/recipes/edm-depth.json",
+      "load": "lazy",
+      "hash": "sha256:df347fbac68567c05cf7815972f52b499c0103bcb25cf0e146fe4700e1f1da22",
+      "bytes": 4468
     },
     {
       "id": "bodies-edmfeels",
@@ -127,6 +137,26 @@
       "bytes": 11081
     },
     {
+      "id": "bodies-industrial",
+      "kind": "x-glyphcore.recipe-bodies",
+      "format": "x-glyphcore.recipe-bodies@1",
+      "version": "1.0.0",
+      "path": "data/recipes/industrial.json",
+      "load": "lazy",
+      "hash": "sha256:e3efbbf626d10dabcfcc9cec27bbcc5383dc84a9a58339fd08df21084dd4cc0a",
+      "bytes": 25684
+    },
+    {
+      "id": "bodies-rockmetal",
+      "kind": "x-glyphcore.recipe-bodies",
+      "format": "x-glyphcore.recipe-bodies@1",
+      "version": "1.0.0",
+      "path": "data/recipes/rockmetal.json",
+      "load": "lazy",
+      "hash": "sha256:caad5dc66e0a9103b204c7cd7a2f4e7f3f38502d53ab41322dfaedf1f06b4164",
+      "bytes": 25534
+    },
+    {
       "id": "strudel-docs",
       "kind": "intellisense",
       "format": "intellisense@1",
@@ -182,9 +212,9 @@
       "format": "syntax@1",
       "version": "1.0.0",
       "path": "data/syntax.json",
-      "hash": "sha256:4d6933274c124deb5c329441a1fff5a8489e16735c1c26afe1cec25bdf147174",
+      "hash": "sha256:7be656ce3d0815d1b213dbe12fe6e73ee266641fe568931734105732687a29b6",
       "load": "eager",
-      "bytes": 186614
+      "bytes": 209210
     },
     {
       "id": "composition",
@@ -192,9 +222,9 @@
       "format": "syntax@1",
       "version": "1.0.0",
       "path": "data/composition.json",
-      "hash": "sha256:a8e85aca9859a48dcd306bc1f47132c1a4d9fb99cace5c03424466611f49474e",
+      "hash": "sha256:65777f8689c765620f874c0aee4156422d7ee9a143bc61bdcff9b25de8dfb145",
       "load": "lazy",
-      "bytes": 164880,
+      "bytes": 165040,
       "title": "Composition concepts",
       "description": "Catalog of composition design concepts (docs/COMPOSITION.md): motif, interplay, foreshadow, layering, groove, harmony, discordance, assonance, complement, synergy, clustering; Craft and Strudel forms"
     },
@@ -292,6 +322,9 @@
       },
       "groove": {
         "title": "Groove"
+      },
+      "timbre": {
+        "title": "Timbre"
       },
       "keys": {
         "title": "Keys"
@@ -487,6 +520,9 @@
       "growl": {
         "group": "bass"
       },
+      "guitar": {
+        "group": "timbre"
+      },
       "half-time": {
         "group": "tempo"
       },
@@ -517,6 +553,9 @@
       },
       "impact": {
         "group": "fx"
+      },
+      "industrial": {
+        "group": "feel"
       },
       "intro-reveal": {
         "group": "arrangement"
@@ -549,6 +588,9 @@
         "description": "has a plain Strudel form with equal events"
       },
       "melodic-dubstep": {
+        "group": "feel"
+      },
+      "metal": {
         "group": "feel"
       },
       "minor": {
@@ -600,6 +642,9 @@
       },
       "riser": {
         "group": "technique"
+      },
+      "rock": {
+        "group": "feel"
       },
       "sections": {
         "group": "arrangement"

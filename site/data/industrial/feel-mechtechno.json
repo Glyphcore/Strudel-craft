@@ -1,0 +1,390 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"Mechanical techno\" (128-135 bpm): machine-tight four on the floor, metal clap, open chain offbeats. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/industrial:feel-mechtechno\", { as: \"feel\" }).",
+ "atoms": {
+  "avdyf1r": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "kick pattern",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:0217ca393e7b9e240d8b3ffed67e975f3934d9a9f1303a227193b90afe293ac5"
+  },
+  "agmqd42": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a5n6nk8": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "stampKick | groove-human(0.3, 0.04, 1)",
+   "doc": "kick rack and groove",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:238a773c128cddceeaae41703714ceebfee2356a68fb81cdc6ddba75c145fa2c"
+  },
+  "aknrufa": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "snare pattern",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:af7ee3edccbe311642120c20f1a09b1b99396d529e3bbcec654e9ceac382bf7d"
+  },
+  "a3gg849": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "awbwb5h": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "metalClap | groove-human(0.3, 0.04, 2)",
+   "doc": "snare rack and groove",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:ce59104d0198fd03a7231be0710676b473cd5ddf07bb34a30bad019cbbe15c0d"
+  },
+  "apks91x": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ [x x] [x x] [x x x] [x x x]",
+   "doc": "perc pattern",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:bf2271eea1d5541d757dda7cfd41099252e995fb6bebb3a0a7894597f4922764"
+  },
+  "aalfyy0": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "perc accents (velocity)",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "apy0y2a": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "ratchet | groove-human(0.3, 0.04, 3)",
+   "doc": "perc rack and groove",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:90b2edc3703f9e5389e2250cc1d692a46c00c018fd788627e5884e0d1b8f7339"
+  },
+  "aa1vh0z": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "hats pattern",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
+  },
+  "aedgp2e": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "hats accents (velocity)",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "as80sn0": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "openChain | groove-human(0.3, 0.04, 4)",
+   "doc": "hats rack and groove",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:5abeb9038cea302c51033bab1422b691ad206f07cf7370e8c13e33c25a688013"
+  },
+  "agynfak": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ c4 ~ ~ ~ ~ c4 ~ ~ ~ ~ c4 ~ ~ ~ ~",
+   "doc": "top pattern",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:5975bd8a6886400d79ca357cc2084b83af0a15cf0c7170f066d77784dd422db4"
+  },
+  "ama16sn": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "apl2ux3": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "relayClick | groove-human(0.3, 0.04, 5)",
+   "doc": "top rack and groove",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "drums",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:59b278c8daba13ecce82c1ca3543e06ed5b3d8cb56a87868fc06f8534eaa2d73"
+  },
+  "aqw65qi": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ c2 c2 c2 ~ c2 c2 c2 ~ c2 c2 c2 ~ c2 c2 c2",
+   "doc": "bass pattern",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "bass",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:47f589c1709f5a815011509d82ef8241b16399862db5d8d239b7954de6621b66"
+  },
+  "ayetvml": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "bass accents (velocity)",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "bass",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a3m3kd5": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "pressBass | groove-human(0.3, 0.04, 6)",
+   "doc": "bass rack and groove",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "bass",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:f8bedbe70c9fd9a6615cf812c7a21baf9e56a51b03d748136d6d0a9c6aee0798"
+  },
+  "autpe7l": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "c3",
+   "doc": "harmony pattern",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "keys",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:14ab704d526a89ba6417135fe7c1d9c6e555ffa4e7b8d2e52b60750ae261c7e7"
+  },
+  "a0m8b0k": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "keys",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a10vmvy": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "factoryAmb | groove-human(0.3, 0.04, 7)",
+   "doc": "harmony rack and groove",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "keys",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:a380f5bebfc4572e42b9cb2cde194a127d8400998e7d5689022d838b17b6391e"
+  },
+  "awnwsbn": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "fx pattern",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "fx",
+    "feel",
+    "industrial",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "ah3fhcm": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "fx",
+    "feel",
+    "industrial",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "atx41nw": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.3, 0.04, 8)",
+   "doc": "fx rack and groove",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "fx",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:de05f9acff274a516449bdb710c2aaaf087062d381babdc423638827db046924"
+  },
+  "adf3v7v": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.3, 0.04, 0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "folder": "industrial/feel/mechtechno",
+   "tags": [
+    "groove",
+    "feel",
+    "industrial",
+    "rack-slot"
+   ],
+   "hash": "sha256:23ebd835450d60ed17624db09ada356df6e35003863efef75994e88b6ddf7fda"
+  }
+ }
+}

@@ -552,6 +552,18 @@ does; `hooks.bind("fx", "x", "@3b")` is rewritten to single quotes). Design: `do
   **DnB, electro, house / techno / trance** and **Track demos: DnB, electro, house / techno / trance**; catalog recipes (labels dnb, liquid, neuro, jump-up, breakbeat,
   electro, house, techno, trance, big-room) carry both forms. Breaks are synthesised (no sampled break ships); chop any break with `.bite(16, atoms.dnb.chops)`.
   Track sources: docs/tracks/dnb-electro-tutorial (pack versions; `node tools/packs/dnb_electro.mjs` writes the standalone programs and `presets.json`).
+- Pack **`glyphcore/industrial`** 1.0.0 (`data/industrial/`, CC0-1.0, synthesis only, native voices; #155; docs/CONVENTIONS.md 12, docs/INDUSTRIAL_REFERENCES.md): `racks-industrial`
+  (mechanical hits breakerClang, metalImpact, anvil, pipeHit, relayClick, ratchet, chainRattle, metalShatter, hydraulicHiss, servoWhine, servoDown, doorSlam, stampPress, slamImpact,
+  rustBed, factoryAmb; kit stampKick, clangSnare, metalClap, openChain; basses indSub, indRiddim, metalGrowl, clankBass, pressBass; `hissRiser(len)`), `atoms-industrial` (`ind.`
+  drums, hit grammars hits1 / hits2 / hits4 / hits7 / hitsGap, bass lines, the 64-bar form as gates and masks) and feels `feel-indriddim`, `feel-indhalftime`, `feel-mechtechno`,
+  `feel-noiseind`. Syntax section **Industrial**; catalog label industrial.
+- Pack **`glyphcore/rockmetal`** 1.0.0 (`data/rockmetal/`, CC0-1.0, synthesis only; #157; docs/CONVENTIONS.md 13, docs/ROCKMETAL_REFERENCES.md): `racks-rockmetal` (guitar tiers
+  gtrClean, gtrCrunch, palmMute (native), gtrHigh, chugHigh (one distort stage), gtrLead, gtrHarmonic, feedbackSwell; bassFinger, bassPick; rockKick, metalKick, rockSnare, rockHat,
+  rockRide, crashCym, rockTom; organ, rockStrings, vowelVox), `atoms-rockmetal` (`rm.` drum patterns incl. double kick, blast, thrash, doom; power chords, riff cells and the A A A B
+  grammar, chug, gallop, breakdown; the 72-bar song form as gates) and feels `feel-rock`, `feel-shuffle`, `feel-rockhalftime`, `feel-thrash`, `feel-doom`. New rack class `guitar`.
+  Syntax section **Rock and metal**; catalog labels rock, metal, guitar.
+- glyphcore/edm **depth layer** (#156; docs/CONVENTIONS.md 14): `racks-edm-depth` (serialFM, fmFormant, formantChop, tapeStop; moves stutterGate, mbLow, mbMid, mbHigh, tapeStopMove) and
+  `atoms-edm-depth` (`ed.` 16 / 32-bar maps, phrase ends, chop notes / vowels / steps). Syntax section **EDM depth** (32-bar map, multiband on a bus with `.split`, resampling with `capture`).
 
 ## Mixer read model (`engine/mixer-model.js`, #95; docs/REFACTOR_PLAN.md phase R1)
 `channels(graph)` turns the lane graph (`engine/lanes.js` `compile(src).graph`) into channel strips: one per lane (`kind: "lane"`), one per `ret(name)` lane (`kind: "return"`, with its

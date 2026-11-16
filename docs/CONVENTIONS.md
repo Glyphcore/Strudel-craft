@@ -235,3 +235,46 @@ feel"); set the tempo with it. Switch liquid -> neuro: two imports and lane tags
 Rejected: new stdlib presets in `site/engine/groove.js` for genre grooves (engine change for content); pack hook defs with a `groove` step (the first
 draft; a composition of existing presets needs no new def); DnB swing above 55 % (reads as UK garage). Drift is not used (groove-human has none; 1.5 % was the
 first draft for liquid).
+
+## 12. Industrial (pack `glyphcore/industrial`, #155)
+Sources, sound-design recipes and the approach guide: docs/INDUSTRIAL_REFERENCES.md; rules docs/RESEARCH_ETHICS.md (synthesis only, CC0).
+C minor, one cycle = one bar of 4/4, 140 bpm half-time (mechanical techno 130). Native superdough voices only in every rack (FM at
+inharmonic ratios 1.41 / 2.76 / 3.9 with a decaying index, noise layers, band-passes, pitch envelopes, room); no worklet stages.
+
+| component | atoms (`ind.`) | rack (class) |
+|---|---|---|
+| mechanical hits | `hits1`, `hits2`, `hits4`, `hits7`, `hitsGap` (hits per bar by section), `relays`, `relayNotes`, `ratchetFill`, `chain16`, `chainVel`, `offChain`, `shards` | `breakerClang`, `metalImpact`, `anvil`, `pipeHit`, `relayClick`, `ratchet` (perc), `chainRattle`, `metalShatter`, `openChain` (hat), `hydraulicHiss`, `servoDown` (sweep), `servoWhine` (screech), `doorSlam`, `stampPress`, `slamImpact` (impact), `rustBed`, `factoryAmb` (texture) |
+| kit | `halfKick`, `halfSnare`, `fourKick`, `backClap`, `noiseKick` | `stampKick` (kick), `clangSnare`, `metalClap` (snare) |
+| basses | `riddimLine`, `riddimAlt` (call / response), `growlLine`, `clankLine`, `subLine`, `rumbleLine` | `indSub` (sub), `indRiddim`, `metalGrowl`, `clankBass` (growl), `pressBass` (bass) |
+| build / FX | `servoLine`, `bed`, `bedNote` | `hissRiser(len)` (riser); edm-core `noiseRiser`, `crash`, `sidechain`, `ott`, `drive` combine (pack glyphcore/edm) |
+
+Form (64 bars, gates): `ind.intro` 1-8, `build` 9-16, `drop1` 17-32, `brk` 33-40, `build2` 41-48, `drop2` 49-64, `drops`, `notDrops`, `builds`,
+`vacuum` (last half bar before each drop), `pickup` (last beat), `phraseEnd` (last bar of every 8), masks `mDrops`, `mBuilds`, `mNotDrops`.
+Grammar: sparse hits (1-2 a bar) in intros and breaks, mid (4) in builds, `hitsGap` in drops (the hits answer kick and snare), dense (7) on
+`phraseEnd`. Dovetails: clang / ratchet on `pickup`, hiss riser ending on the drop, the vacuum, `slamImpact` on the downbeat, `servoDown` after.
+Feels (template v1): `feel-indriddim` (140, tight), `feel-indhalftime` (140, sparse and heavy), `feel-mechtechno` (130, machine-tight
+`groove-human(0.3, 0.04)`), `feel-noiseind` (120, loose `groove-human(4, 0.25)`). Pick one: `atoms.import("pack:glyphcore/industrial:feel-indriddim", { as: "feel" })`.
+
+## 13. Rock and metal (pack `glyphcore/rockmetal`, #157)
+Sources, synthesis approach, forms and composition fundamentals: docs/ROCKMETAL_REFERENCES.md. E minor (E2 power chords, E1 bass), one cycle =
+one bar. New rack class `guitar` (70-8000 Hz, below -24, above -20, >18k -40, side<120 -30; hygiene-guitar 70 / 7000 Hz; RACK_STANDARD 10).
+
+| component | atoms (`rm.`) | rack (class) |
+|---|---|---|
+| guitars | `pI`, `pbIII`, `pIV`, `pbVI`, `pbVII`, `pbII`, `riffA`, `riffB`, `riff` (A A A B), `chug`, `gallop`, `breakdown`, `phryg`, `doomRiff` | `gtrClean`, `gtrCrunch`, `palmMute` (native), `gtrHigh`, `chugHigh` (one distort stage) (guitar), `gtrLead`, `feedbackSwell` (lead), `gtrHarmonic` (bell) |
+| bass guitar | `bassRoot`, `bassGallop`, `bassDoom` | `bassFinger`, `bassPick` (bass) |
+| drums | `kick`, `snare`, `hats`, `hatVel`, `shuffleKick`, `shuffleHats`, `halfKick`, `halfSnare`, `doubleKick`, `doubleVel`, `blastKick`, `blastSnare`, `thrashKick`, `thrashSnare`, `doomKick`, `ride`, `crashOne`, `tomFill`, `snareFill`, `breakdownKick` | `rockKick`, `metalKick` (kick), `rockSnare` (snare), `rockHat`, `rockRide`, `crashCym` (hat), `rockTom` (perc) |
+| keys, pads, voice | `chords`, `lead`, `harm`, `voxLine` | `organ` (keys), `rockStrings` (pad), `vowelVox` (vox, no words) |
+
+Form (72 bars): `rm.intro`, `verse1`, `pre1`, `chorus1`, `verse2`, `pre2`, `chorus2`, `bridge` (metal: breakdown), `solo`, `chorus3`, `outro`,
+`verses`, `pres`, `choruses`, `notChoruses`, `fills`, `crashBars`, mask `mChoruses`. Feels: `feel-rock` (120), `feel-shuffle` (112),
+`feel-rockhalftime` (140, pushed 3 %), `feel-thrash` (180), `feel-doom` (70, dragged 5 %).
+
+## 14. EDM depth (pack `glyphcore/edm`, family edm-depth, #156)
+New ingredients only (`racks-edm-depth`, `atoms-edm-depth`, ns `ed.`); edm-core and dubstep items are unchanged. Arrangement grammars:
+`ed.m16Intro / m16Build / m16Drop` (4 + 4 + 8) and `ed.m32Intro / m32Build / m32Drop / m32DropA / m32DropB / m32Stutter / m32LastBeat`
+(8 + 8 + 16), `ed.phraseEnds` (every 4th bar), masks `m16Mask`, `m32Mask`, `fill4`. Sound design: `serialFM` (FM 0.5 with a falling index into
+one shape stage, growl), `fmFormant` (native talking bass, growl), multiband by layering (moves `mbLow`, `mbMid`, `mbHigh`: one compressor per
+band) or on a bus with `.split` (Syntax "Multiband OTT-style on a bus"), resampling with `capture()` (docs/LANES.md 6), `formantChop` (vox) with
+`ed.chopNotes`, `chopVowels`, `chopStep`; transitions `stutterGate` (move), `tapeStop` (sweep), `tapeStopMove` (move). Mastering per genre:
+docs/MASTERING.md.

@@ -824,7 +824,7 @@ Strudel form: none (lane tags and selections (.tags, tagged().mute / solo / fx) 
 #### LAY-03 Simultaneous layer counts per genre and section
 
 - **Definition.** Target ranges of simultaneous lanes (each drum piece counts) per section role, scaled per genre.
-- **Why it works.** Producer-reported norms (COMPOSITION_RESEARCH.md): drops are the fullest section, cloud and riddim stay sparse, big-room and DnB carry more. Design call: intro 2-6, verse 4-9, build 5-10, drop 8-14, breakdown 3-7, outro 2-6 lanes; genre factor cloud 0.6, riddim 0.75, trap 0.85, phonk 0.9, house / dubstep / DnB 1.0, big room 1.1.
+- **Why it works.** Producer-reported norms (COMPOSITION_RESEARCH.md): drops are the fullest section, cloud and riddim stay sparse, big-room and DnB carry more. Design call: intro 2-6, verse 4-9, build 5-10, drop 8-14, breakdown 3-7, outro 2-6 lanes; genre factor cloud 0.6, riddim 0.75, trap 0.85, phonk 0.9, house / dubstep / DnB 1.0, big room 1.1; rock 0.8, metal 0.85, industrial 0.85 (design calls, #159: a band arrangement is 5-8 lanes; the licensed DAW study has n < 3 per genre, docs/FORM_PROFILES.md).
 - **When.** Planning and checking; override the factor with --genre.
 - **Measure.** composer density --genre G: section means against the scaled targets. (engine/composer `density`)
 - **Anti-patterns.** Treating the numbers as rules (they are conventions; the brief wins).

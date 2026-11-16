@@ -1,0 +1,390 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"Rock / metal half-time\" (120-160 bpm (felt half)): half-time snare on 3, ride quarters, high-gain riff. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/rockmetal:feel-rockhalftime\", { as: \"feel\" }).",
+ "atoms": {
+  "axphzdi": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~",
+   "doc": "kick pattern",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:0c64f84974ef8be7b43b95e899d6caebb354964b4bb9c9fcc72652b4421987da"
+  },
+  "a4tgcbt": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "accv7c5": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "rockKick | groove-push(3) | groove-human(1.5, 0.1, 1)",
+   "doc": "kick rack and groove",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:54c898bf9217e065e4f75a0e520a4efb81237e858c46e135192c6ca1f4c09c84"
+  },
+  "aosyw11": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
+   "doc": "snare pattern",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:525fd0444781900288d0ac6c5358b9391d694346d05e7bca8b3001885e70932c"
+  },
+  "aonnjnc": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "awrgo82": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "rockSnare | groove-push(3) | groove-human(1.5, 0.1, 2)",
+   "doc": "snare rack and groove",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:e94f9097e0f3328d52892b4fa444ef0c42b4092d537c57afc0d98ed532a6b878"
+  },
+  "a9tlcas": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "perc pattern",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "a0n0br3": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "perc accents (velocity)",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "axdfisv": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-push(3) | groove-human(1.5, 0.1, 3)",
+   "doc": "perc rack and groove",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:e36c9cdd24cb0284371ca956dd3c2f163d73f816f4198f4298343062ed03c316"
+  },
+  "a2fuepe": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*4",
+   "doc": "hats pattern",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:06d0ab79870e8ade2b3cabbe93bdce7aae87130e1c1e10bb4134eb57d1b4e9af"
+  },
+  "a97xh8l": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "hats accents (velocity)",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ahvv6y9": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "rockRide | groove-push(3) | groove-human(1.5, 0.1, 4)",
+   "doc": "hats rack and groove",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:337dafbf275053a5560102db4d9b0943449c25b34fc12a6bdf5eb58d4706a42b"
+  },
+  "ap8qdg3": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "top pattern",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "ahloh8m": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "au9i3fg": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-push(3) | groove-human(1.5, 0.1, 5)",
+   "doc": "top rack and groove",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:74544ae3e619dfe8cdc00b6856b61baf1b1bb3c236b1ba84c1d5d345eabebbfb"
+  },
+  "ajx39ob": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "e1 e1 ~ e1 ~ e1 e1 ~ g1 ~ g1 ~ a1 ~ a1 ~",
+   "doc": "bass pattern",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "bass",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:90a6f51112a0b36709f7a09396231e82835bb6338bc87476acb4e70268253be7"
+  },
+  "amdbdny": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "bass accents (velocity)",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "bass",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "asogwr8": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "bassPick | groove-push(3) | groove-human(1.5, 0.1, 6)",
+   "doc": "bass rack and groove",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "bass",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:b02fff63e33dbf0b7a948e66a1c6056399dc75358e05b45b6553b8886ff605c1"
+  },
+  "a1wmzqm": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "[e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [g2,d3,g3] ~ [a2,e3,a3]",
+   "doc": "harmony pattern",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "keys",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:e5280c7691f59d956a57e535e7a64d2da019556940d4b8a1c7743040976de3fb"
+  },
+  "ax2vsjl": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "keys",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "arf8k31": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "gtrHigh | groove-push(3) | groove-human(1.5, 0.1, 7)",
+   "doc": "harmony rack and groove",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "keys",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:85ee22c68f4df2221cf4c8069ab551ccf05afe3ab64cbd82d4cab9103d0aa728"
+  },
+  "ahgpldy": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "fx pattern",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "fx",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "a1gcd7d": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "fx",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a9qhcb9": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-push(3) | groove-human(1.5, 0.1, 8)",
+   "doc": "fx rack and groove",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "fx",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:eceed00f99c28cfda021c01811c782426cba586e943134c900a33ef0a7f8dc43"
+  },
+  "aydxdti": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-push(3) | groove-human(1.5, 0.1, 0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "folder": "rockmetal/feel/rockhalftime",
+   "tags": [
+    "groove",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:7ca3968b710b292c8dfa4f96aa341dab984a8aedaebcf1692f4217eddb207002"
+  }
+ }
+}

@@ -1,0 +1,390 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"Thrash\" (160-220 bpm): skank beat (kick on beats, snare on offbeats). Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/rockmetal:feel-thrash\", { as: \"feel\" }).",
+ "atoms": {
+  "a2cckmr": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "kick pattern",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:0217ca393e7b9e240d8b3ffed67e975f3934d9a9f1303a227193b90afe293ac5"
+  },
+  "ayryb1i": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "au9pk1o": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "metalKick | groove-human(0.8, 0.06, 1)",
+   "doc": "kick rack and groove",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:bee51836a358f1d9f07be65fac173428eeead175b1bbc6f29ded16ad1ffe1ba9"
+  },
+  "axt2u9e": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "snare pattern",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
+  },
+  "a5m1wsl": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ad1pu7l": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "rockSnare | groove-human(0.8, 0.06, 2)",
+   "doc": "snare rack and groove",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:b40647ed4d7ece0e8df0d62da1720fce557c91cfd6836507bb34969041d02cd8"
+  },
+  "adi3o9d": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "perc pattern",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "a4zcuzo": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "perc accents (velocity)",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "aftjk2m": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.8, 0.06, 3)",
+   "doc": "perc rack and groove",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:85d49a23eec529b9128f9384cc6e85d945405eb4ae81b30827a33b75d01cfb36"
+  },
+  "a8bi4m7": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*4",
+   "doc": "hats pattern",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:06d0ab79870e8ade2b3cabbe93bdce7aae87130e1c1e10bb4134eb57d1b4e9af"
+  },
+  "a6byk0i": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "hats accents (velocity)",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a6oxes8": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "rockRide | groove-human(0.8, 0.06, 4)",
+   "doc": "hats rack and groove",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:356878a5ac6d1ab599a4f07202da91fdc7278194d28e7fefd2163e8f26ca2dd5"
+  },
+  "a4prpns": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "top pattern",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "aviss7n": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "acsnw5v": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.8, 0.06, 5)",
+   "doc": "top rack and groove",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "drums",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:f8b182b664ac23a041c013a7144ef427c99cf4d80f680a115558b46c762ad7e1"
+  },
+  "apqmzse": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "[e1 ~ e1 e1]*4",
+   "doc": "bass pattern",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "bass",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:9b01238c4bf870204e8ab5dc9cf7aff6de8298964bc76e0a0017b4c6f0a8973e"
+  },
+  "ad2m3cx": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "bass accents (velocity)",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "bass",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ax56dpp": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "bassPick | groove-human(0.8, 0.06, 6)",
+   "doc": "bass rack and groove",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "bass",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:1968463c13e990d0936be21352a5989587369bc0e9aaf44c61d696bf48134061"
+  },
+  "a1gcd6t": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "[e2 ~ e2 e2]*4",
+   "doc": "harmony pattern",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "keys",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:a6813cf0b5002ef35a194eeafc9a64fc206dbeea00f25ff16ada2308e8ffb243"
+  },
+  "aror508": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "keys",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "afanpya": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "palmMute | groove-human(0.8, 0.06, 7)",
+   "doc": "harmony rack and groove",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "keys",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:4e6d78068ae579c913205e189b855b00136df26758fa39dab68a37ec7b7b512d"
+  },
+  "a3afyen": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "fx pattern",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "fx",
+    "feel",
+    "rock",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "a1y4bvm": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "fx",
+    "feel",
+    "rock",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "aobupgo": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.8, 0.06, 8)",
+   "doc": "fx rack and groove",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "fx",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:a0ee5a596b56f79fdd0798e71147870a1d3fe7927a9e31f7282f82e8ea0339b5"
+  },
+  "a2sxvif": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-human(0.8, 0.06, 0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "folder": "rockmetal/feel/thrash",
+   "tags": [
+    "groove",
+    "feel",
+    "rock",
+    "rack-slot"
+   ],
+   "hash": "sha256:cb4bb320902b1a12ee1748b2036e0d45496ab6ac0eaac9ef792b5914dc09b710"
+  }
+ }
+}

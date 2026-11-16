@@ -33,6 +33,18 @@
       "bytes": 9568
     },
     {
+      "id": "racks-edm-depth",
+      "kind": "hooks",
+      "format": "hooks@1",
+      "version": "1.0.0",
+      "path": "racks-edm-depth.json",
+      "title": "EDM depth racks",
+      "description": "Chain-only hook defs: serialFM, fmFormant, formantChop, tapeStop, stutterGate, mbLow, mbMid, mbHigh, tapeStopMove",
+      "load": "manual",
+      "hash": "sha256:03a5d3f80df38fd5611add1941484672983e90596c2a1e766eda97d0c5eb60c8",
+      "bytes": 4383
+    },
+    {
       "id": "atoms-edm-core",
       "kind": "atoms",
       "format": "atoms@1",
@@ -55,6 +67,18 @@
       "load": "eager",
       "hash": "sha256:d0566c7517fee18f77d1353899d4a149103020ba011fdc2081d03479c9d04149",
       "bytes": 10178
+    },
+    {
+      "id": "atoms-edm-depth",
+      "kind": "atoms",
+      "format": "atoms@1",
+      "version": "1.0.0",
+      "path": "atoms-edm-depth.json",
+      "title": "EDM depth atoms",
+      "description": "glyphcore/edm depth atoms (ed.): 16-bar and 32-bar arrangement maps as gates and masks, phrase ends, a fill mask, vocal chop notes, vowels and pitch steps, a growl line.",
+      "load": "eager",
+      "hash": "sha256:5742c512a7e9887259294230bbd5bcb84667f57df1cde9465f10f03090494c71",
+      "bytes": 6682
     },
     {
       "id": "feel-halftime",

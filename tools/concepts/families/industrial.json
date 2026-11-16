@@ -1,0 +1,2289 @@
+{
+ "family": "industrial",
+ "title": "Industrial EDM: synthesized mechanical hits, industrial kit, riddim / growl basses, hit grammars, forms, four feels",
+ "doc": "Pack glyphcore/industrial (CC0-1.0, docs/CONVENTIONS.md section 12, sources docs/INDUSTRIAL_REFERENCES.md). Every sound is synthesized with native superdough voices (FM at inharmonic ratios, noise sources, filters, envelopes, room); no samples, no worklet drive in the racks (docs/RACK_STANDARD.md section 9). C minor, one cycle = one bar of 4/4 on 16 steps.",
+ "pack": "glyphcore/industrial",
+ "section": {
+  "id": "industrial",
+  "title": "Industrial: mechanical hits, kit, riddim, forms, feels",
+  "explain": "Pack glyphcore/industrial (docs/CONVENTIONS.md 12; sources and sound-design recipes in docs/INDUSTRIAL_REFERENCES.md). Mechanical hits are synthesized racks: breakerClang, metalImpact, anvil, pipeHit (FM at the free-bar ratios 1.41 / 2.76 / 3.9 with a decaying index plus noise), relayClick, ratchet, chainRattle, metalShatter, hydraulicHiss (band-passed noise bursts), servoWhine / servoDown (saw with pitch envelope and vibrato), doorSlam, stampPress, slamImpact (sine with a pitch knock plus noise), rustBed, factoryAmb (noise floors). Kit: stampKick, clangSnare, metalClap, openChain; basses indSub, indRiddim, metalGrowl, clankBass, pressBass; build hissRiser(len). Atoms ind.: drum patterns, hit grammars hits1 / hits2 / hits4 / hits7 / hitsGap (hits per bar by section), bass lines, a 64-bar form as gates (intro, build, drop1, brk, build2, drop2, drops, notDrops, builds, vacuum, pickup, phraseEnd) and masks. Four feels: feel-indriddim, feel-indhalftime, feel-mechtechno, feel-noiseind.",
+  "needs": "hooks"
+ },
+ "taxonomy": {
+  "folder": "industrial",
+  "genres": [
+   "industrial"
+  ]
+ },
+ "source": "docs/INDUSTRIAL_REFERENCES.md",
+ "racksIngredient": "racks-industrial",
+ "racksTitle": "Industrial racks",
+ "racksDoc": "Chain-only hook defs of glyphcore/industrial: synthesized mechanical hits (FM at inharmonic ratios plus noise), industrial kit, native riddim / growl / clank basses, hiss riser; every rack starts with its hygiene rack (docs/RACK_STANDARD.md).",
+ "atomsIngredient": {
+  "id": "atoms-industrial",
+  "ns": "ind",
+  "title": "Industrial atoms",
+  "doc": "glyphcore/industrial atoms (ind.): half-time, four-floor and noise kick patterns, chain / relay / ratchet patterns, hit grammars by density (hits1, hits2, hits4, hits7, hitsGap), riddim / growl / clank / sub / rumble lines, the 64-bar form as gates and masks. Import with atoms.import(\"pack:glyphcore/industrial:atoms-industrial\")."
+ },
+ "labels": [
+  [
+   "industrial",
+   "Industrial",
+   "feel",
+   "mechanical, metallic, factory, clang, riddim"
+  ]
+ ],
+ "racks": {
+  "breakerClang": {
+   "class": "perc",
+   "doc": "circuit-breaker clang: square with FM at the inharmonic ratio 1.41 (index 5 decaying in 120 ms) stacked with a white-noise burst, one envelope of 350 ms, 24 dB/oct low-pass 7 kHz, a short small room: the thunk-and-ring of a heavy contact closing",
+   "chain": [
+    [
+     "hook",
+     "hygiene-perc"
+    ],
+    [
+     "s",
+     {
+      "$mini": "square, white"
+     }
+    ],
+    [
+     "note",
+     "g3"
+    ],
+    [
+     "fm",
+     5
+    ],
+    [
+     "fmh",
+     1.41
+    ],
+    [
+     "fmattack",
+     0.001
+    ],
+    [
+     "fmdecay",
+     0.12
+    ],
+    [
+     "fmsustain",
+     0.15
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.35
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     120
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     7000
+    ],
+    [
+     "room",
+     0.15
+    ],
+    [
+     "size",
+     0.3
+    ],
+    [
+     "gain",
+     0.42
+    ]
+   ]
+  },
+  "metalImpact": {
+   "class": "perc",
+   "doc": "metal impact: triangle on C3 with FM at 2.76 (the second partial ratio of a free bar), index 8 falling in 60 ms, pink-noise body, 500 ms ring",
+   "chain": [
+    [
+     "hook",
+     "hygiene-perc"
+    ],
+    [
+     "s",
+     {
+      "$mini": "triangle, pink"
+     }
+    ],
+    [
+     "note",
+     "c3"
+    ],
+    [
+     "fm",
+     8
+    ],
+    [
+     "fmh",
+     2.76
+    ],
+    [
+     "fmattack",
+     0.001
+    ],
+    [
+     "fmdecay",
+     0.06
+    ],
+    [
+     "fmsustain",
+     0.1
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.5
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     80
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     6000
+    ],
+    [
+     "room",
+     0.2
+    ],
+    [
+     "size",
+     0.4
+    ],
+    [
+     "gain",
+     0.4
+    ]
+   ]
+  },
+  "anvil": {
+   "class": "perc",
+   "doc": "anvil: sine on G4 with FM at 3.9 (bright inharmonic partials), index 3 with a slow 400 ms decay so the strike stays metallic while it rings for 1 s",
+   "chain": [
+    [
+     "hook",
+     "hygiene-perc"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "note",
+     "g4"
+    ],
+    [
+     "fm",
+     3
+    ],
+    [
+     "fmh",
+     3.9
+    ],
+    [
+     "fmattack",
+     0.001
+    ],
+    [
+     "fmdecay",
+     0.4
+    ],
+    [
+     "fmsustain",
+     0.1
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     1.0
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     200
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     8000
+    ],
+    [
+     "gain",
+     0.35
+    ]
+   ]
+  },
+  "pipeHit": {
+   "class": "perc",
+   "doc": "pipe: triangle on D4 with FM at 2.76, low index (a hollow tube), 600 ms",
+   "chain": [
+    [
+     "hook",
+     "hygiene-perc"
+    ],
+    [
+     "s",
+     "triangle"
+    ],
+    [
+     "note",
+     "d4"
+    ],
+    [
+     "fm",
+     2
+    ],
+    [
+     "fmh",
+     2.76
+    ],
+    [
+     "fmdecay",
+     0.2
+    ],
+    [
+     "fmsustain",
+     0.2
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.6
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     150
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     7000
+    ],
+    [
+     "gain",
+     0.4
+    ]
+   ]
+  },
+  "relayClick": {
+   "class": "perc",
+   "doc": "relay click: an 8 ms white-noise tick through a 3 kHz band-pass (Q 2): the dry snap of a contact",
+   "chain": [
+    [
+     "hook",
+     "hygiene-perc"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     0.0005
+    ],
+    [
+     "decay",
+     0.008
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "bpf",
+     3000
+    ],
+    [
+     "bpq",
+     2
+    ],
+    [
+     "hpf",
+     1000
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     8000
+    ],
+    [
+     "gain",
+     0.7
+    ]
+   ]
+  },
+  "ratchet": {
+   "class": "perc",
+   "doc": "ratchet: 12 ms band-passed noise ticks (2.2 kHz, Q 4), played as 16th or 32nd runs; a pawl over a gear",
+   "chain": [
+    [
+     "hook",
+     "hygiene-perc"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     0.0005
+    ],
+    [
+     "decay",
+     0.012
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "bpf",
+     2200
+    ],
+    [
+     "bpq",
+     4
+    ],
+    [
+     "hpf",
+     600
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     7000
+    ],
+    [
+     "gain",
+     0.65
+    ]
+   ]
+  },
+  "chainRattle": {
+   "class": "hat",
+   "doc": "chain rattle: 30 ms noise links 3-11 kHz; dense patterns with human jitter make the chain (pair with groove-human)",
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.03
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     5000
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     11000
+    ],
+    [
+     "gain",
+     0.4
+    ]
+   ]
+  },
+  "metalShatter": {
+   "class": "hat",
+   "doc": "metal / glass shatter: 250 ms of high noise (3.5-12 kHz); scatter it with degradeBy and 32nds for the shards",
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.25
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     5000
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     12000
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "hydraulicHiss": {
+   "class": "sweep",
+   "doc": "hydraulic hiss: a 50 ms-in, 600 ms-out burst of noise 2.5-9 kHz; the press releasing pressure",
+   "chain": [
+    [
+     "hook",
+     "hygiene-sweep"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     0.05
+    ],
+    [
+     "decay",
+     0.6
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     2500
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     9000
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "servoWhine": {
+   "class": "screech",
+   "doc": "servo whine: a saw on C5 that slides up a fifth over 300 ms (pitch attack) with 6 Hz vibrato, resonant 5 kHz low-pass; a motor seeking its position",
+   "chain": [
+    [
+     "hook",
+     "hygiene-screech"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "note",
+     "c5"
+    ],
+    [
+     "penv",
+     7
+    ],
+    [
+     "pattack",
+     0.3
+    ],
+    [
+     "vib",
+     6
+    ],
+    [
+     "vibmod",
+     0.3
+    ],
+    [
+     "attack",
+     0.08
+    ],
+    [
+     "decay",
+     0.3
+    ],
+    [
+     "sustain",
+     0.6
+    ],
+    [
+     "release",
+     0.2
+    ],
+    [
+     "hpf",
+     400
+    ],
+    [
+     "lpf",
+     5000
+    ],
+    [
+     "lpq",
+     6
+    ],
+    [
+     "gain",
+     0.18
+    ]
+   ]
+  },
+  "servoDown": {
+   "class": "sweep",
+   "doc": "servo power-down: the saw falls two octaves over 800 ms (a downlifter made of a motor)",
+   "chain": [
+    [
+     "hook",
+     "hygiene-sweep"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "note",
+     "c5"
+    ],
+    [
+     "penv",
+     -24
+    ],
+    [
+     "pdecay",
+     0.8
+    ],
+    [
+     "attack",
+     0.01
+    ],
+    [
+     "decay",
+     1.0
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     200
+    ],
+    [
+     "lpf",
+     4000
+    ],
+    [
+     "gain",
+     0.2
+    ]
+   ]
+  },
+  "doorSlam": {
+   "class": "impact",
+   "doc": "door slam: sine thump at 60 Hz with a 12-semitone pitch knock plus brown-noise body under 2 kHz, 400 ms",
+   "chain": [
+    [
+     "hook",
+     "hygiene-impact"
+    ],
+    [
+     "s",
+     {
+      "$mini": "sine, brown"
+     }
+    ],
+    [
+     "freq",
+     60
+    ],
+    [
+     "penv",
+     12
+    ],
+    [
+     "pdecay",
+     0.05
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.4
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     30
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     2000
+    ],
+    [
+     "gain",
+     0.75
+    ]
+   ]
+  },
+  "stampPress": {
+   "class": "impact",
+   "doc": "stamp press: sine and square at 48 Hz with a two-octave knock in 40 ms: a dull heavy press hit with a hard edge, 300 ms",
+   "chain": [
+    [
+     "hook",
+     "hygiene-impact"
+    ],
+    [
+     "s",
+     {
+      "$mini": "sine, square"
+     }
+    ],
+    [
+     "freq",
+     48
+    ],
+    [
+     "penv",
+     24
+    ],
+    [
+     "pdecay",
+     0.04
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.3
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     30
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     3000
+    ],
+    [
+     "gain",
+     0.55
+    ]
+   ]
+  },
+  "slamImpact": {
+   "class": "impact",
+   "doc": "drop impact: sine at 45 Hz with a three-octave knock over 80 ms, brown-noise rumble, 1.2 s; the industrial downbeat (dry: a room put side energy under 120 Hz, audit)",
+   "chain": [
+    [
+     "hook",
+     "hygiene-impact"
+    ],
+    [
+     "s",
+     {
+      "$mini": "sine, brown"
+     }
+    ],
+    [
+     "freq",
+     45
+    ],
+    [
+     "penv",
+     36
+    ],
+    [
+     "pdecay",
+     0.08
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     1.2
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     28
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     3000
+    ],
+    [
+     "gain",
+     0.7
+    ]
+   ]
+  },
+  "rustBed": {
+   "class": "texture",
+   "doc": "rust noise bed: brown and pink noise 250 Hz-6 kHz, slow in and out; a quiet floor under the hits",
+   "chain": [
+    [
+     "hook",
+     "hygiene-texture"
+    ],
+    [
+     "s",
+     {
+      "$mini": "brown, pink"
+     }
+    ],
+    [
+     "attack",
+     0.5
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.5
+    ],
+    [
+     "hpf",
+     500
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     6000
+    ],
+    [
+     "gain",
+     0.07
+    ]
+   ]
+  },
+  "factoryAmb": {
+   "class": "texture",
+   "doc": "factory ambience: pink noise through an 'o' formant (a hall hum), 300 Hz-4 kHz, a big room",
+   "chain": [
+    [
+     "hook",
+     "hygiene-texture"
+    ],
+    [
+     "s",
+     "pink"
+    ],
+    [
+     "vowel",
+     "o"
+    ],
+    [
+     "attack",
+     1
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     1
+    ],
+    [
+     "hpf",
+     300
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     4000
+    ],
+    [
+     "room",
+     0.5
+    ],
+    [
+     "size",
+     0.8
+    ],
+    [
+     "gain",
+     0.06
+    ]
+   ]
+  },
+  "stampKick": {
+   "class": "kick",
+   "doc": "industrial kick: sine at 50 Hz with a 30-semitone knock in 30 ms (the press), 300 ms, high-pass 38 Hz",
+   "chain": [
+    [
+     "hook",
+     "hygiene-kick"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "freq",
+     50
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "penv",
+     30
+    ],
+    [
+     "pdecay",
+     0.03
+    ],
+    [
+     "decay",
+     0.3
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     38
+    ],
+    [
+     "lpf",
+     4000
+    ],
+    [
+     "gain",
+     0.85
+    ]
+   ]
+  },
+  "clangSnare": {
+   "class": "snare",
+   "doc": "clang snare: triangle on E3 with FM at 1.41 plus white noise, 200 ms; the backbeat with a metal edge",
+   "chain": [
+    [
+     "hook",
+     "hygiene-snare"
+    ],
+    [
+     "s",
+     {
+      "$mini": "triangle, white"
+     }
+    ],
+    [
+     "note",
+     "e3"
+    ],
+    [
+     "fm",
+     4
+    ],
+    [
+     "fmh",
+     1.41
+    ],
+    [
+     "fmdecay",
+     0.05
+    ],
+    [
+     "fmsustain",
+     0.1
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.2
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     160
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     9000
+    ],
+    [
+     "gain",
+     0.5
+    ]
+   ]
+  },
+  "metalClap": {
+   "class": "snare",
+   "doc": "metal clap: noise band-passed at 1.5 kHz (Q 1.5), 120 ms; the techno clap of the kit",
+   "chain": [
+    [
+     "hook",
+     "hygiene-snare"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.12
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "bpf",
+     1500
+    ],
+    [
+     "bpq",
+     1.5
+    ],
+    [
+     "hpf",
+     300
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     8000
+    ],
+    [
+     "gain",
+     0.65
+    ]
+   ]
+  },
+  "openChain": {
+   "class": "hat",
+   "doc": "open chain hat: 120 ms noise 4-11 kHz",
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.12
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     5000
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     11000
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "indSub": {
+   "class": "sub",
+   "doc": "industrial sub: sine, 5 ms attack, low-pass 300 Hz, mono; the weight under every growl",
+   "chain": [
+    [
+     "hook",
+     "hygiene-sub"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "decay",
+     0.2
+    ],
+    [
+     "sustain",
+     0.9
+    ],
+    [
+     "release",
+     0.06
+    ],
+    [
+     "lpf",
+     300
+    ],
+    [
+     "gain",
+     0.55
+    ]
+   ]
+  },
+  "indRiddim": {
+   "class": "growl",
+   "doc": "industrial riddim: square with FM at 1.5 (a metallic fifth), resonant 24 dB low-pass 1.1 kHz with a short envelope snap, high-pass 120 Hz (the sub plays below); short, repetitive, the gaps are part of it; no worklet drive",
+   "chain": [
+    [
+     "hook",
+     "hygiene-growl"
+    ],
+    [
+     "s",
+     "square"
+    ],
+    [
+     "fm",
+     1
+    ],
+    [
+     "fmh",
+     1.5
+    ],
+    [
+     "attack",
+     0.004
+    ],
+    [
+     "decay",
+     0.2
+    ],
+    [
+     "sustain",
+     0.4
+    ],
+    [
+     "release",
+     0.04
+    ],
+    [
+     "hpf",
+     120
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     1100
+    ],
+    [
+     "lpq",
+     5
+    ],
+    [
+     "lpenv",
+     2
+    ],
+    [
+     "lpdecay",
+     0.1
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "metalGrowl": {
+   "class": "growl",
+   "doc": "metal growl: saw with FM at 1.41 (index 2.5 decaying to 40 %), alternating o / e formants, high-pass 100 Hz",
+   "chain": [
+    [
+     "hook",
+     "hygiene-growl"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "fm",
+     2.5
+    ],
+    [
+     "fmh",
+     1.41
+    ],
+    [
+     "fmattack",
+     0.005
+    ],
+    [
+     "fmdecay",
+     0.3
+    ],
+    [
+     "fmsustain",
+     0.4
+    ],
+    [
+     "vowel",
+     {
+      "$mini": "<o e>"
+     }
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     0.05
+    ],
+    [
+     "hpf",
+     100
+    ],
+    [
+     "lpf",
+     3500
+    ],
+    [
+     "gain",
+     0.35
+    ]
+   ]
+  },
+  "clankBass": {
+   "class": "growl",
+   "doc": "clank bass: square and triangle with FM at 2.76, index 6 falling in 60 ms: every note starts with a clang and settles into a bass, high-pass 90 Hz",
+   "chain": [
+    [
+     "hook",
+     "hygiene-growl"
+    ],
+    [
+     "s",
+     {
+      "$mini": "square, triangle"
+     }
+    ],
+    [
+     "fm",
+     6
+    ],
+    [
+     "fmh",
+     2.76
+    ],
+    [
+     "fmattack",
+     0.001
+    ],
+    [
+     "fmdecay",
+     0.06
+    ],
+    [
+     "fmsustain",
+     0.2
+    ],
+    [
+     "attack",
+     0.003
+    ],
+    [
+     "decay",
+     0.18
+    ],
+    [
+     "sustain",
+     0.3
+    ],
+    [
+     "release",
+     0.04
+    ],
+    [
+     "hpf",
+     90
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "lpf",
+     4000
+    ],
+    [
+     "gain",
+     0.32
+    ]
+   ]
+  },
+  "pressBass": {
+   "class": "bass",
+   "doc": "press bass (mechanical techno): triangle and square, 600 Hz low-pass with a short envelope, 5 ms attack; rolling 16ths",
+   "chain": [
+    [
+     "hook",
+     "hygiene-bass"
+    ],
+    [
+     "s",
+     {
+      "$mini": "triangle, square"
+     }
+    ],
+    [
+     "attack",
+     0.008
+    ],
+    [
+     "decay",
+     0.12
+    ],
+    [
+     "sustain",
+     0.2
+    ],
+    [
+     "release",
+     0.03
+    ],
+    [
+     "ftype",
+     "24db"
+    ],
+    [
+     "hpf",
+     45
+    ],
+    [
+     "lpf",
+     600
+    ],
+    [
+     "lpenv",
+     1.5
+    ],
+    [
+     "lpdecay",
+     0.08
+    ],
+    [
+     "gain",
+     0.4
+    ]
+   ]
+  },
+  "hissRiser": {
+   "class": "riser",
+   "doc": "hiss riser: white noise fading in over len seconds while its high-pass climbs (hpenv 4 octaves): pressure building in a pipe; len = bars x 240 / bpm",
+   "chain": [
+    [
+     "hook",
+     "hygiene-riser"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     {
+      "$param": "len"
+     }
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.1
+    ],
+    [
+     "hpf",
+     400
+    ],
+    [
+     "hpenv",
+     4
+    ],
+    [
+     "hpattack",
+     {
+      "$param": "len"
+     }
+    ],
+    [
+     "hpsustain",
+     1
+    ],
+    [
+     "lpf",
+     11000
+    ],
+    [
+     "gain",
+     0.25
+    ]
+   ],
+   "params": {
+    "len": {
+     "min": 0.5,
+     "max": 30,
+     "default": 6.86
+    }
+   }
+  }
+ },
+ "atoms": {
+  "halfKick": {
+   "type": "mini",
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "half-time kick: 1 and the and of 3"
+  },
+  "halfSnare": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
+   "doc": "half-time snare alone on beat 3"
+  },
+  "fourKick": {
+   "type": "mini",
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "four on the floor (mechanical techno)"
+  },
+  "backClap": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~",
+   "doc": "clap on 2 and 4"
+  },
+  "noiseKick": {
+   "type": "mini",
+   "body": "x ~ ~ x ~ ~ ~ ~ x ~ x ~ ~ ~ ~ ~",
+   "doc": "noise-industrial kick: irregular, 1, the a of 1, 3, the and of 3"
+  },
+  "chain16": {
+   "type": "mini",
+   "body": "x*16",
+   "doc": "chain rattle on every 16th"
+  },
+  "chainVel": {
+   "type": "mini",
+   "body": "[.5 .3 .8 .3]*4",
+   "doc": "chain accents: the and of each beat loudest"
+  },
+  "offChain": {
+   "type": "mini",
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "open chain on the offbeat 8ths"
+  },
+  "ratchetFill": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ [x x] [x x] [x x x] [x x x]",
+   "doc": "ratchet run into the next bar (32nds then triplet 32nds)"
+  },
+  "relays": {
+   "type": "mini",
+   "body": "~ x ~ ~ ~ ~ x ~ ~ ~ ~ x ~ ~ ~ ~",
+   "doc": "relay ticks in the drum gaps"
+  },
+  "hits1": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~",
+   "doc": "hit grammar, sparse (1 per bar): one clang on the a of 4, a pickup into the next bar (intros, breakdowns)"
+  },
+  "hits2": {
+   "type": "mini",
+   "body": "~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~",
+   "doc": "hit grammar, sparse (2 per bar): the a of 1 and the a of 4, answering the kick"
+  },
+  "hits4": {
+   "type": "mini",
+   "body": "~ ~ x ~ ~ x ~ ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "hit grammar, mid (4 per bar): in the gaps of the half-time kick and snare (builds, verse-like drop halves)"
+  },
+  "hits7": {
+   "type": "mini",
+   "body": "x ~ x ~ ~ x ~ x ~ ~ x ~ x ~ ~ x",
+   "doc": "hit grammar, dense (7 per bar): 3+3+2 accents; fills and the last bar of a drop phrase"
+  },
+  "hitsGap": {
+   "type": "mini",
+   "body": "~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~",
+   "doc": "hits only where the half-time kick and snare are silent (call and response with the drums)"
+  },
+  "riddimLine": {
+   "type": "mini",
+   "body": "c2 ~ ~ c2 ~ ~ c2 ~ ~ ~ c2 ~ c2 ~ ~ ~",
+   "doc": "riddim: one note in a 3+3+4+2+4 spacing; repetition and gaps are the hook"
+  },
+  "riddimAlt": {
+   "type": "mini",
+   "body": "c2 ~ c2 ~ ~ c2 ~ ~ eb2 ~ ~ c2 ~ ~ g1 ~",
+   "doc": "riddim answer: the same pulse moving to Eb2 and G1 (second half of a call / response)"
+  },
+  "growlLine": {
+   "type": "mini",
+   "body": "c2 ~ ~ ~ c2 c2 ~ ~ eb2 ~ ~ ~ c2 ~ ~ ~",
+   "doc": "growl line for metalGrowl"
+  },
+  "clankLine": {
+   "type": "mini",
+   "body": "c2 ~ ~ ~ ~ ~ c2 ~ ~ ~ ~ ~ c2 ~ ~ ~",
+   "doc": "clank bass on a 3-against-4 spacing (dotted quarters)"
+  },
+  "subLine": {
+   "type": "mini",
+   "body": "c1@10 c1@6",
+   "doc": "sub under the half-time kick, each note held to the next (no envelope sidebands under 20 Hz)"
+  },
+  "rumbleLine": {
+   "type": "mini",
+   "body": "~ c2 c2 c2 ~ c2 c2 c2 ~ c2 c2 c2 ~ c2 c2 c2",
+   "doc": "press bass rolling in the 16ths the kick leaves free"
+  },
+  "servoLine": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c5 ~ ~ ~",
+   "doc": "servo whine on the 4 of the bar"
+  },
+  "bed": {
+   "type": "mini",
+   "body": "x",
+   "doc": "one held texture note per bar"
+  },
+  "intro": {
+   "type": "gate",
+   "body": "<9b",
+   "doc": "intro: bars 1-8 (form: intro 8, build 8, drop 1 16, break 8, build 2 8, drop 2 16 = 64 bars)"
+  },
+  "build": {
+   "type": "gate",
+   "body": "9b..17b",
+   "doc": "build: bars 9-16"
+  },
+  "drop1": {
+   "type": "gate",
+   "body": "17b..33b",
+   "doc": "drop 1: bars 17-32"
+  },
+  "brk": {
+   "type": "gate",
+   "body": "33b..41b",
+   "doc": "break: bars 33-40"
+  },
+  "build2": {
+   "type": "gate",
+   "body": "41b..49b",
+   "doc": "build 2: bars 41-48"
+  },
+  "drop2": {
+   "type": "gate",
+   "body": "49b..65b",
+   "doc": "drop 2: bars 49-64 (switch-up: new hit grammar, same kit)"
+  },
+  "drops": {
+   "type": "gate",
+   "body": "17b..33b, 49b..65b",
+   "doc": "both drops"
+  },
+  "notDrops": {
+   "type": "gate",
+   "body": "<17b, 33b..49b",
+   "doc": "everything but the drops"
+  },
+  "builds": {
+   "type": "gate",
+   "body": "9b..17b, 41b..49b",
+   "doc": "both builds"
+  },
+  "vacuum": {
+   "type": "gate",
+   "body": "16.3b..17b, 48.3b..49b",
+   "doc": "the last half bar before each drop: everything but the riser stops"
+  },
+  "pickup": {
+   "type": "gate",
+   "body": "16.4b..17b, 48.4b..49b",
+   "doc": "the last beat before each drop: a clang or ratchet pickup"
+  },
+  "phraseEnd": {
+   "type": "gate",
+   "body": "8b..9b, 16b..17b, 24b..25b, 32b..33b, 40b..41b, 48b..49b, 56b..57b, 64b..65b",
+   "doc": "the last bar of every 8-bar phrase: fills (hits7, ratchetFill)"
+  },
+  "mDrops": {
+   "type": "mini",
+   "body": "<0!16 1!16 0!16 1!16>",
+   "doc": "mask form of ind.drops (plain Strudel)"
+  },
+  "mBuilds": {
+   "type": "mini",
+   "body": "<0!8 1!8 0!24 1!8 0!16>",
+   "doc": "mask form of ind.builds"
+  },
+  "mNotDrops": {
+   "type": "mini",
+   "body": "<1!16 0!16 1!16 0!16>",
+   "doc": "mask form of ind.notDrops"
+  },
+  "relayNotes": {
+   "type": "mini",
+   "body": "~ c4 ~ ~ ~ ~ c4 ~ ~ ~ ~ c4 ~ ~ ~ ~",
+   "doc": "relay ticks as notes (for the feel's top slot, which is a note lane; the click ignores the pitch)"
+  },
+  "bedNote": {
+   "type": "mini",
+   "body": "c3",
+   "doc": "one held texture note per bar (the feel's harmony slot is a note lane; noise ignores the pitch)"
+  },
+  "shards": {
+   "type": "mini",
+   "body": "[c6*8]",
+   "doc": "shatter shards as 8th notes for the top slot"
+  }
+ },
+ "recipes": [
+  {
+   "id": "ind-breaker-clang",
+   "title": "Circuit-breaker clang",
+   "intent": "FM at an inharmonic ratio plus a noise burst under one envelope.",
+   "labels": [
+    "industrial",
+    "drums",
+    "fm"
+   ],
+   "class": "perc",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@hits2",
+     "rack": "breakerClang"
+    }
+   ]
+  },
+  {
+   "id": "ind-metal-hits",
+   "title": "Metal hits: impact, anvil, pipe",
+   "intent": "Three struck-metal voices from FM ratios of a free bar (2.76) and.",
+   "labels": [
+    "industrial",
+    "drums",
+    "fm"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "x ~ ~ ~",
+     "rack": "metalImpact"
+    },
+    {
+     "src": "s",
+     "pat": "~ ~ x ~",
+     "rack": "anvil"
+    },
+    {
+     "src": "s",
+     "pat": "~ x ~ x",
+     "rack": "pipeHit"
+    }
+   ]
+  },
+  {
+   "id": "ind-small-mechanics",
+   "title": "Relays, ratchet, chain",
+   "intent": "Tiny mechanical noises as rhythm.",
+   "labels": [
+    "industrial",
+    "drums",
+    "human-feel"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@relays",
+     "rack": "relayClick"
+    },
+    {
+     "src": "s",
+     "pat": "@ratchetFill",
+     "rack": "ratchet"
+    },
+    {
+     "src": "s",
+     "pat": "@chain16",
+     "rack": "chainRattle",
+     "vel": "@chainVel",
+     "groove": "groove-human(3, 0.2, 5)"
+    }
+   ]
+  },
+  {
+   "id": "ind-servo-hydraulic",
+   "title": "Servo whine and hydraulic hiss",
+   "intent": "A motor seeking position (saw with pitch attack and vibrato) answered.",
+   "labels": [
+    "industrial",
+    "texture-moving",
+    "movement"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@servoLine",
+     "rack": "servoWhine"
+    },
+    {
+     "src": "s",
+     "pat": "~ ~ x ~",
+     "rack": "hydraulicHiss"
+    },
+    {
+     "src": "note",
+     "pat": "<~ c5>",
+     "rack": "servoDown"
+    }
+   ]
+  },
+  {
+   "id": "ind-slam-stamp",
+   "title": "Door slam and stamp press",
+   "intent": "Low thumps with a pitch knock.",
+   "labels": [
+    "industrial",
+    "impact"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "x ~ ~ ~",
+     "rack": "doorSlam"
+    },
+    {
+     "src": "s",
+     "pat": "~ ~ x ~",
+     "rack": "stampPress"
+    }
+   ]
+  },
+  {
+   "id": "ind-shatter",
+   "title": "Metal shatter",
+   "intent": "Noise shards: 32nds with half of them dropped at random (seeded), a.",
+   "labels": [
+    "industrial",
+    "probability",
+    "hats"
+   ],
+   "class": "hat",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "[x*8]",
+     "rack": "metalShatter",
+     "more": ".degradeBy(0.5)"
+    }
+   ]
+  },
+  {
+   "id": "ind-factory-bed",
+   "title": "Rust bed and factory ambience",
+   "intent": "Two quiet noise floors.",
+   "labels": [
+    "industrial",
+    "texture-moving",
+    "drone"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@bedNote",
+     "rack": "rustBed"
+    },
+    {
+     "src": "note",
+     "pat": "@bedNote",
+     "rack": "factoryAmb"
+    }
+   ]
+  },
+  {
+   "id": "ind-kit-halftime",
+   "title": "Industrial half-time kit",
+   "intent": "Stamp kick on 1 and the and of 3, clang snare on 3, chain rattle.",
+   "labels": [
+    "industrial",
+    "drums",
+    "half-time"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@halfKick",
+     "rack": "stampKick"
+    },
+    {
+     "src": "s",
+     "pat": "@halfSnare",
+     "rack": "clangSnare"
+    },
+    {
+     "src": "s",
+     "pat": "@chain16",
+     "rack": "chainRattle",
+     "vel": "@chainVel",
+     "groove": "groove-human(2, 0.15, 3)"
+    },
+    {
+     "src": "s",
+     "pat": "@hitsGap",
+     "rack": "breakerClang"
+    }
+   ]
+  },
+  {
+   "id": "ind-hit-grammar",
+   "title": "Hits-per-bar grammar",
+   "intent": "The same clang at 1, 2, 4 and 7 hits per bar over a half-time kit.",
+   "labels": [
+    "industrial",
+    "drums",
+    "arrangement"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@halfKick",
+     "rack": "stampKick"
+    },
+    {
+     "src": "s",
+     "pat": "@halfSnare",
+     "rack": "clangSnare"
+    },
+    {
+     "src": "s",
+     "pat": "<@hits1 @hits2 @hits4 @hits7>",
+     "rack": "metalImpact"
+    }
+   ]
+  },
+  {
+   "id": "ind-riddim-drop",
+   "title": "Industrial riddim drop",
+   "intent": "Sub under a native FM riddim (no worklet drive), call (riddimLine).",
+   "labels": [
+    "industrial",
+    "riddim",
+    "bass",
+    "call-response"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@halfKick",
+     "rack": "stampKick"
+    },
+    {
+     "src": "s",
+     "pat": "@halfSnare",
+     "rack": "clangSnare"
+    },
+    {
+     "src": "note",
+     "pat": "@subLine",
+     "rack": "indSub"
+    },
+    {
+     "src": "note",
+     "pat": "<@riddimLine @riddimAlt>",
+     "rack": "indRiddim"
+    },
+    {
+     "src": "s",
+     "pat": "@hitsGap",
+     "rack": "relayClick"
+    }
+   ]
+  },
+  {
+   "id": "ind-growl-clank",
+   "title": "Metal growl and clank bass",
+   "intent": "Two native growl classes.",
+   "labels": [
+    "industrial",
+    "growl",
+    "bass",
+    "fm",
+    "formant"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@growlLine",
+     "rack": "metalGrowl",
+     "more": ".mask(\"<1 0>\")"
+    },
+    {
+     "src": "note",
+     "pat": "@clankLine",
+     "rack": "clankBass",
+     "more": ".mask(\"<0 1>\")"
+    }
+   ]
+  },
+  {
+   "id": "ind-mech-techno",
+   "title": "Mechanical techno groove",
+   "intent": "Four stamp kicks, metal clap on 2 and 4, open chain on the offbeats.",
+   "labels": [
+    "industrial",
+    "techno",
+    "four-floor",
+    "drums"
+   ],
+   "class": "demo",
+   "cpm": 130,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@fourKick",
+     "rack": "stampKick"
+    },
+    {
+     "src": "s",
+     "pat": "@backClap",
+     "rack": "metalClap"
+    },
+    {
+     "src": "s",
+     "pat": "@offChain",
+     "rack": "openChain"
+    },
+    {
+     "src": "note",
+     "pat": "@rumbleLine",
+     "rack": "pressBass"
+    },
+    {
+     "src": "s",
+     "pat": "<~ @ratchetFill>",
+     "rack": "ratchet"
+    }
+   ]
+  },
+  {
+   "id": "ind-hiss-build",
+   "title": "Hiss build into a slam",
+   "intent": "A 2-bar hiss riser (high-pass climbing) that ends exactly on the.",
+   "labels": [
+    "industrial",
+    "riser",
+    "build-drop",
+    "transition"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 3,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "<x ~ ~>",
+     "rack": "hissRiser",
+     "args": "(3.43)",
+     "more": ".clip(2)"
+    },
+    {
+     "src": "s",
+     "pat": "<~ [~ ~ ~ [x x x x]] ~>",
+     "rack": "ratchet"
+    },
+    {
+     "src": "s",
+     "pat": "<~ ~ x>",
+     "rack": "slamImpact"
+    }
+   ]
+  }
+ ],
+ "syntax": [
+  {
+   "title": "Pick an industrial feel (one import line)",
+   "bars": 2,
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/industrial:feel-indriddim\", { as: \"feel\" })   // or feel-indhalftime, feel-mechtechno, feel-noiseind\natoms.import(\"pack:glyphcore/industrial:atoms-industrial\")\nhooks.bind(\"kick\", atoms.feel.kickRack)\nhooks.bind(\"snare\", atoms.feel.snareRack)\nhooks.bind(\"perc\", atoms.feel.percRack)\nhooks.bind(\"hats\", atoms.feel.hatsRack)\nhooks.bind(\"top\", atoms.feel.topRack)\nhooks.bind(\"bass\", atoms.feel.bassRack)\nhooks.bind(\"harmony\", atoms.feel.harmonyRack)\nhooks.bind(\"fx\", atoms.feel.fxRack)\nkick: s(atoms.feel.kick).velocity(atoms.feel.kickVel).use(\"kick\", { mode: \"swap\" })\nsnare: s(atoms.feel.snare).velocity(atoms.feel.snareVel).use(\"snare\", { mode: \"swap\" })\nperc: s(atoms.feel.perc).velocity(atoms.feel.percVel).use(\"perc\", { mode: \"swap\" })\nhats: s(atoms.feel.hats).velocity(atoms.feel.hatsVel).use(\"hats\", { mode: \"swap\" })\ntop: note(atoms.feel.top).velocity(atoms.feel.topVel).use(\"top\", { mode: \"swap\" })\nbass: note(atoms.feel.bass).velocity(atoms.feel.bassVel).use(\"bass\", { mode: \"swap\" })\nharmony: note(atoms.feel.harmony).velocity(atoms.feel.harmonyVel).use(\"harmony\", { mode: \"swap\" })\nfx: s(atoms.feel.fx).velocity(atoms.feel.fxVel).use(\"fx\", { mode: \"swap\" })\nsub: note(atoms.ind.subLine).hook(\"indSub\")   // the sub has its own lane under the riddim"
+  },
+  {
+   "title": "Industrial hits grammar: density by section",
+   "bars": 4,
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/industrial:atoms-industrial\")\nkick: s(atoms.ind.halfKick).hook(\"stampKick\")\nsnare: s(atoms.ind.halfSnare).hook(\"clangSnare\")\n// hits per bar by section: sparse 1 (intro, break), sparse 2, mid 4 (build), dense 7 (fills)\nh1: s(atoms.ind.hits1).hook(\"breakerClang\").mask(\"<1 0 0 0>\")\nh2: s(atoms.ind.hits2).hook(\"breakerClang\").mask(\"<0 1 0 0>\")\nh4: s(atoms.ind.hits4).hook(\"breakerClang\").mask(\"<0 0 1 0>\")\nh7: s(atoms.ind.hits7).hook(\"breakerClang\").mask(\"<0 0 0 1>\")"
+  },
+  {
+   "title": "Industrial form as gates (build, vacuum, slam)",
+   "bars": 20,
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/industrial:atoms-industrial\")\nkick: s(atoms.ind.halfKick).hook(\"stampKick\").tags(\"drums\")\nsnare: s(atoms.ind.halfSnare).hook(\"clangSnare\").tags(\"drums\")\nchain: s(atoms.ind.chain16).velocity(atoms.ind.chainVel).hook(\"chainRattle\").tags(\"drums\")\nbass: note(atoms.ind.riddimLine).hook(\"indRiddim\").tags(\"low\")\nsub: note(atoms.ind.subLine).hook(\"indSub\").tags(\"low\")\nrise: s(\"x/8\").hook(\"hissRiser(13.7)\").tags(\"rise\")\ntagged(\"low\").mute(atoms.ind.notDrops)\ntagged(\"drums\").mute(atoms.ind.intro)\ntagged(\"rise\").mute(\"<9b, 17b..65b\")\ntagged(\"!rise\").mute(atoms.ind.vacuum)"
+  },
+  {
+   "title": "Industrial dovetails: clang pickup, ratchet into the drop",
+   "bars": 3,
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/industrial:atoms-industrial\")\nkick: s(atoms.ind.halfKick).hook(\"stampKick\").mask(\"<0 0 1>\")\nfill: s(\"<~ [~ ~ ~ [x x x x]] ~>\").hook(\"ratchet\")\npick: s(\"<~ [~ ~ ~ x] ~>\").hook(\"breakerClang\")\nslam: s(\"<~ ~ x>\").hook(\"slamImpact\")"
+  }
+ ],
+ "feels": {
+  "indriddim": {
+   "title": "Industrial riddim",
+   "tempo": "140-150 bpm",
+   "cpm": 140,
+   "groove": "groove-human(0.5, 0.05, $seed)",
+   "doc": "half-time stamp kick and clang snare, chain 16ths",
+   "labels": [
+    "industrial",
+    "riddim"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@halfKick",
+     "rack": "stampKick"
+    },
+    "snare": {
+     "pat": "@halfSnare",
+     "rack": "clangSnare"
+    },
+    "perc": {
+     "pat": "@hitsGap",
+     "rack": "breakerClang"
+    },
+    "hats": {
+     "pat": "@chain16",
+     "rack": "chainRattle",
+     "vel": "@chainVel",
+     "groove": "groove-human(2, 0.15, $seed)"
+    },
+    "top": {
+     "pat": "@relayNotes",
+     "rack": "relayClick"
+    },
+    "bass": {
+     "pat": "@riddimLine",
+     "rack": "indRiddim"
+    },
+    "harmony": {
+     "pat": "~"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  },
+  "indhalftime": {
+   "title": "Industrial half-time",
+   "tempo": "135-145 bpm",
+   "cpm": 140,
+   "groove": "groove-human(1, 0.08, $seed)",
+   "doc": "heavier and sparser: half-time kit, two anvil hits a bar, metal growl",
+   "labels": [
+    "industrial",
+    "half-time"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@halfKick",
+     "rack": "stampKick"
+    },
+    "snare": {
+     "pat": "@halfSnare",
+     "rack": "clangSnare"
+    },
+    "perc": {
+     "pat": "@hits2",
+     "rack": "anvil"
+    },
+    "hats": {
+     "pat": "@offChain",
+     "rack": "openChain"
+    },
+    "top": {
+     "pat": "@servoLine",
+     "rack": "servoWhine"
+    },
+    "bass": {
+     "pat": "@growlLine",
+     "rack": "metalGrowl"
+    },
+    "harmony": {
+     "pat": "@bedNote",
+     "rack": "rustBed"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  },
+  "mechtechno": {
+   "title": "Mechanical techno",
+   "tempo": "128-135 bpm",
+   "cpm": 130,
+   "groove": "groove-human(0.3, 0.04, $seed)",
+   "doc": "machine-tight four on the floor, metal clap, open chain offbeats",
+   "labels": [
+    "industrial",
+    "techno"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@fourKick",
+     "rack": "stampKick"
+    },
+    "snare": {
+     "pat": "@backClap",
+     "rack": "metalClap"
+    },
+    "perc": {
+     "pat": "@ratchetFill",
+     "rack": "ratchet"
+    },
+    "hats": {
+     "pat": "@offChain",
+     "rack": "openChain"
+    },
+    "top": {
+     "pat": "@relayNotes",
+     "rack": "relayClick"
+    },
+    "bass": {
+     "pat": "@rumbleLine",
+     "rack": "pressBass"
+    },
+    "harmony": {
+     "pat": "@bedNote",
+     "rack": "factoryAmb"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  },
+  "noiseind": {
+   "title": "Noise industrial",
+   "tempo": "100-130 bpm",
+   "cpm": 120,
+   "groove": "groove-human(4, 0.25, $seed)",
+   "doc": "loose and abrasive: irregular slam kick, press hits, shatter shards",
+   "labels": [
+    "industrial"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@noiseKick",
+     "rack": "doorSlam"
+    },
+    "snare": {
+     "pat": "@hits2",
+     "rack": "stampPress"
+    },
+    "perc": {
+     "pat": "@hits7",
+     "rack": "metalImpact"
+    },
+    "hats": {
+     "pat": "@chain16",
+     "rack": "chainRattle",
+     "vel": "@chainVel"
+    },
+    "top": {
+     "pat": "@shards",
+     "rack": "metalShatter"
+    },
+    "bass": {
+     "pat": "@clankLine",
+     "rack": "clankBass"
+    },
+    "harmony": {
+     "pat": "@bedNote",
+     "rack": "rustBed"
+    },
+    "fx": {
+     "pat": "~ x",
+     "rack": "hydraulicHiss"
+    }
+   }
+  }
+ }
+}

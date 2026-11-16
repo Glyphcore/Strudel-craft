@@ -47,16 +47,16 @@ hooks.def("voxPad", { chain: [["hook", "hygiene-vox"], ["attack", 0.6], ["releas
 
 // == drums ==
 kick: s("x*4").hook("edmKick").shape(0.5).duckorbit("2:3:4").duckdepth("0.35:0.3:0.3").duckattack("0.36:0.4:0.4").velocity("<1!8 .8!8 .75!12 .6!3 1!97>").hpf("<38!28 120 180 250 38!100>").postgain(0.379)
-kickH: s(atoms.ds.halfKick2).hook("dsKick").shape(0.55).duckorbit("2:3:4").duckdepth("0.5:0.35:0.35").duckattack("0.15:0.3:0.3").velocity("<1!72 .85!8 .93!8 1!48>").postgain(0.508)
+kickH: s(atoms.ds.halfKick2).hook("dsKick").shape(0.55).duckorbit("2:3:4").duckdepth("0.5:0.35:0.35").duckattack("0.15:0.3:0.3").velocity("<1!72 .85!8 .93!8 1!48>").postgain(0.478)
 clap: s(atoms.sfClap).hook("edmClap").room(0.2).orbit(1).velocity("<1!32 1!8 .94!8 1!88>").postgain(0.726)
-snareH: s(atoms.ds.halfSnare).hook("dsSnare").shape(0.3).room(0.25).velocity("<1!72 .85!8 .93!8 1!48>").postgain(0.302)
+snareH: s(atoms.ds.halfSnare).hook("dsSnare").shape(0.3).room(0.25).velocity("<1!72 .85!8 .93!8 1!48>").postgain(0.272)
 ghost: s(atoms.ds.ghostSnare).hook("snareTight").velocity(0.3).postgain(1.519)
-hats: s(atoms.ec.hats16).velocity(atoms.ec.accent16).hook("hatClosed").swingBy(0.14, 8).velocity("<1!32 1!8 .94!8 1!88>").postgain(0.619)
-ohat: s(atoms.ec.offHats).hook("hatOpen").groove({ swing: 57, jitter: 2, seed: 5 }).velocity("<1!32 1!8 .94!8 1!88>").postgain(0.941)
+hats: s(atoms.ec.hats16).velocity(atoms.ec.accent16).hook("hatClosed").swingBy(0.14, 8).velocity("<1!32 1!8 .94!8 1!88>").postgain(0.526)
+ohat: s(atoms.ec.offHats).hook("hatOpen").groove({ swing: 57, jitter: 2, seed: 5 }).velocity("<1!32 1!8 .94!8 1!88>").postgain(0.847)
 hatsH: s(atoms.ds.dsHats).velocity(atoms.ds.dsHatVel).hook("hatClosed").postgain(0.779)
 hats16H: s(atoms.ds.hats16).velocity(atoms.ds.hat16Vel).hook("hatClosed").postgain(0.643)
 roll: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook("snareTight").mask(atoms.ec.gapMask).postgain(0.381)
-roll4: s(atoms.ec.roll4).velocity(atoms.ec.rollVel4).hook("snareTight").postgain(0.555)
+roll4: s(atoms.ec.roll4).velocity(atoms.ec.rollVel4).hook("snareTight").postgain(0.5)
 fill: s("x*16").velocity(saw.range(0.3, 1)).hook("snareTight").postgain(0.267)
 perc: s(atoms.sfMetal).hook("metalHit").note("<g5 d6 eb6 bb5>").orbit(4).room(0.55).roomsize(5).groove({ swing: 55, jitter: 3, seed: 9 }).velocity("<1!72 .85!8 .93!8 1!48>").postgain(0.843)
 
@@ -71,18 +71,18 @@ crash: s("x").hook("crash").postgain(0.286)
 metalTail: s("x").note("c5").hook("metalHit").orbit(4).room(0.9).roomsize(8).decay(1.4)
 
 // == bass ==
-seedH: note(atoms.sfSeed).hook("seedHouse").orbit(2).compressor("-30:12:3:0.002:0.08").velocity("<1!32 1!8 .94!8 1!88>").postgain(0.648)
-seedB: note(atoms.sfSeed).hook("seedHouse").hpf("<130!16 150 160 175 190 210 230 255 285 320 360 400 450 500 560 620 130!97>").orbit(2).compressor("-30:12:3:0.002:0.08").postgain(0.62)
-seedHm: note(atoms.sfSeed).hook("seedHouse").orbit(2).mask(atoms.ds.notLastOf4).compressor("-30:12:3:0.002:0.08").postgain(0.52)
+seedH: note(atoms.sfSeed).hook("seedHouse").orbit(2).compressor("-30:12:3:0.002:0.08").velocity("<1!32 1!8 .94!8 1!88>").postgain(0.505)
+seedB: note(atoms.sfSeed).hook("seedHouse").hpf("<130!16 150 160 175 190 210 230 255 285 320 360 400 450 500 560 620 130!97>").orbit(2).compressor("-30:12:3:0.002:0.08").postgain(0.496)
+seedHm: note(atoms.sfSeed).hook("seedHouse").orbit(2).mask(atoms.ds.notLastOf4).compressor("-30:12:3:0.002:0.08").postgain(0.406)
 subH: note(atoms.sfRoots).hook("subSine").orbit(2).postgain(0.347)
-seedG: note(atoms.sfDrop).hook("seedGrowl").shape(0.3).crush(11).orbit(2).compressor("-30:12:3:0.002:0.08").velocity("<1!72 .85!8 .93!8 1!48>").mask("<1 1 1 [1 1 0 0]>").postgain(0.6)
-growl2: note(atoms.sfSwitch).hook("seedGrowl").lpf("<900 1400 2200 3400>").vowel("<a o e i>").lpsync(8).lpdepth(1.5).shape(0.3).crush(11).orbit(2).compressor("-42:20:3:0.002:0.08").postgain(0.306)
+seedG: note(atoms.sfDrop).hook("seedGrowl").shape(0.3).crush(11).orbit(2).compressor("-30:12:3:0.002:0.08").velocity("<1!72 .85!8 .93!8 1!48>").mask("<1 1 1 [1 1 0 0]>").postgain(0.459)
+growl2: note(atoms.sfSwitch).hook("seedGrowl").lpf("<900 1400 2200 3400>").vowel("<a o e i>").lpsync(8).lpdepth(1.5).shape(0.3).crush(11).orbit(2).compressor("-42:20:3:0.002:0.08").postgain(0.291)
 growlR: note(atoms.sfDrop).hook("seedGrowl").shape(0.3).crush(11).orbit(2).mask(atoms.ds.lastOf4).compressor("-30:12:3:0.002:0.08").postgain(0.532)
-subD: note(atoms.sfSubD).hook("subSine").orbit(2).velocity("<1!72 .85!8 .93!8 1!48>").postgain(0.56)
+subD: note(atoms.sfSubD).hook("subSine").orbit(2).velocity("<1!72 .85!8 .93!8 1!48>").postgain(0.493)
 
 // == music ==
-disco: note(atoms.sfStab).struct(atoms.sfDisco).hook("ukfPluck").hpf(atoms.sfHpfIn).orbit(3).room(0.25).roomsize(3).postgain(0.727)
-discoOut: note(atoms.sfStab).struct(atoms.sfDisco).hook("ukfPluck").hpf(atoms.sfHpfOut).orbit(3).room(0.25).roomsize(3).postgain(0.596)
+disco: note(atoms.sfStab).struct(atoms.sfDisco).hook("ukfPluck").hpf(atoms.sfHpfIn).orbit(3).room(0.25).roomsize(3).postgain(0.618)
+discoOut: note(atoms.sfStab).struct(atoms.sfDisco).hook("ukfPluck").hpf(atoms.sfHpfOut).orbit(3).room(0.25).roomsize(3).postgain(0.536)
 stabsB: note(atoms.sfStab).struct(atoms.sfStabA).hook("superChord").lpf(atoms.ec.open8).hpf(atoms.ec.thin8).orbit(3).room(0.25).roomsize(3).postgain(1.304)
 stabs1: note(atoms.sfStab).struct(atoms.sfStabA).hook("superChord").orbit(3).room(0.25).roomsize(3).postgain(0.464)
 stabs2: note(atoms.sfStab).struct(atoms.sfStabB).hook("superChord").orbit(3).room(0.25).roomsize(3).postgain(0.417)
@@ -92,17 +92,17 @@ pad: note(atoms.sfPad).hook("atmosPad").orbit(3).room(0.35).roomsize(4).postgain
 padD: note(atoms.sfPad).hook("atmosPad").orbit(3).room(0.35).roomsize(4).postgain(0.815)
 padP: note("<[c3,g3,bb3,eb4] [c3,g3,bb3,eb4] [c3,g3,bb3,eb4] [c3,g3,bb3,db4]>").hook("atmosPad").orbit(3).room(0.35).roomsize(4).postgain(0.979)
 fpad: s("vs_o").note(atoms.sfVoxPad).hook("voxPad").orbit(3).room(0.4).roomsize(5).postgain(0.031)                                //@craft
-//@plain fpad: s("sawtooth").note(atoms.sfVoxPad).hook("voxPad").orbit(3).room(0.4).roomsize(5).postgain(0.174)
+//@plain fpad: s("sawtooth").note(atoms.sfVoxPad).hook("voxPad").orbit(3).room(0.4).roomsize(5).postgain(0.061)
 chop: note(atoms.sfHook).s("<vs_a!4 vs_o!4>").hook("voxChop").orbit(3).room(0.3).roomsize(3).postgain(0.23)                           //@craft
-//@plain chop: note(atoms.sfHook).hook("vowelChop").orbit(3).room(0.3).roomsize(3).postgain(1.277)
+//@plain chop: note(atoms.sfHook).hook("vowelChop").orbit(3).room(0.3).roomsize(3).postgain(0.894)
 chopB: note(atoms.sfHookB).s("<vs_a!4 vs_o!4>").hook("voxChop").orbit(3).room(0.3).roomsize(3).postgain(0.215)                         //@craft
-//@plain chopB: note(atoms.sfHookB).hook("vowelChop").orbit(3).room(0.3).roomsize(3).postgain(1.197)
-chopA: note(atoms.sfAnswer).s("<vs_a vs_o>").hook("voxChop").orbit(4).room(0.5).roomsize(4).postgain(0.161)                            //@craft
-//@plain chopA: note(atoms.sfAnswer).hook("vowelChop").orbit(4).room(0.5).roomsize(4).postgain(1.28)
+//@plain chopB: note(atoms.sfHookB).hook("vowelChop").orbit(3).room(0.3).roomsize(3).postgain(0.838)
+chopA: note(atoms.sfAnswer).s("<vs_a vs_o>").hook("voxChop").orbit(4).room(0.5).roomsize(4).postgain(0.137)                            //@craft
+//@plain chopA: note(atoms.sfAnswer).hook("vowelChop").orbit(4).room(0.5).roomsize(4).postgain(0.762)
 arp: note(atoms.sfArp).hook("ukfArp").orbit(3).room(0.3).roomsize(3).postgain(0.37)
 screech: note(atoms.ds.screechLine).hook("screechLead").orbit(4).room(0.4).roomsize(4)
 air: s("white").hook("hygiene-texture").hpf(6500).lpf(13500).gain(0.4).orbit(3).velocity("<1!32 1!8 .94!8 1!88>").postgain(1.009)
-airD: s("white").hook("hygiene-texture").hpf(6500).lpf(13500).gain(0.4).orbit(3).postgain(0.996)
+airD: s("white").hook("hygiene-texture").hpf(6500).lpf(13500).gain(0.4).orbit(3).postgain(1.195)
 tex: s("pink").hook("hygiene-texture").gain(0.12).lpf(sine.slow(8).range(900, 5000)).orbit(4).room(0.5).roomsize(5).postgain(1.595)
 
 // == arrangement (generated: node docs/tracks/sirocco-foundry/build.mjs gates) ==

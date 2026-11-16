@@ -1,4 +1,4 @@
-// Syntax view navigation (#150 follow-up of #120/#144): measures open-view time and scroll frame time on CPU x4, and (without --measure-only) checks the
+// Syntax view navigation (#149, follow-up of #120/#144): measures open-view time and scroll frame time on CPU x4, and (without --measure-only) checks the
 // 390px touch flow: expand a family, search 'foreshadow', pin, deep link, reload persistence, old anchors, perf bound, clean console.
 // Usage: node tests/site/syntax_nav.mjs [--measure-only] [--site DIR]   (NODE_PATH must reach playwright)
 import { createRequire } from 'module'; import http from 'http'; import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';

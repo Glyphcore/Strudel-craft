@@ -43,7 +43,7 @@ function registerSnippets() {
 }
 if (!registerSnippets()) { const iv = setInterval(() => { if (registerSnippets()) clearInterval(iv); }, 300); setTimeout(() => clearInterval(iv), 15000); }
 
-/* ---- navigation at 132+ sections (#150): the #120 organizer (folder tree, tag chips) plus a sticky search, collapsed families, jump strip,
+/* ---- navigation at 132+ sections (#149): the #120 organizer (folder tree, tag chips) plus a sticky search, collapsed families, jump strip,
    Pinned / Recent (local), lazy section bodies and the deep link #syntax=<id> (the old #sx-<id> and the element ids sx-<id> / sxh-<id> still work) ---- */
 let sxOrg = null, sxHost = null, sxMod = null; let sxSecs = [], sxData = null, sxQuery = '';
 const NAVKEY = 'sc.syntax.nav';

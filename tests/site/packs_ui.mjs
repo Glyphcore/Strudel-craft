@@ -63,6 +63,9 @@ async function open({ lock, empty = false, width = 1440, height = 900, mobile = 
   return { ctx, page };
 }
 const viaPalette = async (page) => { await page.keyboard.press('Control+k'); await page.keyboard.type('packs'); await page.keyboard.press('Enter'); await page.waitForSelector('#packSheet[open]'); await page.waitForTimeout(250); };
+const shipped = JSON.parse(fs.readFileSync(path.join(SITE, 'packs.lock.json'), 'utf8')).packs;
+const expectRows = shipped.reduce((n, e) => { const dir = path.join(SITE, e.source.startsWith('file:') ? e.source.slice(5) : ''); const f = path.join(dir, 'craftpack.json'); if (!fs.existsSync(f)) return n;
+  return n + JSON.parse(fs.readFileSync(f, 'utf8')).ingredients.filter((i) => i.kind === 'recipes').reduce((k, i) => k + JSON.parse(fs.readFileSync(path.join(dir, i.path), 'utf8')).recipes.length, 0); }, 0);
 const sheetText = (page) => page.$eval('#pkBody', (e) => e.innerText);
 
 // 1. default site (shim only): lazy, reachable from the palette by keyboard, shim licence verbatim, empty "Your packs", no badge
@@ -71,7 +74,7 @@ const sheetText = (page) => page.$eval('#pkBody', (e) => e.innerText);
   const { ctx, page } = await open({ errors, dialogs });
   const lazy = !log.some((p) => /packs-ui\.(js|css)$/.test(p));
   const rows = await page.$$eval('#list .row', (r) => r.length), badges = await page.$$eval('#list .row .pk', (r) => r.length);
-  check('default: 46 recipe rows, no pack badge, sheet files not fetched at boot', rows === 46 && badges === 0 && lazy, `rows ${rows}, badges ${badges}, lazy ${lazy}`);
+  check('default: one row per shipped recipe (shim catalog + shipped packs), no pack badge, sheet files not fetched at boot', rows === expectRows && badges === 0 && lazy, `rows ${rows}/${expectRows}, badges ${badges}, lazy ${lazy}`);
   await viaPalette(page);
   const t = await sheetText(page), lic = await page.$eval('[data-pack="glyphcore/shim"] .pk-lic', (e) => e.textContent);
   const nd = await page.$$eval('[data-pack="glyphcore/shim"] .pk-nd', (n) => n.map((x) => x.textContent));

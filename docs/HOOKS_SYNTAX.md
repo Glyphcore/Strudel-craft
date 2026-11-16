@@ -153,7 +153,7 @@ MPC percent (50-75, a monotone time map inside each pair of steps), push / jitte
 `vel` scales velocity down by up to that fraction, `seed` picks the random stream. Every offset is a hash of (seed, exact onset), so the
 result is independent of the query span (chunked render = live = re-render). Built into the runtime next to the standard library, with
 presets as standard-library defs: `groove-straight`, `-pocket`, `-lazy`, `-bounce`, `-rolling`, `-cloud` (param `seed`), `groove-swing(pct, grid)`,
-`groove-push(pct)`, `groove-human(jitter, vel, seed)`. In a def it is a chain step: `["groove", { "swing": 57, "seed": { "$param": "seed" } }]`; as pack data (glyphcore/phonk:grooves) the site accepts it through the `groove` entry of `site/data/hooks-steps.json` (shape `groove-opts`: the seven named numbers or `$param`, nothing else).
+`groove-push(pct)`, `groove-human(jitter, vel, seed)`. In a def it is a chain step: `["groove", { "swing": 57, "seed": { "$param": "seed" } }]`; as pack data (glyphcore/phonk:grooves) the site accepts it through the `groove` entry of `site/data/hooks-steps.json` (shape `groove-opts`: the seven named numbers or `$param`, nothing else). A hooks `s`/`sound` step may not select the bytebeat, zzfx or z_* sources (PACK_SPEC 5.2).
 Ranges, units and the plain-Strudel lowering: docs/CONVENTIONS.md section 4. Unknown param or a non-number: `E_BAD_ARG`.
 
 ### 4.3 Bindings and gates

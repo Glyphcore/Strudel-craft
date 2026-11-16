@@ -20,8 +20,8 @@ await page.evaluate(async () => { await window.strudelCraft.packs.ready; await w
 // spy: every AudioWorkletNode constructed and every message posted to a worklet
 await page.evaluate(() => { window.__wk = []; const O = window.AudioWorkletNode; window.AudioWorkletNode = class extends O { constructor(c, name, o) { super(c, name, o); window.__wk.push([name, 'new']); const pm = this.port.postMessage.bind(this.port); this.port.postMessage = (m, t) => { window.__wk.push([name, 'msg']); return pm(m, t); }; } }; });
 const cases = [
-  ['bbexpr scalar string', [['s', 'bytebeat'], ['bbexpr', 't*(t>>15^t>>66)']], 'bbexpr'],
-  ['bbexpr array (skips the mini-notation parse)', [['s', 'bytebeat'], ['bbexpr', ['(()=>{window.__pwn=1})(),t']]], 'bbexpr'],
+  ['bbexpr scalar string', [['s', 'bd'], ['bbexpr', 't*(t>>15^t>>66)']], 'bbexpr'],
+  ['bbexpr array (skips the mini-notation parse)', [['s', 'bd'], ['bbexpr', ['(()=>{window.__pwn=1})(),t']]], 'bbexpr'],
   ['byteBeatExpression array', [['byteBeatExpression', ['1']]], 'byteBeatExpression'],
   ['speak', [['speak', 'en', 'hello']], 'speak'],
   ['visual pianoroll', [['pianoroll']], 'pianoroll'],
@@ -35,6 +35,9 @@ const cases = [
   ['wire to a prototype member (__lookupGetter__)', [['s', 'bd'], ['wire', '__lookupGetter__', 't:ev']], '__lookupGetter__'],
   ['wire to a non-control allowlisted method (fast)', [['s', 'bd'], ['wire', 'fast', 't:ev']], 'fast'],
   ['wire to a string control (s)', [['s', 'bd'], ['wire', 's', 't:ev']], 's'],
+  ['s selects bytebeat (data-only worklet source)', [['s', 'bytebeat']], 's'],
+  ['s $mini with zzfx among tokens', [['s', { $mini: 'bd, zzfx' }]], 's'],
+  ['sound z_sawtooth', [['sound', 'z_sawtooth']], 'sound'],
   ['wire to wire', [['s', 'bd'], ['wire', 'wire', 't:ev']], 'wire'],
 ];
 const r = await page.evaluate(async (cases) => {
@@ -63,6 +66,12 @@ const r = await page.evaluate(async (cases) => {
   const gr = m.install(H, [{ pack: 'gen/p', ingredient: 'x', data: { model: 1, defs } }], { defs: new Map(), told: new Set() }, {}, () => {}, { allow });
   const gerrs = await run(true); H.reset();
   out.gen = { methods: names.length, installed: gr.defs.length, invalid: gr.invalid.map((i) => i.errors[0].message), errs: gerrs.slice(0, 5), nErrs: gerrs.length, newGlobals: Object.getOwnPropertyNames(window).filter((k) => !g0.has(k) && !ctlGlobals.includes(k) && k !== '__wk'), nodesCtl: ctlNodes, nodesHooked: nodes(), wk: window.__wk.length - wk0 };
+  // parity guard: EVERY hooks ingredient of EVERY pack in the shipped lock (site/packs.lock.json, source file:<dir> relative to site/) through the real validator; none may be rejected
+  const lock = await (await fetch('packs.lock.json')).json(); out.parity = { packs: 0, ingredients: 0, defs: 0, rejected: [] };
+  for (const pk of lock.packs) { const dir = String(pk.source).replace(/^file:/, '').replace(/\/$/, ''); const man = await (await fetch(dir + '/craftpack.json')).json(); out.parity.packs++;
+    for (const ing of (man.ingredients || []).filter((i) => i.kind === 'hooks')) { const data = await (await fetch(dir + '/' + ing.path)).json(); out.parity.ingredients++;
+      const pr = m.install(H, [{ pack: pk.id, ingredient: ing.path, data }], { defs: new Map(), told: new Set() }, {}, () => {}, { allow }); out.parity.defs += Object.keys(data.defs || {}).length;
+      for (const i of pr.invalid) out.parity.rejected.push(pk.id + ':' + ing.path + ' ' + (i.errors[0] && i.errors[0].message || '').slice(0, 120)); H.reset(); } }
   return out;
 }, cases);
 await page.waitForTimeout(500);
@@ -77,5 +86,6 @@ check(`general: a def for each of the ${r.gen.methods} allowlisted methods insta
 check('general: query errors are none', r.gen.nErrs === 0, JSON.stringify(r.gen.errs));
 check('general: window globals and canvas/iframe/audio/script node counts unchanged versus the control run, nothing posted to a worklet', r.gen.newGlobals.length === 0 && r.gen.nodesCtl === r.gen.nodesHooked && r.gen.wk === 0, JSON.stringify({ globals: r.gen.newGlobals, ctl: r.gen.nodesCtl, hooked: r.gen.nodesHooked, wk: r.gen.wk }));
 check('engine in the page resolves wire targets from Strudel\'s registry (isControlName / getControlName present); a non-control throws E_BAD_ARG', r.reg[0] === 'function' && r.reg[1] === 'function' && r.reg[2] === 'E_BAD_ARG', JSON.stringify(r.reg));
+check(`parity: every hooks ingredient of every shipped lock pack validates (${r.parity.packs} packs, ${r.parity.ingredients} ingredients, ${r.parity.defs} defs)`, r.parity.ingredients >= 6 && r.parity.rejected.length === 0, JSON.stringify(r.parity.rejected.slice(0, 5)));
 check('no page errors', errors.length === 0, errors.slice(0, 3).join(' | '));
 await browser.close(); server.close(); process.exit(fails ? 1 : 0);

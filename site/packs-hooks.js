@@ -31,6 +31,9 @@ export function chainable(Pattern, doc) {
   }
   return Object.freeze({ has: (n) => typeof n === 'string' && set.has(n), args: (n) => set.get(n) || [], wireTarget: (n) => typeof n === 'string' && wires.has(n), limits: Object.freeze(lim), size: set.size });
 }
+// Reviewed list of sound sources backed by an expression-compiling or generator worklet (Strudel: bytebeat, zzfx and its z_* waveforms). A data def must not select them (any token of a
+// s/sound string or $mini). Sample names and plain oscillators stay open: `bank` only prefixes sample banks, and a name that is no source plays nothing.
+const WORKLET_SRC = (v) => typeof v === 'string' && (v.match(/[A-Za-z0-9_]+/g) || []).some((t) => /^(bytebeat|zzfx|z_[a-z0-9_]*)$/i.test(t));
 const LIM = { depth: 8, nodes: 20000, str: 4096, arr: 1024, chain: 1000, defs: 5000 };
 const BADKEY = new Set(['__proto__', 'constructor', 'prototype']);
 function json(v, b, depth, path) { // JSON data only (params, docs, slots...); returns an error message or null
@@ -88,6 +91,7 @@ export function validate(d, allow) {
         const sh = allow.args(st[0]), lim = allow.limits, ps = isObj(v.params) ? v.params : {};
         if (st[0] === 'wire' && !(typeof st[1] === 'string' && allow.wireTarget && allow.wireTarget(st[1]))) return bad(k, `def "${k}": step ${i} wire target "${String(st[1]).slice(0, 40)}" is not a wire-able control (site/data/hooks-steps.json, "wire": true)`);
         if (st.length - 1 > lim.args) return bad(k, `def "${k}": step "${st[0]}" has more than ${lim.args} arguments`);
+        if ((st[0] === 's' || st[0] === 'sound') && st.slice(1).some((a) => WORKLET_SRC((a && typeof a === 'object') ? a.$mini : a))) return bad(k, `def "${k}": step ${i} "${st[0]}" selects an expression/worklet-backed source (bytebeat, zzfx), which a data-only def may not use`);
         for (let j = 1; j < st.length; j++) { const e = arg(st[j], sh, lim, ps, `def "${k}" step ${i} "${st[0]}" arg ${j}`); if (e) bad(k, e); }
       });
     }

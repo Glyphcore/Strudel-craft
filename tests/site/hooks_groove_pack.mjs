@@ -42,5 +42,14 @@ else {
   check('site and CLI give the same groove events over 4 cycles (cycle to 2e-6, sound, note, gain)', diff.length === 0 && cli.length > 140, `cli ${cli.length}, site ${site.out.length}, differing ${diff.length} ${JSON.stringify(diff.slice(0, 2))}`);
   fs.rmSync(tmp, { recursive: true, force: true });
 }
+// critic reproducer (round 4): the pack named in a comment, a groove def hooked: nothing invalid, no error toast, haps differ from the unhooked pattern
+const rep = await page.evaluate(async () => {
+  const E = window.__sc.Engine, ev = async (c) => { window.strudelCraft.hooks.reset(); await E.idle(c); const p = E.repl.state.pattern; return p ? p.queryArc(0, 2).filter((h) => h.hasOnset()).map((h) => +h.whole.begin) : null; };
+  const hooked = await ev('// glyphcore/phonk:\n$: s("hh*8").hook("groove-pocket")'), st = window.strudelCraft.packHooks.state(), plain = await ev('$: s("hh*8")');
+  const toasts = [...document.querySelectorAll('.toast, #toasts *, [role=status]')].map((e) => e.textContent).filter((t) => /not loaded|skipped|E_PACK_HOOKS|allowlist/i.test(t));
+  return { hooked, plain, invalid: st.invalid, nDefs: st.defs.length, toasts };
+});
+check('reproducer `// glyphcore/phonk:` + hook("groove-pocket"): packHooks.state().invalid empty, defs installed, no error toast', rep.invalid.length === 0 && rep.nDefs > 9 && rep.toasts.length === 0, JSON.stringify({ invalid: rep.invalid, nDefs: rep.nDefs, toasts: rep.toasts }).slice(0, 300));
+check('the hooked groove changes the haps versus the unhooked pattern (16 onsets each, positions differ)', rep.hooked && rep.plain && rep.hooked.length === rep.plain.length && rep.hooked.some((x, i) => Math.abs(x - rep.plain[i]) > 1e-6), JSON.stringify({ h: (rep.hooked || []).slice(0, 4), p: (rep.plain || []).slice(0, 4) }));
 check('no page errors', errors.length === 0, errors.slice(0, 3).join(' | '));
 await browser.close(); server.close(); console.log(fails ? `${fails} FAILED` : 'ALL PASS'); process.exit(fails ? 1 : 0);

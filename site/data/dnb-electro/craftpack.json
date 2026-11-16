@@ -16,8 +16,8 @@
       "title": "DnB, electro and house track demos",
       "description": "Track demos: DnB tutorial, electro, house / techno / trance / big room (the paste-ready standalone programs)",
       "load": "manual",
-      "hash": "sha256:35ab4492e3834d989e742193cd78c0743311e12bbcc66209e1e0de233767441d",
-      "bytes": 42043
+      "hash": "sha256:682b2f3e097f33ee51d5132369050eb8722ed119e01e74dac48dfadfa06ec337",
+      "bytes": 42057
     },
     {
       "id": "racks-dnb-electro",
@@ -28,8 +28,8 @@
       "title": "DnB, electro and house racks",
       "description": "Chain-only hook defs: dnbKick, dnbSnare, ghostSnare, breakKick, breakSnare, ride, dnbShaker, dnbHat, dnbSub, reese, neuroBass, rollingBass, jumpWobble, liquidRhodes, liquidPad, strings, vocalChop, boom808, clap808, hat808, open808, cowbell808, electroBass, vocoLead, robotStab, filterBass, sawStab, houseKick, bigKick, houseClap, offHat, closedHat, houseBass, rumble, pluck, bigChords and 2 more",
       "load": "manual",
-      "hash": "sha256:ce242393a838cce0c07c3e0d9f6085414fd55dd572d5c7c13cf4862985fd49ea",
-      "bytes": 18973
+      "hash": "sha256:21245011a993eaaec5ceb74d18dc9fc3f87e5da07e8b0739c5016f9b472e82ad",
+      "bytes": 19007
     },
     {
       "id": "atoms-dnb",

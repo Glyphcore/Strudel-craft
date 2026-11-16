@@ -464,6 +464,10 @@
      "sine"
     ],
     [
+     "hpf",
+     30
+    ],
+    [
      "attack",
      0.008
     ],
@@ -649,7 +653,7 @@
   },
   "jumpWobble": {
    "class": "growl",
-   "doc": "jump-up envelope wobble (a mid layer from 90 Hz over a sub): resonant saw whose filter envelope re-opens on every note, so a 3+3+2 rhythm wobbles",
+   "doc": "jump-up envelope wobble (a mid layer from 130 Hz over a sub): resonant saw whose filter envelope re-opens on every note, so a 3+3+2 rhythm wobbles",
    "chain": [
     [
      "hook",
@@ -661,7 +665,7 @@
     ],
     [
      "hpf",
-     90
+     130
     ],
     [
      "attack",

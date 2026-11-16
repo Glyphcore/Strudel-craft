@@ -218,6 +218,12 @@ function reportTab(rep) {
   const out = [];
   out.push(section(`Errors (${rep.errors.length})`, rep.errors.length ? [h('ul', { class: 'pk-errs' }, rep.errors.map((e) => row(e, 'err')))] : [h('p', { class: 'pk-hint' }, 'None.')]));
   out.push(section(`Warnings (${rep.warnings.length})`, rep.warnings.length ? [h('ul', { class: 'pk-errs' }, rep.warnings.map((e) => row(e, 'warn')))] : [h('p', { class: 'pk-hint' }, 'None.')]));
+  const inf = rep.info || []; // I_PACK_SHADOW: identical duplicates, collapsed and filterable (#143)
+  if (inf.length) {
+    const list = h('ul', { class: 'pk-errs' }, inf.map((e) => h('li', { 'data-kind': 'info', 'data-q': `${e.kind} ${e.name} ${e.winner} ${e.shadowed.join(' ')}`.toLowerCase() }, h('code', {}, e.code), ' ', h('span', { class: 'pk-ing-k' }, e.kind), ' ', h('code', {}, e.name), ' ', e.winner, ' = ', e.shadowed.join(', '))));
+    const q = h('input', { type: 'search', placeholder: 'Filter', 'aria-label': 'Filter identical duplicates', oninput: (ev) => { const v = ev.target.value.toLowerCase(); for (const li of list.children) li.hidden = !!v && !li.dataset.q.includes(v); } });
+    out.push(h('details', { class: 'pk-sec', id: 'pkInfo' }, h('summary', {}, `Identical duplicates (${inf.length})`), h('p', { class: 'pk-hint' }, 'Same content under more than one pack: not a conflict.'), q, list));
+  }
   const sh = Object.entries(rep.resolution || {}).flatMap(([kind, m]) => Object.entries(m).filter(([, e]) => e.shadowed && e.shadowed.length).map(([name, e]) => ({ kind, name, e })));
   out.push(section(`Shadowed names (${sh.length})`, sh.length ? [h('ul', { class: 'pk-errs' }, sh.map(({ kind, name, e }) => h('li', {}, h('span', { class: 'pk-ing-k' }, kind), ' ', h('code', {}, name), ' → ', h('code', {}, e.winner), ' over ', e.shadowed.map((s, k) => [k ? ', ' : '', h('code', {}, String(s))]))))] : [h('p', { class: 'pk-hint' }, 'No bare name has more than one owner.')]));
   return out;

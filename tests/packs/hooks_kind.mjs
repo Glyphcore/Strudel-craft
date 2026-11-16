@@ -118,7 +118,7 @@ const FORBIDDEN = ['bbexpr', 'byteBeatExpression', 'bbst', 'byteBeatStartTime', 
   assert.equal(allow.wireTarget('animate'), false); assert.equal(allow.wireTarget('constructor'), false);
   ok('data-only def with wire to animate / visual / bbexpr / speak / prototype member / non-control method / string control / non-string: E_PACK_HOOKS_INVALID naming the target; valid controls pass; every flag is a registered control');
   H.reset(); const s5 = st(); const r5 = install(H, [e('evil/w', 'x', { model: 1, defs: { anim: chain(['s', 'bd'], ['wire', 'animate', 't:ev']), fine: chain(['gain', 1]) } })], s5);
-  assert.deepEqual(defsOf(), []); assert.equal(r5.invalid.length, 1); assert.equal(r5.invalid[0].errors[0].code, 'E_PACK_HOOKS_INVALID'); ok('installer: the ingredient with a bad wire target installs nothing (atomic)'); }
+  assert.deepEqual(defsOf(), ['fine']); assert.equal(r5.invalid.length, 1); assert.equal(r5.invalid[0].errors[0].code, 'E_PACK_HOOKS_INVALID'); assert.deepEqual(r5.invalid[0].skipped, ['anim']); ok('installer: a bad wire target skips only that def (granular), the valid def loads'); }
 { // engine: user-written wire on a non-control is a structured error, nothing is called (spy on animate); no probing
   const P = RT.core.Pattern.prototype; let called = 0; const orig = P.animate; P.animate = function () { called++; return this; };
   try { assert.throws(() => RT.core.s('x').wire('animate', 'k:env'), (x) => x.code === 'E_BAD_ARG' && /animate/.test(x.message)); assert.throws(() => RT.core.s('x').wire('constructor', 'k:env'), (x) => x.code === 'E_BAD_ARG'); assert.throws(() => RT.core.s('x').wire('__proto__', 'k:env'), (x) => x.code === 'E_BAD_ARG'); } finally { if (orig) P.animate = orig; else delete P.animate; }

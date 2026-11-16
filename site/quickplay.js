@@ -88,6 +88,8 @@ async function getRepl() {
     await W.webaudioOutput(hap, dt, dur, cps, t); fixOrbit();
   };
   repl = W.webaudioRepl({ getTime: () => ctx.currentTime, defaultOutput, transpiler: TR, audioContext: ctx });
+  const H0 = () => sc.hooks && sc.hooks.within ? sc.hooks : null, o0 = repl.scheduler.onTrigger;
+  repl.scheduler.onTrigger = (...a) => { const H = H0(); return H && run && run.A ? H.within(run.A, () => o0(...a)) : o0(...a); };
   restoreGlobals(); return repl;
 }
 function fixOrbit() {
@@ -109,18 +111,32 @@ function resolveLen(R, code, cps) {
   } catch (e) { return { cycles: null, rule: 'none', note: 'end not readable: loops until stopped' }; }
 }
 function applyMode(r = run) { if (!r) return; r.endC = state.mode === 'bars' ? state.bars : state.mode === 'loop' ? null : r.found ? r.found.cycles : null; if (r.tail && (r.endC == null || (r.cyc || 0) < r.endC)) { /* a stop already scheduled stays */ } }
-/* ---- isolation: what an audition's evaluate rebinds is saved before it and put back after it / on the final release ----
-   1. the program's repl-bound globals (all, each, hush, cpm, setcps/setcpm..., Pattern.prototype.p/q/d1..): saved and restored around the evaluate;
-   2. the hooks registry (defs, binds, markers, slots, vars, taps...): the audition is evaluated against a blank registry (so its own End resolves from its own
-      markers and gates, and an earlier audition's entries are gone), then merged over the program's for playback; the final release restores the program's exactly
-      (skipped when the program re-evaluated meanwhile: its registry is then already newer). */
-const GN = ['all', 'each', 'hush', 'cpm', 'setCps', 'setcps', 'setCpm', 'setcpm', 'compileKabel'];
+/* ---- isolation (docs/QUICKPLAY.md) ----
+   hooks: the audition has its own registry A (evaluated and queried inside hooks.enter/within), the program's registry is never written or replaced, so slot
+     names, markers, gates and defs cannot collide; while the audition evaluates, the program's own pattern is queried inside its registry (shieldMain).
+   repl globals (all/each/hush/cpm/setcps/setcpm, Pattern.prototype.p/q/d1..) and ctl/ctlAt/sliderWithID: saved before the evaluate, put back right after it;
+     the audition's controls are scratch signals at their default (nothing is declared in the controls engine, the Perform model or localStorage).
+   Not isolated: the lanes graph and atoms imports an audition evaluates. */
+const GN = ['all', 'each', 'hush', 'cpm', 'setCps', 'setcps', 'setCpm', 'setcpm', 'compileKabel', 'ctl', 'ctlAt', 'sliderWithID', 'slider'];
 const PK = () => ['p', 'q', ...[1, 2, 3, 4, 5, 6, 7, 8, 9].flatMap((i) => ['d' + i, 'p' + i, 'q' + i])];
 function saveGlobals() { const P = window.Pattern && window.Pattern.prototype; return { g: GN.map((k) => [k, window[k]]), d: P ? PK().map((k) => [k, Object.getOwnPropertyDescriptor(P, k)]) : [] }; }
 function putGlobals(v) { for (const [k, x] of v.g) { try { if (x === undefined) delete window[k]; else window[k] = x; } catch (e) { /* locked */ } } const P = window.Pattern && window.Pattern.prototype; if (P) for (const [k, d] of v.d) { try { if (d) Object.defineProperty(P, k, d); else delete P[k]; } catch (e) { /* locked */ } } }
-let hbase = null, hbaseEval = 0, hadd = null;
-const blankHooks = (b) => ({ R: { markers: new Map(), scopes: new Map(), slots: new Map(), declared: new Set(), defs: new Map(), bindings: [], vars: new Map(), sets: [], wires: [], taps: new Map(), reads: new Set(), laneMode: b.R.laneMode }, bid: b.bid, seq: b.seq, sid: b.sid, frozen: false, cpb: b.cpb, bpb: b.bpb, cps: b.cps, journal: b.journal });
-function unhook(r) { const H = sc.hooks; if (!hbase || !H || !H.restore) { hbase = null; return; } if (run && run !== r) return; const same = S0() && S0().Engine.evalCount === hbaseEval; try { if (same) H.restore(hbase); else if (hadd) H.unmerge(hadd, hbase); } catch (e) { console.warn('quickplay: hooks restore: ' + e.message); } hbase = null; hadd = null; }
+/* scratch controls: a signal at the control's default (value / default / lower bound); nothing is registered anywhere */
+function scratchControls() {
+  const un = (v) => (v && typeof v === 'object' && typeof v.firstCycle === 'function' ? (v.__pure !== undefined ? v.__pure : (v.firstCycle()[0] || {}).value) : v);
+  const val = (spec, d) => { spec = spec && typeof spec === 'object' ? spec : {}; const v = un(spec.default != null ? spec.default : spec.value != null ? spec.value : d); return v; };
+  const sig = (v) => (typeof v === 'number' && window.signal ? window.signal(() => v) : window.pure ? window.pure(v) : v);
+  window.ctl = (name, spec = {}) => sig(val(spec, un(spec && spec.min) != null ? un(spec.min) : 0));
+  window.ctlAt = (id, label, spec = {}) => window.ctl(label, spec);
+  window.sliderWithID = (id, value) => sig(+un(value));
+}
+/* while the audition evaluates (async), the program keeps being queried inside its own registry */
+function shieldMain(H, B) {
+  const sch = S0() && S0().Engine.scheduler; if (!sch || !window.Pattern) return () => {};
+  const own = Object.getOwnPropertyDescriptor(sch, 'pattern'); let real = sch.pattern, wrap = null, wrapOf = null;
+  Object.defineProperty(sch, 'pattern', { configurable: true, enumerable: true, get() { if (!real) return real; if (wrapOf !== real) { const r = real; wrap = new window.Pattern((st) => H.within(B, () => r.query(st))); wrapOf = r; } return wrap; }, set(v) { real = v; } });
+  return () => { try { if (own && 'value' in own) Object.defineProperty(sch, 'pattern', { ...own, value: real }); else { delete sch.pattern; sch.pattern = real; } } catch (e) { sch.pattern = real; } };
+}
 /* one cleanup for every exit (error, failed prepare, blocked, switch, Stop, page hide): Solo off and the program's orbits back to 1, the bus muted again if we unmuted it */
 function release(r) {
   const was = state.solo; state.solo = false; if (was) applySolo();
@@ -148,18 +164,20 @@ export async function play(spec) {
     await Q.ensureCode(code); const prot = Q.protectCode(code);
     const R = await getRepl(); if (me !== token) { release(r); return; }
     R.state.evalError = undefined; run = r;
-    const H = sc.hooks && sc.hooks.snapshot ? sc.hooks : null, G = saveGlobals(); let A = null;
-    if (H) { if (hbase) H.restore(hbase); else { hbase = H.snapshot(); hbaseEval = Q.Engine.evalCount; } H.restore(blankHooks(hbase)); }
-    try { await R.evaluate(prot, true); } finally { putGlobals(G); restoreGlobals(); }
-    if (R.state.evalError) { if (H) H.restore(hbase); throw R.state.evalError; }
+    const H = sc.hooks && sc.hooks.enter ? sc.hooks : null, G = saveGlobals();
+    const B = H ? H.current() : null; const A = H ? { ...H.snapshot(), R: { markers: new Map(), scopes: new Map(), slots: new Map(), declared: new Set(), defs: new Map(B.R.defs), bindings: [], vars: new Map(), sets: [], wires: [], taps: new Map(), reads: new Set(), laneMode: B.R.laneMode }, frozen: false } : null;
+    r.A = A; const unshield = H ? shieldMain(H, B) : () => {}, leave = H ? H.enter(A) : () => {};
+    try { scratchControls(); await R.evaluate(prot, true); } finally { leave(); unshield(); putGlobals(G); restoreGlobals(); }
+    if (R.state.evalError) throw R.state.evalError;
     if (me !== token) return;
-    r.start = R.scheduler.now(); r.t0a = ctx.currentTime; r.cps = R.scheduler.cps || 0.5; r.found = resolveLen(R, prot, r.cps);
-    if (H) { A = H.snapshot(); hadd = A; H.restore(hbase); H.merge(A); } applyMode(r);
+    r.start = R.scheduler.now(); r.t0a = ctx.currentTime; r.cps = R.scheduler.cps || 0.5; r.found = H ? H.within(A, () => resolveLen(R, prot, r.cps)) : resolveLen(R, prot, r.cps);
+    applyMode(r);
+    if (H && R.scheduler.pattern) { const real = R.scheduler.pattern; R.scheduler.pattern = new window.Pattern((st) => H.within(A, () => real.query(st))); }
     state.phase = 'playing'; stats.plays++; sync(); startLoops();
   } catch (e) {
     if (me !== token) return;
     run = null; state.phase = 'idle'; state.key = null; state.error = e && e.message || String(e); sync(); restoreGlobals();
-    release(r); unhook(r);
+    release(r);
     try { repl && repl.scheduler.stop(); } catch (er) { /* idle */ }
     if (!(e && e.silent)) toast(`Quick play: ${spec.title || 'example'} did not play: ${state.error}`, 'error');
   }
@@ -175,7 +193,7 @@ async function endRun(r, fade, hard) {
   if (o) { try { o.disconnect(); } catch (e) { /* gone */ } const c = ctrl(); if (c && c.nodes && c.nodes[QP_ORBIT] === o) delete c.nodes[QP_ORBIT]; }
   if (run === r) run = null;
   if (!hard) {
-    stopLoops(); release(r); unhook(r); const Q = S0(); if (Q && !Q.S.playing) { try { Q.muteBus(); } catch (e) { /* no bus */ } }
+    stopLoops(); release(r); const Q = S0(); if (Q && !Q.S.playing) { try { Q.muteBus(); } catch (e) { /* no bus */ } }
     state.phase = 'idle'; state.key = null; sync();
     restoreGlobals();
   }

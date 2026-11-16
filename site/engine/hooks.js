@@ -800,15 +800,14 @@ export function install(S, opts = {}) {
     fn(name) { return (pat) => new Pattern((st) => guarded(() => compileSpec(name, { slot: null, p0: st.span.begin, cx: cxOf(st.controls), named: {} }), String(name))(pat).query(st)); },
     pipe(...names) { return hooks.fn(names.join(' | ')); },
     reset(o = {}) { frozen = false; clear(); bid = 0; seq = 0; sid = 0; active.clear(); if (!o.keepJournal) hooks.journal.length = 0; diag.length = 0; seen.clear(); for (const f of EXT.reset) f(o); touch(); return hooks; },
-    /* Registry snapshots (Quick play, docs/QUICKPLAY.md): snapshot() copies the registry, restore(s) puts it back exactly, merge(s) lays a snapshot's entries over the current registry (later wins; bindings append). Bindings and defs are shared by reference, not cloned. */
+    /* Registry snapshots (Quick play, docs/QUICKPLAY.md): snapshot() copies the registry, restore(s) puts it back exactly. Bindings and defs are shared by reference, not cloned. */
     snapshot() { const m = (x) => new Map(x); return { R: { markers: m(R.markers), scopes: m(R.scopes), slots: new Map([...R.slots].map(([k, v]) => [k, { ...v }])), declared: new Set(R.declared), defs: m(R.defs), bindings: R.bindings.slice(), vars: new Map([...R.vars].map(([k, l]) => [k, l.slice()])), sets: R.sets.slice(), wires: R.wires.slice(), taps: m(R.taps), reads: new Set(R.reads), laneMode: R.laneMode }, bid, seq, sid, frozen, cpb: hooks.cpb, bpb: hooks.bpb, cps: hooks.cps, journal: hooks.journal.slice() }; },
     restore(s) { const x = s.R; Object.assign(R, { markers: new Map(x.markers), scopes: new Map(x.scopes), slots: new Map([...x.slots].map(([k, v]) => [k, { ...v }])), declared: new Set(x.declared), defs: new Map(x.defs), bindings: x.bindings.slice(), vars: new Map([...x.vars].map(([k, l]) => [k, l.slice()])), sets: x.sets.slice(), wires: x.wires.slice(), taps: new Map(x.taps), reads: new Set(x.reads), laneMode: x.laneMode }); bid = s.bid; seq = s.seq; sid = s.sid; frozen = s.frozen; hooks.cpb = s.cpb; hooks.bpb = s.bpb; hooks.cps = s.cps; hooks.journal.length = 0; hooks.journal.push(...s.journal); touch(); return hooks; },
-    merge(s) { const x = s.R; for (const k of ['markers', 'scopes', 'defs', 'taps']) for (const [a, b] of x[k]) R[k].set(a, b); for (const [a, b] of x.slots) R.slots.set(a, { ...(R.slots.get(a) || {}), ...b }); for (const d of x.declared) R.declared.add(d); for (const [a, l] of x.vars) R.vars.set(a, [...(R.vars.get(a) || []), ...l]); R.bindings.push(...x.bindings); R.sets.push(...x.sets); R.wires.push(...x.wires); for (const r of x.reads) R.reads.add(r); touch(); return hooks; },
-    /* unmerge(a, base): take out what merge(a) added (entries still identical to a's go back to base's value or vanish; bindings, vars, sets, wires by identity), leaving anything the program registered since */
-    unmerge(a, b) { const x = a.R, y = b.R; for (const k of ['markers', 'scopes', 'defs', 'taps']) for (const [n, v] of x[k]) if (R[k].get(n) === v) { if (y[k].has(n)) R[k].set(n, y[k].get(n)); else R[k].delete(n); }
-      for (const [n] of x.slots) { if (y.slots.has(n)) R.slots.set(n, { ...y.slots.get(n) }); else R.slots.delete(n); } for (const d of x.declared) if (!y.declared.has(d)) R.declared.delete(d);
-      const gone = new Set([...x.bindings, ...x.sets, ...x.wires, ...[...x.vars.values()].flat()]); R.bindings = R.bindings.filter((e) => !gone.has(e)); R.sets = R.sets.filter((e) => !gone.has(e)); R.wires = R.wires.filter((e) => !gone.has(e));
-      for (const [n, l] of R.vars) { const m = l.filter((e) => !gone.has(e)); if (m.length) R.vars.set(n, m); else R.vars.delete(n); } for (const r of x.reads) if (!y.reads.has(r)) R.reads.delete(r); touch(); return hooks; },
+    /* Scoped registries (Quick play): enter(snap) makes snap's registry the live one (by reference: what runs inside mutates snap), the returned leave() copies the fields back into snap and puts the previous registry live again; within(snap, fn) is enter + fn + leave. current() is a by-reference snapshot of the live registry. */
+    current() { return { R: { ...R }, bid, seq, sid, frozen, cpb: hooks.cpb, bpb: hooks.bpb, cps: hooks.cps, journal: hooks.journal }; },
+    enter(snap) { const keep = { R: { ...R }, bid, seq, sid, frozen }; Object.assign(R, snap.R); bid = snap.bid; seq = snap.seq; sid = snap.sid; frozen = snap.frozen; touch();
+      return () => { Object.assign(snap.R, R); snap.bid = bid; snap.seq = seq; snap.sid = sid; snap.frozen = frozen; Object.assign(R, keep.R); bid = keep.bid; seq = keep.seq; sid = keep.sid; frozen = keep.frozen; touch(); }; },
+    within(snap, fn) { const leave = hooks.enter(snap); try { return fn(); } finally { leave(); } },
     diag: () => diag.map((d) => ({ ...d })),
     clearDiag() { diag.length = 0; seen.clear(); },
   });
@@ -922,7 +921,7 @@ export function install(S, opts = {}) {
     }
     return x;
   };
-  for (const k of Object.keys(hooks)) if (typeof hooks[k] === 'function' && !['diag', 'clearDiag', 'toJSON', 'check', 'plan', 'fn', 'pipe', 'publish', 'snapshot', 'restore', 'merge', 'unmerge'].includes(k)) { const f = hooks[k]; hooks[k] = (...a) => { atomsSeen.length = 0; return f(...a.map(plain)); }; }
+  for (const k of Object.keys(hooks)) if (typeof hooks[k] === 'function' && !['diag', 'clearDiag', 'toJSON', 'check', 'plan', 'fn', 'pipe', 'publish', 'snapshot', 'restore', 'current', 'enter', 'within'].includes(k)) { const f = hooks[k]; hooks[k] = (...a) => { atomsSeen.length = 0; return f(...a.map(plain)); }; }
   for (const k of METHODS) { const f = proto[k]; proto[k] = mark(function (...a) { return f.apply(this, a.map(plain)); }); }
   const tap0 = tap; const tapP = mark((...a) => tap0(...a.map(plain)));
 

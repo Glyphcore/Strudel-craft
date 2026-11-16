@@ -49,6 +49,7 @@ try {
   const A = await snap();
   const run = (code) => page.evaluate((code) => window.strudelCraft.quickplay.play({ key: 't:' + Math.random(), title: 'T', code }), code);
   await run('// @daw bars=2\nsetcpm(240/4)\n$: s("bd*2")'); await page.waitForFunction(() => window.strudelCraft.quickplay.state.phase === 'playing', null, { timeout: 60000 });
+  console.log('DBG', await page.evaluate(() => JSON.stringify({ f: window.strudelCraft.quickplay.run.found, e: window.strudelCraft.quickplay.run.endC })));
   const t2 = Date.now(); check('default mode is End and the tray shows bar position', await page.evaluate(() => window.strudelCraft.quickplay.state.mode) === 'end' && /bar \d+ \/ 2/.test(await page.locator('.qp-pos').innerText()), await page.locator('.qp-pos').innerText());
   await page.waitForFunction(() => window.strudelCraft.quickplay.state.phase === 'idle', null, { timeout: 15000 }); nums.endMs = Date.now() - t2;
   check('an end-resolved entry (@daw bars=2) stops at its end (within a bar)', nums.endMs < 4500, nums.endMs + ' ms');
@@ -125,6 +126,25 @@ try {
   const e2 = await page.evaluate(() => { const r = window.strudelCraft.quickplay.run; return { endC: r.endC, rule: r.found.rule }; }); check('a second audition does not inherit the first one\'s marker or gates (endless)', e2.endC == null, JSON.stringify(e2));
   await page.evaluate(() => window.strudelCraft.quickplay.stop('fast')); await page.waitForTimeout(300);
   check('registry still the program\'s after the second audition; the program still sounds', (await reg()) === regBefore && (await peak(800)).pk > 0.003);
+  // slot collision: program fx = lpf 300 on the bass; the audition binds its own fx = hpf 4000. The program's low band must not move while the audition plays.
+  const low = (ms) => page.evaluate(async (ms) => { const an = window.__sc.Bus.an, f = new Float32Array(an.frequencyBinCount), hz = an.context.sampleRate / an.fftSize; let sum = 0, n = 0; const t0 = performance.now();
+    await new Promise((r) => { const iv = setInterval(() => { an.getFloatFrequencyData(f); let e = 0; for (let k = 1; k * hz < 600; k++) e += Math.pow(10, f[k] / 10); sum += e; n++; if (performance.now() - t0 > ms) { clearInterval(iv); r(); } }, 20); }); return 10 * Math.log10(sum / n); }, ms);
+  const MAIN2 = 'setcpm(240/4)\nhooks.def("murk", { chain: [["lpf", 300]] })\nhooks.bind("fx", "murk")\n$: note("c2").s("sawtooth").use("fx")\n$: s("hh*8").gain(.3)';
+  await page.evaluate((c) => { const ta = document.getElementById('code'); ta.value = c; ta.dispatchEvent(new Event('input', { bubbles: true })); document.activeElement.blur(); }, MAIN2);
+  await page.evaluate(() => window.__sc.stop()); await page.waitForTimeout(300); await page.evaluate(() => window.__sc.play()); await page.waitForFunction(() => window.__sc.S.playing, null, { timeout: 60000 }); await page.waitForTimeout(2500);
+  const lo0 = await low(1500);
+  await page.evaluate(() => window.strudelCraft.quickplay.play({ key: 'c:1', title: 'C', code: 'setcpm(240/4)\nhooks.def("bright", { chain: [["hpf", 4000]] })\nhooks.bind("fx", "bright")\n$: note("c5*2").s("triangle").gain(.2).use("fx")' })); await page.waitForFunction(() => window.strudelCraft.quickplay.state.phase === 'playing', null, { timeout: 30000 }); await page.waitForTimeout(800);
+  const lo1 = await low(1500); nums.low = [lo0.toFixed(1), lo1.toFixed(1)];
+  check('a colliding fx slot leaves the program\'s low band unchanged (within 1 dB) while the audition plays', Math.abs(lo1 - lo0) < 1, JSON.stringify(nums.low));
+  check('the audition uses its own fx (its registry has the bright def, the program\'s does not)', await page.evaluate(() => { const h = window.strudelCraft.hooks, a = window.strudelCraft.quickplay.run.A; return a.R.defs.has('bright') && !JSON.parse(h.toJSON()).defs?.bright && !!JSON.parse(h.toJSON()).defs?.murk; }));
+  // controls: an auditioned ctl() leaves the controls list, the Perform model and localStorage alone, also after a reload
+  const ctlState = () => page.evaluate(() => JSON.stringify({ l: window.strudelCraft.perform.controls.list().map((c) => c.name), m: window.strudelCraft.perform.model().controls, ls: localStorage.getItem('sc.perform') }));
+  await page.evaluate(() => window.strudelCraft.quickplay.stop('fast')); await page.waitForTimeout(300); const cs0 = await ctlState();
+  await page.evaluate(() => window.strudelCraft.quickplay.play({ key: 'c:2', title: 'K', code: 'setcpm(240/4)\n$: s("hh*4").lpf(ctl("qpleak", { min: 200, max: 4000 })).gain(slider(0.4))' })); await page.waitForFunction(() => window.strudelCraft.quickplay.state.phase === 'playing', null, { timeout: 30000 });
+  const kp = await peak(800); await page.evaluate(() => window.strudelCraft.quickplay.stop('fast')); await page.waitForTimeout(300); const cs1 = await ctlState();
+  check('an auditioned ctl()/slider() plays and leaves controls list, model and localStorage unchanged', kp.pk > 0.003 && cs1 === cs0 && !cs1.includes('qpleak'), cs1.includes('qpleak') ? 'leaked' : 'peak ' + kp.pk.toFixed(3));
+  await page.reload(); await page.waitForSelector('#list li[data-id]'); await page.evaluate(() => window.__sc.setView('perform')); await page.waitForFunction(() => window.strudelCraft.perform && window.strudelCraft.perform.controls, null, { timeout: 60000 });
+  check('after a reload the Perform controls do not contain the audition\'s control', !(await ctlState()).includes('qpleak'));
   await page.evaluate(() => window.__sc.stop());
   console.log(JSON.stringify(nums));
   const real = errors.filter((e) => !/notAFunction/.test(e)); check('no console errors (the deliberate bad entry logs its own eval error)', real.length === 0, real.slice(0, 3).join(' | '));

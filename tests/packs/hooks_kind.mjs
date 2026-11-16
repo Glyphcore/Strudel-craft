@@ -3,10 +3,11 @@
 import assert from 'node:assert/strict';
 import { bootRuntime } from '../hooks/fixtures/rt.mjs';
 import { KINDS, DEFERRED } from '../../site/packs-kinds.js';
-import { install } from '../../site/packs-hooks.js';
+import { install as rawInstall, chainable } from '../../site/packs-hooks.js';
+import { resolve, itemIds } from '../../site/engine/packs-core.js';
 const RT = await bootRuntime();
 if (!RT) { console.log('SKIP @strudel/core/@strudel/mini not installed (set STRUDEL_MODULES)'); process.exit(0); }
-const H = RT.hooks; let n = 0; const ok = (m) => { n++; console.log('PASS ' + m); };
+const H = RT.hooks; const allow = chainable(RT.core.Pattern); const install = (h, e, s, i, nf) => rawInstall(h, e, s, i, nf, { allow }); let n = 0; const ok = (m) => { n++; console.log('PASS ' + m); };
 const defsOf = () => Object.keys(JSON.parse(H.toJSON()).defs || {}).sort();
 const chain = (...c) => ({ chain: c });
 const A = { model: 1, defs: { kick: chain(['s', 'sine'], ['gain', 0.8]), pad: chain(['s', 'saw'], ['lpf', 800]) } };
@@ -50,4 +51,35 @@ const serve = async (code) => { const m = enc(man(code)); const files = { 'craft
   assert.equal(i.state, 'blocked'); assert.equal(i.reason.code, 'E_PACK_CODE_GRANT'); assert.ok(P.report().errors.some((x) => x.code === 'E_PACK_CODE_GRANT')); ok('loader: code: true without a grant -> blocked, E_PACK_CODE_GRANT in the report');
   H.reset(); const toldL = []; const r2 = install(H, entries, st(), { 'glyphcore/hk:racks': i }, (m) => toldL.push(m)); assert.deepEqual(defsOf(), ['fine']); assert.deepEqual(r2.refused[0].defs, ['fn', 'dyn']); assert.equal(toldL.length, 1); ok('loader data part -> install: the chain-only def loads, code defs are refused with a notice'); }
 { const P = createPacks({ base: 'http://t/', fetch: await serve(false), storage: null, search: '' }); await P.ready; await P.get('hooks'); const i = P.list()[0].ingredients[0]; assert.equal(i.state, 'failed'); assert.equal(i.reason.code, 'E_PACK_CODE_UNDECLARED'); ok('loader: code defs without code: true -> failed E_PACK_CODE_UNDECLARED, nothing installed'); }
+
+// ---- security regression (#91 rework): data can never reach Function / Object.prototype through a chain, and one bad def installs nothing of its ingredient
+const PWN = 'window.__PWNED=(window.__PWNED||0)+1'; globalThis.window = globalThis; delete globalThis.__PWNED;
+const flush = () => { try { H.slot('sl', { mode: 'chain' }); } catch (e) { /* already there */ } };
+const run = (name) => { flush(); H.bind('sl', name); try { RT.core.s('bd').use('sl').queryArc(0, 1); } catch (e) { /* the site never throws; the test needs only the side effect */ } };
+const refuse = (label, data, expectDef) => { H.reset(); const s = st(), told = []; const r = install(H, [e('x/evil', 'racks', data)], s, {}, (m) => told.push(m));
+  assert.equal(r.invalid.length, 1, label); assert.equal(r.invalid[0].code, 'E_PACK_HOOKS_INVALID', label); assert.ok(r.invalid[0].errors.length >= 1 && r.invalid[0].errors[0].code === 'E_PACK_HOOKS_INVALID', label);
+  assert.deepEqual(r.defs, [], label); assert.deepEqual(defsOf(), [], label); assert.equal(told.length, 1, label); assert.match(told[0], /E_PACK_HOOKS_INVALID/);
+  if (expectDef) run(expectDef); assert.equal(globalThis.__PWNED, undefined, label + ': global side effect'); };
+refuse('critic exploit', { model: 1, defs: { pwn: chain(['__lookupGetter__', '_steps'], ['constructor', PWN], ['apply', null, []]) } }, 'pwn'); ok('critic exploit (__lookupGetter__ -> constructor -> apply): rejected, structured, no side effect');
+refuse('__proto__ step', { model: 1, defs: { a: chain(['__proto__', 'x']) } }); refuse('constructor.constructor', { model: 1, defs: { a: chain(['constructor.constructor', PWN]) } });
+refuse('computed-looking', { model: 1, defs: { a: chain(['["constructor"]', PWN]) } }); refuse('computed-looking 2', { model: 1, defs: { a: chain(['gain.constructor', PWN]) } });
+refuse('apply step', { model: 1, defs: { a: chain(['apply', null, []]) } }); refuse('call/bind/toString', { model: 1, defs: { a: chain(['call', null]), b: chain(['bind', null]), c: chain(['toString']) } });
+refuse('unknown method', { model: 1, defs: { a: chain(['noSuchMethod', 1]) } });
+ok('variants rejected: __proto__, constructor.constructor, computed-looking names, apply/call/bind/toString, unknown methods');
+refuse('__proto__ key in args', { model: 1, defs: { a: JSON.parse('{"chain":[["gain",{"__proto__":{"x":1}}]]}') } }); refuse('constructor key in args', { model: 1, defs: { a: chain(['gain', { constructor: { prototype: 1 } }]) } });
+refuse('function object arg', { model: 1, defs: { a: chain(['gain', () => 1]) } }); refuse('too deep', { model: 1, defs: { a: chain(['gain', [[[[[[[[[[1]]]]]]]]]]]) } });
+ok('arguments are JSON data only: __proto__/constructor keys, functions, deep nesting rejected');
+refuse('reserved def names', { model: 1, defs: { constructor: chain(['gain', 1]) } }); refuse('__proto__ def', { model: 1, defs: JSON.parse('{"__proto__":{"chain":[["gain",1]]}}') });
+refuse('toString def', { model: 1, defs: { toString: chain(['gain', 1]) } }); refuse('bad slot name', { model: 1, slots: { constructor: {} }, defs: { a: chain(['gain', 1]) } });
+ok('def / slot names: reserved Object.prototype / Function.prototype members and non-identifiers rejected');
+{ H.reset(); const s = st(), r = install(H, [e('x/f', 'racks', { model: 1, defs: { fl: chain(['s', 'function(){window.__PWNED=1}()'], ['gain', '${window.__PWNED=2}']) } })], s);
+  assert.deepEqual(r.invalid, []); assert.deepEqual(r.defs, ['fl']); run('fl'); assert.equal(globalThis.__PWNED, undefined); ok('function-like / template strings are inert string data (mini-notation), no side effect'); }
+{ H.reset(); const s = st(), told = []; const good = chain(['gain', 1]); const r = install(H, [e('x/mix', 'racks', { model: 1, defs: { pre: good, bad: chain(['noSuchMethod', 1]), post: good } }), e('y/ok', 'racks', { model: 1, defs: { fine2: good } })], s, {}, (m) => told.push(m));
+  assert.deepEqual(defsOf(), ['fine2']); assert.equal(r.invalid.length, 1); assert.equal(r.invalid[0].ingredient, 'x/mix:racks'); assert.equal(told.length, 1); ok('atomic per ingredient: one bad def installs none of its ingredient (other ingredients load), one notice');
+  H.reset(); const s2 = st(); install(H, [e('x/mix', 'racks', { model: 1, defs: { pre: good, post: good } })], s2); assert.deepEqual(defsOf(), ['post', 'pre']);
+  install(H, [e('x/mix', 'racks', { model: 1, defs: { pre: good, bad: chain(['noSuchMethod', 1]), post: good } })], s2); assert.deepEqual(defsOf(), []); ok('a new bad version of a pack removes the stale defs of the previous version'); }
+{ const data = { model: 1, defs: JSON.parse('{"constructor":{"chain":[["gain",1]]},"ok":{"chain":[["gain",1]]}}') }; assert.deepEqual(itemIds('hooks', data), ['ok']);
+  const man = { craftpack: '1.0.0', id: 'x/c', version: '1.0.0', license: 'CC0-1.0', ingredients: [] }; const r = resolve([{ name: 'shipped', packs: [{ id: 'x/c', source: 's' }] }], { 'x/c': { manifest: man, ingredients: [{ id: 'racks', kind: 'hooks', data }] } });
+  assert.deepEqual(Object.keys(r.resolution.hooks), ['ok']); ok('a def named constructor cannot crash the resolution / report (no claim, null-prototype claims)'); }
+assert.equal(chainable(RT.core.Pattern).has('constructor'), false); assert.equal(chainable(RT.core.Pattern).has('apply'), false); assert.equal(chainable(RT.core.Pattern).has('lpf'), true); assert.equal(chainable(RT.core.Pattern).has('hook'), true); ok('allowlist: controls and hooks methods in, constructor / apply out');
 console.log(`${n} checks passed`);

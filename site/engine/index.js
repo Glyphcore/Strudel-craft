@@ -32,15 +32,16 @@ sc.lanesCaptureEnsure = async (src) => {
 };
 // pack kind `hooks` (#91): a program that names a pack shipping a hooks ingredient (`pack:author/pack:...` or `author/pack:ingredient` anywhere in its text) gets that pack's
 // chain-only defs in the registry on every evaluation (app.js: ensure before, install inside protectCode). The installer is site/packs-hooks.js, imported only then.
-const phSt = { defs: new Map(), told: new Set(), refused: [], view: [], info: {}, mod: null }; let phIds = null;
+const phSt = { defs: new Map(), told: new Set(), refused: [], invalid: [], view: [], info: {}, mod: null, allow: null }; let phIds = null;
 const phNamed = (code) => (phIds || (phIds = (sc.packs ? sc.packs.list() : []).filter((p) => p.state === 'ready' && p.ingredients.some((i) => i.kind === 'hooks')).map((p) => p.id))).filter((id) => { const t = String(code); for (let i = t.indexOf(id + ':'); i >= 0; i = t.indexOf(id + ':', i + 1)) if (!/[\w/.-]/.test(t[i - 1] || ' ')) return true; return false; });
 if (sc.packs && sc.packs.on) for (const ev of ['state', 'report']) sc.packs.on(ev, () => { phIds = null; });
 sc.packHooks = {
   async ensure(code) { const ids = phNamed(code); if (!ids.length && !phSt.defs.size) return; phSt.mod ||= await import('../packs-hooks.js');
     if (ids.length) { phSt.view = await sc.packs.get('hooks'); phSt.info = Object.fromEntries(sc.packs.list().flatMap((p) => p.ingredients.filter((i) => i.kind === 'hooks').map((i) => [p.id + ':' + i.id, i]))); } },
   install(code) { if (!sc.hooks || !phSt.mod) return null; const ids = phNamed(code); if (!ids.length && !phSt.defs.size) return null;
-    return phSt.mod.install(sc.hooks, phSt.view.filter((e) => ids.includes(e.pack)), phSt, phSt.info, (m) => sc.ui && sc.ui.toast(m, { kind: 'error', sticky: true })); },
-  state: () => ({ defs: [...phSt.defs.keys()], refused: phSt.refused }),
+    phSt.allow ||= phSt.mod.chainable(globalThis.Pattern); // allowlist from Strudel's own registered methods, built once
+    return phSt.mod.install(sc.hooks, phSt.view.filter((e) => ids.includes(e.pack)), phSt, phSt.info, (m) => sc.ui && sc.ui.toast(m, { kind: 'error', sticky: true }), { allow: phSt.allow }); },
+  state: () => ({ defs: [...phSt.defs.keys()], refused: phSt.refused, invalid: phSt.invalid }),
 };
 // Record panel hook (#76): every offline render (exact, reference, Remake) runs the capture passes first, in dependency order. Registered once per page, at load, because the first
 // Remake of a fresh page has to find it already there; programs without capture / recall / .from cost one regex test. Teardown: strudelCraft.lanesCaptureHookOff().

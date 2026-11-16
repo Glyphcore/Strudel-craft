@@ -18,7 +18,7 @@ const ITEMS = {
   'vox-bank': (d) => Object.keys({ ...(d.maps?.flat || {}), ...(d.maps?.pitched || {}) }).filter((k) => k !== '_base'),
   'param-shapes': (d) => ['params', 'ranges', 'canon'].flatMap((s) => Object.keys(d[s] || {}).map((k) => `${s}.${k}`)),
   'atoms': (d) => Object.values(d.atoms || {}).map((a) => a.name), // one ingredient = one namespace of atoms (ATOMS 10, PACK_SPEC 5.1)
-  'hooks': (d) => Object.keys(d.defs || {}), // #91: a def is one item; whole-def precedence
+  'hooks': (d) => Object.keys(d.defs || {}).filter((k) => /^[A-Za-z][\w-]*$/.test(k) && !(k in Object.prototype) && !(k in Function.prototype)), // #91: a def is one item; whole-def precedence
   'intellisense': (d) => (d.items || []).map((i) => `${i.category || ''}|${i.label}`),
 };
 export const itemIds = (kind, data) => (data && ITEMS[kind] ? ITEMS[kind](data) : []);
@@ -51,11 +51,11 @@ export function resolve(layers, loaded) {
     }
   }
   // claims[kind][bare] = [{ pack, ingredient, qualified, priority, rank, seq }]
-  const claims = {};
+  const claims = Object.create(null); // null-prototype: an item named like an Object.prototype member cannot break it
   for (const p of accepted) {
     for (const ing of loaded[p.id]?.ingredients || []) {
       for (const item of itemIds(ing.kind, ing.data)) {
-        const k = ((claims[ing.kind] ||= {})[item] ||= []);
+        const k = ((claims[ing.kind] ||= Object.create(null))[item] ||= []);
         k.push({ pack: p.id, ingredient: ing.id, qualified: `${p.id}:${item}`, priority: p.priority, rank: p.rank, seq: p.seq });
       }
     }

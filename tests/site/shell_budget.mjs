@@ -16,11 +16,11 @@ const SITE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../s
 export const EAGER = [
   'preload fonts/ChakraPetch-500.woff2', 'preload data/catalog.json', 'modulepreload packs.js', 'modulepreload packs-kinds.js', 'modulepreload engine/packs-core.js',
   'preload packs.lock.json', 'preload craftpack.json', 'preload data/vox/craftpack.json', 'preload data/phonk/craftpack.json', 'preload data/phonk/presets.json',
-  'preload app.js', 'style style.css', 'script ui.js', 'script forms.js', 'script app.js', 'module packs.js', 'style workspace.css', 'module palette.js', 'style pwa.css', 'module pwa.js',
+  'preload app.js', 'style style.css', 'style taxonomy.css', 'style organizer.css', /* #120: the organizer in the Recipes browser (first paint) */ 'script ui.js', 'script forms.js', 'script app.js', 'module packs.js', 'style workspace.css', 'module palette.js', 'style pwa.css', 'module pwa.js',
 ];
-/* the budget leaves under 3% for small fixes, not for a new feature: data/catalog.json alone is 109,978 of it */
-export const BUDGET_MEASURED = 419_567; // index.html + 18 eager files + their static imports, 2026-11-16 (b9e7024 + the #59 rework)
-export const BUDGET = 430_000; // +2.8%
+/* the budget leaves under 3% for small fixes, not for a new feature: data/catalog.json alone is 121,056 of it */
+export const BUDGET_MEASURED = 457_815; // index.html + 20 eager files + their static imports, 2026-11-16 (7eced68 + the #59 rework)
+export const BUDGET = 470_000; // +2.7%
 
 export function shellBudget() {
   const checks = []; const check = (name, ok, detail = '') => checks.push({ name, ok: !!ok, detail });

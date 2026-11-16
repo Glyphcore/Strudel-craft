@@ -2441,9 +2441,10 @@
     "mjs_fixed": 69
    },
    "eager_shell_bytes": {
-    "93cea67": "~327 KB (catalog 43,677)",
+    "93cea67 (my finishing point, approx)": 327000,
     "b9e7024 + rework": 419567,
-    "budget": 430000
+    "7eced68 + rework (taxonomy.css, organizer.css, catalog 121,056)": 457815,
+    "budget": 470000
    }
   }
  }

@@ -9,14 +9,14 @@ const HERE = path.dirname(fileURLToPath(import.meta.url)), ROOT = path.resolve(H
 const TOTAL = 136; // bars 129-136 are the tail (a mask list repeats after its last entry, so the tail is written out as 0)
 const B = (...r) => r; // [a, b] inclusive; a single number n means [n, n]
 export const ON = {
-  kick: [[9, 31], [33, 56], [97, 120]], kickH: [[73, 96]], clap: [[17, 31], [33, 56], [97, 116]], snareH: [[73, 96]], ghost: [[77, 96]],
-  hats: [[1, 31], [33, 56], [97, 124]], ohat: [[9, 31], [33, 56], [97, 120]], hatsH: [[73, 88]], hats16H: [[89, 96]],
-  roll: [[25, 32], [65, 72]], roll4: [[13, 16]], fill: [48, 56, 96, 112], perc: [[61, 96]],
-  rise1: [[17, 32]], rise2: [[69, 72]], pitch2: [[69, 72]], rev: [16, 96], down: [57, 113], impact: [33, 73, 97], crash: [33, 49, 73, 89, 97, 113], metalTail: [57],
-  seedH: [[17, 31], [33, 56], [113, 116]], seedHm: [[97, 112]], subH: [[25, 31], [33, 56], [97, 116]], seedG: [[73, 88]], growl2: [[89, 96]], growlR: [[97, 112]], subD: [[73, 96]],
-  disco: [[1, 16]], discoOut: [[117, 124]], stabsB: [[17, 32]], stabs1: [[37, 48], [113, 116]], stabs2: [[49, 55]], stabsUp: [[97, 111]], closeS: [56, 112],
+  kick: [[9, 31], [33, 56], [97, 120]], kickH: [[73, 87], [89, 96]], clap: [[25, 31], [33, 56], [97, 116]], snareH: [[73, 87], [89, 96]], ghost: [[77, 87]],
+  hats: [[1, 31], [33, 56], [97, 124]], ohat: [[9, 31], [33, 56], [97, 120]], hatsH: [[75, 87]], hats16H: [[89, 96]],
+  roll: [[25, 32], [65, 72]], roll4: [[13, 16]], fill: [48, 56, 80, 88, 96, 112], perc: [[61, 72], [81, 87], [89, 96]],
+  rise1: [[17, 32]], rise2: [[69, 72]], pitch2: [[69, 72]], rev: [16, 88, 96], down: [57, 113], impact: [33, 73, 89, 97], crash: [33, 49, 73, 89, 97, 113], metalTail: [57],
+  seedH: [[33, 56], [113, 116]], seedB: [[17, 31]], seedHm: [[97, 112]], subH: [[33, 56], [97, 116]], seedG: [[73, 87]], growl2: [[89, 96]], growlR: [[97, 112]], subD: [[73, 87], [89, 96]],
+  disco: [[1, 16]], discoOut: [[117, 124]], stabsB: [[17, 32]], stabs1: [[33, 48], [113, 116]], stabs2: [[49, 55]], stabsUp: [[97, 111]], closeS: [56, 112],
   pad: [[17, 32], [57, 72], [117, 128]], padD: [[33, 56], [97, 112]], padP: [[73, 96]], fpad: [[25, 32], [57, 72], [105, 112], [121, 128]],
-  chop: [[13, 16], [41, 48], [69, 72], [97, 104], [121, 124]], chopB: [[49, 56], [105, 112]], chopA: [[73, 96]], arp: [[49, 56], [65, 72], [97, 112]], screech: [[89, 96]], tex: [[57, 96], [121, 128]], air: [[17, 31], [33, 56], [73, 96], [97, 120]],
+  chop: [[13, 16], [41, 48], [69, 72], [97, 104], [121, 124]], chopB: [[49, 56], [105, 112]], chopA: [[75, 87], [89, 96]], arp: [[49, 56], [65, 72], [97, 112]], screech: [[89, 96]], tex: [[57, 96], [121, 128]], air: [[33, 56], [97, 120]], airD: [[81, 87], [89, 96]],
 };
 const norm = (rs) => rs.map((r) => (Array.isArray(r) ? r : [r, r]));
 const onSet = (rs) => { const a = new Array(TOTAL + 1).fill(0); for (const [x, y] of norm(rs)) for (let b = x; b <= y; b++) a[b] = 1; return a; };
@@ -32,7 +32,10 @@ const laneIds = [...craft.matchAll(/^(?:\/\/@plain )?([A-Za-z]\w*):/gm)].map((m)
 const missing = Object.keys(ON).filter((k) => !laneIds.includes(k)), unused = [...new Set(laneIds)].filter((k) => !(k in ON));
 if (missing.length || unused.length) { console.error('ON and lanes differ', { missing, unused }); process.exit(1); }
 const gates = Object.entries(ON).map(([k, rs]) => `tagged("#${k}").mute("${offWindows(rs)}")`).join('\n');
-craft = craft.replace(/\/\/@gates-begin[\s\S]*?\/\/@gates-end/, `//@gates-begin\n${gates}\n//@gates-end`); fs.writeFileSync(file, craft);
+const CHECK = process.argv.includes('--check'); // --check writes nothing and exits 1 when the committed gates block or standalone differs from a fresh build
+const crafted = craft.replace(/\/\/@gates-begin[\s\S]*?\/\/@gates-end/, `//@gates-begin\n${gates}\n//@gates-end`); let stale = [];
+if (CHECK) { if (crafted !== craft) stale.push('track.strudel.js gates block'); } else fs.writeFileSync(file, crafted);
+craft = crafted;
 
 // ---- standalone ----
 const { createLowering } = await import(pathToFileURL(path.join(ROOT, 'tools/lowering/lower.mjs')).href);
@@ -41,5 +44,7 @@ src = src.split('\n').map((l) => { const m = /^([A-Za-z]\w*):/.exec(l); if (!m |
 const L = await createLowering(); const r = L.lower(src);
 if (r.state !== 'lowered') { console.error('lowering did not lower:', r); process.exit(1); }
 const head = '// GENERATED from track.strudel.js by docs/tracks/sirocco-foundry/build.mjs (lowering, docs/LOWERING.md): plain Strudel, paste-ready for strudel.cc. Edit the Craft file, not this one.\n// The vox sample lanes (fpad, chop, chopB, chopA) are their synthesised twins here; the section gates are .mask() lists.\n';
-fs.writeFileSync(path.join(HERE, 'track.standalone.strudel.js'), head + r.lowered);
+const SA = path.join(HERE, 'track.standalone.strudel.js');
+if (CHECK) { if (!fs.existsSync(SA) || fs.readFileSync(SA, 'utf8') !== head + r.lowered) stale.push('track.standalone.strudel.js'); if (stale.length) { console.error('STALE (run node docs/tracks/sirocco-foundry/build.mjs):', stale.join(', ')); process.exit(1); } console.log('sirocco-foundry: gates and standalone are current'); process.exit(0); }
+fs.writeFileSync(SA, head + r.lowered);
 console.log('wrote gates (' + Object.keys(ON).length + ' lanes) and track.standalone.strudel.js (' + r.lowered.length + ' bytes)');

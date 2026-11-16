@@ -1071,7 +1071,7 @@
     ],
     [
      "Measure",
-     "composer scan: spectral centroid / band map changes per bar while composer ledger reports \"exact\" statements."
+     "composer scan: the band map and per-bar band energy shift bar to bar (energy moving between bands; scan reports no single centroid number) while composer ledger reports \"exact\" statements."
     ],
     [
      "Anti-patterns",
@@ -2047,7 +2047,7 @@
     ],
     [
      "Measure",
-     "composer scan: band map shows sub and bass falling, presence rising across the build; centroid up."
+     "composer scan: band map shows sub and bass falling, presence rising across the build (the brightening is read from the band shift; scan reports no centroid number)."
     ],
     [
      "Anti-patterns",
@@ -2387,7 +2387,7 @@
     ],
     [
      "Measure",
-     "composer scan: presence band rising over the build bars, a broadband onset on the drop bar."
+     "composer scan: presence band rising over the build bars, then every band energy jumping together on the drop bar (read from per-bar band energy; scan has no onset detector)."
     ],
     [
      "Anti-patterns",

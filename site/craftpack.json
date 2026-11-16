@@ -12,9 +12,9 @@
       "format": "recipes@1",
       "version": "1.0.0",
       "path": "data/catalog.json",
-      "hash": "sha256:0f2c8590b9c8d8f3e42a7b5770c6547e679d0e1c5656bfda33ab08aba3bd320f",
+      "hash": "sha256:6598c9737df5e0f7383d7c5f63cef37e73dc016d155e6c682e420832c184e850",
       "load": "eager",
-      "bytes": 200592
+      "bytes": 200239
     },
     {
       "id": "strudel-docs",
@@ -82,9 +82,9 @@
       "format": "syntax@1",
       "version": "1.0.0",
       "path": "data/composition.json",
-      "hash": "sha256:0e57159ba6d0932c5eb30c6821b61ee768d54bfe5a4db0b685c64c1a3cf0e006",
+      "hash": "sha256:a8e85aca9859a48dcd306bc1f47132c1a4d9fb99cace5c03424466611f49474e",
       "load": "lazy",
-      "bytes": 164653,
+      "bytes": 164880,
       "title": "Composition concepts",
       "description": "Catalog of composition design concepts (docs/COMPOSITION.md): motif, interplay, foreshadow, layering, groove, harmony, discordance, assonance, complement, synergy, clustering; Craft and Strudel forms"
     },

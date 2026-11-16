@@ -8,19 +8,19 @@ and no melody, sample, stem or arrangement of a specific track is reproduced or 
 Web content was treated as untrusted data; no instruction in it was followed.
 
 ## Status of sources
-| source | opened | note |
-|---|---|---|
-| Attack Magazine, Deconstructed: Purple Disco Machine "In My Arms" (2020-04-24), https://www.attackmagazine.com/technique/deconstructed/purple-disco-machine-in-your-arms/ | yes | arrangement walk-through, read for structure only |
-| Native Instruments blog, French house music (2024-08-28), https://www.native-instruments.com/blogs/blog/french-house-music | yes | |
-| EDMProd, How to make riddim (2025-05-23), https://www.edmprod.com/how-to-make-riddim/ | yes | |
-| KQED, Remembering Traxamillion (2022-01-05, updated 2024-09-19), https://www.kqed.org/arts/13907735/remembering-traxamillion-whose-beats-defined-the-bay-area-sound | yes | |
-| Sethares, Relating Tuning and Timbre, https://sethares.engr.wisc.edu/consemi.html | yes | the page names the method; the constants come from the cited paper (see theory) |
-| MusicRadar, 22 arranging tips (no date visible), https://www.musicradar.com/how-to/22-arranging-tips-and-tricks-to-try-today | no (truncated behind sign-up) | UNVERIFIED |
-| MusicRadar, Interview: Noisia on beats, basslines, software, https://musicradar.com/news/tech/interview-noisia-on-beats-basslines-software-and-more-513071 | no (truncated) | UNVERIFIED |
-| MusicRadar, How to program a classic electro drum track, https://musicradar.com/how-to/how-to-program-a-classic-electro-drum-track | no (truncated) | UNVERIFIED |
-| Melodics, Producer's guide to phonk, https://melodics.com/blog/producers-guide-to-phonk-music | no (empty body) | UNVERIFIED |
-| intmus inttheory, Intro to mode mixture, https://intmus.github.io/inttheory/17-mode-mixture/a1-ex-intromodemix.html | no (404) | UNVERIFIED |
-| Sound On Sound Inside Track, Gearspace, KVR, Resident Advisor, Point Blank, Ableton blog "subtractive arranging" (https://www.ableton.com/en/blog/subtractive-arranging-novel-production-method-danny-j-lewis/), r/edmproduction, r/musicproduction, r/WeAreTheMusicMakers, r/drumandbass, r/Dubstep, Hooktheory, Open Music Theory | no | searched; no relevant page could be opened in this pass (Reddit not indexed by the search tool, SOS Inside Track had no electronic-arrangement match, Ableton body was navigation only, OMT not returned). All UNVERIFIED; follow-up in the tracker |
+| source | opened | accessed | note |
+|---|---|---|---|
+| Attack Magazine, Deconstructed: Purple Disco Machine "In Your Arms" (2020-04-24), https://www.attackmagazine.com/technique/deconstructed/purple-disco-machine-in-your-arms/ | yes | 2026-11-16 | arrangement walk-through, read for structure only |
+| Native Instruments blog, French house music (2024-08-28), https://www.native-instruments.com/blogs/blog/french-house-music | yes | 2026-11-16 | |
+| EDMProd, How to make riddim (2025-05-23), https://www.edmprod.com/how-to-make-riddim/ | yes | 2026-11-16 | |
+| KQED, Remembering Traxamillion (2022-01-05, updated 2024-09-19), https://www.kqed.org/arts/13907735/remembering-traxamillion-whose-beats-defined-the-bay-area-sound | yes | 2026-11-16 | |
+| Sethares, Relating Tuning and Timbre, https://sethares.engr.wisc.edu/consemi.html | yes | 2026-11-16 | the page names the method; the constants come from the cited paper (see theory) |
+| MusicRadar, 22 arranging tips (no date visible), https://www.musicradar.com/how-to/22-arranging-tips-and-tricks-to-try-today | no (truncated behind sign-up) | 2026-11-16 | UNVERIFIED |
+| MusicRadar, Interview: Noisia on beats, basslines, software, https://musicradar.com/news/tech/interview-noisia-on-beats-basslines-software-and-more-513071 | no (truncated) | 2026-11-16 | UNVERIFIED |
+| MusicRadar, How to program a classic electro drum track, https://musicradar.com/how-to/how-to-program-a-classic-electro-drum-track | no (truncated) | 2026-11-16 | UNVERIFIED |
+| Melodics, Producer's guide to phonk, https://melodics.com/blog/producers-guide-to-phonk-music | no (empty body) | 2026-11-16 | UNVERIFIED |
+| intmus inttheory, Intro to mode mixture, https://intmus.github.io/inttheory/17-mode-mixture/a1-ex-intromodemix.html | no (404) | 2026-11-16 | UNVERIFIED |
+| Sound On Sound Inside Track, Gearspace, KVR, Resident Advisor, Point Blank, Ableton blog "subtractive arranging" (https://www.ableton.com/en/blog/subtractive-arranging-novel-production-method-danny-j-lewis/), r/edmproduction, r/musicproduction, r/WeAreTheMusicMakers, r/drumandbass, r/Dubstep, Hooktheory, Open Music Theory | no | 2026-11-16 | searched; no relevant page could be opened in this pass (Reddit not indexed by the search tool, SOS Inside Track had no electronic-arrangement match, Ableton body was navigation only, OMT not returned). All UNVERIFIED; follow-up in the tracker |
 Other links below were seen as search summaries only and are UNVERIFIED unless marked opened.
 
 ## House, French house, Italo
@@ -28,9 +28,9 @@ Other links below were seen as search summaries only and are UNVERIFIED unless m
   16-bar loop into intro, build (everything enters), breakdown and drop (all parts). A group filter starts low and opens through the breakdown,
   fully open at the drop; a high-pass EQ on the music switched off at the drop; optional sidechain on the hook or top loop.
   -> COMPOSITION TEN-03 (spectral tension), SYN-05 (sidechain interplay), LAY-08.
-- **Producer-reported (opened, Attack Deconstructed, read for form only):** a ~100-bar single edit at 120 bpm; filtered drums and a sampled
-  piano loop first, risers and delay chimes for tension, the octave bassline only around bar 21, vocal samples entering gradually, guitar and
-  synth layers making the middle fuller, breakdowns stripped with filter, phaser and tape echo, snare rolls into a full return near the end.
+- **Producer-reported (opened, Attack Deconstructed, read for form only):** the bass enters late in the arrangement, after a long build made
+  of filtered drums, a sampled loop, risers and delay chimes; vocals and extra layers join gradually, breakdowns are stripped with filter and
+  echo, and a snare roll leads back into the full return.
   -> staged entries (LAY-02 ladder), delayed bass entry (FS-04), subtraction breakdowns (LAY-08), roll into return (TEN-02).
 - **UNVERIFIED (search summaries):** filter house relies on one sampled loop plus heavy kick-keyed sidechain and phaser / vocoder colour
   (Splice blog, https://splice.com/blog/?p=13979; MusicRadar funky French house, https://www.musicradar.com/how-to/how-to-produce-a-funky-french-house-track).
@@ -55,6 +55,9 @@ Other links below were seen as search summaries only and are UNVERIFIED unless m
 - **UNVERIFIED:** builds that start from sub only and add layers, modulation and distortion (DubSpot analysis of a Datsik bassline,
   https://blog.dubspot.com/electronic-music-theory-analyzing-dubstep-basslines-datsiks-3-fist-style), which also names the flat second over the root
   as the tension interval of that style. -> DIS-01, TEN-02.
+- **UNVERIFIED (industrial dubstep, from search summaries only, no page opened):** bass built from harsh, heavily distorted and clipped
+  metallic or noise-based layers, with mechanical, repeating drums and sparse, abrupt gaps instead of melodic builds; keep the low end mono and
+  tight so the distortion stays on the mids. -> SND-04, TEN-04 (gap); a hypothesis to test by ear, not a stated rule.
 - **UNVERIFIED (melodic / UKF):** supersaw chords with extended voicings (7ths, 9ths, add9) for a bittersweet colour, softened entrances by filter
   or volume swell, paired with a softer pad or pluck; one element owns the lows, the rest high-passed; widen high, keep lows mono; vocal chops
   re-pitched to the chords, given tails, sometimes vocoded (Native Instruments melodic bass; Unison; Scribd production notes).

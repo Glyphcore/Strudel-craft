@@ -4122,9 +4122,9 @@
    "code": "setcpm(128/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hook(\"superChord | pump(0.7)\")",
    "lowered": "setcpm(128/4)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).tremolosync(4).tremolodepth(0.7).tremoloshape(\"ramp\")",
    "lowered_check": {
-    "equal": false,
+    "equal": true,
     "cycles": 4,
-    "reason": "event 0 differs: {\"t\":0,\"dur\":1.875,\"cycle\":0,\"cycles\":1,\"note\":\"c3\",\"hcutoff\":180,\"cutoff\":6000,\"s\":\"supersaw\",\"unison\":7,\"detune\":0.3,\"spread\":0.6,\"attack\":0.01,\"sustain\":0.8,\"release\":0.4,\"gain\":0.16,\"lpf\":6000,\"hpf\":180,\"midi\":48,\"freq\":130.8128} vs {\"t\":0,\"dur\":1.875,\"cycle\":0,\"cycles\":1,\"note\"",
+    "events": 16,
     "hash": "02347ad710"
    },
    "notes": "",

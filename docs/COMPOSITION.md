@@ -545,7 +545,7 @@ $: n("0 2 4 3").scale("C5:minor").s("triangle").hpf(120).lpf(7000).mask("<0 0 1 
 - **Definition.** The same notes, with the timbre changing over time (filter, vowel, waveform, FM index).
 - **Why it works.** Timbre is a separate perceptual dimension: a slow change of spectral centroid reads as development and energy without new pitches.
 - **When.** Long loops (techno, riddim), builds, breakdowns.
-- **Measure.** composer scan: spectral centroid / band map changes per bar while composer ledger reports "exact" statements. (engine/composer `scan`)
+- **Measure.** composer scan: the band map and per-bar band energy shift bar to bar (energy moving between bands; scan reports no single centroid number) while composer ledger reports "exact" statements. (engine/composer `scan`)
 - **Anti-patterns.** Morphing that ends where it began with no arrival; Morphing several layers in sync (one wash).
 - **Tags.** composition, cross-texture, filter-sweep, formant, measured, lowered
 
@@ -1025,7 +1025,7 @@ $: s("sd").hpf(120).lpf(10000).ftype("24db").fast("<4 8 16 [32 0]>").velocity(sa
 - **Definition.** Brightness rises before the arrival: high-pass rising on the mix, low-pass opening on leads, noise risers.
 - **Why it works.** Spectral centroid correlates with perceived tension and energy; removing lows (HPF) makes the return of the low end the release.
 - **When.** Builds; the whole mix or the music bus, not the kick alone.
-- **Measure.** composer scan: band map shows sub and bass falling, presence rising across the build; centroid up. (engine/composer `scan`)
+- **Measure.** composer scan: band map shows sub and bass falling, presence rising across the build (the brightening is read from the band shift; scan reports no centroid number). (engine/composer `scan`)
 - **Anti-patterns.** Masking production moves because they sound "EDM": risers and filter builds are tools in any genre (user directive).
 - **Tags.** composition, tension, filter-sweep, riser, measured, lowered
 
@@ -1194,7 +1194,7 @@ $: s("<~ ~ ~ [~ ~ ~ [sd sd sd sd]]>").hpf(120).lpf(10000).ftype("24db")
 - **Definition.** A riser that ends exactly on the downbeat, an impact that starts on it (dt.rise / dt.hit).
 - **Why it works.** Continuous pitch / noise rise predicts an endpoint; the impact confirms it.
 - **When.** Builds into drops, section changes in cinematic and EDM forms (and any genre that wants them).
-- **Measure.** composer scan: presence band rising over the build bars, a broadband onset on the drop bar. (engine/composer `scan`)
+- **Measure.** composer scan: presence band rising over the build bars, then every band energy jumping together on the drop bar (read from per-bar band energy; scan has no onset detector). (engine/composer `scan`)
 - **Anti-patterns.** A riser that stops before the downbeat (dead air) or overruns it.
 - **Tags.** composition, transition, riser, measured, lowered
 

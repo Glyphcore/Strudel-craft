@@ -154,7 +154,7 @@ add('xt', 'XT-02', 'Timbral morphing', { def: 'The same notes, with the timbre c
   why: 'Timbre is a separate perceptual dimension: a slow change of spectral centroid reads as development and energy without new pitches.',
   when: 'Long loops (techno, riddim), builds, breakdowns.',
   code: '$: n("0 2 4 3").scale("C3:minor").s("sawtooth").hook("hygiene-bass").lpf(sine.slow(8).range(300, 3000)).vowel("<a e i o>")',
-  check: 'composer scan: spectral centroid / band map changes per bar while composer ledger reports "exact" statements.',
+  check: 'composer scan: the band map and per-bar band energy shift bar to bar (energy moving between bands; scan reports no single centroid number) while composer ledger reports "exact" statements.',
   anti: ['Morphing that ends where it began with no arrival', 'Morphing several layers in sync (one wash)'], tags: ['filter-sweep', 'formant'], tool: 'scan', needs: 'hooks' });
 add('xt', 'XT-03', 'Rhythm from pitch', { def: 'The motif\'s rhythm alone, played on an unpitched layer (rim, hat, noise).',
   why: 'Rhythm is a strong identity cue; the percussion echo keeps the motif present while the melody rests, and builds anticipation.',
@@ -280,7 +280,7 @@ add('ten', 'TEN-03', 'Spectral tension', { def: 'Brightness rises before the arr
   why: 'Spectral centroid correlates with perceived tension and energy; removing lows (HPF) makes the return of the low end the release.',
   when: 'Builds; the whole mix or the music bus, not the kick alone.',
   code: '$: chord("<Cm Ab>").voicing().s("supersaw").hook("hygiene-pad").hpf(saw.range(200, 2000).slow(4)).gain(0.25)\n$: s("white").hook("hygiene-riser").attack(6).release(0.1).lpf(saw.range(500, 9000).slow(4)).gain(0.2).slow(4)',
-  check: 'composer scan: band map shows sub and bass falling, presence rising across the build; centroid up.',
+  check: 'composer scan: band map shows sub and bass falling, presence rising across the build (the brightening is read from the band shift; scan reports no centroid number).',
   anti: ['Masking production moves because they sound "EDM": risers and filter builds are tools in any genre (user directive)'], tags: ['filter-sweep', 'riser'], tool: 'scan', needs: 'hooks' });
 add('ten', 'TEN-04', 'Dynamic tension: the gap', { def: 'Silence or near-silence (a beat or a bar) immediately before the drop.',
   why: 'A gap resets loudness adaptation and creates maximal temporal expectation of the downbeat.',
@@ -326,7 +326,7 @@ add('tr', 'TR-02', 'Riser and impact', { def: 'A riser that ends exactly on the 
   why: 'Continuous pitch / noise rise predicts an endpoint; the impact confirms it.',
   when: 'Builds into drops, section changes in cinematic and EDM forms (and any genre that wants them).',
   code: 'atoms.import("pack:glyphcore/edm:atoms-edm-core")\n$: s("white").hook("hygiene-riser").attack(3.5).release(0.05).lpf(saw.range(400, 8000).slow(2)).gain(0.2).struct("<x ~>").slow(2)\n$: note("c1").s("sine").hook("hygiene-impact").decay(1.2).struct("<~ ~ x ~>")',
-  check: 'composer scan: presence band rising over the build bars, a broadband onset on the drop bar.',
+  check: 'composer scan: presence band rising over the build bars, then every band energy jumping together on the drop bar (read from per-bar band energy; scan has no onset detector).',
   anti: ['A riser that stops before the downbeat (dead air) or overruns it'], tags: ['riser', 'transition'], tool: 'scan', needs: 'hooks' });
 add('tr', 'TR-03', 'Drop-out bar', { def: 'All or most layers stop for the bar or beat before the new section (see TEN-04).',
   why: 'Contrast by subtraction at the seam.',

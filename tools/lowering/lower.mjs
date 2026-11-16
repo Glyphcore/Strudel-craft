@@ -144,10 +144,19 @@ export async function createLowering({ defs = {}, die = (m) => { throw new Error
 /* ---------- hap equality (CLI `strudel events`) ---------- */
 const round = (v) => (typeof v === 'number' ? Math.round(v * 1e5) / 1e5 : v);
 const norm = (events) => events.map((e) => Object.fromEntries(Object.entries(e).filter(([k]) => k !== 'layer').map(([k, v]) => [k, round(v)])));
-let hooksFile = null;
-function ensureHooks(defs) {
-  if (hooksFile) return hooksFile; const d = fs.mkdtempSync(path.join(os.tmpdir(), 'lowering-')); hooksFile = path.join(d, 'hooks.json');
-  fs.writeFileSync(hooksFile, JSON.stringify({ model: 1, defs })); return hooksFile;
+const hooksFiles = new Map();
+// a program that names its racks (`// racks: pack:ID:NAME`) uses THAT pack's defs over the merged all-packs defs, which would otherwise win for a name two packs define (two packs both define "pump")
+function packRackKeys(code) {
+  const own = {}; const DATA = path.join(ROOT, 'site/data');
+  for (const m of String(code || '').matchAll(/\/\/\s*racks:\s*pack:([\w./-]+):([\w-]+)/g)) for (const dir of fs.readdirSync(DATA)) {
+    try { if (rd(path.join(DATA, dir, 'craftpack.json')).id !== m[1]) continue; const d = rd(path.join(DATA, dir, m[2] + '.json')); Object.assign(own, d.defs || {}); } catch (e) { /* not this dir */ }
+  }
+  return own;
+}
+function ensureHooks(defs, code) {
+  const own = packRackKeys(code); const key = Object.keys(own).sort().join(',');
+  if (hooksFiles.has(key)) return hooksFiles.get(key); const d = fs.mkdtempSync(path.join(os.tmpdir(), 'lowering-')); const f = path.join(d, 'hooks.json');
+  fs.writeFileSync(f, JSON.stringify({ model: 1, defs: { ...(defs || {}), ...own } })); hooksFiles.set(key, f); return f;
 }
 // a lock without the shim pack (its pin goes stale whenever catalog.json / syntax.json change, which is what this tool writes): content packs only
 let lockFile = null;
@@ -158,7 +167,7 @@ function ensureLock() {
 }
 export function events(code, { defs, cycles }) { // exported for tools/composition/build.mjs (smoke run of examples with no plain form)
   const d = fs.mkdtempSync(path.join(os.tmpdir(), 'lowering-')); const f = path.join(d, 'in.strudel.js'); fs.writeFileSync(f, code);
-  const args = ['events', f, '--cycles', String(cycles), '--hooks', ensureHooks(defs), '--packs', ensureLock(), '--prelude', path.join(ROOT, 'docs/tracks/night-phonk-demo/cli-site-base.js'), '--prelude', path.join(ROOT, 'site/prelude/word.js')];
+  const args = ['events', f, '--cycles', String(cycles), '--hooks', ensureHooks(defs, code), '--packs', ensureLock(), '--prelude', path.join(ROOT, 'docs/tracks/night-phonk-demo/cli-site-base.js'), '--prelude', path.join(ROOT, 'site/prelude/word.js')];
   const p = spawnSync(path.join(CLI, 'strudel'), args, { encoding: 'utf8', env: { ...process.env, STRUDEL_CRAFT: ROOT }, maxBuffer: 1 << 28, timeout: 120000 });
   fs.rmSync(d, { recursive: true, force: true });
   if (p.status !== 0) return { error: ((p.stderr || '') + (p.stdout || '')).trim().split('\n').filter(Boolean).pop() || `exit ${p.status}` };

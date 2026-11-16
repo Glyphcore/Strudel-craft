@@ -936,6 +936,13 @@
    "detail": "voxBank(name | url)",
    "info": "Load a vocal word bank for word()/syl(): voxBank('call-me-baby'), voxBank('ljspeech'), voxBank('vocalset'), voxBank('sung') (200 sung words, d#3 to d#5), voxBank('https://host/strudel.json'), voxBank() picks a local folder, voxBank.list() lists banks (kind, words, clips, notes, licence, active), voxBank.words(name) -> Promise of a bank's entries, voxBank.active() names the active bank. The demo bank loads on the first word(); word(\" completions follow the active bank. Browse every bank: Banks (Syntax view, Ctrl+K). Prelude #43.",
    "category": "vocals"
+  },
+  {
+   "label": "hooks.map",
+   "method": false,
+   "detail": "hooks.map(control, dest, { range, curve, op, priority })",
+   "info": "Send one control to a param. dest is a param name ('lpf', 'gain': maps every event) or lane-qualified '<lane>.<param>' ('kick.gain': only the events of the kick: lane; a lane label is the one before the colon). Perform's Mixer preset writes hooks.map('mix_kick', 'kick.gain').",
+   "category": "hooks"
   }
  ],
  "params": {
@@ -1934,6 +1941,23 @@
     "unit": "steps / cycle",
     "control": "knob",
     "clamp": "hard"
+   }
+  ],
+  "hooks.map": [
+   {
+    "name": "control",
+    "shape": "control"
+   },
+   {
+    "name": "dest",
+    "shape": "name",
+    "examples": [
+     "gain",
+     "lpf",
+     "kick.gain",
+     "bass.lpf"
+    ],
+    "doc": "param, or <lane>.<param> to scope to one lane's events"
    }
   ]
  },

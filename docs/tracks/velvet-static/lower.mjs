@@ -8,9 +8,9 @@ import { createLowering } from '../../../tools/lowering/lower.mjs';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const craft = fs.readFileSync(path.join(here, 'track.strudel.js'), 'utf8');
 const L = await createLowering();
-const r = L.lower(craft.replace(/\bvoxBank\(/g, '__voxBank('));
+const r = L.lower(craft.replace(/\bvoxBank\(/g, '__voxBank(').replace(/\.send\(/g, '.__send(').replace(/\bret\(/g, '__ret('));
 if (r.state !== 'lowered') { console.error('not lowered:', r.state, r.why || ''); process.exit(1); }
-const out = '// GENERATED from track.strudel.js by docs/tracks/velvet-static/lower.mjs (tools/lowering, docs/LOWERING.md): plain Strudel plus the site vox prelude (voxBank). Edit the Craft file, not this one.\n' + r.lowered.replace(/__voxBank\(/g, 'voxBank(');
+const out = '// GENERATED from track.strudel.js by docs/tracks/velvet-static/lower.mjs (tools/lowering, docs/LOWERING.md): plain Strudel plus the site vox prelude (voxBank). Edit the Craft file, not this one.\n' + r.lowered.replace(/__voxBank\(/g, 'voxBank(').replace(/\.__send\(/g, '.send(').replace(/__ret\(/g, 'ret(');
 const f = path.join(here, 'track.standalone.strudel.js');
 if (process.argv.includes('--check')) { const same = fs.existsSync(f) && fs.readFileSync(f, 'utf8') === out; console.log(same ? 'up to date' : 'STALE'); process.exit(same ? 0 : 1); }
 fs.writeFileSync(f, out); console.log('wrote', f, out.length, 'bytes');

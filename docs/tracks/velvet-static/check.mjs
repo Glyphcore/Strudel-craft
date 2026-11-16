@@ -19,6 +19,6 @@ for (const w of arg('--windows', '1-8,49-56,105-112').split(',')) {
   if (a === null || b === null) { fail(`window ${w}: render failed`); continue; }
   if (a === b) { console.log(`ok   bars ${w}: ${a} haps in both`); continue; }
   console.log(`diff bars ${w}: Craft ${a}, standalone ${b}; per lane:`);
-  for (const l of lanes) { const x = haps(craft, w, l.name + ',master'), y = haps(std, w, l.name + ',master'); if (x !== y) { const tol = l.groove && Math.abs(x - y) <= 1; console.log(`  ${tol ? 'tol ' : 'FAIL'} ${l.name}: ${x} vs ${y}${tol ? ' (groove, +-1)' : ''}`); if (!tol) bad++; } }
+  for (const l of lanes) { const x = haps(craft, w, l.name + ",bus1,bus2,bus3,bus4,bus5"), y = haps(std, w, l.name + ",bus1,bus2,bus3,bus4,bus5"); if (x !== y) { const tol = l.groove && Math.abs(x - y) <= 1; console.log(`  ${tol ? 'tol ' : 'FAIL'} ${l.name}: ${x} vs ${y}${tol ? ' (groove, +-1)' : ''}`); if (!tol) bad++; } }
 }
 fs.rmSync(tmp, { recursive: true, force: true }); process.exit(bad ? 1 : 0);

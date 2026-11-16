@@ -35,6 +35,9 @@ const fromB64 = (b64) => { const x = new Float32Array(Uint8Array.from(Buffer.fro
 const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
 const ctx = await browser.newContext({ viewport: { width: 360, height: 780 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, userAgent: 'Mozilla/5.0 (Linux; Android 14; SM-S901B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36' });
 await ctx.route(/api\.github\.com/, (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: r.request().url().includes('/issues/') ? JSON.stringify({ title: 'Live tracker', body: '## Site\n- [x] done' }) : '[]' }));
+/* fixture (default on, --no-pin to disable; the reference must come from PIN_SUPERSAW=1 ref_render.sh): the supersaw worklet's phases are Math.random on the audio thread, so no two renders
+   (nor Chrome and the CLI) agree on a supersaw voice. Pinned here by aliasing 'supersaw' to 'sawtooth' in every frame (live page and render host); the CLI reference does the same. The track is unchanged. */
+if (!process.argv.includes('--no-pin')) await ctx.addInitScript(() => { setInterval(() => { try { const m = window.soundMap && window.soundMap.get(); if (m && m.sawtooth && m.supersaw && m.supersaw !== m.sawtooth) window.soundMap.setKey('supersaw', m.sawtooth); } catch (e) { /* not loaded yet */ } }, 50); });
 const page = await ctx.newPage(); const errors = [];
 page.on('pageerror', (e) => errors.push(e.message.slice(0, 200))); page.on('console', (m) => { if (m.type() === 'error' && !/favicon|404/.test(m.text())) errors.push('console.error: ' + m.text().slice(0, 200)); });
 await page.goto(BASE); await page.waitForFunction(() => window.__sc && window.strudelCraft && window.strudelCraft.packs && window.strudelCraft.capture, null, { timeout: 90000 });
@@ -90,8 +93,8 @@ const live = async (stall) => { await page.evaluate(() => { const T = window.str
 const L4 = await live(false); if (arg('--dump', null) && L4.cap) fs.writeFileSync(arg('--dump', null) + '/live_x4.f32', Buffer.from(fromB64(L4.cap.b64).buffer)); if (arg('--dump', null)) fs.writeFileSync(arg('--dump', null) + '/live_x4.json', JSON.stringify({ start: L4.start, check: L4.check, recipe: L4.recipe }));
 if (L4.error) check(`live take under x${THR} throttling`, false, L4.error);
 else { const gl = compare(refWin(L4.start, L4.cap.frames, L4.cap.sr), { x: fromB64(L4.cap.b64), sr: L4.cap.sr }); report.liveThrottled = { check: L4.check, glitch: gl };
-  const bad = gl.dropouts > 0 || gl.missingOnsets > 0.15 * gl.refOnsets || Math.abs(gl.driftMsPerS) > 0.5; report.liveThrottledWindow = L4.start;
-  check(`live take under x${THR} throttling carries a self-check with no false negative (flagged whenever the glitch metric shows dropouts, > 15 % missing onsets or drift)`, !!L4.check && (!bad || !L4.check.ok), JSON.stringify({ check: L4.check, glitch: gl }));
+  const bad = gl.dropouts > 0 || gl.refOnsets - gl.matchedSoft > 0.15 * gl.refOnsets || Math.abs(gl.driftMsPerS) > 0.5; report.liveThrottledWindow = L4.start;
+  check(`live take under x${THR} throttling carries a self-check with no false negative (flagged whenever the glitch metric shows dropouts, > 15 % missing onsets by the soft rule (the strict detector alone misses 17-23 % on a clean take) or drift)`, !!L4.check && (!bad || !L4.check.ok), JSON.stringify({ check: L4.check, glitch: gl }));
   if (L4.render && arg('--dump', null)) fs.writeFileSync(arg('--dump', null) + '/live_render.f32', Buffer.from(fromB64(L4.render.b64).buffer));
   if (L4.render) { const gr = compare(refWin(L4.start, L4.render.frames, L4.render.sr), { x: fromB64(L4.render.b64), sr: L4.render.sr }); report.liveThrottledRender = gr; check('its reference render (offline, host) matches the CLI render', SAME(gr), JSON.stringify(gr)); } }
 const LS = await live(true);

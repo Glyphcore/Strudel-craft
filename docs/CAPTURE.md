@@ -132,3 +132,5 @@ A program can capture its own lanes: `capture("groove", "drums", { window: "1b..
   - no console errors.
 
 UI check: `node tests/site/record_ui.mjs` (360 px: offline default, progress strip with percent and Cancel, cancel stores no take, flagged take shows reason + Re-render button, no native dialogs). Known, unrelated: cancelling a host render mid-chunk can log an `InvalidAccessError` (stale-context connect) from the render host; it is present before this change.
+
+- Takes vs the CLI (#108): live takes need superdough's AudioWorklets (Play loads them; before, voices with shape/distort/crush/ladder were silent live unless a mousedown fired) and start at the transport range Start on a fresh run. Supersaw phases are random per render, so comparisons against the CLI pin supersaw to sawtooth on both sides (tests/site/record_offline.mjs, docs/AUDIO_ENGINE.md section 5).

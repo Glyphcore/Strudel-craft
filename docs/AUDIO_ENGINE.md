@@ -126,11 +126,14 @@ between runs, the pairs do not). Per played minute.
   Live x1/x4 at cycle 17 now: 28-29 of 29 onsets by the soft rule, p95 5 ms, 0 dropouts, drift <= 0.3 ms/s. Window 17 is the validated one; the take
   rows of record_offline.mjs use it (the 18 window of the old numbers was a workaround for the start bug). A take under x4 is flagged by its self-check
   (27 dropped events, tap gaps) whenever the glitch metric shows loss.
-  Open (isolated in #108): host renders of the same window are not repeatable (two unthrottled renders, transport stopped: residual -12 dB, 9-17 % of 5 ms
-  hops differ by > 3 dB in every band, the differences sit at single events). A synthetic OfflineAudioContext test (superdough, 4 runs each, half with a 30 ms
-  main-thread busy loop per voice) is bit-identical for `sine`, `sine` + `shape` (worklet) and `sawtooth` under load, and differs on every run for `supersaw`
-  (worklet with random phases) without the seed module. So main-thread load is not the cause; the supersaw phases are, and the CLI's supersaw has its own phases, so a
-  5 ms-hop level match above 120 Hz (120-2000 Hz, later cycles) is statistical: 0.78-0.87 at window 17, the 0.85 gate passes or fails by chance. Not fixed.
+  Test fixture (#108): the supersaw voice (hazePad) is pinned to a plain sawtooth on both sides, `PIN_SUPERSAW=1 tests/site/ref_render.sh REF v2 16 8 128.8` for the
+  CLI and an `addInitScript` that aliases `supersaw` to `sawtooth` in every frame in record_offline.mjs (`--no-pin` turns it off); the track is unchanged. Reason: the supersaw
+  worklet draws its phases from Math.random on the audio thread, no two renders (nor Chrome and the CLI) agree, and that alone made host renders differ by -12 dB and the x4
+  render +0.5 dB louder (that level gap is gone with the pin). A synthetic OfflineAudioContext test (4 runs, half with a 30 ms busy loop per voice) is bit-identical for sine,
+  sine + shape, sawtooth, pink, room, vib, lpenv, and differs for supersaw (random phases) and for `vowel` (-22 dB residual, not explained). With the pin, two unthrottled host
+  renders still differ by -16..-19 dB (not bit-identical; unidentified, vowel and the high-pass worklet are the suspects) and 5 ms-hop level matches are 0.87-0.89.
+  Live take flag: the "no false negative" judge counts missing onsets by the soft rule (strict alone misses 17-23 % of a clean take).
+  Open: the reference render attached to a take made under x4 throttling scores 0.68-0.75 on the above-120 Hz 5 ms-hop level (gate 0.85), unthrottled renders 0.87-0.89; not explained.
 
 - Offline renders repeat: two renders of the same recipe in the render host are within 1.5 dB on 99 % of 10 ms blocks (92 % before the
   worklet seed and the noise prefill).

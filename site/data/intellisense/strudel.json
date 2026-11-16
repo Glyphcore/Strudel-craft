@@ -919,9 +919,33 @@
   {
    "label": "atom",
    "method": false,
-   "detail": "atom(name, { type, params?, body | from, doc? })",
-   "info": "Declare an atom: one typed, parameterised definition for a magic string (docs/ATOMS.md). Types: mini, sound, bank, note, chord, scale, voicing, progression, gate, point, tapref, slot, hook, name, text. Header statement; it is removed when the program is compiled. Compile pass built (#61); editor, intellisense, hooks / model / pads / maps and pack wiring built (#63). Graph cards and the reference popover are coming (#64).",
+   "detail": "atom(name, { type, params?, body | from, doc?, tags?, folder? })",
+   "info": "Declare an atom: one typed, parameterised definition for a magic string (docs/ATOMS.md). Types: mini, sound, bank, note, chord, scale, voicing, progression, gate, point, tapref, slot, hook, name, text. Header statement; it is removed when the program is compiled. Compile pass built (#61); editor, intellisense, hooks / model / pads / maps and pack wiring built (#63). Graph cards and the reference popover are coming (#64). Optional tags (lowercase kebab) and folder (slash path such as hiphop/trap/drums) file the atom in the browsers (docs/PACKAGES.md); neither is part of the atom hash.",
    "category": "atoms"
+  },
+  {
+   "label": "folder",
+   "method": false,
+   "detail": "folder: \"hiphop/trap/drums\"",
+   "info": "Where an entry lives in the pack folder tree: lowercase slash path, up to 8 segments (a-z, 0-9, hyphen). Valid on atom(), hooks.def, recipes and pack entries; the browsers show a collapsible tree, deep link #folder=hiphop/trap. Docs: PACKAGES.md, PACK_SPEC 5.3.",
+   "category": "folders and tags",
+   "apply": "folder: \"\""
+  },
+  {
+   "label": "tags",
+   "method": false,
+   "detail": "tags: [\"drums\", \"trap\"]",
+   "info": "Lowercase kebab tags (up to 24). A pack taxonomy in craftpack.json is the controlled vocabulary (unknown tags warn, W_PACK_TAG); the browsers filter by tag (all or any), and a tag drives colour and icon (taxonomy.tags[tag].style). Deep link #tag=drums,trap.",
+   "category": "folders and tags",
+   "apply": "tags: []"
+  },
+  {
+   "label": "aliases",
+   "method": false,
+   "detail": "aliases: [\"old-name\"]",
+   "info": "Older ids of a recipe, atom or hook def. A bare reference to an alias resolves to the item (PACK_SPEC 9.3 rule 5); a real id always wins over an alias. Use it when you rename or move an entry so existing programs, takes and lib: refs keep working.",
+   "category": "folders and tags",
+   "apply": "aliases: []"
   },
   {
    "label": "atoms",

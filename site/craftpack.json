@@ -12,9 +12,9 @@
       "format": "recipes@1",
       "version": "1.0.0",
       "path": "data/catalog.json",
-      "hash": "sha256:7f3c0b77118a5296d3067a0cd2b9e20c6ade99950531269f97ebada3605b80ba",
+      "hash": "sha256:eece4c2cc27c491a0b376734bcd1b1042b545ed635edc96bf3e8612f06dbb423",
       "load": "eager",
-      "bytes": 121003
+      "bytes": 121056
     },
     {
       "id": "strudel-docs",
@@ -22,9 +22,9 @@
       "format": "intellisense@1",
       "version": "1.0.0",
       "path": "data/intellisense/strudel.json",
-      "hash": "sha256:b43d353a36c1ee3746b9fc7bac3fbc08bdb79214c69df5d8dd737f8f746b8643",
+      "hash": "sha256:715257ef2eca56de35b1b5686d696a00042fd360e38dfc408bfd05694c948510",
       "load": "eager",
-      "bytes": 50632
+      "bytes": 52087
     },
     {
       "id": "params",
@@ -32,9 +32,9 @@
       "format": "param-shapes@1",
       "version": "1.0.0",
       "path": "data/intellisense/strudel.json",
-      "hash": "sha256:b43d353a36c1ee3746b9fc7bac3fbc08bdb79214c69df5d8dd737f8f746b8643",
+      "hash": "sha256:715257ef2eca56de35b1b5686d696a00042fd360e38dfc408bfd05694c948510",
       "load": "eager",
-      "bytes": 50632
+      "bytes": 52087
     },
     {
       "id": "ranges",
@@ -52,9 +52,9 @@
       "format": "param-editors@1",
       "version": "1.0.0",
       "path": "data/intellisense/strudel.json",
-      "hash": "sha256:b43d353a36c1ee3746b9fc7bac3fbc08bdb79214c69df5d8dd737f8f746b8643",
+      "hash": "sha256:715257ef2eca56de35b1b5686d696a00042fd360e38dfc408bfd05694c948510",
       "load": "eager",
-      "bytes": 50632
+      "bytes": 52087
     },
     {
       "id": "controls",
@@ -228,7 +228,12 @@
       },
       "boom-bap": {
         "group": "genre",
-        "description": "dusty knock and pocket"
+        "description": "dusty knock and pocket",
+        "style": {
+          "color": "orange",
+          "icon": "genre",
+          "pattern": "dots"
+        }
       },
       "breakdown": {
         "group": "arrangement"
@@ -324,15 +329,21 @@
       "half-time": {
         "group": "tempo"
       },
-      "hiphop": {
-        "group": "technique"
+      "hip-hop": {
+        "group": "genre",
+        "description": "hip-hop family"
       },
       "human-feel": {
         "group": "technique"
       },
       "hyphy": {
         "group": "genre",
-        "description": "bay-area bounce and stomp"
+        "description": "bay-area bounce and stomp",
+        "style": {
+          "color": "lime",
+          "icon": "genre",
+          "pattern": "stripe"
+        }
       },
       "hypnotic": {
         "group": "mood"
@@ -434,7 +445,11 @@
       },
       "trap": {
         "group": "genre",
-        "description": "rolling hats, half-time, 808"
+        "description": "rolling hats, half-time, 808",
+        "style": {
+          "color": "amber",
+          "icon": "genre"
+        }
       },
       "tremolo": {
         "group": "technique"

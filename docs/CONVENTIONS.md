@@ -131,8 +131,9 @@ by default (HOOKS_SYNTAX 4.3). Lane selections (`tagged(...).mute(gate)`) are al
 5. Syntax examples: add to `syntax` (`title`, `code`, `bars`); site syntax, packs and hooks allowed.
 6. A feel: add to `feels` in feels.json (`title`, `tempo`, `cpm`, `groove` preset, `doc`, `labels`, `voices` for every template voice).
    A new template voice is one entry in `template.voices` / `template.src`, and every feel must then fill it (silence is `{ "pat": "~" }`).
-7. Run `node tools/concepts/build.mjs --render` (every recipe must come back `verified`), `python3 tools/packs/packs.py hash site/data/phonk --write`,
+7. Folder and tags are derived, not written: `tools/concepts/taxonomy.mjs` gives every recipe, atom and rack a folder (family, genre, role: `hiphop/trap/drums`, `dovetail/pickup`, `feels/trap/bass`) and tags (role, genre, feel, tempo-feel, mood, technique, status). A new concept needs only its family, labels and role word; to add a role, genre or technique word extend the lists at the top of that file and rerun. The hand-written phonk files and the pack `taxonomy` are filled by `node tools/packs/taxonomy_fill.mjs` (run it after the build, then hash). docs/PACKAGES.md section 4.
+8. Run `node tools/concepts/build.mjs --render` (every recipe must come back `verified`), `python3 tools/packs/packs.py hash site/data/phonk --write`,
    `python3 tools/packs/shim.py`, `node tools/lowering/build.mjs` (verifies Craft = Strudel events, annotates the Syntax examples; docs/LOWERING.md),
-   `python3 tools/packs/shim.py`, `node tools/pwa/precache.mjs`, then `node tools/racks/audit.mjs` (0 failures) and
-   `node tools/concepts/build.mjs --check` (exit 0).
-8. Docs follow code: this file (tables above), docs/LOWERING.md, site/README.md, docs/CONCEPT_DAG.md, the #56 tracker.
+   `node tools/packs/taxonomy_fill.mjs` (then hash and shim again), `python3 tools/packs/shim.py`, `node tools/pwa/precache.mjs`, then `node tools/racks/audit.mjs` (0 failures),
+   `node tools/concepts/build.mjs --check` and `node tools/packs/taxonomy_fill.mjs --check` (exit 0), and `python3 tools/packs/audit.py --write-doc` (docs/PACKAGES.md numbers).
+9. Docs follow code: this file (tables above), docs/LOWERING.md, docs/PACKAGES.md, site/README.md, docs/CONCEPT_DAG.md, the #56 tracker.

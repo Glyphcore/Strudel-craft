@@ -42,7 +42,7 @@ export function createStore(storage = (typeof localStorage !== 'undefined' ? loc
     subscribe(fn) { subs.add(fn); return () => subs.delete(fn); },
     addFolder(path) { const p = normFolder(path), e = checkFolder(p); if (e) throw new Error(e); if (!doc.folders.includes(p)) { doc.folders.push(p); save(); } return p; },
     removeFolder(path) { doc.folders = doc.folders.filter((f) => f !== path && !f.startsWith(path + '/')); for (const [k, o] of Object.entries(doc.entries)) if (o.folder === path || (o.folder || '').startsWith(path + '/')) { delete o.folder; prune(k); } delete doc.styles['folder:' + path]; save(); },
-    move(key, folder) { const p = folder === '' ? '' : normFolder(folder); if (p) { const e = checkFolder(p); if (e) throw new Error(e); if (!doc.folders.includes(p)) doc.folders.push(p); } slot(key).folder = p; save(); return p; },
+    move(key, folder) { const p = normFolder(folder); if (!p) { if (doc.entries[key]) { delete doc.entries[key].folder; prune(key); } save(); return ''; } { const e = checkFolder(p); if (e) throw new Error(e); if (!doc.folders.includes(p)) doc.folders.push(p); } slot(key).folder = p; save(); return p; }, // an empty folder removes the override: the entry shows in its pack folder again
     tag(key, tags) { const list = [...new Set((tags || []).map(kebab).filter(Boolean))]; if (list.length > TAGS_MAX) throw new Error(`at most ${TAGS_MAX} tags`); slot(key).tags = list; if (!list.length) delete doc.entries[key].tags; prune(key); save(); return list; },
     entry: (key) => doc.entries[key] || null,
     setStyle(name, style) { if (!validStyle(style)) throw new Error('colour, icon and pattern must come from the fixed set'); doc.styles[name] = { ...style }; save(); },

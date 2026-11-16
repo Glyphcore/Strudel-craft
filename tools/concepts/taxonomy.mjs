@@ -4,7 +4,7 @@
 // Rules are code here so a new concept needs no code: it names a family, labels and a role word, and gets folder and tags.
 
 export const ROLES = ['drums', 'bass', 'keys', 'pad', 'lead', 'vox', 'fx', 'form', 'groove', 'dovetail'];
-const GENRE_OF = { 'hip-hop': 'hiphop', 'boom-bap': 'boom-bap', trap: 'trap', hyphy: 'hyphy', cloud: 'cloud', phonk: 'phonk' };
+const GENRE_OF = { 'hip-hop': 'hip-hop', 'boom-bap': 'boom-bap', trap: 'trap', hyphy: 'hyphy', cloud: 'cloud', phonk: 'phonk' };
 const GENRE_FOLDER = ['trap', 'boom-bap', 'hyphy', 'cloud'];
 const TEMPO_FEEL = ['half-time', 'syncopated', 'offbeat', 'four-floor', 'polyrhythm'];
 const MOOD = ['dark', 'driving', 'hypnotic', 'tense', 'floaty', 'sparse', 'bright'];
@@ -34,7 +34,7 @@ const subgenre = (labels) => labels.find((x) => GENRE_FOLDER.includes(x)) || nul
 export function recipeTaxonomy(r) {
   const labels = r.labels || []; const fam = r.family || null; const role = roleOfLabels(r.id, labels);
   let folder;
-  if (fam === 'dovetail') folder = 'dovetail/' + (/pickup/.test(r.id) ? 'pickup' : /tail/.test(r.id) ? 'tail' : /call/.test(r.id) ? 'call-response' : /crossfade/.test(r.id) ? 'crossfade' : /riser/.test(r.id) ? 'riser-impact' : /duck/.test(r.id) ? 'ducked' : r.id.replace(/^dovetail-/, ''));
+  if (fam === 'dovetail') { const sid = r.id.replace(/^dovetail-/, ''); folder = 'dovetail/' + (/pickup/.test(sid) ? 'pickup' : /tail/.test(sid) ? 'tail' : /call/.test(sid) ? 'call-response' : /crossfade/.test(sid) ? 'crossfade' : /riser/.test(sid) ? 'riser-impact' : /duck/.test(sid) ? 'ducked' : sid); }
   else if (fam === 'groove') folder = 'groove/' + (/swing|mpc/.test(r.id) ? 'swing' : /drag|lazy/.test(r.id) ? 'push' : 'human');
   else if (fam === 'feels') folder = 'hiphop/' + (subgenre(labels) || 'general') + '/feel';
   else if (fam === 'hiphop') folder = `hiphop/${subgenre(labels) || 'general'}/${role || 'drums'}`;
@@ -87,10 +87,12 @@ const DESC = {
   form: 'sections, gates and arrangement', groove: 'timing: swing, push, jitter, drift', dovetail: 'how sections interlock', 'hip-hop': 'hip-hop family', trap: 'rolling hats, half-time, 808', 'boom-bap': 'dusty knock and pocket', hyphy: 'bay-area bounce and stomp', cloud: 'airy washed rap', phonk: 'night phonk kit',
   verified: 'rendered headless with sound', unverified: 'not rendered or not checked', 'needs-samples': 'needs a sample bank (network)', lowered: 'has a plain Strudel form with equal events', approx: 'plain Strudel form is approximate (grooves)', rack: 'a hook def (instrument rack or move)', 'rack-slot': 'a hook expression for a slot', gate: 'a section gate atom', pattern: 'a mini-notation pattern atom', feel: 'a feel template entry',
 };
+/* tag styles a pack sets itself (the rest follow the site category defaults); a palette key and an icon key, never a colour value */
+const TAGSTYLE = { phonk: { color: 'violet', icon: 'genre', pattern: 'stripe', badge: 'PH' }, trap: { color: 'amber', icon: 'genre' }, 'boom-bap': { color: 'orange', icon: 'genre', pattern: 'dots' }, hyphy: { color: 'lime', icon: 'genre', pattern: 'stripe' } };
 export function packTaxonomy(tagsUsed, { labels = [], extraPriority = [] } = {}) {
   const tags = {}; const labelCat = Object.fromEntries(labels.map((l) => [l.id, l.category]));
   const groupOf = (t) => ROLES.includes(t) ? t : ['hip-hop', 'trap', 'boom-bap', 'hyphy', 'cloud', 'phonk'].includes(t) ? 'genre' : ['verified', 'unverified', 'needs-samples', 'lowered', 'approx'].includes(t) ? 'status' : ['rack', 'rack-slot', 'gate', 'pattern'].includes(t) ? 'technique' : t === 'feel' ? 'feel' : TEMPO_FEEL.includes(t) ? 'tempo' : MOOD.includes(t) ? 'mood' : TECHNIQUE.includes(t) ? 'technique' : labelCat[t] || 'technique';
-  for (const t of [...tagsUsed].sort()) { const g = groupOf(t); tags[t] = { group: g, ...(DESC[t] ? { description: DESC[t] } : {}) }; }
+  for (const t of [...tagsUsed].sort()) { const g = groupOf(t); tags[t] = { group: g, ...(DESC[t] ? { description: DESC[t] } : {}), ...(TAGSTYLE[t] ? { style: TAGSTYLE[t] } : {}) }; }
   const groups = {}; for (const t of Object.values(tags)) groups[t.group] ||= GROUPS[t.group] ? { ...GROUPS[t.group] } : { title: t.group[0].toUpperCase() + t.group.slice(1) };
   return { version: 1, groups, priority: uniq([...extraPriority, ...ROLES, 'genre', 'feel', 'tempo', 'mood', 'technique', 'status']).filter((g) => groups[g] || tags[g]), tags };
 }

@@ -278,7 +278,12 @@
       },
       "boom-bap": {
         "group": "genre",
-        "description": "dusty knock and pocket"
+        "description": "dusty knock and pocket",
+        "style": {
+          "color": "orange",
+          "icon": "genre",
+          "pattern": "dots"
+        }
       },
       "cloud": {
         "group": "genre",
@@ -321,7 +326,12 @@
       },
       "hyphy": {
         "group": "genre",
-        "description": "bay-area bounce and stomp"
+        "description": "bay-area bounce and stomp",
+        "style": {
+          "color": "lime",
+          "icon": "genre",
+          "pattern": "stripe"
+        }
       },
       "keys": {
         "group": "keys",
@@ -344,7 +354,13 @@
       },
       "phonk": {
         "group": "genre",
-        "description": "night phonk kit"
+        "description": "night phonk kit",
+        "style": {
+          "color": "violet",
+          "icon": "genre",
+          "pattern": "stripe",
+          "badge": "PH"
+        }
       },
       "rack": {
         "group": "technique",
@@ -362,7 +378,11 @@
       },
       "trap": {
         "group": "genre",
-        "description": "rolling hats, half-time, 808"
+        "description": "rolling hats, half-time, 808",
+        "style": {
+          "color": "amber",
+          "icon": "genre"
+        }
       },
       "unverified": {
         "group": "status",

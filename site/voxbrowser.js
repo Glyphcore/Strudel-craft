@@ -39,15 +39,21 @@ export function createPanel(root, o = {}) {
   root.classList.add('vb'); root.innerHTML = '';
   const top = document.createElement('div'); top.className = 'vb-top';
   const body = document.createElement('div'); body.className = 'vb-body';
-  root.append(top, body);
-  let banks = [];
+  const orgHost = document.createElement('div'); orgHost.className = 'org-host vb-org';
+  root.append(top, orgHost, body);
+  let banks = [], org = null; const withOv = (e) => window.strudelCraft.taxonomyOverlay ? window.strudelCraft.taxonomyOverlay(e) : e;
+  /* folders and tags (site/organizer.js): a bank is an entry in vox/<kind> with its kind, state and origin as tags; loaded on first open */
+  const bankEntry = (b) => ({ id: b.name, kind: 'bank', title: b.short || b.name, pack: b.pack || 'glyphcore/vox', folder: 'vox/' + (b.kind === 'sound' ? 'sound' : 'word'), tags: ['vox', b.kind === 'sound' ? 'sound-bank' : 'word-bank', ...(b.active ? ['active'] : []), ...(b.origin && b.origin !== 'shipped' ? [String(b.origin).toLowerCase().replace(/[^a-z0-9]+/g, '-')] : [])] });
+  import('./organizer.js').then((O) => { org = O.createOrganizer({ kind: 'banks', host: orgHost, entries: () => banks.map(bankEntry), link: false, sorts: ['catalog', 'name', 'folder'], onChange: () => { if (st.mode === 'list') drawList(); } }); orgHost.hidden = st.mode !== 'list'; if (st.mode === 'list') drawList(); }).catch(() => {});
 
   const drawTop = () => {
     const a = V().active(); const b = banks.find((x) => x.name === a || x.short === a);
     top.innerHTML = `<span class="vb-dot" aria-hidden="true"></span><span class="vb-act-l">Active</span><code class="vb-line" title="The line that switches to this bank">${esc(b ? V().line(b) : `voxBank('${a}')`)}</code>${window.voxBank ? '' : '<span class="vb-def">default, loads on first word()</span>'}`;
   };
   const drawList = () => {
-    const shown = banks.filter((b) => st.kind === 'all' || b.kind === st.kind);
+    orgHost.hidden = !org;
+    let shown = banks.filter((b) => st.kind === 'all' || b.kind === st.kind);
+    if (org) { org.refresh(); shown = shown.filter((b) => org.pass(withOv(bankEntry(b)))); if (org.state.sort !== 'catalog') { const ord = org.sort(shown.map(bankEntry)).map((e) => e.id); shown = shown.slice().sort((a, b) => ord.indexOf(a.name) - ord.indexOf(b.name)); } }
     body.innerHTML = `<div class="vb-kinds" role="group" aria-label="Bank kind">${[['all', 'All'], ['word', 'Word banks'], ['sound', 'Sound banks']].map(([k, t]) => `<button type="button" class="vb-chip" data-kind="${k}" aria-pressed="${st.kind === k}">${t}</button>`).join('')}</div>
     <p class="vb-hint">Word banks play with <code>word("baby:1")</code>, sound banks with <code>s("vs_a")</code>. Open a bank to see every word, take and pitch.</p>
     <ul class="vb-banks" aria-label="Vox banks">${shown.map((b) => `<li class="vb-card" data-bank="${esc(b.name)}" data-active="${!!b.active}" data-kind="${b.kind}">
@@ -87,7 +93,7 @@ export function createPanel(root, o = {}) {
       <ul class="vb-list" aria-label="Entries of ${esc(b.name)}">${es.slice(0, st.shown).map(row).join('') || '<li class="vb-empty">Nothing matches</li>'}</ul>
       ${es.length > st.shown ? `<button type="button" class="ghost vb-moreb" data-more>Show ${Math.min(PAGE, es.length - st.shown)} more (${es.length - st.shown} left)</button>` : ''}`;
   };
-  const draw = () => { drawTop(); if (st.mode === 'bank' && st.bank) drawBank(); else drawList(); };
+  const draw = () => { drawTop(); orgHost.hidden = !(org && st.mode === 'list'); if (st.mode === 'bank' && st.bank) drawBank(); else drawList(); };
   const redrawRows = () => { const ul = body.querySelector('.vb-list'); if (!ul) return draw(); const es = filtered(); ul.innerHTML = es.slice(0, st.shown).map(row).join('') || '<li class="vb-empty">Nothing matches</li>';
     const c = body.querySelector('.vb-count'); if (c) c.textContent = es.length === st.bank.entries.length ? `${es.length} ${st.bank.kind === 'sound' ? 'keys' : 'words'}` : `${es.length} of ${st.bank.entries.length}`;
     const m = body.querySelector('.vb-moreb'); if (m) m.remove(); if (es.length > st.shown) { const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'ghost vb-moreb'; bt.dataset.more = ''; bt.textContent = `Show ${Math.min(PAGE, es.length - st.shown)} more (${es.length - st.shown} left)`; body.append(bt); } };

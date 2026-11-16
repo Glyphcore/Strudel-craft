@@ -42,8 +42,14 @@ function registerSnippets() {
 }
 if (!registerSnippets()) { const iv = setInterval(() => { if (registerSnippets()) clearInterval(iv); }, 300); setTimeout(() => clearInterval(iv), 15000); }
 
+/* folders and tags (site/organizer.js): a section is an entry in syntax/<needs> with its engine and built state as tags */
+let sxOrg = null, sxHost = null; const sxEntries = (d) => (d.sections || []).map((s) => ({ id: s.id, kind: 'syntax', title: s.title, pack: 'glyphcore/shim', folder: 'syntax/' + String(s.needs || 'core').toLowerCase().replace(/[^a-z0-9]+/g, '-'), tags: ['syntax', String(s.needs || 'core').toLowerCase().replace(/[^a-z0-9]+/g, '-'), (HAS[s.needs] || (() => false))() ? 'built' : 'coming'] }));
+let sxSecs = [];
+function sxApply() { const root = $('#syntax'); if (!root || !sxOrg) return; const O = sc.taxonomyOverlay || ((e) => e); const keep = new Set(sxOrg.sort(sxSecs.map((e) => O(e))).filter((e) => sxOrg.pass(e)).map((e) => e.id));
+  root.querySelectorAll('.sx-sec').forEach((s) => { s.hidden = !keep.has(s.id.replace(/^sx-/, '')); }); root.querySelectorAll('.sx-toc a').forEach((a) => { a.hidden = !keep.has(a.dataset.sx); });
+  const n = root.querySelector('.sx-count'); if (n) n.textContent = `${keep.size} / ${sxSecs.length} sections`; }
 async function render() {
-  const root = $('#syntax'); if (!root) return; const d = await data;
+  const root = $('#syntax'); if (!root) return; const d = await data; sxSecs = sxEntries(d);
   root.innerHTML = `<div class="panel-head"><h2>Syntax</h2><span class="sx-sub">New paradigms, each with runnable examples</span></div>
   ${d.error ? `<div class="sx-error" role="alert"><p><b>Syntax examples could not load.</b> ${esc(d.error)}. Showing the bundled core examples.</p><button type="button" class="sx-retry">Retry</button></div>` : ''}
   <nav class="sx-toc" aria-label="Syntax sections">${d.sections.map((s) => `<a href="#sx-${s.id}" data-sx="${s.id}">${esc(s.title)}</a>`).join('')}</nav>
@@ -62,6 +68,8 @@ async function render() {
     h.replaceWith(F.render({ craft: ex.code, lowered: ex.lowered, lowered_note: ex.lowered_note, lowered_check: ex.lowered_check }, { insert: (code, which) => {
       window.__sc.setView('rack'); const ta = document.getElementById('code'); ta.value = code; ta.dispatchEvent(new Event('input'));
       sc.ui && sc.ui.toast(`Inserted the ${which === 'craft' ? 'Craft' : 'Strudel'} form of "${ex.title}" into the Rack editor. Revert restores the recipe.`, { kind: 'ok' }); } })); });
+  if (!sxHost) sxHost = Object.assign(document.createElement('div'), { className: 'org-host' }); root.querySelector('nav.sx-toc').before(sxHost); root.querySelector('nav.sx-toc').before(Object.assign(document.createElement('p'), { className: 'count-line sx-count', role: 'status' }));
+  if (!sxOrg) import('./organizer.js').then((O) => { sxOrg = O.createOrganizer({ kind: 'syntax', host: sxHost, entries: () => sxSecs, link: false, sorts: ['catalog', 'name', 'folder'], onChange: sxApply }); sxApply(); }).catch(() => {}); else { sxOrg.refresh(); sxApply(); }
   root.querySelectorAll('.sx-toc a').forEach((a) => a.addEventListener('click', (ev) => { ev.preventDefault(); $('#sx-' + a.dataset.sx).scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }));
   if (root.dataset.bound) return; root.dataset.bound = '1'; /* one delegated handler: render() runs again on strudel:ready and Retry */
   root.addEventListener('click', async (ev) => {

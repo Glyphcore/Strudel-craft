@@ -568,11 +568,16 @@ function liveUpdate() { liveCode(playView()); }
 
 /* ---------- browser ---------- */
 const norm = (s) => s.toLowerCase();
+/* folders and tags (site/organizer.js, docs/PACKAGES.md): the effective entry of a recipe (pack folder and tags, plus the user's own); the organizer loads after the first frame */
+const entryOf = (r) => ({ id: r.id, kind: 'recipe', title: r.title, pack: r.pack || 'glyphcore/shim', folder: r.folder, tags: r.tags || [] });
+const effOf = (r) => (S.orgMod ? S.orgMod.withOverlay(entryOf(r)) : entryOf(r));
 function matches(r) {
   if (S.vonly && !r.verified) return false;
   for (const l of S.chips) if (!r.labels.includes(l)) return false;
+  if (S.org && !S.org.pass(effOf(r))) return false;
   const q = norm(S.q.trim()); if (!q) return true;
-  const hay = norm([r.title, r.intent, r.notes, r.code, ...r.labels.flatMap((l) => [l, ...(S.labelsById[l] ? S.labelsById[l].words : [])])].join(' '));
+  const e = effOf(r);
+  const hay = norm([r.title, r.intent, r.notes, r.code, e.folder, (e.folder || '').replace(/\//g, ' '), ...(e.tags || []), (e.tags || []).join(' ').replace(/-/g, ' '), r.pack, ...r.labels.flatMap((l) => [l, ...(S.labelsById[l] ? S.labelsById[l].words : [])])].join(' '));
   return q.split(/\s+/).every((w) => hay.includes(w));
 }
 /* packs (#67): recipes from a non-core pack carry a pack-id badge; the pack sheet (packs-ui.js) loads on first open */
@@ -581,6 +586,7 @@ const openPacks = (o) => import('./packs-ui.js').then((m) => m.open(o)).catch((e
 function renderList(keepId) {
   const prevId = keepId || (cur() && cur().id);
   S.filtered = S.recipes.filter(matches);
+  if (S.org && S.org.state.sort !== 'catalog') { const how = S.org.state.sort, es = new Map(S.filtered.map((r) => [r, effOf(r)])); const order = S.orgMod.T.sortEntries([...es.values()], how).map((e) => e.id); S.filtered.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id)); }
   const idx = S.filtered.findIndex((r) => r.id === prevId); S.sel = idx >= 0 ? idx : 0;
   const list = $('#list');
   const foreign = foreignPacks();
@@ -589,10 +595,13 @@ function renderList(keepId) {
   else if (!S.filtered.length) list.replaceChildren(el('li', { class: 'empty' }, 'No recipe matches. Clear filters with Esc.'));
   else list.replaceChildren(...S.filtered.map((r, i) => {
     const inStack = S.stack.some((l) => l.id === r.id);
+    const e = effOf(r), st = S.org ? S.org.entryStyle(e) : null;
     return el('li', { 'data-id': r.id, 'aria-current': i === S.sel ? 'true' : 'false', class: S.playing && r.id === S.playingId ? 'playing' : null },
-      el('button', { type: 'button', class: 'row', 'data-i': i, title: r.intent },
-        el('span', { class: 'n', 'aria-hidden': 'true' }, String(S.recipes.indexOf(r) + 1).padStart(2, '0')), el('span', { class: 't' }, r.title),
-        foreign.has(r.pack) ? el('span', { class: 'pk', title: 'From pack ' + r.pack }, r.pack) : null,
+      el('button', { type: 'button', class: 'row', 'data-i': i, title: r.intent + (e.folder ? ' (' + e.folder + ')' : '') },
+        el('span', { class: 'n', 'aria-hidden': 'true' }, String(S.recipes.indexOf(r) + 1).padStart(2, '0')),
+        st ? S.orgMod.ico(st) : null,
+        el('span', { class: 'tt' }, el('span', { class: 't' }, r.title), e.folder || (e.tags || []).length ? el('span', { class: 'sub' }, [e.folder, (e.tags || []).filter((x) => !['verified', 'unverified'].includes(x) && !(e.folder || '').split('/').includes(x)).slice(0, 2).join(' ')].filter(Boolean).join(' · ')) : null),
+        el('span', { class: 'pk ns' + (foreign.has(r.pack) ? '' : ' own'), title: 'Pack ' + (r.pack || 'glyphcore/shim') }, foreign.has(r.pack) ? r.pack : (r.pack || 'glyphcore/shim').replace(/^glyphcore\//, '')),
         el('span', { class: 'k' + (r.verified ? ' ok' : '') }, r.verified ? 'ok' : r.needs_samples ? 'smp' : '·')),
       el('button', { type: 'button', class: 'add', 'data-add': r.id, 'aria-pressed': inStack ? 'true' : 'false', disabled: !r.expr, 'aria-label': (inStack ? 'Remove ' : 'Add ') + r.title + (inStack ? ' from stack' : ' to stack'), title: r.expr ? 'Stack (A)' : 'Uses top-level statements: solo only' }, inStack ? '−' : '+'));
   }));
@@ -634,6 +643,7 @@ function renderSelection(updateHash) {
       foreignPacks().has(r.pack) ? el('button', { type: 'button', class: 'badge pkb', title: 'Open the pack sheet', onclick: () => openPacks() }, 'Pack ' + r.pack) : null),
     r.verified ? el('div', { class: 'meas' }, el('div', {}, el('i', {}, 'RMS'), el('b', {}, r.rms_dbfs + ' dBFS')), el('div', {}, el('i', {}, 'Centroid'), el('b', {}, r.centroid_hz + ' Hz'))) : null,
     el('div', { class: 'tags' }, labs),
+    orgBlock(r),
     r.notes ? el('p', { html: mdInline(r.notes) }) : null,
     r.needs_samples ? el('p', {}, 'Loads drum-machine sample banks on first play (network).') : null,
     el('div', { class: 'acts' },
@@ -645,11 +655,29 @@ function renderSelection(updateHash) {
   if (updateHash && S.view === 'rack') history.replaceState(null, '', '#r/' + r.id);
   syncTransport();
 }
+/* inspector: the folder (a link that filters the browser), the tags as styled chips (tap to filter) and the user's Folder and tags editor */
+function orgBlock(r) {
+  const O = S.orgMod; if (!O || !S.org) return null; const e = effOf(r), tax = S.org.tax();
+  const chips = (e.tags || []).map((t) => { const st = O.T.tagStyle(t, tax, O.store.user()); return el('button', { type: 'button', class: 'org-chip', 'aria-pressed': String(S.org.state.tags.includes(t)), title: 'Filter by tag ' + t, ...O.styleAttrs(st), onclick: () => S.org.set({ tags: S.org.state.tags.includes(t) ? S.org.state.tags.filter((x) => x !== t) : [...S.org.state.tags, t] }) }, O.ico(st), el('span', {}, t)); });
+  return el('div', { class: 'org-insp' },
+    e.folder ? el('p', { class: 'org-path' }, el('button', { type: 'button', class: 'ghost org-crumb', title: 'Show only this folder', onclick: () => S.org.set({ folder: e.folder }) }, O.ico(S.org.folderStyle(e.folder)), e.folder)) : null,
+    el('div', { class: 'org-chips' }, chips),
+    el('button', { type: 'button', class: 'ghost', onclick: async () => { const res = await O.editEntryDialog(entryOf(r), { folders: S.recipes.map((x) => x.folder).filter(Boolean), tags: [] }); if (res) { renderList(r.id); } } }, 'Folder and tags'));
+}
 async function copyText(text, btn) {
   try { await navigator.clipboard.writeText(text); } catch (e) { const t = el('textarea'); t.value = text; document.body.append(t); t.select(); try { document.execCommand('copy'); } catch (e2) { /* ignore */ } t.remove(); }
   say('Copied to clipboard'); if (btn) { btn.classList.add('flash'); setTimeout(() => btn.classList.remove('flash'), 600); }
 }
 
+/* folders and tags: loaded after the first list so the first frame is not delayed (#59); it re-renders the list with styles, the tree and the chips */
+function startOrganizer() {
+  if (S.orgMod || S.orgLoading) return; S.orgLoading = true;
+  import('./organizer.js').then((O) => {
+    S.orgMod = { ...O };
+    S.org = O.createOrganizer({ kind: 'recipes', host: $('#org'), entries: () => S.recipes.map(entryOf), onChange: () => renderList() });
+    window.strudelCraft.organizer = { recipes: S.org }; renderList(); route();
+  }).catch((e) => { S.orgLoading = false; say('Folders and tags failed to load: ' + e.message, true); });
+}
 /* filters */
 function buildFilters() {
   $('#filters').replaceChildren(...S.cat.categories.map((c) => el('div', { class: 'fgroup' }, el('h3', {}, c.title),
@@ -859,6 +887,7 @@ async function boot() {
     S.cat = await loadJSON('catalog');
     S.labelsById = Object.fromEntries(S.cat.labels.map((l) => [l.id, l])); S.recipes = S.cat.recipes;
     buildFilters(); renderList(); renderStack(); route();
+    startOrganizer();
     say(S.recipes.length ? `${S.recipes.length} recipes loaded. Press Play or Space.` : 'No recipes: no content pack provides any. Type a program in the Stack view, or add a pack.');
   } catch (e) { say('Failed to load recipes: ' + e.message, true); $('#nowTitle').textContent = 'Offline'; }
   window.dispatchEvent(new Event('sc:shell')); /* #59: first frame with recipes is ready; index.html now loads the rest of the instrument */

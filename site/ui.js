@@ -1,13 +1,14 @@
 /* Site modal (input / yes-no) and toast components. Never use the browser's native dialogs.
    window.strudelCraft.ui = { ask({title, label, value, okText}) -> Promise<string|null>,
                               askYesNo({title, message, okText, danger}) -> Promise<boolean>,
+                              form({title, okText, body: Node, collect: () => value, validate: () => errorText|null}) -> Promise<value|null> (custom fields inside the one modal; Enter submits),
                               askLater({title, message, okText, notice}) -> Promise<boolean> (sticky toast first, modal on tap; never blocks Play),
                               toast(message, {kind: 'info'|'ok'|'error', ms}) } */
 (() => {
   const sc = (window.strudelCraft = window.strudelCraft || {});
   const h = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (v == null || v === false) continue; if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v); } e.append(...kids); return e; };
   let n = 0;
-  function modal({ title, message, label, value, okText = 'OK', cancelText = 'Cancel', input = false, danger = false }) {
+  function modal({ title, message, label, value, okText = 'OK', cancelText = 'Cancel', input = false, danger = false, body = null, collect = null, validate = null }) {
     return new Promise((resolve) => {
       const id = 'scm' + ++n; const prev = document.activeElement;
       const field = input ? h('input', { type: 'text', id: id + 'i', class: 'scm-input', autocomplete: 'off', enterkeyhint: 'done' }) : null; if (field) field.value = value || '';
@@ -15,25 +16,25 @@
       const cancel = h('button', { type: 'button', class: 'ghost' }, cancelText);
       const form = h('form', { method: 'dialog', class: 'scm-body' },
         message ? h('p', { class: 'scm-msg', id: id + 'm' }, message) : '',
-        field ? h('label', { for: id + 'i', class: 'scm-lab' }, label || title) : '', field || '',
+        field ? h('label', { for: id + 'i', class: 'scm-lab' }, label || title) : '', field || '', body || '',
         h('div', { class: 'scm-acts' }, cancel, ok));
       const d = h('dialog', { class: 'scm', 'aria-labelledby': id + 't' }, h('div', { class: 'help-head' }, h('h2', { id: id + 't' }, title)), form);
       if (message) d.setAttribute('aria-describedby', id + 'm');
       let done = false;
       const finish = (v) => { if (done) return; done = true; d.close(); d.remove(); if (prev && prev.focus) prev.focus({ preventScroll: true }); resolve(v); };
-      form.addEventListener('submit', (e) => { e.preventDefault(); finish(input ? field.value : true); });
-      cancel.addEventListener('click', () => finish(input ? null : false));
-      d.addEventListener('cancel', (e) => { e.preventDefault(); finish(input ? null : false); });
-      d.addEventListener('click', (e) => { if (e.target === d) finish(input ? null : false); });
+      form.addEventListener('submit', (e) => { e.preventDefault(); if (validate) { const bad = validate(); if (bad) { toast(bad, { kind: 'error' }); return; } } finish(collect ? collect() : input ? field.value : true); });
+      cancel.addEventListener('click', () => finish(input || collect ? null : false));
+      d.addEventListener('cancel', (e) => { e.preventDefault(); finish(input || collect ? null : false); });
+      d.addEventListener('click', (e) => { if (e.target === d) finish(input || collect ? null : false); });
       d.addEventListener('keydown', (e) => {
         e.stopPropagation();
-        if (e.key === 'Escape') { e.preventDefault(); finish(input ? null : false); return; }
+        if (e.key === 'Escape') { e.preventDefault(); finish(input || collect ? null : false); return; }
         if (e.key !== 'Tab') return;
         const f = [...d.querySelectorAll('button,input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter((x) => !x.disabled);
         const first = f[0], last = f[f.length - 1];
         if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
       });
-      document.body.append(d); d.showModal(); (field || ok).focus(); if (field) field.select();
+      document.body.append(d); d.showModal(); (field || (body && body.querySelector('input:not([type=radio]),select,textarea')) || ok).focus({ preventScroll: true }); if (field) field.select();
     });
   }
   let stack = null;
@@ -51,7 +52,7 @@
      question opened on load covered Play, so the first Play after an upgrade did nothing (#84). askLater shows a sticky toast above the
      transport instead; tapping it opens the yes/no modal and the promise resolves with the answer. Dismissing the toast leaves it pending. */
   function askLater(o) { return new Promise((resolve) => { toast((o.notice || o.title) + ': tap to review', { kind: 'info', sticky: true, onClick: () => modal({ ...o, input: false }).then(resolve) }); }); }
-  sc.ui = { ask: (o) => modal({ ...o, input: true }), askYesNo: (o) => modal({ ...o, input: false }), askLater, toast };
+  sc.ui = { form: (o) => modal({ ...o, input: false }), ask: (o) => modal({ ...o, input: true }), askYesNo: (o) => modal({ ...o, input: false }), askLater, toast };
 })();
 /* Phone chrome: overflow tools sheet and header that hides on scroll down, returns on scroll up. */
 (() => {

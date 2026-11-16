@@ -123,8 +123,8 @@ function declOf(code, d, atOverride) {
     if (typeof name !== 'string' || !NAME_RE.test(name)) throw err('E_ATOM_ARG', `bad atom name ${JSON.stringify(name)}`);
     if (typeof spec.type !== 'string') throw err('E_ATOM_TYPE_ID', `atom "${name}" needs a type`);
     if (('body' in spec) === ('from' in spec)) throw err('E_ATOM_ARG', `atom "${name}" needs exactly one of body | from`);
-    const { type, params, body, from, doc, tags, quote } = spec;
-    return { name, type, ...(params && { params }), ...('body' in spec && { body }), ...(from !== undefined && { from }), ...(doc && { doc }), ...(tags && { tags }), ...(quote && { quote }), origin: 'code', at };
+    const { type, params, body, from, doc, tags, folder, quote } = spec;
+    return { name, type, ...(params && { params }), ...('body' in spec && { body }), ...(from !== undefined && { from }), ...(doc && { doc }), ...(tags && { tags }), ...(folder && { folder }), ...(quote && { quote }), origin: 'code', at };
   });
 }
 // extra: { atoms: model.atoms (id -> record), imports: { source -> atoms map } }. Code declarations win over model entries of the same name
@@ -538,7 +538,7 @@ function contentOf(env, ids, d) {
   return { type: d.type, ...(d.params && { params: norm(d.params) }), ...(d.from !== undefined ? { from: (() => { const r = toRef(env, d.from.atom !== undefined ? { $atom: d.from.atom, args: d.from.args, ops: d.from.ops } : d.from); return { atom: ids[r.$atom] || r.$atom, ...(Object.keys(r.args).length && { args: norm(r.args) }), ...(r.ops.length && { ops: norm(r.ops) }) }; })() } : { body: norm(d.body) }) };
 }
 // a fresh (no previous model) reconciled record of one declaration
-const freshRec = (env, ids, d) => { const c = contentOf(env, ids, d); return { name: d.name, ...c, ...(d.doc && { doc: d.doc }), ...(d.tags && { tags: d.tags }), ...(d.quote && { quote: d.quote }), hash: hashOf(c), rev: 1 }; };
+const freshRec = (env, ids, d) => { const c = contentOf(env, ids, d); return { name: d.name, ...c, ...(d.doc && { doc: d.doc }), ...(d.tags && { tags: d.tags }), ...(d.folder && { folder: d.folder }), ...(d.quote && { quote: d.quote }), hash: hashOf(c), rev: 1 }; };
 // declared (env.decls) vs previous model atoms (id -> record) -> { atoms: id -> record, ids: name -> id, renamed: [{ from, to, id }], notInCode: [id] }
 export function reconcile(prev = {}, env, { keep = new Set() } = {}) {
   const decls = env.decls, ids = {}, taken = new Set(Object.keys(prev)), matchedPrev = new Set();
@@ -556,7 +556,7 @@ export function reconcile(prev = {}, env, { keep = new Set() } = {}) {
   const atoms = {};
   for (const d of decls) {
     const c = content(d), h = hashOf(c), id = ids[d.name], p = prev[id];
-    const rec = { name: d.name, ...c, ...(d.doc && { doc: d.doc }), ...(d.tags && { tags: d.tags }), ...(d.quote && { quote: d.quote }), hash: h };
+    const rec = { name: d.name, ...c, ...(d.doc && { doc: d.doc }), ...(d.tags && { tags: d.tags }), ...(d.folder && { folder: d.folder }), ...(d.quote && { quote: d.quote }), hash: h };
     if (!p) { rec.rev = 1; } else if (p.hash === h) { rec.rev = p.rev; if (p.parent) rec.parent = p.parent; } else { rec.rev = p.rev + 1; rec.parent = p.hash; }
     atoms[id] = rec;
   }

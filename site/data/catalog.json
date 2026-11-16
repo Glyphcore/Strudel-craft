@@ -2145,7 +2145,7 @@
    "folder": "hiphop/boom-bap/drums",
    "tags": [
     "drums",
-    "hiphop",
+    "hip-hop",
     "boom-bap",
     "syncopated",
     "verified",
@@ -2184,7 +2184,7 @@
    "folder": "hiphop/general/drums",
    "tags": [
     "drums",
-    "hiphop",
+    "hip-hop",
     "accents",
     "verified",
     "lowered"
@@ -2224,7 +2224,7 @@
    "tags": [
     "drums",
     "trap",
-    "hiphop",
+    "hip-hop",
     "driving",
     "verified",
     "lowered"
@@ -2262,7 +2262,7 @@
    "folder": "hiphop/general/drums",
    "tags": [
     "drums",
-    "hiphop",
+    "hip-hop",
     "offbeat",
     "verified",
     "lowered"
@@ -2302,7 +2302,7 @@
    "tags": [
     "drums",
     "hyphy",
-    "hiphop",
+    "hip-hop",
     "offbeat",
     "verified",
     "lowered"
@@ -2417,7 +2417,7 @@
    "folder": "hiphop/general/keys",
    "tags": [
     "keys",
-    "hiphop",
+    "hip-hop",
     "chord-progression",
     "voicing",
     "verified",
@@ -2536,7 +2536,7 @@
    "folder": "hiphop/general/lead",
    "tags": [
     "lead",
-    "hiphop",
+    "hip-hop",
     "syncopated",
     "pluck",
     "verified",
@@ -2614,7 +2614,7 @@
    "folder": "hiphop/general/vox",
    "tags": [
     "vox",
-    "hiphop",
+    "hip-hop",
     "formant",
     "texture-vocal-like",
     "verified",
@@ -2652,7 +2652,7 @@
    "error": null,
    "folder": "hiphop/general/drums",
    "tags": [
-    "hiphop",
+    "hip-hop",
     "lofi",
     "verified",
     "lowered"
@@ -2730,7 +2730,7 @@
    "tags": [
     "drums",
     "boom-bap",
-    "hiphop",
+    "hip-hop",
     "syncopated",
     "verified",
     "lowered"
@@ -2770,7 +2770,7 @@
    "tags": [
     "drums",
     "trap",
-    "hiphop",
+    "hip-hop",
     "half-time",
     "verified",
     "lowered"
@@ -2849,7 +2849,7 @@
    "folder": "hiphop/general/form",
    "tags": [
     "form",
-    "hiphop",
+    "hip-hop",
     "sections",
     "breakdown",
     "verified",
@@ -2889,7 +2889,7 @@
    "folder": "hiphop/general/form",
    "tags": [
     "form",
-    "hiphop",
+    "hip-hop",
     "sections",
     "accents",
     "verified",
@@ -3123,7 +3123,7 @@
    "centroid_hz": 2111,
    "peak": 0.1522,
    "error": null,
-   "folder": "dovetail/tail",
+   "folder": "dovetail/call-response",
    "tags": [
     "dovetail",
     "call-response",
@@ -3162,7 +3162,7 @@
    "centroid_hz": 329,
    "peak": 0.3482,
    "error": null,
-   "folder": "dovetail/tail",
+   "folder": "dovetail/crossfade",
    "tags": [
     "dovetail",
     "transition",
@@ -3201,7 +3201,7 @@
    "centroid_hz": 2982,
    "peak": 0.3586,
    "error": null,
-   "folder": "dovetail/tail",
+   "folder": "dovetail/riser-impact",
    "tags": [
     "dovetail",
     "riser",
@@ -3240,7 +3240,7 @@
    "centroid_hz": 753,
    "peak": 0.2838,
    "error": null,
-   "folder": "dovetail/tail",
+   "folder": "dovetail/ducked",
    "tags": [
     "dovetail",
     "sidechain",
@@ -3279,7 +3279,7 @@
    "centroid_hz": 514,
    "peak": 0.3681,
    "error": null,
-   "folder": "dovetail/tail",
+   "folder": "dovetail/delay-throw",
    "tags": [
     "dovetail",
     "delay-echo",
@@ -3318,7 +3318,7 @@
    "centroid_hz": 222,
    "peak": 0.3844,
    "error": null,
-   "folder": "dovetail/tail",
+   "folder": "dovetail/turnaround",
    "tags": [
     "dovetail",
     "chord-progression",
@@ -3361,7 +3361,7 @@
    "folder": "groove/swing",
    "tags": [
     "groove",
-    "hiphop",
+    "hip-hop",
     "swing",
     "human-feel",
     "verified",
@@ -3560,7 +3560,7 @@
    "tags": [
     "drums",
     "boom-bap",
-    "hiphop",
+    "hip-hop",
     "feel",
     "human-feel",
     "verified",
@@ -3644,7 +3644,7 @@
    "tags": [
     "drums",
     "trap",
-    "hiphop",
+    "hip-hop",
     "feel",
     "half-time",
     "verified",

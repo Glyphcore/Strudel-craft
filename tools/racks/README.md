@@ -8,6 +8,7 @@ Checks every rack against the rack standard (docs/RACK_STANDARD.md, issue #94).
 | `standard.json` | classes: target band, thresholds, test phrase; global limits |
 | `measure.mjs` | measures one WAV (loudness BS.1770, LRA Tech 3342, true peak, spectral, mono low end, onsets per bar, duck depth) and scores it against `docs/genres/*.json` (issue #125, RACK_STANDARD.md section 8) |
 | `render_demo.cjs` | renders the night phonk demo to a float WAV through the site's offline recorder (Playwright; env `PLAYWRIGHT_MODULES`, `CHROMIUM_PATH`); example: `docs/genres/examples/night-phonk-demo.measure.json` |
+| `render_track.cjs` | renders any track (Craft form or standalone) in one pass: `node tools/racks/render_track.cjs TRACK.js OUT.wav [--bars 1-128] [--tail 4] [--solo a,b] [--mute a,b] [--quiet a,b]`; `--solo`/`--mute` select lanes (a `name:` line at column 0) for stems, `--quiet` keeps a lane firing at `.postgain(0)` so a sidechain still ducks (kick stem for a duck measurement); prints frames, bpm, failed events and the hap count; example: `docs/tracks/sirocco-foundry/` |
 | `targets.json` | the class of every audited item: racks (hook def name), catalog recipes (id), Syntax examples (`section/title`); unlisted catalog and Syntax items are class `demo` |
 
 ```

@@ -66,12 +66,12 @@ const srv = http.createServer((q, r) => {
     const C = window.strudelCraft.capture; C.configure({ source: 'offline', audio: true, events: false, code: true });
     const rec = await C.recordOffline(cycles, { at, name: 'o' }); if (!rec) return { error: 'no take' };
     const a = rec.audio.render, enc = (x) => { const u = new Uint8Array(x.buffer); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };
-    return { sr: a.sr, cps: rec.recipe.timing.cps, fails: rec.recipe.outputs.render.fails, L: enc(a.L), R: enc(a.R) };
+    return { sr: a.sr, cps: rec.recipe.timing.cps, fails: rec.recipe.outputs.render.fails, haps: rec.recipe.outputs.render.haps, L: enc(a.L), R: enc(a.R) };
   }, [B1 - B0 + 1 + TAIL, B0 - 1]);
   if (o.error) { console.error(o.error); process.exit(1); }
   const L = new Float32Array(Uint8Array.from(Buffer.from(o.L, 'base64')).buffer), R = new Float32Array(Uint8Array.from(Buffer.from(o.R, 'base64')).buffer), n = L.length, bf = Buffer.alloc(44 + n * 8);
   bf.write('RIFF', 0); bf.writeUInt32LE(36 + n * 8, 4); bf.write('WAVEfmt ', 8); bf.writeUInt32LE(16, 16); bf.writeUInt16LE(3, 20); bf.writeUInt16LE(2, 22); bf.writeUInt32LE(o.sr, 24); bf.writeUInt32LE(o.sr * 8, 28);
   bf.writeUInt16LE(8, 32); bf.writeUInt16LE(32, 34); bf.write('data', 36); bf.writeUInt32LE(n * 8, 40);
   for (let i = 0; i < n; i++) { bf.writeFloatLE(L[i], 44 + i * 8); bf.writeFloatLE(R[i], 48 + i * 8); }
-  fs.writeFileSync(OUT, bf); console.log(JSON.stringify({ wrote: OUT, frames: n, sample_rate: o.sr, cps: o.cps, bpm: +(o.cps * 240).toFixed(2), bars: [B0, B1], tail: TAIL, fails: o.fails, packs: [...new Set(loads)] })); await b.close(); srv.close();
+  fs.writeFileSync(OUT, bf); console.log(JSON.stringify({ wrote: OUT, frames: n, sample_rate: o.sr, cps: o.cps, bpm: +(o.cps * 240).toFixed(2), bars: [B0, B1], tail: TAIL, fails: o.fails, haps: o.haps, packs: [...new Set(loads)] })); await b.close(); srv.close();
 })().catch((e) => { console.error('ERR', e.message.slice(0, 300)); process.exit(1); });

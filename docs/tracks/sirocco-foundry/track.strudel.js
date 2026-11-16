@@ -55,7 +55,7 @@ ohat: s(atoms.ec.offHats).hook("hatOpen").groove({ swing: 57, jitter: 2, seed: 5
 hatsH: s(atoms.ds.dsHats).velocity(atoms.ds.dsHatVel).hook("hatClosed").postgain(0.866)
 hats16H: s(atoms.ds.hats16).velocity(atoms.ds.hat16Vel).hook("hatClosed").postgain(1.049)
 roll: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook("snareTight").mask(atoms.ec.gapMask).postgain(0.595)
-roll4: s(atoms.ec.roll4).velocity(atoms.ec.rollVel4).hook("snareTight").postgain(0.768)
+roll4: s(atoms.ec.roll4).velocity(atoms.ec.rollVel4).hook("snareTight").postgain(0.653)
 fill: s("x*16").velocity(saw.range(0.3, 1)).hook("snareTight").postgain(0.314)
 perc: s(atoms.sfMetal).hook("metalHit").note("<g5 d6 eb6 bb5>").orbit(4).room(0.55).roomsize(5).groove({ swing: 55, jitter: 3, seed: 9 }).postgain(1.102)
 
@@ -74,14 +74,14 @@ seedH: note(atoms.sfSeed).hook("seedHouse").orbit(2).compressor("-30:12:3:0.002:
 seedHm: note(atoms.sfSeed).hook("seedHouse").orbit(2).mask(atoms.ds.notLastOf4).compressor("-30:12:3:0.002:0.08").postgain(0.73)
 subH: note(atoms.sfRoots).hook("subSine").orbit(2).postgain(0.398)
 seedG: note(atoms.sfDrop).hook("seedGrowl").shape(0.3).crush(11).orbit(2).compressor("-30:12:3:0.002:0.08").postgain(0.354)
-growl2: note(atoms.sfDrop).fast(2).hook("seedGrowl").vowel("<a o e i>").lpsync(8).lpdepth(1.5).shape(0.3).crush(11).orbit(2).compressor("-30:12:3:0.002:0.08").postgain(0.086)
+growl2: note(atoms.sfDrop).fast(2).hook("seedGrowl").vowel("<a o e i>").lpsync(8).lpdepth(1.5).shape(0.3).crush(11).orbit(2).compressor("-30:12:3:0.002:0.08").postgain(0.073)
 growlR: note(atoms.sfDrop).hook("seedGrowl").shape(0.3).crush(11).orbit(2).mask(atoms.ds.lastOf4).compressor("-30:12:3:0.002:0.08").postgain(0.532)
 subD: note(atoms.sfSubD).hook("subSine").orbit(2).postgain(0.662)
 
 // == music ==
-disco: note(atoms.sfStab).struct(atoms.sfDisco).hook("ukfPluck").hpf(atoms.sfHpfIn).orbit(3).room(0.25).roomsize(3).postgain(1.029)
+disco: note(atoms.sfStab).struct(atoms.sfDisco).hook("ukfPluck").hpf(atoms.sfHpfIn).orbit(3).room(0.25).roomsize(3).postgain(0.947)
 discoOut: note(atoms.sfStab).struct(atoms.sfDisco).hook("ukfPluck").hpf(atoms.sfHpfOut).orbit(3).room(0.25).roomsize(3).postgain(0.864)
-stabsB: note(atoms.sfStab).struct(atoms.sfStabA).hook("superChord").lpf(atoms.ec.open8).hpf(atoms.ec.thin8).orbit(3).room(0.25).roomsize(3).postgain(2.471)
+stabsB: note(atoms.sfStab).struct(atoms.sfStabA).hook("superChord").lpf(atoms.ec.open8).hpf(atoms.ec.thin8).orbit(3).room(0.25).roomsize(3).postgain(2.174)
 stabs1: note(atoms.sfStab).struct(atoms.sfStabA).hook("superChord").orbit(3).room(0.25).roomsize(3).postgain(0.899)
 stabs2: note(atoms.sfStab).struct(atoms.sfStabB).hook("superChord").orbit(3).room(0.25).roomsize(3).postgain(0.899)
 stabsUp: note(atoms.sfStab).add(note(12)).struct(atoms.sfStabB).hook("superChord").mask(atoms.ds.notLastOf4).orbit(3).room(0.25).roomsize(3).postgain(0.809)

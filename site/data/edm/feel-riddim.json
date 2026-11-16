@@ -1,0 +1,390 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"Riddim\" (140-150 bpm (half-time)): sparse drums, a hollow repetitive bass in 3+3+2 with the gaps as the groove, one laser per bar, no chords. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/edm:feel-riddim\", { as: \"feel\" }).",
+ "atoms": {
+  "algjll8": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~",
+   "doc": "kick pattern",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:0c64f84974ef8be7b43b95e899d6caebb354964b4bb9c9fcc72652b4421987da"
+  },
+  "aw7iyx3": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "amtqls7": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "dsKick | groove-straight(1)",
+   "doc": "kick rack and groove",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:abe832e238fbcc155e80e2a7f08993987a6e30e1c4111972d5fba46354073f81"
+  },
+  "atqty67": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
+   "doc": "snare pattern",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:525fd0444781900288d0ac6c5358b9391d694346d05e7bca8b3001885e70932c"
+  },
+  "a2oekc2": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "akczra0": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "dsSnare | groove-straight(2)",
+   "doc": "snare rack and groove",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:0189c8f69a339955da186b31678e548575aa7238374edf025f5f27c1d46c6429"
+  },
+  "at5njfa": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "perc pattern",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "a6chdex": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "perc accents (velocity)",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "anu0rut": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-straight(3)",
+   "doc": "perc rack and groove",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:c991a9ef4e71a57c23e7122921878c6243b924c7c2453234c1445c0f1cbb46ba"
+  },
+  "a7zrlvs": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*8",
+   "doc": "hats pattern",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:c2845fc5d1dfae91f61227e9f77fbff665ea294e5367dbd32a4f511e758525ec"
+  },
+  "aj1812r": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[1 .55]*4",
+   "doc": "hats accents (velocity)",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:f77c236a1a254eecdbcf4976f44b5b01d5f6aa633ce54230729f37d31ab8112f"
+  },
+  "atok98z": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "hatClosed | groove-straight(4)",
+   "doc": "hats rack and groove",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:d22c26820d2f9c9010f2cad8bdf881d2dec66af87bfce7698c3d2ac772a9a604"
+  },
+  "a89n4ut": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c6 ~ ~ ~",
+   "doc": "top pattern",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:1751a36f8c1370c8734dc8b364c986cf46213c3a13441640faf08d7fffd45e76"
+  },
+  "aherl0o": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a1pgtaq": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "laserZap | groove-straight(5)",
+   "doc": "top rack and groove",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:67073224cebbbf0bbd0be150b69c9f30d6270bb5fe447db4e3bac033efd7b297"
+  },
+  "agau2ux": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "[c2 ~ ~ c2 ~ ~ c2 ~]*2",
+   "doc": "bass pattern",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "bass",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:32ed4bd6bc580c783abd2900575de2b6edc3f111a89edd55d7284b631d40fb73"
+  },
+  "a5wn86k": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "bass accents (velocity)",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "bass",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a3rueja": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "riddimBass | groove-straight(6)",
+   "doc": "bass rack and groove",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "bass",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:aabdcd809b5303bd61ac5dabd209e14f6829fe969d243aa39856d1bffe99097d"
+  },
+  "aykq2kg": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "harmony pattern",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "keys",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "akzx6tn": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "keys",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "adzlg4b": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-straight(7)",
+   "doc": "harmony rack and groove",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "keys",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:227af6d40c285b20c097e400f2dd9b87e67c827a1c760aae4961952b94e49da1"
+  },
+  "ae6u6y4": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "fx pattern",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "fx",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "a80wkdj": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "fx",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a6jlfwn": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-straight(8)",
+   "doc": "fx rack and groove",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "fx",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:a6d764d590064bda96b489b11bf46e4cc02487373ce7b3d95349a541eb54beaa"
+  },
+  "anbr3t0": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-straight(0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "folder": "edm/dubstep/feel/riddim",
+   "tags": [
+    "groove",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:4727a3d952d63f4573689323a6bd3ca37e9eb4b1431ba5e6cbc5c1dddd386c92"
+  }
+ }
+}

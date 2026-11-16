@@ -1,0 +1,604 @@
+{
+ "format": "atoms@1",
+ "name": "ec",
+ "doc": "glyphcore/edm foundation atoms (ec.): four-on-the-floor and off-beat patterns, snare rolls (roll4, roll8 + velocity ramps), filter builds (open8, thin8), gap masks, riser gates (rise4, rise8, rise16, hit), the 104-bar form as gates (intro .. outro, drops, notDrops, gap, fillBars) and as masks (mIntro .. mOutro). Import with atoms.import(\"pack:glyphcore/edm:atoms-edm-core\").",
+ "atoms": {
+  "a2irzz7": {
+   "name": "ec.fourFloor",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "four on the floor: a kick on every beat",
+   "folder": "edm/core/drums",
+   "tags": [
+    "drums",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:0217ca393e7b9e240d8b3ffed67e975f3934d9a9f1303a227193b90afe293ac5"
+  },
+  "ai34xk2": {
+   "name": "ec.offHats",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "off-beat hats: the and of every beat",
+   "folder": "edm/core/drums",
+   "tags": [
+    "drums",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:6bd5ea73a5c49b44251c29cea1fa168ea7a8a123d293cf0e95074b34b75e3764"
+  },
+  "ajdwo7y": {
+   "name": "ec.hats16",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*16",
+   "doc": "16th hats",
+   "folder": "edm/core/drums",
+   "tags": [
+    "drums",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:bc74a3b9e12ebc0770e636fb859180836145824d453b6c0c08e954bc49f4cdaf"
+  },
+  "aokjmhu": {
+   "name": "ec.accent16",
+   "type": "mini",
+   "rev": 1,
+   "body": "[1 .5 .75 .5]*4",
+   "doc": "16th accents: downbeat strong, off-beat medium",
+   "folder": "edm/core/drums",
+   "tags": [
+    "drums",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:d44bbc85249e099bd9397ed912179359b16ad17331b5656be1538a9b371e2e12"
+  },
+  "acni2ck": {
+   "name": "ec.roll8",
+   "type": "mini",
+   "rev": 1,
+   "body": "<x*4!2 x*8!2 x*16!3 x*32>",
+   "doc": "8-bar snare roll: quarters, eighths, sixteenths, then 32nds in the last bar",
+   "folder": "edm/core/drums",
+   "tags": [
+    "drums",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:e6a8c2bb1305caed6d28e451423d2408a5dd08907f103c1a5c998b36725910ab"
+  },
+  "adsjx6d": {
+   "name": "ec.rollVel8",
+   "type": "mini",
+   "rev": 1,
+   "body": "<.35 .42 .5 .58 .66 .76 .88 1>",
+   "doc": "velocity ramp of the 8-bar roll",
+   "folder": "edm/core/drums",
+   "tags": [
+    "drums",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:a4f3b7f362f012e241745d3c0aa6d9faf56c4f11df4d985a7cfd7567160e6c91"
+  },
+  "a9bmu0w": {
+   "name": "ec.roll4",
+   "type": "mini",
+   "rev": 1,
+   "body": "<x*8 x*16 x*16 x*32>",
+   "doc": "4-bar snare roll: eighths, sixteenths, 32nds",
+   "folder": "edm/core/drums",
+   "tags": [
+    "drums",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:8e479c04c7a2e7636be6f45b239720b76127d5d07bb37fdcf20c210c4665df55"
+  },
+  "aewiby9": {
+   "name": "ec.rollVel4",
+   "type": "mini",
+   "rev": 1,
+   "body": "<.45 .62 .8 1>",
+   "doc": "velocity ramp of the 4-bar roll",
+   "folder": "edm/core/drums",
+   "tags": [
+    "drums",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:23610928bd48de2b9957a97a0433fc754624bdd79768a75b3a4509678fddd273"
+  },
+  "a1e9wzh": {
+   "name": "ec.open8",
+   "type": "mini",
+   "rev": 1,
+   "body": "<300 450 700 1000 1500 2300 3600 6000>",
+   "doc": "8-bar low-pass automation (x1.5 per bar)",
+   "folder": "edm/core/fx",
+   "tags": [
+    "fx",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:2b5606fa490e17cce69c01be0a847d4c1410c3597636c032d9b54de35bfa61be"
+  },
+  "allmogk": {
+   "name": "ec.thin8",
+   "type": "mini",
+   "rev": 1,
+   "body": "<30 50 80 130 200 320 500 800>",
+   "doc": "8-bar high-pass automation",
+   "folder": "edm/core/fx",
+   "tags": [
+    "fx",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:d4a7275ab3df92c556219a7d5c2ee696e9e21b4d78d2bf7ba290ff71c07d9dde"
+  },
+  "ag24x3u": {
+   "name": "ec.pump16",
+   "type": "mini",
+   "rev": 1,
+   "body": "[.3 .65 .9 1]*4",
+   "doc": "velocity pump on 16ths (for 16th-segmented parts): dips on each beat",
+   "folder": "edm/core/fx",
+   "tags": [
+    "fx",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:0cf51e59463d0c0a55c1fc59b8c0efad65f2c0b83f5df260a447f8a141b46503"
+  },
+  "ax81qo1": {
+   "name": "ec.gapMask",
+   "type": "mini",
+   "rev": 1,
+   "body": "<1!7 [1 1 1 0]>",
+   "doc": "8-bar build mask: the last beat is silent (the breath before the drop)",
+   "folder": "edm/core/fx",
+   "tags": [
+    "fx",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:d1acdda9427c883e2b5afa3817c417a1d645aacf2e9b674e7a7cc29fa8ca774e"
+  },
+  "ad975zu": {
+   "name": "ec.dropMask",
+   "type": "mini",
+   "rev": 1,
+   "body": "<1!3 [1 1 1 0]>",
+   "doc": "4-bar loop with a silent last beat",
+   "folder": "edm/core/misc",
+   "tags": [
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:386c233745baa971e60738bf2d30540915f1562103d64c5c961abd470ce4cd99"
+  },
+  "a49xdan": {
+   "name": "ec.intro",
+   "type": "gate",
+   "rev": 1,
+   "body": "<17b",
+   "doc": "bars 1-16 of the 104-bar map: intro (kick and atmosphere, no bass)",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:7899d3c492854887c3fdad9846e9da19a702658be71a97b741dd1484affa2343"
+  },
+  "a3rpmh5": {
+   "name": "ec.build",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..25b",
+   "doc": "bars 17-24: first build (roll, riser, filter opens)",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:e67adbd7795bc1c1f3791c53d05bf0d02a7d534c9cbc1129aefcd96ca4a33de1"
+  },
+  "aqd6sf5": {
+   "name": "ec.dropA",
+   "type": "gate",
+   "rev": 1,
+   "body": "25b..41b",
+   "doc": "bars 25-40: drop A",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:baa3ddc2d06ad4210982d9c5173d1fb48805aac96567282bb26c485f13d496a2"
+  },
+  "a0euagu": {
+   "name": "ec.breakdown",
+   "type": "gate",
+   "rev": 1,
+   "body": "41b..57b",
+   "doc": "bars 41-56: breakdown (no kick, no bass; chords and lead)",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:f4d1e051a1a41ea0b7fe193f24a1bec676ba87c2b0df90cba9d64f5ed9acf586"
+  },
+  "apmuqjl": {
+   "name": "ec.build2",
+   "type": "gate",
+   "rev": 1,
+   "body": "57b..65b",
+   "doc": "bars 57-64: second build",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:ece0a0c31c8abf4ebd5c1cd8a5ce9842128da6818ef4196b7934b47429495923"
+  },
+  "apj7zc8": {
+   "name": "ec.dropB",
+   "type": "gate",
+   "rev": 1,
+   "body": "65b..89b",
+   "doc": "bars 65-88: drop B (bars 77-88 switch up)",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:170288bd28ba83e56170ae8f209c24987ff970e5e3d61b3d1188e8e779657f3d"
+  },
+  "a7p2412": {
+   "name": "ec.switchUp",
+   "type": "gate",
+   "rev": 1,
+   "body": "77b..89b",
+   "doc": "bars 77-88: switch-up inside drop B (new bass pattern or timbre, same kit)",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:1f8d62df5630e8a08e2956f187abad9f60500d22f4316a8f900733f19585b166"
+  },
+  "a6sjtni": {
+   "name": "ec.outro",
+   "type": "gate",
+   "rev": 1,
+   "body": "@89b",
+   "doc": "bars 89-104: outro (DJ-friendly: drums and atmosphere, bass out)",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:c71be732009791b44f0f665115c9bde31724a8e8cd6ea6b47edff22ab6e94f12"
+  },
+  "achqnqj": {
+   "name": "ec.drops",
+   "type": "gate",
+   "rev": 1,
+   "body": "25b..41b, 65b..89b",
+   "doc": "both drops",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:10bd16a420ec11799266428d3e65e23ec8cd4c735cdb519dab54f872063ab831"
+  },
+  "a831n9q": {
+   "name": "ec.builds",
+   "type": "gate",
+   "rev": 1,
+   "body": "17b..25b, 57b..65b",
+   "doc": "both builds",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:27d6dcae1906172e924e8c5805bac8446bb22e6ac0963b77f778f437a37ef1c6"
+  },
+  "ae7uz06": {
+   "name": "ec.notDrops",
+   "type": "gate",
+   "rev": 1,
+   "body": "<25b, 41b..65b, @89b",
+   "doc": "everything except the drops (mute a drop-only lane with it)",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:0e0dc267e9306846a68a6601b6af1f46e5f293707efec911ae4ca4d5a0fcc5a9"
+  },
+  "ahqtkmt": {
+   "name": "ec.notBuilds",
+   "type": "gate",
+   "rev": 1,
+   "body": "<17b, 25b..57b, @65b",
+   "doc": "everything except the builds",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:5e3a67716cf75958c3747908cdd38891c0201406046fcd96f296ed4284796309"
+  },
+  "ako62th": {
+   "name": "ec.gap",
+   "type": "gate",
+   "rev": 1,
+   "body": "24.4b..25b, 64.4b..65b",
+   "doc": "the last beat before each drop: the breath",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:86527bcc746c2a23aeb91dbcfa84c1521d17ad68bab27fea2017a51d715e07ef"
+  },
+  "aam32eo": {
+   "name": "ec.fillBars",
+   "type": "gate",
+   "rev": 1,
+   "body": "16b..17b, 24b..25b, 40b..41b, 56b..57b, 64b..65b, 88b..89b",
+   "doc": "the bar before each section change: fills",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:3f713b8a4eb87c435b1918e0734a96e8a01571f297c7b0206ca846101e87cc6e"
+  },
+  "aqrf7zw": {
+   "name": "ec.mIntro",
+   "type": "mini",
+   "rev": 1,
+   "body": "<1!16 0!88>",
+   "doc": "mask form of ec.intro for plain Strudel (.mask): 1 in bars 1-16 of the 104-bar map",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:6e1a9e25e1f702f995faa4518935f57e5cc10fb8eaafe797c39c29e7c61bea9b"
+  },
+  "abtnlka": {
+   "name": "ec.mBuild",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0!16 1!8 0!80>",
+   "doc": "mask form of ec.build (bars 17-24)",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:54107b0ff45d2312d5ab3aedebbe66514d2b4981fc4b0d6156236a988e2db8ba"
+  },
+  "agcrej6": {
+   "name": "ec.mDropA",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0!24 1!16 0!64>",
+   "doc": "mask form of ec.dropA (bars 25-40)",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:95a24bcb4883d916ebf8c701582884cea621e408a0dbd263bc541ac1da14fe59"
+  },
+  "afnioft": {
+   "name": "ec.mBreak",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0!40 1!16 0!48>",
+   "doc": "mask form of ec.breakdown (bars 41-56)",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:2df3abcb6fc87fb7a1906f5c7f4f04991633346db25d090eae9b78cd2a7eaa4a"
+  },
+  "aci3ls8": {
+   "name": "ec.mBuild2",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0!56 1!8 0!40>",
+   "doc": "mask form of ec.build2 (bars 57-64)",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:4162aa6373216e73bf47782273b3387b5cbbe8357847d6a6ceff498d814281f0"
+  },
+  "ag2rsu7": {
+   "name": "ec.mDropB",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0!64 1!24 0!16>",
+   "doc": "mask form of ec.dropB (bars 65-88)",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:79cee2f45d3274cb17a4ee4b900931cb6fe37582fa5c9d8a1217a4495f83eab2"
+  },
+  "aro5h6i": {
+   "name": "ec.mSwitch",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0!76 1!12 0!16>",
+   "doc": "mask form of ec.switchUp (bars 77-88)",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:4cb633c110f192e448d23fc55aa1989375916892fc5f17ed58540161f69094f4"
+  },
+  "av2x5bd": {
+   "name": "ec.mOutro",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0!88 1!16>",
+   "doc": "mask form of ec.outro (bars 89-104)",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:cc32311e60e4f95d13eaa6d2e97acb869d8b91775c77a718ca2914b0df6c3048"
+  },
+  "abcyk1o": {
+   "name": "ec.mDrops",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0!24 1!16 0!24 1!24 0!16>",
+   "doc": "mask form of ec.drops",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:d9117308efc690d0423d9f47f8d34afdd7f00d124fc3bca8f703ea5b8b259d54"
+  },
+  "au1wp23": {
+   "name": "ec.mBuilds",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0!16 1!8 0!32 1!8 0!40>",
+   "doc": "mask form of ec.builds",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "pattern"
+   ],
+   "hash": "sha256:eeb9af2e2d1cd1a8f16900e8d30dcffafeb3772386629acd6656463f96e80d0b"
+  },
+  "a65ep52": {
+   "name": "ec.rise4",
+   "type": "gate",
+   "rev": 1,
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "25b"
+    }
+   },
+   "body": "${at}-4b..${at}",
+   "doc": "4 bars that end exactly on a point: short riser",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:9748261a62efb644188cedc79cabe1accc724b3484ef359d0d128bba72fe31bd"
+  },
+  "a9h9xgq": {
+   "name": "ec.rise8",
+   "type": "gate",
+   "rev": 1,
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "25b"
+    }
+   },
+   "body": "${at}-8b..${at}",
+   "doc": "8 bars that end on a point: the standard build",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:83582c207d57a3601fdea7f2260b53acbd3bbf7ee5066a4d84916d78a02a1990"
+  },
+  "a5sta3t": {
+   "name": "ec.rise16",
+   "type": "gate",
+   "rev": 1,
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "25b"
+    }
+   },
+   "body": "${at}-16b..${at}",
+   "doc": "16 bars that end on a point: long build (trance, progressive)",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:95067c7bd5f9b351c76d06efe02bcc8f86ef14458b14f0be728c02eb2139511f"
+  },
+  "akrunqs": {
+   "name": "ec.hit",
+   "type": "gate",
+   "rev": 1,
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "25b"
+    }
+   },
+   "body": "${at}..${at}+1b",
+   "doc": "the bar that starts on a point: impact, crash, downlifter",
+   "folder": "edm/core/form",
+   "tags": [
+    "form",
+    "edm",
+    "gate"
+   ],
+   "hash": "sha256:c529f818f353808a1850b4d44810a954494e01faa62452082f9c123a32510bcd"
+  }
+ }
+}

@@ -1,0 +1,390 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"Brostep\" (140-150 bpm (half-time)): busier kicks, 16th hats, an FM formant growl with screech answers in its gaps. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/edm:feel-brostep\", { as: \"feel\" }).",
+ "atoms": {
+  "aoykrys": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "kick pattern",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:ab11b12ad1e86d946ad09ef80cbdd5dc01af4e0aef7a4cd80dc418b68f9ab734"
+  },
+  "aqy1u1b": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "apy3xof": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "dsKick | groove-straight(1)",
+   "doc": "kick rack and groove",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:abe832e238fbcc155e80e2a7f08993987a6e30e1c4111972d5fba46354073f81"
+  },
+  "a2obf87": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
+   "doc": "snare pattern",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:525fd0444781900288d0ac6c5358b9391d694346d05e7bca8b3001885e70932c"
+  },
+  "a4lubje": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a8foydc": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "dsSnare | groove-straight(2)",
+   "doc": "snare rack and groove",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:0189c8f69a339955da186b31678e548575aa7238374edf025f5f27c1d46c6429"
+  },
+  "a11zilq": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "perc pattern",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "apssqtd": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "perc accents (velocity)",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a6p5j71": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-rolling(3)",
+   "doc": "perc rack and groove",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:94a80b1d792c4213f8864e061b1c83da67c051ebee14ae373bf400f992cfc102"
+  },
+  "a5uym6o": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*16",
+   "doc": "hats pattern",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:bc74a3b9e12ebc0770e636fb859180836145824d453b6c0c08e954bc49f4cdaf"
+  },
+  "aekw8t7": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[.9 .4 .6 .4]*4",
+   "doc": "hats accents (velocity)",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:0a62ee2689086899803348f134f48a84fd8ba5f7fb8d089d37f4804ab79e04da"
+  },
+  "arx07sb": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "hatClosed | groove-rolling(4)",
+   "doc": "hats rack and groove",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:eda42cacf4541f37bf9aa154fd8350f095b3f0a190951b0d8fa1834b61c0a995"
+  },
+  "axkrmod": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ c6 ~ ~ ~ ~ ~ ~ ~ eb6 ~",
+   "doc": "top pattern",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:fcbc04ca90c48e2bc0e130f650244ab42d802814a4796d50d3b52bf9f9dd9572"
+  },
+  "aorwpfk": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ab9628q": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "screechLead | groove-straight(5)",
+   "doc": "top rack and groove",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:5aba65769d73581b0553ae0dcef97adc4b9e8360bae2951d2b061f8ce89865b0"
+  },
+  "anuk91t": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]",
+   "doc": "bass pattern",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "bass",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:7ed0d62a07b3323bea88405c3d859a38be26230e0e8e06ad39b0c3257b505fc8"
+  },
+  "ahpjig4": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "bass accents (velocity)",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "bass",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "alk53xa": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "growlBass | groove-straight(6)",
+   "doc": "bass rack and groove",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "bass",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:8e5aafb39417e58f0669d3a0bbce39cf0af1aa90b62a4dcf2377a3175a81678e"
+  },
+  "a20i5fc": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "harmony pattern",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "keys",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "al5h2ar": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "keys",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "afkg3ib": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-rolling(7)",
+   "doc": "harmony rack and groove",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "keys",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:1877dd22d42c3fe8b3466b6589d72f5979bdcc9ef7ad663f7551ece543ef8116"
+  },
+  "awlm41g": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "<x ~ ~ ~>",
+   "doc": "fx pattern",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "fx",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:722335a46452ff22a7e46104cfab079d7aa345ba70db614f7503bee8df5359bb"
+  },
+  "aeg0zcf": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "fx",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "awtzrpb": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "impactBoom",
+   "doc": "fx rack and groove",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "fx",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:48f3c6b33096a56ce809cf89ec8eb1bf688ba2f7f82ffb72d4e2485f06a438c0"
+  },
+  "a1y7yjg": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-rolling(0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "folder": "edm/dubstep/feel/brostep",
+   "tags": [
+    "groove",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:2c1d77f87f2b86e24cb54a599b224419137db855f6c36cef4d0a63452ac9f331"
+  }
+ }
+}

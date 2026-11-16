@@ -60,8 +60,7 @@
    "class": "move"
   },
   "pump": {
-   "class": "move",
-   "skip": "needs a kick tap in the program (wire to kick:env); covered by the track render"
+   "class": "move"
   },
   "tom": {
    "class": "perc"
@@ -141,6 +140,126 @@
   },
   "knock808": {
    "class": "kick"
+  },
+  "edmKick": {
+   "class": "kick"
+  },
+  "subSine": {
+   "class": "sub"
+  },
+  "edmClap": {
+   "class": "snare"
+  },
+  "snareTight": {
+   "class": "snare"
+  },
+  "hatClosed": {
+   "class": "hat"
+  },
+  "hatOpen": {
+   "class": "hat"
+  },
+  "shaker": {
+   "class": "hat"
+  },
+  "crash": {
+   "class": "hat"
+  },
+  "noiseRiser": {
+   "class": "riser"
+  },
+  "hpBuild": {
+   "class": "riser"
+  },
+  "pitchRiser": {
+   "class": "riser"
+  },
+  "downSweep": {
+   "class": "sweep"
+  },
+  "reverseSwell": {
+   "class": "reverse"
+  },
+  "impactBoom": {
+   "class": "impact"
+  },
+  "subDrop": {
+   "class": "impact"
+  },
+  "superChord": {
+   "class": "supersaw"
+  },
+  "edmPluck": {
+   "class": "pluck"
+  },
+  "edmPad": {
+   "class": "pad"
+  },
+  "sidechain": {
+   "class": "move"
+  },
+  "ducked": {
+   "class": "move"
+  },
+  "ott": {
+   "class": "move"
+  },
+  "drive": {
+   "class": "move"
+  },
+  "wobble": {
+   "class": "move"
+  },
+  "filterBuild": {
+   "class": "move"
+  },
+  "thinBuild": {
+   "class": "move"
+  },
+  "dsKick": {
+   "class": "kick"
+  },
+  "dsSnare": {
+   "class": "snare"
+  },
+  "reeseBass": {
+   "class": "reese"
+  },
+  "growlBass": {
+   "class": "growl"
+  },
+  "wobbleBass": {
+   "class": "growl"
+  },
+  "talkBass": {
+   "class": "growl"
+  },
+  "riddimBass": {
+   "class": "growl"
+  },
+  "screechLead": {
+   "class": "screech"
+  },
+  "laserZap": {
+   "class": "screech"
+  },
+  "ukfChord": {
+   "class": "supersaw"
+  },
+  "ukfPluck": {
+   "class": "pluck"
+  },
+  "ukfArp": {
+   "class": "arp"
+  },
+  "ukfLead": {
+   "class": "lead"
+  },
+  "atmosPad": {
+   "class": "pad"
+  },
+  "vowelChop": {
+   "class": "vox"
   }
  },
  "catalog": {
@@ -356,6 +475,169 @@
   "feel-cloud": {
    "class": "demo",
    "bars": 2
+  },
+  "edm-kick-four-floor": {
+   "class": "kick"
+  },
+  "edm-sub-sine": {
+   "class": "sub"
+  },
+  "edm-clap": {
+   "class": "snare"
+  },
+  "edm-hats-offbeat": {
+   "class": "hat"
+  },
+  "edm-crash": {
+   "class": "hat"
+  },
+  "edm-sidechain-duck": {
+   "class": "demo",
+   "bars": 2
+  },
+  "edm-pump-shaper": {
+   "class": "demo",
+   "bars": 2
+  },
+  "edm-snare-roll-8": {
+   "class": "snare",
+   "bars": 8
+  },
+  "edm-noise-riser": {
+   "class": "riser",
+   "bars": 4
+  },
+  "edm-white-noise-build": {
+   "class": "riser",
+   "bars": 4
+  },
+  "edm-pitch-riser": {
+   "class": "riser",
+   "bars": 4
+  },
+  "edm-impact": {
+   "class": "impact"
+  },
+  "edm-sub-drop": {
+   "class": "impact"
+  },
+  "edm-reverse-swell": {
+   "class": "reverse"
+  },
+  "edm-downlifter": {
+   "class": "sweep"
+  },
+  "edm-supersaw-chords": {
+   "class": "supersaw",
+   "bars": 4
+  },
+  "edm-pluck": {
+   "class": "pluck"
+  },
+  "edm-pad": {
+   "class": "pad",
+   "bars": 4
+  },
+  "edm-ott-squash": {
+   "class": "demo",
+   "bars": 2
+  },
+  "edm-filter-build": {
+   "class": "demo",
+   "bars": 8
+  },
+  "edm-build-grammar": {
+   "class": "demo",
+   "bars": 10
+  },
+  "dubstep-halftime-drums": {
+   "class": "demo",
+   "bars": 2
+  },
+  "dubstep-kick": {
+   "class": "kick"
+  },
+  "dubstep-snare": {
+   "class": "snare"
+  },
+  "dubstep-reese": {
+   "class": "reese",
+   "bars": 4
+  },
+  "dubstep-sub-growl": {
+   "class": "demo",
+   "bars": 2
+  },
+  "dubstep-growl": {
+   "class": "growl"
+  },
+  "dubstep-wobble": {
+   "class": "growl",
+   "bars": 4
+  },
+  "dubstep-talk-bass": {
+   "class": "growl"
+  },
+  "riddim-bass": {
+   "class": "growl"
+  },
+  "dubstep-screech": {
+   "class": "screech"
+  },
+  "dubstep-laser": {
+   "class": "screech"
+  },
+  "ukf-supersaw-chords": {
+   "class": "supersaw",
+   "bars": 4
+  },
+  "ukf-pluck": {
+   "class": "pluck",
+   "bars": 4
+  },
+  "ukf-arp": {
+   "class": "arp",
+   "bars": 4
+  },
+  "ukf-lead": {
+   "class": "lead",
+   "bars": 4
+  },
+  "ukf-atmos-pad": {
+   "class": "pad",
+   "bars": 4
+  },
+  "dubstep-vowel-chops": {
+   "class": "vox",
+   "bars": 2
+  },
+  "dubstep-call-response": {
+   "class": "demo",
+   "bars": 4
+  },
+  "dubstep-drop-fill": {
+   "class": "demo",
+   "bars": 4
+  },
+  "edm-dubstep-tutorial": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-halftime": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-ukf": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-riddim": {
+   "class": "demo",
+   "bars": 2
+  },
+  "feel-brostep": {
+   "class": "demo",
+   "bars": 2
   }
  },
  "syntax": {
@@ -430,6 +712,46 @@
   "feels/Beat switch between two feels": {
    "class": "demo",
    "bars": 4
+  },
+  "edm/Sidechain: the kick ducks a bus (duckorbit)": {
+   "class": "demo",
+   "bars": 2
+  },
+  "edm/Pump without a trigger (beat-synced ramp tremolo)": {
+   "class": "demo",
+   "bars": 2
+  },
+  "edm/8-bar build grammar as gates (roll, riser, filter, breath, impact)": {
+   "class": "demo",
+   "bars": 10
+  },
+  "edm/Band-split drive and 3-band OTT on buses (.split)": {
+   "class": "demo",
+   "bars": 2
+  },
+  "edm/Song form as gates (intro, build, drop A, breakdown, build 2, drop B, switch-up, outro)": {
+   "class": "demo",
+   "bars": 4
+  },
+  "dubstep/Pick a dubstep feel (one import line)": {
+   "class": "demo",
+   "bars": 2
+  },
+  "dubstep/Drop as layers: sub + growl, the kick ducks both": {
+   "class": "demo",
+   "bars": 2
+  },
+  "dubstep/Wobble rate as a pattern (lpsync)": {
+   "class": "demo",
+   "bars": 4
+  },
+  "dubstep/Switch-up in drop B (one slot, two basses by gate)": {
+   "class": "demo",
+   "bars": 4
+  },
+  "dubstep/Growl on a bus: band-split drive (.split)": {
+   "class": "demo",
+   "bars": 2
   }
  }
 }

@@ -10,6 +10,12 @@ const TEMPO_FEEL = ['half-time', 'syncopated', 'offbeat', 'four-floor', 'polyrhy
 const MOOD = ['dark', 'driving', 'hypnotic', 'tense', 'floaty', 'sparse', 'bright'];
 const TECHNIQUE = ['sidechain', 'filter-sweep', 'automation-drift', 'call-response', 'build-drop', 'euclid', 'probability', 'delay-echo', 'phaser', 'tremolo', 'fm', 'formant', 'arpeggio', 'crescendo', 'fade-out', 'riser', 'swing', 'human-feel', 'accents', 'transition', 'reverb-big', 'dry-tight', 'stereo'];
 export const uniq = (a) => [...new Set(a.filter(Boolean))];
+/* families of other packs register their own folder root and genre tags (family data "taxonomy": { folder, genres }), so a new genre needs no code here:
+   tools/concepts/build.mjs calls registerFamily for every family that has it (glyphcore/edm: edm-core -> edm/core, dubstep -> edm/dubstep) */
+const FAMS = {}, BY_NS = {}, BY_ING = {};
+export function registerFamily(f) { const t = f.taxonomy; if (!t) return; const reg = { folder: t.folder, genres: t.genres || [], tag: t.tag || null };
+  FAMS[f.family] = reg; if (f.atomsIngredient) BY_NS[f.atomsIngredient.ns] = reg; if (f.racksIngredient) BY_ING[f.racksIngredient] = reg;
+  for (const g of reg.genres) GENRE_OF[g] = g; if (reg.tag) GENRE_OF[reg.tag] = reg.tag; }
 
 /* the role of a recipe from its labels and id */
 export function roleOfLabels(id, labels) {
@@ -38,6 +44,7 @@ export function recipeTaxonomy(r) {
   else if (fam === 'groove') folder = 'groove/' + (/swing|mpc/.test(r.id) ? 'swing' : /drag|lazy/.test(r.id) ? 'push' : 'human');
   else if (fam === 'feels') folder = 'hiphop/' + (subgenre(labels) || 'general') + '/feel';
   else if (fam === 'hiphop') folder = `hiphop/${subgenre(labels) || 'general'}/${role || 'drums'}`;
+  else if (FAMS[fam]) folder = `${FAMS[fam].folder}/${role || 'misc'}`;
   else if (r.origin === 'RECIPES.md' || r.origin === 'new' || !fam) folder = role ? `strudel/${role}` : 'strudel/misc';
   const status = [];
   if (r.verified) status.push('verified'); else status.push('unverified');
@@ -49,11 +56,17 @@ export function recipeTaxonomy(r) {
 
 /* atoms (name "ns.name" inside an atoms ingredient) -> { folder, tags } */
 const FORM_NAMES = /^(intro|drop|verse|hook|bridge|outro|dropBar|lastBeat|switch|bounce|stomp|no[A-Z]\w*|dark|builds?|drops?|conf|reliefs?|relief2|vac|dropB|slams|lastBar|every4)$/;
+export function registerFeel(ingId, f) { const t = f.taxonomy; if (!t) return; (BY_NS.__feels ||= {})[ingId] = { folder: t.folder, genres: t.genres || [] }; }
 export function atomTaxonomy(ingId, ns, name, atom) {
   const n = name.replace(/^[a-z0-9]+\./, '');
   const gen = /^(boom)/.test(n) ? 'boom-bap' : /^(trap)/.test(n) ? 'trap' : /^(hyphy|stomp|bounce)/.test(n) ? 'hyphy' : /^cloud/.test(n) ? 'cloud' : null;
   const mk = (folder, role, extra = []) => ({ folder, tags: uniq([role, ...extra, atom.type === 'gate' ? 'gate' : atom.type === 'hook' ? 'rack-slot' : 'pattern']) });
   if (ns === 'dt') { const tech = /pickup/i.test(n) ? 'pickup' : /tail/i.test(n) ? 'tail' : /call|answer/i.test(n) ? 'call-response' : /xfade/i.test(n) ? 'crossfade' : /rise|hit/i.test(n) ? 'riser-impact' : n; return mk('dovetail/' + tech, 'dovetail', ['transition']); }
+  if (/^feel-/.test(ingId) && BY_NS.__feels && BY_NS.__feels[ingId]) { const reg = BY_NS.__feels[ingId]; const v = n.replace(/(Vel|Rack)$/, ''); const role = /^(kick|snare|perc|hats|top)$/.test(v) ? 'drums' : v === 'bass' ? 'bass' : v === 'harmony' ? 'keys' : v === 'fx' ? 'fx' : 'groove';
+    return { folder: `${reg.folder}/feel/${ingId.replace(/^feel-/, '')}`, tags: uniq([role, 'feel', ...reg.genres.slice(0, 1), /Vel$/.test(n) ? 'accents' : null, atom.type === 'hook' ? 'rack-slot' : 'pattern']) }; }
+  if (BY_NS[ns]) { const reg = BY_NS[ns]; if (FORM_NAMES.test(n) || atom.type === 'gate' || /^m[A-Z]/.test(n)) return mk(`${reg.folder}/form`, 'form', reg.genres.slice(0, 1));
+    const role = /kick|snare|clap|snap|hats?|roll|perc|ghost|accent|floor/i.test(n) ? 'drums' : /sub|bass|reese|growl|wobble|riddim|talk/i.test(n) ? 'bass' : /chords|chop|stab/i.test(n) ? 'keys' : /pad/i.test(n) ? 'pad' : /lead|arp|pluck|screech|laser/i.test(n) ? 'lead' : /open|thin|gap|pump|rise|fx/i.test(n) ? 'fx' : null;
+    return mk(`${reg.folder}/${role || 'misc'}`, role, reg.genres.slice(0, 1)); }
   if (/^feel-/.test(ingId)) { const id = ingId.replace(/^feel-/, ''); const v = n.replace(/(Vel|Rack)$/, ''); const role = /^(kick|snare|perc|hats|top)$/.test(v) ? 'drums' : v === 'bass' ? 'bass' : v === 'harmony' ? 'keys' : v === 'fx' ? 'fx' : v === 'groove' ? 'groove' : null;
     return { folder: `feels/${id}/${role || 'misc'}`, tags: uniq([role, 'feel', id === 'boombap' || id === 'lazy' ? 'boom-bap' : id, id === 'lazy' ? 'lazy' : null, /Vel$/.test(n) ? 'accents' : null, atom.type === 'hook' ? 'rack-slot' : 'pattern']) }; }
   if (FORM_NAMES.test(n) || atom.type === 'gate') return mk(`${ns === 'hh' ? 'hiphop/general' : ns === 'ph' || ns === 'ph2' ? 'phonk' : ns}/form`, 'form', ns === 'hh' ? ['hip-hop'] : ['phonk']);
@@ -63,9 +76,12 @@ export function atomTaxonomy(ingId, ns, name, atom) {
 }
 
 /* hook defs (racks, grooves, moves): { folder, tags } from the def's class */
+const EDM_ROLE = { sub: 'bass', reese: 'bass', growl: 'bass', screech: 'lead', supersaw: 'keys', pluck: 'lead', arp: 'lead', riser: 'fx', reverse: 'fx', impact: 'fx' };
 const CLASS_ROLE = { kick: 'drums', snare: 'drums', perc: 'drums', hat: 'drums', bass: 'bass', keys: 'keys', bell: 'lead', lead: 'lead', pad: 'pad', stab: 'keys', vox: 'vox', texture: 'fx', sweep: 'fx', move: 'dovetail', groove: 'groove', master: 'fx' };
 export function rackTaxonomy(name, def, cls, ingId) {
   if (/^groove-/.test(name)) return { folder: 'grooves/' + (/swing|push|human/.test(name) ? 'builders' : 'presets'), tags: ['groove', 'rack-slot', 'human-feel', ...(/swing/.test(name) ? ['swing'] : [])] };
+  if (BY_ING[ingId]) { const reg = BY_ING[ingId]; const role = CLASS_ROLE[cls] || EDM_ROLE[cls] || null; const move = cls === 'move';
+    return { folder: `${reg.folder}/${move ? 'moves' : 'racks/' + (role || 'misc')}`, tags: uniq([move ? 'fx' : role, 'rack', ...reg.genres.slice(0, 1)]) }; }
   const role = CLASS_ROLE[cls] || (cls === 'move' ? 'dovetail' : null); const gen = ingId === 'racks-hiphop' ? 'hiphop' : 'phonk';
   const move = cls === 'move' || /^(fadeOut|fadeIn|throw|tailHold|duckUnder)$/.test(name);
   return { folder: move ? 'dovetail/moves' : `racks/${role || 'misc'}`, tags: uniq([move ? 'dovetail' : role, 'rack', move ? 'transition' : null, gen === 'hiphop' ? 'hip-hop' : 'phonk']) };

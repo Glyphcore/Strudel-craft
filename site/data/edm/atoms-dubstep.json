@@ -1,0 +1,397 @@
+{
+ "format": "atoms@1",
+ "name": "ds",
+ "doc": "glyphcore/edm dubstep atoms (ds.): half-time, brostep and riddim drum patterns, hat accents, sub / growl / wobble / reese / riddim / talk bass lines, wobble rates, the Cm7 Abmaj7 Ebmaj7 Bb7 loop with arp, pluck, lead, chop, screech and laser lines; call / response and 4th-bar fill masks. Import with atoms.import(\"pack:glyphcore/edm:atoms-dubstep\").",
+ "atoms": {
+  "a1vg8vf": {
+   "name": "ds.halfKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~",
+   "doc": "half-time kick: the 1 only",
+   "folder": "edm/dubstep/drums",
+   "tags": [
+    "drums",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:d0f80ff33ec6e1db3872b32285cdcb291e1347b4a0b23d477b59a3d5131165dc"
+  },
+  "axy6gez": {
+   "name": "ds.halfKick2",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "half-time kick with the and of 3",
+   "folder": "edm/dubstep/drums",
+   "tags": [
+    "drums",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:de06729586e457eea6ecbfade8323300f60d93d4dc29d6160834b42c3eb44211"
+  },
+  "agtzmh7": {
+   "name": "ds.broKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "brostep kick: 1, the a of 1, the and of 3, the and of 4",
+   "folder": "edm/dubstep/drums",
+   "tags": [
+    "drums",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:ab11b12ad1e86d946ad09ef80cbdd5dc01af4e0aef7a4cd80dc418b68f9ab734"
+  },
+  "a1d3uyx": {
+   "name": "ds.riddimKick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~",
+   "doc": "riddim kick: 1 and the and of 2",
+   "folder": "edm/dubstep/drums",
+   "tags": [
+    "drums",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:0c64f84974ef8be7b43b95e899d6caebb354964b4bb9c9fcc72652b4421987da"
+  },
+  "as5y9ay": {
+   "name": "ds.halfSnare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
+   "doc": "half-time snare on beat 3",
+   "folder": "edm/dubstep/drums",
+   "tags": [
+    "drums",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:525fd0444781900288d0ac6c5358b9391d694346d05e7bca8b3001885e70932c"
+  },
+  "ajohkk0": {
+   "name": "ds.ghostSnare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x",
+   "doc": "ghost snares around the backbeat (the a of 2, the a of 4)",
+   "folder": "edm/dubstep/drums",
+   "tags": [
+    "drums",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:e75c6c45cbb9b49e51068f1cf75afae3e6c33a7263bba09ccb1552c9fa57eda4"
+  },
+  "afneov7": {
+   "name": "ds.dsHats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*8",
+   "doc": "8th hats: the standard meter over half-time drums",
+   "folder": "edm/dubstep/drums",
+   "tags": [
+    "drums",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:c2845fc5d1dfae91f61227e9f77fbff665ea294e5367dbd32a4f511e758525ec"
+  },
+  "ac1942d": {
+   "name": "ds.dsHatVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[1 .55]*4",
+   "doc": "8th hat accents",
+   "folder": "edm/dubstep/drums",
+   "tags": [
+    "drums",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:f77c236a1a254eecdbcf4976f44b5b01d5f6aa633ce54230729f37d31ab8112f"
+  },
+  "av8xayl": {
+   "name": "ds.hats16",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*16",
+   "doc": "16th hats (brostep, builds)",
+   "folder": "edm/dubstep/drums",
+   "tags": [
+    "drums",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:bc74a3b9e12ebc0770e636fb859180836145824d453b6c0c08e954bc49f4cdaf"
+  },
+  "ay6v88x": {
+   "name": "ds.hat16Vel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[.9 .4 .6 .4]*4",
+   "doc": "16th hat accents",
+   "folder": "edm/dubstep/drums",
+   "tags": [
+    "drums",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:0a62ee2689086899803348f134f48a84fd8ba5f7fb8d089d37f4804ab79e04da"
+  },
+  "ajcsiko": {
+   "name": "ds.subLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "<c1 c1 ab1 bb1>",
+   "doc": "sub roots, one per bar, C minor (i i VI VII)",
+   "folder": "edm/dubstep/bass",
+   "tags": [
+    "bass",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:4b54717f4dc6ec36aa7bed3fd791eefe29131517b7e90d9ead9d358a50d39288"
+  },
+  "adjvosv": {
+   "name": "ds.growlLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]",
+   "doc": "growl rhythm: 8ths and 16ths with gaps (the gaps make the groove)",
+   "folder": "edm/dubstep/bass",
+   "tags": [
+    "bass",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:7ed0d62a07b3323bea88405c3d859a38be26230e0e8e06ad39b0c3257b505fc8"
+  },
+  "aft1ifb": {
+   "name": "ds.wobbleLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "<c2 c2 eb2 [g1 bb1]>",
+   "doc": "wobble roots, held",
+   "folder": "edm/dubstep/bass",
+   "tags": [
+    "bass",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:e4f3934ad1cbea840939b029a74c1abd8b47a8fec1cf705424141955d6e8b5ed"
+  },
+  "abtfym2": {
+   "name": "ds.wobbleSync",
+   "type": "mini",
+   "rev": 1,
+   "body": "<4 8 [4 16] 6>",
+   "doc": "wobble rates per bar: quarters, eighths, quarters then 16ths, triplets",
+   "folder": "edm/dubstep/bass",
+   "tags": [
+    "bass",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:4f8540d7509e3aeeb44be88a6533f3571a799d69254e9ee25ab9be22d2c2c601"
+  },
+  "agsxwqq": {
+   "name": "ds.reeseLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "<c2 [c2@3 eb2] ab1 [bb1@3 g1]>",
+   "doc": "reese line, held notes",
+   "folder": "edm/dubstep/bass",
+   "tags": [
+    "bass",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:f8614f6323a3dcae24ea5f93a89c91b4e1d3c1e33fc1f2a3569239d1c7531bd7"
+  },
+  "amnj79d": {
+   "name": "ds.riddimLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "[c2 ~ ~ c2 ~ ~ c2 ~]*2",
+   "doc": "riddim: 3 + 3 + 2 sixteenths, twice; repetition and space",
+   "folder": "edm/dubstep/bass",
+   "tags": [
+    "bass",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:32ed4bd6bc580c783abd2900575de2b6edc3f111a89edd55d7284b631d40fb73"
+  },
+  "a5zvzcc": {
+   "name": "ds.talkLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "[c2@3 c2] [~ eb2] [c2@2 g1@2] ~",
+   "doc": "talking bass phrase",
+   "folder": "edm/dubstep/bass",
+   "tags": [
+    "bass",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:3b01289da1096992e4a51ea267b03cf27c8384b0f453557debc2aa9ab6a3801a"
+  },
+  "ax0vu97": {
+   "name": "ds.chords",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>",
+   "doc": "melodic dubstep loop: Cm7 Abmaj7 Ebmaj7 Bb7 (i VI III VII)",
+   "folder": "edm/dubstep/keys",
+   "tags": [
+    "keys",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:d84c725e064052cc810f622a662aa2382ccec9066c2de9a977bb44c408083c6e"
+  },
+  "aeqwb6p": {
+   "name": "ds.arp",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[c4 eb4 g4 c5]*4 [ab3 c4 eb4 ab4]*4 [eb4 g4 bb4 eb5]*4 [bb3 d4 f4 bb4]*4>",
+   "doc": "16th arp over the chord loop",
+   "folder": "edm/dubstep/lead",
+   "tags": [
+    "lead",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:6475110bbfca48f07a58faf65b1c88760635cdc09608c0bb5442e0d030be03b2"
+  },
+  "amc9844": {
+   "name": "ds.leadLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[c5 ~ bb4 g4 ~ g4 bb4 c5] [eb5 ~ d5 c5 ~ bb4 g4 ~] [g5 ~ f5 eb5 ~ d5 eb5 ~] [f5 ~ eb5 d5 ~ bb4 ~ ~]>",
+   "doc": "melodic lead over the loop",
+   "folder": "edm/dubstep/lead",
+   "tags": [
+    "lead",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:45059f6cbed840b71165db72a2da48d19ffc2a368ee04857f3c19f22176dd0c5"
+  },
+  "aob2tg3": {
+   "name": "ds.pluckLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[c4 ~ g4 ~ eb4 ~ c5 ~] [ab3 ~ eb4 ~ c4 ~ ab4 ~] [eb4 ~ bb4 ~ g4 ~ eb5 ~] [bb3 ~ f4 ~ d4 ~ bb4 ~]>",
+   "doc": "pluck figure",
+   "folder": "edm/dubstep/lead",
+   "tags": [
+    "lead",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:b892ab0b62ab48e50f99a0edb77c3a6c1f34bf0e3a057adb2444a2c1fb5a1488"
+  },
+  "a89rh46": {
+   "name": "ds.chopLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[g4 ~ g4 ~ ~ bb4 ~ c5] [~ eb5 ~ d5 c5 ~ ~ ~]>",
+   "doc": "vowel-chop hook",
+   "folder": "edm/dubstep/keys",
+   "tags": [
+    "keys",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:0adef123b8c655609b1c7a6dfa48e11a70c6604e32a447d1d940498e1a6dbddb"
+  },
+  "a5tw6hv": {
+   "name": "ds.screechLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ c6 ~ ~ ~ ~ ~ ~ ~ eb6 ~",
+   "doc": "screech answers in the bass gaps",
+   "folder": "edm/dubstep/lead",
+   "tags": [
+    "lead",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:fcbc04ca90c48e2bc0e130f650244ab42d802814a4796d50d3b52bf9f9dd9572"
+  },
+  "awcm0kh": {
+   "name": "ds.laserLine",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c6 ~ ~ ~",
+   "doc": "one laser per bar, in a gap",
+   "folder": "edm/dubstep/lead",
+   "tags": [
+    "lead",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:1751a36f8c1370c8734dc8b364c986cf46213c3a13441640faf08d7fffd45e76"
+  },
+  "as8cmr2": {
+   "name": "ds.bassA",
+   "type": "mini",
+   "rev": 1,
+   "body": "<1 0>",
+   "doc": "call bar (bass A)",
+   "folder": "edm/dubstep/bass",
+   "tags": [
+    "bass",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:df9e10eef08ac819979e30b6078ee906e6cecd6ed441438908f11e2fa83210da"
+  },
+  "aryd123": {
+   "name": "ds.bassB",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0 1>",
+   "doc": "response bar (bass B)",
+   "folder": "edm/dubstep/bass",
+   "tags": [
+    "bass",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:30bbee5e1ba3b59c9931a6c03ea562e628699cad5cff851ef07472e0f8105e7a"
+  },
+  "akthkpz": {
+   "name": "ds.lastOf4",
+   "type": "mini",
+   "rev": 1,
+   "body": "<0 0 0 1>",
+   "doc": "the 4th bar of every 4: the drop fill",
+   "folder": "edm/dubstep/misc",
+   "tags": [
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:5118a36546127239c95cb863107e30e0eb6db3db242c892edc57c50de456b464"
+  },
+  "apqr5yk": {
+   "name": "ds.notLastOf4",
+   "type": "mini",
+   "rev": 1,
+   "body": "<1 1 1 0>",
+   "doc": "bars 1-3 of every 4",
+   "folder": "edm/dubstep/misc",
+   "tags": [
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:51b1cdef53ee2c9a328e8d1a223ea66026ebabf48620325c7df56169d1d85d7e"
+  }
+ }
+}

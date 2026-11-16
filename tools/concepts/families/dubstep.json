@@ -1,0 +1,1727 @@
+{
+ "family": "dubstep",
+ "title": "Dubstep: UKF half-time, melodic dubstep, riddim, brostep",
+ "doc": "Dubstep components (C minor, 140 bpm half-time, one cycle = one bar): kick and half-time snare, sub (edm-core), Reese, FM formant growl, synced wobble, talking bass, riddim bass, screech and laser leads, supersaw chords, pluck, arp, lead, atmosphere pad and synthesised vowel chops; forms reuse the edm-core 104-bar gates; four feel templates (halftime, ukf, riddim, brostep).",
+ "pack": "glyphcore/edm",
+ "taxonomy": {
+  "folder": "edm/dubstep",
+  "genres": [
+   "dubstep",
+   "melodic-dubstep",
+   "riddim",
+   "brostep"
+  ]
+ },
+ "source": "docs/EDM_REFERENCES.md",
+ "racksIngredient": "racks-dubstep",
+ "racksTitle": "Dubstep racks",
+ "racksDoc": "Dubstep racks (band-scoped, docs/RACK_STANDARD.md): dsKick, dsSnare, reeseBass, growlBass, wobbleBass(sync), talkBass, riddimBass, screechLead, laserZap, ukfChord, ukfPluck, ukfArp, ukfLead, atmosPad, vowelChop. Growl layers start at 80-90 Hz: put subSine (racks-edm-core) under them.",
+ "atomsIngredient": {
+  "id": "atoms-dubstep",
+  "ns": "ds",
+  "title": "Dubstep atoms",
+  "doc": "glyphcore/edm dubstep atoms (ds.): half-time, brostep and riddim drum patterns, hat accents, sub / growl / wobble / reese / riddim / talk bass lines, wobble rates, the Cm7 Abmaj7 Ebmaj7 Bb7 loop with arp, pluck, lead, chop, screech and laser lines; call / response and 4th-bar fill masks. Import with atoms.import(\"pack:glyphcore/edm:atoms-dubstep\")."
+ },
+ "section": {
+  "id": "dubstep",
+  "title": "Dubstep: half-time, UKF melodic, riddim, brostep",
+  "explain": "Dubstep in pack glyphcore/edm (docs/EDM_REFERENCES.md). 140 bpm, one cycle = one bar, kick on the 1 (and the and of 3), snare alone on beat 3. Bass is layered: subSine plays the fundamental, the growl / wobble / reese / riddim layer starts at 80-90 Hz, so drive never muddies the sub. Wobble is the superdough low-pass LFO synced to the bar (lpsync: periods per bar). Four feels (feel-halftime, feel-ukf, feel-riddim, feel-brostep) fill the same template slots as the hip-hop feels."
+ },
+ "labels": [
+  [
+   "dubstep",
+   "Dubstep",
+   "feel",
+   "140, half-time, UKF, bass music"
+  ],
+  [
+   "melodic-dubstep",
+   "Melodic dubstep",
+   "feel",
+   "UKF, emotional, supersaw, future"
+  ],
+  [
+   "riddim",
+   "Riddim",
+   "feel",
+   "hollow, repetitive, minimal bass"
+  ],
+  [
+   "brostep",
+   "Brostep",
+   "feel",
+   "growl, screech, aggressive"
+  ],
+  [
+   "reese",
+   "Reese",
+   "bass",
+   "detuned saw bass, beating"
+  ],
+  [
+   "growl",
+   "Growl",
+   "bass",
+   "FM, formant, talking, yoi"
+  ],
+  [
+   "wobble",
+   "Wobble",
+   "bass",
+   "wub, LFO filter, synced"
+  ],
+  [
+   "lead",
+   "Lead",
+   "synth",
+   "melody, screech, top line"
+  ]
+ ],
+ "racks": {
+  "dsKick": {
+   "class": "kick",
+   "doc": "dubstep kick: sine body near 48 Hz, 30-semitone drop over 60 ms, 400 ms decay, shape for punch",
+   "chain": [
+    [
+     "hook",
+     "hygiene-kick"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "freq",
+     48
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "penv",
+     30
+    ],
+    [
+     "pdecay",
+     0.06
+    ],
+    [
+     "decay",
+     0.4
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "shape",
+     0.4
+    ],
+    [
+     "lpf",
+     3500
+    ],
+    [
+     "gain",
+     0.8
+    ]
+   ]
+  },
+  "dsSnare": {
+   "class": "snare",
+   "doc": "half-time snare: triangle body on D3 stacked with white noise, high-pass 150 Hz, 220 ms, light shape; the one big hit on beat 3",
+   "chain": [
+    [
+     "hook",
+     "hygiene-snare"
+    ],
+    [
+     "s",
+     {
+      "$mini": "triangle, white"
+     }
+    ],
+    [
+     "note",
+     "d3"
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.22
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     150
+    ],
+    [
+     "lpf",
+     9000
+    ],
+    [
+     "shape",
+     0.25
+    ],
+    [
+     "gain",
+     0.55
+    ]
+   ]
+  },
+  "reeseBass": {
+   "class": "reese",
+   "doc": "Reese: two saws 0.3 semitone apart (+-15 cents, the beating is the sound), mono (spread 0), low-pass 900 Hz with a short envelope, light shape",
+   "chain": [
+    [
+     "hook",
+     "hygiene-reese"
+    ],
+    [
+     "s",
+     "supersaw"
+    ],
+    [
+     "unison",
+     2
+    ],
+    [
+     "detune",
+     0.3
+    ],
+    [
+     "spread",
+     0
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.08
+    ],
+    [
+     "lpf",
+     900
+    ],
+    [
+     "lpenv",
+     1
+    ],
+    [
+     "lpdecay",
+     0.3
+    ],
+    [
+     "lpsustain",
+     0.5
+    ],
+    [
+     "shape",
+     0.3
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "growlBass": {
+   "class": "growl",
+   "doc": "FM formant growl (mid layer over a separate sub): saw with FM at ratio 1 whose index decays, a vowel formant filter per note, distortion after the filters; high-pass 90 Hz leaves the fundamental to the sub",
+   "chain": [
+    [
+     "hook",
+     "hygiene-growl"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "fm",
+     2
+    ],
+    [
+     "fmh",
+     1
+    ],
+    [
+     "fmattack",
+     0.005
+    ],
+    [
+     "fmdecay",
+     0.25
+    ],
+    [
+     "fmsustain",
+     0.3
+    ],
+    [
+     "vowel",
+     {
+      "$mini": "<a o>"
+     }
+    ],
+    [
+     "hpf",
+     90
+    ],
+    [
+     "lpf",
+     3200
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     0.05
+    ],
+    [
+     "distort",
+     1.5
+    ],
+    [
+     "distortvol",
+     0.4
+    ],
+    [
+     "gain",
+     0.4
+    ]
+   ]
+  },
+  "wobbleBass": {
+   "class": "growl",
+   "doc": "wobble: saw + square through a resonant low-pass whose LFO is synced to the bar (`sync` per bar: 4 quarters, 8 eighths, 6 / 12 triplets), shape after it; high-pass 80 Hz",
+   "params": {
+    "sync": {
+     "min": 0.5,
+     "max": 32,
+     "default": 4
+    }
+   },
+   "chain": [
+    [
+     "hook",
+     "hygiene-growl"
+    ],
+    [
+     "s",
+     {
+      "$mini": "sawtooth, square"
+     }
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.05
+    ],
+    [
+     "hpf",
+     80
+    ],
+    [
+     "lpf",
+     500
+    ],
+    [
+     "lpq",
+     6
+    ],
+    [
+     "lpsync",
+     {
+      "$param": "sync"
+     }
+    ],
+    [
+     "lpdepth",
+     1.6
+    ],
+    [
+     "shape",
+     0.45
+    ],
+    [
+     "gain",
+     0.26
+    ]
+   ]
+  },
+  "talkBass": {
+   "class": "growl",
+   "doc": "talking bass: saw with FM at ratio 2 through an 'o' formant, a 1/16 synced low-pass LFO (16 per bar) and soft distortion: the vocal yoi / talk movement",
+   "chain": [
+    [
+     "hook",
+     "hygiene-growl"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "fm",
+     1.5
+    ],
+    [
+     "fmh",
+     2
+    ],
+    [
+     "vowel",
+     "o"
+    ],
+    [
+     "hpf",
+     90
+    ],
+    [
+     "lpf",
+     2400
+    ],
+    [
+     "lpsync",
+     16
+    ],
+    [
+     "lpdepth",
+     0.9
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "sustain",
+     0.9
+    ],
+    [
+     "release",
+     0.05
+    ],
+    [
+     "distort",
+     1.2
+    ],
+    [
+     "distortvol",
+     0.45
+    ],
+    [
+     "gain",
+     0.38
+    ]
+   ]
+  },
+  "riddimBass": {
+   "class": "growl",
+   "doc": "riddim: hollow square with FM at ratio 0.5 (a sub-octave modulator), resonant low-pass 900 Hz, short and repetitive, heavy shape; the space between hits is part of the sound",
+   "chain": [
+    [
+     "hook",
+     "hygiene-growl"
+    ],
+    [
+     "s",
+     "square"
+    ],
+    [
+     "fm",
+     0.6
+    ],
+    [
+     "fmh",
+     0.5
+    ],
+    [
+     "attack",
+     0.004
+    ],
+    [
+     "decay",
+     0.22
+    ],
+    [
+     "sustain",
+     0.35
+    ],
+    [
+     "release",
+     0.04
+    ],
+    [
+     "hpf",
+     90
+    ],
+    [
+     "lpf",
+     900
+    ],
+    [
+     "lpq",
+     3
+    ],
+    [
+     "shape",
+     0.5
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "screechLead": {
+   "class": "screech",
+   "doc": "screech: saw with FM at a slightly inharmonic ratio 3.01 (a beating edge), index decays to 0.5, high-pass 400 Hz, distortion, fast vibrato",
+   "chain": [
+    [
+     "hook",
+     "hygiene-screech"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "fm",
+     3
+    ],
+    [
+     "fmh",
+     3.01
+    ],
+    [
+     "fmdecay",
+     0.3
+    ],
+    [
+     "fmsustain",
+     0.5
+    ],
+    [
+     "hpf",
+     400
+    ],
+    [
+     "lpf",
+     6000
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "sustain",
+     0.7
+    ],
+    [
+     "release",
+     0.1
+    ],
+    [
+     "vib",
+     6
+    ],
+    [
+     "vibmod",
+     0.2
+    ],
+    [
+     "distort",
+     2
+    ],
+    [
+     "distortvol",
+     0.35
+    ],
+    [
+     "gain",
+     0.22
+    ]
+   ]
+  },
+  "laserZap": {
+   "class": "screech",
+   "doc": "laser: a saw that falls two octaves in 120 ms (pitch envelope), 180 ms long; the pew between bass hits",
+   "chain": [
+    [
+     "hook",
+     "hygiene-screech"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "penv",
+     24
+    ],
+    [
+     "pdecay",
+     0.12
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "decay",
+     0.18
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     300
+    ],
+    [
+     "lpf",
+     7000
+    ],
+    [
+     "gain",
+     0.25
+    ]
+   ]
+  },
+  "ukfChord": {
+   "class": "supersaw",
+   "doc": "melodic dubstep chords: 7-voice supersaw, 0.35 semitone detune, 0.7 spread above a 200 Hz high-pass",
+   "chain": [
+    [
+     "hook",
+     "hygiene-supersaw"
+    ],
+    [
+     "s",
+     "supersaw"
+    ],
+    [
+     "unison",
+     7
+    ],
+    [
+     "detune",
+     0.35
+    ],
+    [
+     "spread",
+     0.7
+    ],
+    [
+     "attack",
+     0.02
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     0.5
+    ],
+    [
+     "hpf",
+     200
+    ],
+    [
+     "lpf",
+     7000
+    ],
+    [
+     "gain",
+     0.15
+    ]
+   ]
+  },
+  "ukfPluck": {
+   "class": "pluck",
+   "doc": "UKF pluck: saw + square, 250 ms, low-pass 2.2 kHz with a 3-octave envelope",
+   "chain": [
+    [
+     "hook",
+     "hygiene-pluck"
+    ],
+    [
+     "s",
+     {
+      "$mini": "sawtooth, square"
+     }
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "decay",
+     0.25
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "lpf",
+     2200
+    ],
+    [
+     "lpenv",
+     3
+    ],
+    [
+     "lpdecay",
+     0.2
+    ],
+    [
+     "lpsustain",
+     0
+    ],
+    [
+     "gain",
+     0.24
+    ]
+   ]
+  },
+  "ukfArp": {
+   "class": "arp",
+   "doc": "arp: triangle, 150 ms, filter envelope 2 octaves",
+   "chain": [
+    [
+     "hook",
+     "hygiene-arp"
+    ],
+    [
+     "s",
+     "triangle"
+    ],
+    [
+     "attack",
+     0.003
+    ],
+    [
+     "decay",
+     0.15
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "lpf",
+     3000
+    ],
+    [
+     "lpenv",
+     2
+    ],
+    [
+     "lpdecay",
+     0.12
+    ],
+    [
+     "gain",
+     0.35
+    ]
+   ]
+  },
+  "ukfLead": {
+   "class": "lead",
+   "doc": "melodic lead: 3-voice supersaw, low-pass 3.5 kHz, 15 ms attack, vibrato 5 Hz at 0.12 semitone",
+   "chain": [
+    [
+     "hook",
+     "hygiene-lead"
+    ],
+    [
+     "s",
+     "supersaw"
+    ],
+    [
+     "unison",
+     3
+    ],
+    [
+     "detune",
+     0.15
+    ],
+    [
+     "spread",
+     0.4
+    ],
+    [
+     "attack",
+     0.015
+    ],
+    [
+     "sustain",
+     0.7
+    ],
+    [
+     "release",
+     0.3
+    ],
+    [
+     "lpf",
+     3500
+    ],
+    [
+     "lpenv",
+     1
+    ],
+    [
+     "lpdecay",
+     0.3
+    ],
+    [
+     "vib",
+     5
+    ],
+    [
+     "vibmod",
+     0.12
+    ],
+    [
+     "gain",
+     0.22
+    ]
+   ]
+  },
+  "atmosPad": {
+   "class": "pad",
+   "doc": "atmosphere pad: 5-voice supersaw, 2 s attack, 3 s release, filter opens over 3 s",
+   "chain": [
+    [
+     "hook",
+     "hygiene-pad"
+    ],
+    [
+     "s",
+     "supersaw"
+    ],
+    [
+     "unison",
+     5
+    ],
+    [
+     "detune",
+     0.25
+    ],
+    [
+     "attack",
+     2
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     3
+    ],
+    [
+     "lpf",
+     1200
+    ],
+    [
+     "lpenv",
+     1.5
+    ],
+    [
+     "lpattack",
+     3
+    ],
+    [
+     "gain",
+     0.15
+    ]
+   ]
+  },
+  "vowelChop": {
+   "class": "vox",
+   "doc": "vowel chop (synthesised, no sample): a saw through a vowel formant that changes per note, 120 ms stab",
+   "chain": [
+    [
+     "hook",
+     "hygiene-vox"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "vowel",
+     {
+      "$mini": "<a e o i>"
+     }
+    ],
+    [
+     "attack",
+     0.003
+    ],
+    [
+     "decay",
+     0.12
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     250
+    ],
+    [
+     "lpf",
+     5000
+    ],
+    [
+     "gain",
+     0.4
+    ]
+   ]
+  }
+ },
+ "atoms": {
+  "halfKick": {
+   "type": "mini",
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~",
+   "doc": "half-time kick: the 1 only"
+  },
+  "halfKick2": {
+   "type": "mini",
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "half-time kick with the and of 3"
+  },
+  "broKick": {
+   "type": "mini",
+   "body": "x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "brostep kick: 1, the a of 1, the and of 3, the and of 4"
+  },
+  "riddimKick": {
+   "type": "mini",
+   "body": "x ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~",
+   "doc": "riddim kick: 1 and the and of 2"
+  },
+  "halfSnare": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
+   "doc": "half-time snare on beat 3"
+  },
+  "ghostSnare": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x",
+   "doc": "ghost snares around the backbeat (the a of 2, the a of 4)"
+  },
+  "dsHats": {
+   "type": "mini",
+   "body": "x*8",
+   "doc": "8th hats: the standard meter over half-time drums"
+  },
+  "dsHatVel": {
+   "type": "mini",
+   "body": "[1 .55]*4",
+   "doc": "8th hat accents"
+  },
+  "hats16": {
+   "type": "mini",
+   "body": "x*16",
+   "doc": "16th hats (brostep, builds)"
+  },
+  "hat16Vel": {
+   "type": "mini",
+   "body": "[.9 .4 .6 .4]*4",
+   "doc": "16th hat accents"
+  },
+  "subLine": {
+   "type": "mini",
+   "body": "<c1 c1 ab1 bb1>",
+   "doc": "sub roots, one per bar, C minor (i i VI VII)"
+  },
+  "growlLine": {
+   "type": "mini",
+   "body": "[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]",
+   "doc": "growl rhythm: 8ths and 16ths with gaps (the gaps make the groove)"
+  },
+  "wobbleLine": {
+   "type": "mini",
+   "body": "<c2 c2 eb2 [g1 bb1]>",
+   "doc": "wobble roots, held"
+  },
+  "wobbleSync": {
+   "type": "mini",
+   "body": "<4 8 [4 16] 6>",
+   "doc": "wobble rates per bar: quarters, eighths, quarters then 16ths, triplets"
+  },
+  "reeseLine": {
+   "type": "mini",
+   "body": "<c2 [c2@3 eb2] ab1 [bb1@3 g1]>",
+   "doc": "reese line, held notes"
+  },
+  "riddimLine": {
+   "type": "mini",
+   "body": "[c2 ~ ~ c2 ~ ~ c2 ~]*2",
+   "doc": "riddim: 3 + 3 + 2 sixteenths, twice; repetition and space"
+  },
+  "talkLine": {
+   "type": "mini",
+   "body": "[c2@3 c2] [~ eb2] [c2@2 g1@2] ~",
+   "doc": "talking bass phrase"
+  },
+  "chords": {
+   "type": "mini",
+   "body": "<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>",
+   "doc": "melodic dubstep loop: Cm7 Abmaj7 Ebmaj7 Bb7 (i VI III VII)"
+  },
+  "arp": {
+   "type": "mini",
+   "body": "<[c4 eb4 g4 c5]*4 [ab3 c4 eb4 ab4]*4 [eb4 g4 bb4 eb5]*4 [bb3 d4 f4 bb4]*4>",
+   "doc": "16th arp over the chord loop"
+  },
+  "leadLine": {
+   "type": "mini",
+   "body": "<[c5 ~ bb4 g4 ~ g4 bb4 c5] [eb5 ~ d5 c5 ~ bb4 g4 ~] [g5 ~ f5 eb5 ~ d5 eb5 ~] [f5 ~ eb5 d5 ~ bb4 ~ ~]>",
+   "doc": "melodic lead over the loop"
+  },
+  "pluckLine": {
+   "type": "mini",
+   "body": "<[c4 ~ g4 ~ eb4 ~ c5 ~] [ab3 ~ eb4 ~ c4 ~ ab4 ~] [eb4 ~ bb4 ~ g4 ~ eb5 ~] [bb3 ~ f4 ~ d4 ~ bb4 ~]>",
+   "doc": "pluck figure"
+  },
+  "chopLine": {
+   "type": "mini",
+   "body": "<[g4 ~ g4 ~ ~ bb4 ~ c5] [~ eb5 ~ d5 c5 ~ ~ ~]>",
+   "doc": "vowel-chop hook"
+  },
+  "screechLine": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ ~ ~ c6 ~ ~ ~ ~ ~ ~ ~ eb6 ~",
+   "doc": "screech answers in the bass gaps"
+  },
+  "laserLine": {
+   "type": "mini",
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c6 ~ ~ ~",
+   "doc": "one laser per bar, in a gap"
+  },
+  "bassA": {
+   "type": "mini",
+   "body": "<1 0>",
+   "doc": "call bar (bass A)"
+  },
+  "bassB": {
+   "type": "mini",
+   "body": "<0 1>",
+   "doc": "response bar (bass B)"
+  },
+  "lastOf4": {
+   "type": "mini",
+   "body": "<0 0 0 1>",
+   "doc": "the 4th bar of every 4: the drop fill"
+  },
+  "notLastOf4": {
+   "type": "mini",
+   "body": "<1 1 1 0>",
+   "doc": "bars 1-3 of every 4"
+  }
+ },
+ "recipes": [
+  {
+   "id": "dubstep-halftime-drums",
+   "title": "Half-time drums at 140",
+   "intent": "Kick on the 1 and the and of 3, the snare alone on beat 3, 8th hats: the half-time pulse under a 140 bpm meter.",
+   "labels": [
+    "dubstep",
+    "half-time",
+    "edm"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@halfKick2",
+     "rack": "dsKick"
+    },
+    {
+     "src": "s",
+     "pat": "@halfSnare",
+     "rack": "dsSnare"
+    },
+    {
+     "src": "s",
+     "pat": "@dsHats",
+     "rack": "hatClosed",
+     "vel": "@dsHatVel"
+    }
+   ]
+  },
+  {
+   "id": "dubstep-kick",
+   "title": "Dubstep kick",
+   "intent": "Deep sine kick with a punchy pitch drop on the half-time 1.",
+   "labels": [
+    "dubstep",
+    "half-time"
+   ],
+   "class": "kick",
+   "cpm": 140,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@halfKick2",
+     "rack": "dsKick"
+    }
+   ]
+  },
+  {
+   "id": "dubstep-snare",
+   "title": "Half-time snare",
+   "intent": "Triangle body plus noise on beat 3, with ghost snares around it.",
+   "labels": [
+    "dubstep",
+    "accents"
+   ],
+   "class": "snare",
+   "cpm": 140,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@halfSnare",
+     "rack": "dsSnare"
+    },
+    {
+     "src": "s",
+     "pat": "@ghostSnare",
+     "rack": "snareTight",
+     "vel": "0.35"
+    }
+   ]
+  },
+  {
+   "id": "dubstep-reese",
+   "title": "Reese bass",
+   "intent": "Two saws 0.3 semitone apart beating against each other, mono, low-passed.",
+   "labels": [
+    "dubstep",
+    "reese",
+    "bass"
+   ],
+   "class": "reese",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@reeseLine",
+     "rack": "reeseBass"
+    }
+   ]
+  },
+  {
+   "id": "dubstep-sub-growl",
+   "title": "Sub + growl (band split by layering)",
+   "intent": "A clean sine sub plays the fundamental, an FM formant growl an octave up starts at 90 Hz: the low end stays clean while the mids snarl.",
+   "labels": [
+    "dubstep",
+    "growl",
+    "low-end"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@growlLine",
+     "rack": "growlBass"
+    },
+    {
+     "src": "note",
+     "pat": "[c1 c1] ~ [c1 ~ c1 c1] [eb1 ~ g1 ~]",
+     "rack": "subSine"
+    }
+   ]
+  },
+  {
+   "id": "dubstep-growl",
+   "title": "FM formant growl",
+   "intent": "Saw with an FM index that decays, a vowel formant per note and distortion after the filters.",
+   "labels": [
+    "dubstep",
+    "growl",
+    "fm",
+    "formant"
+   ],
+   "class": "growl",
+   "cpm": 140,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@growlLine",
+     "rack": "growlBass"
+    }
+   ]
+  },
+  {
+   "id": "dubstep-wobble",
+   "title": "Wobble (synced filter LFO)",
+   "intent": "Held roots through a resonant low-pass whose LFO is synced to the bar; the rate changes per bar: quarters, eighths, 16ths, triplets.",
+   "labels": [
+    "dubstep",
+    "wobble",
+    "filter-sweep"
+   ],
+   "class": "growl",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@wobbleLine",
+     "rack": "wobbleBass",
+     "more": ".lpsync(\"@wobbleSync\")"
+    }
+   ]
+  },
+  {
+   "id": "dubstep-talk-bass",
+   "title": "Talking bass",
+   "intent": "FM saw through an 'o' formant with a 16th-note filter LFO: the bass seems to speak.",
+   "labels": [
+    "dubstep",
+    "growl",
+    "formant"
+   ],
+   "class": "growl",
+   "cpm": 140,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@talkLine",
+     "rack": "talkBass"
+    }
+   ]
+  },
+  {
+   "id": "riddim-bass",
+   "title": "Riddim bass",
+   "intent": "A hollow square with a sub-octave FM modulator in a 3+3+2 pattern; the space between hits is the groove.",
+   "labels": [
+    "riddim",
+    "dubstep",
+    "growl"
+   ],
+   "class": "growl",
+   "cpm": 140,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@riddimLine",
+     "rack": "riddimBass"
+    }
+   ]
+  },
+  {
+   "id": "dubstep-screech",
+   "title": "Screech lead",
+   "intent": "FM saw at an inharmonic ratio with distortion and fast vibrato, answering in the bass gaps.",
+   "labels": [
+    "dubstep",
+    "brostep",
+    "lead"
+   ],
+   "class": "screech",
+   "cpm": 140,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@screechLine",
+     "rack": "screechLead"
+    }
+   ]
+  },
+  {
+   "id": "dubstep-laser",
+   "title": "Laser zap",
+   "intent": "A saw that falls two octaves in 120 ms, once per bar in a gap.",
+   "labels": [
+    "dubstep",
+    "brostep"
+   ],
+   "class": "screech",
+   "cpm": 140,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@laserLine",
+     "rack": "laserZap"
+    }
+   ]
+  },
+  {
+   "id": "ukf-supersaw-chords",
+   "title": "Melodic dubstep chords",
+   "intent": "Cm7 Abmaj7 Ebmaj7 Bb7 on a wide 7-voice supersaw, high-passed at 200 Hz.",
+   "labels": [
+    "melodic-dubstep",
+    "supersaw",
+    "chord-progression"
+   ],
+   "class": "supersaw",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@chords",
+     "rack": "ukfChord"
+    }
+   ]
+  },
+  {
+   "id": "ukf-pluck",
+   "title": "UKF pluck figure",
+   "intent": "Saw + square pluck outlining the chord loop.",
+   "labels": [
+    "melodic-dubstep",
+    "pluck"
+   ],
+   "class": "pluck",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@pluckLine",
+     "rack": "ukfPluck"
+    }
+   ]
+  },
+  {
+   "id": "ukf-arp",
+   "title": "16th arp",
+   "intent": "Triangle arp through the chord loop.",
+   "labels": [
+    "melodic-dubstep",
+    "arpeggio"
+   ],
+   "class": "arp",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@arp",
+     "rack": "ukfArp"
+    }
+   ]
+  },
+  {
+   "id": "ukf-lead",
+   "title": "Melodic lead",
+   "intent": "3-voice supersaw lead with vibrato over the loop.",
+   "labels": [
+    "melodic-dubstep",
+    "lead"
+   ],
+   "class": "lead",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@leadLine",
+     "rack": "ukfLead"
+    }
+   ]
+  },
+  {
+   "id": "ukf-atmos-pad",
+   "title": "Atmosphere pad",
+   "intent": "Slow supersaw pad for intros and breakdowns.",
+   "labels": [
+    "melodic-dubstep",
+    "pad"
+   ],
+   "class": "pad",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@chords",
+     "rack": "atmosPad"
+    }
+   ]
+  },
+  {
+   "id": "dubstep-vowel-chops",
+   "title": "Vowel chops (synthesised)",
+   "intent": "A saw through a vowel formant that changes per note: a chopped vocal hook without samples.",
+   "labels": [
+    "dubstep",
+    "melodic-dubstep",
+    "formant"
+   ],
+   "class": "vox",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@chopLine",
+     "rack": "vowelChop"
+    }
+   ]
+  },
+  {
+   "id": "dubstep-call-response",
+   "title": "Call and response basses",
+   "intent": "Bar A is the growl, bar B the talking bass: two basses share the drop without masking each other.",
+   "labels": [
+    "dubstep",
+    "call-response",
+    "growl"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "@growlLine",
+     "rack": "growlBass",
+     "more": ".mask(\"@bassA\")"
+    },
+    {
+     "src": "note",
+     "pat": "@talkLine",
+     "rack": "talkBass",
+     "more": ".mask(\"@bassB\")"
+    },
+    {
+     "src": "note",
+     "pat": "@subLine",
+     "rack": "subSine"
+    }
+   ]
+  },
+  {
+   "id": "dubstep-drop-fill",
+   "title": "Drop with a 4th-bar fill",
+   "intent": "Three bars of drop, then a bar where the bass stops and a laser and snare fill lead back to the 1.",
+   "labels": [
+    "dubstep",
+    "dovetail",
+    "build-drop"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@halfKick2",
+     "rack": "dsKick",
+     "move": "sidechain(2, 0.36, 0.15)"
+    },
+    {
+     "src": "s",
+     "pat": "@halfSnare",
+     "rack": "dsSnare"
+    },
+    {
+     "src": "note",
+     "pat": "@growlLine",
+     "rack": "growlBass",
+     "move": "ducked(2)",
+     "more": ".mask(\"@notLastOf4\")"
+    },
+    {
+     "src": "s",
+     "pat": "x*8",
+     "rack": "snareTight",
+     "more": ".velocity(\"[.3 .4 .5 .6 .7 .8 .9 1]\").mask(\"@lastOf4\")"
+    },
+    {
+     "src": "note",
+     "pat": "@laserLine",
+     "rack": "laserZap",
+     "more": ".mask(\"@lastOf4\")"
+    }
+   ]
+  },
+  {
+   "id": "edm-dubstep-tutorial",
+   "title": "Dubstep tutorial track (104 bars, 11 lessons)",
+   "intent": "A 3-minute half-time dubstep track that teaches itself: intro, build, drop A, breakdown, build 2, drop B with a switch-up, outro; every section is a lesson in the code comments.",
+   "labels": [
+    "dubstep",
+    "melodic-dubstep",
+    "riddim",
+    "arrangement",
+    "build-drop",
+    "sidechain"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "program": "docs/tracks/edm-dubstep-tutorial/track.strudel.js",
+   "standalone": "docs/tracks/edm-dubstep-tutorial/track.standalone.strudel.js",
+   "notes": "The whole track: Craft form (packs, atoms, racks as .hook) and its generated Strudel form (track.standalone.strudel.js, paste-ready). Map, lessons and measured numbers: docs/tracks/edm-dubstep-tutorial/README.md."
+  }
+ ],
+ "syntax": [
+  {
+   "title": "Pick a dubstep feel (one import line)",
+   "bars": 2,
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:feel-halftime\", { as: \"feel\" })   // or feel-ukf, feel-riddim, feel-brostep\nhooks.bind(\"kick\", atoms.feel.kickRack)\nhooks.bind(\"snare\", atoms.feel.snareRack)\nhooks.bind(\"perc\", atoms.feel.percRack)\nhooks.bind(\"hats\", atoms.feel.hatsRack)\nhooks.bind(\"top\", atoms.feel.topRack)\nhooks.bind(\"bass\", atoms.feel.bassRack)\nhooks.bind(\"harmony\", atoms.feel.harmonyRack)\nhooks.bind(\"fx\", atoms.feel.fxRack)\nkick: s(atoms.feel.kick).velocity(atoms.feel.kickVel).use(\"kick\", { mode: \"swap\" })\nsnare: s(atoms.feel.snare).velocity(atoms.feel.snareVel).use(\"snare\", { mode: \"swap\" })\nperc: s(atoms.feel.perc).velocity(atoms.feel.percVel).use(\"perc\", { mode: \"swap\" })\nhats: s(atoms.feel.hats).velocity(atoms.feel.hatsVel).use(\"hats\", { mode: \"swap\" })\ntop: note(atoms.feel.top).velocity(atoms.feel.topVel).use(\"top\", { mode: \"swap\" })\nbass: note(atoms.feel.bass).velocity(atoms.feel.bassVel).use(\"bass\", { mode: \"swap\" })\nharmony: note(atoms.feel.harmony).velocity(atoms.feel.harmonyVel).use(\"harmony\", { mode: \"swap\" })\nfx: s(atoms.feel.fx).velocity(atoms.feel.fxVel).use(\"fx\", { mode: \"swap\" })"
+  },
+  {
+   "title": "Drop as layers: sub + growl, the kick ducks both",
+   "bars": 2,
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\"); atoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\nkick: s(atoms.ds.halfKick2).hook(\"dsKick | sidechain(2, 0.36, 0.15)\")\nsnare: s(atoms.ds.halfSnare).hook(\"dsSnare\")\nsub: note(atoms.ds.subLine).hook(\"subSine | ducked(2)\")          // fundamental: clean, mono\ngrowl: note(atoms.ds.growlLine).hook(\"growlBass | ducked(2)\")    // mids from 90 Hz: FM, formant, drive"
+  },
+  {
+   "title": "Wobble rate as a pattern (lpsync)",
+   "bars": 4,
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\nwob: note(atoms.ds.wobbleLine).hook(\"wobbleBass\").lpsync(\"<4 8 [4 16] 6>\")   // LFO periods per bar\nsub: note(\"<c1 c1 eb1 [g1 bb1]>\").hook(\"subSine\")"
+  },
+  {
+   "title": "Switch-up in drop B (one slot, two basses by gate)",
+   "bars": 4,
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\nhooks.bind(\"bass\", \"growlBass\", \"<3b\"); hooks.bind(\"bass\", \"riddimBass\", \"@3b\")\nbass: note(\"[c2 c2] ~ [c2 ~ c2 c2] [eb2 ~ g1 ~]\").use(\"bass\", { mode: \"swap\" })\nkick: s(atoms.ds.halfKick2).hook(\"dsKick\")\nsnare: s(atoms.ds.halfSnare).hook(\"dsSnare\")"
+  },
+  {
+   "title": "Growl on a bus: band-split drive (.split)",
+   "bars": 2,
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\ngrowl: note(atoms.ds.growlLine).s(\"sawtooth\").fm(2).fmh(1).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").lpf(3200).attack(0.005).gain(0.4)\n  .split(lo => lo.lpf(100),                                     // fundamental stays clean\n         hi => hi.hpf(100).distort(2.5).postgain(0.45).lpf(9000)) // drive the mids, scope the top after the drive\nsub: note(atoms.ds.subLine).hook(\"subSine\")"
+  }
+ ],
+ "feels": {
+  "halftime": {
+   "title": "Half-time dubstep",
+   "tempo": "138-142 bpm (half-time)",
+   "cpm": 140,
+   "groove": "groove-rolling",
+   "doc": "kick on the 1 and the and of 3, the snare alone on beat 3, 8th hats in the standard meter, a held sub and a dark pad",
+   "labels": [
+    "dubstep",
+    "half-time",
+    "edm"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@halfKick2",
+     "rack": "dsKick",
+     "groove": "groove-straight"
+    },
+    "snare": {
+     "pat": "@halfSnare",
+     "rack": "dsSnare",
+     "groove": "groove-straight"
+    },
+    "perc": {
+     "pat": "@ghostSnare",
+     "rack": "snareTight",
+     "vel": "0.3"
+    },
+    "hats": {
+     "pat": "@dsHats",
+     "rack": "hatClosed",
+     "vel": "@dsHatVel"
+    },
+    "top": {
+     "pat": "~"
+    },
+    "bass": {
+     "pat": "@subLine",
+     "rack": "subSine",
+     "groove": "groove-straight"
+    },
+    "harmony": {
+     "pat": "@chords",
+     "rack": "atmosPad",
+     "groove": "groove-straight"
+    },
+    "fx": {
+     "pat": "<~ ~ ~ x>",
+     "rack": "downSweep",
+     "groove": false
+    }
+   }
+  },
+  "ukf": {
+   "title": "UKF melodic dubstep",
+   "tempo": "140-150 bpm (half-time)",
+   "cpm": 140,
+   "groove": "groove-straight",
+   "doc": "half-time drums, wide supersaw chords, a melodic lead and a clean sub: emotion over weight",
+   "labels": [
+    "melodic-dubstep",
+    "dubstep",
+    "half-time"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@halfKick2",
+     "rack": "dsKick"
+    },
+    "snare": {
+     "pat": "@halfSnare",
+     "rack": "dsSnare"
+    },
+    "perc": {
+     "pat": "~"
+    },
+    "hats": {
+     "pat": "@dsHats",
+     "rack": "shaker",
+     "vel": "@dsHatVel"
+    },
+    "top": {
+     "pat": "@leadLine",
+     "rack": "ukfLead"
+    },
+    "bass": {
+     "pat": "@subLine",
+     "rack": "subSine"
+    },
+    "harmony": {
+     "pat": "@chords",
+     "rack": "ukfChord"
+    },
+    "fx": {
+     "pat": "<x ~ ~ ~>",
+     "rack": "crash",
+     "groove": false
+    }
+   }
+  },
+  "riddim": {
+   "title": "Riddim",
+   "tempo": "140-150 bpm (half-time)",
+   "cpm": 140,
+   "groove": "groove-straight",
+   "doc": "sparse drums, a hollow repetitive bass in 3+3+2 with the gaps as the groove, one laser per bar, no chords",
+   "labels": [
+    "riddim",
+    "dubstep",
+    "sparse"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@riddimKick",
+     "rack": "dsKick"
+    },
+    "snare": {
+     "pat": "@halfSnare",
+     "rack": "dsSnare"
+    },
+    "perc": {
+     "pat": "~"
+    },
+    "hats": {
+     "pat": "@dsHats",
+     "rack": "hatClosed",
+     "vel": "@dsHatVel"
+    },
+    "top": {
+     "pat": "@laserLine",
+     "rack": "laserZap"
+    },
+    "bass": {
+     "pat": "@riddimLine",
+     "rack": "riddimBass"
+    },
+    "harmony": {
+     "pat": "~"
+    },
+    "fx": {
+     "pat": "~"
+    }
+   }
+  },
+  "brostep": {
+   "title": "Brostep",
+   "tempo": "140-150 bpm (half-time)",
+   "cpm": 140,
+   "groove": "groove-rolling",
+   "doc": "busier kicks, 16th hats, an FM formant growl with screech answers in its gaps",
+   "labels": [
+    "brostep",
+    "dubstep",
+    "driving"
+   ],
+   "voices": {
+    "kick": {
+     "pat": "@broKick",
+     "rack": "dsKick",
+     "groove": "groove-straight"
+    },
+    "snare": {
+     "pat": "@halfSnare",
+     "rack": "dsSnare",
+     "groove": "groove-straight"
+    },
+    "perc": {
+     "pat": "~"
+    },
+    "hats": {
+     "pat": "@hats16",
+     "rack": "hatClosed",
+     "vel": "@hat16Vel"
+    },
+    "top": {
+     "pat": "@screechLine",
+     "rack": "screechLead",
+     "groove": "groove-straight"
+    },
+    "bass": {
+     "pat": "@growlLine",
+     "rack": "growlBass",
+     "groove": "groove-straight"
+    },
+    "harmony": {
+     "pat": "~"
+    },
+    "fx": {
+     "pat": "<x ~ ~ ~>",
+     "rack": "impactBoom",
+     "groove": false
+    }
+   }
+  }
+ }
+}

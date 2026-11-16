@@ -1,0 +1,390 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"UKF melodic dubstep\" (140-150 bpm (half-time)): half-time drums, wide supersaw chords, a melodic lead and a clean sub: emotion over weight. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/edm:feel-ukf\", { as: \"feel\" }).",
+ "atoms": {
+  "abt19z7": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "kick pattern",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:de06729586e457eea6ecbfade8323300f60d93d4dc29d6160834b42c3eb44211"
+  },
+  "aa90sza": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ab4z0ss": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "dsKick | groove-straight(1)",
+   "doc": "kick rack and groove",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:abe832e238fbcc155e80e2a7f08993987a6e30e1c4111972d5fba46354073f81"
+  },
+  "adbyy1u": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
+   "doc": "snare pattern",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:525fd0444781900288d0ac6c5358b9391d694346d05e7bca8b3001885e70932c"
+  },
+  "ahb841h": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "alh9g9t": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "dsSnare | groove-straight(2)",
+   "doc": "snare rack and groove",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:0189c8f69a339955da186b31678e548575aa7238374edf025f5f27c1d46c6429"
+  },
+  "a9zuxlt": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "perc pattern",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "adbqxbo": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "perc accents (velocity)",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "av9rx9q": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-straight(3)",
+   "doc": "perc rack and groove",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:c991a9ef4e71a57c23e7122921878c6243b924c7c2453234c1445c0f1cbb46ba"
+  },
+  "avhykdr": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*8",
+   "doc": "hats pattern",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:c2845fc5d1dfae91f61227e9f77fbff665ea294e5367dbd32a4f511e758525ec"
+  },
+  "awzxp0i": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[1 .55]*4",
+   "doc": "hats accents (velocity)",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:f77c236a1a254eecdbcf4976f44b5b01d5f6aa633ce54230729f37d31ab8112f"
+  },
+  "a7w3cbs": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "shaker | groove-straight(4)",
+   "doc": "hats rack and groove",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:ba195c91a27e5253de3d374f5725056a7b4e7eb26e7408eaf570da4a95f5e1d8"
+  },
+  "asi1vmg": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[c5 ~ bb4 g4 ~ g4 bb4 c5] [eb5 ~ d5 c5 ~ bb4 g4 ~] [g5 ~ f5 eb5 ~ d5 eb5 ~] [f5 ~ eb5 d5 ~ bb4 ~ ~]>",
+   "doc": "top pattern",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:45059f6cbed840b71165db72a2da48d19ffc2a368ee04857f3c19f22176dd0c5"
+  },
+  "ah6v11f": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a031jr7": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "ukfLead | groove-straight(5)",
+   "doc": "top rack and groove",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:2621dadb5a991ff39dc23a8e7e92ef369eaf7d40abf9c18b1516e7f4f9f13150"
+  },
+  "advx5z2": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "<c1 c1 ab1 bb1>",
+   "doc": "bass pattern",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "bass",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:4b54717f4dc6ec36aa7bed3fd791eefe29131517b7e90d9ead9d358a50d39288"
+  },
+  "a12cljl": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "bass accents (velocity)",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "bass",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "agiw2d9": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "subSine | groove-straight(6)",
+   "doc": "bass rack and groove",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "bass",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:11c807e5fe864cb3a2c1440ff946cec5d75149a55a6929e3c9f8c5811edc754b"
+  },
+  "ayk1rn9": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>",
+   "doc": "harmony pattern",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "keys",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:d84c725e064052cc810f622a662aa2382ccec9066c2de9a977bb44c408083c6e"
+  },
+  "ae2q43s": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "keys",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "avj789e": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "ukfChord | groove-straight(7)",
+   "doc": "harmony rack and groove",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "keys",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:4c34c5091bf8107fe64e049e06c5f967f145d20a33cca74c41a29f2f7becb6fb"
+  },
+  "ap65bz3": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "<x ~ ~ ~>",
+   "doc": "fx pattern",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "fx",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:722335a46452ff22a7e46104cfab079d7aa345ba70db614f7503bee8df5359bb"
+  },
+  "a1e52he": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "fx",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "aiqbndk": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "crash",
+   "doc": "fx rack and groove",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "fx",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:2eae4cc1c8cc3790c2ae8d0fa5d18d930da19a8a67a5517bb010a3e029d5ec06"
+  },
+  "adzzcs7": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-straight(0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "folder": "edm/dubstep/feel/ukf",
+   "tags": [
+    "groove",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:4727a3d952d63f4573689323a6bd3ca37e9eb4b1431ba5e6cbc5c1dddd386c92"
+  }
+ }
+}

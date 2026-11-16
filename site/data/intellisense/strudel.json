@@ -967,6 +967,188 @@
    "detail": "hooks.map(control, dest, { range, curve, op, priority })",
    "info": "Send one control to a param. dest is a param name ('lpf', 'gain': maps every event) or lane-qualified '<lane>.<param>' ('kick.gain': only the events of the kick: lane; a lane label is the one before the colon). Perform's Mixer preset writes hooks.map('mix_kick', 'kick.gain').",
    "category": "hooks"
+  },
+  {
+   "label": "lpsync",
+   "method": true,
+   "detail": "lpsync(periods)",
+   "info": "Low-pass LFO synced to the cycle: periods per cycle (8 = eighth-note wobble at one cycle per bar); superdough, glyphcore/edm wobble",
+   "category": "filter"
+  },
+  {
+   "label": "lprate",
+   "method": true,
+   "detail": "lprate(hz)",
+   "info": "Low-pass LFO rate in Hz",
+   "category": "filter"
+  },
+  {
+   "label": "lpdepth",
+   "method": true,
+   "detail": "lpdepth(depth)",
+   "info": "Low-pass LFO depth as a multiple of the cutoff",
+   "category": "filter"
+  },
+  {
+   "label": "hpsync",
+   "method": true,
+   "detail": "hpsync(periods)",
+   "info": "High-pass LFO synced to the cycle (periods per cycle)",
+   "category": "filter"
+  },
+  {
+   "label": "bpsync",
+   "method": true,
+   "detail": "bpsync(periods)",
+   "info": "Band-pass LFO synced to the cycle (periods per cycle)",
+   "category": "filter"
+  },
+  {
+   "label": "hpenv",
+   "method": true,
+   "detail": "hpenv(octaves)",
+   "info": "High-pass envelope depth in octaves (white-noise builds: hpBuild)",
+   "category": "filter"
+  },
+  {
+   "label": "hpattack",
+   "method": true,
+   "detail": "hpattack(seconds)",
+   "info": "High-pass envelope attack",
+   "category": "filter"
+  },
+  {
+   "label": "duckorbit",
+   "method": true,
+   "detail": "duckorbit(\"2:3\")",
+   "info": "Sidechain trigger: this event ducks the orbit(s) named (Strudel sidechain; glyphcore/edm move sidechain)",
+   "category": "fx"
+  },
+  {
+   "label": "duckdepth",
+   "method": true,
+   "detail": "duckdepth(depth)",
+   "info": "Sidechain depth 0..1; the ducked gain is 1 - sqrt(depth) (0.25 = -6 dB, 0.5 = -10.7 dB); per orbit \"0.36:0.5\"",
+   "category": "fx"
+  },
+  {
+   "label": "duckattack",
+   "method": true,
+   "detail": "duckattack(seconds)",
+   "info": "Seconds for the ducked orbit to come back (the sidechain release); per orbit \"0.15:0.3\"",
+   "category": "fx"
+  },
+  {
+   "label": "tremolosync",
+   "method": true,
+   "detail": "tremolosync(periods)",
+   "info": "Tremolo synced to the cycle (4 = every beat at one cycle per bar); the pump without a trigger",
+   "category": "fx"
+  },
+  {
+   "label": "tremolodepth",
+   "method": true,
+   "detail": "tremolodepth(depth)",
+   "info": "Tremolo depth 0..1",
+   "category": "fx"
+  },
+  {
+   "label": "tremoloshape",
+   "method": true,
+   "detail": "tremoloshape(\"ramp\")",
+   "info": "Tremolo waveform: tri, square, sine, saw, ramp",
+   "category": "fx"
+  },
+  {
+   "label": "fmh",
+   "method": true,
+   "detail": "fmh(ratio)",
+   "info": "FM harmonicity (modulator / carrier ratio): whole numbers harmonic, fractions inharmonic",
+   "category": "synth"
+  },
+  {
+   "label": "fmdecay",
+   "method": true,
+   "detail": "fmdecay(seconds)",
+   "info": "FM index envelope decay",
+   "category": "synth"
+  },
+  {
+   "label": "fmsustain",
+   "method": true,
+   "detail": "fmsustain(level)",
+   "info": "FM index envelope sustain 0..1",
+   "category": "synth"
+  },
+  {
+   "label": "distortvol",
+   "method": true,
+   "detail": "distortvol(gain)",
+   "info": "Output level after distort",
+   "category": "fx"
+  },
+  {
+   "label": "distorttype",
+   "method": true,
+   "detail": "distorttype(\"soft\")",
+   "info": "Distortion curve: scurve, soft, hard, cubic, diode, asym, fold, sinefold, chebyshev",
+   "category": "fx"
+  },
+  {
+   "label": "compressorRatio",
+   "method": true,
+   "detail": "compressorRatio(ratio)",
+   "info": "Compressor ratio (after compressor(threshold))",
+   "category": "fx"
+  },
+  {
+   "label": "compressorAttack",
+   "method": true,
+   "detail": "compressorAttack(seconds)",
+   "info": "Compressor attack",
+   "category": "fx"
+  },
+  {
+   "label": "compressorRelease",
+   "method": true,
+   "detail": "compressorRelease(seconds)",
+   "info": "Compressor release",
+   "category": "fx"
+  },
+  {
+   "label": "unison",
+   "method": true,
+   "detail": "unison(voices)",
+   "info": "Supersaw voices",
+   "category": "synth"
+  },
+  {
+   "label": "detune",
+   "method": true,
+   "detail": "detune(semitones)",
+   "info": "Supersaw total detune in semitones across the voices (2 voices, 0.3 = +-15 cents: a Reese)",
+   "category": "synth"
+  },
+  {
+   "label": "spread",
+   "method": true,
+   "detail": "spread(width)",
+   "info": "Supersaw stereo spread 0..1 (keep it above a 180 Hz high-pass: mono low end)",
+   "category": "synth"
+  },
+  {
+   "label": "pattack",
+   "method": true,
+   "detail": "pattack(seconds)",
+   "info": "Pitch envelope attack (pitch risers)",
+   "category": "synth"
+  },
+  {
+   "label": "panchor",
+   "method": true,
+   "detail": "panchor(0|1)",
+   "info": "Pitch envelope anchor: 0 starts at the note, 1 ends on it",
+   "category": "synth"
   }
  ],
  "params": {
@@ -1982,6 +2164,297 @@
      "bass.lpf"
     ],
     "doc": "param, or <lane>.<param> to scope to one lane's events"
+   }
+  ],
+  "lpsync": [
+   {
+    "name": "periods",
+    "shape": "number",
+    "min": 0.25,
+    "max": 32,
+    "default": 4,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "lprate": [
+   {
+    "name": "hz",
+    "shape": "number",
+    "min": 0.05,
+    "max": 40,
+    "default": 2,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "lpdepth": [
+   {
+    "name": "depth",
+    "shape": "number",
+    "min": 0,
+    "max": 4,
+    "default": 1,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "hpsync": [
+   {
+    "name": "periods",
+    "shape": "number",
+    "min": 0.25,
+    "max": 32,
+    "default": 4,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "bpsync": [
+   {
+    "name": "periods",
+    "shape": "number",
+    "min": 0.25,
+    "max": 32,
+    "default": 4,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "hpenv": [
+   {
+    "name": "octaves",
+    "shape": "number",
+    "min": -8,
+    "max": 8,
+    "default": 2,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "hpattack": [
+   {
+    "name": "seconds",
+    "shape": "number",
+    "min": 0,
+    "max": 30,
+    "default": 0.01,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "duckorbit": [
+   {
+    "name": "orbits",
+    "shape": "mini"
+   }
+  ],
+  "duckdepth": [
+   {
+    "name": "depth",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0.5,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "duckattack": [
+   {
+    "name": "seconds",
+    "shape": "number",
+    "min": 0.002,
+    "max": 2,
+    "default": 0.2,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "tremolosync": [
+   {
+    "name": "periods",
+    "shape": "number",
+    "min": 0.25,
+    "max": 32,
+    "default": 4,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "tremolodepth": [
+   {
+    "name": "depth",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0.5,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "tremoloshape": [
+   {
+    "name": "shape",
+    "shape": "enum",
+    "options": [
+     "tri",
+     "square",
+     "sine",
+     "saw",
+     "ramp"
+    ]
+   }
+  ],
+  "fmh": [
+   {
+    "name": "ratio",
+    "shape": "number",
+    "min": 0.125,
+    "max": 16,
+    "default": 1,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "fmdecay": [
+   {
+    "name": "seconds",
+    "shape": "number",
+    "min": 0,
+    "max": 4,
+    "default": 0.2,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "fmsustain": [
+   {
+    "name": "level",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 1,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "distortvol": [
+   {
+    "name": "gain",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0.5,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "distorttype": [
+   {
+    "name": "type",
+    "shape": "enum",
+    "options": [
+     "scurve",
+     "soft",
+     "hard",
+     "cubic",
+     "diode",
+     "asym",
+     "fold",
+     "sinefold",
+     "chebyshev"
+    ]
+   }
+  ],
+  "compressorRatio": [
+   {
+    "name": "ratio",
+    "shape": "number",
+    "min": 1,
+    "max": 20,
+    "default": 4,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "compressorAttack": [
+   {
+    "name": "seconds",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0.003,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "compressorRelease": [
+   {
+    "name": "seconds",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0.1,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "unison": [
+   {
+    "name": "voices",
+    "shape": "number",
+    "min": 1,
+    "max": 16,
+    "default": 5,
+    "control": "number",
+    "clamp": "hard",
+    "step": 1
+   }
+  ],
+  "detune": [
+   {
+    "name": "semitones",
+    "shape": "number",
+    "min": 0,
+    "max": 2,
+    "default": 0.18,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "spread": [
+   {
+    "name": "width",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0.6,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "pattack": [
+   {
+    "name": "seconds",
+    "shape": "number",
+    "min": 0,
+    "max": 30,
+    "default": 0.01,
+    "control": "knob",
+    "clamp": "soft"
+   }
+  ],
+  "panchor": [
+   {
+    "name": "anchor",
+    "shape": "number",
+    "min": 0,
+    "max": 1,
+    "default": 0,
+    "control": "number",
+    "clamp": "hard",
+    "step": 1
    }
   ]
  },

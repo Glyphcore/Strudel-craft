@@ -89,7 +89,9 @@ const FORBIDDEN = ['bbexpr', 'byteBeatExpression', 'bbst', 'byteBeatStartTime', 
 { const bad = FORBIDDEN.filter((k) => Object.prototype.hasOwnProperty.call(STEPS.methods, k)); assert.deepEqual(bad, []); ok(`the data file lists none of the ${FORBIDDEN.length} forbidden names (string-compiling, speech, visual, loader, storage / MIDI / OSC, prototype members); ${Object.keys(STEPS.methods).length} methods listed`); }
 { for (const [k, m] of Object.entries(STEPS.methods)) { assert.ok(/^[A-Za-z][A-Za-z0-9]*$/.test(k)); assert.ok(m.args.every((a) => ['scalar', 'param', 'mini', 'wire-opts'].includes(a)), k); } ok('every entry declares known argument shapes only'); }
 { // parity guard: every step of every shipped hooks ingredient (and the tests/hooks fixtures that carry defs) passes validation with the real allowlist; report non-scalars
-  const files = fs.readdirSync(new URL('../../site/data/phonk/', import.meta.url)).filter((f) => /^racks.*\.json$/.test(f)).map((f) => new URL('../../site/data/phonk/' + f, import.meta.url));
+  // every content pack under site/data (glyphcore/phonk, glyphcore/edm, ...): a directory with a craftpack.json
+  const packDirs = fs.readdirSync(new URL('../../site/data/', import.meta.url)).filter((d) => fs.existsSync(new URL(`../../site/data/${d}/craftpack.json`, import.meta.url)));
+  const files = packDirs.flatMap((d) => fs.readdirSync(new URL(`../../site/data/${d}/`, import.meta.url)).filter((f) => /^racks.*\.json$/.test(f)).map((f) => new URL(`../../site/data/${d}/` + f, import.meta.url)));
   files.push(new URL('../hooks/fixtures/h.json', import.meta.url));
   const used = new Set(), nonscalar = {}; let steps = 0;
   for (const u of files) { const d = JSON.parse(fs.readFileSync(u, 'utf8')); assert.deepEqual(rawValidate(d, allow), [], u.pathname);

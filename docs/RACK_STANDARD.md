@@ -60,6 +60,8 @@ Strudel because they open on strudel.cc: they carry the same scope as literal `.
 | `hygiene-kick` | 30 | 7000 | 12 dB/oct |
 | `hygiene-sub` | 25 | - (the rack's own) | 12 |
 | `hygiene-bass` | 40 | 3500 | 12 |
+| `hygiene-reese` | 30 | 5000 | 12 |
+| `hygiene-growl` | 70 | 9000 | 12 |
 | `hygiene-snare` | 120 | 10000 | 24 |
 | `hygiene-hat` | 5000 | 14500 | 24 |
 | `hygiene-perc` | 80 | 8000 | 12 |
@@ -68,6 +70,7 @@ Strudel because they open on strudel.cc: they carry the same scope as literal `.
 | `hygiene-stab` | 120 | 8000 | 12 |
 | `hygiene-pad` | 180 | 6000 | 12 |
 | `hygiene-lead` | 150 | 8000 | 12 |
+| `hygiene-screech` | 300 | 10000 | 12 |
 | `hygiene-keys` | 80 | 7000 | 12 |
 | `hygiene-arp` | 150 | 8000 | 12 |
 | `hygiene-supersaw` | 100 | 9000 | 12 |
@@ -93,6 +96,8 @@ high note, power away from the harmonics (outside 2 % of each, at least 6 bins) 
 | kick | 28-6000 | -30 | -30 | -40 | -45 | -3 | -50 | - | `s("x ~ x ~")` |
 | sub | 25-400 | -26 | -24 | -30 | -45 | -6 | -50 | - | `note("eb1 f1 g1 bb0")` |
 | bass | 30-2500 | -30 | -24 | -40 | -45 | -6 | -50 | c4 -40 | `note("c2 ~ c2 eb2 ~ g1 ~ c2")` |
+| reese | 30-5000 | -30 | -24 | -40 | -45 | -6 | -50 | c4 -34 | `note("c2 ~ c2 eb2 ~ g1 bb1 c2")` |
+| growl | 60-10000 | -24 | -20 | -40 | -35 | -6 | -40 | - | `note("c2*4 [c2 c2] eb2 g1*2")` |
 | snare | 100-10000 | -24 | -24 | -40 | -45 | -3 | -30 | - | `s("~ x ~ x")` |
 | hat | 3000-16000 | -30 | -15 | -40 | -15 | -6 | -30 | - | `s("x*8")` |
 | perc | 80-9000 | -24 | -24 | -40 | -45 | -3 | -30 | - | `note("g2 d3 bb2 g2")` |
@@ -101,6 +106,7 @@ high note, power away from the harmonics (outside 2 % of each, at least 6 bins) 
 | stab | 100-10000 | -30 | -30 | -40 | -45 | -6 | -30 | c7 -40 | `note("[c4,eb4,g4] ~ [bb3,d4,f4] ~")` |
 | pad | 100-8000 | -30 | -30 | -40 | -45 | -6 | -24 | c6 -34 | `note("<[c3,eb3,g3,bb3] [bb2,d3,f3,a3]>")` |
 | lead | 150-10000 | -30 | -30 | -40 | -45 | -6 | -30 | c7 -40 | `note("g4 bb4 d5 a4 g4 f4 g4 bb4")` |
+| screech | 250-12000 | -30 | -20 | -40 | -35 | -6 | -30 | - | `note("c5 ~ eb5 g5 ~ bb4 c5 ~")` |
 | keys | 80-8000 | -30 | -30 | -40 | -45 | -6 | -30 | c7 -40 | `note("[c3,g3,eb4] [f3,c4,ab4] [g3,d4,bb4] [c3,g3,eb4]")` |
 | arp | 150-10000 | -30 | -30 | -40 | -45 | -6 | -30 | c7 -40 | `note("[c4 eb4 g4 c5 g4 eb4]*2")` |
 | supersaw | 100-12000 | -30 | -30 | -40 | -45 | -6 | -24 | c6 -34 | `note("<[c3,g3,c4,eb4] [ab2,eb3,ab3,c4]>")` |

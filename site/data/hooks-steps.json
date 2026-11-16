@@ -15,7 +15,8 @@
  "methods": {
   "attack": {
    "args": [
-    "scalar"
+    "scalar",
+    "param"
    ],
    "from": "shipped",
    "wire": true
@@ -52,6 +53,36 @@
    ],
    "from": "documented",
    "wire": true
+  },
+  "compressor": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "compressorAttack": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "compressorKnee": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "compressorRatio": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "compressorRelease": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
   },
   "crush": {
    "args": [
@@ -112,17 +143,25 @@
   },
   "distort": {
    "args": [
-    "scalar"
+    "scalar",
+    "param"
    ],
    "from": "documented",
    "wire": true
   },
-  "duckattack": {
+  "distortvol": {
    "args": [
     "scalar"
    ],
    "from": "shipped",
    "wire": true
+  },
+  "duckattack": {
+   "args": [
+    "scalar",
+    "param"
+   ],
+   "from": "shipped"
   },
   "duckdepth": {
    "args": [
@@ -135,7 +174,8 @@
   "duckorbit": {
    "args": [
     "scalar",
-    "mini"
+    "mini",
+    "param"
    ],
    "from": "shipped"
   },
@@ -171,12 +211,30 @@
    "from": "shipped",
    "wire": true
   },
+  "fmattack": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "fmdecay": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
   "fmh": {
    "args": [
     "scalar"
    ],
    "from": "shipped",
    "wire": true
+  },
+  "fmsustain": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
   },
   "freq": {
    "args": [
@@ -198,13 +256,33 @@
    ],
    "from": "shipped"
   },
-  "hpf": {
+  "hpattack": {
    "args": [
     "scalar",
     "param"
    ],
    "from": "shipped",
    "wire": true
+  },
+  "hpenv": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "hpf": {
+   "args": [
+    "scalar",
+    "param",
+    "mini"
+   ],
+   "from": "shipped"
+  },
+  "hpsustain": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
   },
   "late": {
    "args": [
@@ -214,7 +292,8 @@
   },
   "lpattack": {
    "args": [
-    "scalar"
+    "scalar",
+    "param"
    ],
    "from": "shipped",
    "wire": true
@@ -225,6 +304,13 @@
    ],
    "from": "shipped",
    "wire": true
+  },
+  "lpdepth": {
+   "args": [
+    "scalar",
+    "param"
+   ],
+   "from": "shipped"
   },
   "lpenv": {
    "args": [
@@ -256,6 +342,14 @@
    "from": "shipped",
    "wire": true
   },
+  "lpsync": {
+   "args": [
+    "scalar",
+    "param",
+    "mini"
+   ],
+   "from": "shipped"
+  },
   "mask": {
    "args": [
     "scalar"
@@ -285,7 +379,8 @@
   },
   "orbit": {
    "args": [
-    "scalar"
+    "scalar",
+    "param"
    ],
    "from": "documented",
    "wire": true
@@ -296,6 +391,19 @@
    ],
    "from": "documented",
    "wire": true
+  },
+  "panchor": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "pattack": {
+   "args": [
+    "scalar",
+    "param"
+   ],
+   "from": "shipped"
   },
   "pdecay": {
    "args": [
@@ -313,7 +421,8 @@
   },
   "postgain": {
    "args": [
-    "scalar"
+    "scalar",
+    "param"
    ],
    "from": "shipped",
    "wire": true
@@ -391,6 +500,12 @@
    "from": "documented",
    "wire": true
   },
+  "spread": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
   "struct": {
    "args": [
     "scalar"
@@ -403,6 +518,25 @@
    ],
    "from": "shipped",
    "wire": true
+  },
+  "tremolodepth": {
+   "args": [
+    "scalar",
+    "param"
+   ],
+   "from": "shipped"
+  },
+  "tremoloshape": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
+  },
+  "tremolosync": {
+   "args": [
+    "scalar"
+   ],
+   "from": "shipped"
   },
   "unison": {
    "args": [
@@ -435,7 +569,8 @@
   },
   "vowel": {
    "args": [
-    "scalar"
+    "scalar",
+    "mini"
    ],
    "from": "shipped"
   },

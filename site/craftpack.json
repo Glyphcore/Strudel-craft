@@ -12,9 +12,9 @@
       "format": "recipes@1",
       "version": "1.0.0",
       "path": "data/catalog.json",
-      "hash": "sha256:eece4c2cc27c491a0b376734bcd1b1042b545ed635edc96bf3e8612f06dbb423",
+      "hash": "sha256:2cbde784897b493eaca8702e5721beeff0f63e8e1b3d771919d024f959f40a81",
       "load": "eager",
-      "bytes": 121056
+      "bytes": 194319
     },
     {
       "id": "strudel-docs",
@@ -22,9 +22,9 @@
       "format": "intellisense@1",
       "version": "1.0.0",
       "path": "data/intellisense/strudel.json",
-      "hash": "sha256:715257ef2eca56de35b1b5686d696a00042fd360e38dfc408bfd05694c948510",
+      "hash": "sha256:fb16301228259ae43cdce8787e4f331b23b805360eb74397e597545537baf7f9",
       "load": "eager",
-      "bytes": 52087
+      "bytes": 61129
     },
     {
       "id": "params",
@@ -32,9 +32,9 @@
       "format": "param-shapes@1",
       "version": "1.0.0",
       "path": "data/intellisense/strudel.json",
-      "hash": "sha256:715257ef2eca56de35b1b5686d696a00042fd360e38dfc408bfd05694c948510",
+      "hash": "sha256:fb16301228259ae43cdce8787e4f331b23b805360eb74397e597545537baf7f9",
       "load": "eager",
-      "bytes": 52087
+      "bytes": 61129
     },
     {
       "id": "ranges",
@@ -52,9 +52,9 @@
       "format": "param-editors@1",
       "version": "1.0.0",
       "path": "data/intellisense/strudel.json",
-      "hash": "sha256:715257ef2eca56de35b1b5686d696a00042fd360e38dfc408bfd05694c948510",
+      "hash": "sha256:fb16301228259ae43cdce8787e4f331b23b805360eb74397e597545537baf7f9",
       "load": "eager",
-      "bytes": 52087
+      "bytes": 61129
     },
     {
       "id": "controls",
@@ -72,9 +72,9 @@
       "format": "syntax@1",
       "version": "1.0.0",
       "path": "data/syntax.json",
-      "hash": "sha256:770471e9dee1590dffe60340c6d8d60a343d9777fa22886ff1c3540f518a38f9",
+      "hash": "sha256:bf52085488b44915fdc2d464eed4fb7924f0f472198b435fa98ea67468eb0a0a",
       "load": "eager",
-      "bytes": 106393
+      "bytes": 113589
     },
     {
       "id": "plugins",
@@ -135,21 +135,24 @@
         "title": "Mood",
         "description": "emotional tint"
       },
+      "feel": {
+        "title": "Feel",
+        "description": "groove and attitude: boom-bap, trap, hyphy, cloud, lazy"
+      },
       "dynamics": {
         "title": "Dynamics"
       },
       "harmony": {
         "title": "Harmony"
       },
+      "mix": {
+        "title": "Mix"
+      },
       "dovetail": {
         "title": "Dovetail"
       },
       "drums": {
         "title": "Drums"
-      },
-      "feel": {
-        "title": "Feel",
-        "description": "groove and attitude: boom-bap, trap, hyphy, cloud, lazy"
       },
       "form": {
         "title": "Form",
@@ -177,8 +180,14 @@
       "pad": {
         "title": "Pad"
       },
+      "rhythm": {
+        "title": "Rhythm"
+      },
       "space": {
         "title": "Space"
+      },
+      "synth": {
+        "title": "Synth"
       },
       "vox": {
         "title": "Vox"
@@ -241,6 +250,9 @@
       "bright": {
         "group": "mood"
       },
+      "brostep": {
+        "group": "feel"
+      },
       "build": {
         "group": "dynamics"
       },
@@ -256,6 +268,9 @@
       "cloud": {
         "group": "genre",
         "description": "airy washed rap"
+      },
+      "compression": {
+        "group": "mix"
       },
       "crescendo": {
         "group": "technique"
@@ -283,8 +298,14 @@
       "dry-tight": {
         "group": "technique"
       },
+      "dubstep": {
+        "group": "feel"
+      },
       "dynamics": {
         "group": "dynamics"
+      },
+      "edm": {
+        "group": "feel"
       },
       "euclid": {
         "group": "technique"
@@ -326,6 +347,9 @@
         "group": "groove",
         "description": "timing: swing, push, jitter, drift"
       },
+      "growl": {
+        "group": "bass"
+      },
       "half-time": {
         "group": "tempo"
       },
@@ -347,6 +371,9 @@
       },
       "hypnotic": {
         "group": "mood"
+      },
+      "impact": {
+        "group": "fx"
       },
       "intro-reveal": {
         "group": "arrangement"
@@ -371,6 +398,9 @@
       "lowered": {
         "group": "status",
         "description": "has a plain Strudel form with equal events"
+      },
+      "melodic-dubstep": {
+        "group": "feel"
       },
       "minor": {
         "group": "harmony"
@@ -404,8 +434,17 @@
       "probability": {
         "group": "technique"
       },
+      "pumping": {
+        "group": "mix"
+      },
+      "reese": {
+        "group": "bass"
+      },
       "reverb-big": {
         "group": "technique"
+      },
+      "riddim": {
+        "group": "feel"
       },
       "riser": {
         "group": "technique"
@@ -416,6 +455,9 @@
       "sidechain": {
         "group": "technique"
       },
+      "snare-roll": {
+        "group": "rhythm"
+      },
       "space": {
         "group": "space"
       },
@@ -424,6 +466,12 @@
       },
       "stereo": {
         "group": "technique"
+      },
+      "sub": {
+        "group": "bass"
+      },
+      "supersaw": {
+        "group": "synth"
       },
       "swing": {
         "group": "technique"
@@ -471,6 +519,9 @@
       },
       "wide": {
         "group": "texture"
+      },
+      "wobble": {
+        "group": "bass"
       }
     },
     "folders": {

@@ -39,12 +39,14 @@ export async function createLowering({ defs = {}, die = (m) => { throw new Error
   const A = await imp('site/engine/atoms.js'); const AC = await imp('site/engine/atoms-consumers.js'); const { HYGIENE } = await imp('site/engine/hygiene.js'); const G = await imp('site/engine/groove.js');
   A.loadTypes(fs.readFileSync(path.join(ROOT, 'site/data/atoms/types.json'), 'utf8'));
   const phonk = {}; const imports = {};
-  const PH = path.join(ROOT, 'site/data/phonk');
-  for (const f of fs.readdirSync(PH).filter((x) => x.endsWith('.json'))) {
-    let d; try { d = rd(path.join(PH, f)); } catch (e) { continue; }
-    if (d.defs && d.model) Object.assign(phonk, d.defs);
-    if (d.format === 'atoms@1') { const id = f.replace(/\.json$/, ''); imports['pack:glyphcore/phonk:' + id] = AC.importedAtoms({ data: d, id: 'glyphcore/phonk:' + id, format: 'atoms@1', kind: 'atoms' }); }
-  }
+  // every content pack under site/data (a directory with a craftpack.json): glyphcore/phonk first, so its rack names win over a later pack's
+  const DATA = path.join(ROOT, 'site/data'); const packDirs = fs.readdirSync(DATA).filter((x) => fs.existsSync(path.join(DATA, x, 'craftpack.json'))).sort((a, b) => (a === 'phonk' ? -1 : b === 'phonk' ? 1 : a.localeCompare(b)));
+  for (const dir of packDirs) { const PH = path.join(DATA, dir); let pid; try { pid = rd(path.join(PH, 'craftpack.json')).id; } catch (e) { continue; }
+    for (const f of fs.readdirSync(PH).filter((x) => x.endsWith('.json') && x !== 'craftpack.json')) {
+      let d; try { d = rd(path.join(PH, f)); } catch (e) { continue; }
+      if (d.defs && d.model) for (const [k, v] of Object.entries(d.defs)) if (!(k in phonk)) phonk[k] = v;
+      if (d.format === 'atoms@1') { const id = f.replace(/\.json$/, ''); imports[`pack:${pid}:${id}`] = AC.importedAtoms({ data: d, id: `${pid}:${id}`, format: 'atoms@1', kind: 'atoms' }); }
+    } }
   const ALL = { ...HYGIENE, ...G.GROOVES, ...phonk, ...defs };
   const parseExpr = (e) => e.split('|').map((t) => t.trim()).filter(Boolean).map((t) => { const m = /^([\w-]+)(?:\((.*)\))?$/.exec(t); if (!m) die(`bad hook expression "${e}"`); return { name: m[1], args: m[2] ? m[2].split(',').map((x) => Number(x.trim())) : [] }; });
   function expand(expr, local = {}) { // hook expression -> plain chain steps with params substituted; `local` = defs the program itself declares (they win)

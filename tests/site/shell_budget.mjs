@@ -20,7 +20,7 @@ export const EAGER = [
 ];
 /* the budget leaves under 3% for small fixes, not for a new feature: data/catalog.json alone is 121,056 of it */
 export const BUDGET_MEASURED = 418_999; // index.html + 18 eager files + their static imports, 2026-11-16 (7eced68 + the #59 rework)
-export const BUDGET = 430_000; // +2.6%
+export const BUDGET = 510_000; // #127 decision: the glyphcore/edm concept recipes grow data/catalog.json (121,056 -> about 195,000 bytes); measured 493,404 with them (418,999 without). Structural fix, per-pack lazy recipes: #131
 
 export function shellBudget() {
   const checks = []; const check = (name, ok, detail = '') => checks.push({ name, ok: !!ok, detail });

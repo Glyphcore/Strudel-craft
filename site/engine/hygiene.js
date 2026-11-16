@@ -10,6 +10,8 @@ export const HYGIENE = Object.freeze({
   'hygiene-kick': scope(30, 7000),
   'hygiene-sub': scope(25, 0),
   'hygiene-bass': scope(40, 3500),
+  'hygiene-reese': scope(30, 5000), // detuned-saw bass: fundamental to the upper mids, mono (EDM foundations, docs/EDM_REFERENCES.md)
+  'hygiene-growl': scope(70, 9000), // mid-bass growl layer over a separate sub: the band split is the layering (pre-drive scope)
   'hygiene-snare': scope(120, 10000, steep),
   'hygiene-hat': scope(5000, 14500, steep),
   'hygiene-perc': scope(80, 8000),
@@ -18,6 +20,7 @@ export const HYGIENE = Object.freeze({
   'hygiene-stab': scope(120, 8000),
   'hygiene-pad': scope(180, 6000),
   'hygiene-lead': scope(150, 8000),
+  'hygiene-screech': scope(300, 10000), // FM / driven screech and laser leads
   'hygiene-keys': scope(80, 7000),
   'hygiene-arp': scope(150, 8000),
   'hygiene-supersaw': scope(100, 9000),

@@ -494,6 +494,16 @@ does; `hooks.bind("fx", "x", "@3b")` is rewritten to single quotes). Design: `do
 - Catalog recipes with `origin: "concepts"` (labels hip-hop, boom-bap, trap, hyphy, cloud, dovetail, transition, swing) are plain Strudel lowered from the same data.
   Source: `tools/concepts/families/*.json`; regenerate with `node tools/concepts/build.mjs --render` (`--check` exits 1 when stale), then `packs.py hash site/data/phonk --write`,
   `shim.py`, `tools/pwa/precache.mjs`. Test: `node tests/hooks/p10_groove.mjs`.
+- Pack **`glyphcore/edm`** 1.0.0 (`data/edm/`, CC0-1.0, synthesis only; #127 #128 #129; docs/EDM_REFERENCES.md): `racks-edm-core` (edmKick, subSine, edmClap, snareTight, hats, crash,
+  risers `noiseRiser(len)` / `hpBuild(len)` / `pitchRiser(len)`, `reverseSwell(len)`, downSweep, impactBoom, subDrop, superChord, edmPluck, edmPad; moves `sidechain(orbit, depth, release)`
+  (duckorbit; gain 1 - sqrt(depth)), `ducked(orbit)`, `pump(depth)` (beat-synced ramp tremolo), `ott(gain)`, `drive(amt)`, `wobble(sync, depth)` (synced low-pass LFO), filterBuild, thinBuild),
+  `atoms-edm-core` (`ec.` roll / filter / gap atoms, riser gates `rise4 / rise8 / rise16 / hit`, the 104-bar form as gates and as masks `mIntro` .. `mOutro`), `racks-dubstep`
+  (dsKick, dsSnare, reeseBass, growlBass, wobbleBass(sync), talkBass, riddimBass, screechLead, laserZap, ukfChord, ukfPluck, ukfArp, ukfLead, atmosPad, vowelChop), `atoms-dubstep` (`ds.`) and
+  feels `feel-halftime`, `feel-ukf`, `feel-riddim`, `feel-brostep`. Syntax sections **EDM foundations** and **Dubstep**; catalog labels edm, dubstep, melodic-dubstep, riddim, brostep,
+  reese, growl, wobble, sidechain, pumping, riser, build-drop. The tutorial track (Recipes: "Dubstep tutorial track", Craft and Strudel tabs) is
+  `docs/tracks/edm-dubstep-tutorial/`. New rack classes reese, growl, screech (docs/RACK_STANDARD.md). Other EDM packs (glyphcore/dnb-electro) build on edm-core.
+- A family recipe may be a whole program (`"program": "docs/tracks/.../track.strudel.js"`, `"standalone": "..."`): the builder lowers it to plain Strudel (the Strudel tab) and writes
+  the standalone copy, so the paste-ready file is generated, never hand-kept.
 
 ## Mixer read model (`engine/mixer-model.js`, #95; docs/REFACTOR_PLAN.md phase R1)
 `channels(graph)` turns the lane graph (`engine/lanes.js` `compile(src).graph`) into channel strips: one per lane (`kind: "lane"`), one per `ret(name)` lane (`kind: "return"`, with its

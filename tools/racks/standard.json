@@ -62,6 +62,35 @@
    "phrase": "note(\"c2 ~ c2 eb2 ~ g1 ~ c2\")",
    "bars": 2
   },
+  "reese": {
+   "band": [
+    30,
+    5000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -24,
+   "peak_max_db": -6,
+   "side_low_max_db": -50,
+   "alias": {
+    "note": "c4",
+    "max_db": -34
+   },
+   "phrase": "note(\"c2 ~ c2 eb2 ~ g1 bb1 c2\")",
+   "bars": 2
+  },
+  "growl": {
+   "band": [
+    60,
+    10000
+   ],
+   "below_max_db": -24,
+   "above_max_db": -20,
+   "ultra_max_db": -35,
+   "peak_max_db": -6,
+   "side_low_max_db": -40,
+   "phrase": "note(\"c2*4 [c2 c2] eb2 g1*2\")",
+   "bars": 2
+  },
   "snare": {
    "band": [
     100,
@@ -170,6 +199,18 @@
     "max_db": -40
    },
    "phrase": "note(\"g4 bb4 d5 a4 g4 f4 g4 bb4\")",
+   "bars": 2
+  },
+  "screech": {
+   "band": [
+    250,
+    12000
+   ],
+   "below_max_db": -30,
+   "above_max_db": -20,
+   "ultra_max_db": -35,
+   "peak_max_db": -6,
+   "phrase": "note(\"c5 ~ eb5 g5 ~ bb4 c5 ~\")",
    "bars": 2
   },
   "keys": {

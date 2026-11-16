@@ -18,7 +18,13 @@ sys.path.insert(0, str(ROOT / "tools" / "packs"))
 import packs as P  # noqa: E402
 
 
-SITE_PACKS = {"glyphcore/phonk": "file:data/phonk"}  # pack id -> source (relative to site/); glyphcore/vox is pinned by tools/vox/bank_index.py
+# pack id -> source (relative to site/): every site/data/<dir>/craftpack.json except glyphcore/vox (pinned by tools/vox/bank_index.py);
+# glyphcore/phonk first, then by directory name, so a new content pack (glyphcore/edm, ...) is pinned without editing this file
+SITE_PACKS = {"glyphcore/phonk": "file:data/phonk"}
+for _mf in sorted((ROOT / "site" / "data").glob("*/craftpack.json")):
+    _id = json.loads(_mf.read_text()).get("id")
+    if _id and _id not in SITE_PACKS and _id != "glyphcore/vox":
+        SITE_PACKS[_id] = "file:data/" + _mf.parent.name
 
 
 def main(argv):

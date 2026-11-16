@@ -90,6 +90,11 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | offline-render-host (hidden page, own superdough, chunked, cancellable) | record-recipes | built | #104 |
 | offline-record-default (no speakers) | offline-render-host | built | #104 |
 | live-take-self-check + re-render | offline-render-host, audio-engine-measurements | built | #104 |
+| edm-core foundations (sidechain / pump / OTT / drive / wobble moves, risers, impacts, roll and filter grammars, 104-bar gates and masks; pack glyphcore/edm; multi-pack builder) | concept-framework, feels, rack standard | built (critic pending) | #127 |
+| dubstep family (UKF half-time, melodic, riddim, brostep; reese / growl / screech classes; feels halftime, ukf, riddim, brostep) | edm-core foundations | built (critic pending) | #128 |
+| edm-dubstep tutorial track (104 bars, 11 lessons, program recipe with generated standalone) | dubstep family | built (critic pending) | #129 |
+| dnb / electro / house / techno / trance / big-room families (glyphcore/dnb-electro) | edm-core foundations | issued (other session) | - |
+| wavetable growl (wt_ frames) | dubstep family, sample banks | designed | - |
 
 ## Waiting nodes
 - audio engine (#102-#104): measured first (#102); B wins behind flags (vis, sched, late) and C (render host, offline Record default, self-checking live takes) built; the engine worker (B1) is designed in docs/AUDIO_ENGINE.md 7 and waits for its own issue once the flag numbers settle.

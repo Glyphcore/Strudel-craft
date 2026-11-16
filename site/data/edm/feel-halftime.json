@@ -1,0 +1,390 @@
+{
+ "format": "atoms@1",
+ "name": "feel",
+ "doc": "Feel template \"Half-time dubstep\" (138-142 bpm (half-time)): kick on the 1 and the and of 3, the snare alone on beat 3, 8th hats in the standard meter, a held sub and a dark pad. Slots drums (kick, snare, perc), top (hats, top), bass, harmony, fx, groove; per voice <v> (pattern), <v>Vel (accents), <v>Rack (rack | groove). Import with atoms.import(\"pack:glyphcore/edm:feel-halftime\", { as: \"feel\" }).",
+ "atoms": {
+  "a5rofux": {
+   "name": "kick",
+   "type": "mini",
+   "rev": 1,
+   "body": "x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~",
+   "doc": "kick pattern",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:de06729586e457eea6ecbfade8323300f60d93d4dc29d6160834b42c3eb44211"
+  },
+  "ao64324": {
+   "name": "kickVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "kick accents (velocity)",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ak7o43q": {
+   "name": "kickRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "dsKick | groove-straight(1)",
+   "doc": "kick rack and groove",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:abe832e238fbcc155e80e2a7f08993987a6e30e1c4111972d5fba46354073f81"
+  },
+  "a4sewj0": {
+   "name": "snare",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~",
+   "doc": "snare pattern",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:525fd0444781900288d0ac6c5358b9391d694346d05e7bca8b3001885e70932c"
+  },
+  "arlwwiv": {
+   "name": "snareVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "snare accents (velocity)",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "auo666f": {
+   "name": "snareRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "dsSnare | groove-straight(2)",
+   "doc": "snare rack and groove",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:0189c8f69a339955da186b31678e548575aa7238374edf025f5f27c1d46c6429"
+  },
+  "adrtgmz": {
+   "name": "perc",
+   "type": "mini",
+   "rev": 1,
+   "body": "~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x",
+   "doc": "perc pattern",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:e75c6c45cbb9b49e51068f1cf75afae3e6c33a7263bba09ccb1552c9fa57eda4"
+  },
+  "a7bghim": {
+   "name": "percVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "0.3",
+   "doc": "perc accents (velocity)",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:82224601aa9fe2ca25d5bdcce3f3c086bfdddf7a3a9dd4345e3dff4627a4b4d8"
+  },
+  "awa8510": {
+   "name": "percRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "snareTight | groove-rolling(3)",
+   "doc": "perc rack and groove",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:0ce750254ff5873eab341fe7c9559ae575b96abea1175405b6735950f796ce62"
+  },
+  "a7xb9gl": {
+   "name": "hats",
+   "type": "mini",
+   "rev": 1,
+   "body": "x*8",
+   "doc": "hats pattern",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:c2845fc5d1dfae91f61227e9f77fbff665ea294e5367dbd32a4f511e758525ec"
+  },
+  "at30kl4": {
+   "name": "hatsVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "[1 .55]*4",
+   "doc": "hats accents (velocity)",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:f77c236a1a254eecdbcf4976f44b5b01d5f6aa633ce54230729f37d31ab8112f"
+  },
+  "a7u9n36": {
+   "name": "hatsRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "hatClosed | groove-rolling(4)",
+   "doc": "hats rack and groove",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:eda42cacf4541f37bf9aa154fd8350f095b3f0a190951b0d8fa1834b61c0a995"
+  },
+  "aefpa1u": {
+   "name": "top",
+   "type": "mini",
+   "rev": 1,
+   "body": "~",
+   "doc": "top pattern",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:ad7fa93fce26b7e70b9d5bba864b13e0878f246773511bff2ec6454449af6b50"
+  },
+  "aw02yet": {
+   "name": "topVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "top accents (velocity)",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a777kch": {
+   "name": "topRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-rolling(5)",
+   "doc": "top rack and groove",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "drums",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:4514a0465bf27ec1d4ee0877a11957d31b370f9428837ca4f0741ac1e43c8c22"
+  },
+  "axt7n70": {
+   "name": "bass",
+   "type": "mini",
+   "rev": 1,
+   "body": "<c1 c1 ab1 bb1>",
+   "doc": "bass pattern",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "bass",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:4b54717f4dc6ec36aa7bed3fd791eefe29131517b7e90d9ead9d358a50d39288"
+  },
+  "a0exciv": {
+   "name": "bassVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "bass accents (velocity)",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "bass",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "a8pxzqf": {
+   "name": "bassRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "subSine | groove-straight(6)",
+   "doc": "bass rack and groove",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "bass",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:11c807e5fe864cb3a2c1440ff946cec5d75149a55a6929e3c9f8c5811edc754b"
+  },
+  "acop4tj": {
+   "name": "harmony",
+   "type": "mini",
+   "rev": 1,
+   "body": "<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>",
+   "doc": "harmony pattern",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "keys",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:d84c725e064052cc810f622a662aa2382ccec9066c2de9a977bb44c408083c6e"
+  },
+  "a9c41mi": {
+   "name": "harmonyVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "harmony accents (velocity)",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "keys",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "ahqjsvk": {
+   "name": "harmonyRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "atmosPad | groove-straight(7)",
+   "doc": "harmony rack and groove",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "keys",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:58f0ef4fd0e704765d4d4269aa8feef96a9adfdf89f7cac2742d762dab349988"
+  },
+  "ara9qbh": {
+   "name": "fx",
+   "type": "mini",
+   "rev": 1,
+   "body": "<~ ~ ~ x>",
+   "doc": "fx pattern",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "fx",
+    "feel",
+    "dubstep",
+    "pattern"
+   ],
+   "hash": "sha256:9c96c2ec200a6319260bd773fb53cf2832c7bd492523bbbc0cb3369b9eab3efb"
+  },
+  "am1lfg0": {
+   "name": "fxVel",
+   "type": "mini",
+   "rev": 1,
+   "body": "1",
+   "doc": "fx accents (velocity)",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "fx",
+    "feel",
+    "dubstep",
+    "accents",
+    "pattern"
+   ],
+   "hash": "sha256:3072e476fb0fc853a1ef71db9afcd75a8ba6acd0a036b8aa201dc8c506d7860b"
+  },
+  "abqpve2": {
+   "name": "fxRack",
+   "type": "hook",
+   "rev": 1,
+   "body": "downSweep",
+   "doc": "fx rack and groove",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "fx",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:278389941a08852b5b54188b67bfd824b4a4b22ff790275e5d8c214c3fb27be6"
+  },
+  "aw1tjrx": {
+   "name": "groove",
+   "type": "hook",
+   "rev": 1,
+   "body": "groove-rolling(0)",
+   "doc": "the feel groove for any extra voice: .hook(atoms.feel.groove)",
+   "folder": "edm/dubstep/feel/halftime",
+   "tags": [
+    "groove",
+    "feel",
+    "dubstep",
+    "rack-slot"
+   ],
+   "hash": "sha256:2c1d77f87f2b86e24cb54a599b224419137db855f6c36cef4d0a63452ac9f331"
+  }
+ }
+}

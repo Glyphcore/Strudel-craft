@@ -7,7 +7,7 @@
       "id": "glyphcore/shim",
       "version": "1.0.0",
       "source": "file:.",
-      "manifest": "sha256:a9207217484124c5decaa887a323f97c815b9c3be676f600e35a67f55105a26d",
+      "manifest": "sha256:5512b068d60ed8ee26b7e242bff8ca556ad4f8c46ac28dbe5a1db151ca7d4a43",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}
@@ -26,6 +26,15 @@
       "version": "1.2.0",
       "source": "file:data/phonk",
       "manifest": "sha256:9ef88569865b30e669cf230a418a5203495bb10560d3e61bb662f68d87d3f8a2",
+      "priority": 0,
+      "allowCode": [],
+      "dependencies": {}
+    },
+    {
+      "id": "glyphcore/edm",
+      "version": "1.0.0",
+      "source": "file:data/edm",
+      "manifest": "sha256:7f0f51e1bdaa778a2f23fbc09eca5172ef326c69726eaff89922929a7f8871bd",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}

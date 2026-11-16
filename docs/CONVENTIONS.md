@@ -17,6 +17,8 @@ Each concept family is one JSON file, `tools/concepts/families/<family>.json`. `
 | `site/data/syntax.json` section `feels` | hooks / atoms / pack programs | Syntax view |
 | `tools/racks/targets.json` | the class of every new rack, recipe and Syntax example | `node tools/racks/audit.mjs` |
 | `site/data/phonk/craftpack.json` | the ingredient list (hashes by `packs.py hash --write`) | packs loader, lock |
+| `site/data/<pack>/...` | the same outputs for a family with `"pack": "author/name"` (e.g. glyphcore/edm -> site/data/edm/: `racks-<id>.json` per `racksIngredient`, `atoms-*`, `feel-*`, its craftpack.json ingredient list) and its own Syntax `section` | packs loader, lock (shim.py pins every site/data pack) |
+| a program recipe's `standalone` file | a family recipe with `"program": FILE` is a whole Craft program (a track): its Strudel form is the lowering of FILE, also written to `standalone` (paste-ready) | Recipes (both tabs), strudel.cc |
 
 DRY rules: a rack chain is written once (its catalog recipe is lowered from it); a pattern is an atom and recipes cite it as `@name`
 (own family) or `@ns:name` (another family); a fade table is one atom that the fade racks cite with `{ "$atomBody": "xfadeOut" }`; groove
@@ -120,7 +122,9 @@ Sub-bar gates (pickups, last beats) need `quant: 0` on the slot (`.use(name, { q
 by default (HOOKS_SYNTAX 4.3). Lane selections (`tagged(...).mute(gate)`) are always exact.
 
 ## 7. Add a concept (checklist)
-1. Pick or create a family file in `tools/concepts/families/` (`family`, `title`, `doc`; `racksIngredient`, `atomsIngredient { id, ns, title, doc }` when it ships atoms).
+1. Pick or create a family file in `tools/concepts/families/` (`family`, `title`, `doc`; `racksIngredient`, `atomsIngredient { id, ns, title, doc }` when it ships atoms). For a pack other than
+   glyphcore/phonk add `pack` (write `site/data/<name>/craftpack.json` with an empty `ingredients` list first), `racksTitle`, `racksDoc`, `section { id, title, explain }`, `labels`
+   (`[[id, title, category, words]]`) and `source` (the doc cited by its recipes). A whole track is a recipe with `program` and `standalone`; run the build twice after an atom change it uses.
 2. Racks: add to `racks` with `class` (a class of `tools/racks/standard.json`; a new class needs an entry there and a `hygiene-<class>` def in
    `site/engine/hygiene.js`), `doc`, `chain` starting with `["hook", "hygiene-<class>"]` (moves: class `move`, no head), and `target` only
    to override the audit phrase or skip with a reason.
@@ -132,8 +136,30 @@ by default (HOOKS_SYNTAX 4.3). Lane selections (`tagged(...).mute(gate)`) are al
 6. A feel: add to `feels` in feels.json (`title`, `tempo`, `cpm`, `groove` preset, `doc`, `labels`, `voices` for every template voice).
    A new template voice is one entry in `template.voices` / `template.src`, and every feel must then fill it (silence is `{ "pat": "~" }`).
 7. Folder and tags are derived, not written: `tools/concepts/taxonomy.mjs` gives every recipe, atom and rack a folder (family, genre, role: `hiphop/trap/drums`, `dovetail/pickup`, `feels/trap/bass`) and tags (role, genre, feel, tempo-feel, mood, technique, status). A new concept needs only its family, labels and role word; to add a role, genre or technique word extend the lists at the top of that file and rerun. The hand-written phonk files and the pack `taxonomy` are filled by `node tools/packs/taxonomy_fill.mjs` (run it after the build, then hash). docs/PACKAGES.md section 4.
-8. Run `node tools/concepts/build.mjs --render` (every recipe must come back `verified`), `python3 tools/packs/packs.py hash site/data/phonk --write`,
+8. Run `node tools/concepts/build.mjs --render` (every recipe must come back `verified`), `python3 tools/packs/packs.py hash site/data/<pack> --write`,
    `python3 tools/packs/shim.py`, `node tools/lowering/build.mjs` (verifies Craft = Strudel events, annotates the Syntax examples; docs/LOWERING.md),
    `node tools/packs/taxonomy_fill.mjs` (then hash and shim again), `python3 tools/packs/shim.py`, `node tools/pwa/precache.mjs`, then `node tools/racks/audit.mjs` (0 failures),
    `node tools/concepts/build.mjs --check` and `node tools/packs/taxonomy_fill.mjs --check` (exit 0), and `python3 tools/packs/audit.py --write-doc` (docs/PACKAGES.md numbers).
 9. Docs follow code: this file (tables above), docs/LOWERING.md, docs/PACKAGES.md, site/README.md, docs/CONCEPT_DAG.md, the #56 tracker.
+
+## 8. EDM families: edm-core and dubstep (pack glyphcore/edm, #127 #128 #129)
+Sources, what each taught and the shared rules: docs/EDM_REFERENCES.md. C minor, one cycle = one bar, 140 bpm unless the recipe says 128 (house tempo demos).
+edm-core is the shared layer other EDM families import (`glyphcore/dnb-electro` depends on it): a family never re-defines a sidechain, riser or form gate.
+
+| component | atoms | rack / move | note |
+|---|---|---|---|
+| kick, clap, roll snare, hats, crash | `ec.fourFloor`, `ec.offHats`, `ec.hats16`, `ec.accent16`, `ds.halfKick`, `ds.halfKick2`, `ds.broKick`, `ds.riddimKick`, `ds.halfSnare`, `ds.ghostSnare`, `ds.dsHats` | `edmKick` (hpf 38: four kicks a bar), `dsKick`, `edmClap`, `dsSnare` (triangle + noise stack), `snareTight`, `hatClosed`, `hatOpen`, `shaker`, `crash` | half-time: kick on the 1 (+ the and of 3), snare alone on 3, hats in the 140 meter |
+| sub | `ds.subLine` | `subSine` | the fundamental, mono, 5 ms attack; every growl layer sits on top of it |
+| reese | `ds.reeseLine` | `reeseBass` | 2-voice supersaw, 0.3 st total detune (+-15 cents), spread 0 |
+| growl / formant / FM | `ds.growlLine`, `ds.talkLine`, `ds.riddimLine`, `ds.wobbleLine`, `ds.wobbleSync` | `growlBass`, `talkBass`, `riddimBass`, `wobbleBass(sync)`, move `wobble(sync, depth)` | band split by layering: high-pass 80-90 Hz, drive after the per-voice filters; wobble = `lpsync` (periods per bar) |
+| screech / laser | `ds.screechLine`, `ds.laserLine` | `screechLead` (FM 3.01), `laserZap` (2-octave fall in 120 ms) | in the gaps of the bass |
+| supersaw, pluck, arp, lead, pad | `ds.chords` (Cm7 Abmaj7 Ebmaj7 Bb7), `ds.arp`, `ds.pluckLine`, `ds.leadLine` | `superChord`, `ukfChord`, `edmPluck`, `ukfPluck`, `ukfArp`, `ukfLead`, `edmPad`, `atmosPad` | spread only above a 180-200 Hz high-pass |
+| vocal chops | `ds.chopLine` | `vowelChop` | synthesised vowel stabs; sampled chops use the vox racks and banks |
+| risers, builds, impacts | `ec.roll8`, `ec.rollVel8`, `ec.roll4`, `ec.rollVel4`, `ec.open8`, `ec.thin8`, `ec.gapMask`, `ec.dropMask` | `noiseRiser(len)`, `hpBuild(len)`, `pitchRiser(len)`, `reverseSwell(len)`, `downSweep`, `impactBoom`, `subDrop`; moves `filterBuild`, `thinBuild` | `len` in seconds = bars x 240 / bpm |
+| sidechain, pump, bus | `ec.pump16` | moves `sidechain(orbit, depth, release)`, `ducked(orbit)`, `pump(depth)`, `ott(gain)`, `drive(amt)` | duck gain = 1 - sqrt(depth); multiband / band-split = `.split` (Syntax) |
+
+Forms: the 104-bar map (EDM_REFERENCES section 3) as gates `ec.intro`, `build`, `dropA`, `breakdown`, `build2`, `dropB`, `switchUp`, `outro`, `drops`, `builds`, `notDrops`,
+`notBuilds`, `gap`, `fillBars`, riser gates `ec.rise4 / rise8 / rise16 / hit ({ at })`, and the same sections as masks for plain Strudel (`ec.mIntro` .. `ec.mOutro`, `mDrops`, `mBuilds`):
+a track that must open on strudel.cc uses the masks (`.mask(atoms.ec.mDropA)`), a Craft track may use the gates (`tagged("bass").mute(atoms.ec.notDrops)`).
+Dovetails: call / response basses `ds.bassA` / `ds.bassB`, the drop fill `ds.lastOf4` / `ds.notLastOf4`, the gap before a drop, a reverse swell that stops on the downbeat,
+a downlifter after it. Feels: `feel-halftime`, `feel-ukf`, `feel-riddim`, `feel-brostep` (template of section 5; `atoms.import("pack:glyphcore/edm:feel-ukf", { as: "feel" })`).

@@ -1,0 +1,1132 @@
+{
+ "model": 1,
+ "meta": {
+  "id": "glyphcore/edm:racks-edm-core",
+  "doc": "EDM foundation racks (band-scoped, docs/RACK_STANDARD.md): edmKick, subSine, edmClap, snareTight, hats, crash, risers (noiseRiser, hpBuild, pitchRiser), downSweep, reverseSwell, impactBoom, subDrop, superChord, edmPluck, edmPad; moves sidechain(orbit, depth, release), ducked(orbit), pump(depth), ott(gain), drive(amt), wobble(sync, depth), filterBuild, thinBuild. Use: .hook(\"edmKick | sidechain(2)\")."
+ },
+ "defs": {
+  "edmKick": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-kick"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "freq",
+     52
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "penv",
+     36
+    ],
+    [
+     "pdecay",
+     0.05
+    ],
+    [
+     "decay",
+     0.3
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "shape",
+     0.35
+    ],
+    [
+     "lpf",
+     4000
+    ],
+    [
+     "hpf",
+     38
+    ],
+    [
+     "gain",
+     0.8
+    ]
+   ],
+   "folder": "edm/core/racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "edm"
+   ]
+  },
+  "subSine": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-sub"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "decay",
+     0.2
+    ],
+    [
+     "sustain",
+     0.9
+    ],
+    [
+     "release",
+     0.08
+    ],
+    [
+     "shape",
+     0.15
+    ],
+    [
+     "lpf",
+     220
+    ],
+    [
+     "gain",
+     0.5
+    ]
+   ],
+   "folder": "edm/core/racks/bass",
+   "tags": [
+    "bass",
+    "rack",
+    "edm"
+   ]
+  },
+  "edmClap": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-snare"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "bpf",
+     1500
+    ],
+    [
+     "bpq",
+     1.1
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.17
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.85
+    ]
+   ],
+   "folder": "edm/core/racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "edm"
+   ]
+  },
+  "snareTight": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-snare"
+    ],
+    [
+     "s",
+     {
+      "$mini": "triangle, white"
+     }
+    ],
+    [
+     "note",
+     "e3"
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.12
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     170
+    ],
+    [
+     "lpf",
+     7000
+    ],
+    [
+     "gain",
+     0.55
+    ]
+   ],
+   "folder": "edm/core/racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "edm"
+   ]
+  },
+  "hatClosed": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     8000
+    ],
+    [
+     "decay",
+     0.035
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.4
+    ]
+   ],
+   "folder": "edm/core/racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "edm"
+   ]
+  },
+  "hatOpen": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     7000
+    ],
+    [
+     "decay",
+     0.2
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ],
+   "folder": "edm/core/racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "edm"
+   ]
+  },
+  "shaker": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     5500
+    ],
+    [
+     "attack",
+     0.012
+    ],
+    [
+     "decay",
+     0.06
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ],
+   "folder": "edm/core/racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "edm"
+   ]
+  },
+  "crash": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     5000
+    ],
+    [
+     "decay",
+     1.6
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.22
+    ]
+   ],
+   "folder": "edm/core/racks/drums",
+   "tags": [
+    "drums",
+    "rack",
+    "edm"
+   ]
+  },
+  "noiseRiser": {
+   "params": {
+    "len": {
+     "min": 0.5,
+     "max": 30,
+     "default": 6.86
+    }
+   },
+   "chain": [
+    [
+     "hook",
+     "hygiene-riser"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     {
+      "$param": "len"
+     }
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.2
+    ],
+    [
+     "hpf",
+     300
+    ],
+    [
+     "lpf",
+     700
+    ],
+    [
+     "lpenv",
+     4
+    ],
+    [
+     "lpattack",
+     {
+      "$param": "len"
+     }
+    ],
+    [
+     "lpsustain",
+     1
+    ],
+    [
+     "gain",
+     0.28
+    ]
+   ],
+   "folder": "edm/core/racks/fx",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "hpBuild": {
+   "params": {
+    "len": {
+     "min": 0.5,
+     "max": 30,
+     "default": 6.86
+    }
+   },
+   "chain": [
+    [
+     "hook",
+     "hygiene-riser"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     1
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.2
+    ],
+    [
+     "hpf",
+     200
+    ],
+    [
+     "hpenv",
+     4
+    ],
+    [
+     "hpattack",
+     {
+      "$param": "len"
+     }
+    ],
+    [
+     "hpsustain",
+     1
+    ],
+    [
+     "lpf",
+     11000
+    ],
+    [
+     "gain",
+     0.22
+    ]
+   ],
+   "folder": "edm/core/racks/fx",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "pitchRiser": {
+   "params": {
+    "len": {
+     "min": 0.5,
+     "max": 30,
+     "default": 6.86
+    }
+   },
+   "chain": [
+    [
+     "hook",
+     "hygiene-riser"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "note",
+     "c4"
+    ],
+    [
+     "penv",
+     24
+    ],
+    [
+     "pattack",
+     {
+      "$param": "len"
+     }
+    ],
+    [
+     "panchor",
+     0
+    ],
+    [
+     "attack",
+     2
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.1
+    ],
+    [
+     "lpf",
+     4000
+    ],
+    [
+     "gain",
+     0.16
+    ]
+   ],
+   "folder": "edm/core/racks/fx",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "downSweep": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-sweep"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "decay",
+     2
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     300
+    ],
+    [
+     "lpf",
+     1000
+    ],
+    [
+     "lpenv",
+     3.5
+    ],
+    [
+     "lpattack",
+     0.001
+    ],
+    [
+     "lpdecay",
+     1.8
+    ],
+    [
+     "lpsustain",
+     0
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ],
+   "folder": "edm/core/racks/fx",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "reverseSwell": {
+   "params": {
+    "len": {
+     "min": 0.2,
+     "max": 8,
+     "default": 1.71
+    }
+   },
+   "chain": [
+    [
+     "hook",
+     "hygiene-reverse"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     {
+      "$param": "len"
+     }
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.02
+    ],
+    [
+     "hpf",
+     1500
+    ],
+    [
+     "lpf",
+     9000
+    ],
+    [
+     "gain",
+     0.28
+    ]
+   ],
+   "folder": "edm/core/racks/fx",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "impactBoom": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-impact"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "note",
+     "c1"
+    ],
+    [
+     "penv",
+     24
+    ],
+    [
+     "pdecay",
+     0.25
+    ],
+    [
+     "decay",
+     2.2
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "shape",
+     0.25
+    ],
+    [
+     "lpf",
+     3000
+    ],
+    [
+     "gain",
+     0.7
+    ]
+   ],
+   "folder": "edm/core/racks/fx",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "subDrop": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-impact"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "note",
+     "c1"
+    ],
+    [
+     "penv",
+     24
+    ],
+    [
+     "pdecay",
+     1
+    ],
+    [
+     "decay",
+     2.5
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "lpf",
+     400
+    ],
+    [
+     "gain",
+     0.6
+    ]
+   ],
+   "folder": "edm/core/racks/fx",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "superChord": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-supersaw"
+    ],
+    [
+     "s",
+     "supersaw"
+    ],
+    [
+     "unison",
+     7
+    ],
+    [
+     "detune",
+     0.3
+    ],
+    [
+     "spread",
+     0.6
+    ],
+    [
+     "attack",
+     0.01
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     0.4
+    ],
+    [
+     "hpf",
+     180
+    ],
+    [
+     "lpf",
+     6000
+    ],
+    [
+     "gain",
+     0.16
+    ]
+   ],
+   "folder": "edm/core/racks/keys",
+   "tags": [
+    "keys",
+    "rack",
+    "edm"
+   ]
+  },
+  "edmPluck": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-pluck"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "decay",
+     0.2
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "lpf",
+     1500
+    ],
+    [
+     "lpenv",
+     2
+    ],
+    [
+     "lpdecay",
+     0.18
+    ],
+    [
+     "lpsustain",
+     0
+    ],
+    [
+     "gain",
+     0.35
+    ]
+   ],
+   "folder": "edm/core/racks/lead",
+   "tags": [
+    "lead",
+    "rack",
+    "edm"
+   ]
+  },
+  "edmPad": {
+   "chain": [
+    [
+     "hook",
+     "hygiene-pad"
+    ],
+    [
+     "s",
+     "supersaw"
+    ],
+    [
+     "unison",
+     4
+    ],
+    [
+     "detune",
+     0.2
+    ],
+    [
+     "attack",
+     1
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     2.5
+    ],
+    [
+     "lpf",
+     1600
+    ],
+    [
+     "lpenv",
+     1
+    ],
+    [
+     "lpattack",
+     2
+    ],
+    [
+     "gain",
+     0.18
+    ]
+   ],
+   "folder": "edm/core/racks/pad",
+   "tags": [
+    "pad",
+    "rack",
+    "edm"
+   ]
+  },
+  "sidechain": {
+   "params": {
+    "orbit": {
+     "min": 1,
+     "max": 16,
+     "default": 2
+    },
+    "depth": {
+     "min": 0,
+     "max": 1,
+     "default": 0.5
+    },
+    "release": {
+     "min": 0.02,
+     "max": 1,
+     "default": 0.2
+    }
+   },
+   "chain": [
+    [
+     "duckorbit",
+     {
+      "$param": "orbit"
+     }
+    ],
+    [
+     "duckdepth",
+     {
+      "$param": "depth"
+     }
+    ],
+    [
+     "duckattack",
+     {
+      "$param": "release"
+     }
+    ]
+   ],
+   "folder": "edm/core/moves",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "ducked": {
+   "params": {
+    "orbit": {
+     "min": 1,
+     "max": 16,
+     "default": 2
+    }
+   },
+   "chain": [
+    [
+     "orbit",
+     {
+      "$param": "orbit"
+     }
+    ]
+   ],
+   "folder": "edm/core/moves",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "pump": {
+   "params": {
+    "depth": {
+     "min": 0,
+     "max": 1,
+     "default": 0.7
+    }
+   },
+   "chain": [
+    [
+     "tremolosync",
+     4
+    ],
+    [
+     "tremolodepth",
+     {
+      "$param": "depth"
+     }
+    ],
+    [
+     "tremoloshape",
+     "ramp"
+    ]
+   ],
+   "folder": "edm/core/moves",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "ott": {
+   "params": {
+    "gain": {
+     "min": 0.1,
+     "max": 2,
+     "default": 0.5
+    }
+   },
+   "chain": [
+    [
+     "compressor",
+     -30
+    ],
+    [
+     "compressorRatio",
+     6
+    ],
+    [
+     "compressorKnee",
+     6
+    ],
+    [
+     "compressorAttack",
+     0.003
+    ],
+    [
+     "compressorRelease",
+     0.08
+    ],
+    [
+     "postgain",
+     {
+      "$param": "gain"
+     }
+    ]
+   ],
+   "folder": "edm/core/moves",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "drive": {
+   "params": {
+    "amt": {
+     "min": 0,
+     "max": 4,
+     "default": 1
+    }
+   },
+   "chain": [
+    [
+     "distort",
+     {
+      "$param": "amt"
+     }
+    ],
+    [
+     "distortvol",
+     0.6
+    ]
+   ],
+   "folder": "edm/core/moves",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "wobble": {
+   "params": {
+    "sync": {
+     "min": 0.25,
+     "max": 32,
+     "default": 4
+    },
+    "depth": {
+     "min": 0,
+     "max": 4,
+     "default": 1.5
+    }
+   },
+   "chain": [
+    [
+     "lpsync",
+     {
+      "$param": "sync"
+     }
+    ],
+    [
+     "lpdepth",
+     {
+      "$param": "depth"
+     }
+    ]
+   ],
+   "folder": "edm/core/moves",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "filterBuild": {
+   "chain": [
+    [
+     "lpf",
+     {
+      "$mini": "<300 450 700 1000 1500 2300 3600 6000>"
+     }
+    ]
+   ],
+   "folder": "edm/core/moves",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  },
+  "thinBuild": {
+   "chain": [
+    [
+     "hpf",
+     {
+      "$mini": "<30 50 80 130 200 320 500 800>"
+     }
+    ]
+   ],
+   "folder": "edm/core/moves",
+   "tags": [
+    "fx",
+    "rack",
+    "edm"
+   ]
+  }
+ }
+}

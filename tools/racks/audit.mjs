@@ -4,7 +4,7 @@
 //   node tools/racks/audit.mjs [--only racks,catalog,syntax] [--item NAME] [--out DIR] [--baseline REPORT.json] [--no-structure]
 //                              [--hooks FILE]... [--catalog FILE] [--syntax FILE] [--jobs N] [--keep] [--quiet]
 // Writes OUT/report.json and OUT/report.md (default OUT = tools/racks/out, gitignored). Exit 0 = no failure, 1 = failures, 2 = usage / CLI missing.
-// Sources audited: hook defs of the given hooks files (default: site/data/racks/hygiene.json, site/data/phonk/racks.json, racks-v2.json),
+// Sources audited: hook defs of the given hooks files (default: site/data/racks/hygiene.json, site/data/phonk/racks*.json, racks*.json of every other pack in site/data),
 // site/data/catalog.json recipes, site/data/syntax.json examples. Classes come from tools/racks/targets.json.
 import fs from 'node:fs'; import path from 'node:path'; import os from 'node:os'; import { spawn } from 'node:child_process'; import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url)); const ROOT = path.resolve(HERE, '..', '..');
@@ -83,7 +83,10 @@ export function judge(m, cls, extra = {}) {
 }
 
 // ---------- items ----------
-const hooksFiles = optAll('--hooks').length ? optAll('--hooks') : ['site/data/racks/hygiene.json', 'site/data/phonk/racks.json', 'site/data/phonk/racks-v2.json', 'site/data/phonk/racks-hiphop.json'].map((f) => path.join(ROOT, f)).filter((f) => fs.existsSync(f));
+// default: the hygiene racks, the phonk racks, then every racks*.json of the other content packs under site/data (a directory with a craftpack.json)
+const packRacks = fs.readdirSync(path.join(ROOT, 'site/data')).filter((d) => d !== 'phonk' && fs.existsSync(path.join(ROOT, 'site/data', d, 'craftpack.json'))).sort()
+  .flatMap((d) => fs.readdirSync(path.join(ROOT, 'site/data', d)).filter((f) => /^racks.*\.json$/.test(f)).sort().map((f) => `site/data/${d}/${f}`));
+const hooksFiles = optAll('--hooks').length ? optAll('--hooks') : ['site/data/racks/hygiene.json', 'site/data/phonk/racks.json', 'site/data/phonk/racks-v2.json', 'site/data/phonk/racks-hiphop.json', ...packRacks].map((f) => path.join(ROOT, f)).filter((f) => fs.existsSync(f));
 const merged = { model: 1, defs: {} }; for (const f of hooksFiles) Object.assign(merged.defs, JSON.parse(fs.readFileSync(f, 'utf8')).defs || {});
 const items = [];
 if (only.includes('racks')) for (const [name, def] of Object.entries(merged.defs)) {

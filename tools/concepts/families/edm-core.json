@@ -1,0 +1,1831 @@
+{
+ "family": "edm-core",
+ "title": "EDM foundations: sidechain, pumps, risers, impacts, builds and drops",
+ "doc": "Shared EDM foundations for every EDM / dubstep / DnB / electro family (docs/EDM_REFERENCES.md): kick, sub, clap, hats, crash; risers, white-noise builds, pitch risers, impacts, sub drops, reverse swells, downlifters; supersaw, pluck, pad; moves for sidechain (duckorbit), trigger-free pump, OTT-style squash, drive, synced wobble, filter and high-pass builds; snare-roll, filter and gap atoms, riser grammars (4 / 8 / 16 bars ending on a point) and the 104-bar song-form gates.",
+ "pack": "glyphcore/edm",
+ "taxonomy": {
+  "folder": "edm/core",
+  "genres": [
+   "edm"
+  ]
+ },
+ "source": "docs/EDM_REFERENCES.md",
+ "racksIngredient": "racks-edm-core",
+ "racksTitle": "EDM foundation racks",
+ "racksDoc": "EDM foundation racks (band-scoped, docs/RACK_STANDARD.md): edmKick, subSine, edmClap, snareTight, hats, crash, risers (noiseRiser, hpBuild, pitchRiser), downSweep, reverseSwell, impactBoom, subDrop, superChord, edmPluck, edmPad; moves sidechain(orbit, depth, release), ducked(orbit), pump(depth), ott(gain), drive(amt), wobble(sync, depth), filterBuild, thinBuild. Use: .hook(\"edmKick | sidechain(2)\").",
+ "atomsIngredient": {
+  "id": "atoms-edm-core",
+  "ns": "ec",
+  "title": "EDM foundation atoms",
+  "doc": "glyphcore/edm foundation atoms (ec.): four-on-the-floor and off-beat patterns, snare rolls (roll4, roll8 + velocity ramps), filter builds (open8, thin8), gap masks, riser gates (rise4, rise8, rise16, hit), the 104-bar form as gates (intro .. outro, drops, notDrops, gap, fillBars) and as masks (mIntro .. mOutro). Import with atoms.import(\"pack:glyphcore/edm:atoms-edm-core\")."
+ },
+ "section": {
+  "id": "edm",
+  "title": "EDM foundations: sidechain, pumps, builds, drops, buses",
+  "explain": "Shared EDM foundations (pack glyphcore/edm, docs/EDM_REFERENCES.md). Sidechain is Strudel's duckorbit: the move sidechain(orbit, depth, release) goes on the kick, ducked(orbit) on what it ducks. pump(depth) is a beat-synced ramp tremolo for a pump without a trigger. Builds are data: ec.roll8 / ec.rollVel8 (snare roll), ec.open8 / ec.thin8 (filter automation), ec.gapMask (the silent beat before the drop), gates ec.rise4 / rise8 / rise16 / hit that end or start on a point, and the 104-bar map ec.intro, build, dropA, breakdown, build2, dropB, switchUp, outro (with drops, notDrops, gap, fillBars). Bus processing (band-split drive, 3-band OTT) is a .split on superdough buses."
+ },
+ "labels": [
+  [
+   "edm",
+   "EDM",
+   "feel",
+   "electronic dance music, club, festival"
+  ],
+  [
+   "sidechain",
+   "Sidechain",
+   "mix",
+   "ducking, duck, pump, kick ducks"
+  ],
+  [
+   "pumping",
+   "Pumping",
+   "mix",
+   "pump, breathe, volume shaper"
+  ],
+  [
+   "build",
+   "Build",
+   "arrangement",
+   "build-up, rise, tension"
+  ],
+  [
+   "build-drop",
+   "Build and drop",
+   "arrangement",
+   "drop, impact, release"
+  ],
+  [
+   "riser",
+   "Riser",
+   "fx",
+   "uplifter, sweep up, noise build"
+  ],
+  [
+   "snare-roll",
+   "Snare roll",
+   "rhythm",
+   "roll, build roll, fill"
+  ],
+  [
+   "impact",
+   "Impact",
+   "fx",
+   "boom, hit, sub drop"
+  ],
+  [
+   "sub",
+   "Sub",
+   "bass",
+   "sine sub, low end"
+  ],
+  [
+   "supersaw",
+   "Supersaw",
+   "synth",
+   "detuned saws, trance chords"
+  ],
+  [
+   "compression",
+   "Compression",
+   "mix",
+   "OTT, squash, multiband"
+  ]
+ ],
+ "racks": {
+  "edmKick": {
+   "class": "kick",
+   "doc": "EDM kick: sine body near 52 Hz, a 3-octave pitch drop in 50 ms for the click, short decay, light shape for weight; high-pass 38 Hz because four kicks a bar put pitch-envelope sidebands under 20 Hz",
+   "chain": [
+    [
+     "hook",
+     "hygiene-kick"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "freq",
+     52
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "penv",
+     36
+    ],
+    [
+     "pdecay",
+     0.05
+    ],
+    [
+     "decay",
+     0.3
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "shape",
+     0.35
+    ],
+    [
+     "lpf",
+     4000
+    ],
+    [
+     "hpf",
+     38
+    ],
+    [
+     "gain",
+     0.8
+    ]
+   ]
+  },
+  "subSine": {
+   "class": "sub",
+   "doc": "clean sub: sine, 5 ms attack (no click), a little shape for harmonics small speakers can play, low-pass 220 Hz; mono by construction",
+   "chain": [
+    [
+     "hook",
+     "hygiene-sub"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "decay",
+     0.2
+    ],
+    [
+     "sustain",
+     0.9
+    ],
+    [
+     "release",
+     0.08
+    ],
+    [
+     "shape",
+     0.15
+    ],
+    [
+     "lpf",
+     220
+    ],
+    [
+     "gain",
+     0.5
+    ]
+   ]
+  },
+  "edmClap": {
+   "class": "snare",
+   "doc": "clap: band-passed white noise at 1.5 kHz, fast decay",
+   "chain": [
+    [
+     "hook",
+     "hygiene-snare"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "bpf",
+     1500
+    ],
+    [
+     "bpq",
+     1.1
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.17
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.85
+    ]
+   ]
+  },
+  "snareTight": {
+   "class": "snare",
+   "doc": "tight snare for rolls: triangle body (E3) stacked with white noise, high-passed at 170 Hz, 120 ms",
+   "chain": [
+    [
+     "hook",
+     "hygiene-snare"
+    ],
+    [
+     "s",
+     {
+      "$mini": "triangle, white"
+     }
+    ],
+    [
+     "note",
+     "e3"
+    ],
+    [
+     "attack",
+     0.001
+    ],
+    [
+     "decay",
+     0.12
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     170
+    ],
+    [
+     "lpf",
+     7000
+    ],
+    [
+     "gain",
+     0.55
+    ]
+   ]
+  },
+  "hatClosed": {
+   "class": "hat",
+   "doc": "closed hat: white noise over 8 kHz, 35 ms",
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     8000
+    ],
+    [
+     "decay",
+     0.035
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.4
+    ]
+   ]
+  },
+  "hatOpen": {
+   "class": "hat",
+   "doc": "open hat: white noise over 7 kHz, 200 ms",
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     7000
+    ],
+    [
+     "decay",
+     0.2
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "shaker": {
+   "class": "hat",
+   "doc": "shaker: soft 12 ms attack, 60 ms, noise over 5.5 kHz",
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     5500
+    ],
+    [
+     "attack",
+     0.012
+    ],
+    [
+     "decay",
+     0.06
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "crash": {
+   "class": "hat",
+   "doc": "crash: noise over 5 kHz with a 1.6 s decay, the downbeat marker of a drop",
+   "chain": [
+    [
+     "hook",
+     "hygiene-hat"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "hpf",
+     5000
+    ],
+    [
+     "decay",
+     1.6
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "gain",
+     0.22
+    ]
+   ]
+  },
+  "noiseRiser": {
+   "class": "riser",
+   "doc": "noise riser: white noise fades in over len seconds while its low-pass opens 4 octaves (700 Hz -> 11 kHz); len = bars x 240 / bpm (4 bars at 140 = 6.86 s)",
+   "params": {
+    "len": {
+     "min": 0.5,
+     "max": 30,
+     "default": 6.86
+    }
+   },
+   "chain": [
+    [
+     "hook",
+     "hygiene-riser"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     {
+      "$param": "len"
+     }
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.2
+    ],
+    [
+     "hpf",
+     300
+    ],
+    [
+     "lpf",
+     700
+    ],
+    [
+     "lpenv",
+     4
+    ],
+    [
+     "lpattack",
+     {
+      "$param": "len"
+     }
+    ],
+    [
+     "lpsustain",
+     1
+    ],
+    [
+     "gain",
+     0.28
+    ]
+   ]
+  },
+  "hpBuild": {
+   "class": "riser",
+   "doc": "white-noise build: noise (1 s fade-in) whose high-pass climbs 4 octaves (200 Hz -> 3.2 kHz) over len seconds, so it thins and rises at once",
+   "params": {
+    "len": {
+     "min": 0.5,
+     "max": 30,
+     "default": 6.86
+    }
+   },
+   "chain": [
+    [
+     "hook",
+     "hygiene-riser"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     1
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.2
+    ],
+    [
+     "hpf",
+     200
+    ],
+    [
+     "hpenv",
+     4
+    ],
+    [
+     "hpattack",
+     {
+      "$param": "len"
+     }
+    ],
+    [
+     "hpsustain",
+     1
+    ],
+    [
+     "lpf",
+     11000
+    ],
+    [
+     "gain",
+     0.22
+    ]
+   ]
+  },
+  "pitchRiser": {
+   "class": "riser",
+   "doc": "pitch riser: a saw on C4 that glides up two octaves over len seconds (pitch envelope, anchor at the start), 2 s fade-in, low-passed at 4 kHz",
+   "params": {
+    "len": {
+     "min": 0.5,
+     "max": 30,
+     "default": 6.86
+    }
+   },
+   "chain": [
+    [
+     "hook",
+     "hygiene-riser"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "note",
+     "c4"
+    ],
+    [
+     "penv",
+     24
+    ],
+    [
+     "pattack",
+     {
+      "$param": "len"
+     }
+    ],
+    [
+     "panchor",
+     0
+    ],
+    [
+     "attack",
+     2
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.1
+    ],
+    [
+     "lpf",
+     4000
+    ],
+    [
+     "gain",
+     0.16
+    ]
+   ]
+  },
+  "downSweep": {
+   "class": "sweep",
+   "doc": "downlifter: noise whose low-pass falls 3.5 octaves (11 kHz -> 1 kHz) over 1.8 s after a drop or into a breakdown",
+   "chain": [
+    [
+     "hook",
+     "hygiene-sweep"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     0.005
+    ],
+    [
+     "decay",
+     2
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "hpf",
+     300
+    ],
+    [
+     "lpf",
+     1000
+    ],
+    [
+     "lpenv",
+     3.5
+    ],
+    [
+     "lpattack",
+     0.001
+    ],
+    [
+     "lpdecay",
+     1.8
+    ],
+    [
+     "lpsustain",
+     0
+    ],
+    [
+     "gain",
+     0.3
+    ]
+   ]
+  },
+  "reverseSwell": {
+   "class": "reverse",
+   "doc": "reverse swell: noise that fades in over len seconds and stops dead (20 ms release), so it peaks exactly where its event ends; place it to end on the downbeat",
+   "params": {
+    "len": {
+     "min": 0.2,
+     "max": 8,
+     "default": 1.71
+    }
+   },
+   "chain": [
+    [
+     "hook",
+     "hygiene-reverse"
+    ],
+    [
+     "s",
+     "white"
+    ],
+    [
+     "attack",
+     {
+      "$param": "len"
+     }
+    ],
+    [
+     "sustain",
+     1
+    ],
+    [
+     "release",
+     0.02
+    ],
+    [
+     "hpf",
+     1500
+    ],
+    [
+     "lpf",
+     9000
+    ],
+    [
+     "gain",
+     0.28
+    ]
+   ]
+  },
+  "impactBoom": {
+   "class": "impact",
+   "doc": "impact: sine on C1 dropping two octaves in 250 ms, 2.2 s tail, light shape; the downbeat of a drop",
+   "chain": [
+    [
+     "hook",
+     "hygiene-impact"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "note",
+     "c1"
+    ],
+    [
+     "penv",
+     24
+    ],
+    [
+     "pdecay",
+     0.25
+    ],
+    [
+     "decay",
+     2.2
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "shape",
+     0.25
+    ],
+    [
+     "lpf",
+     3000
+    ],
+    [
+     "gain",
+     0.7
+    ]
+   ]
+  },
+  "subDrop": {
+   "class": "impact",
+   "doc": "sub drop: a sine that falls from about 130 Hz to C1 over a second (pitch envelope down), clean",
+   "chain": [
+    [
+     "hook",
+     "hygiene-impact"
+    ],
+    [
+     "s",
+     "sine"
+    ],
+    [
+     "note",
+     "c1"
+    ],
+    [
+     "penv",
+     24
+    ],
+    [
+     "pdecay",
+     1
+    ],
+    [
+     "decay",
+     2.5
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "lpf",
+     400
+    ],
+    [
+     "gain",
+     0.6
+    ]
+   ]
+  },
+  "superChord": {
+   "class": "supersaw",
+   "doc": "supersaw chords: 7 voices, 0.3 semitone total detune, 0.6 stereo spread; high-pass 180 Hz so the spread never reaches the mono low end",
+   "chain": [
+    [
+     "hook",
+     "hygiene-supersaw"
+    ],
+    [
+     "s",
+     "supersaw"
+    ],
+    [
+     "unison",
+     7
+    ],
+    [
+     "detune",
+     0.3
+    ],
+    [
+     "spread",
+     0.6
+    ],
+    [
+     "attack",
+     0.01
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     0.4
+    ],
+    [
+     "hpf",
+     180
+    ],
+    [
+     "lpf",
+     6000
+    ],
+    [
+     "gain",
+     0.16
+    ]
+   ]
+  },
+  "edmPluck": {
+   "class": "pluck",
+   "doc": "pluck: saw, 200 ms decay, low-pass 1.5 kHz with a 2-octave envelope that closes with the note",
+   "chain": [
+    [
+     "hook",
+     "hygiene-pluck"
+    ],
+    [
+     "s",
+     "sawtooth"
+    ],
+    [
+     "attack",
+     0.002
+    ],
+    [
+     "decay",
+     0.2
+    ],
+    [
+     "sustain",
+     0
+    ],
+    [
+     "lpf",
+     1500
+    ],
+    [
+     "lpenv",
+     2
+    ],
+    [
+     "lpdecay",
+     0.18
+    ],
+    [
+     "lpsustain",
+     0
+    ],
+    [
+     "gain",
+     0.35
+    ]
+   ]
+  },
+  "edmPad": {
+   "class": "pad",
+   "doc": "pad: 4-voice supersaw, 1 s attack, 2.5 s release, filter opens one octave over 2 s",
+   "chain": [
+    [
+     "hook",
+     "hygiene-pad"
+    ],
+    [
+     "s",
+     "supersaw"
+    ],
+    [
+     "unison",
+     4
+    ],
+    [
+     "detune",
+     0.2
+    ],
+    [
+     "attack",
+     1
+    ],
+    [
+     "sustain",
+     0.8
+    ],
+    [
+     "release",
+     2.5
+    ],
+    [
+     "lpf",
+     1600
+    ],
+    [
+     "lpenv",
+     1
+    ],
+    [
+     "lpattack",
+     2
+    ],
+    [
+     "gain",
+     0.18
+    ]
+   ]
+  },
+  "sidechain": {
+   "class": "move",
+   "doc": "sidechain trigger (Strudel duckorbit): put on the kick; every kick ducks the voices on orbit `orbit` to a gain of 1 - sqrt(depth) (superdough: 0.25 = -6 dB, 0.36 = -8 dB, 0.5 = -10.7 dB, 0.8 = -19.5 dB) and they come back over `release` seconds (superdough duckattack)",
+   "params": {
+    "orbit": {
+     "min": 1,
+     "max": 16,
+     "default": 2
+    },
+    "depth": {
+     "min": 0,
+     "max": 1,
+     "default": 0.5
+    },
+    "release": {
+     "min": 0.02,
+     "max": 1,
+     "default": 0.2
+    }
+   },
+   "chain": [
+    [
+     "duckorbit",
+     {
+      "$param": "orbit"
+     }
+    ],
+    [
+     "duckdepth",
+     {
+      "$param": "depth"
+     }
+    ],
+    [
+     "duckattack",
+     {
+      "$param": "release"
+     }
+    ]
+   ]
+  },
+  "ducked": {
+   "class": "move",
+   "doc": "sidechain target: send this voice to orbit `orbit`, the one the kick's sidechain move ducks (an orbit has one delay and one reverb)",
+   "params": {
+    "orbit": {
+     "min": 1,
+     "max": 16,
+     "default": 2
+    }
+   },
+   "chain": [
+    [
+     "orbit",
+     {
+      "$param": "orbit"
+     }
+    ]
+   ]
+  },
+  "pump": {
+   "class": "move",
+   "doc": "pump without a trigger (volume shaper, LFOTool-style): a ramp tremolo synced to the beat (4 per bar) dips each beat by `depth` and swells back; works on held chords",
+   "params": {
+    "depth": {
+     "min": 0,
+     "max": 1,
+     "default": 0.7
+    }
+   },
+   "chain": [
+    [
+     "tremolosync",
+     4
+    ],
+    [
+     "tremolodepth",
+     {
+      "$param": "depth"
+     }
+    ],
+    [
+     "tremoloshape",
+     "ramp"
+    ]
+   ]
+  },
+  "ott": {
+   "class": "move",
+   "doc": "OTT-style squash on one band: fast, deep downward compression (-30 dB threshold, 6:1, 3 ms / 80 ms) then `gain` trims after the Web Audio compressor's own makeup gain (measured on the rack audit chord: +11 dB before the trim, +5 dB net at the default 0.5); quiet detail comes up relative to the peaks; a 3-band version is a .split on buses (Syntax: EDM foundations)",
+   "params": {
+    "gain": {
+     "min": 0.1,
+     "max": 2,
+     "default": 0.5
+    }
+   },
+   "chain": [
+    [
+     "compressor",
+     -30
+    ],
+    [
+     "compressorRatio",
+     6
+    ],
+    [
+     "compressorKnee",
+     6
+    ],
+    [
+     "compressorAttack",
+     0.003
+    ],
+    [
+     "compressorRelease",
+     0.08
+    ],
+    [
+     "postgain",
+     {
+      "$param": "gain"
+     }
+    ]
+   ]
+  },
+  "drive": {
+   "class": "move",
+   "doc": "drive: superdough distortion (scurve, amount `amt`, output 0.6); after the filters, so it sees band-limited input. DC grows with the amount (measured on the audit chord: -48.8 dBFS at 1, -33.2 at 2): above 1 put a high-pass on the bus or master (engine/master: 25 Hz)",
+   "params": {
+    "amt": {
+     "min": 0,
+     "max": 4,
+     "default": 1
+    }
+   },
+   "chain": [
+    [
+     "distort",
+     {
+      "$param": "amt"
+     }
+    ],
+    [
+     "distortvol",
+     0.6
+    ]
+   ]
+  },
+  "wobble": {
+   "class": "move",
+   "doc": "wobble: the low-pass LFO synced to the bar (`sync` periods per bar: 2 = half notes, 4 = quarters, 8 = eighths, 6 / 12 = triplets) at `depth` x the cutoff; needs an lpf in the rack",
+   "params": {
+    "sync": {
+     "min": 0.25,
+     "max": 32,
+     "default": 4
+    },
+    "depth": {
+     "min": 0,
+     "max": 4,
+     "default": 1.5
+    }
+   },
+   "chain": [
+    [
+     "lpsync",
+     {
+      "$param": "sync"
+     }
+    ],
+    [
+     "lpdepth",
+     {
+      "$param": "depth"
+     }
+    ]
+   ]
+  },
+  "filterBuild": {
+   "class": "move",
+   "doc": "8-bar filter build: the low-pass steps open bar by bar (ec.open8: 300 Hz -> 6 kHz), the automation of a build written as data",
+   "chain": [
+    [
+     "lpf",
+     {
+      "$atomBody": "open8"
+     }
+    ]
+   ]
+  },
+  "thinBuild": {
+   "class": "move",
+   "doc": "8-bar thinning: the high-pass climbs bar by bar (ec.thin8: 30 -> 800 Hz), so the low end empties before the drop",
+   "chain": [
+    [
+     "hpf",
+     {
+      "$atomBody": "thin8"
+     }
+    ]
+   ]
+  }
+ },
+ "atoms": {
+  "fourFloor": {
+   "type": "mini",
+   "body": "x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~",
+   "doc": "four on the floor: a kick on every beat"
+  },
+  "offHats": {
+   "type": "mini",
+   "body": "~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~",
+   "doc": "off-beat hats: the and of every beat"
+  },
+  "hats16": {
+   "type": "mini",
+   "body": "x*16",
+   "doc": "16th hats"
+  },
+  "accent16": {
+   "type": "mini",
+   "body": "[1 .5 .75 .5]*4",
+   "doc": "16th accents: downbeat strong, off-beat medium"
+  },
+  "roll8": {
+   "type": "mini",
+   "body": "<x*4!2 x*8!2 x*16!3 x*32>",
+   "doc": "8-bar snare roll: quarters, eighths, sixteenths, then 32nds in the last bar"
+  },
+  "rollVel8": {
+   "type": "mini",
+   "body": "<.35 .42 .5 .58 .66 .76 .88 1>",
+   "doc": "velocity ramp of the 8-bar roll"
+  },
+  "roll4": {
+   "type": "mini",
+   "body": "<x*8 x*16 x*16 x*32>",
+   "doc": "4-bar snare roll: eighths, sixteenths, 32nds"
+  },
+  "rollVel4": {
+   "type": "mini",
+   "body": "<.45 .62 .8 1>",
+   "doc": "velocity ramp of the 4-bar roll"
+  },
+  "open8": {
+   "type": "mini",
+   "body": "<300 450 700 1000 1500 2300 3600 6000>",
+   "doc": "8-bar low-pass automation (x1.5 per bar)"
+  },
+  "thin8": {
+   "type": "mini",
+   "body": "<30 50 80 130 200 320 500 800>",
+   "doc": "8-bar high-pass automation"
+  },
+  "pump16": {
+   "type": "mini",
+   "body": "[.3 .65 .9 1]*4",
+   "doc": "velocity pump on 16ths (for 16th-segmented parts): dips on each beat"
+  },
+  "gapMask": {
+   "type": "mini",
+   "body": "<1!7 [1 1 1 0]>",
+   "doc": "8-bar build mask: the last beat is silent (the breath before the drop)"
+  },
+  "dropMask": {
+   "type": "mini",
+   "body": "<1!3 [1 1 1 0]>",
+   "doc": "4-bar loop with a silent last beat"
+  },
+  "intro": {
+   "type": "gate",
+   "body": "<17b",
+   "doc": "bars 1-16 of the 104-bar map: intro (kick and atmosphere, no bass)"
+  },
+  "build": {
+   "type": "gate",
+   "body": "17b..25b",
+   "doc": "bars 17-24: first build (roll, riser, filter opens)"
+  },
+  "dropA": {
+   "type": "gate",
+   "body": "25b..41b",
+   "doc": "bars 25-40: drop A"
+  },
+  "breakdown": {
+   "type": "gate",
+   "body": "41b..57b",
+   "doc": "bars 41-56: breakdown (no kick, no bass; chords and lead)"
+  },
+  "build2": {
+   "type": "gate",
+   "body": "57b..65b",
+   "doc": "bars 57-64: second build"
+  },
+  "dropB": {
+   "type": "gate",
+   "body": "65b..89b",
+   "doc": "bars 65-88: drop B (bars 77-88 switch up)"
+  },
+  "switchUp": {
+   "type": "gate",
+   "body": "77b..89b",
+   "doc": "bars 77-88: switch-up inside drop B (new bass pattern or timbre, same kit)"
+  },
+  "outro": {
+   "type": "gate",
+   "body": "@89b",
+   "doc": "bars 89-104: outro (DJ-friendly: drums and atmosphere, bass out)"
+  },
+  "drops": {
+   "type": "gate",
+   "body": "25b..41b, 65b..89b",
+   "doc": "both drops"
+  },
+  "builds": {
+   "type": "gate",
+   "body": "17b..25b, 57b..65b",
+   "doc": "both builds"
+  },
+  "notDrops": {
+   "type": "gate",
+   "body": "<25b, 41b..65b, @89b",
+   "doc": "everything except the drops (mute a drop-only lane with it)"
+  },
+  "notBuilds": {
+   "type": "gate",
+   "body": "<17b, 25b..57b, @65b",
+   "doc": "everything except the builds"
+  },
+  "gap": {
+   "type": "gate",
+   "body": "24.4b..25b, 64.4b..65b",
+   "doc": "the last beat before each drop: the breath"
+  },
+  "fillBars": {
+   "type": "gate",
+   "body": "16b..17b, 24b..25b, 40b..41b, 56b..57b, 64b..65b, 88b..89b",
+   "doc": "the bar before each section change: fills"
+  },
+  "mIntro": {
+   "type": "mini",
+   "body": "<1!16 0!88>",
+   "doc": "mask form of ec.intro for plain Strudel (.mask): 1 in bars 1-16 of the 104-bar map"
+  },
+  "mBuild": {
+   "type": "mini",
+   "body": "<0!16 1!8 0!80>",
+   "doc": "mask form of ec.build (bars 17-24)"
+  },
+  "mDropA": {
+   "type": "mini",
+   "body": "<0!24 1!16 0!64>",
+   "doc": "mask form of ec.dropA (bars 25-40)"
+  },
+  "mBreak": {
+   "type": "mini",
+   "body": "<0!40 1!16 0!48>",
+   "doc": "mask form of ec.breakdown (bars 41-56)"
+  },
+  "mBuild2": {
+   "type": "mini",
+   "body": "<0!56 1!8 0!40>",
+   "doc": "mask form of ec.build2 (bars 57-64)"
+  },
+  "mDropB": {
+   "type": "mini",
+   "body": "<0!64 1!24 0!16>",
+   "doc": "mask form of ec.dropB (bars 65-88)"
+  },
+  "mSwitch": {
+   "type": "mini",
+   "body": "<0!76 1!12 0!16>",
+   "doc": "mask form of ec.switchUp (bars 77-88)"
+  },
+  "mOutro": {
+   "type": "mini",
+   "body": "<0!88 1!16>",
+   "doc": "mask form of ec.outro (bars 89-104)"
+  },
+  "mDrops": {
+   "type": "mini",
+   "body": "<0!24 1!16 0!24 1!24 0!16>",
+   "doc": "mask form of ec.drops"
+  },
+  "mBuilds": {
+   "type": "mini",
+   "body": "<0!16 1!8 0!32 1!8 0!40>",
+   "doc": "mask form of ec.builds"
+  },
+  "rise4": {
+   "type": "gate",
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "25b"
+    }
+   },
+   "body": "${at}-4b..${at}",
+   "doc": "4 bars that end exactly on a point: short riser"
+  },
+  "rise8": {
+   "type": "gate",
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "25b"
+    }
+   },
+   "body": "${at}-8b..${at}",
+   "doc": "8 bars that end on a point: the standard build"
+  },
+  "rise16": {
+   "type": "gate",
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "25b"
+    }
+   },
+   "body": "${at}-16b..${at}",
+   "doc": "16 bars that end on a point: long build (trance, progressive)"
+  },
+  "hit": {
+   "type": "gate",
+   "params": {
+    "at": {
+     "shape": "point",
+     "default": "25b"
+    }
+   },
+   "body": "${at}..${at}+1b",
+   "doc": "the bar that starts on a point: impact, crash, downlifter"
+  }
+ },
+ "recipes": [
+  {
+   "id": "edm-kick-four-floor",
+   "title": "EDM kick, four on the floor",
+   "intent": "Sine kick with a fast pitch drop on every beat.",
+   "labels": [
+    "edm",
+    "four-floor"
+   ],
+   "class": "kick",
+   "cpm": 128,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@fourFloor",
+     "rack": "edmKick"
+    }
+   ]
+  },
+  {
+   "id": "edm-sub-sine",
+   "title": "Clean sub (sine)",
+   "intent": "A mono sine sub under C minor roots, 5 ms attack, held to the next note.",
+   "labels": [
+    "edm",
+    "low-end",
+    "sub"
+   ],
+   "class": "sub",
+   "cpm": 140,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "<c1 c1 f1 g1>",
+     "rack": "subSine"
+    }
+   ]
+  },
+  {
+   "id": "edm-clap",
+   "title": "EDM clap",
+   "intent": "Band-passed noise clap on 2 and 4.",
+   "labels": [
+    "edm",
+    "accents"
+   ],
+   "class": "snare",
+   "cpm": 128,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "~ x ~ x",
+     "rack": "edmClap"
+    }
+   ]
+  },
+  {
+   "id": "edm-hats-offbeat",
+   "title": "Off-beat hats and shaker",
+   "intent": "Open hats on the and of every beat, 16th shaker under them.",
+   "labels": [
+    "edm",
+    "driving"
+   ],
+   "class": "hat",
+   "cpm": 128,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@offHats",
+     "rack": "hatOpen"
+    },
+    {
+     "src": "s",
+     "pat": "@hats16",
+     "rack": "shaker",
+     "vel": "@accent16"
+    }
+   ]
+  },
+  {
+   "id": "edm-crash",
+   "title": "Crash on the downbeat",
+   "intent": "A long noise crash that marks the first beat of a drop.",
+   "labels": [
+    "edm",
+    "build-drop"
+   ],
+   "class": "hat",
+   "cpm": 140,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "<x ~>",
+     "rack": "crash",
+     "more": ".mask(\"@dropMask\")"
+    }
+   ]
+  },
+  {
+   "id": "edm-sidechain-duck",
+   "title": "Sidechain ducking (kick ducks the chords)",
+   "intent": "Every kick ducks the supersaw chords on orbit 2 by depth 0.5 (-10.7 dB); they swell back over 200 ms: the pump.",
+   "labels": [
+    "edm",
+    "sidechain",
+    "pumping"
+   ],
+   "class": "demo",
+   "cpm": 128,
+   "bars": 2,
+   "notes": "duckorbit on the kick (the trigger) and orbit on the chords (the target): Strudel's sidechain. One orbit = one delay and one reverb, so keep ducked parts that need different sends on separate orbits.",
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@fourFloor",
+     "rack": "edmKick",
+     "move": "sidechain(2, 0.5, 0.2)"
+    },
+    {
+     "src": "note",
+     "pat": "<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>",
+     "rack": "superChord",
+     "move": "ducked(2)"
+    }
+   ]
+  },
+  {
+   "id": "edm-pump-shaper",
+   "title": "Pump without a trigger (volume shaper)",
+   "intent": "A beat-synced ramp tremolo dips the held chords on every beat and swells back, with no kick needed.",
+   "labels": [
+    "edm",
+    "pumping",
+    "sidechain"
+   ],
+   "class": "demo",
+   "cpm": 128,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>",
+     "rack": "superChord",
+     "move": "pump(0.7)"
+    }
+   ]
+  },
+  {
+   "id": "edm-snare-roll-8",
+   "title": "8-bar snare roll",
+   "intent": "Quarters, eighths, sixteenths, then 32nds in the last bar, velocity rising from 0.35 to 1.",
+   "labels": [
+    "edm",
+    "build",
+    "snare-roll"
+   ],
+   "class": "snare",
+   "cpm": 140,
+   "bars": 8,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "@roll8",
+     "rack": "snareTight",
+     "vel": "@rollVel8"
+    }
+   ]
+  },
+  {
+   "id": "edm-noise-riser",
+   "title": "Noise riser (4 bars)",
+   "intent": "White noise fades in over 4 bars at 140 bpm while its low-pass opens four octaves.",
+   "labels": [
+    "edm",
+    "riser",
+    "build"
+   ],
+   "class": "riser",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "x/4",
+     "rack": "noiseRiser",
+     "args": "(6.86)"
+    }
+   ]
+  },
+  {
+   "id": "edm-white-noise-build",
+   "title": "White-noise build (high-pass climb)",
+   "intent": "Noise at full level whose high-pass climbs four octaves over 4 bars: it thins and rises.",
+   "labels": [
+    "edm",
+    "riser",
+    "build"
+   ],
+   "class": "riser",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "x/4",
+     "rack": "hpBuild",
+     "args": "(6.86)"
+    }
+   ]
+  },
+  {
+   "id": "edm-pitch-riser",
+   "title": "Pitch riser",
+   "intent": "A saw that glides up two octaves over 4 bars.",
+   "labels": [
+    "edm",
+    "riser",
+    "build"
+   ],
+   "class": "riser",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "x/4",
+     "rack": "pitchRiser",
+     "args": "(6.86)"
+    }
+   ]
+  },
+  {
+   "id": "edm-impact",
+   "title": "Impact boom",
+   "intent": "Sine boom on C1 with a two-octave pitch drop and a 2 s tail.",
+   "labels": [
+    "edm",
+    "build-drop",
+    "impact"
+   ],
+   "class": "impact",
+   "cpm": 140,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "x/2",
+     "rack": "impactBoom"
+    }
+   ]
+  },
+  {
+   "id": "edm-sub-drop",
+   "title": "Sub drop",
+   "intent": "A clean sine falling from about 130 Hz to C1 over a second.",
+   "labels": [
+    "edm",
+    "build-drop",
+    "impact"
+   ],
+   "class": "impact",
+   "cpm": 140,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "x/2",
+     "rack": "subDrop"
+    }
+   ]
+  },
+  {
+   "id": "edm-reverse-swell",
+   "title": "Reverse swell into the downbeat",
+   "intent": "Noise fades in over a bar and stops dead on the next downbeat.",
+   "labels": [
+    "edm",
+    "riser",
+    "transition"
+   ],
+   "class": "reverse",
+   "cpm": 140,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "<x ~>",
+     "rack": "reverseSwell",
+     "args": "(1.71)"
+    }
+   ]
+  },
+  {
+   "id": "edm-downlifter",
+   "title": "Downlifter",
+   "intent": "Noise whose low-pass falls from 11 kHz to 1 kHz after the downbeat.",
+   "labels": [
+    "edm",
+    "transition"
+   ],
+   "class": "sweep",
+   "cpm": 140,
+   "voices": [
+    {
+     "src": "s",
+     "pat": "<x ~>",
+     "rack": "downSweep"
+    }
+   ]
+  },
+  {
+   "id": "edm-supersaw-chords",
+   "title": "Supersaw chords",
+   "intent": "7-voice supersaw, wide above 180 Hz, C minor to A-flat major.",
+   "labels": [
+    "edm",
+    "supersaw",
+    "chord-progression"
+   ],
+   "class": "supersaw",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "<[c3,g3,c4,eb4] [ab2,eb3,ab3,c4]>",
+     "rack": "superChord"
+    }
+   ]
+  },
+  {
+   "id": "edm-pluck",
+   "title": "EDM pluck",
+   "intent": "Saw pluck whose filter closes with each note.",
+   "labels": [
+    "edm",
+    "pluck",
+    "motif"
+   ],
+   "class": "pluck",
+   "cpm": 140,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "c4 eb4 g4 bb4 c5 bb4 g4 eb4",
+     "rack": "edmPluck"
+    }
+   ]
+  },
+  {
+   "id": "edm-pad",
+   "title": "EDM pad",
+   "intent": "Slow supersaw pad whose filter opens over two seconds.",
+   "labels": [
+    "edm",
+    "pad"
+   ],
+   "class": "pad",
+   "cpm": 140,
+   "bars": 4,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "<[c3,eb3,g3,bb3] [bb2,d3,f3,a3]>",
+     "rack": "edmPad"
+    }
+   ]
+  },
+  {
+   "id": "edm-ott-squash",
+   "title": "OTT-style squash on a pluck",
+   "intent": "The pluck through deep fast compression with makeup gain: tails and detail come up against the attack.",
+   "labels": [
+    "edm",
+    "compression"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 2,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "c4 eb4 g4 bb4 c5 bb4 g4 eb4",
+     "rack": "edmPluck",
+     "move": "ott(0.5)"
+    }
+   ]
+  },
+  {
+   "id": "edm-filter-build",
+   "title": "8-bar filter build",
+   "intent": "Chords whose low-pass opens bar by bar from 300 Hz to 6 kHz while the high-pass empties the low end.",
+   "labels": [
+    "edm",
+    "build",
+    "filter-sweep"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 8,
+   "voices": [
+    {
+     "src": "note",
+     "pat": "[c3,eb3,g3,bb3]*4",
+     "rack": "superChord",
+     "move": "filterBuild | thinBuild"
+    }
+   ]
+  },
+  {
+   "id": "edm-build-grammar",
+   "title": "Build grammar: roll, riser, filter, gap, drop",
+   "intent": "8 bars of build (snare roll, noise riser, filter opening, a silent last beat), then the drop lands with kick, sub and an impact.",
+   "labels": [
+    "edm",
+    "build-drop",
+    "arrangement"
+   ],
+   "class": "demo",
+   "cpm": 140,
+   "bars": 10,
+   "notes": "With hooks the same build is gates: ec.build, ec.gap, ec.rise8({ at: \"25b\" }), ec.hit({ at: \"25b\" }) (Syntax: EDM foundations).",
+   "voices": [
+    {
+     "src": "s",
+     "pat": "<x*4!2 x*8!2 x*16!3 x*32 ~ ~>",
+     "rack": "snareTight",
+     "more": ".velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").mask(\"<1!7 [1 1 1 0] 0 0>\")"
+    },
+    {
+     "src": "s",
+     "pat": "<x ~ ~ ~ ~ ~ ~ ~ ~ ~>",
+     "rack": "noiseRiser",
+     "args": "(13.3)"
+    },
+    {
+     "src": "note",
+     "pat": "[c3,eb3,g3,bb3]*4",
+     "rack": "superChord",
+     "more": ".lpf(\"<300 450 700 1000 1500 2300 3600 6000 6000 6000>\").mask(\"<1!7 [1 1 1 0] 1 1>\")"
+    },
+    {
+     "src": "s",
+     "pat": "<~!8 x ~>",
+     "rack": "impactBoom"
+    },
+    {
+     "src": "s",
+     "pat": "<~!8 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>",
+     "rack": "edmKick"
+    },
+    {
+     "src": "note",
+     "pat": "<~!8 c1 c1>",
+     "rack": "subSine"
+    }
+   ]
+  }
+ ],
+ "syntax": [
+  {
+   "title": "Sidechain: the kick ducks a bus (duckorbit)",
+   "bars": 2,
+   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\nkick: s(atoms.ec.fourFloor).hook(\"edmKick | sidechain(2, 0.5, 0.2)\")   // trigger: ducks orbit 2\nchords: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hook(\"superChord | ducked(2)\")   // target: lives on orbit 2\nsub: note(\"<c1 ab0>\").hook(\"subSine | ducked(2)\")"
+  },
+  {
+   "title": "Pump without a trigger (beat-synced ramp tremolo)",
+   "bars": 2,
+   "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\nchords: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hook(\"superChord | pump(0.7)\")\nkick: s(atoms.ec.fourFloor).hook(\"edmKick\")"
+  },
+  {
+   "title": "8-bar build grammar as gates (roll, riser, filter, breath, impact)",
+   "bars": 10,
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\nhooks.bind(\"roll\", \"snareTight\", atoms.ec.rise8({ at: \"9b\" }))\nhooks.bind(\"rise\", \"noiseRiser(13.3)\", atoms.ec.rise8({ at: \"9b\" }))\nhooks.bind(\"hit\", \"impactBoom\", atoms.ec.hit({ at: \"9b\" }))\nroll: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).use(\"roll\", { else: \"silence\" }).mask(atoms.ec.gapMask)\nrise: s(\"<x ~ ~ ~ ~ ~ ~ ~ ~ ~>\").use(\"rise\", { else: \"silence\" })\nhit: s(\"x\").use(\"hit\", { else: \"silence\" })\nchords: note(\"[c3,eb3,g3,bb3]*4\").hook(\"superChord\").lpf(\"<300 450 700 1000 1500 2300 3600 6000 6000 6000>\").mask(atoms.ec.gapMask).tags(\"music\")\nkick: s(atoms.ec.fourFloor).hook(\"edmKick\").tags(\"drop\")\nsub: note(\"c1\").hook(\"subSine\").tags(\"drop\")\ntagged(\"drop\").mute(\"<9b\")"
+  },
+  {
+   "title": "Band-split drive and 3-band OTT on buses (.split)",
+   "bars": 2,
+   "code": "setcpm(140/4)\nbass: note(\"c2*8\").s(\"sawtooth\").lpf(1400).attack(0.005).decay(0.18).sustain(0.4).gain(0.4)\n  .split(lo => lo.lpf(120),                                   // the sub band stays clean and mono\n         mid => mid.hpf(120).lpf(2500).distort(3).postgain(0.5), // drive only above 120 Hz\n         hi => hi.hpf(2500).compressor(-30).compressorRatio(6).postgain(1.5))\n  .merge(m => m.compressor(-18).compressorRatio(3))"
+  },
+  {
+   "title": "Song form as gates (intro, build, drop A, breakdown, build 2, drop B, switch-up, outro)",
+   "bars": 4,
+   "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\nkick: s(atoms.ec.fourFloor).hook(\"edmKick\").tags(\"drums\")\nsub: note(\"c1\").hook(\"subSine\").tags(\"bass\")\nchords: note(\"[c3,eb3,g3,bb3]*2\").hook(\"superChord\").tags(\"music\")\ntagged(\"drums\").mute(atoms.ec.breakdown)\ntagged(\"bass\").mute(atoms.ec.notDrops)\ntagged(\"music\").mute(atoms.ec.gap)"
+  }
+ ]
+}

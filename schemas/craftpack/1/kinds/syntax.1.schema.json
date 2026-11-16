@@ -116,9 +116,115 @@
           }
          },
          "description": "build-time hap equality of `code` and `lowered` (strudel events over `cycles` cycles)"
+        },
+        "smoke": {
+         "type": "object",
+         "additionalProperties": false,
+         "description": "build-time smoke run of `code` when it has no plain form (strudel events over `cycles` cycles)",
+         "properties": {
+          "ok": {
+           "type": "boolean"
+          },
+          "cycles": {
+           "type": "integer"
+          },
+          "events": {
+           "type": "integer"
+          },
+          "error": {
+           "type": "string"
+          },
+          "hash": {
+           "type": "string"
+          }
+         }
         }
        }
       }
+     },
+     "folder": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*(/[a-z0-9][a-z0-9-]*){0,7}$",
+      "description": "organizer folder (#120); default syntax/<needs>"
+     },
+     "tags": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+       "type": "string",
+       "pattern": "^[a-z0-9][a-z0-9-]*$"
+      },
+      "description": "organizer tags (#120); default syntax, <needs>, built|coming"
+     },
+     "notes": {
+      "type": "array",
+      "description": "labelled notes under the section text: [label, text or list of texts]",
+      "items": {
+       "type": "array",
+       "minItems": 2,
+       "maxItems": 2,
+       "prefixItems": [
+        {
+         "type": "string"
+        },
+        {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "array",
+           "items": {
+            "type": "string"
+           }
+          }
+         ]
+        }
+       ]
+      }
+     },
+     "tool": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "the suno-track-lab engine/composer subcommand that measures this concept"
+     }
+    }
+   }
+  },
+  "title": {
+   "type": "string"
+  },
+  "doc": {
+   "type": "string",
+   "description": "the doc this data is generated with (docs/COMPOSITION.md)"
+  },
+  "licence": {
+   "type": "string"
+  },
+  "families": {
+   "type": "array",
+   "description": "concept families (composition catalog): id, title, folder, intro",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "id",
+     "title"
+    ],
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "title": {
+      "type": "string"
+     },
+     "folder": {
+      "type": "string"
+     },
+     "intro": {
+      "type": "string"
      }
     }
    }

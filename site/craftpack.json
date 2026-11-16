@@ -77,6 +77,18 @@
       "bytes": 121305
     },
     {
+      "id": "composition",
+      "kind": "syntax",
+      "format": "syntax@1",
+      "version": "1.0.0",
+      "path": "data/composition.json",
+      "hash": "sha256:0e57159ba6d0932c5eb30c6821b61ee768d54bfe5a4db0b685c64c1a3cf0e006",
+      "load": "lazy",
+      "bytes": 164653,
+      "title": "Composition concepts",
+      "description": "Catalog of composition design concepts (docs/COMPOSITION.md): motif, interplay, foreshadow, layering, groove, harmony, discordance, assonance, complement, synergy, clustering; Craft and Strudel forms"
+    },
+    {
       "id": "plugins",
       "kind": "docs",
       "format": "docs@1",

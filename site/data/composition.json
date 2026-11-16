@@ -1,0 +1,5509 @@
+{
+ "version": 1,
+ "title": "Composition concepts",
+ "doc": "docs/COMPOSITION.md",
+ "licence": "CC0-1.0",
+ "families": [
+  {
+   "id": "mot",
+   "title": "Motif transformations",
+   "folder": "composition/motif",
+   "intro": "One short cell, many statements: the listener tracks identity through change. Every transformation keeps one property (rhythm, contour, intervals) and changes another."
+  },
+  {
+   "id": "int",
+   "title": "Interplay",
+   "folder": "composition/interplay",
+   "intro": "How two or more lines share time and register: who speaks, who answers, who holds."
+  },
+  {
+   "id": "xt",
+   "title": "Cross-textural development",
+   "folder": "composition/cross-texture",
+   "intro": "The same idea travels between instruments, registers and domains (pitch to rhythm, synth to voice), so a long track stays one piece."
+  },
+  {
+   "id": "fs",
+   "title": "Foreshadowing",
+   "folder": "composition/foreshadow",
+   "intro": "Plant early, pay later: partial statements before the hook, the full hook at the drop, a callback at the end."
+  },
+  {
+   "id": "lay",
+   "title": "Layering and density",
+   "folder": "composition/layering",
+   "intro": "How many things sound at once, in which roles and frequency slots, and how a loop evolves on each repeat."
+  },
+  {
+   "id": "ten",
+   "title": "Tension and release",
+   "folder": "composition/tension",
+   "intro": "The grammar of expectation: harmonic, rhythmic, spectral and dynamic tension, and where it lands."
+  },
+  {
+   "id": "en",
+   "title": "Energy curves",
+   "folder": "composition/energy",
+   "intro": "The macro shape of a track: energy per section and the ramps inside a phrase."
+  },
+  {
+   "id": "tr",
+   "title": "Transitions and dovetails",
+   "folder": "composition/transition",
+   "intro": "How one section hands over to the next (docs/CONVENTIONS.md section 6 holds the shipped dt. atoms)."
+  },
+  {
+   "id": "grv",
+   "title": "Groove and feel",
+   "folder": "composition/groove",
+   "intro": "Rhythm sequence archetypes and micro-timing: swing, push and pull, ghost notes, polymeter (docs/CONVENTIONS.md sections 4-5)."
+  },
+  {
+   "id": "har",
+   "title": "Harmonic design",
+   "folder": "composition/harmony",
+   "intro": "Chord loops, voice leading, pedals and harmonic rhythm."
+  },
+  {
+   "id": "bor",
+   "title": "Tone borrowing",
+   "folder": "composition/borrowing",
+   "intro": "Borrow pitch material from a parallel mode or key, or timbre, envelope and groove from another layer or genre."
+  },
+  {
+   "id": "dis",
+   "title": "Discordance",
+   "folder": "composition/discordance",
+   "intro": "Intentional clashes (minor seconds, tritones, clusters, beating unisons) placed where tension is the point, and resolved on purpose."
+  },
+  {
+   "id": "asn",
+   "title": "Assonance and consonance",
+   "folder": "composition/assonance",
+   "intro": "Sound-similarity that binds layers: shared formants, harmonic series, colours, rhythm cells and envelopes."
+  },
+  {
+   "id": "cmp",
+   "title": "Complementing",
+   "folder": "composition/complement",
+   "intro": "One layer fills the gaps of another: in frequency, time, stereo, length and dynamics."
+  },
+  {
+   "id": "syn",
+   "title": "Synergy",
+   "folder": "composition/synergy",
+   "intro": "Pairs that only work together: the sum is a new sound, not two sounds."
+  },
+  {
+   "id": "clu",
+   "title": "Clustering",
+   "folder": "composition/clustering",
+   "intro": "Tone clusters, rhythmic clusters, event bursts in time, and clustering as analysis (bars, motifs)."
+  },
+  {
+   "id": "snd",
+   "title": "Sound-design layering",
+   "folder": "composition/sound-design",
+   "intro": "One instrument from several layers: sub, body, bite, air; parallel and serial processing."
+  },
+  {
+   "id": "vox",
+   "title": "Vocal as instrument",
+   "folder": "composition/vocal-instrument",
+   "intro": "Pitched syllables, vowels and formant pads; no lyrics are written or implied."
+  },
+  {
+   "id": "arr",
+   "title": "Arrangement maps",
+   "folder": "composition/arrangement",
+   "intro": "Section maps per genre as gates and masks, so a track is one program with selections, not copies."
+  }
+ ],
+ "sections": [
+  {
+   "id": "mot-01",
+   "title": "MOT-01 Transposition",
+   "needs": "hooks",
+   "folder": "composition/motif",
+   "tags": [
+    "composition",
+    "motif",
+    "lead",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The whole cell moved up or down by a fixed interval; intervals and rhythm are kept.",
+   "notes": [
+    [
+     "Why it works",
+     "Interval and rhythm patterns are what memory encodes for a melody (contour plus interval), so the cell is recognised at a new pitch; a new register also changes brightness and the chord it sits on."
+    ],
+    [
+     "When to use",
+     "Second half of a 16-bar phrase, a lift into the last drop, answering phrases."
+    ],
+    [
+     "Measure",
+     "composer ledger: relation \"transposed\" (or \"octave\") to the first statement, with the semitone offset."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Transposing every repeat (the listener loses the home pitch)",
+      "Chromatic transposition that leaves the key by accident (check composer discord, out-of-key share)"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "MOT-01 transposition",
+     "code": "atom(\"m\", { type: \"mini\", body: \"0 2 4 3\" })\n$: n(atoms.m).scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-lead\")\n$: n(atoms.m).add(n(4)).scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-lead\").late(1)",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"triangle\").hpf(150).lpf(8000)\n$: n(\"0 2 4 3\").add(n(4)).scale(\"C4:minor\").s(\"triangle\").hpf(150).lpf(8000).late(1)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 32,
+      "hash": "96d8d150ea"
+     }
+    }
+   ]
+  },
+  {
+   "id": "mot-02",
+   "title": "MOT-02 Sequence",
+   "needs": "hooks",
+   "folder": "composition/motif",
+   "tags": [
+    "composition",
+    "motif",
+    "build",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A transposition repeated in steps in consecutive windows (a chain: up a step, up a step).",
+   "notes": [
+    [
+     "Why it works",
+     "Predictable stepwise displacement creates momentum: the ear extrapolates the next step and the arrival on a stable degree releases it."
+    ],
+    [
+     "When to use",
+     "Builds, pre-drops, bridges; two or three links, then break the chain."
+    ],
+    [
+     "Measure",
+     "composer ledger: relation \"sequence\" (transposed repeat in the next window of the same layer)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Sequences longer than 3-4 links (a predictable rosalia tires fast)",
+      "Sequencing every layer in parallel (all motion, no anchor)"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "MOT-02 sequence",
+     "code": "atom(\"m\", { type: \"mini\", body: \"0 2 4 3\" })\n$: n(atoms.m).add(n(\"<0 1 2 4>\")).scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\").lpf(1800)",
+     "lowered": "$: n(\"0 2 4 3\").add(n(\"<0 1 2 4>\")).scale(\"C4:minor\").s(\"sawtooth\").hpf(150).lpf(8000).lpf(1800)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "0dc166087c"
+     }
+    }
+   ]
+  },
+  {
+   "id": "mot-03",
+   "title": "MOT-03 Inversion",
+   "needs": "hooks",
+   "folder": "composition/motif",
+   "tags": [
+    "composition",
+    "motif",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Each interval flips direction (up a third becomes down a third), tonally inside the scale.",
+   "notes": [
+    [
+     "Why it works",
+     "Contour is the strongest melodic cue; flipping it keeps rhythm and interval sizes, so the cell is related yet heard as an answer."
+    ],
+    [
+     "When to use",
+     "Response phrases, second verse or second drop, counterlines against the original."
+    ],
+    [
+     "Measure",
+     "composer ledger: relation \"inverted\"."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Inverting a cell whose identity is its rhythm only (no audible change)",
+      "Real (chromatic) inversion that leaves the key"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "MOT-03 inversion",
+     "code": "atom(\"m\", { type: \"mini\", body: \"0 2 4 3\" })\natom(\"mInv\", { type: \"mini\", body: \"0 -2 -4 -3\" })\n$: n(atoms.m).scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-lead\")\n$: n(atoms.mInv).scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-lead\").late(1)",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"triangle\").hpf(150).lpf(8000)\n$: n(\"0 -2 -4 -3\").scale(\"C4:minor\").s(\"triangle\").hpf(150).lpf(8000).late(1)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 32,
+      "hash": "56a12071a4"
+     }
+    }
+   ]
+  },
+  {
+   "id": "mot-04",
+   "title": "MOT-04 Retrograde and retro-inversion",
+   "needs": "hooks",
+   "folder": "composition/motif",
+   "tags": [
+    "composition",
+    "motif",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The pitches (and optionally the rhythm) played backwards; retro-inversion also flips intervals.",
+   "notes": [
+    [
+     "Why it works",
+     "A weaker relation than transposition (memory is forward), so it reads as new material with a family resemblance; good for development sections that must not sound like the hook."
+    ],
+    [
+     "When to use",
+     "Breakdowns, B-sections, turnarounds."
+    ],
+    [
+     "Measure",
+     "composer ledger: relation \"retrograde\" / \"retro-inverted\"."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Expecting listeners to recognise retrograde of a long line (only short cells survive)"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "MOT-04 retrograde and retro-inversion",
+     "code": "atom(\"m\", { type: \"mini\", body: \"0 2 4 3\" })\n$: n(atoms.m).scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-pluck\")\n$: n(atoms.m).rev().scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-pluck\").late(1)",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").hpf(120).lpf(7000)\n$: n(\"0 2 4 3\").rev().scale(\"C4:minor\").s(\"sawtooth\").hpf(120).lpf(7000).late(1)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 32,
+      "hash": "a0d655c526"
+     }
+    }
+   ]
+  },
+  {
+   "id": "mot-05",
+   "title": "MOT-05 Augmentation and diminution",
+   "needs": "hooks",
+   "folder": "composition/motif",
+   "tags": [
+    "composition",
+    "motif",
+    "pad",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Note values doubled (augmentation) or halved (diminution); pitches kept.",
+   "notes": [
+    [
+     "Why it works",
+     "Time-scaling keeps contour and intervals; augmentation reads as weight and calm, diminution as urgency. In half-time genres augmentation turns a drop riff into a pad line."
+    ],
+    [
+     "When to use",
+     "Augment for intros, breakdowns and outro callbacks; diminish in builds and fills."
+    ],
+    [
+     "Measure",
+     "composer ledger: relation \"augmented\" / \"diminished\" (IOIs x2 / x0.5)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Diminution past the 1/16 grid at club tempos (smear)",
+      "Augmenting into sustained notes that mask the vocal band"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "MOT-05 augmentation and diminution",
+     "code": "atom(\"m\", { type: \"mini\", body: \"0 2 4 3\" })\n$: n(atoms.m).scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-lead\")\n$: n(atoms.m).slow(2).scale(\"C3:minor\").s(\"supersaw\").hook(\"hygiene-pad\").gain(0.3)",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"triangle\").hpf(150).lpf(8000)\n$: n(\"0 2 4 3\").slow(2).scale(\"C3:minor\").s(\"supersaw\").hpf(180).lpf(6000).gain(0.3)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 24,
+      "hash": "d2b289237b"
+     }
+    }
+   ]
+  },
+  {
+   "id": "mot-06",
+   "title": "MOT-06 Fragmentation",
+   "needs": "hooks",
+   "folder": "composition/motif",
+   "tags": [
+    "composition",
+    "motif",
+    "build",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A piece of the cell (usually its head or tail) repeated on its own.",
+   "notes": [
+    [
+     "Why it works",
+     "The fragment is cheap to recognise and leaves room; repetition of a fragment builds expectation for the whole."
+    ],
+    [
+     "When to use",
+     "Teasers (FS-01), builds (shorter and shorter fragments), fills."
+    ],
+    [
+     "Measure",
+     "composer ledger: relation \"fragment\" (a contiguous piece of >= 3 notes)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Fragments of a cell that has not yet been established and will never come (no payoff)"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "MOT-06 fragmentation",
+     "code": "atom(\"m\", { type: \"mini\", body: \"0 2 4 3\" })\n$: n(atoms.m).linger(\"<1 0.5 0.25 0.25>\").scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-lead\")",
+     "lowered": "$: n(\"0 2 4 3\").linger(\"<1 0.5 0.25 0.25>\").scale(\"C4:minor\").s(\"triangle\").hpf(150).lpf(8000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "e874a1fe7b"
+     }
+    }
+   ]
+  },
+  {
+   "id": "mot-07",
+   "title": "MOT-07 Extension",
+   "needs": "hooks",
+   "folder": "composition/motif",
+   "tags": [
+    "composition",
+    "motif",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The cell continues past its end with new notes (an answer tail), often to reach a cadence.",
+   "notes": [
+    [
+     "Why it works",
+     "The head keeps identity, the tail adds direction; ending on a stable degree gives closure."
+    ],
+    [
+     "When to use",
+     "The 4th bar of a 4-bar phrase, phrase endings before section changes."
+    ],
+    [
+     "Measure",
+     "composer ledger: relation \"extension\" or a motif \"grown from\" the first (grown_from)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Tails that never resolve (no cadence anywhere in the track)"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "MOT-07 extension",
+     "code": "atom(\"m\", { type: \"mini\", body: \"0 2 4 3\" })\natom(\"tail\", { type: \"mini\", body: \"2 1 0 -1\" })\n$: n(cat(atoms.m, atoms.m, atoms.m, atoms.tail)).scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\").lpf(2000)",
+     "lowered": "$: n(cat(\"0 2 4 3\", \"0 2 4 3\", \"0 2 4 3\", \"2 1 0 -1\")).scale(\"C4:minor\").s(\"sawtooth\").hpf(150).lpf(8000).lpf(2000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "b4c0db92f1"
+     }
+    }
+   ]
+  },
+  {
+   "id": "mot-08",
+   "title": "MOT-08 Rhythmic displacement",
+   "needs": "hooks",
+   "folder": "composition/motif",
+   "tags": [
+    "composition",
+    "motif",
+    "syncopated",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The same cell starting at a different point of the bar (an eighth or a beat later).",
+   "notes": [
+    [
+     "Why it works",
+     "Metric position changes accent: the same notes against the grid make new syncopation (rhythmic dissonance) without new material."
+    ],
+    [
+     "When to use",
+     "Second half of a drop, switch-ups, tension before a downbeat."
+    ],
+    [
+     "Measure",
+     "composer ledger: relation \"displaced\" (same intervals and rhythm, shifted start); composer feel: syncopation index rises."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Displacing the kick or the bass root (the floor loses the one)"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "MOT-08 rhythmic displacement",
+     "code": "atom(\"m\", { type: \"mini\", body: \"0 2 4 3\" })\n$: n(atoms.m).scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-lead\")\n$: n(atoms.m).late(0.125).scale(\"C5:minor\").s(\"triangle\").hook(\"hygiene-pluck\").gain(0.5)",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"triangle\").hpf(150).lpf(8000)\n$: n(\"0 2 4 3\").late(0.125).scale(\"C5:minor\").s(\"triangle\").hpf(120).lpf(7000).gain(0.5)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 32,
+      "hash": "56c2f17a5c"
+     }
+    }
+   ]
+  },
+  {
+   "id": "mot-09",
+   "title": "MOT-09 Interval expansion and compression",
+   "needs": "hooks",
+   "folder": "composition/motif",
+   "tags": [
+    "composition",
+    "motif",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Same contour and rhythm, wider or narrower steps.",
+   "notes": [
+    [
+     "Why it works",
+     "Contour identity holds while range changes energy: expansion opens (lift), compression tightens (tension, chromatic menace)."
+    ],
+    [
+     "When to use",
+     "Expand in the last drop; compress in builds and dark breakdowns."
+    ],
+    [
+     "Measure",
+     "composer ledger: relation \"expanded\" / \"compressed\" (same contour, larger / smaller interval sum)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Expansion past an octave in a lead that must sit in the vocal band"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "MOT-09 interval expansion and compression",
+     "code": "atom(\"m\", { type: \"mini\", body: \"0 2 4 3\" })\natom(\"mWide\", { type: \"mini\", body: \"0 4 7 5\" })\n$: n(\"<0 1>\").pick([atoms.m, atoms.mWide]).scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\")",
+     "lowered": "$: n(\"<0 1>\").pick([\"0 2 4 3\", \"0 4 7 5\"]).scale(\"C4:minor\").s(\"sawtooth\").hpf(150).lpf(8000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 0,
+      "hash": "c4fc221c13"
+     }
+    }
+   ]
+  },
+  {
+   "id": "mot-10",
+   "title": "MOT-10 Reharmonization",
+   "needs": "hooks",
+   "folder": "composition/motif",
+   "tags": [
+    "composition",
+    "motif",
+    "harmony",
+    "keys",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The melody kept, the chords under it changed (relative minor, borrowed chord, new bass note).",
+   "notes": [
+    [
+     "Why it works",
+     "The same melody note gets a new function (root, third, ninth): its colour and stability change while the tune is recognised."
+    ],
+    [
+     "When to use",
+     "Last chorus or drop, breakdowns (sentimental lift), outros."
+    ],
+    [
+     "Measure",
+     "composer discord: chord roots per bar change while composer ledger keeps the melody \"exact\"."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Reharmonising under a vocal hook without checking clashes (minor 2nds against held melody notes)"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "MOT-10 reharmonization",
+     "code": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-lead\")\n$: chord(\"<Cm Cm Ab Ab Fm Fm G G>/2\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").gain(0.25)",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"triangle\").hpf(150).lpf(8000)\n$: chord(\"<Cm Cm Ab Ab Fm Fm G G>/2\").voicing().s(\"supersaw\").hpf(180).lpf(6000).gain(0.25)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 26,
+      "hash": "ba521816d5"
+     }
+    }
+   ]
+  },
+  {
+   "id": "mot-11",
+   "title": "MOT-11 Ornament",
+   "needs": "hooks",
+   "folder": "composition/motif",
+   "tags": [
+    "composition",
+    "motif",
+    "accents",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Extra notes around the cell: grace notes, turns, trills, ghosted repeats; the cell notes stay on their steps.",
+   "notes": [
+    [
+     "Why it works",
+     "Adds detail on repeats without changing identity; the ear hears the frame plus decoration."
+    ],
+    [
+     "When to use",
+     "Embellishment ladder (LAY-05): the 3rd and 4th repeat of a loop."
+    ],
+    [
+     "Measure",
+     "composer ledger: relation \"ornamented\"."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Ornaments on every note (the frame disappears)",
+      "Grace notes on the bass at low frequencies (mud)"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "MOT-11 ornament",
+     "code": "atom(\"m\", { type: \"mini\", body: \"0 2 4 3\" })\n$: n(atoms.m).off(1/16, x => x.add(n(1)).gain(0.4)).scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-pluck\")",
+     "lowered": "$: n(\"0 2 4 3\").off(1/16, x => x.add(n(1)).gain(0.4)).scale(\"C4:minor\").s(\"triangle\").hpf(120).lpf(7000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 32,
+      "hash": "24492bc18e"
+     }
+    }
+   ]
+  },
+  {
+   "id": "int-01",
+   "title": "INT-01 Call and response",
+   "needs": "hooks",
+   "folder": "composition/interplay",
+   "tags": [
+    "composition",
+    "interplay",
+    "call-response",
+    "lead",
+    "measured",
+    "lowered"
+   ],
+   "explain": "One phrase asks, another answers, in alternating time slots.",
+   "notes": [
+    [
+     "Why it works",
+     "Turn-taking keeps each voice audible (no masking in time) and sets up a predictable cycle that can then be broken."
+    ],
+    [
+     "When to use",
+     "Riddim and dubstep bass phrases (A/B basses), lead vs vocal chop, hook sections."
+    ],
+    [
+     "Measure",
+     "composer layers: high onset_complement between the two lanes and composer ledger shows the answer as a related motif (inverted, transposed)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Answer louder or busier than the call every time (no hierarchy)",
+      "Both voices in the same band (they still mask across the seam)"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "INT-01 call and response",
+     "code": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\").mask(\"<1 0>\")\n$: n(\"4 3 1 0\").scale(\"C5:minor\").s(\"triangle\").hook(\"hygiene-pluck\").mask(\"<0 1>\")",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").hpf(150).lpf(8000).mask(\"<1 0>\")\n$: n(\"4 3 1 0\").scale(\"C5:minor\").s(\"triangle\").hpf(120).lpf(7000).mask(\"<0 1>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "f509c87359"
+     }
+    }
+   ]
+  },
+  {
+   "id": "int-02",
+   "title": "INT-02 Counterline",
+   "needs": "hooks",
+   "folder": "composition/interplay",
+   "tags": [
+    "composition",
+    "interplay",
+    "lead",
+    "counterline",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A second melody that moves against the first: contrary or oblique motion, notes in the first line's rests.",
+   "notes": [
+    [
+     "Why it works",
+     "Independent contour (contrary motion) is heard as a separate stream (auditory stream segregation); filling rests adds detail without masking."
+    ],
+    [
+     "When to use",
+     "Second half of drops, relief sections, last chorus."
+    ],
+    [
+     "Measure",
+     "engine/motifs counterlines (contrary/oblique share); composer layers onset_complement > 0.7."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Parallel fifths/octaves for long stretches (fuses into one stream)",
+      "A counterline in the same register as the vocal"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "INT-02 counterline",
+     "code": "$: n(\"0 ~ 2 ~ 4 ~ 3 ~\").scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\")\n$: n(\"~ 7 ~ 6 ~ 5 ~ 4\").scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-pluck\").gain(0.5)",
+     "lowered": "$: n(\"0 ~ 2 ~ 4 ~ 3 ~\").scale(\"C4:minor\").s(\"sawtooth\").hpf(150).lpf(8000)\n$: n(\"~ 7 ~ 6 ~ 5 ~ 4\").scale(\"C4:minor\").s(\"triangle\").hpf(120).lpf(7000).gain(0.5)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 32,
+      "hash": "15c87bb925"
+     }
+    }
+   ]
+  },
+  {
+   "id": "int-03",
+   "title": "INT-03 Hocket",
+   "needs": "hooks",
+   "folder": "composition/interplay",
+   "tags": [
+    "composition",
+    "interplay",
+    "stereo",
+    "pluck",
+    "measured",
+    "lowered"
+   ],
+   "explain": "One line split note by note between two voices or timbres.",
+   "notes": [
+    [
+     "Why it works",
+     "The ear fuses the line (pitch proximity) while the timbre alternation adds motion and stereo interest."
+    ],
+    [
+     "When to use",
+     "Plucks and bells in breakdowns; stereo ping-pong leads."
+    ],
+    [
+     "Measure",
+     "composer layers: onset_complement close to 1 and rhythm_rhyme close to 0 for the pair; pan_contrast > 0.4."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Hocketing across very different registers (the line breaks into two streams)"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "INT-03 hocket",
+     "code": "$: n(\"0 2 4 3 2 4 5 4\").scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-pluck\").struct(\"x ~ x ~ x ~ x ~\").pan(0.2)\n$: n(\"0 2 4 3 2 4 5 4\").scale(\"C4:minor\").s(\"square\").hook(\"hygiene-pluck\").struct(\"~ x ~ x ~ x ~ x\").pan(0.8).gain(0.4)",
+     "lowered": "$: n(\"0 2 4 3 2 4 5 4\").scale(\"C4:minor\").s(\"triangle\").hpf(120).lpf(7000).struct(\"x ~ x ~ x ~ x ~\").pan(0.2)\n$: n(\"0 2 4 3 2 4 5 4\").scale(\"C4:minor\").s(\"square\").hpf(120).lpf(7000).struct(\"~ x ~ x ~ x ~ x\").pan(0.8).gain(0.4)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 32,
+      "hash": "1dd6418950"
+     }
+    }
+   ]
+  },
+  {
+   "id": "int-04",
+   "title": "INT-04 Handoff (relay)",
+   "needs": "hooks",
+   "folder": "composition/interplay",
+   "tags": [
+    "composition",
+    "interplay",
+    "transition",
+    "lead",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The motif passes from one instrument to another at a section or phrase boundary.",
+   "notes": [
+    [
+     "Why it works",
+     "Continuity of material with a change of colour: the listener follows the motif, so the arrangement can change around it."
+    ],
+    [
+     "When to use",
+     "Section changes (lead to pluck at the breakdown, pluck to vocal at the hook)."
+    ],
+    [
+     "Measure",
+     "composer ledger: the motif lists both layers in migration order with no gap bar between them."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Handoff with an empty bar in between (the thread drops)"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "INT-04 handoff (relay)",
+     "code": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\").mask(\"<1 1 0 0>\")\n$: n(\"0 2 4 3\").scale(\"C5:minor\").s(\"triangle\").hook(\"hygiene-pluck\").mask(\"<0 0 1 1>\")",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").hpf(150).lpf(8000).mask(\"<1 1 0 0>\")\n$: n(\"0 2 4 3\").scale(\"C5:minor\").s(\"triangle\").hpf(120).lpf(7000).mask(\"<0 0 1 1>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "3450bf17b9"
+     }
+    }
+   ]
+  },
+  {
+   "id": "int-05",
+   "title": "INT-05 Unison and octave doubling",
+   "needs": "hooks",
+   "folder": "composition/interplay",
+   "tags": [
+    "composition",
+    "interplay",
+    "lead",
+    "layering",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Two timbres play the same line at the same pitch or octaves apart.",
+   "notes": [
+    [
+     "Why it works",
+     "Partials of both sounds fuse into one richer timbre (common fate); the octave adds brightness without a new line."
+    ],
+    [
+     "When to use",
+     "Drops (lead + supersaw octave), bass + sub doubling, emphasis on a hook bar."
+    ],
+    [
+     "Measure",
+     "composer layers (stems): synergy lufs_gain_db > 0 (coherent), assonance mfcc_cosine high; composer ledger relation \"octave\"."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Doubling with slight detune at low pitch (beating in the sub, see DIS-03)",
+      "Doubling everything (density with no new information)"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "INT-05 unison and octave doubling",
+     "code": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\").superimpose(x => x.add(n(7)).s(\"square\").gain(0.3))",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").hpf(150).lpf(8000).superimpose(x => x.add(n(7)).s(\"square\").gain(0.3))",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 32,
+      "hash": "58185ae2ca"
+     }
+    }
+   ]
+  },
+  {
+   "id": "int-06",
+   "title": "INT-06 Imitation and canon",
+   "needs": "hooks",
+   "folder": "composition/interplay",
+   "tags": [
+    "composition",
+    "interplay",
+    "delay-echo",
+    "pluck",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A second voice repeats the first after a delay, at the same or another pitch.",
+   "notes": [
+    [
+     "Why it works",
+     "The echo creates a predictable texture of overlapping copies (delay lines are acoustic canons); at a fifth it implies harmony."
+    ],
+    [
+     "When to use",
+     "Arps, plucks, ambient intros; DnB and progressive layers."
+    ],
+    [
+     "Measure",
+     "composer ledger: the same motif in two layers (or one) with \"transposed\" / \"displaced\" relations a fixed delay apart."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Canon at a tempo-unrelated delay (smear)",
+      "Imitation in the low end"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "INT-06 imitation and canon",
+     "code": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-pluck\").off(1/4, x => x.add(n(4)).gain(0.5))",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"triangle\").hpf(120).lpf(7000).off(1/4, x => x.add(n(4)).gain(0.5))",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 32,
+      "hash": "780feff9df"
+     }
+    }
+   ]
+  },
+  {
+   "id": "int-07",
+   "title": "INT-07 Pedal and ostinato under melody",
+   "needs": "hooks",
+   "folder": "composition/interplay",
+   "tags": [
+    "composition",
+    "interplay",
+    "bass",
+    "drone",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A held or repeated bass note (pedal) or riff (ostinato) while the melody and chords move.",
+   "notes": [
+    [
+     "Why it works",
+     "A fixed reference makes harmonic motion above it audible as tension (non-chord tones against the pedal) and gives trance-like continuity."
+    ],
+    [
+     "When to use",
+     "Intros, builds (dominant pedal), phonk and techno grooves."
+    ],
+    [
+     "Measure",
+     "composer discord: roughness rises when upper chords leave the pedal and falls on return; engine/motifs chord loop over one bass root."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "A pedal under a chord that clashes for many bars without resolution (check unresolved clashes)"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "INT-07 pedal and ostinato under melody",
+     "code": "$: note(\"g1*8\").s(\"sawtooth\").hook(\"hygiene-bass\").lpf(400)\n$: n(\"<0 2 4 3>*2\").scale(\"G3:minor\").s(\"triangle\").hook(\"hygiene-keys\")",
+     "lowered": "$: note(\"g1*8\").s(\"sawtooth\").hpf(40).lpf(3500).lpf(400)\n$: n(\"<0 2 4 3>*2\").scale(\"G3:minor\").s(\"triangle\").hpf(80).lpf(7000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 40,
+      "hash": "14d2de976e"
+     }
+    }
+   ]
+  },
+  {
+   "id": "xt-01",
+   "title": "XT-01 Motif migration",
+   "needs": "hooks",
+   "folder": "composition/cross-texture",
+   "tags": [
+    "composition",
+    "cross-texture",
+    "motif",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The motif is stated by different layers over the track: bass, then lead, pluck, vocal syllable, pad, percussion rhythm.",
+   "notes": [
+    [
+     "Why it works",
+     "One idea in many colours gives unity with variety; each new texture is a new event even though no new material is added."
+    ],
+    [
+     "When to use",
+     "Long tracks (3+ minutes), extended mixes, any track whose sections risk sounding unrelated."
+    ],
+    [
+     "Measure",
+     "composer ledger: one motif with 3+ layers in its migration list."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Migration with a different motif in each layer (no thread)",
+      "Every layer stating the motif at once (no migration, only doubling)"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "XT-01 motif migration",
+     "code": "atom(\"m\", { type: \"mini\", body: \"0 2 4 3\" })\natom(\"one\", { type: \"mini\", body: \"<1 0 0 0>\" })\natom(\"two\", { type: \"mini\", body: \"<0 1 0 0>\" })\natom(\"three\", { type: \"mini\", body: \"<0 0 1 0>\" })\n$: n(atoms.m).scale(\"C2:minor\").s(\"sawtooth\").hook(\"hygiene-bass\").mask(atoms.one)\n$: n(atoms.m).scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\").mask(atoms.two)\n$: n(atoms.m).scale(\"C5:minor\").s(\"triangle\").hook(\"hygiene-pluck\").mask(atoms.three)",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C2:minor\").s(\"sawtooth\").hpf(40).lpf(3500).mask(\"<1 0 0 0>\")\n$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").hpf(150).lpf(8000).mask(\"<0 1 0 0>\")\n$: n(\"0 2 4 3\").scale(\"C5:minor\").s(\"triangle\").hpf(120).lpf(7000).mask(\"<0 0 1 0>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 12,
+      "hash": "768b371595"
+     }
+    }
+   ]
+  },
+  {
+   "id": "xt-02",
+   "title": "XT-02 Timbral morphing",
+   "needs": "hooks",
+   "folder": "composition/cross-texture",
+   "tags": [
+    "composition",
+    "cross-texture",
+    "filter-sweep",
+    "formant",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The same notes, with the timbre changing over time (filter, vowel, waveform, FM index).",
+   "notes": [
+    [
+     "Why it works",
+     "Timbre is a separate perceptual dimension: a slow change of spectral centroid reads as development and energy without new pitches."
+    ],
+    [
+     "When to use",
+     "Long loops (techno, riddim), builds, breakdowns."
+    ],
+    [
+     "Measure",
+     "composer scan: spectral centroid / band map changes per bar while composer ledger reports \"exact\" statements."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Morphing that ends where it began with no arrival",
+      "Morphing several layers in sync (one wash)"
+     ]
+    ]
+   ],
+   "tool": "scan",
+   "examples": [
+    {
+     "title": "XT-02 timbral morphing",
+     "code": "$: n(\"0 2 4 3\").scale(\"C3:minor\").s(\"sawtooth\").hook(\"hygiene-bass\").lpf(sine.slow(8).range(300, 3000)).vowel(\"<a e i o>\")",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C3:minor\").s(\"sawtooth\").hpf(40).lpf(3500).lpf(sine.slow(8).range(300, 3000)).vowel(\"<a e i o>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "211663578b"
+     }
+    }
+   ]
+  },
+  {
+   "id": "xt-03",
+   "title": "XT-03 Rhythm from pitch",
+   "needs": "hooks",
+   "folder": "composition/cross-texture",
+   "tags": [
+    "composition",
+    "cross-texture",
+    "drums",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The motif's rhythm alone, played on an unpitched layer (rim, hat, noise).",
+   "notes": [
+    [
+     "Why it works",
+     "Rhythm is a strong identity cue; the percussion echo keeps the motif present while the melody rests, and builds anticipation."
+    ],
+    [
+     "When to use",
+     "Builds and intros before the hook (FS-01), breakdowns."
+    ],
+    [
+     "Measure",
+     "composer ledger: rhythm_echoes lists the motif and the unpitched layer."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "A rhythm echo that is an even grid (carries no identity)"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "XT-03 rhythm from pitch",
+     "code": "atom(\"mr\", { type: \"mini\", body: \"x ~ x x ~ x ~ ~\" })\n$: n(\"0 ~ 2 4 ~ 3 ~ ~\").scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-lead\").mask(\"<0 1>\")\n$: s(\"white\").struct(atoms.mr).decay(0.04).hpf(4000).gain(0.4).mask(\"<1 0>\")",
+     "lowered": "$: n(\"0 ~ 2 4 ~ 3 ~ ~\").scale(\"C4:minor\").s(\"triangle\").hpf(150).lpf(8000).mask(\"<0 1>\")\n$: s(\"white\").struct(\"x ~ x x ~ x ~ ~\").decay(0.04).hpf(4000).gain(0.4).mask(\"<1 0>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "9cd10a1ce3"
+     }
+    }
+   ]
+  },
+  {
+   "id": "xt-04",
+   "title": "XT-04 Pitch from rhythm",
+   "needs": "hooks",
+   "folder": "composition/cross-texture",
+   "tags": [
+    "composition",
+    "cross-texture",
+    "pluck",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A drum or percussion rhythm becomes a melodic line (the hat accents become pluck notes).",
+   "notes": [
+    [
+     "Why it works",
+     "Binding melody to the groove makes them lock (shared onsets); the melody feels inevitable."
+    ],
+    [
+     "When to use",
+     "Drops, especially percussion-led genres (electro, hyphy, riddim)."
+    ],
+    [
+     "Measure",
+     "composer layers: rhythm_rhyme close to 1 between the drum lane and the melodic lane."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Copying a dense hat pattern into a melody (too many notes)"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "XT-04 pitch from rhythm",
+     "code": "atom(\"hatAcc\", { type: \"mini\", body: \"x ~ ~ x ~ ~ x ~\" })\n$: s(\"white\").struct(atoms.hatAcc).decay(0.03).hpf(6000).gain(0.4)\n$: n(\"0 3 5\").scale(\"C4:minor\").struct(atoms.hatAcc).s(\"triangle\").hook(\"hygiene-pluck\")",
+     "lowered": "$: s(\"white\").struct(\"x ~ ~ x ~ ~ x ~\").decay(0.03).hpf(6000).gain(0.4)\n$: n(\"0 3 5\").scale(\"C4:minor\").struct(\"x ~ ~ x ~ ~ x ~\").s(\"triangle\").hpf(120).lpf(7000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 24,
+      "hash": "9f209f4c2b"
+     }
+    }
+   ]
+  },
+  {
+   "id": "xt-05",
+   "title": "XT-05 Motif as vocal syllable",
+   "needs": "hooks",
+   "folder": "composition/cross-texture",
+   "tags": [
+    "composition",
+    "cross-texture",
+    "vox",
+    "formant",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The motif sung on vowels or syllables (no words), or a synthetic vowel playing its pitches.",
+   "notes": [
+    [
+     "Why it works",
+     "Voice-like formants grab attention (speech sensitivity) and make a synth motif feel human at the hook."
+    ],
+    [
+     "When to use",
+     "Hooks and drops of melodic genres; phonk vocal chops; breakdowns."
+    ],
+    [
+     "Measure",
+     "composer layers: shared vowel with another layer (ASN-01); composer ledger: motif in the vox lane."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Writing lyrics into the user's track (never infer words)",
+      "Vowel filters on a sub-bass fundamental (formants sit above 300 Hz)"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "XT-05 motif as vocal syllable",
+     "code": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").vowel(\"<a o>\").hook(\"hygiene-vox\").lpf(3000)",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").vowel(\"<a o>\").hpf(150).lpf(8000).lpf(3000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "2848530323"
+     }
+    }
+   ]
+  },
+  {
+   "id": "fs-01",
+   "title": "FS-01 Pre-echo teaser",
+   "needs": "hooks",
+   "folder": "composition/foreshadow",
+   "tags": [
+    "composition",
+    "foreshadow",
+    "intro-reveal",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A fragment or the rhythm of the drop hook in the intro or build.",
+   "notes": [
+    [
+     "Why it works",
+     "Exposure creates familiarity; the full statement later is then recognised and rewarding (mere exposure, expectation)."
+    ],
+    [
+     "When to use",
+     "Intro bar 5-8, build bars 1-4."
+    ],
+    [
+     "Measure",
+     "composer foreshadow: pre_echo PASS (fragment, filtered or rhythm echo before the first drop)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "The full hook at full level in the intro (payoff given away, see FS-04)"
+     ]
+    ]
+   ],
+   "tool": "foreshadow",
+   "examples": [
+    {
+     "title": "FS-01 pre-echo teaser",
+     "code": "atom(\"hook\", { type: \"mini\", body: \"0 2 4 3 2 ~ 0 ~\" })\n$: n(atoms.hook).linger(0.25).scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-pluck\").lpf(800).mask(\"<1 1 0 0>\")\n$: n(atoms.hook).scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\").mask(\"<0 0 1 1>\")",
+     "lowered": "$: n(\"0 2 4 3 2 ~ 0 ~\").linger(0.25).scale(\"C4:minor\").s(\"triangle\").hpf(120).lpf(7000).lpf(800).mask(\"<1 1 0 0>\")\n$: n(\"0 2 4 3 2 ~ 0 ~\").scale(\"C4:minor\").s(\"sawtooth\").hpf(150).lpf(8000).mask(\"<0 0 1 1>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 28,
+      "hash": "90abca5e61"
+     }
+    }
+   ]
+  },
+  {
+   "id": "fs-02",
+   "title": "FS-02 Filtered, reversed or sparse preview",
+   "needs": "hooks",
+   "folder": "composition/foreshadow",
+   "tags": [
+    "composition",
+    "foreshadow",
+    "filter-sweep",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The hook itself, low-passed, reversed or thinned (degraded), before the drop.",
+   "notes": [
+    [
+     "Why it works",
+     "Removing brightness or notes keeps identity at lower salience: the listener half-hears it, and the drop \"opens\" it."
+    ],
+    [
+     "When to use",
+     "Builds (opening filter), the bar before the drop (reversed), intros."
+    ],
+    [
+     "Measure",
+     "composer foreshadow: teasers marked \"filtered\" (lpf < 2 kHz or level < 0.6 x drop); composer scan band map: highs absent before the drop."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "A filter so closed the teaser is inaudible (no exposure)"
+     ]
+    ]
+   ],
+   "tool": "foreshadow",
+   "examples": [
+    {
+     "title": "FS-02 filtered, reversed or sparse preview",
+     "code": "$: n(\"0 2 4 3 2 ~ 0 ~\").scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\").lpf(sine.slow(4).range(300, 900)).degradeBy(0.4).mask(\"<1 0>\")\n$: n(\"0 2 4 3 2 ~ 0 ~\").rev().scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\").hpf(1200).gain(0.3).mask(\"<0 1>\")",
+     "lowered": "$: n(\"0 2 4 3 2 ~ 0 ~\").scale(\"C4:minor\").s(\"sawtooth\").hpf(150).lpf(8000).lpf(sine.slow(4).range(300, 900)).degradeBy(0.4).mask(\"<1 0>\")\n$: n(\"0 2 4 3 2 ~ 0 ~\").rev().scale(\"C4:minor\").s(\"sawtooth\").hpf(150).lpf(8000).hpf(1200).gain(0.3).mask(\"<0 1>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 19,
+      "hash": "753e160613"
+     }
+    }
+   ]
+  },
+  {
+   "id": "fs-03",
+   "title": "FS-03 Planted harmony",
+   "needs": "hooks",
+   "folder": "composition/foreshadow",
+   "tags": [
+    "composition",
+    "foreshadow",
+    "harmony",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The drop's chord loop sounds early (pad, bass pedal) before the hook melody arrives.",
+   "notes": [
+    [
+     "Why it works",
+     "The harmonic frame primes the key and the melody's target notes; the hook then lands on expected ground."
+    ],
+    [
+     "When to use",
+     "Intros and breakdowns that lead into a drop."
+    ],
+    [
+     "Measure",
+     "composer foreshadow: planted_harmony PASS (drop pitch-class sets found before the first drop)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "New chords only at the drop (the hook arrives on unknown ground)"
+     ]
+    ]
+   ],
+   "tool": "foreshadow",
+   "examples": [
+    {
+     "title": "FS-03 planted harmony",
+     "code": "$: chord(\"<Cm Ab Eb Bb>\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").lpf(700).gain(0.25)\n$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\").mask(\"<0!4 1!4>\")",
+     "lowered": "$: chord(\"<Cm Ab Eb Bb>\").voicing().s(\"supersaw\").hpf(180).lpf(6000).lpf(700).gain(0.25)\n$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").hpf(150).lpf(8000).mask(\"<0!4 1!4>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 19,
+      "hash": "b2ad7dba74"
+     }
+    }
+   ]
+  },
+  {
+   "id": "fs-04",
+   "title": "FS-04 Delayed payoff",
+   "needs": "hooks",
+   "folder": "composition/foreshadow",
+   "tags": [
+    "composition",
+    "foreshadow",
+    "build-drop",
+    "gate",
+    "measured",
+    "craft-runtime"
+   ],
+   "explain": "The full, bright, same-layer statement of the hook is withheld until the drop (or a later drop).",
+   "notes": [
+    [
+     "Why it works",
+     "Anticipation is the source of the reward response; withholding the expected event raises its value when it lands."
+    ],
+    [
+     "When to use",
+     "Every drop-based form; second drops can withhold one more layer."
+    ],
+    [
+     "Measure",
+     "composer foreshadow: withheld PASS (no full unfiltered same-layer statement before the first drop)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Withholding so long the hook never fully arrives",
+      "Revealing it in bar 1 of the intro"
+     ]
+    ]
+   ],
+   "tool": "foreshadow",
+   "examples": [
+    {
+     "title": "FS-04 delayed payoff",
+     "code": "atom(\"pay\", { type: \"gate\", body: \"@3b\" })\nhooks.bind(\"open\", [[\"lpf\", 6000]], atoms.pay)\nhooks.bind(\"open\", [[\"lpf\", 600]], \"<3b\")\n$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\").use(\"open\")",
+     "lowered_note": "the binding is gated (it opens at a bar or in a range): gates are evaluated by the Craft runtime as the song plays, plain Strudel has no timeline of bindings",
+     "smoke": {
+      "ok": true,
+      "cycles": 2,
+      "events": 8,
+      "hash": "2246b29288"
+     }
+    }
+   ]
+  },
+  {
+   "id": "fs-05",
+   "title": "FS-05 Callback and outro return",
+   "needs": "hooks",
+   "folder": "composition/foreshadow",
+   "tags": [
+    "composition",
+    "foreshadow",
+    "fade-out",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The hook (or its seed) returns after the last drop: augmented, filtered or on another layer.",
+   "notes": [
+    [
+     "Why it works",
+     "Return closes the form (rounded binary logic); the listener leaves with the hook in memory."
+    ],
+    [
+     "When to use",
+     "Outro, last 4-8 bars."
+    ],
+    [
+     "Measure",
+     "composer foreshadow: callback PASS (a statement after the last drop or in the last section)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "An outro of new material that never returns to the hook"
+     ]
+    ]
+   ],
+   "tool": "foreshadow",
+   "examples": [
+    {
+     "title": "FS-05 callback and outro return",
+     "code": "$: n(\"0 2 4 3\").slow(2).scale(\"C4:minor\").s(\"supersaw\").hook(\"hygiene-pad\").lpf(1200).gain(0.3)",
+     "lowered": "$: n(\"0 2 4 3\").slow(2).scale(\"C4:minor\").s(\"supersaw\").hpf(180).lpf(6000).lpf(1200).gain(0.3)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 8,
+      "hash": "8578fbffc7"
+     }
+    }
+   ]
+  },
+  {
+   "id": "fs-06",
+   "title": "FS-06 Return after contrast",
+   "needs": "hooks",
+   "folder": "composition/foreshadow",
+   "tags": [
+    "composition",
+    "foreshadow",
+    "motif",
+    "form",
+    "measured",
+    "lowered"
+   ],
+   "explain": "After a contrasting section (breakdown, bridge) the motif returns, often varied (MOT family).",
+   "notes": [
+    [
+     "Why it works",
+     "Contrast resets habituation, so the return feels fresh; variation on return signals progress."
+    ],
+    [
+     "When to use",
+     "Second drop, last chorus."
+    ],
+    [
+     "Measure",
+     "composer ledger: the motif is not flagged \"never returns\"; a gap of >= 4 bars precedes a later statement."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Motifs stated in one section only (ledger flag \"never returns\")"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "FS-06 return after contrast",
+     "code": "$: n(\"<[0 2 4 3] [~] [0 2 4 3] [0 4 7 5]>\").scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\")",
+     "lowered": "$: n(\"<[0 2 4 3] [~] [0 2 4 3] [0 4 7 5]>\").scale(\"C4:minor\").s(\"sawtooth\").hpf(150).lpf(8000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 12,
+      "hash": "8793bbfef2"
+     }
+    }
+   ]
+  },
+  {
+   "id": "lay-01",
+   "title": "LAY-01 Detail budget per section",
+   "needs": "hooks",
+   "folder": "composition/layering",
+   "tags": [
+    "composition",
+    "layering",
+    "form",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Plan how many events and layers each section may have, from the energy curve (EN-01).",
+   "notes": [
+    [
+     "Why it works",
+     "Attention is limited: the ear follows 2-3 streams in focus; detail beyond that becomes texture. A budget keeps the peak sections peaky."
+    ],
+    [
+     "When to use",
+     "Before building: write the budget into the brief, check after each render."
+    ],
+    [
+     "Measure",
+     "composer density: mean layers per section inside the role target; suggestions \"add\" / \"remove\"."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Every section at the same density (flat energy curve)",
+      "The intro already at drop density"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "LAY-01 detail budget per section",
+     "code": "atom(\"intro\", { type: \"mini\", body: \"<1 1 0 0 0 0>\" })\natom(\"drop\", { type: \"mini\", body: \"<0 0 1 1 1 1>\" })\n$: s(\"bd*4\").hook(\"hygiene-kick\").mask(atoms.drop)\n$: s(\"hh*8\").hook(\"hygiene-hat\").gain(0.4)\n$: note(\"c2*8\").s(\"sawtooth\").hook(\"hygiene-bass\").mask(atoms.drop)\n$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").gain(0.2).mask(atoms.intro)",
+     "lowered": "$: s(\"bd*4\").hpf(30).lpf(7000).mask(\"<0 0 1 1 1 1>\")\n$: s(\"hh*8\").hpf(5000).lpf(14500).ftype(\"24db\").gain(0.4)\n$: note(\"c2*8\").s(\"sawtooth\").hpf(40).lpf(3500).mask(\"<0 0 1 1 1 1>\")\n$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hpf(180).lpf(6000).gain(0.2).mask(\"<1 1 0 0 0 0>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 65,
+      "hash": "9fb91c3217"
+     }
+    }
+   ]
+  },
+  {
+   "id": "lay-02",
+   "title": "LAY-02 Layer ladder: core, support, ornament, atmos",
+   "needs": "lanes",
+   "folder": "composition/layering",
+   "tags": [
+    "composition",
+    "layering",
+    "tag",
+    "measured",
+    "craft-runtime"
+   ],
+   "explain": "Each layer gets a role: core (beat, bass, hook), support (chords, counterline), ornament (fills, one-shots), atmos (pads, noise, reverb beds).",
+   "notes": [
+    [
+     "Why it works",
+     "Roles make subtraction decisions easy (remove ornaments first, never the core) and keep the hierarchy readable."
+    ],
+    [
+     "When to use",
+     "Every arrangement; label lanes with tags so selections follow roles."
+    ],
+    [
+     "Measure",
+     "composer density: the \"roles\" map (core, support, ornament, atmos per layer) and the per-bar role counts."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Two core leads fighting for attention",
+      "No atmos layer anywhere (dry, small)"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "LAY-02 layer ladder: core, support, ornament, atmos",
+     "code": "kick: s(\"bd*4\").hook(\"hygiene-kick\").tags(\"core\")\nbass: note(\"c2*8\").s(\"sawtooth\").hook(\"hygiene-bass\").tags(\"core\")\nkeys: chord(\"<Cm Ab>\").voicing().s(\"triangle\").hook(\"hygiene-keys\").tags(\"support\")\nfill: s(\"~ ~ ~ sd*4\").hook(\"hygiene-snare\").tags(\"ornament\").mask(\"<0 0 0 1>\")\nair: s(\"pink\").hpf(6000).gain(0.05).tags(\"atmos\")\ntagged(\"ornament | atmos\").mute(\"<2b\")",
+     "lowered_note": "lane tags and selections (.tags, tagged().mute / solo / fx) choose events by lane while the program plays, through the Craft lane engine; plain Strudel has no tags or selections",
+     "smoke": {
+      "ok": true,
+      "cycles": 2,
+      "events": 34,
+      "hash": "6d29d7cf54"
+     }
+    }
+   ]
+  },
+  {
+   "id": "lay-03",
+   "title": "LAY-03 Simultaneous layer counts per genre and section",
+   "needs": "hooks",
+   "folder": "composition/layering",
+   "tags": [
+    "composition",
+    "layering",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Target ranges of simultaneous lanes (each drum piece counts) per section role, scaled per genre.",
+   "notes": [
+    [
+     "Why it works",
+     "Producer-reported norms (COMPOSITION_RESEARCH.md): drops are the fullest section, cloud and riddim stay sparse, big-room and DnB carry more. Design call: intro 2-6, verse 4-9, build 5-10, drop 8-14, breakdown 3-7, outro 2-6 lanes; genre factor cloud 0.6, riddim 0.75, trap 0.85, phonk 0.9, house / dubstep / DnB 1.0, big room 1.1."
+    ],
+    [
+     "When to use",
+     "Planning and checking; override the factor with --genre."
+    ],
+    [
+     "Measure",
+     "composer density --genre G: section means against the scaled targets."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Treating the numbers as rules (they are conventions; the brief wins)"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "LAY-03 simultaneous layer counts per genre and section",
+     "code": "// the targets live in engine/composer/density.py (TARGETS, GENRE); a sparse riddim drop:\n$: s(\"bd ~ ~ ~ ~ ~ ~ ~, ~ ~ ~ ~ sd ~ ~ ~\").hook(\"hygiene-kick\")\n$: s(\"hh*8\").hook(\"hygiene-hat\").gain(0.3)\n$: note(\"c1 ~ ~ c1 ~ ~ c1 ~\").s(\"sine\").hook(\"hygiene-sub\")\n$: note(\"c2 ~ ~ c2 ~ ~ c2 ~\").s(\"sawtooth\").hook(\"hygiene-growl\").lpf(sine.fast(2).range(300, 1500))",
+     "lowered": "// the targets live in engine/composer/density.py (TARGETS, GENRE); a sparse riddim drop:\n$: s(\"bd ~ ~ ~ ~ ~ ~ ~, ~ ~ ~ ~ sd ~ ~ ~\").hpf(30).lpf(7000)\n$: s(\"hh*8\").hpf(5000).lpf(14500).ftype(\"24db\").gain(0.3)\n$: note(\"c1 ~ ~ c1 ~ ~ c1 ~\").s(\"sine\").hpf(25)\n$: note(\"c2 ~ ~ c2 ~ ~ c2 ~\").s(\"sawtooth\").hpf(70).lpf(9000).lpf(sine.fast(2).range(300, 1500))",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 64,
+      "hash": "cef61af7cd"
+     }
+    }
+   ]
+  },
+  {
+   "id": "lay-04",
+   "title": "LAY-04 Frequency-slot allocation",
+   "needs": "hooks",
+   "folder": "composition/layering",
+   "tags": [
+    "composition",
+    "layering",
+    "mix",
+    "low-end",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Each layer owns a band (sub, bass, low-mid, mid, high-mid, presence, air); at most one owner in sub and two in bass.",
+   "notes": [
+    [
+     "Why it works",
+     "Simultaneous masking is strongest within a critical band: two sounds in one slot blur; in different slots both stay clear."
+    ],
+    [
+     "When to use",
+     "Sound selection and octave choice before EQ; carve with hpf/lpf after."
+    ],
+    [
+     "Measure",
+     "composer density: \"slot\" suggestions (sub shared by > 1, bass by > 2 layers); composer layers masking_risk; composer scan band map."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Two layers in the sub band without ducking (SYN-01)",
+      "Every layer full range (no slot left)"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "LAY-04 frequency-slot allocation",
+     "code": "$: note(\"c1*4\").s(\"sine\").hook(\"hygiene-sub\")\n$: note(\"c3 eb3 g3 bb3\").s(\"sawtooth\").hook(\"hygiene-keys\").hpf(250)\n$: note(\"c5 g5\").s(\"triangle\").hook(\"hygiene-pluck\").hpf(1200)\n$: s(\"hh*8\").hook(\"hygiene-hat\")",
+     "lowered": "$: note(\"c1*4\").s(\"sine\").hpf(25)\n$: note(\"c3 eb3 g3 bb3\").s(\"sawtooth\").hpf(80).lpf(7000).hpf(250)\n$: note(\"c5 g5\").s(\"triangle\").hpf(120).lpf(7000).hpf(1200)\n$: s(\"hh*8\").hpf(5000).lpf(14500).ftype(\"24db\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 72,
+      "hash": "e8241b820a"
+     }
+    }
+   ]
+  },
+  {
+   "id": "lay-05",
+   "title": "LAY-05 Embellishment ladder per repeat",
+   "needs": "hooks",
+   "folder": "composition/layering",
+   "tags": [
+    "composition",
+    "layering",
+    "accents",
+    "probability",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Each repeat of a loop adds or changes one small thing: repeat 1 plain, 2 + ornament, 3 + counter-rhythm, 4 + fill.",
+   "notes": [
+    [
+     "Why it works",
+     "Exact repetition habituates within 2-4 cycles; one change per repeat keeps attention while the loop identity stays."
+    ],
+    [
+     "When to use",
+     "Every 8-16 bar loop in drops and verses."
+    ],
+    [
+     "Measure",
+     "composer density: no \"embellish\" suggestion (same active set for >= 8 bars)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Random variation (probability with no plan)",
+      "Changing the hook itself on every repeat"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "LAY-05 embellishment ladder per repeat",
+     "code": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-pluck\").sometimesBy(\"<0 0 0.3 0.6>\", x => x.ply(2))\n$: s(\"hh*8\").hook(\"hygiene-hat\").gain(0.4).lastOf(4, x => x.fast(2))",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"triangle\").hpf(120).lpf(7000).sometimesBy(\"<0 0 0.3 0.6>\", x => x.ply(2))\n$: s(\"hh*8\").hpf(5000).lpf(14500).ftype(\"24db\").gain(0.4).lastOf(4, x => x.fast(2))",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 57,
+      "hash": "151c75eebc"
+     }
+    }
+   ]
+  },
+  {
+   "id": "lay-06",
+   "title": "LAY-06 Ear-candy cadence",
+   "needs": "hooks",
+   "folder": "composition/layering",
+   "tags": [
+    "composition",
+    "layering",
+    "fx",
+    "transition",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Small one-shots (reverse cymbal, vocal chop, delay throw, riser) placed at phrase marks: every 4, 8 or 16 bars.",
+   "notes": [
+    [
+     "Why it works",
+     "Phrase boundaries are where attention resets; a marker there confirms the grid and rewards listening (producer-reported: once per 8 bars)."
+    ],
+    [
+     "When to use",
+     "Drops and verses; fewer in intros (DJ mixing room)."
+    ],
+    [
+     "Measure",
+     "composer density: ornament-role layers have onsets every 4-8 bars; no \"embellish\" suggestion."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Ear candy on every bar (it becomes texture)",
+      "Candy that masks the vocal"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "LAY-06 ear-candy cadence",
+     "code": "$: s(\"white\").attack(0.4).decay(0.05).sustain(0).hpf(3000).gain(0.25).struct(\"<~ ~ ~ [~ ~ ~ x]>\")\n$: s(\"bd*4\").hook(\"hygiene-kick\")",
+     "lowered": "$: s(\"white\").attack(0.4).decay(0.05).sustain(0).hpf(3000).gain(0.25).struct(\"<~ ~ ~ [~ ~ ~ x]>\")\n$: s(\"bd*4\").hpf(30).lpf(7000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 17,
+      "hash": "a8c363e826"
+     }
+    }
+   ]
+  },
+  {
+   "id": "lay-07",
+   "title": "LAY-07 Detail by register",
+   "needs": "hooks",
+   "folder": "composition/layering",
+   "tags": [
+    "composition",
+    "layering",
+    "low-end",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Busy parts high, slow parts low: the bass moves least, the top moves most.",
+   "notes": [
+    [
+     "Why it works",
+     "Low frequencies need longer to be resolved (fewer cycles per note) and mask more; fast detail is clear only in the highs."
+    ],
+    [
+     "When to use",
+     "Writing parts: check note rates per band."
+    ],
+    [
+     "Measure",
+     "composer density + ledger: onset rate per band (sub and bass lanes lowest)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Fast 1/16 basslines with long release (smear)"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "LAY-07 detail by register",
+     "code": "$: note(\"c1 ~ ~ ~ c1 ~ ~ ~\").s(\"sine\").hook(\"hygiene-sub\")\n$: note(\"c3 ~ eb3 ~\").s(\"sawtooth\").hook(\"hygiene-keys\")\n$: note(\"c5 eb5 g5 bb5 c6 bb5 g5 eb5\").s(\"triangle\").hook(\"hygiene-arp\").gain(0.3)",
+     "lowered": "$: note(\"c1 ~ ~ ~ c1 ~ ~ ~\").s(\"sine\").hpf(25)\n$: note(\"c3 ~ eb3 ~\").s(\"sawtooth\").hpf(80).lpf(7000)\n$: note(\"c5 eb5 g5 bb5 c6 bb5 g5 eb5\").s(\"triangle\").hpf(150).lpf(8000).gain(0.3)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 48,
+      "hash": "6ec9021ed1"
+     }
+    }
+   ]
+  },
+  {
+   "id": "lay-08",
+   "title": "LAY-08 Contrast by subtraction",
+   "needs": "hooks",
+   "folder": "composition/layering",
+   "tags": [
+    "composition",
+    "layering",
+    "build-drop",
+    "sparse",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Energy by removing layers before an arrival: a drop-out bar, a beat of silence, the kick gone for the last bar of the build.",
+   "notes": [
+    [
+     "Why it works",
+     "Loudness and density are judged relative to what came before (adaptation); a gap makes the return feel larger than adding more would."
+    ],
+    [
+     "When to use",
+     "The bar or beat before each drop; inside drops every 8-16 bars."
+    ],
+    [
+     "Measure",
+     "composer density: no \"subtract\" suggestion before drops; the curve dips in the bar before a drop."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Subtracting the hook (subtract support and ornaments first)"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "LAY-08 contrast by subtraction",
+     "code": "atom(\"gap\", { type: \"mini\", body: \"<1 1 1 [1 1 1 0]>\" })\n$: s(\"bd*4\").hook(\"hygiene-kick\").mask(atoms.gap)\n$: note(\"c2*8\").s(\"sawtooth\").hook(\"hygiene-bass\").mask(atoms.gap)",
+     "lowered": "$: s(\"bd*4\").hpf(30).lpf(7000).mask(\"<1 1 1 [1 1 1 0]>\")\n$: note(\"c2*8\").s(\"sawtooth\").hpf(40).lpf(3500).mask(\"<1 1 1 [1 1 1 0]>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 45,
+      "hash": "434b8e4dff"
+     }
+    }
+   ]
+  },
+  {
+   "id": "ten-01",
+   "title": "TEN-01 Harmonic tension",
+   "needs": "hooks",
+   "folder": "composition/tension",
+   "tags": [
+    "composition",
+    "tension",
+    "harmony",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Dominant function, leading tones, suspensions and non-chord tones that want to move.",
+   "notes": [
+    [
+     "Why it works",
+     "Tonal expectation: unstable degrees (7, 4, b2) predict motion to stable ones (1, 3, 5); delaying it holds tension."
+    ],
+    [
+     "When to use",
+     "Pre-drop bars (V or bVII), turnarounds."
+    ],
+    [
+     "Measure",
+     "composer discord: the leading tone (raised 7) named in the pre-drop section; roughness peak resolved on the drop downbeat."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "A dominant that never resolves anywhere in the track"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "TEN-01 harmonic tension",
+     "code": "$: chord(\"<Cm Ab Fm G7>\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").gain(0.25)\n$: n(\"<[0 2 4 3] [2 4 5 4] [3 5 7 5] [6 5 4 6]>\").scale(\"C4:harmonic minor\").s(\"sawtooth\").hook(\"hygiene-lead\")",
+     "lowered": "$: chord(\"<Cm Ab Fm G7>\").voicing().s(\"supersaw\").hpf(180).lpf(6000).gain(0.25)\n$: n(\"<[0 2 4 3] [2 4 5 4] [3 5 7 5] [6 5 4 6]>\").scale(\"C4:harmonic minor\").s(\"sawtooth\").hpf(150).lpf(8000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 27,
+      "hash": "b082bbaaf8"
+     }
+    }
+   ]
+  },
+  {
+   "id": "ten-02",
+   "title": "TEN-02 Rhythmic tension",
+   "needs": "hooks",
+   "folder": "composition/tension",
+   "tags": [
+    "composition",
+    "tension",
+    "build-drop",
+    "crescendo",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Subdivision acceleration: snare 1/4 -> 1/8 -> 1/16 -> 1/32 rolls, hats doubling, ratchets.",
+   "notes": [
+    [
+     "Why it works",
+     "Increasing event rate raises arousal and predicts an endpoint (the downbeat)."
+    ],
+    [
+     "When to use",
+     "The last 2-8 bars of a build."
+    ],
+    [
+     "Measure",
+     "composer density: onsets per bar rising through the build; composer cluster: build bars in their own cluster."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Rolls that run into the drop downbeat (the gap is lost)"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "TEN-02 rhythmic tension",
+     "code": "$: s(\"sd\").hook(\"hygiene-snare\").fast(\"<4 8 16 [32 0]>\").velocity(saw.range(0.4, 1).slow(4))",
+     "lowered": "$: s(\"sd\").hpf(120).lpf(10000).ftype(\"24db\").fast(\"<4 8 16 [32 0]>\").velocity(saw.range(0.4, 1).slow(4))",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 44,
+      "hash": "4bc50306eb"
+     }
+    }
+   ]
+  },
+  {
+   "id": "ten-03",
+   "title": "TEN-03 Spectral tension",
+   "needs": "hooks",
+   "folder": "composition/tension",
+   "tags": [
+    "composition",
+    "tension",
+    "filter-sweep",
+    "riser",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Brightness rises before the arrival: high-pass rising on the mix, low-pass opening on leads, noise risers.",
+   "notes": [
+    [
+     "Why it works",
+     "Spectral centroid correlates with perceived tension and energy; removing lows (HPF) makes the return of the low end the release."
+    ],
+    [
+     "When to use",
+     "Builds; the whole mix or the music bus, not the kick alone."
+    ],
+    [
+     "Measure",
+     "composer scan: band map shows sub and bass falling, presence rising across the build; centroid up."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Masking production moves because they sound \"EDM\": risers and filter builds are tools in any genre (user directive)"
+     ]
+    ]
+   ],
+   "tool": "scan",
+   "examples": [
+    {
+     "title": "TEN-03 spectral tension",
+     "code": "$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").hpf(saw.range(200, 2000).slow(4)).gain(0.25)\n$: s(\"white\").hook(\"hygiene-riser\").attack(6).release(0.1).lpf(saw.range(500, 9000).slow(4)).gain(0.2).slow(4)",
+     "lowered": "$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hpf(180).lpf(6000).hpf(saw.range(200, 2000).slow(4)).gain(0.25)\n$: s(\"white\").hpf(150).lpf(12500).ftype(\"24db\").attack(6).release(0.1).lpf(saw.range(500, 9000).slow(4)).gain(0.2).slow(4)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 19,
+      "hash": "92a8abb3bb"
+     }
+    }
+   ]
+  },
+  {
+   "id": "ten-04",
+   "title": "TEN-04 Dynamic tension: the gap",
+   "needs": "hooks",
+   "folder": "composition/tension",
+   "tags": [
+    "composition",
+    "tension",
+    "build-drop",
+    "sparse",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Silence or near-silence (a beat or a bar) immediately before the drop.",
+   "notes": [
+    [
+     "Why it works",
+     "A gap resets loudness adaptation and creates maximal temporal expectation of the downbeat."
+    ],
+    [
+     "When to use",
+     "Before drops; before a beat switch."
+    ],
+    [
+     "Measure",
+     "composer density: the last bar before a drop has fewer layers (no \"subtract\" suggestion)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "A gap with a reverb tail filling it completely"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "TEN-04 dynamic tension: the gap",
+     "code": "atom(\"lastBeat\", { type: \"mini\", body: \"<1 1 1 [1 1 1 0]>\" })\n$: s(\"bd*4, hh*8\").hook(\"hygiene-kick\").mask(atoms.lastBeat)",
+     "lowered": "$: s(\"bd*4, hh*8\").hpf(30).lpf(7000).mask(\"<1 1 1 [1 1 1 0]>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 45,
+      "hash": "17592278cd"
+     }
+    }
+   ]
+  },
+  {
+   "id": "ten-05",
+   "title": "TEN-05 Release grammar",
+   "needs": "hooks",
+   "folder": "composition/tension",
+   "tags": [
+    "composition",
+    "tension",
+    "build-drop",
+    "measured",
+    "lowered"
+   ],
+   "explain": "What happens on the arrival downbeat: impact, sub returns, hook enters, filter fully open, crash.",
+   "notes": [
+    [
+     "Why it works",
+     "Several cues landing together (cross-modal: low end, brightness, loudness, hook) make the arrival unambiguous."
+    ],
+    [
+     "When to use",
+     "Drop downbeats; chorus downbeats."
+    ],
+    [
+     "Measure",
+     "composer cluster: the drop starts a new cluster on its first bar; composer density: the curve jumps at the drop bar."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Staggered entries after the downbeat that blur the arrival (unless intended: then make it a pattern)"
+     ]
+    ]
+   ],
+   "tool": "cluster",
+   "examples": [
+    {
+     "title": "TEN-05 release grammar",
+     "code": "$: s(\"bd*4\").hook(\"hygiene-kick\").mask(\"<0 1>\")\n$: note(\"c1\").s(\"sine\").hook(\"hygiene-impact\").decay(1.5).struct(\"<~ x>\")\n$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\").mask(\"<0 1>\")",
+     "lowered": "$: s(\"bd*4\").hpf(30).lpf(7000).mask(\"<0 1>\")\n$: note(\"c1\").s(\"sine\").hpf(25).lpf(5000).decay(1.5).struct(\"<~ x>\")\n$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").hpf(150).lpf(8000).mask(\"<0 1>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 18,
+      "hash": "78eaeaf9a9"
+     }
+    }
+   ]
+  },
+  {
+   "id": "en-01",
+   "title": "EN-01 Macro energy arc",
+   "needs": "hooks",
+   "folder": "composition/energy",
+   "tags": [
+    "composition",
+    "energy",
+    "form",
+    "dynamics",
+    "measured",
+    "lowered"
+   ],
+   "explain": "An energy level 1-10 per section written before building: e.g. intro 3, build 5, drop 9, break 4, build 6, drop 10, outro 3.",
+   "notes": [
+    [
+     "Why it works",
+     "Contrast between sections drives interest; the second peak higher than the first rewards staying."
+    ],
+    [
+     "When to use",
+     "The brief; the density budget derives from it (LAY-01)."
+    ],
+    [
+     "Measure",
+     "composer density curve and composer scan band map follow the planned arc; the last drop >= the first."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "A flat arc (every section at 8)",
+      "The highest point in the first 30 seconds"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "EN-01 macro energy arc",
+     "code": "atom(\"energy\", { type: \"mini\", body: \"<0.3 0.5 0.9 0.4 0.6 1 0.3>\" })\n$: s(\"bd*4, hh*8\").hook(\"hygiene-kick\").gain(atoms.energy)",
+     "lowered": "$: s(\"bd*4, hh*8\").hpf(30).lpf(7000).gain(\"<0.3 0.5 0.9 0.4 0.6 1 0.3>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 48,
+      "hash": "3a66eab605"
+     }
+    }
+   ]
+  },
+  {
+   "id": "en-02",
+   "title": "EN-02 Phrase ramp",
+   "needs": "hooks",
+   "folder": "composition/energy",
+   "tags": [
+    "composition",
+    "energy",
+    "crescendo",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Inside a 8 or 16-bar section, energy rises toward the phrase end (fills, opening filter, added hats).",
+   "notes": [
+    [
+     "Why it works",
+     "Phrase-level expectation: the end of a hypermetric unit is where change is expected."
+    ],
+    [
+     "When to use",
+     "Every section that leads into another."
+    ],
+    [
+     "Measure",
+     "composer density: within-section layer count or onset count rises to the last bar."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Every phrase ending with the same fill (habituates)"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "EN-02 phrase ramp",
+     "code": "$: s(\"hh*8\").hook(\"hygiene-hat\").gain(saw.range(0.2, 0.6).slow(8))\n$: s(\"~ sd\").hook(\"hygiene-snare\").lastOf(8, x => x.ply(4))",
+     "lowered": "$: s(\"hh*8\").hpf(5000).lpf(14500).ftype(\"24db\").gain(saw.range(0.2, 0.6).slow(8))\n$: s(\"~ sd\").hpf(120).lpf(10000).ftype(\"24db\").lastOf(8, x => x.ply(4))",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 36,
+      "hash": "fd7f0b2e97"
+     }
+    }
+   ]
+  },
+  {
+   "id": "en-03",
+   "title": "EN-03 False drop",
+   "needs": "hooks",
+   "folder": "composition/energy",
+   "tags": [
+    "composition",
+    "energy",
+    "build-drop",
+    "form",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The build leads to an expected drop, but a different, sparser section (or a second build) arrives instead.",
+   "notes": [
+    [
+     "Why it works",
+     "Violated expectation is surprising and makes the real drop that follows stronger."
+    ],
+    [
+     "When to use",
+     "Second build; once per track at most."
+    ],
+    [
+     "Measure",
+     "composer cluster: the bar after the build belongs to a breakdown-like cluster, the following one to the drop cluster."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "False drops twice in one track"
+     ]
+    ]
+   ],
+   "tool": "cluster",
+   "examples": [
+    {
+     "title": "EN-03 false drop",
+     "code": "$: s(\"bd*4\").hook(\"hygiene-kick\").mask(\"<1 0 1 1>\")\n$: note(\"c2*8\").s(\"sawtooth\").hook(\"hygiene-bass\").mask(\"<0 0 1 1>\")",
+     "lowered": "$: s(\"bd*4\").hpf(30).lpf(7000).mask(\"<1 0 1 1>\")\n$: note(\"c2*8\").s(\"sawtooth\").hpf(40).lpf(3500).mask(\"<0 0 1 1>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 28,
+      "hash": "c10da8332c"
+     }
+    }
+   ]
+  },
+  {
+   "id": "tr-01",
+   "title": "TR-01 Pickup fill",
+   "needs": "hooks",
+   "folder": "composition/transition",
+   "tags": [
+    "composition",
+    "transition",
+    "dovetail",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A short fill in the last beat(s) before the new section (snare, toms, 808 slide).",
+   "notes": [
+    [
+     "Why it works",
+     "Anacrusis: the upbeat points at the downbeat and connects the sections."
+    ],
+    [
+     "When to use",
+     "Every section change; vary the fill per occurrence."
+    ],
+    [
+     "Measure",
+     "composer density: an ornament-role onset in the last beat of each section."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "The same fill before every section"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "TR-01 pickup fill",
+     "code": "$: s(\"bd*4\").hook(\"hygiene-kick\")\n$: s(\"<~ ~ ~ [~ ~ ~ [sd sd sd sd]]>\").hook(\"hygiene-snare\")",
+     "lowered": "$: s(\"bd*4\").hpf(30).lpf(7000)\n$: s(\"<~ ~ ~ [~ ~ ~ [sd sd sd sd]]>\").hpf(120).lpf(10000).ftype(\"24db\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 20,
+      "hash": "cd2aca02b8"
+     }
+    }
+   ]
+  },
+  {
+   "id": "tr-02",
+   "title": "TR-02 Riser and impact",
+   "needs": "hooks",
+   "folder": "composition/transition",
+   "tags": [
+    "composition",
+    "transition",
+    "riser",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A riser that ends exactly on the downbeat, an impact that starts on it (dt.rise / dt.hit).",
+   "notes": [
+    [
+     "Why it works",
+     "Continuous pitch / noise rise predicts an endpoint; the impact confirms it."
+    ],
+    [
+     "When to use",
+     "Builds into drops, section changes in cinematic and EDM forms (and any genre that wants them)."
+    ],
+    [
+     "Measure",
+     "composer scan: presence band rising over the build bars, a broadband onset on the drop bar."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "A riser that stops before the downbeat (dead air) or overruns it"
+     ]
+    ]
+   ],
+   "tool": "scan",
+   "examples": [
+    {
+     "title": "TR-02 riser and impact",
+     "code": "atoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(\"white\").hook(\"hygiene-riser\").attack(3.5).release(0.05).lpf(saw.range(400, 8000).slow(2)).gain(0.2).struct(\"<x ~>\").slow(2)\n$: note(\"c1\").s(\"sine\").hook(\"hygiene-impact\").decay(1.2).struct(\"<~ ~ x ~>\")",
+     "lowered": "$: s(\"white\").hpf(150).lpf(12500).ftype(\"24db\").attack(3.5).release(0.05).lpf(saw.range(400, 8000).slow(2)).gain(0.2).struct(\"<x ~>\").slow(2)\n$: note(\"c1\").s(\"sine\").hpf(25).lpf(5000).decay(1.2).struct(\"<~ ~ x ~>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 2,
+      "hash": "2fec4f138e"
+     }
+    }
+   ]
+  },
+  {
+   "id": "tr-03",
+   "title": "TR-03 Drop-out bar",
+   "needs": "hooks",
+   "folder": "composition/transition",
+   "tags": [
+    "composition",
+    "transition",
+    "sparse",
+    "measured",
+    "lowered"
+   ],
+   "explain": "All or most layers stop for the bar or beat before the new section (see TEN-04).",
+   "notes": [
+    [
+     "Why it works",
+     "Contrast by subtraction at the seam."
+    ],
+    [
+     "When to use",
+     "Before drops and beat switches."
+    ],
+    [
+     "Measure",
+     "composer density: dip in the last bar of the section."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Drop-outs before every section"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "TR-03 drop-out bar",
+     "code": "$: s(\"bd*4, hh*8\").hook(\"hygiene-kick\").mask(\"<1 1 1 0>\")",
+     "lowered": "$: s(\"bd*4, hh*8\").hpf(30).lpf(7000).mask(\"<1 1 1 0>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 36,
+      "hash": "d1439faa8b"
+     }
+    }
+   ]
+  },
+  {
+   "id": "tr-04",
+   "title": "TR-04 Reverse swell",
+   "needs": "hooks",
+   "folder": "composition/transition",
+   "tags": [
+    "composition",
+    "transition",
+    "riser",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A reversed tail (reverse cymbal, reversed chord) ending on the downbeat.",
+   "notes": [
+    [
+     "Why it works",
+     "An amplitude envelope rising into the downbeat is an inverted decay: it reads as anticipation."
+    ],
+    [
+     "When to use",
+     "Into drops and choruses; into a vocal entry."
+    ],
+    [
+     "Measure",
+     "composer scan: energy rising through the last bar, ending at the downbeat."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "A swell that ends after the downbeat"
+     ]
+    ]
+   ],
+   "tool": "scan",
+   "examples": [
+    {
+     "title": "TR-04 reverse swell",
+     "code": "$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hook(\"hygiene-reverse\").attack(1.8).release(0.02).gain(0.25).struct(\"<~ x>\")",
+     "lowered": "$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hpf(200).lpf(12000).ftype(\"24db\").attack(1.8).release(0.02).gain(0.25).struct(\"<~ x>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 8,
+      "hash": "6a07dc595a"
+     }
+    }
+   ]
+  },
+  {
+   "id": "tr-05",
+   "title": "TR-05 Overlap tail and crossfade",
+   "needs": "hooks",
+   "folder": "composition/transition",
+   "tags": [
+    "composition",
+    "transition",
+    "crossfade",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A layer of the old section rings into the new one, or two layers cross-fade over a bar.",
+   "notes": [
+    [
+     "Why it works",
+     "Continuity across the seam: the ear follows the overlapping element through the change."
+    ],
+    [
+     "When to use",
+     "Breakdowns into drops (pad tail), section changes in house and DnB."
+    ],
+    [
+     "Measure",
+     "composer density: the old layer active in the first bar of the new section."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Long tails in the low band across a drop (mud on the downbeat)"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "TR-05 overlap tail and crossfade",
+     "code": "$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").release(3).gain(\"<0.3 0.15>\")\n$: note(\"c2*8\").s(\"sawtooth\").hook(\"hygiene-bass\").gain(\"<0 0.5>\")",
+     "lowered": "$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hpf(180).lpf(6000).release(3).gain(\"<0.3 0.15>\")\n$: note(\"c2*8\").s(\"sawtooth\").hpf(40).lpf(3500).gain(\"<0 0.5>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 50,
+      "hash": "908d3c2f25"
+     }
+    }
+   ]
+  },
+  {
+   "id": "tr-06",
+   "title": "TR-06 Delay throw",
+   "needs": "hooks",
+   "folder": "composition/transition",
+   "tags": [
+    "composition",
+    "transition",
+    "delay-echo",
+    "measured",
+    "lowered"
+   ],
+   "explain": "One word or note sent to a long delay at a phrase end; the echoes bridge the gap.",
+   "notes": [
+    [
+     "Why it works",
+     "Echoes keep the last event alive across silence, connecting phrases."
+    ],
+    [
+     "When to use",
+     "Phrase ends, before drops, vocal tags."
+    ],
+    [
+     "Measure",
+     "composer scan: energy continuing in the mid band through the gap bar."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Throws on every phrase"
+     ]
+    ]
+   ],
+   "tool": "scan",
+   "examples": [
+    {
+     "title": "TR-06 delay throw",
+     "code": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-pluck\").delay(\"<0 0 0 0.6>\").delaytime(0.375).delayfeedback(0.55)",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"triangle\").hpf(120).lpf(7000).delay(\"<0 0 0 0.6>\").delaytime(0.375).delayfeedback(0.55)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "28ffe89524"
+     }
+    }
+   ]
+  },
+  {
+   "id": "tr-07",
+   "title": "TR-07 Turnaround",
+   "needs": "hooks",
+   "folder": "composition/transition",
+   "tags": [
+    "composition",
+    "transition",
+    "harmony",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The last bar of a loop changes chord or riff so the loop \"turns\" back to the start.",
+   "notes": [
+    [
+     "Why it works",
+     "Harmonic rhythm acceleration at the cycle end marks the boundary and drives back to bar 1."
+    ],
+    [
+     "When to use",
+     "4 and 8-bar loops; hip-hop and house."
+    ],
+    [
+     "Measure",
+     "composer discord: a chord change in the last bar of each loop; composer cluster: the turnaround bar forms its own small cluster."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Turnarounds on every bar"
+     ]
+    ]
+   ],
+   "tool": "cluster",
+   "examples": [
+    {
+     "title": "TR-07 turnaround",
+     "code": "$: chord(\"<Cm Cm Cm [Ab G]>\").voicing().s(\"triangle\").hook(\"hygiene-keys\")",
+     "lowered": "$: chord(\"<Cm Cm Cm [Ab G]>\").voicing().s(\"triangle\").hpf(80).lpf(7000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 23,
+      "hash": "f44f0a5baf"
+     }
+    }
+   ]
+  },
+  {
+   "id": "grv-01",
+   "title": "GRV-01 Rhythm sequence archetypes",
+   "needs": "hooks",
+   "folder": "composition/groove",
+   "tags": [
+    "composition",
+    "groove",
+    "four-floor",
+    "half-time",
+    "drums",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Named drum skeletons: four-on-the-floor (house, big room), two-step (DnB), half-time (dubstep, trap, phonk), boom-bap, tresillo 3+3+2, electro broken kick, hyphy bounce.",
+   "notes": [
+    [
+     "Why it works",
+     "Each archetype sets the metric hierarchy listeners dance to; genre recognition starts from it."
+    ],
+    [
+     "When to use",
+     "Pick one per section; a beat switch changes it (ARR-04)."
+    ],
+    [
+     "Measure",
+     "composer scan / feel: modal onset pattern, half-time flag, syncopation index."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Mixing two archetypes in one section by accident (ambiguous downbeat)"
+     ]
+    ]
+   ],
+   "tool": "feel",
+   "examples": [
+    {
+     "title": "GRV-01 rhythm sequence archetypes",
+     "code": "$: s(\"bd*4, ~ cp ~ cp, [~ hh]*4\").hook(\"hygiene-kick\")  // four-floor\n$: s(\"bd ~ ~ ~ ~ ~ ~ ~ ~ ~ bd ~ ~ ~ ~ ~, ~ ~ ~ ~ sd ~ ~ ~ ~ ~ ~ ~ sd ~ ~ ~\").hook(\"hygiene-kick\").mask(\"<0 1>\")  // two-step",
+     "lowered": "$: s(\"bd*4, ~ cp ~ cp, [~ hh]*4\").hpf(30).lpf(7000)  // four-floor\n$: s(\"bd ~ ~ ~ ~ ~ ~ ~ ~ ~ bd ~ ~ ~ ~ ~, ~ ~ ~ ~ sd ~ ~ ~ ~ ~ ~ ~ sd ~ ~ ~\").hpf(30).lpf(7000).mask(\"<0 1>\")  // two-step",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 48,
+      "hash": "2d5c556223"
+     }
+    }
+   ]
+  },
+  {
+   "id": "grv-02",
+   "title": "GRV-02 Swing",
+   "needs": "hooks",
+   "folder": "composition/groove",
+   "tags": [
+    "composition",
+    "groove",
+    "swing",
+    "human-feel",
+    "measured",
+    "approx"
+   ],
+   "explain": "The second 16th (or 8th) of each pair delayed: 50 % straight, 54-58 % pocket, 66.7 % triplet (pat.groove swing).",
+   "notes": [
+    [
+     "Why it works",
+     "Long-short pairs create lilt; small swing values are felt rather than heard."
+    ],
+    [
+     "When to use",
+     "Hip-hop, house hats, boom-bap; little or none in big room and riddim."
+    ],
+    [
+     "Measure",
+     "composer feel / scan: swing16 within 1-2 % of the target."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Two swings stacked (pat.groove and swingBy) (they compose)",
+      "Swinging the kick and not the hats (flam feel)"
+     ]
+    ]
+   ],
+   "tool": "feel",
+   "examples": [
+    {
+     "title": "GRV-02 swing",
+     "code": "$: s(\"hh*16\").hook(\"hygiene-hat\").groove({ swing: 57, seed: 1 }).gain(0.4)\n$: s(\"bd ~ ~ bd ~ ~ bd ~, ~ sd\").hook(\"hygiene-kick\")",
+     "lowered": "$: s(\"hh*16\").hpf(5000).lpf(14500).ftype(\"24db\").swingBy(0.14, 8).gain(0.4)\n$: s(\"bd ~ ~ bd ~ ~ bd ~, ~ sd\").hpf(30).lpf(7000)",
+     "lowered_check": {
+      "equal": false,
+      "approx": true,
+      "cycles": 4,
+      "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
+      "hash": "2ed2414ef8"
+     }
+    }
+   ]
+  },
+  {
+   "id": "grv-03",
+   "title": "GRV-03 Push and pull",
+   "needs": "hooks",
+   "folder": "composition/groove",
+   "tags": [
+    "composition",
+    "groove",
+    "human-feel",
+    "swing",
+    "measured",
+    "approx"
+   ],
+   "explain": "A constant early (push, rush) or late (pull, drag) offset per voice, in % of a 16th.",
+   "notes": [
+    [
+     "Why it works",
+     "Relative timing between voices sets feel: late snares feel laid back, early hats urgent."
+    ],
+    [
+     "When to use",
+     "Lazy / cloud feels (snare + 5-10 %), bouncy feels (hats - 3 %)."
+    ],
+    [
+     "Measure",
+     "composer feel / scan: push_high_vs_low_pct16."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Pushing the whole mix (nothing changes relatively)"
+     ]
+    ]
+   ],
+   "tool": "feel",
+   "examples": [
+    {
+     "title": "GRV-03 push and pull",
+     "code": "$: s(\"~ sd\").hook(\"hygiene-snare\").groove({ push: 8, seed: 2 })\n$: s(\"bd ~ ~ bd\").hook(\"hygiene-kick\")",
+     "lowered": "$: s(\"~ sd\").hpf(120).lpf(10000).ftype(\"24db\").late(0.005)\n$: s(\"bd ~ ~ bd\").hpf(30).lpf(7000)",
+     "lowered_check": {
+      "equal": false,
+      "approx": true,
+      "cycles": 4,
+      "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 1 differs); with the groove taken out of both forms the events are identical",
+      "hash": "9e213b82cf"
+     }
+    }
+   ]
+  },
+  {
+   "id": "grv-04",
+   "title": "GRV-04 Micro-timing (humanize)",
+   "needs": "hooks",
+   "folder": "composition/groove",
+   "tags": [
+    "composition",
+    "groove",
+    "human-feel",
+    "measured",
+    "approx"
+   ],
+   "explain": "Small per-hit timing spread (jitter 1-5 % of a 16th) and slow drift, seeded and deterministic.",
+   "notes": [
+    [
+     "Why it works",
+     "Players deviate 5-20 ms; a little variance reads as alive, too much as sloppy."
+    ],
+    [
+     "When to use",
+     "Hats, percussion, keys; not the kick in four-floor genres."
+    ],
+    [
+     "Measure",
+     "composer feel / scan: jitter_pct16 within the feel template range."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Random jitter on the kick and sub (phase smear)"
+     ]
+    ]
+   ],
+   "tool": "feel",
+   "examples": [
+    {
+     "title": "GRV-04 micro-timing (humanize)",
+     "code": "$: s(\"hh*16\").hook(\"hygiene-hat\").groove({ jitter: 3, vel: 0.12, drift: 1, seed: 3 }).gain(0.4)",
+     "lowered": "$: s(\"hh*16\").hpf(5000).lpf(14500).ftype(\"24db\").mul(velocity(rand.late(3.37).range(0.88, 1))).late(rand.late(3).range(0, 0.00375).segment(16)).late(perlin.late(3).range(0, 0.00125).slow(4).segment(16)).early(0.0025).gain(0.4)",
+     "lowered_check": {
+      "equal": false,
+      "approx": true,
+      "cycles": 4,
+      "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (64 Craft, 63 Strudel)); with the groove taken out of both forms the events are identical",
+      "hash": "8201931896"
+     }
+    }
+   ]
+  },
+  {
+   "id": "grv-05",
+   "title": "GRV-05 Ghost notes",
+   "needs": "hooks",
+   "folder": "composition/groove",
+   "tags": [
+    "composition",
+    "groove",
+    "accents",
+    "drums",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Quiet notes (velocity 0.1-0.35) between the main hits, mostly snare and hats.",
+   "notes": [
+    [
+     "Why it works",
+     "Ghosts fill the subdivision grid at low salience: the groove gets motion without changing its accents."
+    ],
+    [
+     "When to use",
+     "Boom-bap, DnB breaks, funk-derived house, phonk."
+    ],
+    [
+     "Measure",
+     "composer feel / scan: ghost_share and ghosts_per_bar."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Ghosts as loud as accents (they stop being ghosts)"
+     ]
+    ]
+   ],
+   "tool": "feel",
+   "examples": [
+    {
+     "title": "GRV-05 ghost notes",
+     "code": "$: s(\"~ sd ~ sd\").hook(\"hygiene-snare\")\n$: s(\"~ ~ ~ sd ~ ~ sd ~ ~ sd ~ ~ ~ ~ ~ sd\").hook(\"hygiene-snare\").velocity(0.22)",
+     "lowered": "$: s(\"~ sd ~ sd\").hpf(120).lpf(10000).ftype(\"24db\")\n$: s(\"~ ~ ~ sd ~ ~ sd ~ ~ sd ~ ~ ~ ~ ~ sd\").hpf(120).lpf(10000).ftype(\"24db\").velocity(0.22)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 24,
+      "hash": "b8bdf9551e"
+     }
+    }
+   ]
+  },
+  {
+   "id": "grv-06",
+   "title": "GRV-06 Polymeter and hemiola",
+   "needs": "hooks",
+   "folder": "composition/groove",
+   "tags": [
+    "composition",
+    "groove",
+    "polyrhythm",
+    "syncopated",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A cycle of 3 (or 6) against the 4 of the bar: a 3-step riff over 16ths, 3+3+2 groupings.",
+   "notes": [
+    [
+     "Why it works",
+     "Phase drift between cycles creates moving accents over a stable pulse (realigns every LCM steps)."
+    ],
+    [
+     "When to use",
+     "Techno, DnB riffs, trap hats, builds."
+    ],
+    [
+     "Measure",
+     "composer scan / feel: hemiola_hint (autocorrelation at lag 3 or 6 beats lag 4 and 8)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Polymeter on the kick in a dance track (the floor loses the pulse)"
+     ]
+    ]
+   ],
+   "tool": "feel",
+   "examples": [
+    {
+     "title": "GRV-06 polymeter and hemiola",
+     "code": "$: note(\"c3 eb3 g3\").fast(16/3).s(\"triangle\").hook(\"hygiene-arp\").gain(0.4)\n$: s(\"bd*4\").hook(\"hygiene-kick\")",
+     "lowered": "$: note(\"c3 eb3 g3\").fast(16/3).s(\"triangle\").hpf(150).lpf(8000).gain(0.4)\n$: s(\"bd*4\").hpf(30).lpf(7000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 80,
+      "hash": "5983ef7c14"
+     }
+    }
+   ]
+  },
+  {
+   "id": "grv-07",
+   "title": "GRV-07 Picking a feel",
+   "needs": "hooks",
+   "folder": "composition/groove",
+   "tags": [
+    "composition",
+    "groove",
+    "feel",
+    "measured",
+    "approx"
+   ],
+   "explain": "Choose a feel template (feel-boombap, lazy, trap, hyphy, cloud, halftime, ukf, riddim, brostep) from measured or intended stats.",
+   "notes": [
+    [
+     "Why it works",
+     "A feel is a coherent set of tempo, archetype and groove settings; picking one keeps all voices consistent."
+    ],
+    [
+     "When to use",
+     "At the start, or from a reference you own: composer scan, then composer feel."
+    ],
+    [
+     "Measure",
+     "composer feel: ranked feels with distances; the measured .groove line."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Copying a reference track's pattern (measure feel stats, never transcribe or duplicate)"
+     ]
+    ]
+   ],
+   "tool": "feel",
+   "examples": [
+    {
+     "title": "GRV-07 picking a feel",
+     "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/phonk:feel-trap\", { as: \"feel\" })\nhooks.bind(\"kick\", atoms.feel.kickRack)\n$: s(atoms.feel.kick).velocity(atoms.feel.kickVel).use(\"kick\")",
+     "lowered": "setcpm(140/4)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>\").velocity(\"1\").hpf(30).lpf(7000).hpf(30).lpf(7000).s(\"sine\").freq(55).penv(36).pdecay(0.04).decay(0.28).sustain(0).noise(0.12).shape(0.4).gain(0.8).hpf(40).mul(velocity(rand.late(1.37).range(0.82, 1))).late(rand.late(1).range(0, 0.001875).segment(16)).early(0.000938)",
+     "lowered_check": {
+      "equal": false,
+      "approx": true,
+      "cycles": 4,
+      "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
+      "hash": "3371c3f022"
+     }
+    }
+   ]
+  },
+  {
+   "id": "har-01",
+   "title": "HAR-01 Voice leading",
+   "needs": "hooks",
+   "folder": "composition/harmony",
+   "tags": [
+    "composition",
+    "harmony",
+    "pad",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Chord changes with the smallest moves per voice; common tones held.",
+   "notes": [
+    [
+     "Why it works",
+     "Small moves keep voices as continuous streams; pads sound smooth instead of jumping."
+    ],
+    [
+     "When to use",
+     "Pads, supersaw chords, keys."
+    ],
+    [
+     "Measure",
+     "engine/motifs chord loop; pitch moves per voice <= 2 semitones (voicing())."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Root-position block chords jumping a fifth each change"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "HAR-01 voice leading",
+     "code": "$: chord(\"<Cm7 Abmaj7 Ebmaj7 Bb7>\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").gain(0.25)",
+     "lowered": "$: chord(\"<Cm7 Abmaj7 Ebmaj7 Bb7>\").voicing().s(\"supersaw\").hpf(180).lpf(6000).gain(0.25)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 10,
+      "hash": "92fd62638f"
+     }
+    }
+   ]
+  },
+  {
+   "id": "har-02",
+   "title": "HAR-02 Bass-note pedal",
+   "needs": "hooks",
+   "folder": "composition/harmony",
+   "tags": [
+    "composition",
+    "harmony",
+    "drone",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The bass holds one note while chords change above (I - IV/I - bVII/I).",
+   "notes": [
+    [
+     "Why it works",
+     "Inverted and slash chords over a pedal give tension and colour with a stable floor."
+    ],
+    [
+     "When to use",
+     "Intros, builds, phonk and techno drones."
+    ],
+    [
+     "Measure",
+     "composer discord: one bar root across chord changes; roughness changes per chord."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "A pedal through a whole track with no release"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "HAR-02 bass-note pedal",
+     "code": "$: note(\"c2*4\").s(\"sawtooth\").hook(\"hygiene-bass\")\n$: chord(\"<Cm Fm Bb Cm>\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").gain(0.25)",
+     "lowered": "$: note(\"c2*4\").s(\"sawtooth\").hpf(40).lpf(3500)\n$: chord(\"<Cm Fm Bb Cm>\").voicing().s(\"supersaw\").hpf(180).lpf(6000).gain(0.25)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 36,
+      "hash": "e99eff6a81"
+     }
+    }
+   ]
+  },
+  {
+   "id": "har-03",
+   "title": "HAR-03 Harmonic rhythm",
+   "needs": "hooks",
+   "folder": "composition/harmony",
+   "tags": [
+    "composition",
+    "harmony",
+    "measured",
+    "lowered"
+   ],
+   "explain": "How often chords change: 1 per 2 bars (house, dubstep), 1 per bar (pop), 2 per bar (turnarounds).",
+   "notes": [
+    [
+     "Why it works",
+     "Faster harmonic rhythm raises energy and forward motion; slower lets texture and groove lead."
+    ],
+    [
+     "When to use",
+     "Accelerate into a drop or chorus, slow down in breakdowns."
+    ],
+    [
+     "Measure",
+     "composer discord / engine/motifs: chord changes per bar per section."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Changing harmonic rhythm under a vocal phrase mid-line"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "HAR-03 harmonic rhythm",
+     "code": "$: chord(\"<Cm Ab Eb Bb>/2\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").gain(0.25)",
+     "lowered": "$: chord(\"<Cm Ab Eb Bb>/2\").voicing().s(\"supersaw\").hpf(180).lpf(6000).gain(0.25)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 9,
+      "hash": "867da9ddf3"
+     }
+    }
+   ]
+  },
+  {
+   "id": "har-04",
+   "title": "HAR-04 Modal colour per genre",
+   "needs": "hooks",
+   "folder": "composition/harmony",
+   "tags": [
+    "composition",
+    "harmony",
+    "dark",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Pick the mode for its colour: Aeolian (most EDM), Dorian (house, liquid), Phrygian (phonk, darker dubstep), harmonic minor (Italo, trance tension).",
+   "notes": [
+    [
+     "Why it works",
+     "The characteristic degree (natural 6 in Dorian, b2 in Phrygian) carries the mood."
+    ],
+    [
+     "When to use",
+     "At the brief; borrowing (BOR) can mix modes per section."
+    ],
+    [
+     "Measure",
+     "composer discord: borrowing names b2 (Phrygian) or natural 6 (Dorian) against the minor key."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Phrygian b2 against a held natural 2 (unwanted clash)"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "HAR-04 modal colour per genre",
+     "code": "$: n(\"0 1 3 4 1 0\").scale(\"C4:phrygian\").s(\"square\").hook(\"hygiene-bell\").gain(0.4)",
+     "lowered": "$: n(\"0 1 3 4 1 0\").scale(\"C4:phrygian\").s(\"square\").hpf(300).lpf(8000).gain(0.4)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 24,
+      "hash": "f71aa5e4b4"
+     }
+    }
+   ]
+  },
+  {
+   "id": "bor-01",
+   "title": "BOR-01 Modal interchange (borrowed chords)",
+   "needs": "hooks",
+   "folder": "composition/borrowing",
+   "tags": [
+    "composition",
+    "borrowing",
+    "harmony",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A chord from the parallel mode inside the key: iv, bVI, bVII in major; IV, major V in minor.",
+   "notes": [
+    [
+     "Why it works",
+     "One altered degree (b6, b7, or a raised 6 / 7) changes colour without leaving the tonic (music theory: mode mixture)."
+    ],
+    [
+     "When to use",
+     "Sentimental lifts, pre-choruses, last chords before a drop."
+    ],
+    [
+     "Measure",
+     "composer discord: borrowing lists b6 (mixture, bVI / iv) in that section."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Borrowing every bar (the key stops being clear)"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "BOR-01 modal interchange (borrowed chords)",
+     "code": "$: chord(\"<C F Fm C>\").voicing().s(\"triangle\").hook(\"hygiene-keys\")",
+     "lowered": "$: chord(\"<C F Fm C>\").voicing().s(\"triangle\").hpf(80).lpf(7000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 20,
+      "hash": "abfc9c05fb"
+     }
+    }
+   ]
+  },
+  {
+   "id": "bor-02",
+   "title": "BOR-02 Parallel and relative shifts",
+   "needs": "hooks",
+   "folder": "composition/borrowing",
+   "tags": [
+    "composition",
+    "borrowing",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A section in the parallel major/minor (C minor -> C major) or the relative key (C minor -> Eb major).",
+   "notes": [
+    [
+     "Why it works",
+     "Same tonic, opposite mode (parallel) or same notes, new centre (relative): big mood change with continuity."
+    ],
+    [
+     "When to use",
+     "Breakdowns, bridges, the final drop."
+    ],
+    [
+     "Measure",
+     "composer discord: key_shift on the section (or major 3 \"parallel major\" named)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Shifting mode under a sustained vocal note that clashes"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "BOR-02 parallel and relative shifts",
+     "code": "$: n(\"0 2 4 3\").scale(\"<C4:minor C4:major>\").s(\"triangle\").hook(\"hygiene-lead\")",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"<C4:minor C4:major>\").s(\"triangle\").hpf(150).lpf(8000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "60865dce8f"
+     }
+    }
+   ]
+  },
+  {
+   "id": "bor-03",
+   "title": "BOR-03 Picardy third",
+   "needs": "hooks",
+   "folder": "composition/borrowing",
+   "tags": [
+    "composition",
+    "borrowing",
+    "bright",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A minor piece ends on a major tonic chord.",
+   "notes": [
+    [
+     "Why it works",
+     "The raised third surprises at the cadence and reads as release or hope."
+    ],
+    [
+     "When to use",
+     "Outros, the last chord of a breakdown."
+    ],
+    [
+     "Measure",
+     "composer discord: \"major 3 (Picardy / parallel major)\" in the last section."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Using it on every loop (it becomes the key)"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "BOR-03 picardy third",
+     "code": "$: chord(\"<Cm Fm G C>\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").gain(0.25)",
+     "lowered": "$: chord(\"<Cm Fm G C>\").voicing().s(\"supersaw\").hpf(180).lpf(6000).gain(0.25)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 19,
+      "hash": "47c6959cc8"
+     }
+    }
+   ]
+  },
+  {
+   "id": "bor-04",
+   "title": "BOR-04 Chromatic mediants",
+   "needs": "hooks",
+   "folder": "composition/borrowing",
+   "tags": [
+    "composition",
+    "borrowing",
+    "harmony",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Chords a third apart that share at most one tone (C major -> E major, Cm -> Ab with a major-third root move and borrowed quality).",
+   "notes": [
+    [
+     "Why it works",
+     "Large colour shift with smooth common-tone voice leading: cinematic and \"lift\" effect."
+    ],
+    [
+     "When to use",
+     "Section seams, trailer-like moments, melodic dubstep breakdowns."
+    ],
+    [
+     "Measure",
+     "composer discord: chromatic_mediants list."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Mediant shifts under a modal vocal melody"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "BOR-04 chromatic mediants",
+     "code": "$: chord(\"<Cm E Cm Ab>\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").gain(0.25)",
+     "lowered": "$: chord(\"<Cm E Cm Ab>\").voicing().s(\"supersaw\").hpf(180).lpf(6000).gain(0.25)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 19,
+      "hash": "bb13827e76"
+     }
+    }
+   ]
+  },
+  {
+   "id": "bor-05",
+   "title": "BOR-05 Key-shift lift",
+   "needs": "hooks",
+   "folder": "composition/borrowing",
+   "tags": [
+    "composition",
+    "borrowing",
+    "build-drop",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The last chorus or drop moves up (often 1 or 2 semitones; a fourth or fifth for a broader lift).",
+   "notes": [
+    [
+     "Why it works",
+     "Raised pitch raises brightness and arousal; the familiar hook in a new key feels like a lift."
+    ],
+    [
+     "When to use",
+     "The final hook; once per track."
+    ],
+    [
+     "Measure",
+     "composer discord: key_shift with lift_semitones in the last drop; composer ledger: \"transposed\" statements there."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "A lift without preparation (pivot chord or gap)"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "BOR-05 key-shift lift",
+     "code": "$: n(\"0 2 4 3\").scale(\"<C4:minor C4:minor D4:minor D4:minor>\").s(\"sawtooth\").hook(\"hygiene-lead\")",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"<C4:minor C4:minor D4:minor D4:minor>\").s(\"sawtooth\").hpf(150).lpf(8000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "971a7fd88e"
+     }
+    }
+   ]
+  },
+  {
+   "id": "bor-06",
+   "title": "BOR-06 Timbre borrowing",
+   "needs": "hooks",
+   "folder": "composition/borrowing",
+   "tags": [
+    "composition",
+    "borrowing",
+    "formant",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Take the timbre of one layer for another: neuro growl formants on a pad, a vocal formant on the bass, bell FM on a pluck.",
+   "notes": [
+    [
+     "Why it works",
+     "Shared spectral envelope across layers binds them (ASN) and makes a new colour from known material."
+    ],
+    [
+     "When to use",
+     "Drops of bass genres; breakdowns that reuse the drop's colour softly."
+    ],
+    [
+     "Measure",
+     "composer layers: shared vowel or high MFCC cosine (stems) between the two layers."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Borrowing a timbre into the same band (masking instead of binding)"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "BOR-06 timbre borrowing",
+     "code": "$: note(\"c2*4\").s(\"sawtooth\").hook(\"hygiene-bass\").vowel(\"o\")\n$: chord(\"<Cm Ab>\").voicing().s(\"sawtooth\").hook(\"hygiene-pad\").vowel(\"o\").gain(0.2)",
+     "lowered": "$: note(\"c2*4\").s(\"sawtooth\").hpf(40).lpf(3500).vowel(\"o\")\n$: chord(\"<Cm Ab>\").voicing().s(\"sawtooth\").hpf(180).lpf(6000).vowel(\"o\").gain(0.2)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 34,
+      "hash": "eeffd4aada"
+     }
+    }
+   ]
+  },
+  {
+   "id": "bor-07",
+   "title": "BOR-07 Groove and envelope borrowing",
+   "needs": "hooks",
+   "folder": "composition/borrowing",
+   "tags": [
+    "composition",
+    "borrowing",
+    "groove",
+    "measured",
+    "lowered"
+   ],
+   "explain": "One layer takes another layer's rhythm or envelope (the hat rhythm on a pluck, the kick envelope on a pad via sidechain), or a genre feel on a new style.",
+   "notes": [
+    [
+     "Why it works",
+     "Shared onsets and envelopes lock layers into one groove (common fate)."
+    ],
+    [
+     "When to use",
+     "Drops; genre blends (hyphy feel under a house chord)."
+    ],
+    [
+     "Measure",
+     "composer layers: rhythm_rhyme / envelope_rhyme high for the pair."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Borrowing a groove that fights the main archetype"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "BOR-07 groove and envelope borrowing",
+     "code": "atom(\"hats\", { type: \"mini\", body: \"~ x ~ x ~ x ~ x\" })\n$: s(\"hh\").struct(atoms.hats).hook(\"hygiene-hat\").gain(0.4)\n$: n(\"0 2 4 2\").scale(\"C5:minor\").struct(atoms.hats).s(\"triangle\").hook(\"hygiene-pluck\")",
+     "lowered": "$: s(\"hh\").struct(\"~ x ~ x ~ x ~ x\").hpf(5000).lpf(14500).ftype(\"24db\").gain(0.4)\n$: n(\"0 2 4 2\").scale(\"C5:minor\").struct(\"~ x ~ x ~ x ~ x\").s(\"triangle\").hpf(120).lpf(7000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 32,
+      "hash": "c84e32c6ad"
+     }
+    }
+   ]
+  },
+  {
+   "id": "bor-08",
+   "title": "BOR-08 Harmonic skeleton borrowing",
+   "needs": "hooks",
+   "folder": "composition/borrowing",
+   "tags": [
+    "composition",
+    "borrowing",
+    "harmony",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A section reuses another section's chord loop or bass skeleton with new material on top.",
+   "notes": [
+    [
+     "Why it works",
+     "Continuity of harmony makes contrasting melodies belong to one piece."
+    ],
+    [
+     "When to use",
+     "Breakdowns over the drop loop; verses over the hook chords."
+    ],
+    [
+     "Measure",
+     "composer foreshadow: planted_harmony; composer discord: same roots per bar in both sections."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Different loops in every section (no harmonic identity)"
+     ]
+    ]
+   ],
+   "tool": "foreshadow",
+   "examples": [
+    {
+     "title": "BOR-08 harmonic skeleton borrowing",
+     "code": "atom(\"loop\", { type: \"mini\", body: \"<Cm Ab Eb Bb>\" })\n$: chord(atoms.loop).voicing().s(\"supersaw\").hook(\"hygiene-pad\").gain(0.2).mask(\"<1 1 0 0>\")\n$: chord(atoms.loop).voicing().s(\"triangle\").hook(\"hygiene-keys\").struct(\"x ~ x x\").mask(\"<0 0 1 1>\")",
+     "lowered": "$: chord(\"<Cm Ab Eb Bb>\").voicing().s(\"supersaw\").hpf(180).lpf(6000).gain(0.2).mask(\"<1 1 0 0>\")\n$: chord(\"<Cm Ab Eb Bb>\").voicing().s(\"triangle\").hpf(80).lpf(7000).struct(\"x ~ x x\").mask(\"<0 0 1 1>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 39,
+      "hash": "2f2ae23607"
+     }
+    }
+   ]
+  },
+  {
+   "id": "dis-01",
+   "title": "DIS-01 Minor-second and tritone stabs",
+   "needs": "hooks",
+   "folder": "composition/discordance",
+   "tags": [
+    "composition",
+    "discordance",
+    "dark",
+    "stab",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Short stabs whose voicing contains a minor 2nd, major 7th or tritone.",
+   "notes": [
+    [
+     "Why it works",
+     "Partials within a critical band beat and roughen (Plomp-Levelt); short duration keeps the roughness a hit, not a texture."
+    ],
+    [
+     "When to use",
+     "Dark drops, industrial dubstep, phonk bells (the cowbell's near-tritone partials), horror tints."
+    ],
+    [
+     "Measure",
+     "composer discord: interval classes m2/M7, tritone in the section; roughness peaks on the stabs."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Sustained clashes under a vocal (unintended \"out of tune\")"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "DIS-01 minor-second and tritone stabs",
+     "code": "$: note(\"<[c4,gb4] [c4,db4]>\").s(\"square\").hook(\"hygiene-stab\").decay(0.12).sustain(0).struct(\"x ~ ~ x ~ ~ x ~\")",
+     "lowered": "$: note(\"<[c4,gb4] [c4,db4]>\").s(\"square\").hpf(120).lpf(8000).decay(0.12).sustain(0).struct(\"x ~ ~ x ~ ~ x ~\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 24,
+      "hash": "8d858cbeeb"
+     }
+    }
+   ]
+  },
+  {
+   "id": "dis-02",
+   "title": "DIS-02 Cluster stabs",
+   "needs": "hooks",
+   "folder": "composition/discordance",
+   "tags": [
+    "composition",
+    "discordance",
+    "clustering",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Three or more adjacent scale tones at once (c-d-eb), short.",
+   "notes": [
+    [
+     "Why it works",
+     "Maximum roughness per event; reads as a percussive, metallic hit."
+    ],
+    [
+     "When to use",
+     "Impacts, industrial textures, builds."
+    ],
+    [
+     "Measure",
+     "composer discord: interval class \"cluster\"; roughness x2+ the section median on the hit bars."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Low clusters (below ~200 Hz: mud, not bite)"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "DIS-02 cluster stabs",
+     "code": "$: note(\"[c4,d4,eb4]\").s(\"sawtooth\").hook(\"hygiene-stab\").decay(0.1).sustain(0).struct(\"<x ~ ~ ~>\")",
+     "lowered": "$: note(\"[c4,d4,eb4]\").s(\"sawtooth\").hpf(120).lpf(8000).decay(0.1).sustain(0).struct(\"<x ~ ~ ~>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 3,
+      "hash": "91c6e41b6f"
+     }
+    }
+   ]
+  },
+  {
+   "id": "dis-03",
+   "title": "DIS-03 Detuned unison beating",
+   "needs": "hooks",
+   "folder": "composition/discordance",
+   "tags": [
+    "composition",
+    "discordance",
+    "bass",
+    "reese",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Two or more copies of a voice detuned by a few cents (supersaw, reese).",
+   "notes": [
+    [
+     "Why it works",
+     "Beating at the frequency difference gives motion and width; at low pitch it becomes audible pulsing."
+    ],
+    [
+     "When to use",
+     "Reese basses (DnB, neuro), supersaw chords; keep the sub itself clean."
+    ],
+    [
+     "Measure",
+     "composer discord: roughness counts detuned copies (unison, detune); composer layers stems: the sub stem stays clean (no beating under 60 Hz)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Detuning the sub (phase cancellation, mono collapse)"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "DIS-03 detuned unison beating",
+     "code": "$: note(\"c2\").s(\"supersaw\").unison(2).detune(0.3).hook(\"hygiene-reese\").lpf(1200).struct(\"x@3 ~\")",
+     "lowered": "$: note(\"c2\").s(\"supersaw\").unison(2).detune(0.3).hpf(30).lpf(5000).lpf(1200).struct(\"x@3 ~\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 4,
+      "hash": "10e777eb55"
+     }
+    }
+   ]
+  },
+  {
+   "id": "dis-04",
+   "title": "DIS-04 Bitonal layers",
+   "needs": "hooks",
+   "folder": "composition/discordance",
+   "tags": [
+    "composition",
+    "discordance",
+    "tense",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Two layers in keys a tritone or semitone apart for a short span.",
+   "notes": [
+    [
+     "Why it works",
+     "Two tonal centres compete; the ear cannot settle: strong unease, best brief."
+    ],
+    [
+     "When to use",
+     "Horror tints, the last bars of an industrial build."
+    ],
+    [
+     "Measure",
+     "composer discord: per-section key fit drops; out-of-key share rises in that section only."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Bitonality for whole sections without intent"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "DIS-04 bitonal layers",
+     "code": "$: n(\"0 2 4\").scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-pluck\")\n$: n(\"0 2 4\").scale(\"F#3:minor\").s(\"sawtooth\").hook(\"hygiene-lead\").gain(0.3).mask(\"<0 0 0 1>\")",
+     "lowered": "$: n(\"0 2 4\").scale(\"C4:minor\").s(\"triangle\").hpf(120).lpf(7000)\n$: n(\"0 2 4\").scale(\"F#3:minor\").s(\"sawtooth\").hpf(150).lpf(8000).gain(0.3).mask(\"<0 0 0 1>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 15,
+      "hash": "abeb11caba"
+     }
+    }
+   ]
+  },
+  {
+   "id": "dis-05",
+   "title": "DIS-05 Dissonance-to-resolution timing",
+   "needs": "hooks",
+   "folder": "composition/discordance",
+   "tags": [
+    "composition",
+    "discordance",
+    "tension",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Place the clash on a weak or pre-arrival position and resolve on the downbeat (appoggiatura logic).",
+   "notes": [
+    [
+     "Why it works",
+     "Tension then release; an unresolved clash reads as error, a resolved one as intent."
+    ],
+    [
+     "When to use",
+     "Pre-drop bars, phrase ends."
+    ],
+    [
+     "Measure",
+     "composer discord: every clash has resolved_at within 2 bars; unresolved list empty (or intended)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Clashes left hanging at section ends"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "DIS-05 dissonance-to-resolution timing",
+     "code": "$: chord(\"<[c4,db4,g4] [c4,eb4,g4]>\").s(\"supersaw\").hook(\"hygiene-pad\").gain(0.25)",
+     "lowered": "$: chord(\"<[c4,db4,g4] [c4,eb4,g4]>\").s(\"supersaw\").hpf(180).lpf(6000).gain(0.25)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 12,
+      "hash": "1e31c776e9"
+     }
+    }
+   ]
+  },
+  {
+   "id": "dis-06",
+   "title": "DIS-06 Roughness as sound design",
+   "needs": "hooks",
+   "folder": "composition/discordance",
+   "tags": [
+    "composition",
+    "discordance",
+    "growl",
+    "fm",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Distortion, FM and ring-style sidebands that create inharmonic, rough spectra (wet industrial, growls).",
+   "notes": [
+    [
+     "Why it works",
+     "Inharmonic partials close together raise sensory roughness; it reads as aggression and grit."
+    ],
+    [
+     "When to use",
+     "Growl and riddim basses, industrial dubstep, phonk distortion; keep the sub separate."
+    ],
+    [
+     "Measure",
+     "composer discord --audio on the stem: roughness per bar; composer scan band map: grit above 200 Hz, a clean sub band."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Distorting the sub with the growl (one band split first, SND-02)"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "DIS-06 roughness as sound design",
+     "code": "$: note(\"c2 ~ c2 ~\").s(\"sawtooth\").hook(\"hygiene-growl\").fm(3).fmh(1.41).distort(2).lpf(2000)\n$: note(\"c1 ~ c1 ~\").s(\"sine\").hook(\"hygiene-sub\")",
+     "lowered": "$: note(\"c2 ~ c2 ~\").s(\"sawtooth\").hpf(70).lpf(9000).fm(3).fmh(1.41).distort(2).lpf(2000)\n$: note(\"c1 ~ c1 ~\").s(\"sine\").hpf(25)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "0ad5f8d0ac"
+     }
+    }
+   ]
+  },
+  {
+   "id": "asn-01",
+   "title": "ASN-01 Shared vowel formants",
+   "needs": "hooks",
+   "folder": "composition/assonance",
+   "tags": [
+    "composition",
+    "assonance",
+    "formant",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Two layers filtered to the same vowel (bass and vocal syllables both on \"o\").",
+   "notes": [
+    [
+     "Why it works",
+     "Formants are the strongest cue for sound similarity in voice-like sounds; shared formants bind layers into one colour."
+    ],
+    [
+     "When to use",
+     "Talking basses with vocal chops, formant pads with leads."
+    ],
+    [
+     "Measure",
+     "composer layers: colour \"shared vowel\" for the pair; stems: high MFCC cosine."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Same vowel and same band (masking)"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "ASN-01 shared vowel formants",
+     "code": "$: note(\"c2*4\").s(\"sawtooth\").hook(\"hygiene-bass\").vowel(\"<o a>\")\n$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").vowel(\"<o a>\").hook(\"hygiene-vox\").gain(0.4)",
+     "lowered": "$: note(\"c2*4\").s(\"sawtooth\").hpf(40).lpf(3500).vowel(\"<o a>\")\n$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").vowel(\"<o a>\").hpf(150).lpf(8000).gain(0.4)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 32,
+      "hash": "77cb3d92b7"
+     }
+    }
+   ]
+  },
+  {
+   "id": "asn-02",
+   "title": "ASN-02 Shared harmonic series",
+   "needs": "hooks",
+   "folder": "composition/assonance",
+   "tags": [
+    "composition",
+    "assonance",
+    "consonance",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Layers placed on partials of one fundamental (octaves, fifths over the bass root).",
+   "notes": [
+    [
+     "Why it works",
+     "Harmonic partials fuse (harmonicity): the layers sound like one rich tone."
+    ],
+    [
+     "When to use",
+     "Pads over a sub, drones, bell layers."
+    ],
+    [
+     "Measure",
+     "composer discord: low roughness with many voices; composer layers stems: lufs_gain_db >= 0 (no cancellation)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Tempered thirds high above a sub expecting perfect fusion (slight beating is normal)"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "ASN-02 shared harmonic series",
+     "code": "$: note(\"c1\").s(\"sine\").hook(\"hygiene-sub\")\n$: note(\"[c3,g3,c4,e4]\").s(\"triangle\").hook(\"hygiene-pad\").gain(0.2)",
+     "lowered": "$: note(\"c1\").s(\"sine\").hpf(25)\n$: note(\"[c3,g3,c4,e4]\").s(\"triangle\").hpf(180).lpf(6000).gain(0.2)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 20,
+      "hash": "8e350cd28d"
+     }
+    }
+   ]
+  },
+  {
+   "id": "asn-03",
+   "title": "ASN-03 Repeated colour and noise texture",
+   "needs": "hooks",
+   "folder": "composition/assonance",
+   "tags": [
+    "composition",
+    "assonance",
+    "texture",
+    "measured",
+    "lowered"
+   ],
+   "explain": "One noise colour (vinyl, tape hiss, pink air) or one reverb space shared by several layers.",
+   "notes": [
+    [
+     "Why it works",
+     "A common acoustic signature (same room, same noise floor) makes separate sources sound recorded together."
+    ],
+    [
+     "When to use",
+     "Lo-fi, phonk, cloud; any mix that feels disjointed."
+    ],
+    [
+     "Measure",
+     "composer layers: same room / filter colour; composer scan: a constant noise floor in the brilliance band."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Noise so loud it masks transients"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "ASN-03 repeated colour and noise texture",
+     "code": "$: s(\"bd ~ sd ~\").hook(\"hygiene-kick\").room(0.3).size(2)\n$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-keys\").room(0.3).size(2)\n$: s(\"pink\").hpf(4000).gain(0.03)",
+     "lowered": "$: s(\"bd ~ sd ~\").hpf(30).lpf(7000).room(0.3).size(2)\n$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"triangle\").hpf(80).lpf(7000).room(0.3).size(2)\n$: s(\"pink\").hpf(4000).gain(0.03)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 28,
+      "hash": "761fdd7f35"
+     }
+    }
+   ]
+  },
+  {
+   "id": "asn-04",
+   "title": "ASN-04 Rhyming rhythm cells",
+   "needs": "hooks",
+   "folder": "composition/assonance",
+   "tags": [
+    "composition",
+    "assonance",
+    "groove",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Two layers share a rhythm cell (same onsets) with different pitches or sounds.",
+   "notes": [
+    [
+     "Why it works",
+     "Shared onsets group layers by common fate; the groove gets one identity."
+    ],
+    [
+     "When to use",
+     "Drops: bass and stab, kick and sub, chord stabs and hats."
+    ],
+    [
+     "Measure",
+     "composer layers: rhythm_rhyme close to 1 for the pair."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Every layer on the same cell (no complement left, see CMP-02)"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "ASN-04 rhyming rhythm cells",
+     "code": "atom(\"cell\", { type: \"mini\", body: \"x ~ x ~ ~ x ~ x\" })\n$: note(\"c2\").struct(atoms.cell).s(\"sawtooth\").hook(\"hygiene-bass\")\n$: chord(\"Cm\").voicing().struct(atoms.cell).s(\"square\").hook(\"hygiene-stab\").decay(0.1).sustain(0)",
+     "lowered": "$: note(\"c2\").struct(\"x ~ x ~ ~ x ~ x\").s(\"sawtooth\").hpf(40).lpf(3500)\n$: chord(\"Cm\").voicing().struct(\"x ~ x ~ ~ x ~ x\").s(\"square\").hpf(120).lpf(8000).decay(0.1).sustain(0)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 96,
+      "hash": "3e43c6fc04"
+     }
+    }
+   ]
+  },
+  {
+   "id": "asn-05",
+   "title": "ASN-05 Rhyming envelopes",
+   "needs": "hooks",
+   "folder": "composition/assonance",
+   "tags": [
+    "composition",
+    "assonance",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Layers share an attack/decay shape (all plucky, or all swelling).",
+   "notes": [
+    [
+     "Why it works",
+     "Envelope shape is a primary timbre cue; matching envelopes make layers belong to one gesture."
+    ],
+    [
+     "When to use",
+     "Pluck layers, stab stacks, pad beds."
+    ],
+    [
+     "Measure",
+     "composer layers: envelope_rhyme close to 1."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "One slow-attack layer inside a pluck stack (smears the transient)"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "ASN-05 rhyming envelopes",
+     "code": "$: note(\"c4 eb4 g4\").s(\"triangle\").hook(\"hygiene-pluck\").attack(0.002).decay(0.15).sustain(0)\n$: note(\"c5 g5\").s(\"square\").hook(\"hygiene-pluck\").attack(0.002).decay(0.15).sustain(0).gain(0.3)",
+     "lowered": "$: note(\"c4 eb4 g4\").s(\"triangle\").hpf(120).lpf(7000).attack(0.002).decay(0.15).sustain(0)\n$: note(\"c5 g5\").s(\"square\").hpf(120).lpf(7000).attack(0.002).decay(0.15).sustain(0).gain(0.3)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 20,
+      "hash": "8ef23a88f2"
+     }
+    }
+   ]
+  },
+  {
+   "id": "asn-06",
+   "title": "ASN-06 Onset alliteration",
+   "needs": "hooks",
+   "folder": "composition/assonance",
+   "tags": [
+    "composition",
+    "assonance",
+    "accents",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Several layers start together on chosen beats (accents everyone hits), then separate.",
+   "notes": [
+    [
+     "Why it works",
+     "Coincident onsets are heard as one accent: hits get weight; the rest of the bar stays clear."
+    ],
+    [
+     "When to use",
+     "Accents on 1 and the \"and of 2\" in hip-hop; drop downbeats."
+    ],
+    [
+     "Measure",
+     "composer layers: onset_lock above chance for the accent layers."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Everything on every accent (flams if timing differs)"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "ASN-06 onset alliteration",
+     "code": "$: s(\"bd ~ ~ bd ~ ~ ~ ~\").hook(\"hygiene-kick\")\n$: note(\"c2 ~ ~ c2 ~ eb2 ~ ~\").s(\"sawtooth\").hook(\"hygiene-bass\")\n$: chord(\"Cm\").voicing().struct(\"x ~ ~ x ~ ~ ~ ~\").s(\"square\").hook(\"hygiene-stab\").decay(0.1).sustain(0)",
+     "lowered": "$: s(\"bd ~ ~ bd ~ ~ ~ ~\").hpf(30).lpf(7000)\n$: note(\"c2 ~ ~ c2 ~ eb2 ~ ~\").s(\"sawtooth\").hpf(40).lpf(3500)\n$: chord(\"Cm\").voicing().struct(\"x ~ ~ x ~ ~ ~ ~\").s(\"square\").hpf(120).lpf(8000).decay(0.1).sustain(0)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 60,
+      "hash": "24b3b74f40"
+     }
+    }
+   ]
+  },
+  {
+   "id": "cmp-01",
+   "title": "CMP-01 Spectral complement and mask-aware carving",
+   "needs": "hooks",
+   "folder": "composition/complement",
+   "tags": [
+    "composition",
+    "complement",
+    "mix",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Layers that compete get mirrored filtering: where one is boosted, the other is cut (or high/low-passed apart).",
+   "notes": [
+    [
+     "Why it works",
+     "Masking is band-local: removing overlap gives each layer its own critical bands (producer-reported \"puzzle-piece\" EQ)."
+    ],
+    [
+     "When to use",
+     "Kick vs bass, vocal vs lead, pads vs keys."
+    ],
+    [
+     "Measure",
+     "composer layers (stems): masking_index falls after carving; composer density: no slot suggestions."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Carving so deep a layer sounds hollow solo and in context"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "CMP-01 spectral complement and mask-aware carving",
+     "code": "$: note(\"c2*8\").s(\"sawtooth\").hook(\"hygiene-bass\").lpf(900)\n$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").hpf(500).gain(0.2)",
+     "lowered": "$: note(\"c2*8\").s(\"sawtooth\").hpf(40).lpf(3500).lpf(900)\n$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hpf(180).lpf(6000).hpf(500).gain(0.2)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 50,
+      "hash": "57462176d6"
+     }
+    }
+   ]
+  },
+  {
+   "id": "cmp-02",
+   "title": "CMP-02 Rhythmic complement",
+   "needs": "hooks",
+   "folder": "composition/complement",
+   "tags": [
+    "composition",
+    "complement",
+    "offbeat",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Onbeat vs offbeat, notes in the other layer's rests (the offbeat bass in house, hats between kicks).",
+   "notes": [
+    [
+     "Why it works",
+     "Interleaved onsets give a denser composite rhythm with no masking in time."
+    ],
+    [
+     "When to use",
+     "Bass vs kick, chops vs snare, counterlines."
+    ],
+    [
+     "Measure",
+     "composer layers: onset_complement close to 1 and \"best complement\" for each layer."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Complement so strict both layers sound like one choppy part"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "CMP-02 rhythmic complement",
+     "code": "$: s(\"bd*4\").hook(\"hygiene-kick\")\n$: note(\"~ c2 ~ c2 ~ c2 ~ c2\").s(\"sawtooth\").hook(\"hygiene-bass\")",
+     "lowered": "$: s(\"bd*4\").hpf(30).lpf(7000)\n$: note(\"~ c2 ~ c2 ~ c2 ~ c2\").s(\"sawtooth\").hpf(40).lpf(3500)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 32,
+      "hash": "c57e34c445"
+     }
+    }
+   ]
+  },
+  {
+   "id": "cmp-03",
+   "title": "CMP-03 Sustained vs staccato",
+   "needs": "hooks",
+   "folder": "composition/complement",
+   "tags": [
+    "composition",
+    "complement",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Long notes against short ones: pad against plucks, held bass against stabs.",
+   "notes": [
+    [
+     "Why it works",
+     "Different envelopes separate into streams and fill both the time and the spectrum."
+    ],
+    [
+     "When to use",
+     "Any two melodic layers that share a register."
+    ],
+    [
+     "Measure",
+     "composer layers: length_contrast >= 2 (log2 ratio of median durations)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Two pads in one register"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "CMP-03 sustained vs staccato",
+     "code": "$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").gain(0.2)\n$: n(\"0 2 4 3 2 4 5 4\").scale(\"C5:minor\").s(\"triangle\").hook(\"hygiene-pluck\").decay(0.1).sustain(0)",
+     "lowered": "$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hpf(180).lpf(6000).gain(0.2)\n$: n(\"0 2 4 3 2 4 5 4\").scale(\"C5:minor\").s(\"triangle\").hpf(120).lpf(7000).decay(0.1).sustain(0)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 50,
+      "hash": "561065f882"
+     }
+    }
+   ]
+  },
+  {
+   "id": "cmp-04",
+   "title": "CMP-04 Stereo complement",
+   "needs": "hooks",
+   "folder": "composition/complement",
+   "tags": [
+    "composition",
+    "complement",
+    "stereo",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Mono low end and lead; width in pads, hats, reverbs; panned pairs left/right.",
+   "notes": [
+    [
+     "Why it works",
+     "Spatial separation releases masking (binaural unmasking) and mono lows stay solid on any system."
+    ],
+    [
+     "When to use",
+     "Always: bass and kick mono, supporting layers wide."
+    ],
+    [
+     "Measure",
+     "composer layers: pan_contrast; stems: low-band correlation stays mono."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Wide sub or wide kick"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "CMP-04 stereo complement",
+     "code": "$: note(\"c1*4\").s(\"sine\").hook(\"hygiene-sub\")\n$: n(\"0 2 4 3\").scale(\"C5:minor\").s(\"triangle\").hook(\"hygiene-pluck\").pan(sine.range(0.2, 0.8))",
+     "lowered": "$: note(\"c1*4\").s(\"sine\").hpf(25)\n$: n(\"0 2 4 3\").scale(\"C5:minor\").s(\"triangle\").hpf(120).lpf(7000).pan(sine.range(0.2, 0.8))",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 32,
+      "hash": "e2a483f21c"
+     }
+    }
+   ]
+  },
+  {
+   "id": "cmp-05",
+   "title": "CMP-05 Dynamic complement (ducking)",
+   "needs": "hooks",
+   "folder": "composition/complement",
+   "tags": [
+    "composition",
+    "complement",
+    "sidechain",
+    "measured",
+    "lowered"
+   ],
+   "explain": "One layer gets quieter while another plays (sidechain, ducking on a bus).",
+   "notes": [
+    [
+     "Why it works",
+     "Time-varying gain separates layers in loudness when they must share a band."
+    ],
+    [
+     "When to use",
+     "Kick and sub, vocal and pads, impacts and the mix."
+    ],
+    [
+     "Measure",
+     "composer density: the sub slot shared by a ducked pair is not flagged; stems: kick transients clear."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Pumping everything (the groove becomes the compressor)"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "CMP-05 dynamic complement (ducking)",
+     "code": "$: s(\"bd*4\").hook(\"hygiene-kick\").duckorbit(2).duckdepth(0.6)\n$: note(\"c1*8\").s(\"sine\").hook(\"hygiene-sub\").orbit(2)",
+     "lowered": "$: s(\"bd*4\").hpf(30).lpf(7000).duckorbit(2).duckdepth(0.6)\n$: note(\"c1*8\").s(\"sine\").hpf(25).orbit(2)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 48,
+      "hash": "85393ab01e"
+     }
+    }
+   ]
+  },
+  {
+   "id": "syn-01",
+   "title": "SYN-01 Kick and sub lock",
+   "needs": "hooks",
+   "folder": "composition/synergy",
+   "tags": [
+    "composition",
+    "synergy",
+    "low-end",
+    "sidechain",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The kick's pitch and decay tuned with the sub: same root, the sub ducked or starting after the kick transient.",
+   "notes": [
+    [
+     "Why it works",
+     "In phase and in tune the two sum into one low event; out of phase they cancel (comb filtering at the overlap)."
+    ],
+    [
+     "When to use",
+     "Every genre with a separate kick and sub (trap 808 + kick, dubstep, DnB)."
+    ],
+    [
+     "Measure",
+     "composer layers (stems): lufs_gain_db >= 0 for kick + sub (no cancellation); events: onset_lock over chance."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Kick and sub a semitone apart",
+      "No ducking and long sub tails under every kick"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "SYN-01 kick and sub lock",
+     "code": "$: s(\"bd ~ ~ bd\").s(\"sine\").hook(\"hygiene-kick\").freq(55).decay(0.3).duckorbit(2).duckdepth(0.7)\n$: note(\"a0 ~ ~ a0\").s(\"sine\").hook(\"hygiene-sub\").orbit(2)",
+     "lowered": "$: s(\"bd ~ ~ bd\").s(\"sine\").hpf(30).lpf(7000).freq(55).decay(0.3).duckorbit(2).duckdepth(0.7)\n$: note(\"a0 ~ ~ a0\").s(\"sine\").hpf(25).orbit(2)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "cb2da9cd15"
+     }
+    }
+   ]
+  },
+  {
+   "id": "syn-02",
+   "title": "SYN-02 Bass and pad reinforcement",
+   "needs": "hooks",
+   "folder": "composition/synergy",
+   "tags": [
+    "composition",
+    "synergy",
+    "pad",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The pad voices sit on the bass note's partials (octave, fifth, tenth), so together they make one chord-tone.",
+   "notes": [
+    [
+     "Why it works",
+     "Harmonic reinforcement raises loudness of shared partials and fuses the two."
+    ],
+    [
+     "When to use",
+     "Breakdowns and drops with sustained chords."
+    ],
+    [
+     "Measure",
+     "composer layers (stems): lufs_gain_db > 0.5 (\"reinforce\")."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Pad thirds in the bass octave"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "SYN-02 bass and pad reinforcement",
+     "code": "$: note(\"<c2 ab1>\").s(\"sawtooth\").hook(\"hygiene-bass\").lpf(500)\n$: chord(\"<C5 Ab5>\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").gain(0.2)",
+     "lowered": "$: note(\"<c2 ab1>\").s(\"sawtooth\").hpf(40).lpf(3500).lpf(500)\n$: chord(\"<C5 Ab5>\").voicing().s(\"supersaw\").hpf(180).lpf(6000).gain(0.2)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 20,
+      "hash": "53b7541ec5"
+     }
+    }
+   ]
+  },
+  {
+   "id": "syn-03",
+   "title": "SYN-03 Snare and noise tail",
+   "needs": "hooks",
+   "folder": "composition/synergy",
+   "tags": [
+    "composition",
+    "synergy",
+    "drums",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A tonal snare body and a noise layer that only work together (body + tail).",
+   "notes": [
+    [
+     "Why it works",
+     "Transient, body and decay come from different layers; each alone is thin, together they make one snare."
+    ],
+    [
+     "When to use",
+     "Snares and claps in every genre."
+    ],
+    [
+     "Measure",
+     "composer layers: onset_lock 1.0 for the pair, different bands."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Layers with different onsets (flam)"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "SYN-03 snare and noise tail",
+     "code": "$: s(\"~ sd\").s(\"triangle\").note(\"d3\").hook(\"hygiene-snare\").decay(0.12).sustain(0)\n$: s(\"~ x\").s(\"white\").hpf(2000).decay(0.18).sustain(0).gain(0.5)",
+     "lowered": "$: s(\"~ sd\").s(\"triangle\").note(\"d3\").hpf(120).lpf(10000).ftype(\"24db\").decay(0.12).sustain(0)\n$: s(\"~ x\").s(\"white\").hpf(2000).decay(0.18).sustain(0).gain(0.5)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 8,
+      "hash": "2b771f8004"
+     }
+    }
+   ]
+  },
+  {
+   "id": "syn-04",
+   "title": "SYN-04 Vocal formant and lead filter sweep",
+   "needs": "hooks",
+   "folder": "composition/synergy",
+   "tags": [
+    "composition",
+    "synergy",
+    "formant",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The lead's filter sweeps through the same region as the vocal's formants, alternating in time.",
+   "notes": [
+    [
+     "Why it works",
+     "Shared spectral region in alternation reads as a duet of one colour."
+    ],
+    [
+     "When to use",
+     "Hooks with vocal chops and a synth lead."
+    ],
+    [
+     "Measure",
+     "composer layers: filter centres within 1/2 octave and onset_complement high."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Sweeping through the vocal while it sings"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "SYN-04 vocal formant and lead filter sweep",
+     "code": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").hook(\"hygiene-lead\").lpf(sine.slow(2).range(700, 1400)).mask(\"<1 0>\")\n$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").vowel(\"a\").hook(\"hygiene-vox\").mask(\"<0 1>\")",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").hpf(150).lpf(8000).lpf(sine.slow(2).range(700, 1400)).mask(\"<1 0>\")\n$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").vowel(\"a\").hpf(150).lpf(8000).mask(\"<0 1>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "a84acc8041"
+     }
+    }
+   ]
+  },
+  {
+   "id": "syn-05",
+   "title": "SYN-05 Sidechain interplay",
+   "needs": "hooks",
+   "folder": "composition/synergy",
+   "tags": [
+    "composition",
+    "synergy",
+    "sidechain",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The kick ducks pads and bass so the pumping becomes part of the groove.",
+   "notes": [
+    [
+     "Why it works",
+     "Amplitude modulation at the beat rate synchronises layers to the kick (common fate)."
+    ],
+    [
+     "When to use",
+     "House, big room, French house filter loops, phonk drops."
+    ],
+    [
+     "Measure",
+     "composer scan: low-band onset pattern on every beat and pad energy dips between; composer density ducks recognised."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Masking sidechain because it is \"EDM\": it is a tool for any genre (user directive)"
+     ]
+    ]
+   ],
+   "tool": "scan",
+   "examples": [
+    {
+     "title": "SYN-05 sidechain interplay",
+     "code": "$: s(\"bd*4\").hook(\"hygiene-kick\").duckorbit(3).duckdepth(0.6)\n$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").orbit(3).gain(0.3)",
+     "lowered": "$: s(\"bd*4\").hpf(30).lpf(7000).duckorbit(3).duckdepth(0.6)\n$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hpf(180).lpf(6000).orbit(3).gain(0.3)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 34,
+      "hash": "578704b254"
+     }
+    }
+   ]
+  },
+  {
+   "id": "clu-01",
+   "title": "CLU-01 Tone clusters",
+   "needs": "hooks",
+   "folder": "composition/clustering",
+   "tags": [
+    "composition",
+    "clustering",
+    "pad",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Adjacent tones sounded together (seconds), as colour (soft, high) or as attack (loud, short).",
+   "notes": [
+    [
+     "Why it works",
+     "High soft clusters shimmer (beating as texture); loud clusters are percussive roughness."
+    ],
+    [
+     "When to use",
+     "Ambient pads (high, quiet), impacts (loud, short)."
+    ],
+    [
+     "Measure",
+     "composer discord: \"cluster\" interval class; roughness level vs section median."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Mid-low clusters held under a vocal"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "CLU-01 tone clusters",
+     "code": "$: note(\"[c5,d5,eb5,f5]\").s(\"triangle\").hook(\"hygiene-pad\").attack(1).release(2).gain(0.1)",
+     "lowered": "$: note(\"[c5,d5,eb5,f5]\").s(\"triangle\").hpf(180).lpf(6000).attack(1).release(2).gain(0.1)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "db83d200c5"
+     }
+    }
+   ]
+  },
+  {
+   "id": "clu-02",
+   "title": "CLU-02 Chord clusters (dense voicings)",
+   "needs": "hooks",
+   "folder": "composition/clustering",
+   "tags": [
+    "composition",
+    "clustering",
+    "harmony",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Add9, sus2, 6/9 and 11 voicings with seconds inside, spread above 200 Hz.",
+   "notes": [
+    [
+     "Why it works",
+     "Seconds inside open voicings add colour (the \"bittersweet\" melodic-bass sound) without the roughness of close low clusters."
+    ],
+    [
+     "When to use",
+     "Melodic dubstep and future bass chords, liquid DnB pads."
+    ],
+    [
+     "Measure",
+     "composer discord: m2/M7 present with moderate roughness (no clash flag)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Clustered voicings below 200 Hz"
+     ]
+    ]
+   ],
+   "tool": "discord",
+   "examples": [
+    {
+     "title": "CLU-02 chord clusters (dense voicings)",
+     "code": "$: chord(\"<Cm9 Abmaj9 Eb6 Bbsus2>\").voicing().s(\"supersaw\").hook(\"hygiene-supersaw\").gain(0.2)",
+     "lowered": "$: chord(\"<Cm9 Abmaj9 Eb6 Bbsus2>\").voicing().s(\"supersaw\").hpf(100).lpf(9000).gain(0.2)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 10,
+      "hash": "466fcaf112"
+     }
+    }
+   ]
+  },
+  {
+   "id": "clu-03",
+   "title": "CLU-03 Rhythmic clusters",
+   "needs": "hooks",
+   "folder": "composition/clustering",
+   "tags": [
+    "composition",
+    "clustering",
+    "drums",
+    "trap",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Bursts of events in a short span: flams, ratchets, drags, rolls.",
+   "notes": [
+    [
+     "Why it works",
+     "A burst is heard as one ornamented event: emphasis and swing within a beat."
+    ],
+    [
+     "When to use",
+     "Trap hats, DnB snares, fills."
+    ],
+    [
+     "Measure",
+     "composer feel: ghost and onset counts per bar; rhythm cells with subdivisions in the ledger rhythm list."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Ratchets on every beat (machine-gun)"
+     ]
+    ]
+   ],
+   "tool": "feel",
+   "examples": [
+    {
+     "title": "CLU-03 rhythmic clusters",
+     "code": "$: s(\"hh*8\").hook(\"hygiene-hat\").ply(\"<1 1 2 [1 3]>\").gain(0.4)\n$: s(\"~ sd ~ [sd sd]\").hook(\"hygiene-snare\")",
+     "lowered": "$: s(\"hh*8\").hpf(5000).lpf(14500).ftype(\"24db\").ply(\"<1 1 2 [1 3]>\").gain(0.4)\n$: s(\"~ sd ~ [sd sd]\").hpf(120).lpf(10000).ftype(\"24db\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 60,
+      "hash": "c9a441c429"
+     }
+    }
+   ]
+  },
+  {
+   "id": "clu-04",
+   "title": "CLU-04 Event clustering over time",
+   "needs": "hooks",
+   "folder": "composition/clustering",
+   "tags": [
+    "composition",
+    "clustering",
+    "build-drop",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Density bursts at points: more events just before the drop, sparse elsewhere.",
+   "notes": [
+    [
+     "Why it works",
+     "Time-varying density shapes expectation; bursts point at arrivals."
+    ],
+    [
+     "When to use",
+     "The last 1-2 bars of builds, the bar before a switch."
+    ],
+    [
+     "Measure",
+     "composer density: onsets per bar peak at the end of the build."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Uniform density (no burst, no arrival)"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "CLU-04 event clustering over time",
+     "code": "$: s(\"sd\").hook(\"hygiene-snare\").fast(\"<1 1 2 8>\")\n$: s(\"hh*8\").hook(\"hygiene-hat\").gain(0.3).mask(\"<1 1 1 0>\")",
+     "lowered": "$: s(\"sd\").hpf(120).lpf(10000).ftype(\"24db\").fast(\"<1 1 2 8>\")\n$: s(\"hh*8\").hpf(5000).lpf(14500).ftype(\"24db\").gain(0.3).mask(\"<1 1 1 0>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 36,
+      "hash": "0e78c46eab"
+     }
+    }
+   ]
+  },
+  {
+   "id": "clu-05",
+   "title": "CLU-05 Bar clustering (analysis)",
+   "needs": "hooks",
+   "folder": "composition/clustering",
+   "tags": [
+    "composition",
+    "clustering",
+    "analysis",
+    "measured",
+    "lowered"
+   ],
+   "explain": "k-means over per-bar features (band energies, centroid, flatness, onsets or lane activation) finds section types without a form.",
+   "notes": [
+    [
+     "Why it works",
+     "Bars that sound alike cluster together; the run lengths reveal the form, turnaround bars and transition bars."
+    ],
+    [
+     "When to use",
+     "Audio you own (find its form), or a draft (did the drop really change?)."
+    ],
+    [
+     "Measure",
+     "composer cluster: labels, runs, adjusted Rand index against the form."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Reading clusters as genre rules: they describe one track"
+     ]
+    ]
+   ],
+   "tool": "cluster",
+   "examples": [
+    {
+     "title": "CLU-05 bar clustering (analysis)",
+     "code": "// engine/composer/run.sh cluster MIX.wav OUT --bpm 128 [--form form.json]\n$: s(\"bd*4, hh*8\").hook(\"hygiene-kick\").mask(\"<1 1 0 0 1 1>\")",
+     "lowered": "// engine/composer/run.sh cluster MIX.wav OUT --bpm 128 [--form form.json]\n$: s(\"bd*4, hh*8\").hpf(30).lpf(7000).mask(\"<1 1 0 0 1 1>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 24,
+      "hash": "d979a73f63"
+     }
+    }
+   ]
+  },
+  {
+   "id": "clu-06",
+   "title": "CLU-06 Motif clustering by contour",
+   "needs": "hooks",
+   "folder": "composition/clustering",
+   "tags": [
+    "composition",
+    "clustering",
+    "motif",
+    "analysis",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Group motif cells by their up/down contour to find families of related ideas.",
+   "notes": [
+    [
+     "Why it works",
+     "Contour is the most robust identity cue; cells sharing it sound related even with different intervals."
+    ],
+    [
+     "When to use",
+     "After drafting: are the motifs one family (unity) or unrelated (patchwork)?"
+    ],
+    [
+     "Measure",
+     "composer ledger: contour_families."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Too many unrelated contours in one track"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "CLU-06 motif clustering by contour",
+     "code": "// engine/composer/run.sh ledger PROGRAM.strudel.js OUT -> contour_families\n$: n(\"<[0 2 4 3] [0 3 5 4]>\").scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-pluck\")",
+     "lowered": "// engine/composer/run.sh ledger PROGRAM.strudel.js OUT -> contour_families\n$: n(\"<[0 2 4 3] [0 3 5 4]>\").scale(\"C4:minor\").s(\"triangle\").hpf(120).lpf(7000)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "96adff89ef"
+     }
+    }
+   ]
+  },
+  {
+   "id": "clu-07",
+   "title": "CLU-07 Timbral clustering",
+   "needs": "hooks",
+   "folder": "composition/clustering",
+   "tags": [
+    "composition",
+    "clustering",
+    "texture",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Group sounds into a few timbral families (metallic, airy, woody, distorted) and assign families to sections.",
+   "notes": [
+    [
+     "Why it works",
+     "A limited palette per section reads as intent; switching families marks sections."
+    ],
+    [
+     "When to use",
+     "Planning the palette; checking stems."
+    ],
+    [
+     "Measure",
+     "composer layers (stems): MFCC cosine groups; composer cluster on stems."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Every layer a different family (no palette)"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "CLU-07 timbral clustering",
+     "code": "$: n(\"0 2 4\").scale(\"C5:minor\").s(\"square\").hook(\"hygiene-bell\").fm(2.01).decay(0.4).sustain(0).mask(\"<1 0>\")\n$: n(\"0 2 4\").scale(\"C4:minor\").s(\"triangle\").hook(\"hygiene-pluck\").mask(\"<0 1>\")",
+     "lowered": "$: n(\"0 2 4\").scale(\"C5:minor\").s(\"square\").hpf(300).lpf(8000).fm(2.01).decay(0.4).sustain(0).mask(\"<1 0>\")\n$: n(\"0 2 4\").scale(\"C4:minor\").s(\"triangle\").hpf(120).lpf(7000).mask(\"<0 1>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 12,
+      "hash": "e94e157bfc"
+     }
+    }
+   ]
+  },
+  {
+   "id": "snd-01",
+   "title": "SND-01 Sub, body, bite, air",
+   "needs": "hooks",
+   "folder": "composition/sound-design",
+   "tags": [
+    "composition",
+    "sound-design",
+    "layering",
+    "measured",
+    "lowered"
+   ],
+   "explain": "One instrument from four layers: sub (sine, mono, < 100 Hz), body (100-500 Hz), bite (1-5 kHz transient or grit), air (> 8 kHz noise).",
+   "notes": [
+    [
+     "Why it works",
+     "Each band carries a different cue (weight, warmth, presence, sheen); separate layers allow separate processing and mono / stereo choices."
+    ],
+    [
+     "When to use",
+     "Basses, leads and snares that must translate on small and large systems."
+    ],
+    [
+     "Measure",
+     "composer scan band map: one layer dominant per band; composer layers stems: low masking between the layers."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Every layer full range (phase mush in the lows)"
+     ]
+    ]
+   ],
+   "tool": "scan",
+   "examples": [
+    {
+     "title": "SND-01 sub, body, bite, air",
+     "code": "$: note(\"c1*2\").s(\"sine\").hook(\"hygiene-sub\")\n$: note(\"c2*2\").s(\"sawtooth\").hook(\"hygiene-bass\").hpf(100).lpf(500)\n$: note(\"c3*2\").s(\"square\").hook(\"hygiene-growl\").hpf(1000).distort(1.5).gain(0.3)\n$: s(\"white*2\").hpf(8000).decay(0.05).sustain(0).gain(0.1)",
+     "lowered": "$: note(\"c1*2\").s(\"sine\").hpf(25)\n$: note(\"c2*2\").s(\"sawtooth\").hpf(40).lpf(3500).hpf(100).lpf(500)\n$: note(\"c3*2\").s(\"square\").hpf(70).lpf(9000).hpf(1000).distort(1.5).gain(0.3)\n$: s(\"white*2\").hpf(8000).decay(0.05).sustain(0).gain(0.1)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 32,
+      "hash": "abbbd07fbb"
+     }
+    }
+   ]
+  },
+  {
+   "id": "snd-02",
+   "title": "SND-02 Parallel processing and band split",
+   "needs": "lanes",
+   "folder": "composition/sound-design",
+   "tags": [
+    "composition",
+    "sound-design",
+    "buses",
+    "measured",
+    "craft-runtime"
+   ],
+   "explain": "Process a copy in parallel (distortion, compression) or split by band (.split) so the sub stays clean.",
+   "notes": [
+    [
+     "Why it works",
+     "The low band keeps its phase and weight; the high band can be wrecked for character."
+    ],
+    [
+     "When to use",
+     "Growls, reeses, drums buses."
+    ],
+    [
+     "Measure",
+     "composer scan: sub band stays tonal (clean) while upper bands show grit; composer discord audio roughness above 200 Hz only."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Distorting the full band and then EQ-ing the sub back"
+     ]
+    ]
+   ],
+   "tool": "scan",
+   "examples": [
+    {
+     "title": "SND-02 parallel processing and band split",
+     "code": "// lo: the sub band stays clean and mono; hi: grit only above 120 Hz\nbass: note(\"c2*4\").s(\"sawtooth\").hook(\"hygiene-bass\").lpf(2400)\n  .split(lo => lo.lpf(120), hi => hi.hpf(120).distort(2.5).postgain(0.45).lpf(8000))",
+     "lowered_note": "splits, sends and returns (.split, .merge, .send, ret) are compiled by the Craft lane engine to audio buses with the source rendered once; strudel.cc has no buses",
+     "smoke": {
+      "ok": true,
+      "cycles": 2,
+      "events": 12,
+      "hash": "9f8b784d54"
+     }
+    }
+   ]
+  },
+  {
+   "id": "snd-03",
+   "title": "SND-03 Serial chain order",
+   "needs": "hooks",
+   "folder": "composition/sound-design",
+   "tags": [
+    "composition",
+    "sound-design",
+    "measured",
+    "lowered"
+   ],
+   "explain": "The order of processes decides the sound: filter then distort (rounded grit) vs distort then filter (tamed harmonics).",
+   "notes": [
+    [
+     "Why it works",
+     "Non-linear stages generate harmonics from what reaches them; order sets which partials exist."
+    ],
+    [
+     "When to use",
+     "Rack design (docs/RACK_STANDARD.md)."
+    ],
+    [
+     "Measure",
+     "composer scan: the two orders give different band maps (A/B in one render)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Stacking reverbs before distortion (mud)"
+     ]
+    ]
+   ],
+   "tool": "scan",
+   "examples": [
+    {
+     "title": "SND-03 serial chain order",
+     "code": "$: note(\"c2*4\").s(\"sawtooth\").hook(\"hygiene-growl\").lpf(800).distort(2)\n$: note(\"c2*4\").s(\"sawtooth\").hook(\"hygiene-growl\").distort(2).lpf(800).mask(\"<0 1>\")",
+     "lowered": "$: note(\"c2*4\").s(\"sawtooth\").hpf(70).lpf(9000).lpf(800).distort(2)\n$: note(\"c2*4\").s(\"sawtooth\").hpf(70).lpf(9000).distort(2).lpf(800).mask(\"<0 1>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 24,
+      "hash": "519f2bf49a"
+     }
+    }
+   ]
+  },
+  {
+   "id": "snd-04",
+   "title": "SND-04 Resampling and freezing",
+   "needs": "core",
+   "folder": "composition/sound-design",
+   "tags": [
+    "composition",
+    "sound-design",
+    "capture",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Render a processed sound to audio (capture), then rework it as a sample: chop, pitch, process again.",
+   "notes": [
+    [
+     "Why it works",
+     "Freezing modulation into a sample makes it consistent per note and opens new processing (producer-reported central in neurofunk)."
+    ],
+    [
+     "When to use",
+     "Bass design sessions; neuro, riddim."
+    ],
+    [
+     "Measure",
+     "the capture exists (CAPTURE.md); composer layers stems on the resampled layer."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Resampling forever without committing a palette"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "SND-04 resampling and freezing",
+     "code": "// strudel capture IN --name growl -o growl.wav (docs/CAPTURE.md), then use the capture as a sample\n$: note(\"c2*4\").s(\"sawtooth\").hook(\"hygiene-growl\").fm(2).distort(2)",
+     "lowered": "// strudel capture IN --name growl -o growl.wav (docs/CAPTURE.md), then use the capture as a sample\n$: note(\"c2*4\").s(\"sawtooth\").hpf(70).lpf(9000).fm(2).distort(2)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "7b6d52f897"
+     }
+    }
+   ]
+  },
+  {
+   "id": "vox-01",
+   "title": "VOX-01 Pitched syllables and vowels",
+   "needs": "hooks",
+   "folder": "composition/vocal-instrument",
+   "tags": [
+    "composition",
+    "vocal-instrument",
+    "vox",
+    "formant",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Vowels or syllables as notes, no words: a melodic instrument with a voice colour.",
+   "notes": [
+    [
+     "Why it works",
+     "Voice-like spectra (formants) draw attention; without words they stay instrumental."
+    ],
+    [
+     "When to use",
+     "Hooks, breakdowns, phonk and melodic bass chops. Never add words the user did not write."
+    ],
+    [
+     "Measure",
+     "composer ledger: the motif on the vox lane; composer layers: shared vowel with another layer."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Inferring lyrics, crowd or choir parts the user did not ask for"
+     ]
+    ]
+   ],
+   "tool": "ledger",
+   "examples": [
+    {
+     "title": "VOX-01 pitched syllables and vowels",
+     "code": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").vowel(\"<a e o a>\").hook(\"hygiene-vox\").lpf(3500)",
+     "lowered": "$: n(\"0 2 4 3\").scale(\"C4:minor\").s(\"sawtooth\").vowel(\"<a e o a>\").hpf(150).lpf(8000).lpf(3500)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 16,
+      "hash": "e2209215fb"
+     }
+    }
+   ]
+  },
+  {
+   "id": "vox-02",
+   "title": "VOX-02 Sustained formant pad",
+   "needs": "hooks",
+   "folder": "composition/vocal-instrument",
+   "tags": [
+    "composition",
+    "vocal-instrument",
+    "vox",
+    "pad",
+    "formant",
+    "measured",
+    "lowered"
+   ],
+   "explain": "A long vowel (formant filter or sustained sung vowel) as a pad layer.",
+   "notes": [
+    [
+     "Why it works",
+     "A vowel pad is warm and human and sits in the vocal band only lightly when filtered."
+    ],
+    [
+     "When to use",
+     "Intros, reliefs, under sparse drops."
+    ],
+    [
+     "Measure",
+     "composer density: atmos role; composer layers: complement with the lead (length contrast)."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "A loud vowel pad under a lead vocal (masking in 300 Hz-3 kHz)"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "VOX-02 sustained formant pad",
+     "code": "$: chord(\"<Cm Ab>\").voicing().s(\"sawtooth\").vowel(\"o\").hook(\"hygiene-pad\").attack(0.8).release(2).gain(0.15)",
+     "lowered": "$: chord(\"<Cm Ab>\").voicing().s(\"sawtooth\").vowel(\"o\").hpf(180).lpf(6000).attack(0.8).release(2).gain(0.15)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 18,
+      "hash": "3d872700a1"
+     }
+    }
+   ]
+  },
+  {
+   "id": "vox-03",
+   "title": "VOX-03 Woven chops",
+   "needs": "hooks",
+   "folder": "composition/vocal-instrument",
+   "tags": [
+    "composition",
+    "vocal-instrument",
+    "vox",
+    "call-response",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Short vocal slices placed in the gaps of the groove (offbeats, after the snare), pitched to the chords.",
+   "notes": [
+    [
+     "Why it works",
+     "Short, pitched chops act as rhythmic ear candy and a call-and-response voice."
+    ],
+    [
+     "When to use",
+     "Drops of melodic bass, house, phonk; the user's own or licensed vocals only."
+    ],
+    [
+     "Measure",
+     "composer layers: onset_complement with the snare lane high."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Chopping vocals from other artists' tracks (never rip; the user's own or licensed material only)"
+     ]
+    ]
+   ],
+   "tool": "layers",
+   "examples": [
+    {
+     "title": "VOX-03 woven chops",
+     "code": "$: n(\"<4 3> ~ 2 ~\").scale(\"C4:minor\").s(\"sawtooth\").vowel(\"<e o>\").hook(\"hygiene-vox\").decay(0.12).sustain(0).late(0.125)",
+     "lowered": "$: n(\"<4 3> ~ 2 ~\").scale(\"C4:minor\").s(\"sawtooth\").vowel(\"<e o>\").hpf(150).lpf(8000).decay(0.12).sustain(0).late(0.125)",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 8,
+      "hash": "54708a2732"
+     }
+    }
+   ]
+  },
+  {
+   "id": "arr-01",
+   "title": "ARR-01 Forms as gates",
+   "needs": "lanes",
+   "folder": "composition/arrangement",
+   "tags": [
+    "composition",
+    "arrangement",
+    "form",
+    "gate",
+    "measured",
+    "craft-runtime"
+   ],
+   "explain": "One form map as gate atoms (intro, build, drop ...); lanes are selected by gate, never copied per section.",
+   "notes": [
+    [
+     "Why it works",
+     "One source of truth for the arrangement: changing a section length moves every layer."
+    ],
+    [
+     "When to use",
+     "Every full track (docs/CONVENTIONS.md section 3)."
+    ],
+    [
+     "Measure",
+     "composer density / cluster with --form: the gates match the cluster runs."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Copy-pasted patterns per section (edits drift)"
+     ]
+    ]
+   ],
+   "tool": "cluster",
+   "examples": [
+    {
+     "title": "ARR-01 forms as gates",
+     "code": "atom(\"intro\", { type: \"gate\", body: \"<3b\" })\natom(\"drop\", { type: \"gate\", body: \"@3b\" })\nkick: s(\"bd*4\").hook(\"hygiene-kick\").tags(\"drums\")\npad: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").gain(0.2).tags(\"pad\")\ntagged(\"drums\").mute(atoms.intro)",
+     "lowered_note": "lane tags and selections (.tags, tagged().mute / solo / fx) choose events by lane while the program plays, through the Craft lane engine; plain Strudel has no tags or selections",
+     "smoke": {
+      "ok": true,
+      "cycles": 2,
+      "events": 9,
+      "hash": "b06518e081"
+     }
+    }
+   ]
+  },
+  {
+   "id": "arr-02",
+   "title": "ARR-02 Genre section maps",
+   "needs": "hooks",
+   "folder": "composition/arrangement",
+   "tags": [
+    "composition",
+    "arrangement",
+    "form",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Typical bar maps: house intro 16-32, breakdown 16-32, drop 32; DnB DJ intro 32, drop 32-48 (16 main, 16 variation, roll-out); dubstep intro 16-32, build 8, drop 16-32, switch-up second drop; trap hook 8 / verse 16; big room build 16 with 8-bar riser, drop 32.",
+   "notes": [
+    [
+     "Why it works",
+     "Producer-reported conventions (COMPOSITION_RESEARCH.md); DJ mixing needs predictable phrase lengths in 8s."
+    ],
+    [
+     "When to use",
+     "Planning the form; a brief may override."
+    ],
+    [
+     "Measure",
+     "composer cluster: run lengths in multiples of 8; composer density per section."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Odd phrase lengths in a DJ tool without intent"
+     ]
+    ]
+   ],
+   "tool": "cluster",
+   "examples": [
+    {
+     "title": "ARR-02 genre section maps",
+     "code": "// 18 bars at 1 cycle per bar: intro 4, build 2, drop 4, break 2, build 2, drop 4 (scale x8 for a real 144-bar map)\natom(\"drops\", { type: \"mini\", body: \"<0!6 1!4 0!4 1!4>\" })\natom(\"builds\", { type: \"mini\", body: \"<0!4 1!2 0!6 1!2 0!4>\" })\n$: s(\"bd*4\").hook(\"hygiene-kick\").mask(atoms.drops)\n$: s(\"sd*8\").hook(\"hygiene-snare\").gain(0.4).mask(atoms.builds)",
+     "lowered": "// 18 bars at 1 cycle per bar: intro 4, build 2, drop 4, break 2, build 2, drop 4 (scale x8 for a real 144-bar map)\n$: s(\"bd*4\").hpf(30).lpf(7000).mask(\"<0!6 1!4 0!4 1!4>\")\n$: s(\"sd*8\").hpf(120).lpf(10000).ftype(\"24db\").gain(0.4).mask(\"<0!4 1!2 0!6 1!2 0!4>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 0,
+      "hash": "b2e588c0f8"
+     }
+    }
+   ]
+  },
+  {
+   "id": "arr-03",
+   "title": "ARR-03 DJ-friendly intro and outro",
+   "needs": "hooks",
+   "folder": "composition/arrangement",
+   "tags": [
+    "composition",
+    "arrangement",
+    "form",
+    "dj",
+    "measured",
+    "lowered"
+   ],
+   "explain": "Drums-led 16-32 bar intro and outro with no full harmony, so DJs can mix.",
+   "notes": [
+    [
+     "Why it works",
+     "Beat-matched mixing needs a rhythm-only overlap; harmonic clashes between two tracks are avoided."
+    ],
+    [
+     "When to use",
+     "Club tracks (house, DnB, techno); not for listening edits."
+    ],
+    [
+     "Measure",
+     "composer density: intro and outro layers mostly drum role; composer discord: no harmony in the first bars."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "Full chords from bar 1 in a club tool"
+     ]
+    ]
+   ],
+   "tool": "density",
+   "examples": [
+    {
+     "title": "ARR-03 dj-friendly intro and outro",
+     "code": "$: s(\"bd*4, [~ hh]*4\").hook(\"hygiene-kick\")\n$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hook(\"hygiene-pad\").gain(0.2).mask(\"<0!4 1!4>\")",
+     "lowered": "$: s(\"bd*4, [~ hh]*4\").hpf(30).lpf(7000)\n$: chord(\"<Cm Ab>\").voicing().s(\"supersaw\").hpf(180).lpf(6000).gain(0.2).mask(\"<0!4 1!4>\")",
+     "lowered_check": {
+      "equal": true,
+      "cycles": 4,
+      "events": 32,
+      "hash": "22cf4b0d25"
+     }
+    }
+   ]
+  },
+  {
+   "id": "arr-04",
+   "title": "ARR-04 Switch-up second drop",
+   "needs": "hooks",
+   "folder": "composition/arrangement",
+   "tags": [
+    "composition",
+    "arrangement",
+    "form",
+    "build-drop",
+    "gate",
+    "measured",
+    "craft-runtime"
+   ],
+   "explain": "The second drop keeps the hook but changes the beat, bass pattern or sound (beat switch, half/double time).",
+   "notes": [
+    [
+     "Why it works",
+     "Repetition with a twist: identity plus novelty, the main reward of the second drop."
+    ],
+    [
+     "When to use",
+     "Dubstep, DnB, trap, phonk."
+    ],
+    [
+     "Measure",
+     "composer cluster: the second drop is a different cluster from the first; composer ledger: the hook motif present in both."
+    ],
+    [
+     "Anti-patterns",
+     [
+      "A second drop identical to the first",
+      "A switch-up that drops the hook entirely"
+     ]
+    ]
+   ],
+   "tool": "cluster",
+   "examples": [
+    {
+     "title": "ARR-04 switch-up second drop",
+     "code": "atom(\"sw\", { type: \"gate\", body: \"@3b\" })\nhooks.bind(\"bass\", [[\"lpf\", 900]], \"<3b\")\nhooks.bind(\"bass\", [[\"lpf\", 2500], [\"distort\", 1.5]], atoms.sw)\n$: note(\"c2 ~ c2 eb2\").s(\"sawtooth\").hook(\"hygiene-bass\").use(\"bass\")",
+     "lowered_note": "the binding is gated (it opens at a bar or in a range): gates are evaluated by the Craft runtime as the song plays, plain Strudel has no timeline of bindings",
+     "smoke": {
+      "ok": true,
+      "cycles": 2,
+      "events": 6,
+      "hash": "2ef819f318"
+     }
+    }
+   ]
+  }
+ ]
+}

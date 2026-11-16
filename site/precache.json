@@ -18,6 +18,7 @@
   "data/atoms/positions.json",
   "data/atoms/types.json",
   "data/catalog.json",
+  "data/composition.json",
   "data/controls/types.json",
   "data/edm/atoms-dubstep.json",
   "data/edm/atoms-edm-core.json",

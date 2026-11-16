@@ -16,6 +16,7 @@ import packs as P  # noqa: E402
 FILES = [("site/data/catalog.json", "kinds/recipes.1.schema.json"),
          ("site/data/controls/types.json", "kinds/control-types.1.schema.json"),
          ("site/data/syntax.json", "kinds/syntax.1.schema.json"),
+         ("site/data/composition.json", "kinds/syntax.1.schema.json"),
          ("site/data/plugins.json", "kinds/docs.1.schema.json"),
          ("site/data/practices.json", "kinds/docs.1.schema.json")]
 

@@ -156,7 +156,7 @@ function ensureLock() {
   const lock = rd(path.join(ROOT, 'site/packs.lock.json')); lock.packs = lock.packs.filter((p) => p.id !== 'glyphcore/shim').map((p) => (p.source.startsWith('file:') ? { ...p, source: 'file:' + path.resolve(ROOT, 'site', p.source.slice(5)) } : p));
   fs.writeFileSync(lockFile, JSON.stringify(lock)); return lockFile;
 }
-function events(code, { defs, cycles }) {
+export function events(code, { defs, cycles }) { // exported for tools/composition/build.mjs (smoke run of examples with no plain form)
   const d = fs.mkdtempSync(path.join(os.tmpdir(), 'lowering-')); const f = path.join(d, 'in.strudel.js'); fs.writeFileSync(f, code);
   const args = ['events', f, '--cycles', String(cycles), '--hooks', ensureHooks(defs), '--packs', ensureLock(), '--prelude', path.join(ROOT, 'docs/tracks/night-phonk-demo/cli-site-base.js'), '--prelude', path.join(ROOT, 'site/prelude/word.js')];
   const p = spawnSync(path.join(CLI, 'strudel'), args, { encoding: 'utf8', env: { ...process.env, STRUDEL_CRAFT: ROOT }, maxBuffer: 1 << 28, timeout: 120000 });

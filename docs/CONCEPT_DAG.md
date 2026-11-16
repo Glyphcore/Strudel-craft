@@ -113,6 +113,12 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | hiphop-trap-hyphy components + forms (racks-hiphop, `hh.` atoms and form gates) | concept-framework, groove | built (critic pending) | #111 |
 | dovetailing (`dt.` pickup / rise / hit / tail gates, masks, equal-power fades, moves fadeOut, fadeIn, throw, tailHold, duckUnder) | concept-framework, hooks-core, lanes-events | built (critic pending) | #111 |
 | feel-templates (slots drums/top/bass/harmony/fx/groove as atoms@1 ingredients; pick = one import, override = one bind) | hiphop-trap-hyphy components + forms, groove, pack-kind-atoms | built (critic pending) | #112 |
+| composition-catalog (111 concepts, 19 families, docs/COMPOSITION.md; tools/composition -> site/data/composition.json in the Syntax view, both forms verified) | concept-framework, lowering (#117), taxonomy (#120) | built (critic pending) | #144 |
+| composition-research (docs/COMPOSITION_RESEARCH.md: per-genre producer-reported components and forms, cited, UNVERIFIED marked) | - | built (critic pending) | #145 |
+| composer-tools (suno-track-lab engine/composer: ledger, density, foreshadow, scan, feel, discord, layers, cluster-bars) | composition-catalog, motifs analysis, CLI events, spectral_align | built (critic pending) | #146 |
+| composer-skill (workflow + design-choice checks, both repos) | composer-tools, composition-catalog | built (critic pending) | #147 |
+| composition-research pass 2 (open SOS Inside Track, Point Blank, Ableton, Hooktheory, OMT, Reddit threads) | composition-research | unexplored | - |
+| composer: audio motif ledger from stems (engine/motifs motifs.json -> ledger), groove-from-audio presets | composer-tools, groove-from-audio | scouted | - |
 | more concept families (drill, jersey club, footwork, dancehall, amapiano log drums, lo-fi; groove templates extracted from audio) | concept-framework | unexplored | - |
 | groove-from-audio (onset offsets of a reference stem -> a groove table / preset) | groove, motifs analysis | unexplored | - |
 | wam-plugin-hosting (WAM 2 effects on returns) | summing-groups + delay-compensation | unexplored | - |

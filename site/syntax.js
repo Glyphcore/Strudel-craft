@@ -1,4 +1,5 @@
-/* Syntax view (key 6): teaches the new paradigms from data/syntax.json (sourced from docs/HOOKS_SYNTAX.md and docs/BLUEPRINT.md).
+/* Syntax view (key 6): teaches the new paradigms from data/syntax.json (sourced from docs/HOOKS_SYNTAX.md and docs/BLUEPRINT.md) and lists the
+   composition concepts from data/composition.json (docs/COMPOSITION.md; a second syntax@1 ingredient, folder composition/<family>).
    One tap on an example loads it into the Rack editor and plays it. Paradigms whose engine is not present are marked "coming".
    Every example is also an intellisense snippet (provider "syntax"). */
 const sc = (window.strudelCraft = window.strudelCraft || {});
@@ -43,7 +44,11 @@ function registerSnippets() {
 if (!registerSnippets()) { const iv = setInterval(() => { if (registerSnippets()) clearInterval(iv); }, 300); setTimeout(() => clearInterval(iv), 15000); }
 
 /* folders and tags (site/organizer.js): a section is an entry in syntax/<needs> with its engine and built state as tags */
-let sxOrg = null, sxHost = null; const sxEntries = (d) => (d.sections || []).map((s) => ({ id: s.id, kind: 'syntax', title: s.title, pack: 'glyphcore/shim', folder: 'syntax/' + String(s.needs || 'core').toLowerCase().replace(/[^a-z0-9]+/g, '-'), tags: ['syntax', String(s.needs || 'core').toLowerCase().replace(/[^a-z0-9]+/g, '-'), (HAS[s.needs] || (() => false))() ? 'built' : 'coming'] }));
+/* a section may carry its own folder and tags (the Composition concepts, data/composition.json: composition/<family>, #120 tags) */
+let sxOrg = null, sxHost = null; const sxEntries = (d) => (d.sections || []).map((s) => { const need = String(s.needs || 'core').toLowerCase().replace(/[^a-z0-9]+/g, '-'), st = (HAS[s.needs] || (() => false))() ? 'built' : 'coming';
+  return { id: s.id, kind: 'syntax', title: s.title, pack: s.pack || 'glyphcore/shim', folder: s.folder || 'syntax/' + need, tags: s.tags ? [...s.tags, st] : ['syntax', need, st] }; });
+/* concept notes (why it works, when, measure, anti-patterns): a definition list under the section text */
+const notesHtml = (n) => (Array.isArray(n) && n.length ? `<dl class="sx-notes">${n.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${Array.isArray(v) ? `<ul>${v.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : esc(v)}</dd>`).join('')}</dl>` : '');
 let sxSecs = [];
 function sxApply() { const root = $('#syntax'); if (!root || !sxOrg) return; const O = sc.taxonomyOverlay || ((e) => e); const keep = new Set(sxOrg.sort(sxSecs.map((e) => O(e))).filter((e) => sxOrg.pass(e)).map((e) => e.id));
   root.querySelectorAll('.sx-sec').forEach((s) => { s.hidden = !keep.has(s.id.replace(/^sx-/, '')); }); root.querySelectorAll('.sx-toc a').forEach((a) => { a.hidden = !keep.has(a.dataset.sx); });
@@ -55,7 +60,7 @@ async function render() {
   <nav class="sx-toc" aria-label="Syntax sections">${d.sections.map((s) => `<a href="#sx-${s.id}" data-sx="${s.id}">${esc(s.title)}</a>`).join('')}</nav>
   ${d.sections.map((s) => { const built = (HAS[s.needs] || (() => false))();
     return `<section class="sx-sec" id="sx-${s.id}" aria-labelledby="sxh-${s.id}"><h3 id="sxh-${s.id}">${esc(s.title)} <span class="sx-badge" data-built="${built}">${built ? 'built' : 'coming'}</span></h3>
-    <p>${esc(s.explain)}</p>
+    <p>${esc(s.explain)}</p>${notesHtml(s.notes)}
     ${(s.examples || []).map((e, i) => { const coming = e.coming || !built; return `<figure class="sx-ex">
       ${e.code ? `<div class="sx-fm" data-sec="${s.id}" data-i="${i}"></div>` : ''}
       ${e.flow ? `<ol class="sx-flow" aria-label="Signal flow">${e.flow.map((f) => `<li><b>${esc(f[0])}</b><span>${esc(f[1])}</span></li>`).join('')}</ol>` : ''}

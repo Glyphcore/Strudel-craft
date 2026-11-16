@@ -18,22 +18,22 @@ Intro: Rhodes and pad low-passed at 700 Hz; the break from 9, high-passed at 700
 break-in
 9-16 foreshadow @brkK,brkS
 the amen-style break enters thin: the drop's rhythm before its weight
-| FS-02 | prepares:drop-1 src=author
+| FS-02 | prepares:drop-1 | src=author
 
 build-1
 17-24 lesson @roll,rise
 Build: roll doubles density, riser over 8 bars, the gap on 24.3
-| TEN-02 TR-01 | prepares:drop-1 src=author
+| TEN-02 TR-01 | prepares:drop-1 | src=author
 
 gap-1
 24.3-24.4 transition @track
 the gap: everything but the riser is muted
-| TR-03 | prepares:drop-1 src=author
+| TR-03 | prepares:drop-1 | src=author
 
 drop-1
 25-56 lesson @kick,snare,sub
 Drop 1 (*liquid*): two-step, ghosts pushed 3 %, sub F1 Db2 Bb1 C2
-| GRV-01 form:drop genre:drum-and-bass | resolves:build-1 src=author
+| GRV-01 form:drop genre:drum-and-bass | resolves:build-1 | src=author
 
 ride-in
 41-56 layer-role @ride,rolling
@@ -43,22 +43,22 @@ ride and rolling bass from 41: the second half of the drop moves more
 breakdown
 57-72 lesson @pad,strings,chops
 Breakdown: pad, strings and vocal chops; sub back from 65
-| EN-02 form:breakdown | contrasts:drop-1 src=author
+| EN-02 form:breakdown | contrasts:drop-1 | src=author
 
 build-2
 73-80 lesson @reese
 Build 2: jungle chops, the reese low-pass opens, ghost roll 77-80
-| TR-01 SYN-01 | varies:build-1 src=author
+| TR-01 SYN-01 | varies:build-1 | src=author
 
 drop-2
 81-112 lesson @neuro+subN
 Drop 2 (*neuro*): FM growl riff, the sub tracks its notes
-| INT-05 form:drop | contrasts:drop-1 src=author
+| INT-05 form:drop | contrasts:drop-1 | src=author
 
 drop-2b
 97-112 layer-role @reese,keys,strings
 reese, Rhodes and strings return: the liquid material under the neuro drums
-| FS-06 | echoes:drop-1 src=author
+| FS-06 | echoes:drop-1 | src=author
 
 halftime
 113-120 lesson @halfK,halfS,wobble

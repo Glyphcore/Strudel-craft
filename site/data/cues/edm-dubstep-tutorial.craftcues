@@ -24,22 +24,22 @@ Lesson 1: start with the *key*, not the drop; the pad low-pass is automation as 
 lesson-2
 9-16 lesson @shaker,kickIntro
 Lesson 2: add *rhythm before weight*: shaker 16ths, kick on the 1 only
-| LAY-01 | prepares:lesson-5 src=author
+| LAY-01 | prepares:lesson-5 | src=author
 
 chops-intro
 13-16 foreshadow @chops
 vowel chops tease the drop's voice
-| FS-01 VOX-01 | prepares:lesson-6 src=author
+| FS-01 VOX-01 | prepares:lesson-6 | src=author
 
 lesson-3
 17-24 lesson @roll,buildChords,riser
 Lesson 3: tension = density + brightness + level rising, then *the gap*
-| TEN-02 TR-01 | prepares:lesson-4 src=author
+| TEN-02 TR-01 | prepares:lesson-4 | src=author
 
 lesson-4
 25 lesson @impact,crash,kick
 Lesson 4: mark the downbeat in three bands at once: impact, crash, kit
-| TR-04 | resolves:lesson-3 src=author
+| TR-04 | resolves:lesson-3 | src=author
 
 lesson-5
 25-40 lesson @kick,snare,ghost,hats
@@ -59,7 +59,7 @@ laser zap every 4th bar: the phrase marker
 lesson-7
 41-56 lesson @track
 Lesson 7: *contrast*: no kick, no sub; the pad pumps from a silent ghost trigger
-| EN-02 | contrasts:lesson-5 src=author
+| EN-02 | contrasts:lesson-5 | src=author
 
 breakdown-lead
 49-56 layer-role @lead
@@ -69,12 +69,12 @@ lead melody enters over the breakdown, chops return
 lesson-8
 57-64 lesson @whiteBuild,pitchUp,swell
 Lesson 8: never build the same way twice: hp build, pitch riser, reverse swell
-| TR-01 MOT-02 | varies:lesson-3 src=author
+| TR-01 MOT-02 | varies:lesson-3 | src=author
 
 lesson-9
 65-76 lesson @wobble
 Lesson 9: the second drop changes something: the wobble's synced filter LFO
-| SYN-02 | varies:lesson-6 src=author
+| SYN-02 | varies:lesson-6 | src=author
 
 lesson-10
 77-88 lesson @riddim->screech
@@ -99,4 +99,4 @@ Breakdown
 drop2
 65-76 section @track
 Drop B: the wobble
-| form:drop | echoes:drop1 src=author
+| form:drop | echoes:drop1 | src=author

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // Ship the authored cue sets to the site (docs/CRAFTCUES.md 6; #163): docs/tracks/*/*.craftcues -> site/data/cues/<track>.craftcues + index.json.
+// <stem>.generated.craftcues (analysis findings, src=inferred / analysis) is merged into <stem>.craftcues of the same folder (authored wins by id).
 // A set matches a program by recipe id (catalog recipe of the same slug) or by the first line of its program (header `program:`).
 // Usage: node tools/craftcues/build_site.mjs [--check]   (--check: exit 1 when site/data/cues is stale)
 import fs from 'node:fs'; import path from 'node:path'; import { fileURLToPath } from 'node:url'; import * as C from '../../site/engine/cues.js';
@@ -7,8 +8,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const recipes = new Set((JSON.parse(fs.readFileSync(path.join(ROOT, 'site/data/catalog.json'), 'utf8')).recipes || []).map((r) => r.id));
 const files = [...fs.readdirSync(path.join(ROOT, 'docs/tracks'), { recursive: true })].filter((f) => /\.craftcues$/.test(f)).sort();
 const want = new Map(); const sets = [];
-for (const f of files) {
-  const text = fs.readFileSync(path.join(ROOT, 'docs/tracks', f), 'utf8'); const { doc, problems } = C.parse(text); if (problems.some((p) => p.level === 'error')) { console.error(`${f}: parse errors`); process.exit(1); }
+const rd = (f) => { const r = C.parse(fs.readFileSync(path.join(ROOT, 'docs/tracks', f), 'utf8')); if (r.problems.some((p) => p.level === 'error')) { console.error(`${f}: parse errors`); process.exit(1); } return r.doc; };
+for (const f of files.filter((x) => !/\.generated\.craftcues$/.test(x))) {
+  const gen = f.replace(/\.craftcues$/, '.generated.craftcues'); const authored = rd(f); const doc = files.includes(gen) ? C.merge(authored, rd(gen)) : authored; doc.header = { ...authored.header }; const text = C.print(doc);
   const name = (doc.header.track || path.basename(f, '.craftcues')) + '.craftcues'; want.set(name, text);
   const set = { file: name, track: doc.header.track || null, title: doc.header.title || null, cues: doc.cues.length };
   if (doc.header.track && recipes.has(doc.header.track)) set.recipe = doc.header.track;

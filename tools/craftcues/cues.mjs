@@ -28,7 +28,8 @@ export function load(file, extra = {}) {
 }
 export function nodeKB() {
   const j = (p) => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8')); } catch { return null; } };
-  const genres = {}; try { for (const f of fs.readdirSync(path.join(ROOT, 'docs/genres'))) if (f.endsWith('.json') && f !== 'genre.schema.json') { const g = j('docs/genres/' + f); if (g) genres[f.replace(/\.json$/, '')] = g; } } catch { /* none */ }
+  const genres = {}; const STL = process.env.SUNO_TRACK_LAB || '/home/user/suno-track-lab'; /* strudel-craft docs/genres first, then suno-track-lab's (wavephonk, dubstep-ukf ...) */
+  for (const dir of [path.join(STL, 'docs/genres'), path.join(ROOT, 'docs/genres')]) { try { for (const f of fs.readdirSync(dir)) if (f.endsWith('.json') && f !== 'genre.schema.json') { try { const g = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')); genres[f.replace(/\.json$/, '')] = g; } catch { /* skip */ } } } catch { /* none */ } }
   let formBank = null; const bp = process.env.FORM_BANK || path.join(process.env.SUNO_TRACK_LAB || '/home/user/suno-track-lab', 'data/form-bank/bank.jsonl');
   if (fs.existsSync(bp)) { formBank = new Map(); for (const l of fs.readFileSync(bp, 'utf8').split('\n')) { try { const r = JSON.parse(l); if (r.id) formBank.set(r.id, r); } catch { /* skip */ } } }
   const items = new Map(); /* resources ids from the shipped pack catalogs (hooks@1 defs, atoms, vox banks), so hook:cowbell resolves without a program */

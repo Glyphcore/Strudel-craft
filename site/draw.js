@@ -41,6 +41,9 @@ export function fromInstrument(inst) {
   if (p && p.length === 4) s.env = { a: p[1][0], d: r4(p[2][0] - p[1][0]), s: p[2][1], r: r4(p[3][0] - p[2][0]) };
   return s;
 }
+/* a stored entry is loaded only if validate() accepts it on its own; otherwise it is listed as damaged (Delete only) and named by its id */
+const brokenOf = (inst) => { const e = validate({ instruments: [inst] }); return e.length ? e[0] : null; };
+const labelOf = (inst) => (inst && typeof inst.id === 'string' && inst.id ? soundName({ id: inst.id.slice(0, 48) }) : 'an entry without an id');
 const slug = (t) => String(t).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
 
 /* harmonic k (1..H) of a frame: magnitude and phase, so a bar drag changes only that harmonic */
@@ -200,10 +203,12 @@ function renderChrome() {
   for (const b of el.notes.querySelectorAll('button')) b.setAttribute('aria-checked', String(b.dataset.note === st.note));
   el.del.disabled = !st.id;
   const mine = (D() && D().list()) || [];
-  el.saved.replaceChildren(...(mine.length ? mine.map((i) => h('button', { type: 'button', class: 'dw-chip', 'aria-current': i.id === st.id ? 'true' : null, title: i.title || i.id, onclick: () => loadSaved(i.id) }, soundName(i))) : [h('span', { class: 'dw-none' }, 'Nothing saved yet. Draw, then Save.')]));
+  el.saved.replaceChildren(...(mine.length ? mine.map((i) => { const bad = brokenOf(i); return bad
+    ? h('button', { type: 'button', class: 'dw-chip dw-bad', title: `Damaged: ${bad.code} ${bad.msg}. Tap to delete it.`, onclick: () => delDamaged(i) }, labelOf(i) + ' (damaged)')
+    : h('button', { type: 'button', class: 'dw-chip', 'aria-current': i.id === st.id ? 'true' : null, title: i.title || i.id, onclick: () => loadSaved(i.id) }, soundName(i)); }) : [h('span', { class: 'dw-none' }, 'Nothing saved yet. Draw, then Save.')]));
 }
 async function keepGoing() { return !st.dirty || await ui().askYesNo({ title: 'Discard changes?', message: 'The drawing has changes that are not saved.', okText: 'Discard', danger: true }); }
-async function loadSaved(id) { if (id === st.id && !st.dirty) return; if (!(await keepGoing())) return; const inst = D().get(id); if (!inst) return; st = { ...fromInstrument(inst), note: st.note, tab: st.tab }; undo = []; redo = []; touch(); }
+async function loadSaved(id) { if (id === st.id && !st.dirty) return; if (!(await keepGoing())) return; const inst = D().get(id); if (!inst) return; if (brokenOf(inst)) { delDamaged(inst); return; } st = { ...fromInstrument(inst), note: st.note, tab: st.tab }; undo = []; redo = []; touch(); }
 function setTab(t) { st.tab = t; touch(false); }
 
 /* ---------------------------------------------------------------- save, use, export */
@@ -218,9 +223,9 @@ async function nameForm(o = {}) {
     validate: () => {
       const id = slug(nameIn.value); if (!id) return 'Give it a name with at least one letter or digit.';
       const snd = soundName({ id }); if (taken.has(snd)) return `${snd} is a shipped instrument; pick another name.`;
-      if (mine.some((i) => soundName(i) === snd && i.id !== o.keep)) return `You already have ${snd}. Load it from Your instruments to change it, or pick another name.`;
+      if (mine.some((i) => i && typeof i.id === 'string' && soundName(i) === snd && i.id !== o.keep)) return `You already have ${snd}. Load it from Your instruments to change it, or pick another name.`;
       const errs = validate({ instruments: [toInstrument({ ...st, id, title: nameIn.value.trim().slice(0, 80) || id, words: wordsIn.value.trim() })] });
-      return errs.length ? `Not saved: ${errs[0].msg} (${errs[0].code} at ${errs[0].path || 'the instrument'})` : null;
+      return errs.length ? `Not saved: ${errs[0].msg} (${errs[0].code} at ${errs[0].path.replace(/^\.instruments\[0\]\.?/, '') || 'the instrument'})` : null;
     },
     collect: () => ({ id: slug(nameIn.value), title: nameIn.value.trim().slice(0, 80) || slug(nameIn.value), words: wordsIn.value.trim() }) });
 }
@@ -232,7 +237,13 @@ async function commit() {
 async function saveAs() { const v = await nameForm({ title: st.title, words: st.words, heading: st.id ? 'Save as a new instrument' : 'Save instrument' }); if (!v) return false; st.id = v.id; st.title = v.title; st.words = v.words; return commit(); }
 const save = () => (st.id ? commit() : saveAs());
 async function rename() { if (!st.id) return saveAs(); const old = st.id, v = await nameForm({ title: st.title, words: st.words, heading: 'Rename or describe', keep: old }); if (!v) return; st.id = v.id; st.title = v.title; st.words = v.words; if (await commit() && v.id !== old) D().remove(old); renderChrome(); }
-async function del() { if (!st.id) return; if (!(await ui().askYesNo({ title: 'Delete instrument?', message: `${soundName({ id: st.id })} is removed from this browser. Programs that use it go silent on that sound.`, okText: 'Delete', danger: true }))) return; D().remove(st.id); toast(`Deleted ${soundName({ id: st.id })}`, { kind: 'ok' }); st.id = null; st.dirty = true; renderChrome(); }
+async function delDamaged(inst) {
+  const bad = brokenOf(inst); if (!bad) return;
+  if (!(await ui().askYesNo({ title: 'Delete damaged instrument?', message: `${labelOf(inst)} in this browser's storage does not pass the waveforms@1 check (${bad.code} at ${bad.path.replace(/^\.instruments\[0\]/, '') || 'the instrument'}: ${bad.msg}), so it cannot be opened or played. Delete it?`, okText: 'Delete', danger: true }))) return;
+  if (typeof inst.id === 'string') D().remove(inst.id); else { try { const d = JSON.parse(localStorage.getItem('sc.drawn')); d.instruments = d.instruments.filter((x) => JSON.stringify(x) !== JSON.stringify(inst)); localStorage.setItem('sc.drawn', JSON.stringify(d)); } catch (e) { /* unreadable store reads as empty */ } }
+  toast(`Deleted the damaged entry ${labelOf(inst)}`, { kind: 'ok' }); renderChrome();
+}
+async function del() { if (!st.id) return; if (!(await ui().askYesNo({ title: 'Delete instrument?', message: `${soundName({ id: st.id })} is removed from this browser. Programs that use it go silent on that sound at once, also while playing (a note already sounding finishes).`, okText: 'Delete', danger: true }))) return; D().remove(st.id); toast(`Deleted ${soundName({ id: st.id })}`, { kind: 'ok' }); st.id = null; st.dirty = true; renderChrome(); }
 export function program(inst = toInstrument()) {
   const p = inst.env.amp.points, a = p[1][0], d = r4(p[2][0] - p[1][0]), s = p[2][1], r = r4(p[3][0] - p[2][0]);
   return `// ${inst.title}: drawn in the draw surface (no audio file)\nsetcpm(90/4)\n$: note("<[c3 eb3 g3 bb3] [ab2 c3 eb3 g3]>").s("${soundName(inst)}")${inst.morph ? '.wt("<0 0.33 0.66 1>")' : ''}.attack(${a}).decay(${d}).sustain(${s}).release(${r}).lpf(5000).gain(0.5)`;
@@ -245,10 +256,10 @@ async function useInRack() {
   toast(`${soundName(toInstrument())} is in the Rack editor. Press Play to hear it; Revert restores the recipe.`, { kind: 'ok' });
 }
 function exportDoc() {
-  const doc = { instruments: D().list() }; if (!doc.instruments.length) { toast('Nothing saved yet to export.', { kind: 'info' }); return; }
+  const all = D().list(), good = all.filter((i) => !brokenOf(i)), doc = { instruments: good }; if (!good.length) { toast(all.length ? 'Nothing to export: every saved entry is damaged.' : 'Nothing saved yet to export.', { kind: 'info' }); return; }
   const errs = validate(doc); if (errs.length) { toast(`Export refused: ${errs[0].code} ${errs[0].path}`, { kind: 'error' }); return; }
   const a = h('a', { href: URL.createObjectURL(new Blob([JSON.stringify(doc, null, 1)], { type: 'application/json' })), download: 'drawn-instruments.waveforms.json' }); document.body.append(a); a.click(); a.remove();
-  toast('Exported your instruments as waveforms@1 data (a pack ingredient).', { kind: 'ok' });
+  toast(`Exported ${good.length} instrument${good.length > 1 ? 's' : ''} as waveforms@1 data (a pack ingredient)` + (all.length > good.length ? `; ${all.length - good.length} damaged entr${all.length - good.length > 1 ? 'ies' : 'y'} left out.` : '.'), { kind: 'ok' });
 }
 
 /* ---------------------------------------------------------------- build */
@@ -306,7 +317,9 @@ let prevFocus = null;
 export function open(id) {
   if (!root) build();
   prevFocus = document.activeElement; root.hidden = false; el.fit(); document.documentElement.classList.add('dw-open');
-  if (id && D().get(id)) { st = { ...fromInstrument(D().get(id)), note: st.note, tab: st.tab }; undo = []; redo = []; }
+  const inst = id ? D().get(id) : null;
+  if (inst && brokenOf(inst)) { renderChrome(); draw(); toast(`${labelOf(inst)} is damaged (${brokenOf(inst).code}) and was not opened. Tap it under Your instruments to delete it.`, { kind: 'error' }); }
+  else if (inst) { st = { ...fromInstrument(inst), note: st.note, tab: st.tab }; undo = []; redo = []; }
   renderChrome(); draw(); (root.querySelector('[role=tab][aria-selected=true]') || el.pad).focus({ preventScroll: true });
 }
 export function close() { if (!root || root.hidden) return; hear(false); root.hidden = true; document.documentElement.classList.remove('dw-open'); if (prevFocus && prevFocus.focus && document.contains(prevFocus)) prevFocus.focus({ preventScroll: true }); }

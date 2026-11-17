@@ -41,6 +41,7 @@
 .dw-lib{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:10px}
 .dw-saved{display:flex;flex-wrap:wrap;gap:6px}
 .dw-chip{font-family:var(--mono);font-size:.76rem}
+.dw-bad{border-style:dashed;border-color:var(--bad);color:var(--bad)}
 .dw-chip[aria-current=true]{border-color:var(--sig-2);color:var(--sig-2)}
 .dw-none,.dw-rule{color:var(--faint);font-size:.78rem;margin:0}
 .dw-form{display:flex;flex-direction:column;gap:6px}

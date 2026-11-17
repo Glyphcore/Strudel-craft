@@ -4,7 +4,8 @@
    preview moves by more than 10 dB, saw -> square); the envelope handle moves sustain; a morph keyframe is added; Save goes through the site modal
    (never a native dialog), the stored document passes validate() of site/engine/waveforms.js and round-trips (stored == surface output, also after a
    reload); Use in Rack puts s("wt_<id>") in the editor and Play through the real path (packs.activateSources, Strudel from unpkg) registers the sound and
-   is audible; a tampered store entry is refused by validate() and registers nothing; a dropped file is refused with a toast. Frame time while hearing is
+   is audible; a tampered store entry is refused by validate() and registers nothing; a dropped file is refused with a toast; delete and rename silence the old wt_ name at once (also while playing); a damaged stored entry opens without throwing, does not block
+   saving, and is deleted through the site modal; the Draw entry takes no room in the 390 px top bar. Frame time while hearing is
    printed (INFO). SHOTS=<dir> writes 390 px and 1440 px screenshots. Usage (repo root): node tests/site/draw_surface.mjs */
 import { createRequire } from 'module'; import http from 'http'; import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 const { chromium } = createRequire(import.meta.url)('playwright');
@@ -107,6 +108,47 @@ check('a tampered instrument is refused by validate() on save and on activation;
 await page.evaluate(() => window.strudelCraft.drawn.open());
 const drop = await page.evaluate(async () => { const dt = new DataTransfer(); dt.items.add(new File([new Uint8Array(64)], 'take.wav', { type: 'audio/wav' })); document.querySelector('#drawSurface').dispatchEvent(new DragEvent('drop', { dataTransfer: dt, bubbles: true, cancelable: true })); await new Promise((ok) => setTimeout(ok, 100)); return [...document.querySelectorAll('.toast')].map((t) => t.textContent).join(' | '); });
 check('a dropped audio file is refused with a toast (no-copy rule)', /not accepted/.test(drop), drop.slice(0, 120));
+
+// critic repro 1 (#182 reject on 7795f06): delete and rename take effect at once, also for a program that is already playing
+const peakWin = (ms) => page.evaluate(async (w) => { window.__pk = 0; await new Promise((ok) => setTimeout(ok, w)); return window.__pk; }, ms);
+const playCode = (c) => page.evaluate(async (c) => { await window.__sc.Engine.play(c, false, () => {}); }, c);
+const stopAll = () => page.evaluate(async () => { window.__sc.Engine.stop(); await new Promise((ok) => setTimeout(ok, 800)); });
+const has = (n) => page.evaluate((n) => Object.keys(window.soundMap.get()).includes(n), n);
+await page.evaluate(() => { const D = window.strudelCraft.drawn; localStorage.setItem('sc.drawn', JSON.stringify({ instruments: [D.list().find((i) => i.id === 'test-lead')] })); });
+const held = 'setcpm(120/4)\n$: note("c3*4").s("wt_test_lead").sustain(1).gain(0.6)';
+await page.evaluate(() => window.strudelCraft.drawn.open('test-lead')); await page.waitForTimeout(200);
+await playCode(held); const pkOn = await peakWin(1500);
+await page.click('.dw-lib button:text-is("Delete")'); await page.waitForSelector('dialog.scm', { timeout: 5000 }); const delMsg = await page.textContent('dialog.scm .scm-msg'); await page.click('dialog.scm .scm-ok');
+await page.waitForTimeout(800); /* voices already started (0.5 s notes) ring out; no new one starts */ const pkAfterDel = await peakWin(1500), goneDel = !(await has('wt_test_lead')); await stopAll();
+await playCode(held); const pkNewDel = await peakWin(1500); await stopAll();
+check('delete takes effect at once: the running program goes silent on wt_test_lead, a new Play is silent, and the confirm says so', pkOn > 0.01 && pkAfterDel < 0.001 && pkNewDel < 0.001 && goneDel && /at once/.test(delMsg), `playing ${pkOn.toFixed(3)}, after delete ${pkAfterDel.toFixed(4)}, new Play ${pkNewDel.toFixed(4)}; "${delMsg}"`);
+// rename: probe-a -> probe-b while playing
+await page.evaluate(async (inst) => { await window.strudelCraft.drawn.save({ ...inst, id: 'probe-a', title: 'probe a' }); }, inst);
+await playCode(held.replace('wt_test_lead', 'wt_probe_a')); const pkA = await peakWin(1500);
+await page.evaluate(() => window.strudelCraft.drawn.open('probe-a')); await page.waitForTimeout(200);
+await page.click('.dw-name'); await page.waitForSelector('dialog.scm #dwName', { timeout: 5000 }); await page.fill('#dwName', 'probe b'); await page.click('dialog.scm .scm-ok'); await page.waitForTimeout(400);
+await page.waitForTimeout(400); /* voices already started (0.5 s notes) ring out; no new one starts */ const pkAfterRen = await peakWin(1500); await stopAll();
+await playCode(held.replace('wt_test_lead', 'wt_probe_a')); const pkOld = await peakWin(1500); await stopAll();
+await playCode(held.replace('wt_test_lead', 'wt_probe_b')); const pkNew = await peakWin(1500); await stopAll();
+const ids = await page.evaluate(() => window.strudelCraft.drawn.list().map((i) => i.id).join(','));
+check('rename takes effect at once: the old wt_probe_a goes silent while playing and on a new Play; wt_probe_b plays', pkA > 0.01 && pkAfterRen < 0.001 && pkOld < 0.001 && pkNew > 0.01 && ids === 'probe-b', `before ${pkA.toFixed(3)}, after rename ${pkAfterRen.toFixed(4)}, old name ${pkOld.toFixed(4)}, new name ${pkNew.toFixed(3)}; stored ${ids}`);
+
+// critic repro 2: a stored entry that fails validate() (no cycle) never throws on open, never blocks saving another one, is shown as damaged and deleted through the site modal
+const errsBefore = errors.length;
+const dmg = await page.evaluate(async () => { const D = window.strudelCraft.drawn, good = D.list()[0];
+  localStorage.setItem('sc.drawn', JSON.stringify({ instruments: [good, { id: 't1', title: 'old entry', family: 'drawn', origin: 'drawn', license: 'own work' }] }));
+  let threw = null; try { await D.open('t1'); } catch (e) { threw = e.message; } await new Promise((ok) => setTimeout(ok, 300));
+  const chip = [...document.querySelectorAll('.dw-chip')].map((c) => c.textContent), toasts = [...document.querySelectorAll('.toast')].map((t) => t.textContent).join(' | ');
+  const saveOther = await D.save({ ...good, id: 'other', title: 'other' }), badSave = await D.save({ ...good, id: 'evil2', title: 'data:x' });
+  return { threw, open: !document.querySelector('#drawSurface').hidden, chip, toasts, saveOther: saveOther.length, badPath: badSave[0] && badSave[0].path }; });
+check('a damaged entry (no cycle) opens without throwing, is listed as damaged and named in the notice; saving another instrument still works; errors name the right instrument', !dmg.threw && dmg.open && dmg.chip.includes('wt_t1 (damaged)') && /wt_t1 is damaged/.test(dmg.toasts) && dmg.saveOther === 0 && /^evil2/.test(dmg.badPath || '') && errors.length === errsBefore, JSON.stringify(dmg));
+await page.click('.dw-chip:text-is("wt_t1 (damaged)")'); await page.waitForSelector('dialog.scm', { timeout: 5000 }); const dmgMsg = await page.textContent('dialog.scm .scm-msg'); await page.click('dialog.scm .scm-ok'); await page.waitForTimeout(300);
+const left = await page.evaluate(() => window.strudelCraft.drawn.list().map((i) => i.id).join(','));
+check('the damaged entry is deleted through the site modal (it names the entry and the failing check)', !left.split(',').includes('t1') && /wt_t1/.test(dmgMsg) && /E_WF_SHAPE/.test(dmgMsg) && natives.length === 0, `left ${left}; "${dmgMsg.slice(0, 140)}"`);
+
+// critic note 3: the Draw entry takes no room in the 390 px top bar (it sits in the More menu, display:none until opened); the tab strip is the scrollable strip of c2633e8
+const bar = await page.evaluate(() => { document.querySelector('#drawSurface') && window.strudelCraft.drawn && document.querySelector('#tools').classList.remove('open'); const n = document.querySelector('.views'), b = document.querySelector('#drawBtn'); const w0 = n.clientWidth, s0 = n.scrollWidth, hidden = b.offsetParent === null; const p = b.parentNode, nx = b.nextSibling; b.remove(); const w1 = n.clientWidth, s1 = n.scrollWidth; p.insertBefore(b, nx); return { w0, w1, s0, s1, hidden, scroll: getComputedStyle(n).overflowX }; });
+check('390 px top bar: the Draw button has no box until More is opened and does not change the tab strip (which scrolls by design)', bar.hidden && bar.w0 === bar.w1 && bar.s0 === bar.s1 && bar.scroll === 'auto', JSON.stringify(bar));
 if (SHOTS) { await page.setViewportSize({ width: 1440, height: 900 }); await page.waitForTimeout(300); await page.screenshot({ path: path.join(SHOTS, 'draw-1440.png') }); }
 check('no uncaught page errors and no native dialogs', errors.length === 0 && natives.length === 0, errors.slice(0, 2).join(' | '));
 await browser.close(); server.close(); process.exit(fail ? 1 : 0);

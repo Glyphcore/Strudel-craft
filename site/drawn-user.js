@@ -4,7 +4,7 @@
    Play: packs.activateSources is wrapped so a program that names wt_<id> of a saved instrument gets its wavetable built in memory and registered
    with samples(), exactly as the pack adapter does for glyphcore/drawn-core. validate() of site/engine/waveforms.js runs on every instrument before
    it is saved and again before it is registered (a tampered store registers nothing).
-   API: window.strudelCraft.drawn = { list(), get(id), save(inst) -> errors[], remove(id), packNames(), activate(code), open(id?) } */
+   API: window.strudelCraft.drawn = { list(), get(id), save(inst) -> errors[], remove(id) (unregisters wt_<id> at once), damaged(inst), packNames(), activate(code), open(id?) } */
 const sc = (window.strudelCraft = window.strudelCraft || {});
 const LS = 'sc.drawn';
 const wf = () => import('./engine/waveforms.js');
@@ -12,20 +12,27 @@ const toast = (m, o) => { try { sc.ui && sc.ui.toast(m, o); } catch (e) { /* no 
 const read = () => { try { const d = JSON.parse(localStorage.getItem(LS)); return d && Array.isArray(d.instruments) ? d : { instruments: [] }; } catch (e) { return { instruments: [] }; } };
 const write = (d) => { try { localStorage.setItem(LS, JSON.stringify(d)); return true; } catch (e) { return false; } };
 const soundOf = (id) => 'wt_' + String(id).replace(/-/g, '_');
+const registered = new Map(); // sound name -> JSON of the instrument it was built from (an edited instrument is rebuilt on the next Play)
 const listeners = new Set(); const changed = () => { for (const f of listeners) try { f(); } catch (e) { /* listener bug */ } };
 
 /* sound names the shipped packs already own (wt_drawn_bass ...): a saved instrument may not shadow them */
 async function packNames() { try { const P = sc.packs, xs = P && P.ensure ? await P.ensure('waveforms') : []; return new Set(xs.map((x) => String(x.name))); } catch (e) { return new Set(); } }
 
+/* save validates the new instrument alone (plus the instrument cap): a damaged stored entry never blocks saving another one; it stays listed as damaged until deleted */
 async function save(inst) {
-  const W = await wf(), doc = read(), rest = doc.instruments.filter((i) => i.id !== inst.id), next = { instruments: [...rest, inst] };
-  const errs = W.validate(next); if (errs.length) return errs;
-  if (!write(next)) return [{ code: 'E_STORE', path: '', msg: 'browser storage is full or off' }];
+  const W = await wf(), doc = read(), rest = doc.instruments.filter((i) => !(i && i.id === inst.id));
+  const errs = W.validate({ instruments: [inst] }).map((e) => ({ ...e, path: e.path.replace(/^\.instruments\[0\]/, inst && typeof inst.id === 'string' ? inst.id : 'the instrument') }));
+  if (errs.length) return errs;
+  if (rest.length + 1 > W.MAX_INSTRUMENTS) return [{ code: 'E_WF_ARRAY', path: '', msg: `at most ${W.MAX_INSTRUMENTS} instruments; delete one first` }];
+  if (!write({ instruments: [...rest, inst] })) return [{ code: 'E_STORE', path: '', msg: 'browser storage is full or off' }];
   changed(); return [];
 }
-function remove(id) { const d = read(); d.instruments = d.instruments.filter((i) => i.id !== id); write(d); registered.delete(soundOf(id)); changed(); }
-
-const registered = new Map(); // sound name -> JSON of the instrument it was built from (an edited instrument is rebuilt on the next Play)
+/* delete takes effect at once: the sound leaves Strudel's sound map, so a running or newly started program no longer plays it (superdough looks a sound up per event) */
+function unregister(id) { const name = soundOf(id); registered.delete(name); try { const sm = globalThis.soundMap; if (sm && sm.setKey && sm.get && name in sm.get()) sm.setKey(name, undefined); } catch (e) { /* no engine yet: nothing registered */ } }
+function remove(id) { const d = read(); d.instruments = d.instruments.filter((i) => !(i && i.id === id)); write(d); unregister(id); changed(); }
+/* damaged(inst) -> null or the first validate() error: the surface lists such an entry as damaged and only offers Delete */
+async function damaged(inst) { const W = await wf(), e = W.validate({ instruments: [inst] }); return e.length ? e[0] : null; }
+ // sound name -> JSON of the instrument it was built from (an edited instrument is rebuilt on the next Play)
 const wantRe = /(?:^|[^\w$])(?:s|sound)\s*\(\s*(["'`])([\s\S]*?)\1/g;
 async function activate(code) {
   const doc = read(); if (!doc.instruments.length || !/wt_/.test(String(code || ''))) return [];
@@ -36,8 +43,8 @@ async function activate(code) {
   const samples = await new Promise((ok) => { const t0 = Date.now(); const tick = () => (typeof globalThis.samples === 'function' ? ok(globalThis.samples) : Date.now() - t0 > 30000 ? ok(null) : setTimeout(tick, 40)); tick(); });
   if (!samples) return [];
   for (const inst of want) {
-    const errs = W.validate({ instruments: [inst] }), name = W.soundName(inst);
-    if (errs.length) { toast(`${name} was not loaded: ${errs[0].code} ${errs[0].path}`, { kind: 'error' }); continue; }
+    const errs = W.validate({ instruments: [inst] }), name = soundOf(inst.id);
+    if (errs.length) { toast(`${name} was not loaded (damaged; open Draw to delete it): ${errs[0].code} ${errs[0].path}`, { kind: 'error' }); continue; }
     const sig = JSON.stringify(inst); if (registered.get(name) === sig) continue;
     const t = W.tables(inst), url = (b) => URL.createObjectURL(new Blob([b], { type: 'audio/wav' }));
     const map = Array.isArray(t.map) ? t.map.map(url) : Object.fromEntries(Object.entries(t.map).map(([k, v]) => [k, v.map(url)]));
@@ -56,7 +63,7 @@ async function open(id) {
   surface.open(id);
 }
 
-sc.drawn = { list: () => read().instruments, get: (id) => read().instruments.find((i) => i.id === id) || null, save, remove, packNames, activate, open, soundOf, onChange: (f) => { listeners.add(f); return () => listeners.delete(f); } };
+sc.drawn = { list: () => read().instruments, get: (id) => read().instruments.find((i) => i.id === id) || null, save, remove, damaged, packNames, activate, open, soundOf, onChange: (f) => { listeners.add(f); return () => listeners.delete(f); } };
 
 /* Play and the offline render host both go through packs.activateSources: saved instruments join its result */
 (function wrap() {

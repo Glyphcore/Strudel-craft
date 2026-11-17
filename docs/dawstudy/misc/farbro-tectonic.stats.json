@@ -1,7 +1,7 @@
 {
  "schema": "dawstudy-stats@1",
  "format": "lmms",
- "tempo": 140.0,
+ "tempo": 140,
  "meter": [
   4,
   4
@@ -32,7 +32,7 @@
    "start_bar": 1,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 2,
    "roles": [
     "other",
@@ -44,7 +44,7 @@
    "start_bar": 5,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 1,
    "roles": [
     "keys"
@@ -55,7 +55,7 @@
    "start_bar": 9,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 2,
    "roles": [
     "other",
@@ -67,7 +67,7 @@
    "start_bar": 13,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 1,
    "roles": [
     "hat"
@@ -78,7 +78,7 @@
    "start_bar": 17,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 1.0,
+   "layers_median": 1,
    "layers_max": 4,
    "roles": [
     "hat",
@@ -91,7 +91,7 @@
    "start_bar": 21,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 1.0,
+   "layers_median": 1,
    "layers_max": 2,
    "roles": [
     "hat"
@@ -117,7 +117,7 @@
    "start_bar": 29,
    "bars": 12,
    "source": "inferred",
-   "layers_median": 3.0,
+   "layers_median": 3,
    "layers_max": 6,
    "roles": [
     "hat",
@@ -131,7 +131,7 @@
    "start_bar": 41,
    "bars": 8,
    "source": "inferred",
-   "layers_median": 5.0,
+   "layers_median": 5,
    "layers_max": 8,
    "roles": [
     "hat",
@@ -146,7 +146,7 @@
    "start_bar": 49,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 1.0,
+   "layers_median": 1,
    "layers_max": 4,
    "roles": [
     "hat",
@@ -159,7 +159,7 @@
    "start_bar": 53,
    "bars": 8,
    "source": "inferred",
-   "layers_median": 2.0,
+   "layers_median": 2,
    "layers_max": 13,
    "roles": [
     "hat",
@@ -176,7 +176,7 @@
    "start_bar": 61,
    "bars": 12,
    "source": "inferred",
-   "layers_median": 5.0,
+   "layers_median": 5,
    "layers_max": 7,
    "roles": [
     "hat",
@@ -192,7 +192,7 @@
    "start_bar": 73,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 1.0,
+   "layers_median": 1,
    "layers_max": 3,
    "roles": [
     "hat",
@@ -205,7 +205,7 @@
    "start_bar": 77,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 1.0,
+   "layers_median": 1,
    "layers_max": 2,
    "roles": [
     "hat"
@@ -216,7 +216,7 @@
    "start_bar": 81,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 4.0,
+   "layers_median": 4,
    "layers_max": 8,
    "roles": [
     "hat",
@@ -231,7 +231,7 @@
    "start_bar": 85,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 4.0,
+   "layers_median": 4,
    "layers_max": 5,
    "roles": [
     "hat",
@@ -244,7 +244,7 @@
    "start_bar": 89,
    "bars": 16,
    "source": "inferred",
-   "layers_median": 5.0,
+   "layers_median": 5,
    "layers_max": 10,
    "roles": [
     "hat",
@@ -261,7 +261,7 @@
    "start_bar": 105,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 1.0,
+   "layers_median": 1,
    "layers_max": 5,
    "roles": [
     "hat",
@@ -275,7 +275,7 @@
    "start_bar": 109,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 1.0,
+   "layers_median": 1,
    "layers_max": 13,
    "roles": [
     "hat",
@@ -290,7 +290,7 @@
    "start_bar": 113,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 2.0,
+   "layers_median": 2,
    "layers_max": 14,
    "roles": [
     "hat",
@@ -308,7 +308,7 @@
    "start_bar": 117,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 2.0,
+   "layers_median": 2,
    "layers_max": 3,
    "roles": [
     "hat",
@@ -320,7 +320,7 @@
    "start_bar": 121,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 5.0,
+   "layers_median": 5,
    "layers_max": 10,
    "roles": [
     "hat",
@@ -351,7 +351,7 @@
    "start_bar": 129,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 2.0,
+   "layers_median": 2,
    "layers_max": 6,
    "roles": [
     "hat",
@@ -514,17 +514,17 @@
    11,
    9
   ],
-  "median": 3.0,
+  "median": 3,
   "max": 14,
   "notes_per_bar_by_role": {
-   "hat": 1.0,
-   "keys": 64.0,
-   "kick": 4.0,
-   "lead": 32.0,
-   "other": 39.0,
-   "pad": 47.0,
-   "perc": 1.0,
-   "snare": 4.0
+   "hat": 1,
+   "keys": 64,
+   "kick": 4,
+   "lead": 32,
+   "other": 39,
+   "pad": 47,
+   "perc": 1,
+   "snare": 4
   }
  },
  "clip_bars": {
@@ -634,6 +634,222 @@
    "shape": "fall",
    "start_bar": 126,
    "end_bar": 129
+  }
+ ],
+ "tension": [
+  {
+   "kind": "build",
+   "bar": 1,
+   "evidence": [
+    "automation 0 volume rise"
+   ],
+   "confidence": 0.4,
+   "end_bar": 9
+  },
+  {
+   "kind": "drop",
+   "bar": 17,
+   "evidence": [
+    "layers 0.5 -> 4"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 25,
+   "evidence": [
+    "layers 1.5 -> 6"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 32,
+   "evidence": [
+    "layers 3.0 -> 5",
+    "layers 4.0 -> 6"
+   ],
+   "confidence": 0.45
+  },
+  {
+   "kind": "breakdown",
+   "bar": 34,
+   "evidence": [
+    "layers 5.5 -> 3"
+   ],
+   "confidence": 0.35
+  },
+  {
+   "kind": "drop",
+   "bar": 41,
+   "evidence": [
+    "layers 3.5 -> 8"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 50,
+   "evidence": [
+    "layers 5.0 -> 1"
+   ],
+   "confidence": 0.35
+  },
+  {
+   "kind": "drop",
+   "bar": 56,
+   "evidence": [
+    "layers 1.0 -> 13",
+    "layers 7.0 -> 12"
+   ],
+   "confidence": 0.45
+  },
+  {
+   "kind": "breakdown",
+   "bar": 58,
+   "evidence": [
+    "layers 12.5 -> 2",
+    "layers 7.0 -> 3"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 61,
+   "evidence": [
+    "layers 2.5 -> 4"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 65,
+   "evidence": [
+    "layers 3.5 -> 7"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "build",
+   "bar": 71,
+   "evidence": [
+    "automation 1 volume rise",
+    "automation 2 volume rise"
+   ],
+   "confidence": 0.8,
+   "end_bar": 74
+  },
+  {
+   "kind": "breakdown",
+   "bar": 73,
+   "evidence": [
+    "layers 6.5 -> 3",
+    "layers 5.0 -> 1"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 81,
+   "evidence": [
+    "layers 1.5 -> 8"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 89,
+   "evidence": [
+    "layers 4.5 -> 10"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 97,
+   "evidence": [
+    "layers 5.5 -> 10"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 98,
+   "evidence": [
+    "layers 8.0 -> 5"
+   ],
+   "confidence": 0.35
+  },
+  {
+   "kind": "breakdown",
+   "bar": 106,
+   "evidence": [
+    "layers 5.0 -> 1",
+    "layers 3.0 -> 1"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 112,
+   "evidence": [
+    "layers 1.0 -> 13",
+    "layers 7.0 -> 14"
+   ],
+   "confidence": 0.45
+  },
+  {
+   "kind": "breakdown",
+   "bar": 114,
+   "evidence": [
+    "layers 13.5 -> 2",
+    "layers 8.0 -> 2"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 120,
+   "evidence": [
+    "layers 2.0 -> 3",
+    "layers 2.5 -> 10"
+   ],
+   "confidence": 0.45
+  },
+  {
+   "kind": "build",
+   "bar": 121,
+   "evidence": [
+    "automation 6 volume rise"
+   ],
+   "confidence": 0.4,
+   "end_bar": 129
+  },
+  {
+   "kind": "breakdown",
+   "bar": 130,
+   "evidence": [
+    "layers 6.0 -> 2",
+    "layers 4.0 -> 2"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 133,
+   "evidence": [
+    "layers 2.0 -> 3",
+    "layers 2.5 -> 4"
+   ],
+   "confidence": 0.45
+  },
+  {
+   "kind": "drop",
+   "bar": 135,
+   "evidence": [
+    "layers 3.5 -> 11"
+   ],
+   "confidence": 0.4
   }
  ],
  "routing": {

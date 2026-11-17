@@ -1,17 +1,17 @@
 # CapDan-TwilightArea-OriginalByAlf42red.mmpz
 
-Format lmms, tempo 170.0, meter 4/4, 105 bars (148.2 s). Tracks 15 (15 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
+Format lmms, tempo 170, meter 4/4, 105 bars (148.2 s). Tracks 15 (15 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
 
 | # | section | start bar | bars | layers median / max | roles | source |
 |---|---|---|---|---|---|---|
-| 1 | intro | 1 | 4 | 2.0 / 2 | other, pad | inferred |
-| 2 | breakdown | 5 | 4 | 5.0 / 5 | bass, hat, other, pad | inferred |
-| 3 | peak | 9 | 64 | 9.0 / 11 | bass, hat, keys, kick, lead, other, pad, snare | inferred |
-| 4 | breakdown | 73 | 4 | 3.0 / 4 | bass, keys, other, pad | inferred |
-| 5 | peak | 77 | 12 | 10.0 / 11 | bass, hat, keys, kick, other, pad, snare | inferred |
-| 6 | breakdown | 89 | 4 | 4.0 / 4 | bass, other, pad | inferred |
-| 7 | body | 93 | 8 | 8.0 / 9 | bass, hat, kick, other, pad, snare | inferred |
-| 8 | breakdown | 101 | 4 | 3.0 / 3 | bass, other, pad | inferred |
+| 1 | intro | 1 | 4 | 2 / 2 | other, pad | inferred |
+| 2 | breakdown | 5 | 4 | 5 / 5 | bass, hat, other, pad | inferred |
+| 3 | peak | 9 | 64 | 9 / 11 | bass, hat, keys, kick, lead, other, pad, snare | inferred |
+| 4 | breakdown | 73 | 4 | 3 / 4 | bass, keys, other, pad | inferred |
+| 5 | peak | 77 | 12 | 10 / 11 | bass, hat, keys, kick, other, pad, snare | inferred |
+| 6 | breakdown | 89 | 4 | 4 / 4 | bass, other, pad | inferred |
+| 7 | body | 93 | 8 | 8 / 9 | bass, hat, kick, other, pad, snare | inferred |
+| 8 | breakdown | 101 | 4 | 3 / 3 | bass, other, pad | inferred |
 | 9 | outro | 105 | 1 | 1 / 1 | pad | inferred |
 
 Roles: {'bass': 2, 'hat': 2, 'keys': 3, 'kick': 2, 'lead': 1, 'other': 2, 'pad': 2, 'snare': 1}

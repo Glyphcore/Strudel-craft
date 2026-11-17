@@ -64,10 +64,11 @@ sidecar per project; none = refused), "render"? }, { "kind": "stats", "dirs" }, 
 - Stage 1 collect + hash + normalise: one JSONL record per source in `OUT/records.jsonl` (`{id = sha256, kind, genre, stats | triage}`);
   projects are parsed in place (never copied); audio goes through the triage (section 6). `render: true` on LMMS projects renders with
   the LMMS binary (GPL, a separate program, `lmms --render`) through `engine/load/gate.sh heavy`, triages the WAV, deletes it, and stores a
-  `rendered-project` record with boundary agreement (project-data boundaries matched within one bar by audio boundaries). The LMMS binary is
-  not installed on this host (apt candidate 1.2.2): rendering is wired but **not yet run** (UNVERIFIED).
+  `rendered-project` record with boundary agreement (project-data boundaries matched within one bar by audio boundaries). Run on 2026-11-16 with LMMS 1.2.2
+  (`lmms render FILE -o OUT.wav -f wav`, `--allowroot` as root): 21 / 21 projects rendered and triaged (FORM_PROFILES.md section 1).
 - Stage 2 aggregate per genre: form profiles (`forms`), tension tables (count, median position in the song, median length, evidence ids),
-  the most common build evidence, audio section tables -> `OUT/tables.json`, `OUT/profiles/<genre>.json|md`.
+  the most common build evidence, audio section tables -> `OUT/tables.json`, `OUT/profiles/<genre>.json|md`. Re-run on the analysed set: `fetch.py restage --from docs/dawstudy --to SCRATCH` writes the projects and a manifest
+  to a scratch dir (sha256 verified), then `batch.mjs SCRATCH/manifest.json`; delete SCRATCH afterwards.
 - Stage 3 compact context pack `OUT/pack.json` (`dawstudy-pack@1`, at most 8192 bytes; candidates are dropped, then curves, until it fits,
   `truncated: true`): per genre tempo, bars, top orders, section bars and layers, FX presence, automation, a 10-point density curve, tension;
   concept candidates `named-form`, `layer-ladder`, `transition-grammar`, each with evidence ids (sha256 prefixes). With `bank` the records are

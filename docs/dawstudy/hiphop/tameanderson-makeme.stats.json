@@ -1,7 +1,7 @@
 {
  "schema": "dawstudy-stats@1",
  "format": "lmms",
- "tempo": 140.0,
+ "tempo": 140,
  "meter": [
   4,
   4
@@ -29,7 +29,7 @@
    "start_bar": 1,
    "bars": 16,
    "source": "inferred",
-   "layers_median": 2.0,
+   "layers_median": 2,
    "layers_max": 3,
    "roles": [
     "other"
@@ -40,7 +40,7 @@
    "start_bar": 17,
    "bars": 128,
    "source": "inferred",
-   "layers_median": 6.0,
+   "layers_median": 6,
    "layers_max": 7,
    "roles": [
     "hat",
@@ -212,10 +212,10 @@
   "median": 6,
   "max": 7,
   "notes_per_bar_by_role": {
-   "hat": 4.0,
-   "kick": 3.0,
-   "other": 28.0,
-   "snare": 1.0
+   "hat": 4,
+   "kick": 3,
+   "other": 28,
+   "snare": 1
   }
  },
  "clip_bars": {
@@ -230,6 +230,32 @@
   "type_frequency": {}
  },
  "automation": [],
+ "tension": [
+  {
+   "kind": "drop",
+   "bar": 17,
+   "evidence": [
+    "layers 2.0 -> 7"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 97,
+   "evidence": [
+    "layers 4.0 -> 7"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 145,
+   "evidence": [
+    "layers 6.0 -> 1"
+   ],
+   "confidence": 0.35
+  }
+ ],
  "routing": {
   "buses": 6,
   "sends": 0,

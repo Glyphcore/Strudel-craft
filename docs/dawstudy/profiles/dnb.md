@@ -1,12 +1,12 @@
 # Form profile: dnb (n = 1, measured (n < 3: indicative only))
 
-Tempo 170.0-170.0 (median 170.0); length median 105 bars (105-105); tracks with clips median 15; sends median 10; projects with sidechain 0.
+Tempo 170-170 (median 170); length median 105 bars (105-105); tracks with clips median 15; sends median 10; projects with sidechain 0.
 
 | section role | count | median bars | median layers |
 |---|---|---|---|
-| body | 1 | 8 | 8.0 |
+| body | 1 | 8 | 8 |
 | breakdown | 4 | 4.0 | 3.5 |
-| intro | 1 | 4 | 2.0 |
+| intro | 1 | 4 | 2 |
 | outro | 1 | 1 | 1 |
 | peak | 2 | 38.0 | 9.5 |
 

@@ -4,9 +4,9 @@
  "n": 2,
  "basis": "measured (n < 3: indicative only)",
  "tempo": {
-  "min": 140.0,
+  "min": 140,
   "median": 142.0,
-  "max": 144.0
+  "max": 144
  },
  "length_bars": {
   "median": 133.5,
@@ -26,10 +26,10 @@
   "outro": 1
  },
  "layers_median_by_section": {
-  "body": 8.0,
-  "breakdown": 2.0,
+  "body": 8,
+  "breakdown": 2,
   "intro": 2.25,
-  "outro": 0.0
+  "outro": 0
  },
  "orders": [
   [
@@ -184,7 +184,7 @@
    "licence": "Artistic 2.0",
    "page_url": "https://lmms.io/lsp/index.php?action=show&file=1565",
    "sha256": "bdcf398f34e66399da26556c06c36c9510584bd13e238ed390b8eaa9095dec37",
-   "tempo": 144.0,
+   "tempo": 144,
    "bars": 139,
    "sections_source": [
     "inferred"
@@ -196,7 +196,7 @@
    "licence": "Artistic 2.0",
    "page_url": "https://lmms.io/lsp/index.php?action=show&file=581",
    "sha256": "c4bb45ad37792b38cc57d91997f7bbecd9eae7e8db2e87b69cacb9c45be4ed34",
-   "tempo": 140.0,
+   "tempo": 140,
    "bars": 128,
    "sections_source": [
     "inferred"

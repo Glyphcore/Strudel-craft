@@ -1,11 +1,11 @@
 # Form profile: hiphop (n = 1, measured (n < 3: indicative only))
 
-Tempo 140.0-140.0 (median 140.0); length median 145 bars (145-145); tracks with clips median 7; sends median 0; projects with sidechain 0.
+Tempo 140-140 (median 140); length median 145 bars (145-145); tracks with clips median 7; sends median 0; projects with sidechain 0.
 
 | section role | count | median bars | median layers |
 |---|---|---|---|
-| body | 1 | 128 | 6.0 |
-| intro | 1 | 16 | 2.0 |
+| body | 1 | 128 | 6 |
+| intro | 1 | 16 | 2 |
 | outro | 1 | 1 | 1 |
 
 Density curve (median layers per 5 % of the song): 2.14 2 4.43 5.5 6.14 6 5.86 5.5 5.57 4 4 4.12 4 5.57 6 5.62 5.14 5.29 6 5.38

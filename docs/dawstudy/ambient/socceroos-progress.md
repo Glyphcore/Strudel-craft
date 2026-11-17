@@ -1,14 +1,14 @@
 # Socceroos-Progress.mmpz
 
-Format lmms, tempo 200.0, meter 4/4, 192 bars (230.4 s). Tracks 14 (10 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
+Format lmms, tempo 200, meter 4/4, 192 bars (230.4 s). Tracks 14 (10 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
 
 | # | section | start bar | bars | layers median / max | roles | source |
 |---|---|---|---|---|---|---|
-| 1 | intro | 1 | 56 | 1.0 / 2 | other | inferred |
-| 2 | breakdown | 57 | 64 | 3.0 / 4 | bass, kick, other | inferred |
-| 3 | breakdown | 121 | 28 | 4.0 / 4 | bass, keys, other | inferred |
-| 4 | peak | 149 | 36 | 9.0 / 9 | bass, hat, keys, kick, other | inferred |
-| 5 | outro | 185 | 8 | 3.0 / 3 | keys, other | inferred |
+| 1 | intro | 1 | 56 | 1 / 2 | other | inferred |
+| 2 | breakdown | 57 | 64 | 3 / 4 | bass, kick, other | inferred |
+| 3 | breakdown | 121 | 28 | 4 / 4 | bass, keys, other | inferred |
+| 4 | peak | 149 | 36 | 9 / 9 | bass, hat, keys, kick, other | inferred |
+| 5 | outro | 185 | 8 | 3 / 3 | keys, other | inferred |
 
 Roles: {'bass': 1, 'hat': 1, 'keys': 2, 'kick': 1, 'other': 5}
 FX type frequency: {'delay': 1, 'modulation': 3, 'other': 3, 'reverb': 1, 'stereo': 1}

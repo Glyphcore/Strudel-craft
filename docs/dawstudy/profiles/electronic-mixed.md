@@ -1,12 +1,12 @@
 # Form profile: electronic-mixed (n = 5, measured)
 
-Tempo 128.0-170.0 (median 140.0); length median 128 bars (105-145); tracks with clips median 15; sends median 6; projects with sidechain 1.
+Tempo 128-170 (median 140); length median 128 bars (105-145); tracks with clips median 15; sends median 6; projects with sidechain 1.
 
 | section role | count | median bars | median layers |
 |---|---|---|---|
-| body | 7 | 35 | 8.0 |
-| breakdown | 11 | 4 | 3.0 |
-| intro | 5 | 4 | 2.0 |
+| body | 7 | 35 | 8 |
+| breakdown | 11 | 4 | 3 |
+| intro | 5 | 4 | 2 |
 | outro | 4 | 2.5 | 1.0 |
 | peak | 2 | 38.0 | 9.5 |
 

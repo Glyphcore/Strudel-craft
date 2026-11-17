@@ -1,7 +1,7 @@
 {
  "schema": "dawstudy-stats@1",
  "format": "lmms",
- "tempo": 140.0,
+ "tempo": 140,
  "meter": [
   4,
   4
@@ -28,7 +28,7 @@
    "start_bar": 1,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 1,
    "roles": [
     "other"
@@ -39,7 +39,7 @@
    "start_bar": 5,
    "bars": 8,
    "source": "inferred",
-   "layers_median": 1.0,
+   "layers_median": 1,
    "layers_max": 2,
    "roles": [
     "kick",
@@ -168,9 +168,9 @@
   "max": 11,
   "notes_per_bar_by_role": {
    "hat": 3.5,
-   "kick": 2.0,
-   "other": 4.0,
-   "snare": 2.0
+   "kick": 2,
+   "other": 4,
+   "snare": 2
   }
  },
  "clip_bars": {
@@ -337,6 +337,100 @@
    "shape": "curve",
    "start_bar": 34,
    "end_bar": 42
+  }
+ ],
+ "tension": [
+  {
+   "kind": "build",
+   "bar": 2,
+   "evidence": [
+    "automation 0 volume rise"
+   ],
+   "confidence": 0.4,
+   "end_bar": 3
+  },
+  {
+   "kind": "breakdown",
+   "bar": 19,
+   "evidence": [
+    "layers 3.0 -> 1"
+   ],
+   "confidence": 0.35
+  },
+  {
+   "kind": "breakdown",
+   "bar": 22,
+   "evidence": [
+    "automation 1 volume fall"
+   ],
+   "confidence": 0.3,
+   "end_bar": 24
+  },
+  {
+   "kind": "drop",
+   "bar": 22,
+   "evidence": [
+    "layers 1.0 -> 4"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 26,
+   "evidence": [
+    "layers 2.5 -> 4"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 30,
+   "evidence": [
+    "layers 3.5 -> 9"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 39,
+   "evidence": [
+    "layers 8.0 -> 11"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 48,
+   "evidence": [
+    "layers 8.0 -> 2"
+   ],
+   "confidence": 0.35
+  },
+  {
+   "kind": "build",
+   "bar": 50,
+   "evidence": [
+    "automation 2 volume rise"
+   ],
+   "confidence": 0.4,
+   "end_bar": 51
+  },
+  {
+   "kind": "drop",
+   "bar": 50,
+   "evidence": [
+    "layers 3.5 -> 10"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 59,
+   "evidence": [
+    "automation 3 volume fall"
+   ],
+   "confidence": 0.3,
+   "end_bar": 63
   }
  ],
  "routing": {

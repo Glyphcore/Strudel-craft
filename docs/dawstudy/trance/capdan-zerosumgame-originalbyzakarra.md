@@ -1,13 +1,13 @@
 # CapDan-ZeroSumGame-OriginalByZakarra.mmpz
 
-Format lmms, tempo 144.0, meter 4/4, 139 bars (231.7 s). Tracks 14 (14 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
+Format lmms, tempo 144, meter 4/4, 139 bars (231.7 s). Tracks 14 (14 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
 
 | # | section | start bar | bars | layers median / max | roles | source |
 |---|---|---|---|---|---|---|
-| 1 | intro | 1 | 8 | 3.0 / 3 | kick, other, snare | inferred |
-| 2 | breakdown | 9 | 36 | 4.0 / 7 | fx, hat, kick, other, snare, sub | inferred |
-| 3 | breakdown | 45 | 16 | 5.0 / 7 | fx, hat, other, pad, snare, sub | inferred |
-| 4 | body | 61 | 44 | 8.0 / 12 | bass, fx, hat, kick, other, pad, snare, sub | inferred |
+| 1 | intro | 1 | 8 | 3 / 3 | kick, other, snare | inferred |
+| 2 | breakdown | 9 | 36 | 4 / 7 | fx, hat, kick, other, snare, sub | inferred |
+| 3 | breakdown | 45 | 16 | 5 / 7 | fx, hat, other, pad, snare, sub | inferred |
+| 4 | body | 61 | 44 | 8 / 12 | bass, fx, hat, kick, other, pad, snare, sub | inferred |
 | 5 | body | 105 | 35 | 7 / 12 | bass, hat, kick, other, pad, snare, sub | inferred |
 
 Roles: {'bass': 1, 'fx': 1, 'hat': 3, 'kick': 1, 'other': 1, 'pad': 2, 'snare': 3, 'sub': 2}

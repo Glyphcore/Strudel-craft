@@ -1,11 +1,11 @@
 # DirtyLove.mmpz
 
-Format lmms, tempo 177.0, meter 4/4, 67 bars (90.8 s). Tracks 14 (14 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
+Format lmms, tempo 177, meter 4/4, 67 bars (90.8 s). Tracks 14 (14 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
 
 | # | section | start bar | bars | layers median / max | roles | source |
 |---|---|---|---|---|---|---|
-| 1 | intro | 1 | 8 | 2.0 / 3 | bass, hat, lead | inferred |
-| 2 | body | 9 | 56 | 7.0 / 10 | bass, fx, hat, kick, lead, other, pad, snare, vox | inferred |
+| 1 | intro | 1 | 8 | 2 / 3 | bass, hat, lead | inferred |
+| 2 | body | 9 | 56 | 7 / 10 | bass, fx, hat, kick, lead, other, pad, snare, vox | inferred |
 | 3 | outro | 65 | 3 | 1 / 1 | other | inferred |
 
 Roles: {'bass': 1, 'fx': 2, 'hat': 2, 'kick': 1, 'lead': 1, 'other': 2, 'pad': 1, 'snare': 3, 'vox': 1}

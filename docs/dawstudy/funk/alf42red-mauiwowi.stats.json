@@ -1,7 +1,7 @@
 {
  "schema": "dawstudy-stats@1",
  "format": "lmms",
- "tempo": 102.0,
+ "tempo": 102,
  "meter": [
   4,
   4
@@ -29,7 +29,7 @@
    "start_bar": 1,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 9,
    "roles": [
     "hat",
@@ -43,7 +43,7 @@
    "start_bar": 5,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 0,
    "roles": []
   },
@@ -52,7 +52,7 @@
    "start_bar": 9,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 11,
    "roles": [
     "hat",
@@ -66,7 +66,7 @@
    "start_bar": 13,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 1,
    "roles": [
     "other"
@@ -77,7 +77,7 @@
    "start_bar": 17,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 12,
    "roles": [
     "guitar",
@@ -92,7 +92,7 @@
    "start_bar": 21,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 0,
    "roles": []
   },
@@ -101,7 +101,7 @@
    "start_bar": 25,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 12,
    "roles": [
     "guitar",
@@ -116,7 +116,7 @@
    "start_bar": 29,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 0,
    "roles": []
   },
@@ -175,11 +175,11 @@
   "median": 0,
   "max": 12,
   "notes_per_bar_by_role": {
-   "guitar": 265.0,
-   "hat": 16.0,
-   "kick": 54.0,
-   "other": 35.0,
-   "snare": 16.0
+   "guitar": 265,
+   "hat": 16,
+   "kick": 54,
+   "other": 35,
+   "snare": 16
   }
  },
  "clip_bars": {
@@ -249,6 +249,84 @@
    "shape": "fall",
    "start_bar": 33,
    "end_bar": 38
+  }
+ ],
+ "tension": [
+  {
+   "kind": "breakdown",
+   "bar": 3,
+   "evidence": [
+    "layers 4.5 -> 0"
+   ],
+   "confidence": 0.35
+  },
+  {
+   "kind": "drop",
+   "bar": 9,
+   "evidence": [
+    "layers 0.0 -> 11"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 10,
+   "evidence": [
+    "layers 5.5 -> 0",
+    "layers 5.5 -> 0"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 17,
+   "evidence": [
+    "layers 0.5 -> 12"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 18,
+   "evidence": [
+    "layers 6.5 -> 0",
+    "layers 6.0 -> 0"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 25,
+   "evidence": [
+    "layers 0.0 -> 12"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 26,
+   "evidence": [
+    "layers 6.0 -> 0",
+    "layers 6.0 -> 0"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 33,
+   "evidence": [
+    "automation 1 volume fall"
+   ],
+   "confidence": 0.3,
+   "end_bar": 38
+  },
+  {
+   "kind": "drop",
+   "bar": 33,
+   "evidence": [
+    "layers 0.0 -> 11"
+   ],
+   "confidence": 0.4
   }
  ],
  "routing": {

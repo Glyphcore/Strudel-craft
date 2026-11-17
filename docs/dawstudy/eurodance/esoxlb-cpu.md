@@ -1,15 +1,15 @@
 # EsoXLB-CPU.mmpz
 
-Format lmms, tempo 128.0, meter 4/4, 120 bars (225.0 s). Tracks 17 (17 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
+Format lmms, tempo 128, meter 4/4, 120 bars (225 s). Tracks 17 (17 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
 
 | # | section | start bar | bars | layers median / max | roles | source |
 |---|---|---|---|---|---|---|
-| 1 | intro | 1 | 4 | 2.0 / 2 | other | inferred |
-| 2 | breakdown | 5 | 4 | 3.0 / 3 | hat, other | inferred |
-| 3 | body | 9 | 24 | 7.0 / 9 | bass, hat, kick, other, snare | inferred |
+| 1 | intro | 1 | 4 | 2 / 2 | other | inferred |
+| 2 | breakdown | 5 | 4 | 3 / 3 | hat, other | inferred |
+| 3 | body | 9 | 24 | 7 / 9 | bass, hat, kick, other, snare | inferred |
 | 4 | breakdown | 33 | 8 | 3.5 / 6 | bass, other, snare | inferred |
-| 5 | body | 41 | 32 | 11.0 / 12 | bass, hat, kick, other, snare | inferred |
-| 6 | outro | 73 | 48 | 8.0 / 13 | bass, hat, kick, lead, other, snare | inferred |
+| 5 | body | 41 | 32 | 11 / 12 | bass, hat, kick, other, snare | inferred |
+| 6 | outro | 73 | 48 | 8 / 13 | bass, hat, kick, lead, other, snare | inferred |
 
 Roles: {'bass': 1, 'hat': 4, 'kick': 1, 'lead': 1, 'other': 8, 'snare': 2}
 FX type frequency: {'delay': 3, 'limiter': 1, 'modulation': 2, 'other': 1, 'reverb': 3, 'sidechain': 1}

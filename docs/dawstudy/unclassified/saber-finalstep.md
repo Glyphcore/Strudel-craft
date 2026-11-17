@@ -1,11 +1,11 @@
 # Saber-FinalStep.mmpz
 
-Format lmms, tempo 140.0, meter 4/4, 73 bars (125.1 s). Tracks 23 (23 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
+Format lmms, tempo 140, meter 4/4, 73 bars (125.1 s). Tracks 23 (23 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
 
 | # | section | start bar | bars | layers median / max | roles | source |
 |---|---|---|---|---|---|---|
-| 1 | intro | 1 | 4 | 0.0 / 1 | other | inferred |
-| 2 | breakdown | 5 | 8 | 1.0 / 2 | kick, other, snare | inferred |
+| 1 | intro | 1 | 4 | 0 / 1 | other | inferred |
+| 2 | breakdown | 5 | 8 | 1 / 2 | kick, other, snare | inferred |
 | 3 | breakdown | 13 | 4 | 1.5 / 2 | hat, kick, other | inferred |
 | 4 | breakdown | 17 | 4 | 1.5 / 4 | kick, other, snare | inferred |
 | 5 | outro | 21 | 53 | 8 / 11 | hat, kick, other, snare | inferred |

@@ -1,7 +1,7 @@
 {
  "schema": "dawstudy-stats@1",
  "format": "lmms",
- "tempo": 200.0,
+ "tempo": 200,
  "meter": [
   4,
   4
@@ -29,7 +29,7 @@
    "start_bar": 1,
    "bars": 56,
    "source": "inferred",
-   "layers_median": 1.0,
+   "layers_median": 1,
    "layers_max": 2,
    "roles": [
     "other"
@@ -40,7 +40,7 @@
    "start_bar": 57,
    "bars": 64,
    "source": "inferred",
-   "layers_median": 3.0,
+   "layers_median": 3,
    "layers_max": 4,
    "roles": [
     "bass",
@@ -53,7 +53,7 @@
    "start_bar": 121,
    "bars": 28,
    "source": "inferred",
-   "layers_median": 4.0,
+   "layers_median": 4,
    "layers_max": 4,
    "roles": [
     "bass",
@@ -66,7 +66,7 @@
    "start_bar": 149,
    "bars": 36,
    "source": "inferred",
-   "layers_median": 9.0,
+   "layers_median": 9,
    "layers_max": 9,
    "roles": [
     "bass",
@@ -81,7 +81,7 @@
    "start_bar": 185,
    "bars": 8,
    "source": "inferred",
-   "layers_median": 3.0,
+   "layers_median": 3,
    "layers_max": 3,
    "roles": [
     "keys",
@@ -284,14 +284,14 @@
    1,
    1
   ],
-  "median": 3.0,
+  "median": 3,
   "max": 9,
   "notes_per_bar_by_role": {
    "bass": 4.625,
-   "hat": 35.0,
+   "hat": 35,
    "keys": 1.75,
-   "kick": 2.0,
-   "other": 4.0
+   "kick": 2,
+   "other": 4
   }
  },
  "clip_bars": {
@@ -369,6 +369,59 @@
    "shape": "rise",
    "start_bar": 121,
    "end_bar": 122
+  }
+ ],
+ "tension": [
+  {
+   "kind": "drop",
+   "bar": 87,
+   "evidence": [
+    "layers 2.0 -> 3"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "build",
+   "bar": 121,
+   "evidence": [
+    "automation 2 volume rise"
+   ],
+   "confidence": 0.4,
+   "end_bar": 122
+  },
+  {
+   "kind": "drop",
+   "bar": 151,
+   "evidence": [
+    "layers 4.0 -> 8"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "build",
+   "bar": 159,
+   "evidence": [
+    "automation 1 volume rise"
+   ],
+   "confidence": 0.4,
+   "end_bar": 160
+  },
+  {
+   "kind": "breakdown",
+   "bar": 183,
+   "evidence": [
+    "layers 9.0 -> 3",
+    "layers 6.0 -> 3"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 191,
+   "evidence": [
+    "layers 3.0 -> 1"
+   ],
+   "confidence": 0.35
   }
  ],
  "routing": {

@@ -1,7 +1,7 @@
 {
  "schema": "dawstudy-stats@1",
  "format": "lmms",
- "tempo": 148.0,
+ "tempo": 148,
  "meter": [
   4,
   4
@@ -33,7 +33,7 @@
    "start_bar": 1,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 1,
    "roles": [
     "lead"
@@ -44,7 +44,7 @@
    "start_bar": 5,
    "bars": 8,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 1,
    "roles": [
     "fx"
@@ -55,7 +55,7 @@
    "start_bar": 13,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 1,
    "roles": [
     "other"
@@ -66,7 +66,7 @@
    "start_bar": 17,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 2,
    "roles": [
     "lead",
@@ -78,7 +78,7 @@
    "start_bar": 21,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 1,
    "roles": [
     "fx"
@@ -89,7 +89,7 @@
    "start_bar": 25,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 0,
    "roles": []
   },
@@ -98,7 +98,7 @@
    "start_bar": 29,
    "bars": 8,
    "source": "inferred",
-   "layers_median": 8.0,
+   "layers_median": 8,
    "layers_max": 11,
    "roles": [
     "bass",
@@ -115,7 +115,7 @@
    "start_bar": 37,
    "bars": 12,
    "source": "inferred",
-   "layers_median": 8.0,
+   "layers_median": 8,
    "layers_max": 9,
    "roles": [
     "fx",
@@ -129,7 +129,7 @@
    "start_bar": 49,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 8.0,
+   "layers_median": 8,
    "layers_max": 11,
    "roles": [
     "bass",
@@ -146,7 +146,7 @@
    "start_bar": 53,
    "bars": 12,
    "source": "inferred",
-   "layers_median": 8.0,
+   "layers_median": 8,
    "layers_max": 13,
    "roles": [
     "fx",
@@ -160,7 +160,7 @@
    "start_bar": 65,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 6.0,
+   "layers_median": 6,
    "layers_max": 11,
    "roles": [
     "hat",
@@ -175,7 +175,7 @@
    "start_bar": 69,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 15.0,
+   "layers_median": 15,
    "layers_max": 18,
    "roles": [
     "bass",
@@ -193,7 +193,7 @@
    "start_bar": 73,
    "bars": 12,
    "source": "inferred",
-   "layers_median": 15.0,
+   "layers_median": 15,
    "layers_max": 16,
    "roles": [
     "fx",
@@ -226,7 +226,7 @@
    "start_bar": 89,
    "bars": 12,
    "source": "inferred",
-   "layers_median": 15.0,
+   "layers_median": 15,
    "layers_max": 16,
    "roles": [
     "fx",
@@ -242,7 +242,7 @@
    "start_bar": 101,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 8.0,
+   "layers_median": 8,
    "layers_max": 11,
    "roles": [
     "bass",
@@ -259,7 +259,7 @@
    "start_bar": 105,
    "bars": 12,
    "source": "inferred",
-   "layers_median": 8.0,
+   "layers_median": 8,
    "layers_max": 9,
    "roles": [
     "fx",
@@ -290,7 +290,7 @@
    "start_bar": 121,
    "bars": 12,
    "source": "inferred",
-   "layers_median": 8.0,
+   "layers_median": 8,
    "layers_max": 13,
    "roles": [
     "fx",
@@ -304,7 +304,7 @@
    "start_bar": 133,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 15.0,
+   "layers_median": 15,
    "layers_max": 18,
    "roles": [
     "bass",
@@ -322,7 +322,7 @@
    "start_bar": 137,
    "bars": 12,
    "source": "inferred",
-   "layers_median": 15.0,
+   "layers_median": 15,
    "layers_max": 15,
    "roles": [
     "fx",
@@ -337,7 +337,7 @@
    "start_bar": 149,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 18.0,
+   "layers_median": 18,
    "layers_max": 22,
    "roles": [
     "bass",
@@ -355,7 +355,7 @@
    "start_bar": 153,
    "bars": 12,
    "source": "inferred",
-   "layers_median": 18.0,
+   "layers_median": 18,
    "layers_max": 19,
    "roles": [
     "fx",
@@ -370,7 +370,7 @@
    "start_bar": 165,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 1.0,
+   "layers_median": 1,
    "layers_max": 5,
    "roles": [
     "bass",
@@ -386,7 +386,7 @@
    "start_bar": 169,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 0,
    "roles": []
   },
@@ -395,7 +395,7 @@
    "start_bar": 173,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 0.0,
+   "layers_median": 0,
    "layers_max": 1,
    "roles": [
     "fx"
@@ -406,7 +406,7 @@
    "start_bar": 177,
    "bars": 6,
    "source": "inferred",
-   "layers_median": 11.0,
+   "layers_median": 11,
    "layers_max": 11,
    "roles": [
     "hat",
@@ -601,18 +601,18 @@
    11,
    11
   ],
-  "median": 8.0,
+  "median": 8,
   "max": 22,
   "notes_per_bar_by_role": {
-   "bass": 128.0,
-   "fx": 4.0,
-   "hat": 5.0,
-   "kick": 3.0,
-   "lead": 128.0,
-   "other": 6.0,
+   "bass": 128,
+   "fx": 4,
+   "hat": 5,
+   "kick": 3,
+   "lead": 128,
+   "other": 6,
    "pad": 4.5,
-   "snare": 4.0,
-   "vox": 21.0
+   "snare": 4,
+   "vox": 21
   }
  },
  "clip_bars": {
@@ -677,8 +677,8 @@
    "filter": 1,
    "modulation": 1,
    "other": 2,
-   "reverb": 2,
-   "pitch_fx": 2
+   "pitch_fx": 2,
+   "reverb": 2
   }
  },
  "automation": [
@@ -705,6 +705,407 @@
    "shape": "fall",
    "start_bar": 177,
    "end_bar": 182
+  }
+ ],
+ "tension": [
+  {
+   "kind": "fill",
+   "bar": 6,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "fill",
+   "bar": 11,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "fill",
+   "bar": 22,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "build",
+   "bar": 31,
+   "evidence": [
+    "fx clip 2 bars (riser)"
+   ],
+   "confidence": 0.3,
+   "end_bar": 32
+  },
+  {
+   "kind": "drop",
+   "bar": 31,
+   "evidence": [
+    "layers 0.0 -> 5",
+    "layers 2.5 -> 9"
+   ],
+   "confidence": 0.45
+  },
+  {
+   "kind": "fill",
+   "bar": 31,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "build",
+   "bar": 33,
+   "evidence": [
+    "fx clip 16 bars (riser)"
+   ],
+   "confidence": 0.3,
+   "end_bar": 48
+  },
+  {
+   "kind": "drop",
+   "bar": 33,
+   "evidence": [
+    "fx riser ends",
+    "layers 7.0 -> 11"
+   ],
+   "confidence": 0.65
+  },
+  {
+   "kind": "fill",
+   "bar": 38,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "fill",
+   "bar": 45,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "build",
+   "bar": 49,
+   "evidence": [
+    "fx clip 16 bars (riser)"
+   ],
+   "confidence": 0.3,
+   "end_bar": 64
+  },
+  {
+   "kind": "drop",
+   "bar": 49,
+   "evidence": [
+    "fx riser ends",
+    "layers 8.0 -> 11"
+   ],
+   "confidence": 0.65
+  },
+  {
+   "kind": "fill",
+   "bar": 58,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "fill",
+   "bar": 61,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "fill",
+   "bar": 63,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "drop",
+   "bar": 64,
+   "evidence": [
+    "layers 8.5 -> 13",
+    "fx riser ends"
+   ],
+   "confidence": 0.45
+  },
+  {
+   "kind": "breakdown",
+   "bar": 65,
+   "evidence": [
+    "layers 11.0 -> 1",
+    "layers 7.0 -> 0"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 67,
+   "evidence": [
+    "layers 0.5 -> 11",
+    "layers 5.5 -> 11"
+   ],
+   "confidence": 0.45
+  },
+  {
+   "kind": "build",
+   "bar": 69,
+   "evidence": [
+    "fx clip 16 bars (riser)",
+    "fx clip 16 bars (riser)"
+   ],
+   "confidence": 0.6,
+   "end_bar": 84
+  },
+  {
+   "kind": "drop",
+   "bar": 69,
+   "evidence": [
+    "layers 11.0 -> 18"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "fill",
+   "bar": 78,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "build",
+   "bar": 85,
+   "evidence": [
+    "fx clip 16 bars (riser)",
+    "fx clip 16 bars (riser)"
+   ],
+   "confidence": 0.6,
+   "end_bar": 100
+  },
+  {
+   "kind": "drop",
+   "bar": 85,
+   "evidence": [
+    "fx riser ends",
+    "fx riser ends",
+    "layers 15.0 -> 18"
+   ],
+   "confidence": 0.9
+  },
+  {
+   "kind": "fill",
+   "bar": 88,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "fill",
+   "bar": 99,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "breakdown",
+   "bar": 101,
+   "evidence": [
+    "layers 16.0 -> 11",
+    "layers 13.5 -> 8"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "build",
+   "bar": 101,
+   "evidence": [
+    "fx clip 16 bars (riser)"
+   ],
+   "confidence": 0.3,
+   "end_bar": 116
+  },
+  {
+   "kind": "drop",
+   "bar": 101,
+   "evidence": [
+    "fx riser ends",
+    "fx riser ends"
+   ],
+   "confidence": 0.5
+  },
+  {
+   "kind": "fill",
+   "bar": 110,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "build",
+   "bar": 117,
+   "evidence": [
+    "fx clip 16 bars (riser)"
+   ],
+   "confidence": 0.3,
+   "end_bar": 132
+  },
+  {
+   "kind": "drop",
+   "bar": 117,
+   "evidence": [
+    "fx riser ends",
+    "layers 8.0 -> 12"
+   ],
+   "confidence": 0.65
+  },
+  {
+   "kind": "fill",
+   "bar": 117,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "fill",
+   "bar": 126,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "fill",
+   "bar": 129,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "fill",
+   "bar": 131,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "drop",
+   "bar": 132,
+   "evidence": [
+    "layers 8.5 -> 13",
+    "fx riser ends",
+    "layers 11.0 -> 18"
+   ],
+   "confidence": 0.7
+  },
+  {
+   "kind": "build",
+   "bar": 133,
+   "evidence": [
+    "fx clip 16 bars (riser)",
+    "fx clip 16 bars (riser)"
+   ],
+   "confidence": 0.6,
+   "end_bar": 148
+  },
+  {
+   "kind": "breakdown",
+   "bar": 148,
+   "evidence": [
+    "layers 15.0 -> 12"
+   ],
+   "confidence": 0.35
+  },
+  {
+   "kind": "build",
+   "bar": 149,
+   "evidence": [
+    "fx clip 16 bars (riser)",
+    "fx clip 16 bars (riser)"
+   ],
+   "confidence": 0.6,
+   "end_bar": 164
+  },
+  {
+   "kind": "drop",
+   "bar": 149,
+   "evidence": [
+    "fx riser ends",
+    "fx riser ends",
+    "layers 13.5 -> 22"
+   ],
+   "confidence": 0.9
+  },
+  {
+   "kind": "fill",
+   "bar": 163,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "breakdown",
+   "bar": 165,
+   "evidence": [
+    "layers 18.5 -> 5",
+    "layers 11.5 -> 0"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 165,
+   "evidence": [
+    "fx riser ends",
+    "fx riser ends"
+   ],
+   "confidence": 0.5
+  },
+  {
+   "kind": "fill",
+   "bar": 167,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "fill",
+   "bar": 174,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "drop",
+   "bar": 179,
+   "evidence": [
+    "layers 0.0 -> 11",
+    "layers 5.5 -> 11"
+   ],
+   "confidence": 0.45
   }
  ],
  "routing": {

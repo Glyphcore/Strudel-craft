@@ -1,14 +1,14 @@
 {
  "schema": "dawstudy-stats@1",
  "format": "lmms",
- "tempo": 128.0,
+ "tempo": 128,
  "meter": [
   4,
   4
  ],
  "key": null,
  "length_bars": 120,
- "length_s": 225.0,
+ "length_s": 225,
  "tracks": {
   "total": 17,
   "with_clips": 17,
@@ -30,7 +30,7 @@
    "start_bar": 1,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 2.0,
+   "layers_median": 2,
    "layers_max": 2,
    "roles": [
     "other"
@@ -41,7 +41,7 @@
    "start_bar": 5,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 3.0,
+   "layers_median": 3,
    "layers_max": 3,
    "roles": [
     "hat",
@@ -53,7 +53,7 @@
    "start_bar": 9,
    "bars": 24,
    "source": "inferred",
-   "layers_median": 7.0,
+   "layers_median": 7,
    "layers_max": 9,
    "roles": [
     "bass",
@@ -81,7 +81,7 @@
    "start_bar": 41,
    "bars": 32,
    "source": "inferred",
-   "layers_median": 11.0,
+   "layers_median": 11,
    "layers_max": 12,
    "roles": [
     "bass",
@@ -96,7 +96,7 @@
    "start_bar": 73,
    "bars": 48,
    "source": "inferred",
-   "layers_median": 8.0,
+   "layers_median": 8,
    "layers_max": 13,
    "roles": [
     "bass",
@@ -231,15 +231,15 @@
    11,
    13
   ],
-  "median": 8.0,
+  "median": 8,
   "max": 13,
   "notes_per_bar_by_role": {
-   "bass": 11.0,
-   "hat": 1.0,
-   "kick": 20.0,
-   "lead": 6.0,
-   "other": 1.0,
-   "snare": 11.0
+   "bass": 11,
+   "hat": 1,
+   "kick": 20,
+   "lead": 6,
+   "other": 1,
+   "snare": 11
   }
  },
  "clip_bars": {
@@ -619,6 +619,119 @@
    "shape": "rise",
    "start_bar": 1,
    "end_bar": 5
+  }
+ ],
+ "tension": [
+  {
+   "kind": "build",
+   "bar": 1,
+   "evidence": [
+    "automation 50 wet rise"
+   ],
+   "confidence": 0.4,
+   "end_bar": 5
+  },
+  {
+   "kind": "drop",
+   "bar": 5,
+   "evidence": [
+    "layers 2.0 -> 3"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 9,
+   "evidence": [
+    "layers 3.0 -> 5"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 33,
+   "evidence": [
+    "layers 8.5 -> 3",
+    "layers 6.0 -> 3"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 41,
+   "evidence": [
+    "layers 5.5 -> 10"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 73,
+   "evidence": [
+    "layers 11.0 -> 6",
+    "layers 8.5 -> 4"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "build",
+   "bar": 73,
+   "evidence": [
+    "automation 17 cutoff rise",
+    "automation 18 cutoff rise",
+    "automation 40 volume rise"
+   ],
+   "confidence": 0.95,
+   "end_bar": 81
+  },
+  {
+   "kind": "drop",
+   "bar": 81,
+   "evidence": [
+    "layers 4.0 -> 6"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 85,
+   "evidence": [
+    "ramp 17 ends, layers rise",
+    "ramp 18 ends, layers rise"
+   ],
+   "confidence": 0.6
+  },
+  {
+   "kind": "drop",
+   "bar": 89,
+   "evidence": [
+    "layers 5.5 -> 10"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 97,
+   "evidence": [
+    "layers 6.5 -> 11"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 109,
+   "evidence": [
+    "layers 8.5 -> 12"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 113,
+   "evidence": [
+    "layers 10.0 -> 13"
+   ],
+   "confidence": 0.4
   }
  ],
  "routing": {

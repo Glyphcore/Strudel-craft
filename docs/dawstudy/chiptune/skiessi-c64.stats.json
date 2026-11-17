@@ -1,7 +1,7 @@
 {
  "schema": "dawstudy-stats@1",
  "format": "lmms",
- "tempo": 127.0,
+ "tempo": 127,
  "meter": [
   4,
   4
@@ -55,7 +55,7 @@
   "median": 9,
   "max": 9,
   "notes_per_bar_by_role": {
-   "other": 6.0
+   "other": 6
   }
  },
  "clip_bars": {
@@ -68,6 +68,16 @@
   "type_frequency": {}
  },
  "automation": [],
+ "tension": [
+  {
+   "kind": "breakdown",
+   "bar": 17,
+   "evidence": [
+    "layers 8.0 -> 1"
+   ],
+   "confidence": 0.35
+  }
+ ],
  "routing": {
   "buses": 0,
   "sends": 0,

@@ -1,7 +1,7 @@
 {
  "schema": "dawstudy-stats@1",
  "format": "lmms",
- "tempo": 177.0,
+ "tempo": 177,
  "meter": [
   4,
   4
@@ -33,7 +33,7 @@
    "start_bar": 1,
    "bars": 8,
    "source": "inferred",
-   "layers_median": 2.0,
+   "layers_median": 2,
    "layers_max": 3,
    "roles": [
     "bass",
@@ -46,7 +46,7 @@
    "start_bar": 9,
    "bars": 56,
    "source": "inferred",
-   "layers_median": 7.0,
+   "layers_median": 7,
    "layers_max": 10,
    "roles": [
     "bass",
@@ -145,14 +145,14 @@
   "median": 7,
   "max": 10,
   "notes_per_bar_by_role": {
-   "bass": 2.0,
-   "fx": 1.0,
+   "bass": 2,
+   "fx": 1,
    "hat": 12.5,
-   "kick": 3.0,
-   "lead": 3.0,
+   "kick": 3,
+   "lead": 3,
    "other": 2.25,
    "pad": 7.125,
-   "snare": 2.0,
+   "snare": 2,
    "vox": 3.25
   }
  },
@@ -329,6 +329,86 @@
    "shape": "fall",
    "start_bar": 65,
    "end_bar": 66
+  }
+ ],
+ "tension": [
+  {
+   "kind": "drop",
+   "bar": 8,
+   "evidence": [
+    "layers 2.0 -> 3",
+    "layers 2.5 -> 6"
+   ],
+   "confidence": 0.45
+  },
+  {
+   "kind": "build",
+   "bar": 9,
+   "evidence": [
+    "automation 7 volume rise"
+   ],
+   "confidence": 0.4,
+   "end_bar": 41
+  },
+  {
+   "kind": "fill",
+   "bar": 17,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "fill",
+   "bar": 24,
+   "evidence": [
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.2
+  },
+  {
+   "kind": "breakdown",
+   "bar": 39,
+   "evidence": [
+    "layers 7.0 -> 2"
+   ],
+   "confidence": 0.35
+  },
+  {
+   "kind": "drop",
+   "bar": 40,
+   "evidence": [
+    "layers 4.5 -> 10",
+    "layers 6.0 -> 9"
+   ],
+   "confidence": 0.45
+  },
+  {
+   "kind": "fill",
+   "bar": 40,
+   "evidence": [
+    "fx one-bar clip (impact / fill)",
+    "fx one-bar clip (impact / fill)"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 57,
+   "evidence": [
+    "automation 4 volume fall"
+   ],
+   "confidence": 0.3,
+   "end_bar": 63
+  },
+  {
+   "kind": "breakdown",
+   "bar": 65,
+   "evidence": [
+    "layers 9.0 -> 1",
+    "layers 5.0 -> 1"
+   ],
+   "confidence": 0.4
   }
  ],
  "routing": {

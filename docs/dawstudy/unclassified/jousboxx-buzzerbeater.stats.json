@@ -1,7 +1,7 @@
 {
  "schema": "dawstudy-stats@1",
  "format": "lmms",
- "tempo": 128.0,
+ "tempo": 128,
  "meter": [
   4,
   4
@@ -25,7 +25,7 @@
    "start_bar": 1,
    "bars": 114,
    "source": "inferred",
-   "layers_median": 9.0,
+   "layers_median": 9,
    "layers_max": 28,
    "roles": [
     "kick"
@@ -149,10 +149,10 @@
    15,
    13
   ],
-  "median": 9.0,
+  "median": 9,
   "max": 28,
   "notes_per_bar_by_role": {
-   "kick": 16.0
+   "kick": 16
   }
  },
  "clip_bars": {
@@ -1505,6 +1505,539 @@
    "shape": "curve",
    "start_bar": 98,
    "end_bar": 100
+  }
+ ],
+ "tension": [
+  {
+   "kind": "breakdown",
+   "bar": 1,
+   "evidence": [
+    "automation 109 cutoff fall",
+    "automation 110 cutoff fall"
+   ],
+   "confidence": 0.6,
+   "end_bar": 9
+  },
+  {
+   "kind": "switch",
+   "bar": 1,
+   "evidence": [
+    "automation 7 mute/enable step"
+   ],
+   "confidence": 0.3
+  },
+  {
+   "kind": "build",
+   "bar": 9,
+   "evidence": [
+    "automation 95 volume rise",
+    "automation 99 cutoff rise"
+   ],
+   "confidence": 0.8,
+   "end_bar": 17
+  },
+  {
+   "kind": "drop",
+   "bar": 9,
+   "evidence": [
+    "layers 10.0 -> 18"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "build",
+   "bar": 17,
+   "evidence": [
+    "automation 27 cutoff rise",
+    "automation 79 cutoff rise"
+   ],
+   "confidence": 0.8,
+   "end_bar": 25
+  },
+  {
+   "kind": "breakdown",
+   "bar": 18,
+   "evidence": [
+    "layers 14.0 -> 0",
+    "layers 6.5 -> 0"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 21,
+   "evidence": [
+    "layers 0.0 -> 12"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 22,
+   "evidence": [
+    "layers 6.0 -> 0",
+    "layers 6.0 -> 0"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 25,
+   "evidence": [
+    "layers 0.0 -> 15"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 26,
+   "evidence": [
+    "layers 7.5 -> 3",
+    "layers 9.0 -> 3"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 29,
+   "evidence": [
+    "layers 3.0 -> 15"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 30,
+   "evidence": [
+    "layers 9.0 -> 3",
+    "layers 9.0 -> 3"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "build",
+   "bar": 33,
+   "evidence": [
+    "automation 113 cutoff rise",
+    "automation 114 cutoff rise"
+   ],
+   "confidence": 0.8,
+   "end_bar": 41
+  },
+  {
+   "kind": "drop",
+   "bar": 33,
+   "evidence": [
+    "layers 3.0 -> 18"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 34,
+   "evidence": [
+    "layers 10.5 -> 5",
+    "layers 11.5 -> 5"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 37,
+   "evidence": [
+    "layers 5.0 -> 17"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 38,
+   "evidence": [
+    "layers 11.0 -> 5",
+    "layers 11.0 -> 5"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 41,
+   "evidence": [
+    "layers 6.0 -> 20"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 42,
+   "evidence": [
+    "layers 13.5 -> 5",
+    "layers 12.5 -> 5"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 45,
+   "evidence": [
+    "layers 5.0 -> 20"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 46,
+   "evidence": [
+    "layers 12.5 -> 5",
+    "layers 12.5 -> 5"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "switch",
+   "bar": 48,
+   "evidence": [
+    "automation 11 mute/enable step"
+   ],
+   "confidence": 0.3
+  },
+  {
+   "kind": "drop",
+   "bar": 49,
+   "evidence": [
+    "layers 5.0 -> 21"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 50,
+   "evidence": [
+    "automation 123 cutoff fall",
+    "automation 125 cutoff fall",
+    "layers 13.0 -> 10"
+   ],
+   "confidence": 0.95,
+   "end_bar": 54
+  },
+  {
+   "kind": "build",
+   "bar": 51,
+   "evidence": [
+    "automation 96 volume rise",
+    "automation 100 cutoff rise"
+   ],
+   "confidence": 0.8,
+   "end_bar": 59
+  },
+  {
+   "kind": "drop",
+   "bar": 53,
+   "evidence": [
+    "layers 11.0 -> 25"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 54,
+   "evidence": [
+    "layers 17.0 -> 9",
+    "layers 17.0 -> 9"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 57,
+   "evidence": [
+    "layers 9.0 -> 0",
+    "layers 4.5 -> 0"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 59,
+   "evidence": [
+    "layers 0.0 -> 11"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 60,
+   "evidence": [
+    "layers 5.5 -> 0",
+    "layers 5.5 -> 0"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 63,
+   "evidence": [
+    "layers 0.0 -> 11"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 64,
+   "evidence": [
+    "layers 5.5 -> 0",
+    "layers 5.5 -> 0"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 67,
+   "evidence": [
+    "layers 0.0 -> 19"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 68,
+   "evidence": [
+    "layers 9.5 -> 5",
+    "layers 12.0 -> 5"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 71,
+   "evidence": [
+    "layers 5.0 -> 19"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 72,
+   "evidence": [
+    "layers 12.0 -> 5",
+    "layers 12.0 -> 5"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "build",
+   "bar": 75,
+   "evidence": [
+    "automation 115 cutoff rise",
+    "automation 116 cutoff rise"
+   ],
+   "confidence": 0.8,
+   "end_bar": 83
+  },
+  {
+   "kind": "drop",
+   "bar": 75,
+   "evidence": [
+    "layers 5.0 -> 28"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 76,
+   "evidence": [
+    "layers 16.5 -> 9",
+    "layers 18.5 -> 9"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 79,
+   "evidence": [
+    "layers 9.0 -> 24"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 80,
+   "evidence": [
+    "layers 16.5 -> 9",
+    "layers 16.5 -> 9"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "build",
+   "bar": 83,
+   "evidence": [
+    "automation 137 cutoff rise"
+   ],
+   "confidence": 0.4,
+   "end_bar": 91
+  },
+  {
+   "kind": "drop",
+   "bar": 83,
+   "evidence": [
+    "layers 9.0 -> 18"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 84,
+   "evidence": [
+    "layers 13.5 -> 5",
+    "layers 11.5 -> 5"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 87,
+   "evidence": [
+    "layers 5.0 -> 17"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 88,
+   "evidence": [
+    "layers 11.0 -> 5",
+    "layers 11.0 -> 5"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 91,
+   "evidence": [
+    "layers 6.0 -> 20"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 92,
+   "evidence": [
+    "layers 13.5 -> 5",
+    "layers 12.5 -> 5"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 95,
+   "evidence": [
+    "layers 5.0 -> 20"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 96,
+   "evidence": [
+    "layers 12.5 -> 5",
+    "layers 12.5 -> 5"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "switch",
+   "bar": 98,
+   "evidence": [
+    "automation 14 mute/enable step"
+   ],
+   "confidence": 0.3
+  },
+  {
+   "kind": "build",
+   "bar": 99,
+   "evidence": [
+    "automation 97 volume rise",
+    "automation 101 cutoff rise",
+    "automation 119 cutoff rise",
+    "automation 120 cutoff rise"
+   ],
+   "confidence": 0.95,
+   "end_bar": 107
+  },
+  {
+   "kind": "drop",
+   "bar": 99,
+   "evidence": [
+    "layers 5.0 -> 22"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 100,
+   "evidence": [
+    "automation 124 cutoff fall",
+    "automation 126 cutoff fall",
+    "layers 13.5 -> 10",
+    "layers 16.0 -> 11"
+   ],
+   "confidence": 0.95,
+   "end_bar": 104
+  },
+  {
+   "kind": "drop",
+   "bar": 103,
+   "evidence": [
+    "layers 10.0 -> 25"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 104,
+   "evidence": [
+    "layers 17.0 -> 9",
+    "layers 17.0 -> 9"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 107,
+   "evidence": [
+    "automation 121 cutoff fall",
+    "automation 122 cutoff fall"
+   ],
+   "confidence": 0.6,
+   "end_bar": 109
+  },
+  {
+   "kind": "build",
+   "bar": 107,
+   "evidence": [
+    "automation 98 volume rise",
+    "automation 102 cutoff rise"
+   ],
+   "confidence": 0.8,
+   "end_bar": 115
+  },
+  {
+   "kind": "drop",
+   "bar": 107,
+   "evidence": [
+    "layers 9.0 -> 18"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "build",
+   "bar": 113,
+   "evidence": [
+    "automation 89 wet rise",
+    "automation 90 wet rise"
+   ],
+   "confidence": 0.8,
+   "end_bar": 115
   }
  ],
  "routing": {

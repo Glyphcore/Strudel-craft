@@ -1,6 +1,6 @@
 # Oglsdl-PpTrip.mmpz
 
-Format lmms, tempo 140.0, meter 8/4, 39 bars (133.7 s). Tracks 18 (14 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
+Format lmms, tempo 140, meter 8/4, 39 bars (133.7 s). Tracks 18 (14 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
 
 | # | section | start bar | bars | layers median / max | roles | source |
 |---|---|---|---|---|---|---|

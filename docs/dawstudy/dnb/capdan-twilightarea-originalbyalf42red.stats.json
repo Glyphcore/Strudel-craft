@@ -1,7 +1,7 @@
 {
  "schema": "dawstudy-stats@1",
  "format": "lmms",
- "tempo": 170.0,
+ "tempo": 170,
  "meter": [
   4,
   4
@@ -32,7 +32,7 @@
    "start_bar": 1,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 2.0,
+   "layers_median": 2,
    "layers_max": 2,
    "roles": [
     "other",
@@ -44,7 +44,7 @@
    "start_bar": 5,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 5.0,
+   "layers_median": 5,
    "layers_max": 5,
    "roles": [
     "bass",
@@ -58,7 +58,7 @@
    "start_bar": 9,
    "bars": 64,
    "source": "inferred",
-   "layers_median": 9.0,
+   "layers_median": 9,
    "layers_max": 11,
    "roles": [
     "bass",
@@ -76,7 +76,7 @@
    "start_bar": 73,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 3.0,
+   "layers_median": 3,
    "layers_max": 4,
    "roles": [
     "bass",
@@ -90,7 +90,7 @@
    "start_bar": 77,
    "bars": 12,
    "source": "inferred",
-   "layers_median": 10.0,
+   "layers_median": 10,
    "layers_max": 11,
    "roles": [
     "bass",
@@ -107,7 +107,7 @@
    "start_bar": 89,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 4.0,
+   "layers_median": 4,
    "layers_max": 4,
    "roles": [
     "bass",
@@ -120,7 +120,7 @@
    "start_bar": 93,
    "bars": 8,
    "source": "inferred",
-   "layers_median": 8.0,
+   "layers_median": 8,
    "layers_max": 9,
    "roles": [
     "bass",
@@ -136,7 +136,7 @@
    "start_bar": 101,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 3.0,
+   "layers_median": 3,
    "layers_max": 3,
    "roles": [
     "bass",
@@ -268,13 +268,13 @@
   "max": 11,
   "notes_per_bar_by_role": {
    "bass": 7.375,
-   "hat": 8.0,
+   "hat": 8,
    "keys": 5.625,
-   "kick": 4.0,
-   "lead": 6.0,
+   "kick": 4,
+   "lead": 6,
    "other": 5.25,
    "pad": 3.778,
-   "snare": 4.0
+   "snare": 4
   }
  },
  "clip_bars": {
@@ -394,6 +394,109 @@
    "shape": "rise",
    "start_bar": 25,
    "end_bar": 33
+  }
+ ],
+ "tension": [
+  {
+   "kind": "drop",
+   "bar": 5,
+   "evidence": [
+    "layers 2.0 -> 5"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 9,
+   "evidence": [
+    "layers 5.0 -> 8"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "build",
+   "bar": 25,
+   "evidence": [
+    "automation 0 cutoff rise",
+    "automation 1 cutoff rise"
+   ],
+   "confidence": 0.8,
+   "end_bar": 33
+  },
+  {
+   "kind": "breakdown",
+   "bar": 47,
+   "evidence": [
+    "layers 9.0 -> 6"
+   ],
+   "confidence": 0.35
+  },
+  {
+   "kind": "drop",
+   "bar": 49,
+   "evidence": [
+    "layers 6.0 -> 9"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 73,
+   "evidence": [
+    "layers 10.0 -> 4",
+    "layers 7.0 -> 3"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 77,
+   "evidence": [
+    "layers 3.0 -> 8"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 81,
+   "evidence": [
+    "layers 8.0 -> 11"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 89,
+   "evidence": [
+    "layers 10.0 -> 4",
+    "layers 7.0 -> 4"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 93,
+   "evidence": [
+    "layers 4.0 -> 9"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 101,
+   "evidence": [
+    "layers 8.0 -> 3",
+    "layers 5.5 -> 3"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 105,
+   "evidence": [
+    "layers 3.0 -> 1"
+   ],
+   "confidence": 0.35
   }
  ],
  "routing": {

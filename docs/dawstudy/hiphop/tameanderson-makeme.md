@@ -1,11 +1,11 @@
 # TameAnderson-MakeMe.mmpz
 
-Format lmms, tempo 140.0, meter 4/4, 145 bars (248.6 s). Tracks 25 (7 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
+Format lmms, tempo 140, meter 4/4, 145 bars (248.6 s). Tracks 25 (7 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
 
 | # | section | start bar | bars | layers median / max | roles | source |
 |---|---|---|---|---|---|---|
-| 1 | intro | 1 | 16 | 2.0 / 3 | other | inferred |
-| 2 | body | 17 | 128 | 6.0 / 7 | hat, kick, other, snare | inferred |
+| 1 | intro | 1 | 16 | 2 / 3 | other | inferred |
+| 2 | body | 17 | 128 | 6 / 7 | hat, kick, other, snare | inferred |
 | 3 | outro | 145 | 1 | 1 / 1 | other | inferred |
 
 Roles: {'hat': 1, 'kick': 1, 'other': 4, 'snare': 1}

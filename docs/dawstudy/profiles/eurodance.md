@@ -1,13 +1,13 @@
 # Form profile: eurodance (n = 1, measured (n < 3: indicative only))
 
-Tempo 128.0-128.0 (median 128.0); length median 120 bars (120-120); tracks with clips median 17; sends median 0; projects with sidechain 1.
+Tempo 128-128 (median 128); length median 120 bars (120-120); tracks with clips median 17; sends median 0; projects with sidechain 1.
 
 | section role | count | median bars | median layers |
 |---|---|---|---|
 | body | 2 | 28.0 | 9.0 |
 | breakdown | 2 | 6.0 | 3.25 |
-| intro | 1 | 4 | 2.0 |
-| outro | 1 | 48 | 8.0 |
+| intro | 1 | 4 | 2 |
+| outro | 1 | 48 | 8 |
 
 Density curve (median layers per 5 % of the song): 2.33 4.33 6 7.17 8.33 4.83 6.33 9.67 10 10.67 11 10.83 4.5 4.33 6.17 6.83 9.17 9.5 10.83 11.17
 

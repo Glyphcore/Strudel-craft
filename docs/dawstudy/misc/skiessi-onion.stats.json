@@ -1,7 +1,7 @@
 {
  "schema": "dawstudy-stats@1",
  "format": "lmms",
- "tempo": 140.0,
+ "tempo": 140,
  "meter": [
   1,
   1
@@ -29,7 +29,7 @@
    "start_bar": 1,
    "bars": 8,
    "source": "inferred",
-   "layers_median": 1.0,
+   "layers_median": 1,
    "layers_max": 1,
    "roles": [
     "pad"
@@ -40,7 +40,7 @@
    "start_bar": 9,
    "bars": 20,
    "source": "inferred",
-   "layers_median": 3.0,
+   "layers_median": 3,
    "layers_max": 4,
    "roles": [
     "hat",
@@ -53,7 +53,7 @@
    "start_bar": 29,
    "bars": 76,
    "source": "inferred",
-   "layers_median": 18.0,
+   "layers_median": 18,
    "layers_max": 22,
    "roles": [
     "bass",
@@ -68,7 +68,7 @@
    "start_bar": 105,
    "bars": 16,
    "source": "inferred",
-   "layers_median": 3.0,
+   "layers_median": 3,
    "layers_max": 4,
    "roles": [
     "hat",
@@ -216,10 +216,10 @@
   "max": 22,
   "notes_per_bar_by_role": {
    "bass": 6.625,
-   "hat": 2.0,
-   "other": 2.0,
-   "pad": 4.0,
-   "snare": 2.0
+   "hat": 2,
+   "other": 2,
+   "pad": 4,
+   "snare": 2
   }
  },
  "clip_bars": {
@@ -383,6 +383,59 @@
   }
  },
  "automation": [],
+ "tension": [
+  {
+   "kind": "drop",
+   "bar": 16,
+   "evidence": [
+    "layers 2.0 -> 3",
+    "layers 2.5 -> 4"
+   ],
+   "confidence": 0.45
+  },
+  {
+   "kind": "drop",
+   "bar": 33,
+   "evidence": [
+    "layers 3.5 -> 13",
+    "layers 8.5 -> 12"
+   ],
+   "confidence": 0.45
+  },
+  {
+   "kind": "drop",
+   "bar": 56,
+   "evidence": [
+    "layers 10.5 -> 14"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 65,
+   "evidence": [
+    "layers 12.0 -> 19"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 89,
+   "evidence": [
+    "layers 19.0 -> 22"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 105,
+   "evidence": [
+    "layers 18.5 -> 4",
+    "layers 11.5 -> 3"
+   ],
+   "confidence": 0.4
+  }
+ ],
  "routing": {
   "buses": 8,
   "sends": 22,

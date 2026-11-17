@@ -1,13 +1,13 @@
 # Form profile: trance (n = 2, measured (n < 3: indicative only))
 
-Tempo 140.0-144.0 (median 142.0); length median 133.5 bars (128-139); tracks with clips median 15.0; sends median 6.5; projects with sidechain 0.
+Tempo 140-144 (median 142.0); length median 133.5 bars (128-139); tracks with clips median 15.0; sends median 6.5; projects with sidechain 0.
 
 | section role | count | median bars | median layers |
 |---|---|---|---|
-| body | 3 | 44 | 8.0 |
-| breakdown | 5 | 4 | 2.0 |
+| body | 3 | 44 | 8 |
+| breakdown | 5 | 4 | 2 |
 | intro | 2 | 6.0 | 2.25 |
-| outro | 1 | 4 | 0.0 |
+| outro | 1 | 4 | 0 |
 
 Density curve (median layers per 5 % of the song): 2.42 3.38 4.57 5.71 6.0 6.43 6.29 6.93 8.95 10.71 9.3 10.17 7.36 6.24 10.36 12.15 12.17 5.86 3.51 2.64
 

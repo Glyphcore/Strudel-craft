@@ -1,13 +1,13 @@
 # Skiessi-Onion.mmpz
 
-Format lmms, tempo 140.0, meter 1/1, 121 bars (207.4 s). Tracks 24 (23 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
+Format lmms, tempo 140, meter 1/1, 121 bars (207.4 s). Tracks 24 (23 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
 
 | # | section | start bar | bars | layers median / max | roles | source |
 |---|---|---|---|---|---|---|
-| 1 | intro | 1 | 8 | 1.0 / 1 | pad | inferred |
-| 2 | breakdown | 9 | 20 | 3.0 / 4 | hat, other, pad | inferred |
-| 3 | body | 29 | 76 | 18.0 / 22 | bass, hat, other, pad, snare | inferred |
-| 4 | breakdown | 105 | 16 | 3.0 / 4 | hat, other, pad | inferred |
+| 1 | intro | 1 | 8 | 1 / 1 | pad | inferred |
+| 2 | breakdown | 9 | 20 | 3 / 4 | hat, other, pad | inferred |
+| 3 | body | 29 | 76 | 18 / 22 | bass, hat, other, pad, snare | inferred |
+| 4 | breakdown | 105 | 16 | 3 / 4 | hat, other, pad | inferred |
 | 5 | outro | 121 | 1 | 1 / 1 | pad | inferred |
 
 Roles: {'bass': 2, 'hat': 6, 'other': 10, 'pad': 1, 'snare': 4}

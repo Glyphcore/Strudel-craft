@@ -1,14 +1,14 @@
 # Momo64-esp.mmpz
 
-Format lmms, tempo 138.0, meter 4/4, 176 bars (306.1 s). Tracks 21 (21 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
+Format lmms, tempo 138, meter 4/4, 176 bars (306.1 s). Tracks 21 (21 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
 
 | # | section | start bar | bars | layers median / max | roles | source |
 |---|---|---|---|---|---|---|
-| 1 | intro | 1 | 4 | 2.0 / 2 | bass, kick | inferred |
-| 2 | body | 5 | 132 | 10.0 / 19 | bass, hat, kick, other, pad, perc, snare | inferred |
-| 3 | breakdown | 137 | 16 | 4.0 / 5 | hat, other | inferred |
-| 4 | breakdown | 153 | 8 | 4.0 / 5 | kick, other, snare | inferred |
-| 5 | outro | 161 | 16 | 8.0 / 8 | bass, hat, kick, other, snare | inferred |
+| 1 | intro | 1 | 4 | 2 / 2 | bass, kick | inferred |
+| 2 | body | 5 | 132 | 10 / 19 | bass, hat, kick, other, pad, perc, snare | inferred |
+| 3 | breakdown | 137 | 16 | 4 / 5 | hat, other | inferred |
+| 4 | breakdown | 153 | 8 | 4 / 5 | kick, other, snare | inferred |
+| 5 | outro | 161 | 16 | 8 / 8 | bass, hat, kick, other, snare | inferred |
 
 Roles: {'bass': 2, 'hat': 3, 'kick': 1, 'other': 8, 'pad': 3, 'perc': 2, 'snare': 2}
 FX type frequency: {}

@@ -1,7 +1,7 @@
 {
  "schema": "dawstudy-stats@1",
  "format": "lmms",
- "tempo": 140.0,
+ "tempo": 140,
  "meter": [
   8,
   4
@@ -88,12 +88,12 @@
   "median": 8,
   "max": 11,
   "notes_per_bar_by_role": {
-   "bass": 12.0,
-   "hat": 32.0,
-   "keys": 36.0,
-   "kick": 16.0,
-   "other": 20.0,
-   "snare": 8.0
+   "bass": 12,
+   "hat": 32,
+   "keys": 36,
+   "kick": 16,
+   "other": 20,
+   "snare": 8
   }
  },
  "clip_bars": {
@@ -181,6 +181,58 @@
    "shape": "curve",
    "start_bar": 32,
    "end_bar": 39
+  }
+ ],
+ "tension": [
+  {
+   "kind": "drop",
+   "bar": 9,
+   "evidence": [
+    "layers 7.0 -> 11"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 13,
+   "evidence": [
+    "layers 8.0 -> 5"
+   ],
+   "confidence": 0.35
+  },
+  {
+   "kind": "breakdown",
+   "bar": 15,
+   "evidence": [
+    "layers 5.0 -> 1",
+    "layers 3.0 -> 1"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 17,
+   "evidence": [
+    "layers 1.0 -> 10",
+    "layers 5.5 -> 9"
+   ],
+   "confidence": 0.45
+  },
+  {
+   "kind": "drop",
+   "bar": 27,
+   "evidence": [
+    "layers 7.0 -> 10"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 39,
+   "evidence": [
+    "layers 8.0 -> 2"
+   ],
+   "confidence": 0.35
   }
  ],
  "routing": {

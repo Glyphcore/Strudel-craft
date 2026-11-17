@@ -1,7 +1,7 @@
 {
  "schema": "dawstudy-stats@1",
  "format": "lmms",
- "tempo": 144.0,
+ "tempo": 144,
  "meter": [
   4,
   4
@@ -32,7 +32,7 @@
    "start_bar": 1,
    "bars": 8,
    "source": "inferred",
-   "layers_median": 3.0,
+   "layers_median": 3,
    "layers_max": 3,
    "roles": [
     "kick",
@@ -45,7 +45,7 @@
    "start_bar": 9,
    "bars": 36,
    "source": "inferred",
-   "layers_median": 4.0,
+   "layers_median": 4,
    "layers_max": 7,
    "roles": [
     "fx",
@@ -61,7 +61,7 @@
    "start_bar": 45,
    "bars": 16,
    "source": "inferred",
-   "layers_median": 5.0,
+   "layers_median": 5,
    "layers_max": 7,
    "roles": [
     "fx",
@@ -77,7 +77,7 @@
    "start_bar": 61,
    "bars": 44,
    "source": "inferred",
-   "layers_median": 8.0,
+   "layers_median": 8,
    "layers_max": 12,
    "roles": [
     "bass",
@@ -253,13 +253,13 @@
   "median": 6,
   "max": 12,
   "notes_per_bar_by_role": {
-   "bass": 4.0,
+   "bass": 4,
    "fx": 0.167,
-   "hat": 8.0,
-   "kick": 1.0,
-   "other": 34.0,
+   "hat": 8,
+   "kick": 1,
+   "other": 34,
    "pad": 0.5,
-   "snare": 5.0,
+   "snare": 5,
    "sub": 0.25
   }
  },
@@ -503,6 +503,267 @@
    "shape": "lfo",
    "start_bar": 97,
    "end_bar": 140
+  }
+ ],
+ "tension": [
+  {
+   "kind": "build",
+   "bar": 1,
+   "evidence": [
+    "automation 0 cutoff rise"
+   ],
+   "confidence": 0.4,
+   "end_bar": 5
+  },
+  {
+   "kind": "breakdown",
+   "bar": 5,
+   "evidence": [
+    "automation 10 cutoff fall"
+   ],
+   "confidence": 0.3,
+   "end_bar": 13
+  },
+  {
+   "kind": "build",
+   "bar": 8,
+   "evidence": [
+    "automation 1 cutoff rise"
+   ],
+   "confidence": 0.4,
+   "end_bar": 12
+  },
+  {
+   "kind": "drop",
+   "bar": 13,
+   "evidence": [
+    "ramp 1 ends, layers rise",
+    "layers 2.0 -> 3"
+   ],
+   "confidence": 0.7
+  },
+  {
+   "kind": "breakdown",
+   "bar": 29,
+   "evidence": [
+    "automation 2 cutoff fall"
+   ],
+   "confidence": 0.3,
+   "end_bar": 37
+  },
+  {
+   "kind": "build",
+   "bar": 33,
+   "evidence": [
+    "fx clip 6 bars (riser)"
+   ],
+   "confidence": 0.3,
+   "end_bar": 38
+  },
+  {
+   "kind": "build",
+   "bar": 37,
+   "evidence": [
+    "automation 3 cutoff rise"
+   ],
+   "confidence": 0.4,
+   "end_bar": 45
+  },
+  {
+   "kind": "drop",
+   "bar": 39,
+   "evidence": [
+    "fx riser ends"
+   ],
+   "confidence": 0.25
+  },
+  {
+   "kind": "build",
+   "bar": 45,
+   "evidence": [
+    "automation 17 cutoff rise",
+    "automation 18 volume rise"
+   ],
+   "confidence": 0.8,
+   "end_bar": 53
+  },
+  {
+   "kind": "breakdown",
+   "bar": 53,
+   "evidence": [
+    "automation 4 cutoff fall"
+   ],
+   "confidence": 0.3,
+   "end_bar": 61
+  },
+  {
+   "kind": "build",
+   "bar": 53,
+   "evidence": [
+    "automation 11 cutoff rise",
+    "fx clip 8 bars (riser)"
+   ],
+   "confidence": 0.7,
+   "end_bar": 60
+  },
+  {
+   "kind": "drop",
+   "bar": 60,
+   "evidence": [
+    "layers 4.0 -> 6",
+    "fx riser ends",
+    "layers 5.0 -> 12"
+   ],
+   "confidence": 0.7
+  },
+  {
+   "kind": "build",
+   "bar": 61,
+   "evidence": [
+    "fx clip 6 bars (riser)"
+   ],
+   "confidence": 0.3,
+   "end_bar": 66
+  },
+  {
+   "kind": "drop",
+   "bar": 62,
+   "evidence": [
+    "layers 9.0 -> 12"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "build",
+   "bar": 67,
+   "evidence": [
+    "fx clip 6 bars (riser)"
+   ],
+   "confidence": 0.3,
+   "end_bar": 72
+  },
+  {
+   "kind": "drop",
+   "bar": 67,
+   "evidence": [
+    "fx riser ends"
+   ],
+   "confidence": 0.25
+  },
+  {
+   "kind": "breakdown",
+   "bar": 69,
+   "evidence": [
+    "layers 12.0 -> 8"
+   ],
+   "confidence": 0.35
+  },
+  {
+   "kind": "drop",
+   "bar": 73,
+   "evidence": [
+    "fx riser ends"
+   ],
+   "confidence": 0.25
+  },
+  {
+   "kind": "breakdown",
+   "bar": 77,
+   "evidence": [
+    "automation 13 cutoff fall"
+   ],
+   "confidence": 0.3,
+   "end_bar": 85
+  },
+  {
+   "kind": "build",
+   "bar": 85,
+   "evidence": [
+    "automation 5 cutoff rise"
+   ],
+   "confidence": 0.4,
+   "end_bar": 93
+  },
+  {
+   "kind": "build",
+   "bar": 97,
+   "evidence": [
+    "fx clip 8 bars (riser)"
+   ],
+   "confidence": 0.3,
+   "end_bar": 104
+  },
+  {
+   "kind": "breakdown",
+   "bar": 101,
+   "evidence": [
+    "automation 7 cutoff fall"
+   ],
+   "confidence": 0.3,
+   "end_bar": 109
+  },
+  {
+   "kind": "breakdown",
+   "bar": 104,
+   "evidence": [
+    "layers 8.5 -> 3"
+   ],
+   "confidence": 0.35
+  },
+  {
+   "kind": "drop",
+   "bar": 105,
+   "evidence": [
+    "fx riser ends",
+    "layers 6.0 -> 12",
+    "layers 7.5 -> 11"
+   ],
+   "confidence": 0.7
+  },
+  {
+   "kind": "build",
+   "bar": 117,
+   "evidence": [
+    "automation 8 cutoff rise"
+   ],
+   "confidence": 0.4,
+   "end_bar": 121
+  },
+  {
+   "kind": "breakdown",
+   "bar": 121,
+   "evidence": [
+    "automation 6 cutoff fall",
+    "layers 11.0 -> 7"
+   ],
+   "confidence": 0.65,
+   "end_bar": 129
+  },
+  {
+   "kind": "build",
+   "bar": 121,
+   "evidence": [
+    "automation 14 cutoff rise"
+   ],
+   "confidence": 0.4,
+   "end_bar": 129
+  },
+  {
+   "kind": "breakdown",
+   "bar": 129,
+   "evidence": [
+    "automation 15 cutoff fall"
+   ],
+   "confidence": 0.3,
+   "end_bar": 137
+  },
+  {
+   "kind": "breakdown",
+   "bar": 139,
+   "evidence": [
+    "layers 5.0 -> 2"
+   ],
+   "confidence": 0.35
   }
  ],
  "routing": {

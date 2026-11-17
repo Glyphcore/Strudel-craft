@@ -1,12 +1,12 @@
 # Form profile: metal (n = 1, measured (n < 3: indicative only))
 
-Tempo 140.0-140.0 (median 140.0); length median 136 bars (136-136); tracks with clips median 13; sends median 0; projects with sidechain 0.
+Tempo 140-140 (median 140); length median 136 bars (136-136); tracks with clips median 13; sends median 0; projects with sidechain 0.
 
 | section role | count | median bars | median layers |
 |---|---|---|---|
 | body | 3 | 36 | 3.5 |
 | breakdown | 2 | 8.0 | 2.0 |
-| intro | 1 | 20 | 0.0 |
+| intro | 1 | 20 | 0 |
 
 Density curve (median layers per 5 % of the song): 0.5 0.29 0.29 2 4 4.33 3.57 3.86 3.57 2.71 3.83 4.71 3.86 3.71 3.71 2.83 2.29 3.71 3.86 4.14
 

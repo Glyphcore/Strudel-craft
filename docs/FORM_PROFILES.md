@@ -16,6 +16,26 @@ norm; the mixed electronic pool (n = 5) is the only n >= 3 profile and mixes gen
 | metal | 1 | 140.0-140.0 | 136 | 20 / 0.0 | body 36 / 3.5 | 2, 8.0, 2.0 | 1.0: 421 | - |
 | eurodance | 1 | 128.0-128.0 | 120 | 4 / 2.0 | body 28.0 / 9.0 | 2, 6.0, 3.25 | 1.0: 90, 2.0: 14, 32.0: 5 | cutoff/lfo 22, wet/lfo 19, wet/curve 3 |
 
+Tension from project data (no render; DAW_STUDY 3 `tension`): events per genre with the median position in the song (0..1) and median length in bars.
+
+| genre | builds (n, position, bars) | drops (n, position) | breakdowns (n, position) | most common build evidence |
+|---|---|---|---|---|
+| trance (n = 2) | 16, 0.40, 6 | 15, 0.47 | 14, 0.67 | cutoff rise automation (8), 2+-bar fx riser clips (5), volume rise (5) |
+| eurodance (n = 1) | 2, 0.30, 7 | 9, 0.70 | 2, 0.43 | cutoff rise (2), reverb wet rise (1), volume rise (1) |
+| dnb (n = 1) | 1, 0.23, 9 | 6, 0.59 | 5, 0.84 | cutoff rise (2) |
+| metal (n = 1) | 0 | 8, 0.50 | 13, 0.44 | - (no automation: density steps only) |
+| hiphop (n = 1) | 0 | 2, 0.39 | 1, 0.99 | - |
+
+Builds in these projects are filter (cutoff) ramps first, then riser clips and volume ramps: the order the `filterBuild` / `noiseRiser` /
+`hissRiser` racks encode. Metal and hip-hop have no automation, so their structure is carried by layer entries and exits alone.
+
+Project data vs rendered audio (method `project-rendered-then-analysed`, all 21 projects rendered with the LMMS 1.2.2 binary, triaged, WAVs
+deleted): 47 of 128 section boundaries inferred from project data (37 %) have an audio-triage boundary within one bar; agreement is best where
+the arrangement changes the whole texture (dnb 5 / 8, trance 3 / 5 and 4 / 4, covers 4 / 4) and worst for long, slowly layered pieces
+(classical 6 / 20, misc 6 / 24 and 6 / 26), where the 4-bar Jaccard rule splits sections the ear hears as one. Read the inferred labels as
+density changes, not as composed sections. Form bank: 762 records (suno-track-lab data/form-bank/bank.jsonl, validator 0 problems); read-only
+summary docs/data/form-bank/summary.json.
+
 Density curves (median layers per 5 % of the song) are in each profile's .md. Rendering the same projects with the LMMS binary and
 triaging the audio (method `project-rendered-then-analysed`, DAW_STUDY 5) checks the inferred boundaries; status in DAW_STUDY_SOURCES.md 3.
 Genres with no licensed project (phonk, dubstep / industrial, house / electro, trap, rock): guides below are producer-reported or design calls.

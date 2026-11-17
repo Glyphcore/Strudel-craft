@@ -41,5 +41,5 @@ fail closed), although the repository as a whole is GPL: a per-file statement is
 - Track roles come from track names and plug-in names; many demo tracks have names like "TripleOscillator" (role `other`).
 - n = 1 per target genre: profiles are indicative examples, not distributions. No number in FORM_PROFILES.md is presented as a genre
   norm unless n >= 3 (none is).
-- Rendering (project-rendered-then-analysed) needs the LMMS binary: installed on this host (1.2.2, separate GPL program); results in
-  FORM_PROFILES.md section 1 when the render batch has run.
+- Rendered with the LMMS 1.2.2 binary (a separate GPL program, heavy load gate, WAVs deleted after triage): all 21; project-data section
+  boundaries matched by audio boundaries within one bar 47 / 128 (37 %, FORM_PROFILES.md section 1).

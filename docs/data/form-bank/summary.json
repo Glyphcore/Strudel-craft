@@ -1,0 +1,1582 @@
+{
+ "schema": "form-bank-summary@1",
+ "records": 762,
+ "rows": [
+  {
+   "genre": "ambient",
+   "form_role": "body",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 10,
+   "confidence_mean": 0.19
+  },
+  {
+   "genre": "ambient",
+   "form_role": "body",
+   "method": "project-rendered-then-analysed",
+   "n": 7,
+   "bars_median": 10,
+   "confidence_mean": 0.58
+  },
+  {
+   "genre": "ambient",
+   "form_role": "breakdown",
+   "method": "inferred-from-project-data",
+   "n": 4,
+   "bars_median": 14.5,
+   "confidence_mean": 0.44
+  },
+  {
+   "genre": "ambient",
+   "form_role": "breakdown",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 14.5,
+   "confidence_mean": 0.15
+  },
+  {
+   "genre": "ambient",
+   "form_role": "build",
+   "method": "inferred-from-project-data",
+   "n": 2,
+   "bars_median": 2.0,
+   "confidence_mean": 0.4
+  },
+  {
+   "genre": "ambient",
+   "form_role": "build",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 2,
+   "confidence_mean": 0.13
+  },
+  {
+   "genre": "ambient",
+   "form_role": "drop",
+   "method": "inferred-from-project-data",
+   "n": 4,
+   "bars_median": 4.5,
+   "confidence_mean": 0.45
+  },
+  {
+   "genre": "ambient",
+   "form_role": "drop",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 8,
+   "confidence_mean": 0.55
+  },
+  {
+   "genre": "ambient",
+   "form_role": "drop",
+   "method": "project-rendered-then-analysed",
+   "n": 3,
+   "bars_median": 26,
+   "confidence_mean": 0.68
+  },
+  {
+   "genre": "ambient",
+   "form_role": "intro",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 56,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "ambient",
+   "form_role": "intro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 56,
+   "confidence_mean": 0.35
+  },
+  {
+   "genre": "ambient",
+   "form_role": "intro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 56,
+   "confidence_mean": 0.55
+  },
+  {
+   "genre": "ambient",
+   "form_role": "outro",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 8,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "ambient",
+   "form_role": "outro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 9,
+   "confidence_mean": 0.42
+  },
+  {
+   "genre": "ambient",
+   "form_role": "outro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 10,
+   "confidence_mean": 0.75
+  },
+  {
+   "genre": "chiptune",
+   "form_role": "breakdown",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.35
+  },
+  {
+   "genre": "chiptune",
+   "form_role": "breakdown",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.12
+  },
+  {
+   "genre": "chiptune",
+   "form_role": "drop",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 6,
+   "confidence_mean": 0.22
+  },
+  {
+   "genre": "chiptune",
+   "form_role": "drop",
+   "method": "project-rendered-then-analysed",
+   "n": 2,
+   "bars_median": 6.0,
+   "confidence_mean": 0.65
+  },
+  {
+   "genre": "chiptune",
+   "form_role": "intro",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 17,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "chiptune",
+   "form_role": "intro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 17,
+   "confidence_mean": 0.17
+  },
+  {
+   "genre": "chiptune",
+   "form_role": "outro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 5,
+   "confidence_mean": 0.21
+  },
+  {
+   "genre": "chiptune",
+   "form_role": "outro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 5,
+   "confidence_mean": 0.62
+  },
+  {
+   "genre": "classical",
+   "form_role": "body",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 10,
+   "confidence_mean": 0.19
+  },
+  {
+   "genre": "classical",
+   "form_role": "body",
+   "method": "project-rendered-then-analysed",
+   "n": 7,
+   "bars_median": 10,
+   "confidence_mean": 0.58
+  },
+  {
+   "genre": "classical",
+   "form_role": "breakdown",
+   "method": "inferred-from-project-data",
+   "n": 20,
+   "bars_median": 4.0,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "classical",
+   "form_role": "breakdown",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 4,
+   "confidence_mean": 0.34
+  },
+  {
+   "genre": "classical",
+   "form_role": "breakdown",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 8,
+   "confidence_mean": 0.75
+  },
+  {
+   "genre": "classical",
+   "form_role": "drop",
+   "method": "inferred-from-project-data",
+   "n": 12,
+   "bars_median": 1.0,
+   "confidence_mean": 0.41
+  },
+  {
+   "genre": "classical",
+   "form_role": "drop",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.3
+  },
+  {
+   "genre": "classical",
+   "form_role": "drop",
+   "method": "project-rendered-then-analysed",
+   "n": 2,
+   "bars_median": 8.0,
+   "confidence_mean": 0.75
+  },
+  {
+   "genre": "classical",
+   "form_role": "intro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 10,
+   "confidence_mean": 0.18
+  },
+  {
+   "genre": "classical",
+   "form_role": "intro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 10,
+   "confidence_mean": 0.55
+  },
+  {
+   "genre": "covers",
+   "form_role": "body",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 132,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "covers",
+   "form_role": "body",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 132,
+   "confidence_mean": 0.17
+  },
+  {
+   "genre": "covers",
+   "form_role": "breakdown",
+   "method": "inferred-from-project-data",
+   "n": 6,
+   "bars_median": 4.5,
+   "confidence_mean": 0.42
+  },
+  {
+   "genre": "covers",
+   "form_role": "breakdown",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 8,
+   "confidence_mean": 0.31
+  },
+  {
+   "genre": "covers",
+   "form_role": "breakdown",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 16,
+   "confidence_mean": 0.75
+  },
+  {
+   "genre": "covers",
+   "form_role": "drop",
+   "method": "inferred-from-project-data",
+   "n": 7,
+   "bars_median": 1,
+   "confidence_mean": 0.41
+  },
+  {
+   "genre": "covers",
+   "form_role": "drop",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 2.5,
+   "confidence_mean": 0.38
+  },
+  {
+   "genre": "covers",
+   "form_role": "drop",
+   "method": "project-rendered-then-analysed",
+   "n": 7,
+   "bars_median": 16,
+   "confidence_mean": 0.73
+  },
+  {
+   "genre": "covers",
+   "form_role": "intro",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 4,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "covers",
+   "form_role": "intro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 4,
+   "confidence_mean": 0.17
+  },
+  {
+   "genre": "covers",
+   "form_role": "outro",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 16,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "covers",
+   "form_role": "outro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 9.5,
+   "confidence_mean": 0.35
+  },
+  {
+   "genre": "covers",
+   "form_role": "outro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 3,
+   "confidence_mean": 0.55
+  },
+  {
+   "genre": "dnb",
+   "form_role": "body",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 8,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "dnb",
+   "form_role": "body",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 8,
+   "confidence_mean": 0.36
+  },
+  {
+   "genre": "dnb",
+   "form_role": "body",
+   "method": "project-rendered-then-analysed",
+   "n": 3,
+   "bars_median": 8,
+   "confidence_mean": 0.55
+  },
+  {
+   "genre": "dnb",
+   "form_role": "breakdown",
+   "method": "inferred-from-project-data",
+   "n": 9,
+   "bars_median": 1,
+   "confidence_mean": 0.43
+  },
+  {
+   "genre": "dnb",
+   "form_role": "breakdown",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 4,
+   "confidence_mean": 0.33
+  },
+  {
+   "genre": "dnb",
+   "form_role": "breakdown",
+   "method": "project-rendered-then-analysed",
+   "n": 2,
+   "bars_median": 4.0,
+   "confidence_mean": 0.75
+  },
+  {
+   "genre": "dnb",
+   "form_role": "build",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 9,
+   "confidence_mean": 0.8
+  },
+  {
+   "genre": "dnb",
+   "form_role": "build",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 9,
+   "confidence_mean": 0.27
+  },
+  {
+   "genre": "dnb",
+   "form_role": "drop",
+   "method": "inferred-from-project-data",
+   "n": 8,
+   "bars_median": 1.0,
+   "confidence_mean": 0.43
+  },
+  {
+   "genre": "dnb",
+   "form_role": "drop",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.35
+  },
+  {
+   "genre": "dnb",
+   "form_role": "drop",
+   "method": "project-rendered-then-analysed",
+   "n": 3,
+   "bars_median": 8,
+   "confidence_mean": 0.8
+  },
+  {
+   "genre": "dnb",
+   "form_role": "intro",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 4,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "dnb",
+   "form_role": "intro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 6,
+   "confidence_mean": 0.35
+  },
+  {
+   "genre": "dnb",
+   "form_role": "intro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 8,
+   "confidence_mean": 0.55
+  },
+  {
+   "genre": "dnb",
+   "form_role": "outro",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "dnb",
+   "form_role": "outro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 3,
+   "confidence_mean": 0.42
+  },
+  {
+   "genre": "dnb",
+   "form_role": "outro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 5,
+   "confidence_mean": 0.75
+  },
+  {
+   "genre": "eurodance",
+   "form_role": "body",
+   "method": "inferred-from-project-data",
+   "n": 2,
+   "bars_median": 28.0,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "eurodance",
+   "form_role": "body",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 28,
+   "confidence_mean": 0.17
+  },
+  {
+   "genre": "eurodance",
+   "form_role": "breakdown",
+   "method": "inferred-from-project-data",
+   "n": 4,
+   "bars_median": 2.5,
+   "confidence_mean": 0.45
+  },
+  {
+   "genre": "eurodance",
+   "form_role": "breakdown",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 2.5,
+   "confidence_mean": 0.15
+  },
+  {
+   "genre": "eurodance",
+   "form_role": "build",
+   "method": "inferred-from-project-data",
+   "n": 2,
+   "bars_median": 7.0,
+   "confidence_mean": 0.68
+  },
+  {
+   "genre": "eurodance",
+   "form_role": "build",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 7,
+   "confidence_mean": 0.23
+  },
+  {
+   "genre": "eurodance",
+   "form_role": "drop",
+   "method": "inferred-from-project-data",
+   "n": 9,
+   "bars_median": 1,
+   "confidence_mean": 0.42
+  },
+  {
+   "genre": "eurodance",
+   "form_role": "drop",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.31
+  },
+  {
+   "genre": "eurodance",
+   "form_role": "drop",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 112,
+   "confidence_mean": 0.9
+  },
+  {
+   "genre": "eurodance",
+   "form_role": "intro",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 4,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "eurodance",
+   "form_role": "intro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 6,
+   "confidence_mean": 0.35
+  },
+  {
+   "genre": "eurodance",
+   "form_role": "intro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 8,
+   "confidence_mean": 0.55
+  },
+  {
+   "genre": "eurodance",
+   "form_role": "outro",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 48,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "eurodance",
+   "form_role": "outro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 26.5,
+   "confidence_mean": 0.42
+  },
+  {
+   "genre": "eurodance",
+   "form_role": "outro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 5,
+   "confidence_mean": 0.75
+  },
+  {
+   "genre": "funk",
+   "form_role": "breakdown",
+   "method": "inferred-from-project-data",
+   "n": 13,
+   "bars_median": 4,
+   "confidence_mean": 0.45
+  },
+  {
+   "genre": "funk",
+   "form_role": "breakdown",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 4,
+   "confidence_mean": 0.15
+  },
+  {
+   "genre": "funk",
+   "form_role": "drop",
+   "method": "inferred-from-project-data",
+   "n": 5,
+   "bars_median": 1,
+   "confidence_mean": 0.42
+  },
+  {
+   "genre": "funk",
+   "form_role": "drop",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.32
+  },
+  {
+   "genre": "funk",
+   "form_role": "drop",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 19,
+   "confidence_mean": 0.75
+  },
+  {
+   "genre": "funk",
+   "form_role": "intro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 16,
+   "confidence_mean": 0.18
+  },
+  {
+   "genre": "funk",
+   "form_role": "intro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 16,
+   "confidence_mean": 0.55
+  },
+  {
+   "genre": "funk",
+   "form_role": "outro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 6,
+   "confidence_mean": 0.25
+  },
+  {
+   "genre": "funk",
+   "form_role": "outro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 6,
+   "confidence_mean": 0.75
+  },
+  {
+   "genre": "hiphop",
+   "form_role": "body",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 128,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "hiphop",
+   "form_role": "body",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 9,
+   "confidence_mean": 0.35
+  },
+  {
+   "genre": "hiphop",
+   "form_role": "body",
+   "method": "project-rendered-then-analysed",
+   "n": 2,
+   "bars_median": 6.5,
+   "confidence_mean": 0.54
+  },
+  {
+   "genre": "hiphop",
+   "form_role": "breakdown",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.35
+  },
+  {
+   "genre": "hiphop",
+   "form_role": "breakdown",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.12
+  },
+  {
+   "genre": "hiphop",
+   "form_role": "drop",
+   "method": "inferred-from-project-data",
+   "n": 2,
+   "bars_median": 1.0,
+   "confidence_mean": 0.4
+  },
+  {
+   "genre": "hiphop",
+   "form_role": "drop",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 7,
+   "confidence_mean": 0.46
+  },
+  {
+   "genre": "hiphop",
+   "form_role": "drop",
+   "method": "project-rendered-then-analysed",
+   "n": 17,
+   "bars_median": 7,
+   "confidence_mean": 0.72
+  },
+  {
+   "genre": "hiphop",
+   "form_role": "intro",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 16,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "hiphop",
+   "form_role": "intro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 16,
+   "confidence_mean": 0.17
+  },
+  {
+   "genre": "hiphop",
+   "form_role": "outro",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "hiphop",
+   "form_role": "outro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 6.5,
+   "confidence_mean": 0.36
+  },
+  {
+   "genre": "hiphop",
+   "form_role": "outro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 12,
+   "confidence_mean": 0.59
+  },
+  {
+   "genre": "metal",
+   "form_role": "body",
+   "method": "inferred-from-project-data",
+   "n": 3,
+   "bars_median": 36,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "metal",
+   "form_role": "body",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 24.5,
+   "confidence_mean": 0.37
+  },
+  {
+   "genre": "metal",
+   "form_role": "body",
+   "method": "project-rendered-then-analysed",
+   "n": 3,
+   "bars_median": 11,
+   "confidence_mean": 0.62
+  },
+  {
+   "genre": "metal",
+   "form_role": "breakdown",
+   "method": "inferred-from-project-data",
+   "n": 15,
+   "bars_median": 1,
+   "confidence_mean": 0.37
+  },
+  {
+   "genre": "metal",
+   "form_role": "breakdown",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.35
+  },
+  {
+   "genre": "metal",
+   "form_role": "breakdown",
+   "method": "project-rendered-then-analysed",
+   "n": 10,
+   "bars_median": 6.0,
+   "confidence_mean": 0.76
+  },
+  {
+   "genre": "metal",
+   "form_role": "build",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 8,
+   "confidence_mean": 0.25
+  },
+  {
+   "genre": "metal",
+   "form_role": "build",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 8,
+   "confidence_mean": 0.75
+  },
+  {
+   "genre": "metal",
+   "form_role": "drop",
+   "method": "inferred-from-project-data",
+   "n": 8,
+   "bars_median": 1.0,
+   "confidence_mean": 0.41
+  },
+  {
+   "genre": "metal",
+   "form_role": "drop",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.14
+  },
+  {
+   "genre": "metal",
+   "form_role": "intro",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 20,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "metal",
+   "form_role": "intro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 14.5,
+   "confidence_mean": 0.35
+  },
+  {
+   "genre": "metal",
+   "form_role": "intro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 9,
+   "confidence_mean": 0.55
+  },
+  {
+   "genre": "metal",
+   "form_role": "outro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 4,
+   "confidence_mean": 0.2
+  },
+  {
+   "genre": "metal",
+   "form_role": "outro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 4,
+   "confidence_mean": 0.61
+  },
+  {
+   "genre": "misc",
+   "form_role": "body",
+   "method": "inferred-from-project-data",
+   "n": 7,
+   "bars_median": 12,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "misc",
+   "form_role": "body",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 10.5,
+   "confidence_mean": 0.52
+  },
+  {
+   "genre": "misc",
+   "form_role": "body",
+   "method": "project-rendered-then-analysed",
+   "n": 3,
+   "bars_median": 9,
+   "confidence_mean": 0.55
+  },
+  {
+   "genre": "misc",
+   "form_role": "breakdown",
+   "method": "inferred-from-project-data",
+   "n": 56,
+   "bars_median": 4.0,
+   "confidence_mean": 0.47
+  },
+  {
+   "genre": "misc",
+   "form_role": "breakdown",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 4,
+   "confidence_mean": 0.49
+  },
+  {
+   "genre": "misc",
+   "form_role": "breakdown",
+   "method": "project-rendered-then-analysed",
+   "n": 5,
+   "bars_median": 8,
+   "confidence_mean": 0.64
+  },
+  {
+   "genre": "misc",
+   "form_role": "build",
+   "method": "inferred-from-project-data",
+   "n": 12,
+   "bars_median": 16.0,
+   "confidence_mean": 0.46
+  },
+  {
+   "genre": "misc",
+   "form_role": "build",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 16,
+   "confidence_mean": 0.48
+  },
+  {
+   "genre": "misc",
+   "form_role": "build",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 4,
+   "confidence_mean": 0.75
+  },
+  {
+   "genre": "misc",
+   "form_role": "drop",
+   "method": "inferred-from-project-data",
+   "n": 34,
+   "bars_median": 1.0,
+   "confidence_mean": 0.49
+  },
+  {
+   "genre": "misc",
+   "form_role": "drop",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.57
+  },
+  {
+   "genre": "misc",
+   "form_role": "drop",
+   "method": "project-rendered-then-analysed",
+   "n": 14,
+   "bars_median": 20.0,
+   "confidence_mean": 0.77
+  },
+  {
+   "genre": "misc",
+   "form_role": "intro",
+   "method": "inferred-from-project-data",
+   "n": 3,
+   "bars_median": 4,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "misc",
+   "form_role": "intro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 4,
+   "confidence_mean": 0.52
+  },
+  {
+   "genre": "misc",
+   "form_role": "intro",
+   "method": "project-rendered-then-analysed",
+   "n": 2,
+   "bars_median": 9.5,
+   "confidence_mean": 0.55
+  },
+  {
+   "genre": "misc",
+   "form_role": "outro",
+   "method": "inferred-from-project-data",
+   "n": 2,
+   "bars_median": 3.5,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "misc",
+   "form_role": "outro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 6,
+   "confidence_mean": 0.65
+  },
+  {
+   "genre": "misc",
+   "form_role": "outro",
+   "method": "project-rendered-then-analysed",
+   "n": 3,
+   "bars_median": 8,
+   "confidence_mean": 0.75
+  },
+  {
+   "genre": "misc",
+   "form_role": "transition",
+   "method": "inferred-from-project-data",
+   "n": 20,
+   "bars_median": 1.0,
+   "confidence_mean": 0.2
+  },
+  {
+   "genre": "misc",
+   "form_role": "transition",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.07
+  },
+  {
+   "genre": "pop",
+   "form_role": "breakdown",
+   "method": "inferred-from-project-data",
+   "n": 3,
+   "bars_median": 1,
+   "confidence_mean": 0.37
+  },
+  {
+   "genre": "pop",
+   "form_role": "breakdown",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.35
+  },
+  {
+   "genre": "pop",
+   "form_role": "breakdown",
+   "method": "project-rendered-then-analysed",
+   "n": 2,
+   "bars_median": 8.0,
+   "confidence_mean": 0.75
+  },
+  {
+   "genre": "pop",
+   "form_role": "build",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 10,
+   "confidence_mean": 0.29
+  },
+  {
+   "genre": "pop",
+   "form_role": "build",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 10,
+   "confidence_mean": 0.87
+  },
+  {
+   "genre": "pop",
+   "form_role": "drop",
+   "method": "inferred-from-project-data",
+   "n": 3,
+   "bars_median": 1,
+   "confidence_mean": 0.42
+  },
+  {
+   "genre": "pop",
+   "form_role": "drop",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 4.5,
+   "confidence_mean": 0.44
+  },
+  {
+   "genre": "pop",
+   "form_role": "drop",
+   "method": "project-rendered-then-analysed",
+   "n": 3,
+   "bars_median": 16,
+   "confidence_mean": 0.9
+  },
+  {
+   "genre": "pop",
+   "form_role": "intro",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 39,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "pop",
+   "form_role": "intro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 23.5,
+   "confidence_mean": 0.35
+  },
+  {
+   "genre": "pop",
+   "form_role": "intro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 8,
+   "confidence_mean": 0.55
+  },
+  {
+   "genre": "pop",
+   "form_role": "outro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 3,
+   "confidence_mean": 0.18
+  },
+  {
+   "genre": "pop",
+   "form_role": "outro",
+   "method": "project-rendered-then-analysed",
+   "n": 1,
+   "bars_median": 3,
+   "confidence_mean": 0.55
+  },
+  {
+   "genre": "reggae",
+   "form_role": "breakdown",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.35
+  },
+  {
+   "genre": "reggae",
+   "form_role": "breakdown",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.12
+  },
+  {
+   "genre": "reggae",
+   "form_role": "build",
+   "method": "inferred-from-project-data",
+   "n": 27,
+   "bars_median": 2,
+   "confidence_mean": 0.3
+  },
+  {
+   "genre": "reggae",
+   "form_role": "build",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 2,
+   "confidence_mean": 0.1
+  },
+  {
+   "genre": "reggae",
+   "form_role": "drop",
+   "method": "inferred-from-project-data",
+   "n": 29,
+   "bars_median": 1,
+   "confidence_mean": 0.27
+  },
+  {
+   "genre": "reggae",
+   "form_role": "drop",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.36
+  },
+  {
+   "genre": "reggae",
+   "form_role": "drop",
+   "method": "project-rendered-then-analysed",
+   "n": 9,
+   "bars_median": 8,
+   "confidence_mean": 0.63
+  },
+  {
+   "genre": "reggae",
+   "form_role": "intro",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 8,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "reggae",
+   "form_role": "intro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 8,
+   "confidence_mean": 0.17
+  },
+  {
+   "genre": "reggae",
+   "form_role": "outro",
+   "method": "inferred-from-project-data",
+   "n": 2,
+   "bars_median": 3.0,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "reggae",
+   "form_role": "outro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 3,
+   "confidence_mean": 0.33
+  },
+  {
+   "genre": "trance",
+   "form_role": "body",
+   "method": "inferred-from-project-data",
+   "n": 3,
+   "bars_median": 44,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "trance",
+   "form_role": "body",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 21.5,
+   "confidence_mean": 0.56
+  },
+  {
+   "genre": "trance",
+   "form_role": "body",
+   "method": "project-rendered-then-analysed",
+   "n": 3,
+   "bars_median": 8,
+   "confidence_mean": 0.62
+  },
+  {
+   "genre": "trance",
+   "form_role": "breakdown",
+   "method": "inferred-from-project-data",
+   "n": 19,
+   "bars_median": 4,
+   "confidence_mean": 0.4
+  },
+  {
+   "genre": "trance",
+   "form_role": "breakdown",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 6,
+   "confidence_mean": 0.44
+  },
+  {
+   "genre": "trance",
+   "form_role": "breakdown",
+   "method": "project-rendered-then-analysed",
+   "n": 3,
+   "bars_median": 8,
+   "confidence_mean": 0.72
+  },
+  {
+   "genre": "trance",
+   "form_role": "build",
+   "method": "inferred-from-project-data",
+   "n": 16,
+   "bars_median": 6.0,
+   "confidence_mean": 0.42
+  },
+  {
+   "genre": "trance",
+   "form_role": "build",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 6,
+   "confidence_mean": 0.46
+  },
+  {
+   "genre": "trance",
+   "form_role": "build",
+   "method": "project-rendered-then-analysed",
+   "n": 2,
+   "bars_median": 6.0,
+   "confidence_mean": 0.82
+  },
+  {
+   "genre": "trance",
+   "form_role": "drop",
+   "method": "inferred-from-project-data",
+   "n": 15,
+   "bars_median": 1,
+   "confidence_mean": 0.44
+  },
+  {
+   "genre": "trance",
+   "form_role": "drop",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 2.5,
+   "confidence_mean": 0.6
+  },
+  {
+   "genre": "trance",
+   "form_role": "drop",
+   "method": "project-rendered-then-analysed",
+   "n": 15,
+   "bars_median": 15,
+   "confidence_mean": 0.77
+  },
+  {
+   "genre": "trance",
+   "form_role": "intro",
+   "method": "inferred-from-project-data",
+   "n": 2,
+   "bars_median": 6.0,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "trance",
+   "form_role": "intro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 6,
+   "confidence_mean": 0.53
+  },
+  {
+   "genre": "trance",
+   "form_role": "intro",
+   "method": "project-rendered-then-analysed",
+   "n": 2,
+   "bars_median": 6.0,
+   "confidence_mean": 0.55
+  },
+  {
+   "genre": "trance",
+   "form_role": "outro",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 4,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "trance",
+   "form_role": "outro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 4,
+   "confidence_mean": 0.57
+  },
+  {
+   "genre": "trance",
+   "form_role": "outro",
+   "method": "project-rendered-then-analysed",
+   "n": 2,
+   "bars_median": 4.0,
+   "confidence_mean": 0.61
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "body",
+   "method": "inferred-from-project-data",
+   "n": 1,
+   "bars_median": 56,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "body",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 12.5,
+   "confidence_mean": 0.57
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "body",
+   "method": "project-rendered-then-analysed",
+   "n": 7,
+   "bars_median": 9,
+   "confidence_mean": 0.58
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "breakdown",
+   "method": "inferred-from-project-data",
+   "n": 36,
+   "bars_median": 1.0,
+   "confidence_mean": 0.44
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "breakdown",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.48
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "breakdown",
+   "method": "project-rendered-then-analysed",
+   "n": 7,
+   "bars_median": 5,
+   "confidence_mean": 0.7
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "build",
+   "method": "inferred-from-project-data",
+   "n": 12,
+   "bars_median": 9.0,
+   "confidence_mean": 0.68
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "build",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 9,
+   "confidence_mean": 0.68
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "build",
+   "method": "project-rendered-then-analysed",
+   "n": 6,
+   "bars_median": 8.0,
+   "confidence_mean": 0.7
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "drop",
+   "method": "inferred-from-project-data",
+   "n": 30,
+   "bars_median": 1.0,
+   "confidence_mean": 0.4
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "drop",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.46
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "drop",
+   "method": "project-rendered-then-analysed",
+   "n": 4,
+   "bars_median": 19.0,
+   "confidence_mean": 0.9
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "intro",
+   "method": "inferred-from-project-data",
+   "n": 2,
+   "bars_median": 6.0,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "intro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 7.5,
+   "confidence_mean": 0.53
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "intro",
+   "method": "project-rendered-then-analysed",
+   "n": 2,
+   "bars_median": 7.5,
+   "confidence_mean": 0.55
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "outro",
+   "method": "inferred-from-project-data",
+   "n": 2,
+   "bars_median": 28.0,
+   "confidence_mean": 0.5
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "outro",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 5.5,
+   "confidence_mean": 0.62
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "outro",
+   "method": "project-rendered-then-analysed",
+   "n": 2,
+   "bars_median": 5.5,
+   "confidence_mean": 0.75
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "transition",
+   "method": "inferred-from-project-data",
+   "n": 6,
+   "bars_median": 1.0,
+   "confidence_mean": 0.28
+  },
+  {
+   "genre": "unclassified",
+   "form_role": "transition",
+   "method": "pieced-together",
+   "n": 1,
+   "bars_median": 1,
+   "confidence_mean": 0.19
+  }
+ ]
+}

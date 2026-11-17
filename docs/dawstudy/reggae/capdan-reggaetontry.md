@@ -1,11 +1,11 @@
 # CapDan-ReggaetonTry.mmpz
 
-Format lmms, tempo 180.0, meter 4/4, 54 bars (72.0 s). Tracks 8 (8 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
+Format lmms, tempo 180, meter 4/4, 54 bars (72 s). Tracks 8 (8 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
 
 | # | section | start bar | bars | layers median / max | roles | source |
 |---|---|---|---|---|---|---|
-| 1 | peak | 1 | 52 | 7.0 / 8 | bass, fx, hat, keys, kick, other, snare | inferred |
-| 2 | outro | 53 | 2 | 5.0 / 5 | fx, hat, kick, snare | inferred |
+| 1 | peak | 1 | 52 | 7 / 8 | bass, fx, hat, keys, kick, other, snare | inferred |
+| 2 | outro | 53 | 2 | 5 / 5 | fx, hat, kick, snare | inferred |
 
 Roles: {'bass': 1, 'fx': 1, 'hat': 2, 'keys': 1, 'kick': 1, 'other': 1, 'snare': 1}
 FX type frequency: {'reverb': 1}

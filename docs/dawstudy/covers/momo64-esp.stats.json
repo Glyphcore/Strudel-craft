@@ -1,7 +1,7 @@
 {
  "schema": "dawstudy-stats@1",
  "format": "lmms",
- "tempo": 138.0,
+ "tempo": 138,
  "meter": [
   4,
   4
@@ -31,7 +31,7 @@
    "start_bar": 1,
    "bars": 4,
    "source": "inferred",
-   "layers_median": 2.0,
+   "layers_median": 2,
    "layers_max": 2,
    "roles": [
     "bass",
@@ -43,7 +43,7 @@
    "start_bar": 5,
    "bars": 132,
    "source": "inferred",
-   "layers_median": 10.0,
+   "layers_median": 10,
    "layers_max": 19,
    "roles": [
     "bass",
@@ -60,7 +60,7 @@
    "start_bar": 137,
    "bars": 16,
    "source": "inferred",
-   "layers_median": 4.0,
+   "layers_median": 4,
    "layers_max": 5,
    "roles": [
     "hat",
@@ -72,7 +72,7 @@
    "start_bar": 153,
    "bars": 8,
    "source": "inferred",
-   "layers_median": 4.0,
+   "layers_median": 4,
    "layers_max": 5,
    "roles": [
     "kick",
@@ -85,7 +85,7 @@
    "start_bar": 161,
    "bars": 16,
    "source": "inferred",
-   "layers_median": 8.0,
+   "layers_median": 8,
    "layers_max": 8,
    "roles": [
     "bass",
@@ -275,15 +275,15 @@
    8,
    8
   ],
-  "median": 9.0,
+  "median": 9,
   "max": 19,
   "notes_per_bar_by_role": {
-   "bass": 6.0,
-   "hat": 1.0,
-   "kick": 4.0,
+   "bass": 6,
+   "hat": 1,
+   "kick": 4,
    "other": 3.375,
    "pad": 2.5,
-   "perc": 3.0,
+   "perc": 3,
    "snare": 2.25
   }
  },
@@ -304,6 +304,102 @@
    "shape": "fall",
    "start_bar": 1,
    "end_bar": 177
+  }
+ ],
+ "tension": [
+  {
+   "kind": "breakdown",
+   "bar": 1,
+   "evidence": [
+    "automation 0 volume fall"
+   ],
+   "confidence": 0.3,
+   "end_bar": 177
+  },
+  {
+   "kind": "drop",
+   "bar": 5,
+   "evidence": [
+    "layers 2.0 -> 9"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 29,
+   "evidence": [
+    "layers 9.0 -> 12"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 32,
+   "evidence": [
+    "layers 11.5 -> 15",
+    "layers 13.0 -> 17"
+   ],
+   "confidence": 0.45
+  },
+  {
+   "kind": "breakdown",
+   "bar": 49,
+   "evidence": [
+    "layers 16.0 -> 7",
+    "layers 11.0 -> 8"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 77,
+   "evidence": [
+    "layers 9.5 -> 13"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 80,
+   "evidence": [
+    "layers 12.0 -> 15",
+    "layers 13.5 -> 18"
+   ],
+   "confidence": 0.45
+  },
+  {
+   "kind": "breakdown",
+   "bar": 97,
+   "evidence": [
+    "layers 17.0 -> 8",
+    "layers 12.0 -> 8"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 121,
+   "evidence": [
+    "layers 8.0 -> 12"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "breakdown",
+   "bar": 137,
+   "evidence": [
+    "layers 10.5 -> 5",
+    "layers 7.0 -> 4"
+   ],
+   "confidence": 0.4
+  },
+  {
+   "kind": "drop",
+   "bar": 161,
+   "evidence": [
+    "layers 4.0 -> 8"
+   ],
+   "confidence": 0.4
   }
  ],
  "routing": {

@@ -4,9 +4,9 @@
  "n": 1,
  "basis": "measured (n < 3: indicative only)",
  "tempo": {
-  "min": 128.0,
-  "median": 128.0,
-  "max": 128.0
+  "min": 128,
+  "median": 128,
+  "max": 128
  },
  "length_bars": {
   "median": 120,
@@ -28,8 +28,8 @@
  "layers_median_by_section": {
   "body": 9.0,
   "breakdown": 3.25,
-  "intro": 2.0,
-  "outro": 8.0
+  "intro": 2,
+  "outro": 8
  },
  "orders": [
   [
@@ -171,7 +171,7 @@
    "licence": "Artistic 2.0",
    "page_url": "https://lmms.io/lsp/index.php?action=show&file=723",
    "sha256": "ffbce994454da09892946cda114334298b7bffa2e5d4e77dd956b881f22eab4f",
-   "tempo": 128.0,
+   "tempo": 128,
    "bars": 120,
    "sections_source": [
     "inferred"

@@ -1,15 +1,15 @@
 # Thomasso-AxeFromThe80s.mmpz
 
-Format lmms, tempo 140.0, meter 4/4, 136 bars (233.1 s). Tracks 13 (13 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
+Format lmms, tempo 140, meter 4/4, 136 bars (233.1 s). Tracks 13 (13 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
 
 | # | section | start bar | bars | layers median / max | roles | source |
 |---|---|---|---|---|---|---|
-| 1 | intro | 1 | 20 | 0.0 / 1 | other | inferred |
-| 2 | breakdown | 21 | 4 | 1.0 / 3 | kick, perc, snare | inferred |
+| 1 | intro | 1 | 20 | 0 / 1 | other | inferred |
+| 2 | breakdown | 21 | 4 | 1 / 3 | kick, perc, snare | inferred |
 | 3 | body | 25 | 36 | 3.5 / 6 | bass, hat, kick, other, snare | inferred |
-| 4 | breakdown | 61 | 12 | 3.0 / 4 | bass, hat, kick, perc | inferred |
-| 5 | body | 73 | 44 | 3.0 / 6 | bass, hat, kick, other, snare | inferred |
-| 6 | body | 117 | 20 | 4.0 / 5 | bass, hat, kick, other, snare | inferred |
+| 4 | breakdown | 61 | 12 | 3 / 4 | bass, hat, kick, perc | inferred |
+| 5 | body | 73 | 44 | 3 / 6 | bass, hat, kick, other, snare | inferred |
+| 6 | body | 117 | 20 | 4 / 5 | bass, hat, kick, other, snare | inferred |
 
 Roles: {'bass': 1, 'hat': 2, 'kick': 1, 'other': 5, 'perc': 3, 'snare': 1}
 FX type frequency: {'delay': 1, 'reverb': 1}

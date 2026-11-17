@@ -1,33 +1,33 @@
 # Farbro-Tectonic.mmpz
 
-Format lmms, tempo 140.0, meter 4/4, 136 bars (233.1 s). Tracks 21 (21 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
+Format lmms, tempo 140, meter 4/4, 136 bars (233.1 s). Tracks 21 (21 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
 
 | # | section | start bar | bars | layers median / max | roles | source |
 |---|---|---|---|---|---|---|
-| 1 | intro | 1 | 4 | 0.0 / 2 | other, pad | inferred |
-| 2 | breakdown | 5 | 4 | 0.0 / 1 | keys | inferred |
-| 3 | breakdown | 9 | 4 | 0.0 / 2 | other, pad | inferred |
-| 4 | breakdown | 13 | 4 | 0.0 / 1 | hat | inferred |
-| 5 | breakdown | 17 | 4 | 1.0 / 4 | hat, other, pad | inferred |
-| 6 | breakdown | 21 | 4 | 1.0 / 2 | hat | inferred |
+| 1 | intro | 1 | 4 | 0 / 2 | other, pad | inferred |
+| 2 | breakdown | 5 | 4 | 0 / 1 | keys | inferred |
+| 3 | breakdown | 9 | 4 | 0 / 2 | other, pad | inferred |
+| 4 | breakdown | 13 | 4 | 0 / 1 | hat | inferred |
+| 5 | breakdown | 17 | 4 | 1 / 4 | hat, other, pad | inferred |
+| 6 | breakdown | 21 | 4 | 1 / 2 | hat | inferred |
 | 7 | breakdown | 25 | 4 | 3.5 / 6 | hat, keys, other, pad, snare | inferred |
-| 8 | breakdown | 29 | 12 | 3.0 / 6 | hat, other, pad, snare | inferred |
-| 9 | breakdown | 41 | 8 | 5.0 / 8 | hat, kick, other, pad, snare | inferred |
-| 10 | breakdown | 49 | 4 | 1.0 / 4 | hat, other, pad | inferred |
-| 11 | breakdown | 53 | 8 | 2.0 / 13 | hat, keys, kick, other, pad, perc, snare | inferred |
-| 12 | breakdown | 61 | 12 | 5.0 / 7 | hat, kick, lead, other, pad, snare | inferred |
-| 13 | breakdown | 73 | 4 | 1.0 / 3 | hat, other, pad | inferred |
-| 14 | breakdown | 77 | 4 | 1.0 / 2 | hat | inferred |
-| 15 | breakdown | 81 | 4 | 4.0 / 8 | hat, kick, lead, other, pad | inferred |
-| 16 | breakdown | 85 | 4 | 4.0 / 5 | hat, kick, other | inferred |
-| 17 | breakdown | 89 | 16 | 5.0 / 10 | hat, keys, kick, lead, other, pad, snare | inferred |
-| 18 | breakdown | 105 | 4 | 1.0 / 5 | hat, keys, other, pad | inferred |
-| 19 | breakdown | 109 | 4 | 1.0 / 13 | hat, kick, other, perc, snare | inferred |
-| 20 | breakdown | 113 | 4 | 2.0 / 14 | hat, keys, kick, lead, other, pad, perc, snare | inferred |
-| 21 | breakdown | 117 | 4 | 2.0 / 3 | hat, other | inferred |
-| 22 | breakdown | 121 | 4 | 5.0 / 10 | hat, keys, kick, lead, other, pad, snare | inferred |
+| 8 | breakdown | 29 | 12 | 3 / 6 | hat, other, pad, snare | inferred |
+| 9 | breakdown | 41 | 8 | 5 / 8 | hat, kick, other, pad, snare | inferred |
+| 10 | breakdown | 49 | 4 | 1 / 4 | hat, other, pad | inferred |
+| 11 | breakdown | 53 | 8 | 2 / 13 | hat, keys, kick, other, pad, perc, snare | inferred |
+| 12 | breakdown | 61 | 12 | 5 / 7 | hat, kick, lead, other, pad, snare | inferred |
+| 13 | breakdown | 73 | 4 | 1 / 3 | hat, other, pad | inferred |
+| 14 | breakdown | 77 | 4 | 1 / 2 | hat | inferred |
+| 15 | breakdown | 81 | 4 | 4 / 8 | hat, kick, lead, other, pad | inferred |
+| 16 | breakdown | 85 | 4 | 4 / 5 | hat, kick, other | inferred |
+| 17 | breakdown | 89 | 16 | 5 / 10 | hat, keys, kick, lead, other, pad, snare | inferred |
+| 18 | breakdown | 105 | 4 | 1 / 5 | hat, keys, other, pad | inferred |
+| 19 | breakdown | 109 | 4 | 1 / 13 | hat, kick, other, perc, snare | inferred |
+| 20 | breakdown | 113 | 4 | 2 / 14 | hat, keys, kick, lead, other, pad, perc, snare | inferred |
+| 21 | breakdown | 117 | 4 | 2 / 3 | hat, other | inferred |
+| 22 | breakdown | 121 | 4 | 5 / 10 | hat, keys, kick, lead, other, pad, snare | inferred |
 | 23 | breakdown | 125 | 4 | 5.5 / 6 | hat, kick, other, snare | inferred |
-| 24 | breakdown | 129 | 4 | 2.0 / 6 | hat, other, pad | inferred |
+| 24 | breakdown | 129 | 4 | 2 / 6 | hat, other, pad | inferred |
 | 25 | breakdown | 133 | 4 | 6.5 / 11 | hat, kick, other, perc, snare | inferred |
 
 Roles: {'hat': 6, 'keys': 1, 'kick': 2, 'lead': 1, 'other': 3, 'pad': 3, 'perc': 3, 'snare': 2}

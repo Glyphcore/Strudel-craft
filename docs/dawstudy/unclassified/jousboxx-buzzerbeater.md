@@ -1,10 +1,10 @@
 # Jousboxx-BuzzerBeater.mmpz
 
-Format lmms, tempo 128.0, meter 4/4, 114 bars (213.8 s). Tracks 55 (55 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
+Format lmms, tempo 128, meter 4/4, 114 bars (213.8 s). Tracks 55 (55 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
 
 | # | section | start bar | bars | layers median / max | roles | source |
 |---|---|---|---|---|---|---|
-| 1 | breakdown | 1 | 114 | 9.0 / 28 | kick | inferred |
+| 1 | breakdown | 1 | 114 | 9 / 28 | kick | inferred |
 
 Roles: {'kick': 55}
 FX type frequency: {'compressor': 5, 'delay': 2, 'distortion': 15, 'eq': 33, 'filter': 2, 'gain': 10, 'limiter': 2, 'modulation': 3, 'other': 11, 'reverb': 12, 'sidechain': 1, 'stereo': 4}

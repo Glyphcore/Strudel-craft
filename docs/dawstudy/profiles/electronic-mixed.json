@@ -4,9 +4,9 @@
  "n": 5,
  "basis": "measured",
  "tempo": {
-  "min": 128.0,
-  "median": 140.0,
-  "max": 170.0
+  "min": 128,
+  "median": 140,
+  "max": 170
  },
  "length_bars": {
   "median": 128,
@@ -28,9 +28,9 @@
   "peak": 2
  },
  "layers_median_by_section": {
-  "body": 8.0,
-  "breakdown": 3.0,
-  "intro": 2.0,
+  "body": 8,
+  "breakdown": 3,
+  "intro": 2,
   "outro": 1.0,
   "peak": 9.5
  },
@@ -206,7 +206,7 @@
    "licence": "Artistic 2.0",
    "page_url": "https://lmms.io/lsp/index.php?action=show&file=1565",
    "sha256": "bdcf398f34e66399da26556c06c36c9510584bd13e238ed390b8eaa9095dec37",
-   "tempo": 144.0,
+   "tempo": 144,
    "bars": 139,
    "sections_source": [
     "inferred"
@@ -218,7 +218,7 @@
    "licence": "Artistic 2.0",
    "page_url": "https://lmms.io/lsp/index.php?action=show&file=581",
    "sha256": "c4bb45ad37792b38cc57d91997f7bbecd9eae7e8db2e87b69cacb9c45be4ed34",
-   "tempo": 140.0,
+   "tempo": 140,
    "bars": 128,
    "sections_source": [
     "inferred"
@@ -230,7 +230,7 @@
    "licence": "Artistic 2.0",
    "page_url": "https://lmms.io/lsp/index.php?action=show&file=723",
    "sha256": "ffbce994454da09892946cda114334298b7bffa2e5d4e77dd956b881f22eab4f",
-   "tempo": 128.0,
+   "tempo": 128,
    "bars": 120,
    "sections_source": [
     "inferred"
@@ -242,7 +242,7 @@
    "licence": "CC (by-sa)",
    "page_url": "https://lmms.io/lsp/index.php?action=show&file=1439",
    "sha256": "092667a2c539d2ab1574ff739d964e8a3efe3a18d6f1896e7c4574ba2ec7a447",
-   "tempo": 170.0,
+   "tempo": 170,
    "bars": 105,
    "sections_source": [
     "inferred"
@@ -254,7 +254,7 @@
    "licence": "Artistic 2.0",
    "page_url": "https://lmms.io/lsp/index.php?action=show&file=1060",
    "sha256": "ecece368cd72b3ca94ed34f655d491c92d595ae6ba932c2659f83a440f51c009",
-   "tempo": 140.0,
+   "tempo": 140,
    "bars": 145,
    "sections_source": [
     "inferred"

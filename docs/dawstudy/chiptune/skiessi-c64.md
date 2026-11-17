@@ -1,6 +1,6 @@
 # Skiessi-C64.mmpz
 
-Format lmms, tempo 127.0, meter 4/4, 17 bars (32.1 s). Tracks 9 (9 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
+Format lmms, tempo 127, meter 4/4, 17 bars (32.1 s). Tracks 9 (9 with clips). Statistics only (docs/RESEARCH_ETHICS.md).
 
 | # | section | start bar | bars | layers median / max | roles | source |
 |---|---|---|---|---|---|---|

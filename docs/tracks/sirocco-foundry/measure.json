@@ -1,169 +1,169 @@
 {
  "track": "sirocco-foundry",
- "version": "v3",
+ "version": "v4",
  "bpm": 140,
  "bars": 128,
  "render": "Craft form, one pass bars 1-128 + 4 tail bars, tools/racks/render_track.cjs",
  "craft_delivered": {
-  "static_gain_db": 10.59,
-  "whole_true_peak_dbtp": -1.15,
-  "whole_lufs": -14,
+  "static_gain_db": 9.8,
+  "whole_lufs": -14.8,
+  "whole_true_peak_dbtp": -2.21,
   "clipped": 0,
   "sections": [
    {
     "section": "intro",
-    "lufs": -16.51,
-    "true_peak_dbtp": -2.05,
-    "centroid_hz": 1111,
-    "low_share_pct": 52.52
+    "lufs": -17.26,
+    "true_peak_dbtp": -2.65,
+    "centroid_hz": 1110,
+    "low_share_pct": 52.08
    },
    {
     "section": "build1",
-    "lufs": -15.8,
-    "true_peak_dbtp": -4.42,
-    "centroid_hz": 1111,
-    "low_share_pct": 56.62
+    "lufs": -16.6,
+    "true_peak_dbtp": -4.6,
+    "centroid_hz": 1114,
+    "low_share_pct": 56.8
    },
    {
     "section": "drop1",
-    "lufs": -12.82,
-    "true_peak_dbtp": -1.8,
-    "centroid_hz": 1179,
-    "low_share_pct": 64.28
+    "lufs": -13.65,
+    "true_peak_dbtp": -2.54,
+    "centroid_hz": 1183,
+    "low_share_pct": 64.82
    },
    {
     "section": "breakdown",
-    "lufs": -19.45,
-    "true_peak_dbtp": -3.65,
-    "centroid_hz": 1445,
-    "low_share_pct": 14.77
+    "lufs": -20.31,
+    "true_peak_dbtp": -4.23,
+    "centroid_hz": 1452,
+    "low_share_pct": 14.34
    },
    {
     "section": "drop2",
-    "lufs": -13.18,
-    "true_peak_dbtp": -1.23,
+    "lufs": -13.96,
+    "true_peak_dbtp": -2.21,
     "centroid_hz": 1352,
-    "low_share_pct": 66.96
+    "low_share_pct": 66.63
    },
    {
     "section": "drop3",
-    "lufs": -12.7,
-    "true_peak_dbtp": -1.15,
-    "centroid_hz": 1156,
-    "low_share_pct": 62.44
+    "lufs": -13.51,
+    "true_peak_dbtp": -3.13,
+    "centroid_hz": 1160,
+    "low_share_pct": 62.7
    },
    {
     "section": "outro",
-    "lufs": -13.81,
-    "true_peak_dbtp": -1.99,
-    "centroid_hz": 1469,
-    "low_share_pct": 53.78
+    "lufs": -14.55,
+    "true_peak_dbtp": -3.2,
+    "centroid_hz": 1458,
+    "low_share_pct": 53.13
    }
   ]
  },
  "raw_render": {
-  "lufs_integrated": -24.59,
-  "true_peak_dbtp": -11.74,
-  "plr_db": 12.85
+  "lufs_integrated": -24.6,
+  "true_peak_dbtp": -12.01,
+  "plr_db": 12.59
  },
  "whole_normalised": {
   "file_seconds": 226.286,
   "sample_rate": 44100,
-  "lufs_integrated": -14,
-  "lra_lu": 9.63,
-  "true_peak_dbtp": -1.15,
-  "sample_peak_dbfs": -1.15,
-  "plr_db": 12.85,
-  "crest_db": 15.11,
-  "dc_offset_dbfs": -91.9,
+  "lufs_integrated": -14.8,
+  "lra_lu": 9.65,
+  "true_peak_dbtp": -2.21,
+  "sample_peak_dbfs": -2.32,
+  "plr_db": 12.59,
+  "crest_db": 14.73,
+  "dc_offset_dbfs": -91.43,
   "clipped_samples": 0,
-  "low_share_pct": 60.77,
-  "spectral_tilt_db_oct": -4.45,
-  "spectral_centroid_hz": 1246,
+  "low_share_pct": 60.8,
+  "spectral_tilt_db_oct": -4.44,
+  "spectral_centroid_hz": 1248,
   "lr_correlation_below_120": 0.999,
-  "side_to_mid_db_below_120": -34.93,
+  "side_to_mid_db_below_120": -34.84,
   "tempo_bpm": 140,
   "bars": 132,
-  "onsets_per_bar": 13.4,
-  "spectral_centroid_densest_8_bars_hz": 1869,
+  "onsets_per_bar": 13.5,
+  "spectral_centroid_densest_8_bars_hz": 1864,
   "densest_8_bars_start_bar": 89
  },
  "sections": [
   {
    "section": "intro",
    "bars": "1-16",
-   "lufs": -16.51,
-   "true_peak_dbtp": -2.05,
-   "centroid_hz": 1111,
-   "low_share_pct": 52.52,
+   "lufs": -17.26,
+   "true_peak_dbtp": -2.65,
+   "centroid_hz": 1110,
+   "low_share_pct": 52.08,
    "corr_below_120": 1,
-   "side_mid_db_below_120": -55.96
+   "side_mid_db_below_120": -57.06
   },
   {
    "section": "build1",
    "bars": "17-32",
-   "lufs": -15.8,
-   "true_peak_dbtp": -4.42,
-   "centroid_hz": 1111,
-   "low_share_pct": 56.62,
+   "lufs": -16.6,
+   "true_peak_dbtp": -4.6,
+   "centroid_hz": 1114,
+   "low_share_pct": 56.8,
    "corr_below_120": 1,
-   "side_mid_db_below_120": -37.28
+   "side_mid_db_below_120": -37.29
   },
   {
    "section": "drop1",
    "bars": "33-56",
-   "lufs": -12.82,
-   "true_peak_dbtp": -1.8,
-   "centroid_hz": 1179,
-   "low_share_pct": 64.28,
+   "lufs": -13.65,
+   "true_peak_dbtp": -2.54,
+   "centroid_hz": 1183,
+   "low_share_pct": 64.82,
    "corr_below_120": 0.999,
-   "side_mid_db_below_120": -35.6
+   "side_mid_db_below_120": -35.42
   },
   {
    "section": "breakdown",
    "bars": "57-72",
-   "lufs": -19.45,
-   "true_peak_dbtp": -3.65,
-   "centroid_hz": 1445,
-   "low_share_pct": 14.77,
-   "corr_below_120": 0.9,
-   "side_mid_db_below_120": -12.72
+   "lufs": -20.31,
+   "true_peak_dbtp": -4.23,
+   "centroid_hz": 1452,
+   "low_share_pct": 14.34,
+   "corr_below_120": 0.891,
+   "side_mid_db_below_120": -12.37
   },
   {
    "section": "drop2",
    "bars": "73-96",
-   "lufs": -13.18,
-   "true_peak_dbtp": -1.23,
+   "lufs": -13.96,
+   "true_peak_dbtp": -2.21,
    "centroid_hz": 1352,
-   "low_share_pct": 66.96,
+   "low_share_pct": 66.63,
    "corr_below_120": 0.999,
    "side_mid_db_below_120": -33.91
   },
   {
    "section": "drop3",
    "bars": "97-112",
-   "lufs": -12.7,
-   "true_peak_dbtp": -1.15,
-   "centroid_hz": 1156,
-   "low_share_pct": 62.44,
+   "lufs": -13.51,
+   "true_peak_dbtp": -3.13,
+   "centroid_hz": 1160,
+   "low_share_pct": 62.7,
    "corr_below_120": 0.999,
-   "side_mid_db_below_120": -35.39
+   "side_mid_db_below_120": -35.38
   },
   {
    "section": "outro",
    "bars": "113-128",
-   "lufs": -13.81,
-   "true_peak_dbtp": -1.99,
-   "centroid_hz": 1469,
-   "low_share_pct": 53.78,
+   "lufs": -14.55,
+   "true_peak_dbtp": -3.2,
+   "centroid_hz": 1458,
+   "low_share_pct": 53.13,
    "corr_below_120": 1,
-   "side_mid_db_below_120": -36.59
+   "side_mid_db_below_120": -36.55
   }
  ],
  "contrast_lu": {
-  "drop1_minus_breakdown": 6.63,
-  "drop2_minus_breakdown": 6.27,
-  "drop3_minus_breakdown": 6.75
+  "drop1_minus_breakdown": 6.66,
+  "drop2_minus_breakdown": 6.35,
+  "drop3_minus_breakdown": 6.8
  },
  "eight_bar_blocks_lufs_centroid": {
   "17-24": [
@@ -223,62 +223,63 @@
  "duck_drop1_bars_41_48": {
   "duck_depth_db": 7.35,
   "duck_kicks_used": 31,
-  "reliability": "unreliable (exponential release reads 1 to 2 dB shallow, RACK_STANDARD section 8)"
+  "reliability": "unreliable (exponential release reads 1 to 2 dB shallow, RACK_STANDARD section 8)",
+  "note": "unchanged program: 7.35 dB over 31 kicks, measured on the v3 build of the same lanes"
  },
  "standalone_render": {
-  "static_gain_db": 10.67,
-  "whole_true_peak_dbtp": -1.33,
-  "whole_lufs": -14,
+  "static_gain_db": 9.88,
+  "whole_lufs": -14.8,
+  "whole_true_peak_dbtp": -1.5,
   "clipped": 0,
   "sections": [
    {
     "section": "intro",
-    "lufs": -16.35,
-    "true_peak_dbtp": -1.97,
-    "centroid_hz": 1079,
-    "low_share_pct": 51.42
+    "lufs": -17.13,
+    "true_peak_dbtp": -2.46,
+    "centroid_hz": 1074,
+    "low_share_pct": 51.28
    },
    {
     "section": "build1",
-    "lufs": -15.72,
-    "true_peak_dbtp": -3.22,
-    "centroid_hz": 1100,
-    "low_share_pct": 56.61
+    "lufs": -16.45,
+    "true_peak_dbtp": -4.51,
+    "centroid_hz": 1093,
+    "low_share_pct": 55.61
    },
    {
     "section": "drop1",
-    "lufs": -12.81,
-    "true_peak_dbtp": -1.33,
-    "centroid_hz": 1170,
-    "low_share_pct": 65.1
+    "lufs": -13.62,
+    "true_peak_dbtp": -1.5,
+    "centroid_hz": 1173,
+    "low_share_pct": 64.9
    },
    {
     "section": "breakdown",
-    "lufs": -19.43,
-    "true_peak_dbtp": -4.37,
-    "centroid_hz": 1403,
-    "low_share_pct": 14.77
+    "lufs": -20.47,
+    "true_peak_dbtp": -5.39,
+    "centroid_hz": 1460,
+    "low_share_pct": 15.94
    },
    {
     "section": "drop2",
-    "lufs": -13.18,
-    "true_peak_dbtp": -1.33,
-    "centroid_hz": 1356,
-    "low_share_pct": 67.44
+    "lufs": -14,
+    "true_peak_dbtp": -1.91,
+    "centroid_hz": 1360,
+    "low_share_pct": 67.85
    },
    {
     "section": "drop3",
-    "lufs": -12.75,
-    "true_peak_dbtp": -1.62,
-    "centroid_hz": 1128,
-    "low_share_pct": 62.94
+    "lufs": -13.53,
+    "true_peak_dbtp": -1.64,
+    "centroid_hz": 1122,
+    "low_share_pct": 63.28
    },
    {
     "section": "outro",
-    "lufs": -13.89,
-    "true_peak_dbtp": -2.6,
+    "lufs": -14.68,
+    "true_peak_dbtp": -3.15,
     "centroid_hz": 1466,
-    "low_share_pct": 55.08
+    "low_share_pct": 55.15
    }
   ]
  },
@@ -287,19 +288,26 @@
   "standalone": 7333
  },
  "true_peak_spread": {
+  "target_lufs": -14.8,
   "craft_renders": [
-   -1.15,
-   -1.35
+   -2.21,
+   -1.98,
+   -2.29
   ],
   "standalone_renders": [
-   -1.33,
-   -1.16,
-   -1.42,
-   -1.25
-  ]
+   -1.5,
+   -2,
+   -2.07
+  ],
+  "at_minus_14_0_lufs_critic_readings": {
+   "craft": -0.79,
+   "standalone": -0.91
+  },
+  "note": "whole-track PLR about 13 dB plus up to 1.3 dB run-to-run true-peak spread (#115); a -14.0 target left 2 of 5 renders above -1.0 dBTP"
  },
  "lane_check": "node docs/tracks/sirocco-foundry/check.mjs: 49 lanes, hap counts equal in every lane, level within 0.5 dB and low share within 3 points (wider tolerances for 5 noisy lanes, listed in the script)",
  "round5_before": {
   "standalone_critic_v2": "-0.72 / -0.77 dBTP, breakdown 1.7 LU quieter, breakdown low share 27.5 % vs 14.7 %"
- }
+ },
+ "static_gain_target_lufs": -14.8
 }

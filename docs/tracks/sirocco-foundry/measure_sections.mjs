@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 // Whole-track and per-section measurement of a Sirocco Foundry render (issue #136). Needs ffmpeg and tools/racks/measure.mjs.
 //   node docs/tracks/sirocco-foundry/measure_sections.mjs RENDER.wav OUT.json [--workdir DIR]
-// 1. measures the render, 2. applies ONE static gain to -14 LUFS integrated (no limiter, no compression), 3. measures the normalised file,
+// 1. measures the render, 2. applies ONE static gain to the target (default -14.8 LUFS integrated, `--target`) (no limiter, no compression), 3. measures the normalised file,
 // 4. slices it on bar lines per section of form.json (140 bpm, one bar = 240/140 s) and measures each slice.
 import fs from 'node:fs'; import path from 'node:path'; import os from 'node:os'; import { spawnSync } from 'node:child_process'; import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url)), ROOT = path.resolve(HERE, '../../..'), MEASURE = path.join(ROOT, 'tools/racks/measure.mjs');
 const [IN, OUT] = process.argv.slice(2); const wd = process.argv.includes('--workdir') ? process.argv[process.argv.indexOf('--workdir') + 1] : fs.mkdtempSync(path.join(os.tmpdir(), 'sf-'));
+const TARGET = process.argv.includes('--target') ? +process.argv[process.argv.indexOf('--target') + 1] : -14.8;
 const form = JSON.parse(fs.readFileSync(path.join(HERE, 'form.json'), 'utf8')), BAR = 240 / form.bpm;
 const measure = (f, extra = []) => JSON.parse(spawnSync('node', [MEASURE, '--bpm', String(form.bpm), ...extra, f], { encoding: 'utf8', maxBuffer: 1 << 28 }).stdout);
-const raw = measure(IN), gain = -14 - raw.lufs_integrated, norm = path.join(wd, 'normalised.wav');
+const raw = measure(IN), gain = TARGET - raw.lufs_integrated, norm = path.join(wd, 'normalised.wav');
 spawnSync('ffmpeg', ['-y', '-v', 'error', '-i', IN, '-af', `volume=${gain.toFixed(4)}dB`, '-c:a', 'pcm_f32le', norm]);
 const whole = measure(norm), sections = []; let bar = 1;
 for (const s of form.form) {

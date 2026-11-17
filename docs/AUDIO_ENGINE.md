@@ -123,6 +123,10 @@ between runs, the pairs do not). Per played minute.
      only live takes differed. Level after the fix: +0.2 to +1.6 dB against the CLI render (was -12 to -19), sub offset +1.2..+1.5 dB.
   2. The scheduler starts at cycle 0 after `stop()` + `play()`; `range.start` was honoured only with Loop on. A fresh run now seeks to Start whenever
      Start > 0 (loop or not), within one tick (<= 100 ms). The live x1 take at `at: 17` no longer waits 30 s.
+  3. Stale worker ticks after stop (#167). A tick the worker posted before `timer.stop()` is still queued when `stop()` returns; it ran against `Cyclist.stop()`'s
+     state (`lastEnd` 0, old cycle origin and tick count), queried [0, old position), and the late-window re-anchor (4c16be4) moved the clock by that many seconds:
+     the next run read cycle -6..-118 (earlier: `lastEnd` written back, the next run began at the old cycle; since 7a56aa5). The clock now has a `running` flag
+     (start sets it, stop/pause clear it) and ignores ticks while stopped. Test: `tests/site/transport_stop_play.mjs` (stale tick forced by blocking the main thread 300 ms before stop).
   Live x1/x4 at cycle 17 now: 28-29 of 29 onsets by the soft rule, p95 5 ms, 0 dropouts, drift <= 0.3 ms/s. Window 17 is the validated one; the take
   rows of record_offline.mjs use it (the 18 window of the old numbers was a workaround for the start bug). A take under x4 is flagged by its self-check
   (27 dropped events, tap gaps) whenever the glitch metric shows loss.

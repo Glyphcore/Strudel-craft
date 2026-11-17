@@ -91,7 +91,7 @@ ahead. Measured with `node tests/site/background.mjs --baseline` (Strudel's cloc
 CPU x4 gave 127 skipped queries and 25 dropped haps; a 2.5 s main-thread stall gave 47 skipped queries.
 - The clock: `bgplay.js` replaces the scheduler's `clock` instance property at runtime (Strudel's code is unmodified) with the same
   per-tick work (same Cyclist fields, so seek, loop and capture keep working), ticked from a dedicated Web Worker timer (worker timers
-  are not throttled like main-thread timers) and always against `AudioContext.currentTime`.
+  are not throttled like main-thread timers) and always against `AudioContext.currentTime`. Ticks that arrive after stop/pause are ignored (a stale queued tick used to move the clock to a negative or old cycle, #167; test `tests/site/transport_stop_play.mjs`).
 - Adaptive lookahead: 0.2 s in the foreground (Strudel's own), at least 1.0 s while hidden, raised after late ticks (1.5 x the gap),
   bounded at 2.0 s, and decaying back once the page is visible and ticks are on time for 5 s. Cost: haps already scheduled cannot be
   taken back, so while the lookahead is raised a live edit or a pad quantise is heard up to that much later (at most 2 s, only right

@@ -136,7 +136,12 @@ function makeClock(S, getTime, onTrigger, latency) {
       });
     } catch (e) { logErr(e); }
   };
-  const onTick = () => { const w0 = now(); try { onTick0(); } finally { const dt = now() - w0; PF.tickMs += dt; if (dt > PF.tickMax) PF.tickMax = dt; } };
+  /* ticks arrive from a worker: a message posted before stop()/pause() is still queued on the main thread when stop() returns (a busy page, CPU
+     throttle), so a stopped clock must ignore it. A ghost tick after Cyclist.stop() (lastEnd = 0, stale cycle origin and tick count) queried [0, old position),
+     found every hap "late" and re-anchored the clock by that many seconds (the next run read cycle -6..-118), or wrote lastEnd back to the old cycle (the next run
+     began there). `running` is set by start() and cleared by stop()/pause(). */
+  let running = false;
+  const onTick = () => { if (!running) return; const w0 = now(); try { onTick0(); } finally { const dt = now() - w0; PF.tickMs += dt; if (dt > PF.tickMax) PF.tickMax = dt; } };
   const onTick0 = () => {
     const t = getTime(), w = now();
     B.stats.ticks++;
@@ -159,9 +164,9 @@ function makeClock(S, getTime, onTrigger, latency) {
   B.clockKind = timer.kind === 'worker' ? 'worker' : 'main-thread (no Worker)';
   return {
     setDuration: () => DURATION, get duration() { return DURATION; }, interval: TICK_MS / 1000, minLatency: MIN_LATENCY, getPhase: () => phase,
-    start() { resetPerf(); timer.stop(); B.lastWall = 0; B.lastT = 0; B.played = 0; B.paused = 0; B.boost = 0; onTick(); timer.start(); },
-    pause() { timer.stop(); },
-    stop() { tick = 0; phase = 0; timer.stop(); },
+    start() { resetPerf(); timer.stop(); B.lastWall = 0; B.lastT = 0; B.played = 0; B.paused = 0; B.boost = 0; running = true; onTick(); timer.start(); },
+    pause() { running = false; timer.stop(); },
+    stop() { running = false; tick = 0; phase = 0; timer.stop(); },
   };
 }
 function install(S) {

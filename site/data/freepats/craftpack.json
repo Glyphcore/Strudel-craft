@@ -2,7 +2,7 @@
   "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
   "craftpack": "1.0.0",
   "id": "glyphcore/freepats",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "title": "FreePats instruments (CC0)",
   "description": "Concert harp, drawbar organ and xylophone from the FreePats project, reduced to per-note ogg samples; lazy sounds ingredient plus three recipes. Selection via the openDAW factory catalogue.",
   "license": "CC0-1.0",
@@ -41,9 +41,9 @@
       "assets": {
         "root": "sounds",
         "index": "files.sha256",
-        "hash": "sha256:09add1cf4dca274d23252f4ec9cb3f2e7f3715c565e5df5f608a9dd24cc347f4",
+        "hash": "sha256:8b1add887e1258c06de47a7713c9048bc77455e0bac4af16ceaf2cbec97f715e",
         "files": 48,
-        "bytes": 1354983
+        "bytes": 1333211
       },
       "bytes": 1634
     },

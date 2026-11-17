@@ -13,4 +13,4 @@ Licence text on each page: "Published under the terms of the Creative Commons CC
 
 Not in this pack (blocked): Spanish classical guitar and Upright Piano KW. FreePats publishes them only as .7z (no tar variant of the same CC0 bank), and no extractor is available here. Tracked on issue #181.
 
-Reduction (tools/freepats/extract.py): one velocity layer (the zone holding velocity 100), the SF2's own root-key zones (every 3 to 6 semitones), cut to 8 s (harp), 4 s (organ, loop unrolled), 3 s (xylophone) with a 150 ms fade, mono ogg vorbis q4 at 44.1 kHz.
+Reduction (tools/freepats/extract.py): one velocity layer (the zone holding velocity 100), the SF2's own root-key zones (every 3 to 6 semitones), cut to 8 s (harp), 4 s (organ, loop unrolled), 3 s (xylophone) with a 150 ms fade, mono ogg vorbis q4 at 44.1 kHz. 1.0.1: every note is scaled to the same level (rms of its first 0.5 s, 1 s organ, 0.3 s xylophone, target -24 dBFS) with a peak cap of -9 dBFS, so the notes are within about 4 dB of each other and recipe mixes keep headroom (1.0.0 was normalised to full scale and clipped).

@@ -70,7 +70,7 @@
       "id": "glyphcore/freepats",
       "version": "1.0.0",
       "source": "file:data/freepats",
-      "manifest": "sha256:9f8f0779a2096bcbca21e55c07010b3ddc9280b43cf9cf93d297868cd29365c2",
+      "manifest": "sha256:b9ad36edc1a3e4cc1a1f151bd3f7c38a30159267293e5b49009cd98689c0f0b3",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}

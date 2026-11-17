@@ -503,6 +503,7 @@
   "resources.css",
   "resources.js",
   "sound-load.js",
+  "sound-prep.js",
   "style-atoms.js",
   "style.css",
   "syntax.js",

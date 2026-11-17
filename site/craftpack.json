@@ -212,9 +212,9 @@
       "format": "syntax@1",
       "version": "1.0.0",
       "path": "data/syntax.json",
-      "hash": "sha256:b8da7bb50d9b7b82b48d58dc56fab2137c7e2d1ae1c093c69cca1bfd71f304d6",
+      "hash": "sha256:b25d7fea22c8b646bb2ca87e218b4fe51eb616b5e4cc9657ac4f401fd4bbaba4",
       "load": "lazy",
-      "bytes": 217723
+      "bytes": 217842
     },
     {
       "id": "composition",

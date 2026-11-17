@@ -522,6 +522,8 @@ export function createPacks(opts = {}) {
       for (const i of allIngs().filter((x) => (x.kind === 'sample-source' || (x.kind === 'waveforms' && wt)) && x.pack.state === 'ready')) { await loadIng(i); if (i.activate) out.push(...await i.activate(names)); }
       return out;
     },
+    // names of the sounds that packs provide (sample-source sounds[] and `sounds` keys), for the engine's sound preparation (site/sound-prep.js, #183)
+    packSounds: () => { const out = new Set(); for (const i of allIngs()) { if (i.pack.state !== 'ready' || i.state !== 'ready' || !i.data) continue; if (i.kind === 'sample-source') i.data.sources.forEach((x) => x.sounds.forEach((n) => out.add(n))); else if (i.kind === 'sounds') Object.keys(i.data).forEach((k) => k !== '_base' && out.add(k)); } return out; },
     ensure: async (kind) => { await ready; await Promise.all(allIngs().filter((i) => i.kind === kind).map(loadIng)); return items(kind); },
     cacheInfo, storage, persist, refresh, uncache, update, revalidate: (id) => revalidate(packs.get(id) || {}),
     add, remove, prefer, grant, revoke, codeInfo, codeEnabled, setCodeEnabled, trusts, offline, propose, accept, proposals: () => proposalList.map((p) => ({ ...p })), peek: async (source) => { const p = proposalList.find((x) => x.source === source && x.state === 'new'); if (!p) return null; proposalList.splice(proposalList.indexOf(p), 1); return propose(source); },

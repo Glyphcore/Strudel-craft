@@ -188,7 +188,7 @@ const Engine = {
     try { if (!window.strudelCraft.hooks && window.strudelCraft.installHooks) window.strudelCraft.installHooks(); await applyRanges(); } catch (e) { /* hooks optional */ }
     try { await loadPerform(); window.strudelCraft.perform && window.strudelCraft.perform.glue(); } catch (e) { /* perform tools optional: ctl()/hooks.map() need them */ }
     if ((needsSamples || needsSamplesFor(code)) && !this.samplesLoaded) { say('Loading sample banks'); await loadSampleMaps((m, err) => audioNotice(m, err ? 'error' : 'info')); }
-    try { const P = window.strudelCraft.packs; if (P && P.activateSources && /\b(?:s|sound)\s*\(/.test(code || '')) await P.activateSources(code); } catch (e) { audioNotice('Instrument source: ' + (e && e.message ? e.message : e), 'error'); } /* referenced sample sources (#183): their map is fetched only when the program names one of their sounds */
+    try { const P = window.strudelCraft.packs; if (P && P.activateSources && /\b(?:s|sound)\s*\(/.test(code || '')) { await P.activateSources(code); const SP = await import('./sound-prep.js'); await SP.prepare(code, { user: true }); } } catch (e) { audioNotice('Instrument source: ' + (e && e.message ? e.message : e), 'error'); } /* referenced sample sources (#183): their map is fetched only when the program names one of their sounds */
     await resumeAudio();
     /* superdough loads its AudioWorklets (shape, distort, crush, coarse, ladder...) only on the first 'mousedown'; a keyboard / programmatic Play never fires it and
        every voice with such an effect (sub808 shape, kick) then fails in getTrigger (silent live, #108). Load once per context here. */
@@ -500,6 +500,18 @@ function currentSource(view = playView()) {
   if (!bodyReady(r)) { const pending = hydrate(r); pending.catch(() => {}); /* readers that only peek at the source must not leave an unhandled rejection */ return { kind: 'solo', id: r.id, title: r.title, code: '', samples: false, pending }; }
   return { kind: 'solo', id: r.id, title: r.title, code: withTempo(recipeCode(r)), samples: r.needs_samples || /\.bank\(|\bs\("(?:bd|hh|sd|cp|oh)/.test(recipeCode(r)) };
 }
+/* #183: start fetching and decoding the pack sounds a program names as soon as it is valid (edit settled, recipe chosen), so a cold Play has them ready (site/sound-prep.js; bounded, off when offline or save-data) */
+let earlyT = 0;
+function earlyPrep(code) {
+  clearTimeout(earlyT); if (!/\b(?:s|sound)\s*\(/.test(code || '')) return;
+  earlyT = setTimeout(async () => { try {
+    if (S.playing || navigator.onLine === false || (navigator.connection && navigator.connection.saveData)) return;
+    const P = window.strudelCraft.packs; if (!P || !P.activateSources || !P.packSounds) return;
+    const SP = await import('./sound-prep.js'); await P.ensure('sample-source');
+    const mine = P.packSounds(); if (![...SP.parse(code).names.keys()].some((n) => mine.has(n))) return;
+    await Engine.load(); await P.activateSources(code); await SP.early(code);
+  } catch (e) { /* preparation is best effort: Play still loads lazily */ } }, 900);
+}
 Engine.evalCount = 0;
 async function play(src = currentSource()) {
   if (!src) return;
@@ -685,6 +697,7 @@ function select(i, { scroll = true, audition = true } = {}) {
   $$('#list li').forEach((li, j) => li.setAttribute('aria-current', j === S.sel ? 'true' : 'false'));
   if (scroll) { const li = $$('#list li')[S.sel]; if (li) li.scrollIntoView({ block: 'nearest', behavior: reducedMotion.matches ? 'auto' : 'smooth' }); }
   renderSelection(true);
+  { const r = cur(); if (r && bodyReady(r)) earlyPrep(recipeCode(r)); }
   if (audition && S.playing && S.view === 'rack') play();
 }
 /* the plain Strudel form of a recipe as it stands: the generated lowering for the catalog text, else the editor text with atoms inlined (an edit has no stored lowering) */
@@ -972,7 +985,7 @@ async function boot() {
   $('#clear').addEventListener('click', clearFilters);
   $('#filters').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (!b) return; const id = b.dataset.label; const on = !S.chips.has(id); on ? S.chips.add(id) : S.chips.delete(id); b.setAttribute('aria-pressed', on); renderList(); });
   const code = $('#code');
-  code.addEventListener('input', () => { commitEdit(code.value); liveCode('rack'); });
+  code.addEventListener('input', () => { commitEdit(code.value); liveCode('rack'); earlyPrep(code.value); });
   $('#followBtn').addEventListener('click', () => { S.follow = !S.follow; store.set('follow', S.follow); say(S.follow ? 'Transport follows the visible tab' : 'Transport locked to ' + (S.srcView || 'rack')); syncTransport(); onViewChanged(); });
   $('#liveChip').addEventListener('click', () => { S.live = !S.live; try { store.set('live', S.live ? 'on' : 'off'); } catch (e) { /* ignore */ } $('#liveChip').setAttribute('aria-pressed', S.live); setLiveChip(S.live ? (S.playing ? 'live' : 'paused') : 'off'); if (S.live) liveCode(); });
   $('#liveChip').setAttribute('aria-pressed', S.live);

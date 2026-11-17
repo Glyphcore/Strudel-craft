@@ -107,6 +107,10 @@ CPU x4 gave 127 skipped queries and 25 dropped haps; a 2.5 s main-thread stall g
 - Keep alive, legitimately: a Screen Wake Lock while playing in the foreground (setting "Keep the screen on while playing", default on,
   re-acquired on return) and Media Session metadata with play / pause / stop handlers (lock-screen and notification controls where the
   browser shows them). No silent-audio loop or other keep-alive hack is used.
+- Engine Worker (#180 stage 1, flag, default off): `?engine=worker` (or `localStorage sc.flag.engine`, or the Engine section of the audio dot's sheet) runs the program's evaluate,
+  transport clock and pattern queries in a Worker (`engine-worker.js`, `engine-worker-host.js`, both lazy, nothing eager) and publishes timed events 0.6 s ahead (2 s hidden);
+  the page only builds voices with the unmodified superdough. Only programs that read no page state (no `hooks.*`, `ctl()`, taps, pads, capture) are eligible; others run on the page clock
+  as before. Limits and numbers: docs/AUDIO_ENGINE.md section 7; tests `tests/site/engine_worker_parity.mjs` and `background_audio_load.mjs --query engine=worker`.
 - Phone control (#178): `node tests/site/background_audio.mjs` (site) and `node tests/site/background_audio_control.mjs` (a bare upstream
   `@strudel/web` 1.3.0 page, no site code) play `note("c4*8")` on a 360x780 touch profile through four cases: foreground, hidden 30-60 s with 1 Hz
   main-thread timers, continuous touch scrolling, CPU x4. Result: the site has 0 late events and 0 gaps in all four; upstream has 482 drop logs

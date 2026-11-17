@@ -396,6 +396,8 @@
   "data/vox/demo/pitched/strudel.json",
   "data/vox/demo/strudel.json",
   "data/vox/demo/words.json",
+  "engine-worker-host.js",
+  "engine-worker.js",
   "engine/aliases.js",
   "engine/atoms-consumers.js",
   "engine/atoms-migrate.js",

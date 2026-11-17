@@ -181,11 +181,34 @@ in-process anyway). The host shares the page's main thread (same origin), so it 
 Live takes check themselves (tap frame continuity from the audio thread's `currentFrame`, dropped events and re-anchors from the
 scheduler counters, Chrome playout statistics where present) and a flagged take can be replaced by its offline render.
 
-## 7. Engine worker (B1, designed, coming)
-Move evaluate, the atoms / hooks / lanes passes and the pattern queries into a module Worker that loads @strudel/core, mini, tonal and
-transpiler at the versions bundled in @strudel/web 1.3.0, plus the DOM-free engine modules (site/engine/*.js already run in Node for the
-CLI); the main thread receives timestamped hap batches and only calls superdough against `AudioContext.currentTime`, with batches
-queued early and a late batch re-anchored (the `late=reanchor` rule above). Prerequisites found while measuring: hap values must be
-structured-clone safe (functions in values such as `onTrigger` / `source` stay on the main side), control, pad and hooks-journal state is
-owned by the UI and must be mirrored to the worker by messages, `word()` / `voxBank` must resolve sound names without superdough, and the
-visuals need the batches (or their own worker query) for future cycles. `tests/site/engine_worker.mjs` comes with it.
+## 7. Engine worker (#180 stage 1, built behind a flag; default off)
+Flag: `?engine=worker`, or `localStorage sc.flag.engine = "worker"`, or the Engine section of the audio dot's sheet ("Audio engine (experimental)", applies after reload). The
+page-thread clock of section 1 stays the default and the fallback.
+- **What moves.** `site/engine-worker.js` (a classic Worker started from a Blob, lazily, only with the flag) runs the unmodified `@strudel/web` 1.3.0 bundle (its text is fetched
+  by the page and handed over; the unpkg URL stays pinned) with stand-ins for what a Worker lacks (no DOM, no AudioContext: `AudioContext` and `document` stubs, `samples()` a no-op),
+  evaluates the program, owns the transport clock (worker timer, not throttled) and runs the Cyclist's per-tick arithmetic. It publishes `{kind: 'hap', source: 'pattern', t, d, cps,
+  onset, value}` events (the event type of the device adapter contract, #180) 0.6 s ahead in the foreground, 2 s while hidden, over a MessagePort; no SharedArrayBuffer.
+  `site/engine-worker-host.js` (page side, lazy) turns each delivered event into a voice with the page's unmodified superdough (`onTrigger`, absolute `t`), mirrors the clock
+  fields (`lastEnd`, `lastTick`, `cps`, ...) so `now()`, seek, loop and the transport readout keep working, forwards live edits (`evaluate` wrapper) and re-syncs the Worker when
+  something else moves the clock (tempo knob, seek). The Worker's audio-clock estimate is re-anchored from `AudioContext.currentTime` on every batch.
+- **Eligibility.** A program is sent to the Worker only if its evaluate text names no page state a query could read: `hooks.*`, `ctl()`, `.tap()`, `.use()`, `pad()`, `capture` /
+  `recall` / `.from()`, `strudelCraft`, `window.` / `document.` / `localStorage` (the lanes pass has already turned `.send` / `.split` / `.merge` into plain Strudel). Anything else, or
+  a program that fails to evaluate in the Worker, runs on the page-thread clock unchanged (also a live edit that becomes ineligible switches back, and the reverse).
+- **Known limits (stage 1).** The pattern is still evaluated once on the page, so visuals, highlights and lane captures read the page pattern (the mirror of the event stream is
+  the next step); live event captures (the scheduler's own queries) record nothing while the Worker drives; a live edit, a seek or a tempo change is heard up to the lookahead
+  (0.6 s, 2 s hidden) later instead of 0.2 s; Perform pads and `ctl()` programs are not eligible (their live path stays the page's `catchUp`); the run starts 0.5 s after Play.
+- **Measured** (`tests/site/background_audio_load.mjs`, phone profile, headless, 20 s, x1; page = flag off, worker = flag on):
+
+| program | engine | late haps | min margin | main-thread script ms/s | query + tick ms/s | long tasks (worst) |
+|---|---|---|---|---|---|---|
+| velvet-static | page | 0 | 81 ms | 545 | 429 + 435 | 69 (497 ms) |
+| velvet-static | worker | 0 | 352 ms | 123 | 0 | 50 (509 ms) |
+| sirocco-foundry | page | 0 | 69 ms | 403 | 294 + 301 | 47 (611 ms) |
+| sirocco-foundry | worker | 0 | 388 ms | 134 | 0 | 65 (410 ms) |
+
+  The scheduling work (query passes, ticks) leaves the page thread (script time -77 % and -67 %); total main-thread task time stays near 970 ms/s because rendering, visuals and the
+  page-side evaluate still run there, so long tasks do not shrink: they now cost late events nowhere (the delivery margin is 350 to 390 ms against 70 to 80 ms). The x4 / x6, hidden and
+  scroll cells of the heavy programs do not complete in the sandbox (the page closes under CDP throttling); the real-phone check is the owner's.
+- **Parity.** `node tests/site/engine_worker_parity.mjs`: the same program on both engines hands the same set of `(onset, value)` events to superdough (385 / 385 on velvet-static,
+  384 / 384 on sirocco-foundry, cycles 2..8) with the same timing law (target - onset / cps constant within 5 ms). Sound is then identical by construction (same values into the same
+  superdough); the `tools/racks/measure.mjs` LU comparison does not apply to the live path because offline renders (record, `render_track.cjs`) never use the live clock.

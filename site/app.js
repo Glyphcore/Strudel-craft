@@ -174,7 +174,7 @@ const Engine = {
       const res0 = res, rej0 = rej; res = (v) => { done(true); res0(v); }; rej = (e) => { done(false, e); rej0(e); };
       const s = document.createElement('script'); s.src = STRUDEL_WEB; s.crossOrigin = 'anonymous';
       s.onload = () => {
-        try { window.initStrudel({ onUpdateState: (st) => { this.state = st; try { window.dispatchEvent(new CustomEvent('strudel:state', { detail: st })); } catch (e) { /* ignore */ } } }).then((r) => { this.repl = r; try { window.strudelCraft.bg && window.strudelCraft.bg.install(r.scheduler); } catch (e) { console.warn('background clock: ' + e.message); } loadPreludes().then(() => res(r), () => res(r)); try { window.dispatchEvent(new CustomEvent('strudel:ready')); } catch (e2) { /* ignore */ } }, rej); } catch (e) { rej(e); }
+        try { window.initStrudel({ onUpdateState: (st) => { this.state = st; try { window.dispatchEvent(new CustomEvent('strudel:state', { detail: st })); } catch (e) { /* ignore */ } } }).then((r) => { this.repl = r; try { window.strudelCraft.bg && window.strudelCraft.bg.install(r.scheduler, r); } catch (e) { console.warn('background clock: ' + e.message); } loadPreludes().then(() => res(r), () => res(r)); try { window.dispatchEvent(new CustomEvent('strudel:ready')); } catch (e2) { /* ignore */ } }, rej); } catch (e) { rej(e); }
       };
       s.onerror = () => { this.ready = null; this.selfCheck.engine = 'failed'; rej(new Error('Could not load the Strudel engine from unpkg (offline or blocked?). Check the connection and press Play again.')); };
       document.head.append(s);

@@ -86,7 +86,7 @@ Owned by the `daw-sme` agent. State: unexplored -> scouted -> designed -> issued
 | late-window-reanchor (flag late) | audio-engine-measurements | built | #103 |
 | per-query-memo (gateAt, mapKey, aliasKey) | audio-engine-measurements | built | #103 |
 | engine-diagnostics (long tasks, late haps, voices in flight, flags) | audio-engine-measurements | built | #103 |
-| engine-worker (evaluate + passes + queries in a Worker) | visuals-hap-cache, late-window-reanchor | designed | #103 (B1) |
+| engine-worker (evaluate + clock + queries in a Worker, events published ahead, page only builds voices; flag, default off; hooks/ctl/pad programs stay on the page clock) | visuals-hap-cache, late-window-reanchor | built stage 1 (critic pending) | #180 |
 | offline-render-host (hidden page, own superdough, chunked, cancellable) | record-recipes | built | #104 |
 | offline-record-default (no speakers) | offline-render-host | built | #104 |
 | live-take-self-check + re-render | offline-render-host, audio-engine-measurements | built | #104 |

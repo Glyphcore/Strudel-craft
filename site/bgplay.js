@@ -124,7 +124,7 @@ function makeClock(S, getTime, onTrigger, latency) {
         if (!h.hasOnset()) return;
         const target = (h.whole.begin - S.num_cycles_at_cps_change) / S.cps + S.seconds_at_cps_change + latency;
         const d = h.duration / S.cps;
-        B.stats.haps++; if (B.trace) { B.trace.push([+h.whole.begin, +target.toFixed(5)]); if (B.trace.length > 20000) B.trace.shift(); }
+        B.stats.haps++; if (B.trace) { let jv = ''; try { jv = JSON.stringify(h.value); } catch (e) { /* unserialisable */ } B.trace.push([+h.whole.begin, +target.toFixed(5), jv]); if (B.trace.length > 20000) B.trace.shift(); }
         /* late-hap accounting: superdough 1.3.0 drops a voice whose target is already in the past ("cannot schedule sounds in the past") */
         PF.haps++; const m = target - getTime(); if (m < 0) PF.late++; else if (m < 0.02) PF.tight++; if (m < PF.minMargin) PF.minMargin = m;
         VF.push(target + d + 0.25); if (VF.length > 4096) VF.splice(0, 2048);
@@ -169,7 +169,16 @@ function makeClock(S, getTime, onTrigger, latency) {
     stop() { running = false; tick = 0; phase = 0; timer.stop(); },
   };
 }
-function install(S) {
+/* engine Worker (#180 stage 1, flag): ?engine=worker or localStorage sc.flag.engine. Off by default; the page-thread clock above is the fallback and the default. */
+const FLAG_ENGINE = (() => { try { return new URLSearchParams(location.search).get('engine') || localStorage.getItem('sc.flag.engine') || 'page'; } catch (e) { return 'page'; } })();
+async function attachWorker(S, repl) {
+  const m = await import('./engine-worker-host.js');
+  const ctl = { fire: () => B.fire, note, stats: B.stats, skipped: () => { PF.skipped++; },
+    account(target, d, hap) { const m0 = target - ctl.time(); B.stats.haps++; PF.haps++; if (m0 < 0) PF.late++; else if (m0 < 0.02) PF.tight++; if (m0 < PF.minMargin) PF.minMargin = m0; VF.push(target + d + 0.25); if (VF.length > 4096) VF.splice(0, 2048); if (B.trace) { let jv = ''; try { jv = JSON.stringify(hap.v); } catch (e) { /* unserialisable */ } B.trace.push([hap.wb, +target.toFixed(5), jv]); } }, time: () => window.getAudioContext().currentTime };
+  const h = await m.attach({ S, repl, base: S.clock, getTime: ctl.time, ctl, flags: { blank: sc.blankComments } });
+  B.worker = h; B.clockKind = 'engine worker (events published 0.6 s ahead, 2 s hidden)'; note('engine-worker-attached');
+}
+function install(S, repl) {
   if (!S || S.__scBg || new URLSearchParams(location.search).get('bgclock') === 'off') return false;
   const getTime = () => window.getAudioContext().currentTime;
   if (typeof window.getTrigger !== 'function' || typeof window.webaudioOutput !== 'function' || !('num_ticks_since_cps_change' in S) || !S.clock) { note('install-skipped', { why: 'Strudel internals not found' }); return false; }
@@ -178,7 +187,9 @@ function install(S) {
   S.__scBg = { strudelClock: S.clock }; S.clock = makeClock(S, getTime, onTrigger, S.latency != null ? S.latency : 0.1);
   if (wasStarted) S.clock.start();
   B.fire = { onTrigger, getTime, latency: S.latency != null ? S.latency : 0.1 };
-  B.installed = true; note('install', { clock: B.clockKind }); return true;
+  B.installed = true; note('install', { clock: B.clockKind });
+  if (FLAG_ENGINE === 'worker' && repl && !wasStarted) attachWorker(S, repl).catch((e) => { note('engine-worker-failed', { why: e.message }); console.warn('engine worker: ' + e.message + ' (page-thread engine stays)'); });
+  return true;
 }
 
 /* Immediate catch-up (#119): the scheduler has already queried and scheduled everything up to S.lastEnd (about 0.25 s of music ahead of the
@@ -249,7 +260,7 @@ function bindLifecycle() {
 /* ---------- diagnostics + settings ---------- */
 function stats() {
   const c = ctx();
-  return { clock: B.installed ? B.clockKind : 'strudel (main-thread setInterval, fixed 0.2 s)', policy: B.policy, wakeLock: !!B.wakeLock, context: c ? c.state : 'none',
+  return { clock: B.installed ? B.clockKind : 'strudel (main-thread setInterval, fixed 0.2 s)', engine: FLAG_ENGINE, policy: B.policy, wakeLock: !!B.wakeLock, context: c ? c.state : 'none',
     lookaheadMs: Math.round(B.lookahead * 1000), lookaheadBounds: { baseMs: LOOKAHEAD.base * 1000, hiddenMs: LOOKAHEAD.hidden * 1000, maxMs: LOOKAHEAD.max * 1000 },
     ...B.stats, underrunEstimate: B.stats.underruns, playedSec: +B.played.toFixed(2), pausedSec: +(B.paused + (B.seg && (B.seg.kind === 'paused' || B.seg.kind === 'interrupted') ? (now() - B.seg.t0) / 1000 : 0)).toFixed(2),
     segment: B.seg ? B.seg.kind : null,
@@ -265,8 +276,8 @@ function setPolicy(p) { if (!POLICIES[p]) throw new Error('unknown policy ' + p)
 function setWake(on) { B.wake = !!on; lsSet('bg.wake', B.wake); wake(B.playing && B.wake); }
 
 /* engine flags (docs/AUDIO_ENGINE.md): persisted in localStorage sc.flag.*, read at load, so a change applies after a reload */
-export const FLAGS = { sched: { label: 'Scheduler query windows', opts: { strudel: 'Strudel 0.05 s', batch: 'Batched 0.2 s' } }, late: { label: 'Late windows', opts: { reanchor: 'Re-anchor the clock', drop: 'Drop late events (Strudel)' } }, vis: { label: 'Visuals and highlights', opts: { cache: 'Cached per cycle', requery: 'Re-query every frame' } } };
-const flagNow = (k) => (k === 'sched' ? FLAG_SCHED : k === 'late' ? FLAG_LATE : (sc.visuals && sc.visuals.flag) || 'cache');
+export const FLAGS = { sched: { label: 'Scheduler query windows', opts: { strudel: 'Strudel 0.05 s', batch: 'Batched 0.2 s' } }, late: { label: 'Late windows', opts: { reanchor: 'Re-anchor the clock', drop: 'Drop late events (Strudel)' } }, vis: { label: 'Visuals and highlights', opts: { cache: 'Cached per cycle', requery: 'Re-query every frame' } }, engine: { label: 'Audio engine (experimental)', opts: { page: 'Page thread', worker: 'Engine Worker (stage 1)' } } };
+const flagNow = (k) => (k === 'sched' ? FLAG_SCHED : k === 'late' ? FLAG_LATE : k === 'engine' ? FLAG_ENGINE : (sc.visuals && sc.visuals.flag) || 'cache');
 function flagsHtml() { return `<section class="bg-set" aria-labelledby="bgFlagH"><h3 id="bgFlagH">Engine (applies after reload)</h3>${Object.entries(FLAGS).map(([k, f]) => `<label class="bg-row"><span>${f.label}</span><select data-flag="${k}">${Object.entries(f.opts).map(([v, t]) => `<option value="${v}"${v === flagNow(k) ? ' selected' : ''}>${t}</option>`).join('')}</select></label>`).join('')}</section>`; }
 function settingsHtml() {
   return flagsHtml() + `<section class="bg-set" aria-labelledby="bgSetH"><h3 id="bgSetH">Background playback</h3>
@@ -299,6 +310,6 @@ function openDiagnostics() {
 
 bindLifecycle();
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addHelpSettings); else addHelpSettings();
-sc.bg = { install, catchUp, onPlay, onStop, stats, segments, gapsBetween, events: () => B.log.slice(), setPolicy, setWake, openDiagnostics, POLICIES, LOOKAHEAD,
+sc.bg = { install, catchUp, engine: () => ({ flag: FLAG_ENGINE, worker: B.worker ? B.worker.state() : null }), onPlay, onStop, stats, segments, gapsBetween, events: () => B.log.slice(), setPolicy, setWake, openDiagnostics, POLICIES, LOOKAHEAD,
   get installed() { return B.installed; }, get played() { return B.played; }, get paused() { return stats().pausedSec; }, get policy() { return B.policy; },
   set trace(on) { B.trace = on ? [] : null; }, get trace() { return B.trace; } };

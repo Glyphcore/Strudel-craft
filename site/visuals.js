@@ -84,12 +84,15 @@ function cachedHaps(pat, t, back) {
    audio scheduler shares the main thread. The visuals measure their own cost (EMA of the last runs, cache refreshes included) and the rAF gap; while the page is
    stressed (rAF gap EMA > 40 ms, or a run costing more than 40 ms) they take at most DUTY_STRESSED (2 %) of the time, i.e. they run once per cost / 0.02 ms (a 40 ms run: every 2 s);
    otherwise at most DUTY_FREE (50 %). Flag ?vis=every restores a run on every frame (A/B). */
+let scrollUntil = 0; const reduced = window.matchMedia('(prefers-reduced-motion: reduce)'); addEventListener('scroll', () => { scrollUntil = performance.now() + 160; }, { capture: true, passive: true });
 const VB = { cost: 0, last: 0, rafAt: 0, gap: 16, ran: 0, skipped: 0, stressed: false, DUTY_FREE: 0.5, DUTY_STRESSED: 0.02 };
 function frame() {
   raf = requestAnimationFrame(frame);
   if (document.hidden) return; /* hidden: no painting or highlighting */
   const tn = performance.now();
   if (VB.rafAt) VB.gap = 0.9 * VB.gap + 0.1 * Math.min(1000, tn - VB.rafAt); VB.rafAt = tn; VB.stressed = VB.gap > 40 || VB.cost > 40;
+  /* #180 1b-render frame cap: highlight and painters run at most 20 times a second (10 while the page scrolls or reduced motion is on), never on a hidden page */
+  if (FLAG_VIS !== 'every' && VB.last && tn - VB.last < (tn < scrollUntil || reduced.matches ? 100 : 50) - 1) { VB.skipped++; return; }
   if (FLAG_VIS !== 'every' && FLAG_VIS !== 'requery' && VB.last && tn - VB.last < VB.cost / (VB.stressed ? VB.DUTY_STRESSED : VB.DUTY_FREE)) { VB.skipped++; return; }
   runFrame(); const d = performance.now() - tn; VB.cost = VB.ran ? 0.7 * VB.cost + 0.3 * d : d; VB.ran++; VB.last = tn;
 }

@@ -322,11 +322,16 @@ function knob({ label, min, max, step, value, def, fmt, onChange, cls }) {
 /* ---------- visuals ---------- */
 const Viz = {
   colors: {}, frames: [], cost: [], last: 0, raf: 0, running: false, laneCache: { key: '', haps: [], lanes: [] }, peaks: [-Infinity, -Infinity], hold: [-Infinity, -Infinity],
-  readColors() { const cs = getComputedStyle(document.documentElement); for (const k of ['sig', 'sig-2', 'text', 'dim', 'faint', 'line', 'line-2', 'panel', 'panel-2', 'warn', 'bad', 'ok']) this.colors[k] = cs.getPropertyValue('--' + k).trim(); },
+  readColors() { const cs = getComputedStyle(document.documentElement); for (const k of ['sig', 'sig-2', 'text', 'dim', 'faint', 'line', 'line-2', 'panel', 'panel-2', 'warn', 'bad', 'ok']) this.colors[k] = cs.getPropertyValue('--' + k).trim(); this.ver = (this.ver || 0) + 1; },
   fit(c) { const dpr = Math.min(2, window.devicePixelRatio || 1); const w = Math.round(c.clientWidth * dpr), h = Math.round(c.clientHeight * dpr); if (c.width !== w || c.height !== h) { c.width = w; c.height = h; } return dpr; },
   init() {
     this.viz = $('#viz'); this.lanes = $('#lanes'); this.meter = $('#meter'); this.cycleOut = $('#cycleOut'); this.cpsOut = $('#cpsOut'); this.peakOut = $('#peakOut');
     new ResizeObserver(() => this.drawAll(performance.now())).observe(this.viz);
+    /* #180 1b-render frame budget: a canvas off screen is not drawn (it redraws the moment it scrolls back); scrolling drops the loop to 10 fps; the loop is capped at 20 fps */
+    this.vis = { viz: true, lanes: true, meter: true };
+    if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { for (const e of es) this.vis[e.target.dataset.vz] = e.isIntersecting; this.drawSoon(); }); for (const k of ['viz', 'lanes', 'meter']) { this[k].dataset.vz = k; io.observe(this[k]); } }
+    if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => { this.ver = (this.ver || 0) + 1; this.drawSoon(); }); /* the cached lane layer holds text: redraw it when a font arrives */
+    addEventListener('scroll', () => { this.scrollUntil = performance.now() + 160; }, { capture: true, passive: true });
     window.__viz = { frames: this.frames, cost: this.cost, get interval() { return reducedMotion.matches ? 100 : 0; } };
     this.drawSoon();
   },
@@ -335,7 +340,7 @@ const Viz = {
   start() { if (this.running) return; this.running = true; this.last = 0; this.raf = requestAnimationFrame((t) => this.tick(t)); },
   stopSoon() { this.stopAt = performance.now() + 900; },
   tick(t) {
-    const minDt = reducedMotion.matches ? 100 : 0;
+    const minDt = reducedMotion.matches ? 100 : t < (this.scrollUntil || 0) ? 100 : 50;
     if (document.hidden) { this.hiddenSkips = (this.hiddenSkips || 0) + 1; } /* hidden: no drawing (bgplay.js background citizenship); the loop idles */
     else if (!this.last || t - this.last >= minDt - 1) {
       if (this.last) { this.frames.push(t - this.last); if (this.frames.length > 2000) this.frames.splice(0, 1000); }
@@ -344,7 +349,7 @@ const Viz = {
     if (!S.playing && this.stopAt && t > this.stopAt) { this.running = false; this.stopAt = 0; this.drawAll(t); return; }
     this.raf = requestAnimationFrame((tt) => this.tick(tt));
   },
-  drawAll(t) { if (!this.colors.sig) this.readColors(); this.drawViz(); this.drawLanes(); this.drawMeter(); },
+  drawAll(t) { if (!this.colors.sig) this.readColors(); const v = this.vis || {}; if (v.viz !== false) this.drawViz(); if (v.lanes !== false) this.drawLanes(); if (v.meter !== false) this.drawMeter(t); },
   drawViz() {
     const c = this.viz, dpr = this.fit(c), g = c.getContext('2d'), W = c.width, H = c.height, C = this.colors;
     g.clearRect(0, 0, W, H);
@@ -389,19 +394,28 @@ const Viz = {
     this.laneCache = { key, haps: out, lanes };
     return this.laneCache;
   },
-  drawLanes() {
-    const c = this.lanes, dpr = this.fit(c), g = c.getContext('2d'), W = c.width, H = c.height, C = this.colors;
-    g.clearRect(0, 0, W, H);
-    const gutter = 64 * dpr; const sch = Engine.scheduler; const playing = S.playing && Engine.started;
-    const now = playing ? sch.now() : 0; const c0 = Math.floor(now); const frac = now - c0;
-    if (this.cycleOut) { this.cycleOut.textContent = playing ? now.toFixed(2) : '0.00'; this.cpsOut.textContent = sch ? (sch.cps * 60 * 4).toFixed(0) + ' bpm' : '-'; }
-    // beat grid: 4 beats, 16 steps
+  /* The static layer (beat grid, lane names, separators) is drawn once per size, colour set and lane list into an offscreen canvas; a frame blits it and draws only the hap bars and the playhead, and a frame whose pixels would be identical (same playhead pixel, same active haps) draws nothing. */
+  laneLayer(W, H, dpr, names, playing) {
+    const C = this.colors, key = [W, H, this.ver, playing, names.join('\u0001')].join('|'); const L = this.layer || (this.layer = { c: document.createElement('canvas'), key: '' });
+    if (L.key === key) return L.c;
+    L.c.width = W; L.c.height = H; const g = L.c.getContext('2d'); const gutter = 64 * dpr;
     for (let i = 0; i <= 16; i++) { const x = Math.round(gutter + (i / 16) * (W - gutter)) + 0.5; g.strokeStyle = i % 4 ? C.line : C['line-2']; g.lineWidth = 1; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H); g.stroke(); }
     g.font = `${10 * dpr}px "JetBrains Mono", monospace`;
-    if (!playing) { g.fillStyle = C.faint; g.fillText('LANES', 8 * dpr, 16 * dpr); return; }
-    const { haps, lanes } = this.queryLanes(c0); const n = Math.max(1, lanes.length); const lh = H / n;
-    lanes.forEach((name, i) => { g.fillStyle = C.dim; g.fillText(name.slice(0, 9), 8 * dpr, i * lh + lh / 2 + 4 * dpr); if (i) { g.strokeStyle = C.line; g.beginPath(); g.moveTo(0, Math.round(i * lh) + 0.5); g.lineTo(W, Math.round(i * lh) + 0.5); g.stroke(); } });
-    const pad = Math.max(Math.min(6 * dpr, lh * 0.2), (lh - 30 * dpr) / 2);
+    if (!playing) { g.fillStyle = C.faint; g.fillText('LANES', 8 * dpr, 16 * dpr); }
+    else { const lh = H / Math.max(1, names.length); names.forEach((name, i) => { g.fillStyle = C.dim; g.fillText(name.slice(0, 9), 8 * dpr, i * lh + lh / 2 + 4 * dpr); if (i) { g.strokeStyle = C.line; g.beginPath(); g.moveTo(0, Math.round(i * lh) + 0.5); g.lineTo(W, Math.round(i * lh) + 0.5); g.stroke(); } }); }
+    L.key = key; return L.c;
+  },
+  drawLanes() {
+    const c = this.lanes, dpr = this.fit(c), g = c.getContext('2d'), W = c.width, H = c.height, C = this.colors;
+    const gutter = 64 * dpr; const sch = Engine.scheduler; const playing = S.playing && Engine.started;
+    const now = playing ? sch.now() : 0; const c0 = Math.floor(now); const frac = now - c0;
+    if (this.cycleOut) { const a = playing ? now.toFixed(2) : '0.00', b = sch ? (sch.cps * 60 * 4).toFixed(0) + ' bpm' : '-'; if (a !== this.txtA) { this.txtA = a; this.cycleOut.textContent = a; } if (b !== this.txtB) { this.txtB = b; this.cpsOut.textContent = b; } }
+    const { haps, lanes } = playing ? this.queryLanes(c0) : { haps: [], lanes: [] };
+    const px = Math.round(gutter + frac * (W - gutter)); let act = ''; for (const h of haps) act += frac >= h.b && frac < h.e ? '1' : '0';
+    const sig = [W, H, this.ver, playing, this.laneCache.key, px, act].join('|'); if (playing && sig === this.laneSig) return; if (!playing && sig === this.laneSig) return; this.laneSig = sig;
+    g.clearRect(0, 0, W, H); g.drawImage(this.laneLayer(W, H, dpr, lanes, playing), 0, 0);
+    if (!playing) return;
+    const n = Math.max(1, lanes.length); const lh = H / n; const pad = Math.max(Math.min(6 * dpr, lh * 0.2), (lh - 30 * dpr) / 2);
     for (const h of haps) {
       const x0 = gutter + clamp(h.b, 0, 1) * (W - gutter), x1 = gutter + clamp(h.e, 0, 1) * (W - gutter);
       const on = frac >= h.b && frac < h.e;
@@ -409,27 +423,32 @@ const Viz = {
       g.fillRect(x0 + 1, h.li * lh + pad, Math.max(2 * dpr, x1 - x0 - 2), lh - pad * 2);
     }
     g.globalAlpha = 1;
-    const px = Math.round(gutter + frac * (W - gutter)); g.fillStyle = C.sig; g.fillRect(px - dpr, 0, 2 * dpr, H);
+    g.fillStyle = C.sig; g.fillRect(px - dpr, 0, 2 * dpr, H);
   },
-  drawMeter() {
+  drawMeter(t) {
     const c = this.meter, dpr = this.fit(c), g = c.getContext('2d'), W = c.width, H = c.height, C = this.colors;
-    g.clearRect(0, 0, W, H); const rowH = (H - 2 * dpr) / 2; const fx = (db) => clamp((db + 60) / 66, 0, 1) * W;
+    const rowH = (H - 2 * dpr) / 2; const fx = (db) => clamp((db + 60) / 66, 0, 1) * W; const ws = [], hs = [];
+    const k = reducedMotion.matches || !this.meterT || !(t > this.meterT) ? 1 : clamp((t - this.meterT) / 16.7, 1, 8); this.meterT = t; /* ballistics in dB per 60 Hz frame: the loop now runs at 20 fps, so the fall scales with the elapsed time and the meter decays at the same dB per second */
     for (let ch = 0; ch < 2; ch++) {
       let pk = -Infinity;
       if (Bus.anL && S.playing) { const buf = ch ? Bus.rbuf : Bus.lbuf; (ch ? Bus.anR : Bus.anL).getFloatTimeDomainData(buf); let m = 0; for (let i = 0; i < buf.length; i++) { const a = Math.abs(buf[i]); if (a > m) m = a; } pk = m > 0 ? 20 * Math.log10(m) : -Infinity; }
-      const fall = reducedMotion.matches ? 6 : 1.2; this.peaks[ch] = Math.max(pk, (this.peaks[ch] === -Infinity ? -70 : this.peaks[ch]) - fall);
-      this.hold[ch] = Math.max(pk, (this.hold[ch] === -Infinity ? -70 : this.hold[ch]) - 0.25);
+      const fall = (reducedMotion.matches ? 6 : 1.2) * k; this.peaks[ch] = Math.max(pk, (this.peaks[ch] === -Infinity ? -70 : this.peaks[ch]) - fall);
+      this.hold[ch] = Math.max(pk, (this.hold[ch] === -Infinity ? -70 : this.hold[ch]) - 0.25 * k);
+      ws.push(fx(this.peaks[ch])); hs.push(this.hold[ch] > -60 ? Math.round(fx(this.hold[ch])) : -1);
+    }
+    const p = Math.max(this.hold[0], this.hold[1]); const pt = p > -60 ? p.toFixed(1) + ' dB' : '-inf dB'; if (pt !== this.txtP) { this.txtP = pt; this.peakOut.textContent = pt; }
+    const sig = [W, H, this.ver, ws[0] | 0, ws[1] | 0, hs[0], hs[1]].join('|'); if (sig === this.meterSig) return; this.meterSig = sig; /* same pixels: no repaint */
+    g.clearRect(0, 0, W, H);
+    for (let ch = 0; ch < 2; ch++) {
       const y = ch * (rowH + 2 * dpr);
       g.fillStyle = C['panel-2']; g.fillRect(0, y, W, rowH);
-      const w = fx(this.peaks[ch]); const w0 = fx(-12), w1 = fx(0);
+      const w = ws[ch]; const w0 = fx(-12), w1 = fx(0);
       g.fillStyle = C['sig-2']; g.fillRect(0, y, Math.min(w, w0), rowH);
       if (w > w0) { g.fillStyle = C.warn; g.fillRect(w0, y, Math.min(w, w1) - w0, rowH); }
       if (w > w1) { g.fillStyle = C.bad; g.fillRect(w1, y, w - w1, rowH); }
-      const hx = fx(this.hold[ch]); if (this.hold[ch] > -60) { g.fillStyle = C.text; g.fillRect(hx - dpr, y, 2 * dpr, rowH); }
+      if (hs[ch] >= 0) { g.fillStyle = C.text; g.fillRect(hs[ch] - dpr, y, 2 * dpr, rowH); }
     }
     g.fillStyle = C.line; for (const db of [-48, -36, -24, -12, 0]) g.fillRect(Math.round(fx(db)), 0, dpr, H);
-    const p = Math.max(this.hold[0], this.hold[1]);
-    this.peakOut.textContent = p > -60 ? p.toFixed(1) + ' dB' : '-inf dB';
   },
 };
 

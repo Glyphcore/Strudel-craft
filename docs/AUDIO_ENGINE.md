@@ -200,7 +200,10 @@ page-thread clock of section 1 stays the default and the fallback.
   pattern: `strudelCraft.bg.cycleHaps(c)` asks the Worker (`{t:'q', c}`) for the haps of cycle `c` (fragments included, source locations kept for the highlight), rebuilds real `Hap`
   objects from the plain data (Strudel's own `Hap`, `TimeSpan`, `Fraction`), caches them (current and future cycles refreshed every 3.5 s, like the visuals' own TTL) and drops the cache on
   every live edit. While a cycle is pending the callers keep their last picture; when the Worker does not drive they query the page pattern as before (`cycleHaps` returns `undefined`).
-- **Resync after a page stall.** When a delivered batch is already late (the page was blocked longer than the lookahead), the page plays the events before the first late one and the Worker resumes from that cycle with a 1 s margin: no event is dropped or doubled, but the position pauses for about 1.1 s plus the lateness per stall. `?resync=off` (or `localStorage sc.flag.resync = off`; harness: `--query resync=off`) restores stage 1: late events go to superdough, which drops them (a hole, no pause).
+- **Late delivery after a page stall.** Default: a delivered event that is already past goes to superdough, which drops it (a hole of about the stall's length, 75 events in one 0.5 s stall on
+  velvet-static); the position never pauses against the clock. Opt-in `?resync=on` (or `localStorage sc.flag.resync = on`; harness `--query resync=on`): the page plays the events before the
+  first late one and the Worker resumes from that cycle with a 1 s margin, so nothing is dropped, but the position pauses about 1.1 s plus the lateness per stall (4 pauses, about 5 s of silence,
+  in one 25 s load run). Kept for comparison once the frame budget (1b-render) makes stalls rarer.
 - **Known limits.** The pattern is still evaluated once on the page (the page copy exists for painters' `getPainters()`, lane captures and the editor, it is no longer queried for
   visuals or lanes); live event captures (the scheduler's own queries) record nothing while the Worker drives; a live edit, a seek or a tempo change is heard up to the lookahead
   (0.6 s, 2 s hidden) later instead of 0.2 s; Perform pads and `ctl()` programs are not eligible (their live path stays the page's `catchUp`); the run starts 1 s after Play.

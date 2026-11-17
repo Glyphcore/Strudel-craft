@@ -18,7 +18,7 @@ async function run(code, engine, secs, after) {
   const ctx = await browser.newContext({ ignoreHTTPSErrors: !!PROXY, viewport: { width: 360, height: 780 }, isMobile: true, hasTouch: true });
   await ctx.route(/api\.github\.com/, (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: r.request().url().includes('/issues/') ? JSON.stringify({ title: 'Live tracker', body: '## Site\n- [x] done' }) : '[]' }));
   const page = await ctx.newPage(); const errs = []; page.on('pageerror', (e) => errs.push(e.message));
-  await page.goto(BASE + '?engine=' + engine); await page.waitForSelector('#list li[data-id]'); await page.waitForTimeout(800);
+  await page.goto(BASE + '?engine=' + engine + (process.argv.includes('--resync') ? '&resync=on' : '')); await page.waitForSelector('#list li[data-id]'); await page.waitForTimeout(800);
   const ed = page.locator('.view[data-for=rack] .cm-content:visible').first(); await ed.click(); await page.keyboard.press('Control+a'); await page.keyboard.insertText(code); await page.waitForTimeout(1200);
   await page.evaluate(() => document.activeElement && document.activeElement.blur());
   await page.evaluate(() => window.__sc.play()); await page.waitForFunction(() => window.__sc.S.playing && window.__sc.Engine.started, null, { timeout: 120000 });

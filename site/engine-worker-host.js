@@ -23,8 +23,9 @@ export async function attach(env) {
   const mir = { cache: new Map(), pend: new Map(), id: 0, TTL: 3500, req: 0, ms: 0 };
   const st = { mode: 'page', epoch: 0, pending: null, workerCode: null, last: null, batches: 0, haps: 0, dropped: 0, errors: [], log: [], resyncs: 0, rsLog: [], minM: Infinity, late: 0, lateLog: [], hidden: !!document.hidden };
   const LA_FG = 0.6, LA_BG = 2.0;
-  /* ?resync=off (or localStorage sc.flag.resync) keeps stage 1's behaviour for comparison: a late delivered event is handed to superdough, which drops it (a hole), and the position never pauses */
-  const RESYNC = (() => { try { return (new URLSearchParams(location.search).get('resync') || localStorage.getItem('sc.flag.resync') || 'on') !== 'off'; } catch (e) { return true; } })();
+  /* default: a late delivered event is handed to superdough, which drops it (a hole); the position never pauses against the clock. ?resync=on (or localStorage sc.flag.resync = on) is opt-in:
+     the Worker resumes from the first late event with a 1 s margin (nothing dropped, the position pauses about 1.1 s per stall) */
+  const RESYNC = (() => { try { return (new URLSearchParams(location.search).get('resync') || localStorage.getItem('sc.flag.resync') || 'off') === 'on'; } catch (e) { return false; } })();
   const la = () => (document.hidden ? LA_BG : LA_FG);
   const anchor = () => [getTime(), performance.timeOrigin + performance.now()];
   w.onerror = (e) => { st.errors.push('worker: ' + e.message); (window.errorLogger || console.warn)('engine worker: ' + e.message); };

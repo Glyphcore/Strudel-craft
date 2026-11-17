@@ -7,17 +7,8 @@
 import fs from 'node:fs'; import path from 'node:path'; import { fileURLToPath, pathToFileURL } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url)), ROOT = path.resolve(HERE, '../../..');
 const TOTAL = 136; // bars 129-136 are the tail (a mask list repeats after its last entry, so the tail is written out as 0)
-const B = (...r) => r; // [a, b] inclusive; a single number n means [n, n]
-export const ON = {
-  kick: [[9, 31], [33, 56], [97, 120]], kickH: [[73, 87], [89, 96]], clap: [[25, 31], [33, 56], [97, 116]], snareH: [[73, 87], [89, 96]], ghost: [[77, 87]],
-  hats: [[1, 31], [33, 56], [97, 124]], ohat: [[9, 31], [33, 56], [97, 120]], hatsH: [[75, 87]], hats16H: [[89, 96]],
-  roll: [[25, 32], [65, 72]], roll4: [[13, 16]], fill: [48, 56, 80, 88, 96, 112], perc: [[61, 72], [81, 87], [89, 96]],
-  rise1: [[17, 32]], rise2: [[69, 72]], pitch2: [[69, 72]], rev: [16, 88, 96], down: [57, 113], impact: [33, 73, 89, 97], crash: [33, 49, 73, 89, 97, 113], metalTail: [57],
-  seedH: [[33, 56], [113, 116]], seedB: [[17, 31]], seedHm: [[97, 112]], subH: [[33, 56], [97, 116]], seedG: [[73, 87]], growl2: [[89, 96]], growlR: [[97, 112]], subD: [[73, 87], [89, 96]],
-  disco: [[1, 16]], discoOut: [[117, 124]], stabsB: [[17, 32]], stabs1: [[33, 48], [113, 116]], stabs2: [[49, 55]], stabsUp: [[97, 111]], closeS: [56, 112],
-  pad: [[17, 32], [57, 72], [117, 128]], padD: [[33, 56], [97, 112]], padP: [[73, 96]], fpad: [[25, 32], [57, 72], [105, 112], [121, 128]],
-  chop: [[13, 16], [41, 48], [69, 72], [97, 104], [121, 124]], chopB: [[49, 56], [105, 112]], chopA: [[75, 87], [89, 96]], arp: [[49, 56], [65, 72], [97, 112]], screech: [[89, 96]], tex: [[57, 96], [121, 128]], air: [[33, 56], [97, 120]], airD: [[81, 87], [89, 96]],
-};
+import { ON } from './arrangement.mjs';
+export { ON };
 const norm = (rs) => rs.map((r) => (Array.isArray(r) ? r : [r, r]));
 const onSet = (rs) => { const a = new Array(TOTAL + 1).fill(0); for (const [x, y] of norm(rs)) for (let b = x; b <= y; b++) a[b] = 1; return a; };
 function offWindows(rs) { // complement as gate text

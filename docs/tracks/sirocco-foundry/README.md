@@ -52,7 +52,7 @@ Energy curve (normalised LUFS per section, delivered v2 render): intro -16.5, bu
 
 ## Techniques used / not used (design deviations, stated)
 Used: atoms (`atoms.import` of glyphcore/edm plus local `atom()` mini patterns), gates as arrangement, local racks via `hooks.def` and `.hook`,
-`.groove` on hats, kick-keyed sidechain (`duckorbit`), buses by orbit, vox sample bank, rack library (`edmKick`, `dsKick`, `superChord`, `atmosPad`,
+`.groove` on the open hat and the metal percussion (the closed hats use an explicit `.swingBy(0.14, 8)`, see Measurements), kick-keyed sidechain (`duckorbit`), buses by orbit, vox sample bank, rack library (`edmKick`, `dsKick`, `superChord`, `atmosPad`,
 `ukfPluck`, `ukfArp`, `screechLead`, `noiseRiser`, `hpBuild`, `pitchRiser`, `reverseSwell`, `downSweep`, `impactBoom`, `crash`, ...).
 Not used, with the reason: `.tap`/`.wire`, `.send`/`ret` buses and the `dt.*` dovetail gate atoms (gated `hooks.bind`) have no plain-Strudel form (docs/LOWERING.md),
 and the issue wants a paste-ready standalone with matching haps; dovetails are therefore written as lanes (tail, pickup, reverse, impact) with masks. The `tagged(...).mute` gates
@@ -90,7 +90,7 @@ Rounds 2 to 4 moved other sections slightly; the table above is the delivered re
 ## What to listen for (all unlistened)
 - Intro: the high-pass opening on the disco stabs over 16 bars, hook teaser 13-16 (is it audible but not stated?), roll and reverse into 17.
 - Bar 32 kick drop-out and the impact on 33; whether drop 1's quieter first 8 bars read as a build into 41 and 49.
-- The pump: kick duck on bass and music (depth 8.5 dB); does the off-beat open hat sit over it, or does it fight the stabs?
+- The pump: kick duck on bass and music (7.46 dB measured, see Measurements); does the off-beat open hat sit over it, or does it fight the stabs?
 - The seed growl in drop 2: does the `vowel` sweep at 89 read as the same voice; is the Db pull in bar 4 of each 4 audible; are the wet metal hits too loud against the kick?
 - Drop 3: growl answering in bar 4 of every 4 while the house bass rests.
 - Outro: elements leaving in reverse order, the last hook echo at 121-124, the wet tail.

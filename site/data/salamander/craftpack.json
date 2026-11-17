@@ -4,7 +4,7 @@
   "id": "glyphcore/salamander-piano",
   "version": "1.0.0",
   "title": "Salamander Grand Piano (referenced)",
-  "description": "Salamander Grand Piano V3 by Alexander Holm, referenced through Strudel's own piano map (mp3); CC BY 3.0, attribution required; no audio in this repo.",
+  "description": "Manifest, source list and recipes of this pack are CC0-1.0; the referenced Salamander Grand Piano V3 samples are CC BY 3.0 (Alexander Holm, credit required) and are not covered by that licence (see LICENSE.md and the source's license field). Salamander Grand Piano V3 by Alexander Holm, referenced through Strudel's own piano map (mp3); CC BY 3.0, attribution required; no audio in this repo.",
   "license": "CC0-1.0",
   "licenseFile": "LICENSE.md",
   "attribution": [
@@ -35,12 +35,12 @@
       "version": "1.0.0",
       "path": "recipes/recipes.json",
       "title": "Salamander Grand Piano (referenced) recipes",
-      "hash": "sha256:fe21a66920ac2115dc878dbedaaedf893d65dc971ad8449c3350d09ce959b1ec",
+      "hash": "sha256:2589059b9694a32ecdc83a17b6f65f6ef5066d82a569eab2cdb25cd2af1a9766",
       "load": "manual",
       "requires": [
         "sources"
       ],
-      "bytes": 1067
+      "bytes": 1068
     }
   ]
 }

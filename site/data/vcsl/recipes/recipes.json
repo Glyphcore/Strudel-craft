@@ -18,7 +18,7 @@
    "id": "vcsl-marimba",
    "title": "VCSL marimba line",
    "intent": "Marimba hits from the Versilian Community Sample Library (CC0, referenced, fetched on play).",
-   "code": "setcpm(100/4)\n$: note(\"c3 e3 g3 c4 g3 e3 d3 f3\").s(\"marimba\").gain(0.9).room(0.2)",
+   "code": "setcpm(100/4)\n$: note(\"c3 e3 g3 c4 g3 e3 d3 f3\").s(\"marimba\").gain(25).room(0.2)",
    "labels": [
     "instruments"
    ],
@@ -31,7 +31,7 @@
    "id": "vcsl-harp-pluck",
    "title": "VCSL concert harp arpeggio",
    "intent": "Concert harp from VCSL (CC0, referenced).",
-   "code": "setcpm(80/4)\n$: note(\"c3 e3 g3 c4 e4 g4 c5 g4\").s(\"harp\").gain(0.9).room(0.3)",
+   "code": "setcpm(80/4)\n$: note(\"c3 e3 g3 c4 e4 g4 c5 g4\").s(\"harp\").gain(2).room(0.3)",
    "labels": [
     "instruments"
    ],
@@ -44,7 +44,7 @@
    "id": "vcsl-drum-kit",
    "title": "VCSL acoustic percussion set",
    "intent": "Bass drum, snare, hi-hat and timpani from VCSL (CC0, referenced).",
-   "code": "setcpm(95/4)\n$: s(\"bassdrum1 [hihat hihat] snare_modern [hihat bassdrum1]\").gain(0.9)\n$: s(\"~ ~ ~ timpani\").gain(0.7)",
+   "code": "setcpm(95/4)\n$: s(\"bassdrum1 [hihat hihat] snare_modern [hihat bassdrum1]\").gain(4)\n$: s(\"~ ~ ~ timpani\").gain(3.2)",
    "labels": [
     "instruments"
    ],

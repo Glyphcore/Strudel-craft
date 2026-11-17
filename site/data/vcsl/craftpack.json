@@ -4,7 +4,7 @@
   "id": "glyphcore/vcsl",
   "version": "1.0.0",
   "title": "VCSL instruments (referenced)",
-  "description": "Versilian Community Sample Library, 128 sounds (mallets, harps, winds, organs, drums, percussion), referenced through Strudel's own map; no audio in this repo.",
+  "description": "Manifest, source list and recipes of this pack are CC0-1.0; the referenced VCSL samples are CC0 1.0 (see LICENSE.md and the source's license field). Versilian Community Sample Library, 128 sounds (mallets, harps, winds, organs, drums, percussion), referenced through Strudel's own map; no audio in this repo.",
   "license": "CC0-1.0",
   "licenseFile": "LICENSE.md",
   "attribution": [
@@ -35,12 +35,12 @@
       "version": "1.0.0",
       "path": "recipes/recipes.json",
       "title": "VCSL instruments (referenced) recipes",
-      "hash": "sha256:0f82b132505ec5d11c0781417510cc502fc56295966cdde3a3ab01e0b4de6cd9",
+      "hash": "sha256:8e3ececc1f375bc7f9be0b2b353a8a157c14db014d8e5e3b540c88045de5a048",
       "load": "manual",
       "requires": [
         "sources"
       ],
-      "bytes": 1386
+      "bytes": 1381
     }
   ]
 }

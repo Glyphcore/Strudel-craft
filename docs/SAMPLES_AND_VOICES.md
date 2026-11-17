@@ -72,3 +72,6 @@ Built on main; nothing here patches Strudel. A bank is cut from one stem plus it
 
 Licences per bank part are listed in `engine/vocals/LICENSES.md`; neither formant variants nor TTS clips are baked into the two
 site banks today.
+
+## FreePats CC0 instruments (#181)
+Pack `glyphcore/freepats` (`site/data/freepats/`): `fp_harp`, `fp_organ`, `fp_xylophone`, pitched `sounds@1` maps cut from the FreePats SF2 banks by `tools/freepats/extract.py` (pinned Strudel 1.3.0 cannot read an SF2; its soundfonts are WebAudioFont presets, so per-note ogg is the route). 1.36 MB total, lazy, runtime-cached for offline. Guitar and piano banks wait on a `.7z` extractor. Credits and archive hashes: `site/data/freepats/README.md`.

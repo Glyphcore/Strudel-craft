@@ -1,0 +1,65 @@
+{
+  "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+  "craftpack": "1.0.0",
+  "id": "glyphcore/freepats",
+  "version": "1.0.0",
+  "title": "FreePats instruments (CC0)",
+  "description": "Concert harp, drawbar organ and xylophone from the FreePats project, reduced to per-note ogg samples; lazy sounds ingredient plus three recipes. Selection via the openDAW factory catalogue.",
+  "license": "CC0-1.0",
+  "licenseFile": "LICENSE.md",
+  "attribution": [
+    {
+      "name": "FreePats project (Roberto, roberto@zenvoid.org)",
+      "url": "https://freepats.zenvoid.org/",
+      "license": "CC0-1.0",
+      "text": "Concert Harp, Drawbar Organ Emulation and Xylophone (medium mallets) sound banks, CC0 1.0. Selection via the openDAW factory catalogue.",
+      "changes": "one velocity layer, cut and faded, re-encoded as per-note ogg"
+    },
+    {
+      "name": "Versilian Community Sample Library, Versilian Studios LLC",
+      "url": "https://vis.versilstudios.com/vcsl.html",
+      "license": "CC0-1.0",
+      "text": "Source samples of the harp and xylophone banks"
+    },
+    {
+      "name": "openDAW",
+      "url": "https://opendaw.studio/",
+      "text": "selection via the openDAW factory catalogue"
+    }
+  ],
+  "ingredients": [
+    {
+      "id": "sounds",
+      "kind": "sounds",
+      "format": "sounds@1",
+      "version": "1.0.0",
+      "path": "sounds/strudel.json",
+      "title": "FreePats harp, organ, xylophone",
+      "description": "fp_harp, fp_organ, fp_xylophone pitched maps",
+      "hash": "sha256:59564f7264d2a53e08cd36230493b42480454ccc8ffa70bb05365b6ed0fb6843",
+      "load": "manual",
+      "assets": {
+        "root": "sounds",
+        "index": "files.sha256",
+        "hash": "sha256:09add1cf4dca274d23252f4ec9cb3f2e7f3715c565e5df5f608a9dd24cc347f4",
+        "files": 48,
+        "bytes": 1354983
+      },
+      "bytes": 1634
+    },
+    {
+      "id": "recipes",
+      "kind": "recipes",
+      "format": "recipes@1",
+      "version": "1.0.0",
+      "path": "recipes/recipes.json",
+      "title": "FreePats recipes",
+      "hash": "sha256:6aa52d37ecf40b5e9e5b6f5d100c843b1b038d6b3449698ac33aee1bbb7c309f",
+      "load": "manual",
+      "requires": [
+        "sounds"
+      ],
+      "bytes": 1435
+    }
+  ]
+}

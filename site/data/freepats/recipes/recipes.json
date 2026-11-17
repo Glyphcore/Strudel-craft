@@ -1,0 +1,57 @@
+{
+ "version": 1,
+ "categories": [
+  {
+   "id": "freepats",
+   "title": "FreePats instruments"
+  }
+ ],
+ "labels": [
+  {
+   "id": "freepats",
+   "title": "FreePats (CC0)",
+   "category": "freepats"
+  }
+ ],
+ "recipes": [
+  {
+   "id": "fp-harp",
+   "title": "Concert harp arpeggio",
+   "intent": "Plays the CC0 FreePats harp bank (selection via the openDAW factory catalogue); loads its samples on first play.",
+   "code": "$: note(\"c3 e3 g3 c4 e4 g4 c5 g4\").s(\"fp_harp\").gain(0.8).room(0.3)",
+   "labels": [
+    "freepats"
+   ],
+   "needs": [
+    "glyphcore/freepats:sounds"
+   ],
+   "verified": false
+  },
+  {
+   "id": "fp-organ",
+   "title": "Drawbar organ chords",
+   "intent": "Plays the CC0 FreePats organ bank (selection via the openDAW factory catalogue); loads its samples on first play.",
+   "code": "setcpm(30)\n$: note(\"<[c3,e3,g3,c4] [f3,a3,c4,f4] [g3,b3,d4,g4]>\").s(\"fp_organ\").gain(0.5).release(0.15)",
+   "labels": [
+    "freepats"
+   ],
+   "needs": [
+    "glyphcore/freepats:sounds"
+   ],
+   "verified": false
+  },
+  {
+   "id": "fp-xylophone",
+   "title": "Xylophone line",
+   "intent": "Plays the CC0 FreePats xylophone bank (selection via the openDAW factory catalogue); loads its samples on first play.",
+   "code": "$: note(\"c4 e4 g4 e4 d4 f4 a4 f4\").s(\"fp_xylophone\").gain(0.8).fast(2)",
+   "labels": [
+    "freepats"
+   ],
+   "needs": [
+    "glyphcore/freepats:sounds"
+   ],
+   "verified": false
+  }
+ ]
+}

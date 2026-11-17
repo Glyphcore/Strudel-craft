@@ -87,7 +87,7 @@ const snap = (req, o) => caches.match(req, { ...o, cacheName: VERSION });
 function shellFetch(req, url) { /* Promise<Response>, or null = leave the request to the browser */
   const pinned = url.hostname === 'unpkg.com' && url.pathname.includes('@strudel/web@1.3.0');
   const cdnModule = url.hostname === 'esm.sh'; /* pinned CodeMirror / jsdiff modules: cache-first so the editor works offline */
-  const bank = url.hostname === 'raw.githubusercontent.com'; /* sample maps (.json) and their audio files: lazy, runtime cache that survives deploys */
+  const bank = url.hostname === 'raw.githubusercontent.com' || (url.origin === self.location.origin && /\/data\/freepats\/.+\.ogg$/.test(url.pathname)); /* + the glyphcore/freepats pack samples (#181): same-origin but lazy, so runtime-cached here, not in the snapshot */ /* sample maps (.json) and their audio files: lazy, runtime cache that survives deploys */
   if (bank) return bankFetch(req);
   if (req.headers.has('range')) return url.origin === self.location.origin ? fetch(req) : null;
   if (pinned || cdnModule) return snap(req, { ignoreVary: true }).then((hit) => hit || fetch(req)); /* the snapshot holds the crawled graph; a miss goes to the network uncached */

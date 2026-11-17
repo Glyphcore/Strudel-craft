@@ -18,6 +18,8 @@ const EXT = new Set(['.craftcues', '.html', '.js', '.mjs', '.css', '.json', '.we
 const SKIP = new Set(['sw.js', 'precache.json']); /* the worker itself, and this manifest (read with cache:'reload' at install) */
 const LAZY_VOX = (rel) => rel.startsWith('data/vox/') && !rel.startsWith('data/vox/demo/') && !/^data\/vox\/[^/]+$/.test(rel); /* pack banks: cached on activation in sc-packs-1; the bank index pack's own top-level files (craftpack.json, banks.json, #85) stay in the shell so the loader and the Banks list work offline */
 
+const LAZY_FREEPATS = (rel) => rel.startsWith('data/freepats/') && rel.endsWith('.ogg'); /* glyphcore/freepats (#181): the ogg samples are lazy pack content (sc-packs-1, ~1.3 MB); the manifest, sounds map and recipes (~6 KB of JSON) stay in the shell so the pack loads offline */
+
 function walk(dir, out = []) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const f = path.join(dir, e.name);
@@ -25,7 +27,7 @@ function walk(dir, out = []) {
   }
   return out;
 }
-const files = walk(SITE).filter((r) => EXT.has(path.extname(r)) && !SKIP.has(r) && !LAZY_VOX(r)).sort();
+const files = walk(SITE).filter((r) => EXT.has(path.extname(r)) && !SKIP.has(r) && !LAZY_VOX(r) && !LAZY_FREEPATS(r)).sort();
 
 /* CDN module entries: string literals in site scripts; ${NAME} / ${NAME.key} placeholders resolve from `const NAME = ...` in the same file */
 const cdn = new Set();

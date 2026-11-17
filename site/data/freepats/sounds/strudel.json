@@ -1,0 +1,149 @@
+{
+ "fp_harp": {
+  "e1": [
+   "harp/e1.ogg"
+  ],
+  "g1": [
+   "harp/g1.ogg"
+  ],
+  "b1": [
+   "harp/b1.ogg"
+  ],
+  "d2": [
+   "harp/d2.ogg"
+  ],
+  "f2": [
+   "harp/f2.ogg"
+  ],
+  "a2": [
+   "harp/a2.ogg"
+  ],
+  "c3": [
+   "harp/c3.ogg"
+  ],
+  "e3": [
+   "harp/e3.ogg"
+  ],
+  "g3": [
+   "harp/g3.ogg"
+  ],
+  "b3": [
+   "harp/b3.ogg"
+  ],
+  "d4": [
+   "harp/d4.ogg"
+  ],
+  "f4": [
+   "harp/f4.ogg"
+  ],
+  "c5": [
+   "harp/c5.ogg"
+  ],
+  "e5": [
+   "harp/e5.ogg"
+  ],
+  "g5": [
+   "harp/g5.ogg"
+  ],
+  "b5": [
+   "harp/b5.ogg"
+  ],
+  "d6": [
+   "harp/d6.ogg"
+  ],
+  "f6": [
+   "harp/f6.ogg"
+  ],
+  "a6": [
+   "harp/a6.ogg"
+  ],
+  "b6": [
+   "harp/b6.ogg"
+  ],
+  "d7": [
+   "harp/d7.ogg"
+  ],
+  "f7": [
+   "harp/f7.ogg"
+  ]
+ },
+ "fp_organ": {
+  "c2": [
+   "organ/c2.ogg"
+  ],
+  "e2": [
+   "organ/e2.ogg"
+  ],
+  "g#2": [
+   "organ/gs2.ogg"
+  ],
+  "c3": [
+   "organ/c3.ogg"
+  ],
+  "e3": [
+   "organ/e3.ogg"
+  ],
+  "g#3": [
+   "organ/gs3.ogg"
+  ],
+  "c4": [
+   "organ/c4.ogg"
+  ],
+  "e4": [
+   "organ/e4.ogg"
+  ],
+  "g#4": [
+   "organ/gs4.ogg"
+  ],
+  "c5": [
+   "organ/c5.ogg"
+  ],
+  "e5": [
+   "organ/e5.ogg"
+  ],
+  "g#5": [
+   "organ/gs5.ogg"
+  ],
+  "c6": [
+   "organ/c6.ogg"
+  ],
+  "e6": [
+   "organ/e6.ogg"
+  ],
+  "g#6": [
+   "organ/gs6.ogg"
+  ],
+  "c7": [
+   "organ/c7.ogg"
+  ]
+ },
+ "fp_xylophone": {
+  "c3": [
+   "xylophone/c3.ogg"
+  ],
+  "g3": [
+   "xylophone/g3.ogg"
+  ],
+  "c4": [
+   "xylophone/c4.ogg"
+  ],
+  "g4": [
+   "xylophone/g4.ogg"
+  ],
+  "c5": [
+   "xylophone/c5.ogg"
+  ],
+  "g5": [
+   "xylophone/g5.ogg"
+  ],
+  "c6": [
+   "xylophone/c6.ogg"
+  ],
+  "g6": [
+   "xylophone/g6.ogg"
+  ],
+  "c7": [
+   "xylophone/c7.ogg"
+  ]
+ }
+}

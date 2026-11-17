@@ -65,6 +65,15 @@
       "priority": 0,
       "allowCode": [],
       "dependencies": {}
+    },
+    {
+      "id": "glyphcore/freepats",
+      "version": "1.0.0",
+      "source": "file:data/freepats",
+      "manifest": "sha256:9f8f0779a2096bcbca21e55c07010b3ddc9280b43cf9cf93d297868cd29365c2",
+      "priority": 0,
+      "allowCode": [],
+      "dependencies": {}
     }
   ]
 }

@@ -29,6 +29,24 @@ const FLAG_SCHED = (() => { try { return new URLSearchParams(location.search).ge
 const QSPAN = FLAG_SCHED === 'batch' ? 0.2 : DURATION;
 /* late windows: ?late=reanchor (default) moves the clock so the first onset keeps LATE_GUARD of margin; ?late=drop is Strudel's behaviour (superdough drops them) */
 const FLAG_LATE = (() => { try { return new URLSearchParams(location.search).get('late') || localStorage.getItem('sc.flag.late') || 'reanchor'; } catch (e) { return 'reanchor'; } })();
+/* Phone-trial candidates (#180 follow-up), each its own flag (URL or localStorage sc.flag.<name>), all off by default, no UI. They change nothing in Strudel: the AudioContext constructor is
+   wrapped before Strudel creates its context, the rest uses documented Web APIs.
+   ?hint=playback|<seconds>  AudioContext latencyHint (Strudel's own context is opened with the default "interactive": the smallest output buffer, 10 ms base latency)
+   ?session=playback         navigator.audioSession.type (Safari 16.4+: a playback session keeps audio running when the app is backgrounded or the ringer switch is on)
+   ?lookahead=<seconds>      foreground schedule-ahead (page clock 0.2 s, bounded 0.2..1; engine Worker 0.6 s)
+   ?scrollla=on              while the page scrolls or is touched, schedule as far ahead as when hidden (1 s)
+   ?poly=<n>                 cap on simultaneous voices (superdough setMaxPolyphony)
+   ?persist=1                keep the flags of this URL in localStorage (an installed app starts without a query); ?persist=clear removes them */
+/* ?persist=1 stores every trial flag named in this URL in localStorage (sc.flag.<name>), so an installed app, which starts from "./" without a query, keeps them; ?persist=clear removes them all */
+try { const u = new URLSearchParams(location.search), P = u.get('persist'), NAMES = ['engine', 'resync', 'hint', 'session', 'lookahead', 'scrollla', 'poly', 'sched', 'late', 'vis'];
+  if (P === 'clear') for (const k of NAMES) localStorage.removeItem('sc.flag.' + k); else if (P) for (const k of NAMES) if (u.has(k)) localStorage.setItem('sc.flag.' + k, u.get(k)); } catch (e) { /* private mode */ }
+const qflag = (k) => { try { return new URLSearchParams(location.search).get(k) || localStorage.getItem('sc.flag.' + k) || ''; } catch (e) { return ''; } };
+const FLAG_HINT = qflag('hint'), FLAG_SESSION = qflag('session'), FLAG_LA = +qflag('lookahead') || 0, FLAG_SCROLLLA = qflag('scrollla') === 'on', FLAG_POLY = +qflag('poly') || 0;
+if (FLAG_LA > 0) LOOKAHEAD.base = Math.min(1, Math.max(0.2, FLAG_LA));
+if (FLAG_HINT && window.AudioContext && !window.AudioContext.__scHint) { const AC = window.AudioContext, hint = isNaN(+FLAG_HINT) ? FLAG_HINT : +FLAG_HINT; window.AudioContext = class extends AC { constructor(o) { super({ ...(o || {}), latencyHint: hint }); } }; window.AudioContext.__scHint = hint; }
+let scrollAt = 0; const scrolling = () => FLAG_SCROLLLA && performance.now() - scrollAt < 1000;
+if (FLAG_SCROLLLA) for (const ev of ['scroll', 'touchmove', 'wheel']) addEventListener(ev, () => { scrollAt = performance.now(); }, { capture: true, passive: true });
+function playFlags() { try { if (FLAG_SESSION && navigator.audioSession) navigator.audioSession.type = FLAG_SESSION; } catch (e) { /* unsupported */ } try { if (FLAG_POLY && window.setMaxPolyphony) window.setMaxPolyphony(FLAG_POLY); } catch (e) { /* not ready */ } }
 const LATE_GUARD = 0.015;
 export const POLICIES = {
   continue: 'Continue in background if audio is running; pause cleanly if the OS suspends it',
@@ -149,7 +167,7 @@ function makeClock(S, getTime, onTrigger, latency) {
     B.lastWall = w;
     /* window: Strudel's 0.2 s in the foreground; >= 1 s hidden; raised by late ticks; bounded; decays after 5 s of on-time ticks */
     if (!document.hidden && w - B.lastLate > 5000) B.boost = Math.max(0, B.boost * 0.97 - 0.002);
-    B.lookahead = Math.min(LOOKAHEAD.max, Math.max(LOOKAHEAD.base, document.hidden ? LOOKAHEAD.hidden : 0, B.boost));
+    B.lookahead = Math.min(LOOKAHEAD.max, Math.max(LOOKAHEAD.base, document.hidden || scrolling() ? LOOKAHEAD.hidden : 0, B.boost));
     if (phase === 0) phase = t + MIN_LATENCY;
     if (phase < t) { /* the window ran dry (frozen page, a stall beyond the lookahead): same cycle, from now; no catch-up, no skipped cycles */
       const gap = t - phase; B.stats.underruns++; if (B.lastT && phase > B.lastT) B.played += phase - B.lastT; B.lastT = t; /* played only up to where the scheduled audio ran out */ note('reanchor', { gap: +gap.toFixed(3), cycle: +(+S.lastEnd).toFixed(3) });
@@ -173,7 +191,7 @@ function makeClock(S, getTime, onTrigger, latency) {
 const FLAG_ENGINE = (() => { try { return new URLSearchParams(location.search).get('engine') || localStorage.getItem('sc.flag.engine') || 'page'; } catch (e) { return 'page'; } })();
 async function attachWorker(S, repl) {
   const m = await import('./engine-worker-host.js');
-  const ctl = { fire: () => B.fire, note, stats: B.stats, skipped: () => { PF.skipped++; },
+  const ctl = { fire: () => B.fire, note, scrolling, laFg: FLAG_LA > 0 ? FLAG_LA : 0.6, stats: B.stats, skipped: () => { PF.skipped++; },
     account(target, d, hap) { const m0 = target - ctl.time(); B.stats.haps++; PF.haps++; if (m0 < 0) PF.late++; else if (m0 < 0.02) PF.tight++; if (m0 < PF.minMargin) PF.minMargin = m0; VF.push(target + d + 0.25); if (VF.length > 4096) VF.splice(0, 2048); if (B.trace) { let jv = ''; try { jv = JSON.stringify(hap.v); } catch (e) { /* unserialisable */ } B.trace.push([hap.wb, +target.toFixed(5), jv]); } }, time: () => window.getAudioContext().currentTime };
   const h = await m.attach({ S, repl, base: S.clock, getTime: ctl.time, ctl, flags: { blank: sc.blankComments } });
   B.worker = h; B.clockKind = 'engine worker (events published 0.6 s ahead, 2 s hidden)'; note('engine-worker-attached');
@@ -233,7 +251,7 @@ function media(title) {
     }
   } catch (e) { /* Media Session is optional */ }
 }
-function onPlay(title) { B.playing = true; B.seg = null; B.segs = []; B.frozen = false; segment('play'); wake(true); media(title); note('play', { title }); }
+function onPlay(title) { playFlags(); B.playing = true; B.seg = null; B.segs = []; B.frozen = false; segment('play'); wake(true); media(title); note('play', { title }); }
 function onStop() { B.playing = false; segment('stop', null); wake(false); media(); note('stop'); }
 
 /* ---------- lifecycle tracking + policy ---------- */
@@ -264,7 +282,8 @@ function stats() {
     lookaheadMs: Math.round(B.lookahead * 1000), lookaheadBounds: { baseMs: LOOKAHEAD.base * 1000, hiddenMs: LOOKAHEAD.hidden * 1000, maxMs: LOOKAHEAD.max * 1000 },
     ...B.stats, underrunEstimate: B.stats.underruns, playedSec: +B.played.toFixed(2), pausedSec: +(B.paused + (B.seg && (B.seg.kind === 'paused' || B.seg.kind === 'interrupted') ? (now() - B.seg.t0) / 1000 : 0)).toFixed(2),
     segment: B.seg ? B.seg.kind : null,
-    sched: FLAG_SCHED, late: FLAG_LATE, querySpanMs: Math.round(QSPAN * 1000),
+    sched: FLAG_SCHED, late: FLAG_LATE, querySpanMs: Math.round(QSPAN * 1000), engineMode: B.worker ? B.worker.state().mode : 'page', engineWorkerAttached: !!B.worker, flags: { hint: FLAG_HINT || null, session: FLAG_SESSION || null, lookahead: FLAG_LA || null, scrollla: FLAG_SCROLLLA, poly: FLAG_POLY || null },
+    audio: c ? { sampleRate: c.sampleRate, baseLatencyMs: Math.round((c.baseLatency || 0) * 1000), outputLatencyMs: Math.round((c.outputLatency || 0) * 1000), hint: (window.AudioContext && window.AudioContext.__scHint) || 'interactive (default)' } : null,
     perf: { tickMs: Math.round(PF.tickMs), tickMaxMs: +PF.tickMax.toFixed(1), queryMs: Math.round(PF.queryMs), queryMaxMs: +PF.queryMax.toFixed(1), voiceMs: Math.round(PF.voiceMs), voiceMaxMs: +PF.voiceMax.toFixed(1),
       voicesInFlight: inFlight(), longTasks: LT.na ? null : LT.n, longTaskWorstMs: Math.round(LT.worst), longTaskMs: Math.round(LT.total),
       haps: PF.haps, voiceMsPerHap: PF.haps ? +(PF.voiceMs / PF.haps).toFixed(3) : 0, lateHaps: PF.late, skippedHaps: PF.skipped, tightHaps: PF.tight, rescuedWindows: PF.rescued, minMarginMs: PF.minMargin === Infinity ? null : Math.round(PF.minMargin * 1000) } };
@@ -298,7 +317,7 @@ function openDiagnostics() {
     const s = stats(), segs = segments().slice(-12).reverse();
     d.innerHTML = `<div class="help-head"><h2 id="bgDiagH">Audio and background</h2><button type="button" class="icon bg-close" aria-label="Close">&times;</button></div>
       <dl class="bg-stats">${[['Clock', s.clock], ['Audio context', s.context], ['Lookahead in use', N.span(N.ms(s.lookaheadMs), 7) + ' ms (' + N.span(N.ms(s.lookaheadBounds.baseMs), 7) + ' foreground, ' + N.span(N.ms(s.lookaheadBounds.hiddenMs), 7) + ' hidden, max ' + N.span(N.ms(s.lookaheadBounds.maxMs), 7) + ')'],
-        ['Ticks / late ticks', N.span(s.ticks, 8) + ' / ' + N.span(s.lateTicks, 6)], ['Max tick gap', N.span(N.ms(s.maxGapMs), 7) + ' ms'], ['Underruns (re-anchored)', N.span(s.underruns, 6)], ['Engine', 'main thread (worker clock)'], ['Long tasks / worst', (s.perf.longTasks == null ? 'n/a' : N.span(s.perf.longTasks, 6)) + ' / ' + N.span(N.ms(s.perf.longTaskWorstMs), 6) + ' ms'],
+        ['Ticks / late ticks', N.span(s.ticks, 8) + ' / ' + N.span(s.lateTicks, 6)], ['Max tick gap', N.span(N.ms(s.maxGapMs), 7) + ' ms'], ['Underruns (re-anchored)', N.span(s.underruns, 6)], ['Engine', s.engineWorkerAttached ? 'engine Worker, now on the ' + s.engineMode + ' clock' : 'page thread (' + s.clock + ', flag ' + s.engine + ')'], ['Output', s.audio ? s.audio.sampleRate + ' Hz, latency hint ' + s.audio.hint + ', base ' + s.audio.baseLatencyMs + ' ms, output ' + s.audio.outputLatencyMs + ' ms' : 'no context'], ['Trial flags', Object.entries(s.flags).filter(([, v]) => v).map(([k, v]) => k + '=' + v).join(', ') || 'none'], ['Long tasks / worst', (s.perf.longTasks == null ? 'n/a' : N.span(s.perf.longTasks, 6)) + ' / ' + N.span(N.ms(s.perf.longTaskWorstMs), 6) + ' ms'],
         ['Late haps (dropped) / skipped / tight', N.span(s.perf.lateHaps, 6) + ' / ' + N.span(s.perf.skippedHaps, 6) + ' / ' + N.span(s.perf.tightHaps, 6)], ['Voices in flight', N.span(s.perf.voicesInFlight, 5)], ['Query / voice time', N.span(N.ms(s.perf.queryMs), 7) + ' / ' + N.span(N.ms(s.perf.voiceMs), 7) + ' ms'], ['Played / paused', N.span(fmt(s.playedSec), 7) + ' / ' + N.span(fmt(s.pausedSec), 7)], ['Wake lock', s.wakeLock ? 'held' : 'off']]
         .map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
       <h3>Segments</h3><ol class="bg-segs">${segs.length ? segs.map((g) => `<li data-kind="${g.kind}"><b>${g.kind}</b> c ${N.span(N.cyc(+g.cycle), 6)} · ${N.span(fmt(g.ms / 1000), 7)} <span>${g.why || ''}</span></li>`).join('') : '<li>Nothing yet: press Play</li>'}</ol>

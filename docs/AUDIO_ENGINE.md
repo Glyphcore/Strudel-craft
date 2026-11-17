@@ -224,3 +224,36 @@ page-thread clock of section 1 stays the default and the fallback.
 - **Parity.** `node tests/site/engine_worker_parity.mjs`: the same program on both engines hands the same set of `(onset, value)` events to superdough (385 / 385 on velvet-static,
   384 / 384 on sirocco-foundry, cycles 2..8) with the same timing law (target - onset / cps constant within 5 ms). Sound is then identical by construction (same values into the same
   superdough); the `tools/racks/measure.mjs` LU comparison does not apply to the live path because offline renders (record, `render_track.cjs`) never use the live clock.
+
+## 8. Phone trial flags and the audio-render-thread finding (#180 follow-up)
+The owner's phone test of `?engine=worker` still glitched. Headless numbers had measured main-thread load only. The same harness also reads `AudioContext.playbackStats` (underrun
+events of the render thread) and it shows the render thread, not the scheduling, as the next suspect: velvet-static, headless x1, 25 s, 0 late scheduled events in every cell:
+
+| cell | latency hint (base / output latency) | audio underrun events (duration) |
+|---|---|---|
+| page clock, default (Strudel opens `new AudioContext()` = "interactive") | 10 / 32 ms | 363 (3630 ms) |
+| page clock, `hint=playback` | 23 / 72 ms | 30 (697 ms) |
+| page clock, `hint=0.5` | 186 / 560 ms | 0 |
+| page clock, `poly=24` | 10 / 32 ms | 86 (860 ms) |
+| engine Worker, default | 10 / 32 ms | 194 (1940 ms) |
+| engine Worker, `hint=playback` | 23 / 72 ms | 53 (1231 ms) |
+
+The Worker moves scheduling off the page; it does not change what the render thread has to do (about 310 nodes created per second, 70 to 140 voices in flight, convolver reverb per
+orbit), and Strudel opens its context with the smallest output buffer. Caveat: headless Chromium has no real sink and shares the sandbox CPU, so the absolute numbers are an upper bound;
+the ranking is what the phone has to confirm.
+
+**Trial flags** (URL query or `localStorage sc.flag.<name>`; all off by default; no visible UI; nothing in Strudel is modified: the `AudioContext` constructor is wrapped before Strudel
+creates its context, the rest are documented Web APIs). `?persist=1` writes every flag named in the URL to localStorage (an installed app starts from `./` without a query);
+`?persist=clear` removes them. The audio dot's sheet (Audio and background) shows what is live: engine (Worker attached and its current clock), sample rate, latency hint, base and output
+latency, and the trial flags in force.
+- `?hint=playback` or `?hint=<seconds>`: `latencyHint` of the context (bigger render buffer; costs output latency, 72 ms at `playback` in the table, more for a number).
+- `?session=playback`: `navigator.audioSession.type = "playback"` on Play (Safari 16.4+; keeps audio alive in the background and with the ringer switch on).
+- `?lookahead=<seconds>`: foreground schedule-ahead (page clock 0.2 s, bounded 0.2 to 1; the engine Worker 0.6 s).
+- `?scrollla=on`: while the page scrolls or is touched (passive capture listeners), schedule as far ahead as when hidden (1 s on the page clock, 2 s on the Worker).
+- `?poly=<n>`: cap of simultaneous voices (superdough `setMaxPolyphony`).
+- Together with `?engine=worker` and `?resync=on` (section 7).
+
+**Which engine is live, and why the phone may not have run the Worker** (read from the code, not measured on a phone): (1) the installed app starts from `./`, so `?engine=worker`
+is gone unless stored (`?persist=1`); (2) the service worker serves the cached shell and ignores the query for navigations (`sw.js`), so a phone that has not yet picked up the deployed build
+runs the old `bgplay.js` that ignores the flag until a second launch; (3) a program that reads page state or has a callback (section 7) silently stays on the page clock, and a Worker
+start failure only writes a console warning and a note. Until now no screen showed this; the diagnostics sheet now does.

@@ -1,0 +1,57 @@
+{
+ "version": 1,
+ "categories": [
+  {
+   "id": "instruments",
+   "title": "Real instruments"
+  }
+ ],
+ "labels": [
+  {
+   "id": "instruments",
+   "title": "Real instruments (referenced samples)",
+   "category": "instruments"
+  }
+ ],
+ "recipes": [
+  {
+   "id": "vsco-strings",
+   "title": "VSCO strings: cello, viola, violin",
+   "intent": "Cello, viola section and solo violin sustained notes from VSCO 2 CE (CC0, referenced, fetched on play).",
+   "code": "setcpm(60/4)\n$: note(\"<c2 a1 f1 g1>\").s(\"vsco_cello\").gain(0.3)\n$: note(\"<[e3,g3] [e3,a3] [f3,a3] [d3,g3]>\").s(\"vsco_viola\").gain(0.3)\n$: note(\"<g4 e4 c5 b4>\").s(\"vsco_violin\").gain(0.3)",
+   "labels": [
+    "instruments"
+   ],
+   "needs": [
+    "glyphcore/vsco:sources"
+   ],
+   "verified": false
+  },
+  {
+   "id": "vsco-brass",
+   "title": "VSCO brass: trumpet, horn, trombone, tuba",
+   "intent": "Sustained brass from VSCO 2 CE (CC0, referenced).",
+   "code": "setcpm(60/4)\n$: note(\"<c4 d4 e4 d4>\").s(\"vsco_trumpet\").gain(0.72)\n$: note(\"<g2 a2 g2 f2>\").s(\"vsco_horn\").gain(0.72)\n$: note(\"<c2 d2 c2 b1>\").s(\"vsco_trombone\").gain(0.72)\n$: note(\"<c1 d1 c1 g0>\").s(\"vsco_tuba\").gain(0.72)",
+   "labels": [
+    "instruments"
+   ],
+   "needs": [
+    "glyphcore/vsco:sources"
+   ],
+   "verified": false
+  },
+  {
+   "id": "vsco-woodwinds",
+   "title": "VSCO woodwinds: flute, oboe, clarinet, bassoon",
+   "intent": "Sustained woodwinds from VSCO 2 CE (CC0, referenced).",
+   "code": "setcpm(60/4)\n$: note(\"<e5 d5 c5 d5>\").s(\"vsco_flute\").gain(0.29)\n$: note(\"<g4 f4 e4 f4>\").s(\"vsco_oboe\").gain(0.29)\n$: note(\"<c4 b3 a3 b3>\").s(\"vsco_clarinet\").gain(0.29)\n$: note(\"<c2 g1 a1 g1>\").s(\"vsco_bassoon\").gain(0.29)",
+   "labels": [
+    "instruments"
+   ],
+   "needs": [
+    "glyphcore/vsco:sources"
+   ],
+   "verified": false
+  }
+ ]
+}

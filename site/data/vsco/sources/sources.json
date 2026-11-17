@@ -1,0 +1,476 @@
+{
+ "sources": [
+  {
+   "id": "vsco",
+   "title": "VSCO 2 Community Edition (orchestral instruments)",
+   "base": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/440300901dfe9275fd84e0b7763af1f8443ae62e/",
+   "map": {
+    "vsco_violin": {
+     "g3": [
+      "Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_G3_f.wav"
+     ],
+     "a3": [
+      "Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_A3_f.wav"
+     ],
+     "c4": [
+      "Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_C4_f.wav"
+     ],
+     "e4": [
+      "Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_E4_f.wav"
+     ],
+     "g4": [
+      "Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_G4_f.wav"
+     ],
+     "a4": [
+      "Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_A4_f.wav"
+     ],
+     "c5": [
+      "Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_C5_f.wav"
+     ],
+     "e5": [
+      "Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_E5_f.wav"
+     ],
+     "g5": [
+      "Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_G5_f.wav"
+     ],
+     "a5": [
+      "Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_A5_f.wav"
+     ],
+     "c6": [
+      "Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_C6_f.wav"
+     ],
+     "e6": [
+      "Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_E6_f.wav"
+     ],
+     "g6": [
+      "Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_G6_f.wav"
+     ],
+     "a6": [
+      "Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_A6_f.wav"
+     ],
+     "c7": [
+      "Strings/Solo%20Violin/Arco%20Vib/LLVln_ArcoVib_C7_f.wav"
+     ]
+    },
+    "vsco_viola": {
+     "c2": [
+      "Strings/Viola%20Section/susvib/ViolaEns_susvib_C2_v2_1.wav"
+     ],
+     "d2": [
+      "Strings/Viola%20Section/susvib/ViolaEns_susvib_D2_v2_1.wav"
+     ],
+     "e2": [
+      "Strings/Viola%20Section/susvib/ViolaEns_susvib_E2_v2_1.wav"
+     ],
+     "g2": [
+      "Strings/Viola%20Section/susvib/ViolaEns_susvib_G2_v2_1.wav"
+     ],
+     "b2": [
+      "Strings/Viola%20Section/susvib/ViolaEns_susvib_B2_v2_1.wav"
+     ],
+     "d3": [
+      "Strings/Viola%20Section/susvib/ViolaEns_susvib_D3_v2_1.wav"
+     ],
+     "f3": [
+      "Strings/Viola%20Section/susvib/ViolaEns_susvib_F3_v2_1.wav"
+     ],
+     "a3": [
+      "Strings/Viola%20Section/susvib/ViolaEns_susvib_A3_v2_1.wav"
+     ],
+     "c4": [
+      "Strings/Viola%20Section/susvib/ViolaEns_susvib_C4_v2_1.wav"
+     ],
+     "e4": [
+      "Strings/Viola%20Section/susvib/ViolaEns_susvib_E4_v2_1.wav"
+     ],
+     "g4": [
+      "Strings/Viola%20Section/susvib/ViolaEns_susvib_G4_v2_1.wav"
+     ],
+     "b4": [
+      "Strings/Viola%20Section/susvib/ViolaEns_susvib_B4_v2_1.wav"
+     ],
+     "d5": [
+      "Strings/Viola%20Section/susvib/ViolaEns_susvib_D5_v2_1.wav"
+     ]
+    },
+    "vsco_cello": {
+     "c1": [
+      "Strings/Cello%20Section/susvib/susvib_C1_v1_1.wav"
+     ],
+     "e1": [
+      "Strings/Cello%20Section/susvib/susvib_E1_v1_1.wav"
+     ],
+     "g1": [
+      "Strings/Cello%20Section/susvib/susvib_G1_v1_1.wav"
+     ],
+     "b1": [
+      "Strings/Cello%20Section/susvib/susvib_B1_v1_1.wav"
+     ],
+     "d2": [
+      "Strings/Cello%20Section/susvib/susvib_D2_v1_1.wav"
+     ],
+     "f2": [
+      "Strings/Cello%20Section/susvib/susvib_F2_v1_1.wav"
+     ],
+     "a2": [
+      "Strings/Cello%20Section/susvib/susvib_A2_v1_1.wav"
+     ],
+     "c3": [
+      "Strings/Cello%20Section/susvib/susvib_C3_v1_1.wav"
+     ],
+     "e3": [
+      "Strings/Cello%20Section/susvib/susvib_E3_v1_1.wav"
+     ],
+     "g3": [
+      "Strings/Cello%20Section/susvib/susvib_G3_v1_1.wav"
+     ],
+     "b3": [
+      "Strings/Cello%20Section/susvib/susvib_B3_v1_1.wav"
+     ],
+     "d4": [
+      "Strings/Cello%20Section/susvib/susvib_D4_v1_1.wav"
+     ],
+     "f4": [
+      "Strings/Cello%20Section/susvib/susvib_F4_v1_1.wav"
+     ]
+    },
+    "vsco_bass": {
+     "f#0": [
+      "Strings/Solo%20Contrabass/SusVib/BKCtbss_SusVib_F%230_v1_rr1.wav"
+     ],
+     "g0": [
+      "Strings/Solo%20Contrabass/SusVib/BKCtbss_SusVib_G0_v1_rr1.wav"
+     ],
+     "a#0": [
+      "Strings/Solo%20Contrabass/SusVib/BKCtbss_SusVib_A%230_v1_rr1.wav"
+     ],
+     "c1": [
+      "Strings/Solo%20Contrabass/SusVib/BKCtbss_SusVib_C1_v1_rr1.wav"
+     ],
+     "d1": [
+      "Strings/Solo%20Contrabass/SusVib/BKCtbss_SusVib_D1_v1_rr1.wav"
+     ],
+     "e1": [
+      "Strings/Solo%20Contrabass/SusVib/BKCtbss_SusVib_E1_v1_rr1.wav"
+     ],
+     "f#1": [
+      "Strings/Solo%20Contrabass/SusVib/BKCtbss_SusVib_F%231_v1_rr1.wav"
+     ],
+     "g#1": [
+      "Strings/Solo%20Contrabass/SusVib/BKCtbss_SusVib_G%231_v1_rr1.wav"
+     ],
+     "a1": [
+      "Strings/Solo%20Contrabass/SusVib/BKCtbss_SusVib_A1_v1_rr1.wav"
+     ],
+     "c#2": [
+      "Strings/Solo%20Contrabass/SusVib/BKCtbss_SusVib_C%232_v1_rr1.wav"
+     ],
+     "e2": [
+      "Strings/Solo%20Contrabass/SusVib/BKCtbss_SusVib_E2_v1_rr1.wav"
+     ],
+     "g#2": [
+      "Strings/Solo%20Contrabass/SusVib/BKCtbss_SusVib_G%232_v1_rr1.wav"
+     ],
+     "b2": [
+      "Strings/Solo%20Contrabass/SusVib/BKCtbss_SusVib_B2_v1_rr1.wav"
+     ]
+    },
+    "vsco_trumpet": {
+     "f2": [
+      "Brass/Trumpet/sus/Sum_SHTrumpet_sus_F2_v1_rr1.wav"
+     ],
+     "a2": [
+      "Brass/Trumpet/sus/Sum_SHTrumpet_sus_A2_v1_rr1.wav"
+     ],
+     "c3": [
+      "Brass/Trumpet/sus/Sum_SHTrumpet_sus_C3_v1_rr1.wav"
+     ],
+     "d#3": [
+      "Brass/Trumpet/sus/Sum_SHTrumpet_sus_D%233_v1_rr1.wav"
+     ],
+     "g3": [
+      "Brass/Trumpet/sus/Sum_SHTrumpet_sus_G3_v1_rr1.wav"
+     ],
+     "a#3": [
+      "Brass/Trumpet/sus/Sum_SHTrumpet_sus_A%233_v1_rr1.wav"
+     ],
+     "d4": [
+      "Brass/Trumpet/sus/Sum_SHTrumpet_sus_D4_v1_rr1.wav"
+     ],
+     "f4": [
+      "Brass/Trumpet/sus/Sum_SHTrumpet_sus_F4_v1_rr1.wav"
+     ],
+     "a4": [
+      "Brass/Trumpet/sus/Sum_SHTrumpet_sus_A4_v1_rr1.wav"
+     ],
+     "c5": [
+      "Brass/Trumpet/sus/Sum_SHTrumpet_sus_C5_v1_rr1.wav"
+     ]
+    },
+    "vsco_horn": {
+     "a0": [
+      "Brass/F%20Horn/sus/MOHorn_sus_A0_v1_1.wav"
+     ],
+     "c1": [
+      "Brass/F%20Horn/sus/MOHorn_sus_C1_v2_1.wav"
+     ],
+     "d#1": [
+      "Brass/F%20Horn/sus/MOHorn_sus_D%231_v2_1.wav"
+     ],
+     "g1": [
+      "Brass/F%20Horn/sus/MOHorn_sus_G1_v2_1.wav"
+     ],
+     "a#1": [
+      "Brass/F%20Horn/sus/MOHorn_sus_A%231_v2_1.wav"
+     ],
+     "d2": [
+      "Brass/F%20Horn/sus/MOHorn_sus_D2_v2_1.wav"
+     ],
+     "f2": [
+      "Brass/F%20Horn/sus/MOHorn_sus_F2_v2_1.wav"
+     ],
+     "a2": [
+      "Brass/F%20Horn/sus/MOHorn_sus_A2_v2_1.wav"
+     ],
+     "c3": [
+      "Brass/F%20Horn/sus/MOHorn_sus_C3_v2_1.wav"
+     ],
+     "d4": [
+      "Brass/F%20Horn/sus/MOHorn_sus_D4_v1_1.wav"
+     ],
+     "f4": [
+      "Brass/F%20Horn/sus/MOHorn_sus_F4_v1_1.wav"
+     ]
+    },
+    "vsco_trombone": {
+     "a#0": [
+      "Brass/Tenor%20Trombone/sus/tenortbn_sus_A%230_v2_1.wav"
+     ],
+     "c#1": [
+      "Brass/Tenor%20Trombone/sus/tenortbn_sus_C%231_v2_1.wav"
+     ],
+     "d#1": [
+      "Brass/Tenor%20Trombone/sus/tenortbn_sus_D%231_v2_1.wav"
+     ],
+     "f1": [
+      "Brass/Tenor%20Trombone/sus/tenortbn_sus_F1_v2_1.wav"
+     ],
+     "a#1": [
+      "Brass/Tenor%20Trombone/sus/tenortbn_sus_A%231_v2_1.wav"
+     ],
+     "d2": [
+      "Brass/Tenor%20Trombone/sus/tenortbn_sus_D2_v2_1.wav"
+     ],
+     "f2": [
+      "Brass/Tenor%20Trombone/sus/tenortbn_sus_F2_v2_1.wav"
+     ],
+     "c3": [
+      "Brass/Tenor%20Trombone/sus/tenortbn_sus_C3_v2_1.wav"
+     ],
+     "c#3": [
+      "Brass/Tenor%20Trombone/sus/tenortbn_sus_C%233_v2_1.wav"
+     ],
+     "d#3": [
+      "Brass/Tenor%20Trombone/sus/tenortbn_sus_D%233_v2_1.wav"
+     ],
+     "f3": [
+      "Brass/Tenor%20Trombone/sus/tenortbn_sus_F3_v2_1.wav"
+     ]
+    },
+    "vsco_tuba": {
+     "f0": [
+      "Brass/Tuba/sus/Tuba3_sus_F0_v1_rr1_Mid.wav"
+     ],
+     "a#0": [
+      "Brass/Tuba/sus/Tuba3_sus_A%230_v2_rr1_Mid.wav"
+     ],
+     "d#1": [
+      "Brass/Tuba/sus/Tuba3_sus_D%231_v2_rr1_Mid.wav"
+     ],
+     "f1": [
+      "Brass/Tuba/sus/Tuba3_sus_F1_v2_rr1_Mid.wav"
+     ],
+     "a#1": [
+      "Brass/Tuba/sus/Tuba3_sus_A%231_v2_rr1_Mid.wav"
+     ],
+     "d2": [
+      "Brass/Tuba/sus/Tuba3_sus_D2_v2_rr1_Mid.wav"
+     ],
+     "f2": [
+      "Brass/Tuba/sus/Tuba3_sus_F2_v2_rr1_Mid.wav"
+     ],
+     "a#2": [
+      "Brass/Tuba/sus/Tuba3_sus_A%232_v2_rr1_Mid.wav"
+     ],
+     "d3": [
+      "Brass/Tuba/sus/Tuba3_sus_D3_v1_rr1_Mid.wav"
+     ]
+    },
+    "vsco_flute": {
+     "c3": [
+      "Woodwinds/Flute/susvib/LDFlute_susvib_C3_v1_1.wav"
+     ],
+     "e3": [
+      "Woodwinds/Flute/susvib/LDFlute_susvib_E3_v1_1.wav"
+     ],
+     "a3": [
+      "Woodwinds/Flute/susvib/LDFlute_susvib_A3_v1_1.wav"
+     ],
+     "c4": [
+      "Woodwinds/Flute/susvib/LDFlute_susvib_C4_v1_1.wav"
+     ],
+     "e4": [
+      "Woodwinds/Flute/susvib/LDFlute_susvib_E4_v1_1.wav"
+     ],
+     "a4": [
+      "Woodwinds/Flute/susvib/LDFlute_susvib_A4_v1_1.wav"
+     ],
+     "c5": [
+      "Woodwinds/Flute/susvib/LDFlute_susvib_C5_v1_1.wav"
+     ],
+     "e5": [
+      "Woodwinds/Flute/susvib/LDFlute_susvib_E5_v1_1.wav"
+     ],
+     "a5": [
+      "Woodwinds/Flute/susvib/LDFlute_susvib_A5_v1_1.wav"
+     ],
+     "c6": [
+      "Woodwinds/Flute/susvib/LDFlute_susvib_C6_v1_1.wav"
+     ]
+    },
+    "vsco_oboe": {
+     "a#2": [
+      "Woodwinds/Oboe/Sus/Oboe_Sus_A%232_v1_Main.wav"
+     ],
+     "d3": [
+      "Woodwinds/Oboe/Sus/Oboe_Sus_D3_v1_Main.wav"
+     ],
+     "f3": [
+      "Woodwinds/Oboe/Sus/Oboe_Sus_F3_v1_Main.wav"
+     ],
+     "a#3": [
+      "Woodwinds/Oboe/Sus/Oboe_Sus_A%233_v1_Main.wav"
+     ],
+     "d4": [
+      "Woodwinds/Oboe/Sus/Oboe_Sus_D4_v1_Main.wav"
+     ],
+     "f4": [
+      "Woodwinds/Oboe/Sus/Oboe_Sus_F4_v1_Main.wav"
+     ],
+     "a#4": [
+      "Woodwinds/Oboe/Sus/Oboe_Sus_A%234_v1_Main.wav"
+     ],
+     "d5": [
+      "Woodwinds/Oboe/Sus/Oboe_Sus_D5_v1_Main.wav"
+     ],
+     "f5": [
+      "Woodwinds/Oboe/Sus/Oboe_Sus_F5_v1_Main.wav"
+     ]
+    },
+    "vsco_clarinet": {
+     "d2": [
+      "Woodwinds/Clarinet/susLong/DCClar_susLong_D2_v2_rr1_sum.wav"
+     ],
+     "f2": [
+      "Woodwinds/Clarinet/susLong/DCClar_susLong_F2_v2_rr1_sum.wav"
+     ],
+     "a#2": [
+      "Woodwinds/Clarinet/susLong/DCClar_susLong_A%232_v2_rr1_sum.wav"
+     ],
+     "d3": [
+      "Woodwinds/Clarinet/susLong/DCClar_susLong_D3_v2_rr1_sum.wav"
+     ],
+     "f3": [
+      "Woodwinds/Clarinet/susLong/DCClar_susLong_F3_v2_rr1_sum.wav"
+     ],
+     "a#3": [
+      "Woodwinds/Clarinet/susLong/DCClar_susLong_A%233_v2_rr1_sum.wav"
+     ],
+     "d4": [
+      "Woodwinds/Clarinet/susLong/DCClar_susLong_D4_v2_rr1_sum.wav"
+     ],
+     "f4": [
+      "Woodwinds/Clarinet/susLong/DCClar_susLong_F4_v2_rr1_sum.wav"
+     ],
+     "a#4": [
+      "Woodwinds/Clarinet/susLong/DCClar_susLong_A%234_v2_rr1_sum.wav"
+     ],
+     "d5": [
+      "Woodwinds/Clarinet/susLong/DCClar_susLong_D5_v2_rr1_sum.wav"
+     ],
+     "f#5": [
+      "Woodwinds/Clarinet/susLong/DCClar_susLong_F%235_v2_rr1_sum.wav"
+     ]
+    },
+    "vsco_bassoon": {
+     "a#0": [
+      "Woodwinds/Bassoon/sus/PSBassoon_A%230_v2_1.wav"
+     ],
+     "c#1": [
+      "Woodwinds/Bassoon/sus/PSBassoon_C%231_v2_1.wav"
+     ],
+     "f1": [
+      "Woodwinds/Bassoon/sus/PSBassoon_F1_v2_1.wav"
+     ],
+     "a1": [
+      "Woodwinds/Bassoon/sus/PSBassoon_A1_v2_1.wav"
+     ],
+     "a#1": [
+      "Woodwinds/Bassoon/sus/PSBassoon_A%231_v2_1.wav"
+     ],
+     "c2": [
+      "Woodwinds/Bassoon/sus/PSBassoon_C2_v2_1.wav"
+     ],
+     "g2": [
+      "Woodwinds/Bassoon/sus/PSBassoon_G2_v2_1.wav"
+     ],
+     "c3": [
+      "Woodwinds/Bassoon/sus/PSBassoon_C3_v2_1.wav"
+     ],
+     "d#3": [
+      "Woodwinds/Bassoon/sus/PSBassoon_D%233_v2_1.wav"
+     ],
+     "g#3": [
+      "Woodwinds/Bassoon/sus/PSBassoon_G%233_v2_1.wav"
+     ],
+     "a3": [
+      "Woodwinds/Bassoon/sus/PSBassoon_A3_v2_1.wav"
+     ],
+     "c4": [
+      "Woodwinds/Bassoon/sus/PSBassoon_C4_v2_1.wav"
+     ],
+     "d#4": [
+      "Woodwinds/Bassoon/sus/PSBassoon_D%234_v2_1.wav"
+     ]
+    }
+   },
+   "sounds": [
+    "vsco_violin",
+    "vsco_viola",
+    "vsco_cello",
+    "vsco_bass",
+    "vsco_trumpet",
+    "vsco_horn",
+    "vsco_trombone",
+    "vsco_tuba",
+    "vsco_flute",
+    "vsco_oboe",
+    "vsco_clarinet",
+    "vsco_bassoon"
+   ],
+   "license": "CC0-1.0",
+   "attribution": {
+    "name": "Versilian Studios LLC (Sam Gossner), VSCO 2 Community Edition",
+    "url": "https://github.com/sgossner/VSCO-2-CE",
+    "text": "VSCO 2 CE, CC0 1.0 (no credit required, given anyway)"
+   },
+   "terms_url": "https://raw.githubusercontent.com/sgossner/VSCO-2-CE/440300901dfe9275fd84e0b7763af1f8443ae62e/LICENSE",
+   "check": {
+    "cors": true,
+    "stable": true,
+    "checked": "2026-11-17",
+    "status": 200
+   }
+  }
+ ]
+}

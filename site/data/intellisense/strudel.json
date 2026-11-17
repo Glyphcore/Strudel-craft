@@ -1415,6 +1415,174 @@
    "detail": "instrument sound",
    "info": "FreePats xylophone (CC0); loads when a program names it",
    "category": "sounds"
+  },
+  {
+   "label": "vsco_violin",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VSCO 2 CE solo violin (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "vsco_viola",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VSCO 2 CE viola section (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "vsco_cello",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VSCO 2 CE cello section (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "vsco_bass",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VSCO 2 CE solo contrabass (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "vsco_trumpet",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VSCO 2 CE trumpet (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "vsco_horn",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VSCO 2 CE French horn (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "vsco_trombone",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VSCO 2 CE tenor trombone (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "vsco_tuba",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VSCO 2 CE tuba (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "vsco_flute",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VSCO 2 CE flute (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "vsco_oboe",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VSCO 2 CE oboe (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "vsco_clarinet",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VSCO 2 CE clarinet (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "vsco_bassoon",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VSCO 2 CE bassoon (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "brd_kick",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "Big Rusty Drums kick (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "brd_snare",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "Big Rusty Drums snare (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "brd_hat_closed",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "Big Rusty Drums closed hat (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "brd_tom",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "Big Rusty Drums tom (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "brd_ride",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "Big Rusty Drums ride (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "gog_kick",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "Gogodze Phu kick (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "gog_snare",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "Gogodze Phu snare (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "gog_hat_closed",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "Gogodze Phu closed hat (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "gog_hat_open",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "Gogodze Phu open hat (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "gog_tom_low",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "Gogodze Phu low tom (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "gog_tom_mid",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "Gogodze Phu mid tom (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "gog_tom_high",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "Gogodze Phu high tom (CC0); loads when a program names it",
+   "category": "sounds"
   }
  ],
  "params": {

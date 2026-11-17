@@ -1,0 +1,130 @@
+{
+ "sources": [
+  {
+   "id": "big-rusty-drums",
+   "title": "Big Rusty Drums (Karoryfer Samples)",
+   "base": "https://raw.githubusercontent.com/sfzinstruments/karoryfer.big-rusty-drums/f07ce00df34a46b6b08375be56fe116cf15782bc/",
+   "map": {
+    "brd_kick": [
+     "Samples/kick_24/kick/kick/k_vl7_rr1.flac",
+     "Samples/kick_24/kick/kick/k_vl7_rr2.flac",
+     "Samples/kick_24/kick/kick/k_vl7_rr3.flac",
+     "Samples/kick_24/kick/kick/k_vl7_rr4.flac"
+    ],
+    "brd_snare": [
+     "Samples/snare_14/center/top/sn_center_vl7_rr1.flac",
+     "Samples/snare_14/center/top/sn_center_vl7_rr2.flac",
+     "Samples/snare_14/center/top/sn_center_vl7_rr3.flac",
+     "Samples/snare_14/center/top/sn_center_vl7_rr4.flac"
+    ],
+    "brd_hat_closed": [
+     "Samples/hihat_14/tc/cl/ht_tc_vl6_rr1.flac",
+     "Samples/hihat_14/tc/cl/ht_tc_vl6_rr2.flac",
+     "Samples/hihat_14/tc/cl/ht_tc_vl6_rr3.flac",
+     "Samples/hihat_14/tc/cl/ht_tc_vl6_rr4.flac"
+    ],
+    "brd_tom": [
+     "Samples/tom_18/center/cl/t18_vl6_rr1.flac",
+     "Samples/tom_18/center/cl/t18_vl6_rr2.flac",
+     "Samples/tom_18/center/cl/t18_vl6_rr3.flac",
+     "Samples/tom_18/center/cl/t18_vl6_rr4.flac"
+    ],
+    "brd_ride": [
+     "Samples/ride_22/rd/cl/rd_vl6_rr1.flac",
+     "Samples/ride_22/rd/cl/rd_vl6_rr2.flac",
+     "Samples/ride_22/rd/cl/rd_vl6_rr3.flac"
+    ]
+   },
+   "sounds": [
+    "brd_kick",
+    "brd_snare",
+    "brd_hat_closed",
+    "brd_tom",
+    "brd_ride"
+   ],
+   "license": "CC0-1.0",
+   "attribution": {
+    "name": "Karoryfer Samples (Big Rusty Drums)",
+    "url": "https://github.com/sfzinstruments/karoryfer.big-rusty-drums",
+    "text": "Big Rusty Drums by Karoryfer Samples, CC0 1.0"
+   },
+   "terms_url": "https://raw.githubusercontent.com/sfzinstruments/karoryfer.big-rusty-drums/f07ce00df34a46b6b08375be56fe116cf15782bc/LICENSE",
+   "check": {
+    "cors": true,
+    "stable": true,
+    "checked": "2026-11-17",
+    "status": 200
+   }
+  },
+  {
+   "id": "gogodze-phu",
+   "title": "Gogodze Phu Vol II (Karoryfer Lecolds)",
+   "base": "https://raw.githubusercontent.com/sfzinstruments/karoryfer.gogodze-phu-vol-ii/69a0274cdc39c99c3098cde1bc3789690de86d62/",
+   "map": {
+    "gog_kick": [
+     "Samples/front_mic/ks_vl3_rr1.wav",
+     "Samples/front_mic/ks_vl3_rr2.wav",
+     "Samples/front_mic/ks_vl3_rr3.wav",
+     "Samples/front_mic/ks_vl3_rr4.wav"
+    ],
+    "gog_snare": [
+     "Samples/front_mic/sc_vl3_rr1.wav",
+     "Samples/front_mic/sc_vl3_rr2.wav",
+     "Samples/front_mic/sc_vl3_rr3.wav",
+     "Samples/front_mic/sc_vl3_rr4.wav"
+    ],
+    "gog_hat_closed": [
+     "Samples/front_mic/hc_vl3_rr1.wav",
+     "Samples/front_mic/hc_vl3_rr2.wav",
+     "Samples/front_mic/hc_vl3_rr3.wav",
+     "Samples/front_mic/hc_vl3_rr4.wav"
+    ],
+    "gog_hat_open": [
+     "Samples/front_mic/ho_vl3_rr1.wav",
+     "Samples/front_mic/ho_vl3_rr2.wav",
+     "Samples/front_mic/ho_vl3_rr3.wav"
+    ],
+    "gog_tom_low": [
+     "Samples/front_mic/tl_vl3_rr1.wav",
+     "Samples/front_mic/tl_vl3_rr2.wav",
+     "Samples/front_mic/tl_vl3_rr3.wav",
+     "Samples/front_mic/tl_vl3_rr4.wav"
+    ],
+    "gog_tom_mid": [
+     "Samples/front_mic/tm_vl3_rr1.wav",
+     "Samples/front_mic/tm_vl3_rr2.wav",
+     "Samples/front_mic/tm_vl3_rr3.wav",
+     "Samples/front_mic/tm_vl3_rr4.wav"
+    ],
+    "gog_tom_high": [
+     "Samples/front_mic/th_vl3_rr1.wav",
+     "Samples/front_mic/th_vl3_rr2.wav",
+     "Samples/front_mic/th_vl3_rr3.wav",
+     "Samples/front_mic/th_vl3_rr4.wav"
+    ]
+   },
+   "sounds": [
+    "gog_kick",
+    "gog_snare",
+    "gog_hat_closed",
+    "gog_hat_open",
+    "gog_tom_low",
+    "gog_tom_mid",
+    "gog_tom_high"
+   ],
+   "license": "CC0-1.0",
+   "attribution": {
+    "name": "Karoryfer Lecolds (Gogodze Phu Vol II)",
+    "url": "https://github.com/sfzinstruments/karoryfer.gogodze-phu-vol-ii",
+    "text": "Gogodze Phu Vol II by Karoryfer Lecolds, CC0 1.0 (readme: royalty-free, copyright 2018 Karoryfer Lecolds)"
+   },
+   "terms_url": "https://raw.githubusercontent.com/sfzinstruments/karoryfer.gogodze-phu-vol-ii/69a0274cdc39c99c3098cde1bc3789690de86d62/LICENSE",
+   "check": {
+    "cors": true,
+    "stable": true,
+    "checked": "2026-11-17",
+    "status": 200
+   }
+  }
+ ]
+}

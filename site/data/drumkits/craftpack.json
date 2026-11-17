@@ -1,0 +1,52 @@
+{
+  "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+  "craftpack": "1.0.0",
+  "id": "glyphcore/drumkits",
+  "version": "1.0.0",
+  "title": "Big Rusty and Gogodze Phu drum kits (referenced)",
+  "description": "Manifest, source list and recipes are CC0-1.0; the referenced drum samples are CC0 1.0 (see LICENSE.md). Big Rusty Drums (kick, snare, closed hat, tom, ride) and Gogodze Phu Vol II (kick, snare, closed and open hat, three toms), one close-mic velocity layer with round robins, referenced at pinned commits; no audio in this repo.",
+  "license": "CC0-1.0",
+  "licenseFile": "LICENSE.md",
+  "attribution": [
+    {
+      "name": "Karoryfer Samples (Big Rusty Drums)",
+      "url": "https://github.com/sfzinstruments/karoryfer.big-rusty-drums",
+      "license": "CC0-1.0",
+      "text": "Big Rusty Drums, CC0 1.0"
+    },
+    {
+      "name": "Karoryfer Lecolds (Gogodze Phu Vol II)",
+      "url": "https://github.com/sfzinstruments/karoryfer.gogodze-phu-vol-ii",
+      "license": "CC0-1.0",
+      "text": "Gogodze Phu Vol II, CC0 1.0 (royalty-free, copyright 2018 Karoryfer Lecolds)"
+    }
+  ],
+  "ingredients": [
+    {
+      "id": "sources",
+      "kind": "sample-source",
+      "format": "sample-source@1",
+      "version": "1.0.0",
+      "path": "sources/sources.json",
+      "title": "Big Rusty and Gogodze Phu drum kits (referenced) (referenced)",
+      "description": "remote files, not hosted here; loaded when a program names one of the sounds",
+      "hash": "sha256:cc5daf77c74ad8b06becd195d3ee555ff6829c6182d326c9bf7e36c09a749ba0",
+      "load": "manual",
+      "bytes": 4179
+    },
+    {
+      "id": "recipes",
+      "kind": "recipes",
+      "format": "recipes@1",
+      "version": "1.0.0",
+      "path": "recipes/recipes.json",
+      "title": "Big Rusty and Gogodze Phu drum kits (referenced) recipes",
+      "hash": "sha256:00f8906452141a3b37455357b6760654f3a49cb016de97a7f739fc248d70d547",
+      "load": "manual",
+      "requires": [
+        "sources"
+      ],
+      "bytes": 1488
+    }
+  ]
+}

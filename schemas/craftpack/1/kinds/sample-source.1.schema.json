@@ -2,7 +2,7 @@
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/sample-source.1.schema.json",
  "title": "sample-source@1",
- "description": "remote sample sources referenced by URL; no audio bytes in the pack. license may be 'unknown' (shown flagged). index_url is a strudel.json-shaped map (key -> files, optional _base).",
+ "description": "remote sample sources referenced by URL; no audio bytes in the pack. A source has either index_url (a remote map) or map + base (an inline map of remote files). license may be 'unknown' (shown flagged).",
  "type": "object",
  "required": [
   "sources"
@@ -17,7 +17,6 @@
     "required": [
      "id",
      "title",
-     "index_url",
      "sounds",
      "license",
      "terms_url"
@@ -33,7 +32,8 @@
      },
      "index_url": {
       "type": "string",
-      "pattern": "^https://"
+      "pattern": "^https://",
+      "description": "a remote strudel.json-shaped map (alternative to map + base)"
      },
      "sounds": {
       "type": "array",
@@ -90,8 +90,50 @@
         "type": "integer"
        }
       }
+     },
+     "map": {
+      "type": "object",
+      "minProperties": 1,
+      "description": "inline strudel.json-shaped map (key -> files, or key -> {note: files}); file paths are relative to `base`. Used instead of index_url when the upstream has no map of its own; the audio stays remote"
+     },
+     "base": {
+      "type": "string",
+      "pattern": "^https://",
+      "description": "absolute https folder the files of `map` live in (pin it to a commit)"
      }
-    }
+    },
+    "oneOf": [
+     {
+      "required": [
+       "index_url"
+      ],
+      "not": {
+       "anyOf": [
+        {
+         "required": [
+          "map"
+         ]
+        },
+        {
+         "required": [
+          "base"
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "required": [
+       "map",
+       "base"
+      ],
+      "not": {
+       "required": [
+        "index_url"
+       ]
+      }
+     }
+    ]
    }
   }
  }

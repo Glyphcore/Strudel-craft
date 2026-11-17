@@ -1,0 +1,57 @@
+{
+ "version": 1,
+ "categories": [
+  {
+   "id": "instruments",
+   "title": "Real instruments"
+  }
+ ],
+ "labels": [
+  {
+   "id": "instruments",
+   "title": "Real instruments (referenced samples)",
+   "category": "instruments"
+  }
+ ],
+ "recipes": [
+  {
+   "id": "brd-groove",
+   "title": "Big Rusty Drums groove",
+   "intent": "Kick, snare, hats and a tom fill from Big Rusty Drums (CC0, referenced, FLAC fetched on play).",
+   "code": "setcpm(90/4)\n$: s(\"brd_kick ~ brd_kick ~, ~ brd_snare ~ brd_snare, brd_hat_closed*8\").gain(1.45)\n$: s(\"~ ~ ~ ~ ~ ~ brd_tom brd_tom\").gain(1.45)",
+   "labels": [
+    "instruments"
+   ],
+   "needs": [
+    "glyphcore/drumkits:sources"
+   ],
+   "verified": false
+  },
+  {
+   "id": "gogodze-groove",
+   "title": "Gogodze Phu groove",
+   "intent": "Kick, snare, closed and open hats from Gogodze Phu Vol II (CC0, referenced).",
+   "code": "setcpm(95/4)\n$: s(\"gog_kick ~ ~ gog_kick, ~ gog_snare ~ gog_snare, gog_hat_closed*8\").gain(1.4)\n$: s(\"~ ~ ~ gog_hat_open\").gain(1.4)",
+   "labels": [
+    "instruments"
+   ],
+   "needs": [
+    "glyphcore/drumkits:sources"
+   ],
+   "verified": false
+  },
+  {
+   "id": "gogodze-toms",
+   "title": "Gogodze Phu tom pattern",
+   "intent": "Three toms from Gogodze Phu Vol II (CC0, referenced).",
+   "code": "setcpm(100/4)\n$: s(\"gog_tom_high gog_tom_mid gog_tom_low gog_kick\").gain(1.58)",
+   "labels": [
+    "instruments"
+   ],
+   "needs": [
+    "glyphcore/drumkits:sources"
+   ],
+   "verified": false
+  }
+ ]
+}

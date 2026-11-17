@@ -21,7 +21,7 @@ const page = await ctx.newPage(); const errors = [], reqs = [], resp = [];
 page.on('pageerror', (e) => errors.push(e.message)); page.on('request', (r) => reqs.push(r.url())); page.on('response', (r) => resp.push([r.url(), r.status()]));
 const ready = () => page.waitForFunction(() => window.strudelCraft && window.strudelCraft.packs, null, { timeout: 60000 }).then(() => page.evaluate(async () => { await window.strudelCraft.packs.ready; }));
 const play = (id) => page.evaluate(async (id) => { const r = window.strudelCraft.packs.resolve('recipes', id); await window.__sc.Engine.play(r.value.code, false, () => {}); await new Promise((ok) => setTimeout(ok, 6000)); return !!r; }, id);
-const ext = () => reqs.filter((u) => /strudel\.b-cdn\.net|raw\.githubusercontent\.com\/(sgossner|felixroos)/.test(u));
+const ext = () => reqs.filter((u) => /strudel\.b-cdn\.net|raw\.githubusercontent\.com\/(sgossner|felixroos|sfzinstruments)/.test(u));
 await page.goto(BASE, { waitUntil: 'load' }); await page.waitForFunction(() => !!navigator.serviceWorker.controller, null, { timeout: 60000 }).catch(() => {}); await ready();
 await page.evaluate(async () => { await window.__sc.Engine.play('$: note("c3 e3").s("sawtooth").gain(0.1)', false, () => {}); await new Promise((ok) => setTimeout(ok, 1500)); });
 check('first load and a synth-only Play: no request to the referenced hosts', ext().length === 0, ext().join(','));
@@ -34,6 +34,14 @@ await play('salamander-piano-chords');
 const mp3 = resp.filter(([u, s]) => /dough-samples.*piano.*\.mp3/.test(u) && s === 200).length, pmap = resp.some(([u, s]) => /piano\.json/.test(u) && s === 200);
 const preg = await page.evaluate(() => { const m = window.soundMap && window.soundMap.get(); return !!(m && m.piano); });
 check('salamander-piano-chords: piano.json 200, piano mp3 200 (' + mp3 + '), sound registered', pmap && mp3 > 0 && preg, `map=${pmap} mp3=${mp3} reg=${preg}`);
+/* #183 box 3: inline-map sources (VSCO 2 CE, Big Rusty, Gogodze): nothing fetched before a program names a sound, then the pinned files arrive (200) and the sounds register */
+const none = reqs.filter((u) => /VSCO-2-CE|karoryfer/.test(u)).length;
+check('VSCO and drum-kit files are not requested before their recipes play', none === 0, String(none));
+for (const [id, re, snd] of [['vsco-woodwinds', /VSCO-2-CE\/[0-9a-f]{40}\/Woodwinds.*\.wav/, 'vsco_flute'], ['brd-groove', /big-rusty-drums\/[0-9a-f]{40}\/Samples.*\.flac/, 'brd_kick'], ['gogodze-groove', /gogodze-phu-vol-ii\/[0-9a-f]{40}\/Samples.*\.wav/, 'gog_kick']]) {
+  await play(id); await page.waitForTimeout(8000);
+  const n = resp.filter(([u, st]) => re.test(decodeURIComponent(u)) && st === 200).length, reg2 = await page.evaluate((k) => { const m = window.soundMap && window.soundMap.get(); return !!(m && m[k]); }, snd);
+  check(`${id}: pinned files 200 (${n}), ${snd} registered`, n > 0 && reg2, `n=${n} reg=${reg2}`);
+}
 /* offline report (informational, no assertion): what the caches do with referenced sources */
 await ctx.setOffline(true); const failed = []; page.on('requestfailed', (r) => failed.push(r.url())); resp.length = 0; await page.reload({ waitUntil: 'load' }); await ready().catch(() => {});
 await play('vcsl-marimba').catch(() => {});

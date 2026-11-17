@@ -1,0 +1,46 @@
+{
+  "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+  "craftpack": "1.0.0",
+  "id": "glyphcore/vsco",
+  "version": "1.0.0",
+  "title": "VSCO 2 CE orchestral instruments (referenced)",
+  "description": "Manifest, source list and recipes are CC0-1.0; the referenced VSCO 2 CE samples are CC0 1.0 (see LICENSE.md). Solo violin, viola, cello, bass, trumpet, horn, trombone, tuba, flute, oboe, clarinet, bassoon: sustained notes from the sgossner/VSCO-2-CE repository, referenced at a pinned commit; no audio in this repo.",
+  "license": "CC0-1.0",
+  "licenseFile": "LICENSE.md",
+  "attribution": [
+    {
+      "name": "Versilian Studios LLC (Sam Gossner), VSCO 2 Community Edition",
+      "url": "https://github.com/sgossner/VSCO-2-CE",
+      "license": "CC0-1.0",
+      "text": "VSCO 2 CE samples, CC0 1.0 (no credit required, given anyway), fetched from raw.githubusercontent.com."
+    }
+  ],
+  "ingredients": [
+    {
+      "id": "sources",
+      "kind": "sample-source",
+      "format": "sample-source@1",
+      "version": "1.0.0",
+      "path": "sources/sources.json",
+      "title": "VSCO 2 CE orchestral instruments (referenced) (referenced)",
+      "description": "remote files, not hosted here; loaded when a program names one of the sounds",
+      "hash": "sha256:39f5104804931a7d0d31014547e82c9e3e204111a2443bc83976f3da5c28e245",
+      "load": "manual",
+      "bytes": 12508
+    },
+    {
+      "id": "recipes",
+      "kind": "recipes",
+      "format": "recipes@1",
+      "version": "1.0.0",
+      "path": "recipes/recipes.json",
+      "title": "VSCO 2 CE orchestral instruments (referenced) recipes",
+      "hash": "sha256:879da00fb3e3b51d39f602c2c31f4637c11e8288a8037f74f73e3600fc07cd8e",
+      "load": "manual",
+      "requires": [
+        "sources"
+      ],
+      "bytes": 1836
+    }
+  ]
+}

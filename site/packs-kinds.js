@@ -124,12 +124,12 @@ export const KINDS = {
       ctx.track(ctx.samples(map, ctx.assetDir(ing.path, d._base)));
     } },
   'sample-source': { formats: ['sample-source@1'], code: 'never', // referenced remote sample maps (#183): no audio in the pack, nothing fetched until a program uses one of a source's sound names
-    check: (d) => (Array.isArray(d.sources) && d.sources.every((x) => isObj(x) && /^https:\/\//.test(x.index_url || '') && Array.isArray(x.sounds) && x.sounds.length) ? null : 'sample-source needs sources[] with an https index_url and sounds[]'),
+    check: (d) => (Array.isArray(d.sources) && d.sources.every((x) => isObj(x) && Array.isArray(x.sounds) && x.sounds.length && (/^https:\/\//.test(x.index_url || '') || (isObj(x.map) && /^https:\/\//.test(x.base || '')))) ? null : 'sample-source needs sources[] with sounds[] and either an https index_url or map + https base'),
     items: (d) => d.sources.flatMap((x) => x.sounds.map((n) => [n, { source: x.id, license: x.license, terms_url: x.terms_url }])),
     view: (entries) => entries.flatMap((e) => e.data.sources.map((x) => ({ pack: e.pack, ingredient: e.ingredient, ...x }))),
-    apply(ing, d, ctx) { // registers nothing yet: activate(names) fetches a source's map (samples(index_url)) the first time a program names one of its sounds
+    apply(ing, d, ctx) { // registers nothing yet: activate(names) fetches a source's map (samples(index_url), or registers its inline map + base) the first time a program names one of its sounds
       const done = new Set(); ing.sources = d.sources;
-      ing.activate = async (names) => { const hit = []; for (const x of d.sources) { if (done.has(x.id) || !x.sounds.some((n) => names.has(n))) continue; done.add(x.id); try { await ctx.samples(x.index_url); hit.push({ id: x.id, license: x.license, terms_url: x.terms_url, pack: ctx.pack }); } catch (e) { done.delete(x.id); throw e; } } return hit; };
+      ing.activate = async (names) => { const hit = []; for (const x of d.sources) { if (done.has(x.id) || !x.sounds.some((n) => names.has(n))) continue; done.add(x.id); try { await (x.map ? ctx.samples(x.map, x.base) : ctx.samples(x.index_url)); hit.push({ id: x.id, license: x.license, terms_url: x.terms_url, pack: ctx.pack }); } catch (e) { done.delete(x.id); throw e; } } return hit; };
     } },
   'waveforms': { formats: ['waveforms@1'], code: 'never', // drawn and computed instruments (#182 stage 2): control points and parameters, no audio; the WAV tables are built in memory
     check: (d) => (isObj(d) && Array.isArray(d.instruments) ? null : 'waveforms needs instruments[]'),

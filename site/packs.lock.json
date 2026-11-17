@@ -7,7 +7,7 @@
       "id": "glyphcore/shim",
       "version": "1.0.0",
       "source": "file:.",
-      "manifest": "sha256:410c0f44225e96e69a1991d6cabe124163bb9336974e30490b9781fe7e4ec2b0",
+      "manifest": "sha256:a9e2ba7353676eb2f2395de50a0203f51b79ef1a10188c2311e120f0bd36e351",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}
@@ -98,6 +98,24 @@
       "version": "1.0.0",
       "source": "file:data/drawn-core",
       "manifest": "sha256:0d380d3f774cbc2974cd885989df38403191f912da723904f3bee7481d85ed1e",
+      "priority": 0,
+      "allowCode": [],
+      "dependencies": {}
+    },
+    {
+      "id": "glyphcore/drumkits",
+      "version": "1.0.0",
+      "source": "file:data/drumkits",
+      "manifest": "sha256:1ca536c91936ea13a1546d3d0e56d415713bded822386265893231e785485c29",
+      "priority": 0,
+      "allowCode": [],
+      "dependencies": {}
+    },
+    {
+      "id": "glyphcore/vsco",
+      "version": "1.0.0",
+      "source": "file:data/vsco",
+      "manifest": "sha256:2f0fea19b081eedf9051d7be3043eda244b5465fe731fecf4aed85ab4fcbfaae",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}

@@ -164,7 +164,7 @@
       },
       "feel": {
         "title": "Feel",
-        "description": "groove and attitude: boom-bap, trap, hyphy, cloud, lazy, liquid, neuro, jump-up, electro-house, techno, trance, big-room (and the feels of the other genre packs)"
+        "description": "groove and attitude: the feel templates of every pack (generated list in docs/CONVENTIONS.md section 5)"
       },
       "drums": {
         "title": "Drums"

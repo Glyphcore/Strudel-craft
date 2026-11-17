@@ -78,15 +78,19 @@ Arrangement map (bars, 1-based; a gate `a..b` is half-open, `25b..57b` = bars 25
 A club track uses 16 / 32-bar blocks: `atoms.hs.mapIntro` .. `mapOutro` (160 bars) and `hs.phrase8` give the gates.
 
 ## 4. Render, master, score (measured, 2026-11-16)
+Genre files: the score here uses the **suno-track-lab** targets `docs/genres/{dnb,electro,house}.json` (the `engine/genre/score.py` format, #121).
+This repo's `docs/genres/drum-and-bass.json`, `electro.json`, `house.json`, `techno.json`, `trance.json` are the separate **Strudel-craft** sound
+standard (`genre-standard@1`, read by `tools/racks/measure.mjs`, #125); the two sets are not the same files and use different names for DnB.
+
 Masters at `--ceiling -2.0` (render.sh `CEILING=-2.0`; at -1.0 the 112 kbit/s mp3s decoded at -0.0 to +0.6 dBTP), mp3 at 192 kbit/s
 (`MP3_BITRATE=192k engine/audio/publish_audio.sh`). Master WAV numbers from `engine/genre/score.py`; decoded mp3 numbers from
 `ffmpeg -af ebur128=peak=true` (its LRA algorithm differs from score.py's).
 
 | program | length | master WAV: LUFS / dBTP / crest / LRA | centroid | low end < 150 Hz | onsets / bar | section span | genre score | decoded mp3: LUFS / dBTP / LRA |
 |---|---|---|---|---|---|---|---|---|
-| DnB tutorial (`--preset dnb`, docs/genres/dnb.json) | 176.6 s | -8.4 / -2.02 / 7.6 dB / 1.7 LU (miss, min 3) | 2287 Hz | 0.54 | 6.4 | 2.8 dB (miss, min 3) | 7 / 9 | -8.7 / -1.80 / 1.6 |
-| electro (`--preset electro`) | 75.0 s | -9.9 / -2.01 / 8.9 / 1.4 (miss, min 2) | 3232 | 0.69 (miss, max 0.65) | 12.0 | 2.4 | 7 / 9 | -10.1 / -1.49 / 1.4 |
-| house / techno / trance (`--preset house`) | 105.0 s | -9.5 / -2.01 / 8.3 / 1.9 (miss, min 2) | 3465 (miss, max 3200) | 0.68 | 12.1 | 4.9 | 7 / 9 | -9.8 / -1.59 / 1.9 |
+| DnB tutorial (`--preset dnb`, suno-track-lab `docs/genres/dnb.json`) | 176.6 s | -8.4 / -2.02 / 7.6 dB / 1.7 LU (miss, min 3) | 2287 Hz | 0.54 | 6.4 | 2.8 dB (miss, min 3) | 7 / 9 | -8.7 / -1.80 / 1.6 |
+| electro (`--preset electro`, suno-track-lab `docs/genres/electro.json`) | 75.0 s | -9.9 / -2.01 / 8.9 / 1.4 (miss, min 2) | 3232 | 0.69 (miss, max 0.65) | 12.0 | 2.4 | 7 / 9 | -10.1 / -1.49 / 1.4 |
+| house / techno / trance (`--preset house`, suno-track-lab `docs/genres/house.json`) | 105.0 s | -9.5 / -2.01 / 8.3 / 1.9 (miss, min 2) | 3465 (miss, max 3200) | 0.68 | 12.1 | 4.9 | 7 / 9 | -9.8 / -1.59 / 1.9 |
 
 Tempo 174 / 128 / 128 bpm passed with `--bpm`. Standalone and pack versions give identical `strudel events` (6087 / 2531 / 3445 events, same hash).
 The LRA and DnB section-span misses come from the master limiter (the DnB mix measures 6.9 LU before it, and the -2.0 ceiling limits harder); targets marked (G) in the genre files are guesses. mp3s:

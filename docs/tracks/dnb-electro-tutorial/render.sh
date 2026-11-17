@@ -3,6 +3,7 @@
 #   docs/tracks/dnb-electro-tutorial/render.sh OUT_DIR [track|electro|house] [standalone|pack] [BARS]
 # chunked CLI render (suno-track-lab engine/strudel-cli/chunk_render.py: 8-bar chunks, 2 bars pre-roll; JOBS=n chunks at a time, default 1) -> OUT/mix.wav
 # -> engine/master/master.py --preset dnb|electro|house -> OUT/master.wav (+ master.json) -> engine/genre/score.py -> OUT/score.json, score.md
+# score targets: suno-track-lab docs/genres/{dnb,electro,house}.json (score.py format), not this repo's docs/genres/drum-and-bass.json (measure.mjs standard, #125)
 # pack = the pack version with the site lock (atoms.import) and both packs' racks as one hooks config; standalone = the generated paste-ready file.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"; SC="${STRUDEL_CRAFT:-$(cd "$HERE/../../.." && pwd)}"; export STRUDEL_CRAFT="$SC"

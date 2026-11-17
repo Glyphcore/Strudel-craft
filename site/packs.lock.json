@@ -7,7 +7,7 @@
       "id": "glyphcore/shim",
       "version": "1.0.0",
       "source": "file:.",
-      "manifest": "sha256:167342bb745fd8fe5302e1757c851b64ab51996a6a0bc3ec5ba2f5438a7de210",
+      "manifest": "sha256:9e5ace59a3b60c5c866eeedfa71e382f7931b455b1e01fb5c06e8049de6e3e90",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}
@@ -25,7 +25,7 @@
       "id": "glyphcore/phonk",
       "version": "1.2.0",
       "source": "file:data/phonk",
-      "manifest": "sha256:9ef88569865b30e669cf230a418a5203495bb10560d3e61bb662f68d87d3f8a2",
+      "manifest": "sha256:0ece3d7286f49ba53df9e53a3d1e2bb4413f5c16460958b50fab260b4563115f",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}
@@ -34,7 +34,7 @@
       "id": "glyphcore/edm",
       "version": "1.0.0",
       "source": "file:data/edm",
-      "manifest": "sha256:f0b979911b433a283efc8583550e30b8efa76acf7c7625cf53c2e7bf6c58b4c0",
+      "manifest": "sha256:f37e9dbc355477118a13f06fda029ced97021b985a87e6e37f67f2eebd2b9c15",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}
@@ -43,7 +43,7 @@
       "id": "glyphcore/dnb-electro",
       "version": "1.0.0",
       "source": "file:data/dnb-electro",
-      "manifest": "sha256:020d5c570fd71eda2e49626dcd56c40394b27b5c2958fb09d92e67d0a3683690",
+      "manifest": "sha256:f6df1b3c12b14fb3ec73ab8dcbfcb62907a9482496078bbb10e91293eb2d80d7",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}
@@ -52,7 +52,7 @@
       "id": "glyphcore/industrial",
       "version": "1.0.0",
       "source": "file:data/industrial",
-      "manifest": "sha256:97c843d33b3c86b70b7607e88affd89730285efbaf59c0f65f740b489f632fe1",
+      "manifest": "sha256:56fcdf1b0a2ca3b25dafe6efcc8e20e8d61e4d79d6f0d30eb2d76c625c21d37c",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}
@@ -61,7 +61,7 @@
       "id": "glyphcore/rockmetal",
       "version": "1.0.0",
       "source": "file:data/rockmetal",
-      "manifest": "sha256:c2655a85d32154cbea32af3cc94bf198147fb994943706fbe0ba7b200f2d30db",
+      "manifest": "sha256:dc1877f4be48bd6bbd4bccf96dffb5929094785026a95e187536137785c455b7",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}

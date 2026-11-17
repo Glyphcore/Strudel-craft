@@ -12,6 +12,8 @@ STRUDEL_CLI="$LAB/engine/strudel-cli" node "$HERE/../tools/racks/audit.mjs" --on
 node "$HERE/racks/measure.mjs" || rc=1
 # hooks allowlist guard (groove regression): every hooks def step of every shipped pack must be in site/data/hooks-steps.json, else the site skips that def
 for pk in "$HERE"/../site/data/*/craftpack.json; do [ -f "$pk" ] && { python3 "$HERE/../tools/packs/packs.py" validate "$pk" --site-allowlist >/dev/null || { echo "FAIL hooks allowlist: $pk"; rc=1; }; }; done
+# pack hygiene: derived folder / tag / taxonomy data in step (#122)
+node "$HERE/../tools/packs/taxonomy_fill.mjs" --check >/dev/null || { echo "FAIL taxonomy_fill --check: run node tools/packs/taxonomy_fill.mjs, then packs.py hash and shim.py"; rc=1; }
 STRUDEL_MODULES="$LAB/engine/strudel-cli/node_modules" node "$HERE/packs/hooks_kind.mjs" >/dev/null || rc=1
 node "$HERE/site/hooks_groove_pack.mjs" >/dev/null || rc=1
 [ $rc -eq 0 ] && echo "OVERALL: PASS" || echo "OVERALL: FAIL"

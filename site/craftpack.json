@@ -33,7 +33,7 @@
       "version": "1.0.0",
       "path": "data/recipes/dnb.json",
       "load": "lazy",
-      "hash": "sha256:dbe17946262523e935634a6b54d9e248d67c8c871a59b7b503f671fc2a49415c",
+      "hash": "sha256:33880f0aea7e9f24f521411ec71c0caf1176b2ae39bf909f80d3afa370718c22",
       "bytes": 22222
     },
     {
@@ -43,7 +43,7 @@
       "version": "1.0.0",
       "path": "data/recipes/dovetail.json",
       "load": "lazy",
-      "hash": "sha256:6eb1a22e30ded5610a4215150540f0dacecb98f308d2e927e0229b44a3f59868",
+      "hash": "sha256:6acfd58354801050de74377124e5c484c9597a07c2faa01b748e26d7dede098e",
       "bytes": 10783
     },
     {
@@ -53,7 +53,7 @@
       "version": "1.0.0",
       "path": "data/recipes/dubstep.json",
       "load": "lazy",
-      "hash": "sha256:21c69b0cdeb40a27d454270885e8099a9a7ec631a3e64c6f3b74a2d60e5874d6",
+      "hash": "sha256:c1eccdfdc6f34f50f12a1e48968580f227efe53c2c60b8876c3c7eca49fa5819",
       "bytes": 47608
     },
     {
@@ -63,7 +63,7 @@
       "version": "1.0.0",
       "path": "data/recipes/edm-core.json",
       "load": "lazy",
-      "hash": "sha256:78c49e202c27a6ac138a6fdc3743c8014b670624f780486d911e3cbbb675c658",
+      "hash": "sha256:f868e1557b9442cff77a24ab86c849f8761875771818f9ed5bd56309541658be",
       "bytes": 18711
     },
     {
@@ -73,7 +73,7 @@
       "version": "1.0.0",
       "path": "data/recipes/edm-depth.json",
       "load": "lazy",
-      "hash": "sha256:a0ef0a989c326abde7521c849c715dbc4fb503c0b90a895a8a960c535a7edcaa",
+      "hash": "sha256:9552da04d4c967520b63fd97fd0db55df839879477eebbe396ff35b1e259d62a",
       "bytes": 5511
     },
     {
@@ -83,7 +83,7 @@
       "version": "1.0.0",
       "path": "data/recipes/edmfeels.json",
       "load": "lazy",
-      "hash": "sha256:0365a6a36719aed6b9353748cd20844a8b7996acfdd86fdffbc543490cc394b7",
+      "hash": "sha256:39ec026ebebf031f5a7e1eee32226e8b9572afdd45cfe241cb9bfa961cda4d84",
       "bytes": 21877
     },
     {
@@ -93,7 +93,7 @@
       "version": "1.0.0",
       "path": "data/recipes/electro.json",
       "load": "lazy",
-      "hash": "sha256:6298a4167639499eef95b37f34fc2abbefec6009b19c73cc7f517fca9628e24b",
+      "hash": "sha256:954630be618cabb30a29acb7698c3a63ddba3951d0d8013ddd2dc9826ce0cb7d",
       "bytes": 9184
     },
     {
@@ -103,7 +103,7 @@
       "version": "1.0.0",
       "path": "data/recipes/feels.json",
       "load": "lazy",
-      "hash": "sha256:1d7e22e35cc4a5ab628afe768cafda7dbf22e031141181a8cd521bbefd1814b7",
+      "hash": "sha256:b3e2d94813e66507b985dbc31d761b9bf8992ef067c72ec957d78ce4b1758346",
       "bytes": 17810
     },
     {
@@ -113,7 +113,7 @@
       "version": "1.0.0",
       "path": "data/recipes/groove.json",
       "load": "lazy",
-      "hash": "sha256:1737a37084c64c78040525f5bc5f320b84951c6c91187a0ce48cfb280e117649",
+      "hash": "sha256:ea45b162810e5de6914f5555bdb61d0940a8944b2ccedea75b1d013e40db73a3",
       "bytes": 5850
     },
     {
@@ -123,7 +123,7 @@
       "version": "1.0.0",
       "path": "data/recipes/hiphop.json",
       "load": "lazy",
-      "hash": "sha256:f12bb6462522ee2ea1580a64b30abed175812a28c52f889c9caf7d4aeb7fdd85",
+      "hash": "sha256:e63032885e86c100723f814f9fd651e7f3f84dd74a18dcf21b35cad076a19593",
       "bytes": 22300
     },
     {
@@ -133,7 +133,7 @@
       "version": "1.0.0",
       "path": "data/recipes/house.json",
       "load": "lazy",
-      "hash": "sha256:def17fcb22feb4737b2b42340d054c8856acdcd0a24be9709d7da4cc7377eab1",
+      "hash": "sha256:c4dc9eabf2e411fd44476ad96ed107660785026f1b48a55b8f26abdf1a0517d6",
       "bytes": 13688
     },
     {
@@ -143,7 +143,7 @@
       "version": "1.0.0",
       "path": "data/recipes/industrial.json",
       "load": "lazy",
-      "hash": "sha256:913f9aeb6b04a1fda9b3bc5a9023e5bf4eea78462b4ec06ef31a566a0e3accba",
+      "hash": "sha256:499d03535f7022ae7d6a0cedd01d9f2e4d28747b5480d890371a756bc5c5ea6f",
       "bytes": 29251
     },
     {
@@ -153,7 +153,7 @@
       "version": "1.0.0",
       "path": "data/recipes/rockmetal.json",
       "load": "lazy",
-      "hash": "sha256:12c10f7a57085ea7abc4da26baf790375eedc097d8575de85cccb0fb64b32a0f",
+      "hash": "sha256:b9f8d16d5d2b105c2661cf31979ce60a81f0af566a02a2a436d77381687af8ed",
       "bytes": 29216
     },
     {
@@ -281,7 +281,7 @@
       },
       "feel": {
         "title": "Feel",
-        "description": "groove and attitude: boom-bap, trap, hyphy, cloud, lazy"
+        "description": "groove and attitude: the feel templates of every pack (generated list in docs/CONVENTIONS.md section 5)"
       },
       "genre": {
         "title": "Genre",

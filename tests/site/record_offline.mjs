@@ -12,6 +12,7 @@
    (REF: tests/site/ref_render.sh REF_DIR v2 16 8 renders cycles 15..23.) PASS/FAIL lines, exit 1 on any FAIL. */
 import { createRequire } from 'module'; import http from 'http'; import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 import { compare as compare0, features, highpass, mono, onsets, readWav } from './lib/glitch.mjs';
+import { runSyntaxEntry } from './lib/syntax.mjs';
 /* broadband numbers plus the same level metric above 120 Hz (hi) and the sub band's own offset (subOffsetDb = broadband offset of what is left below 120 Hz) */
 const compare = (ref, cand) => { const g = compare0(ref, cand); const hr = { x: highpass(ref.x, ref.sr, 120), sr: ref.sr }, hc = { x: highpass(cand.x, cand.sr, 120), sr: cand.sr }; const h = compare0(hr, hc, { lag: Math.round(g.lagMs / 5) });
   const lr = { x: Float32Array.from(ref.x, (v, i) => v - hr.x[i]), sr: ref.sr }, lc = { x: Float32Array.from(cand.x, (v, i) => v - hc.x[i]), sr: cand.sr }; const l = compare0(lr, lc, { lag: Math.round(g.lagMs / 5) });
@@ -42,7 +43,7 @@ const page = await ctx.newPage(); const errors = [];
 page.on('pageerror', (e) => errors.push(e.message.slice(0, 200))); page.on('console', (m) => { if (m.type() === 'error' && !/favicon|404/.test(m.text())) errors.push('console.error: ' + m.text().slice(0, 200)); });
 await page.goto(BASE); await page.waitForFunction(() => window.__sc && window.strudelCraft && window.strudelCraft.packs && window.strudelCraft.capture, null, { timeout: 90000 });
 await page.evaluate(async () => { const P = window.strudelCraft.packs; await P.ready; await P.load('glyphcore/phonk:atoms'); await P.load('glyphcore/phonk:presets'); window.__sc.setView('syntax'); });
-for (let k = 0; k < 5; k++) { await page.evaluate(() => window.strudelCraft.syntax && window.strudelCraft.syntax.go('tracks')); await page.waitForFunction(() => document.querySelectorAll('#sx-tracks .sx-run').length > 1, null, { timeout: 60000 }); await page.waitForTimeout(500); if (await page.evaluate(() => { const b = document.querySelectorAll('#sx-tracks .sx-run')[1]; if (!b) return false; b.click(); return true; })) break; }
+await runSyntaxEntry(page, 'tracks', 1);
 await page.waitForFunction(() => window.__sc.S.playing && !window.__sc.S.busy && window.__sc.Engine.started, null, { timeout: 120000 }); await page.waitForTimeout(5000);
 MG = 10 ** (-(await page.evaluate(() => window.strudelCraft.transport.masterDb)) / 20); report.masterGainComp = +(20 * Math.log10(MG)).toFixed(2);
 /* the take's mono PCM as base64 + its recipe facts */

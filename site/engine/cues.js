@@ -49,8 +49,9 @@ export const secOfBar = (p, h) => (+h.offset || 0) + (p - 1) / barsPerSec(h);
 export function barText(p, h = {}) { const beats = +h.beats || 4; const bar = Math.floor(p + 1e-9); const beat = Math.round((p - bar) * beats) + 1; return beat === 1 ? String(bar) : `${bar}.${beat}`; }
 
 // ---------------------------------------------------------------- one cue line
-const unesc = (s) => s.replace(/\\\|/g, '|');
-const splitBars = (s) => { const out = []; let cur = ''; let qt = false; for (let i = 0; i < s.length; i++) { const c = s[i]; if (c === '\\' && (s[i + 1] === '|' || (qt && s[i + 1] === '"') || (qt && s[i + 1] === '\\'))) { cur += c + s[i + 1]; i++; continue; } if (c === '"' && (qt || /[a-z][\w-]*=$/.test(cur))) { qt = !qt; cur += c; continue; } if (c === '|' && !qt) { out.push(cur); cur = ''; continue; } cur += c; } out.push(cur); return out; }; /* a quoted meta value (more="a | b") keeps its pipes */
+/* escaping in a cue body (one-line form): `\|` is a literal pipe, `\\` is a literal backslash, any other backslash is literal; printing doubles a backslash only when a pipe or backslash follows it */
+const unesc = (s) => s.replace(/\\([\\|])/g, '$1');
+const splitBars = (s) => { const out = []; let cur = ''; let qt = false; for (let i = 0; i < s.length; i++) { const c = s[i]; if (c === '\\' && (s[i + 1] === '|' || (!qt && s[i + 1] === '\\') || (qt && s[i + 1] === '"') || (qt && s[i + 1] === '\\'))) { cur += c + s[i + 1]; i++; continue; } if (c === '"' && (qt || /[a-z][\w-]*=$/.test(cur))) { qt = !qt; cur += c; continue; } if (c === '|' && !qt) { out.push(cur); cur = ''; continue; } cur += c; } out.push(cur); return out; }; /* a quoted meta value (more="a | b") keeps its pipes */
 const tokens = (s) => { const out = []; const re = /([a-z][\w-]*)="((?:\\.|[^"\\])*)"|\S+/g; let m; while ((m = re.exec(s))) out.push(m[1] ? { k: m[1], v: m[2].replace(/\\(.)/g, '$1') } : m[0]); return out; };
 export function normScope(s) {
   s = String(s || '').trim().replace(/^@/, ''); if (!s || s === 'track') return 'track';
@@ -101,7 +102,7 @@ function tokenLine(c, withId) {
 }
 const timeText = (c) => (c.pair ? `${c.at} => ${c.pair}` : c.at);
 /* printLine(cue) -> the one-line form used inside //@ comments (body newlines become " / ") */
-export function printLine(c) { const b = String(c.body || '').replace(/\n/g, ' / ').replace(/\|/g, '\\|'); const t = tokenLine(c, true); return `${timeText(c)} ${c.kind || 'note'} @${c.scope || 'track'}${b ? ': ' + b : ''}${t ? ' ' + t : ''}`; }
+export function printLine(c) { const b = String(c.body || '').replace(/\n/g, ' / ').replace(/\\(?=[\\|])|\|/g, (m) => '\\' + m); const t = tokenLine(c, true); return `${timeText(c)} ${c.kind || 'note'} @${c.scope || 'track'}${b ? ': ' + b : ''}${t ? ' ' + t : ''}`; }
 
 // ---------------------------------------------------------------- sidecar document
 function parseHeaderValue(k, v) {
@@ -121,7 +122,7 @@ export function parse(text, o = {}) {
     if (/^NOTE(\s|$)/.test(block[0])) { doc.notes.push(block.join('\n').replace(/^NOTE\s?/, '')); continue; }
     let id = null; let k = 0; if (ID.test(block[0].trim()) && !normTime(block[0].trim()) && block.length > 1) { id = block[0].trim(); k = 1; }
     const tl = [block[k]]; const body = [];
-    for (let j = k + 1; j < block.length; j++) { const l = block[j]; if (/^\s*\|/.test(l)) tl.push(l.trim()); else body.push(l.replace(/^\\\|/, '|')); }
+    for (let j = k + 1; j < block.length; j++) { const l = block[j]; if (/^\s*\|/.test(l)) tl.push(l.trim()); else body.push(l.replace(/^\\(?=\\*\|)/, '')); }
     const { cue, problems: pr } = parseLine(tl.join(' '), o); for (const p of pr) problems.push({ ...p, line: start + k + 1 });
     if (!cue) continue; n++;
     if (body.length) cue.body = cue.body ? cue.body + '\n' + body.join('\n') : body.join('\n');
@@ -145,7 +146,7 @@ export function print(doc) {
   for (const nt of doc.notes || []) out.push('', 'NOTE ' + nt);
   for (const c of doc.cues || []) {
     out.push('', c.id, `${timeText(c)} ${c.kind} @${c.scope}`);
-    if (c.body) for (const l of String(c.body).split('\n')) out.push(/^\s*\|/.test(l) ? '\\' + l.replace(/^\s*/, '') : l);
+    if (c.body) for (const l of String(c.body).split('\n')) out.push(/^\s*\\*\|/.test(l) ? '\\' + l.replace(/^\s*/, '') : l);
     const t = tokenLine({ ...c, id: null }, false); if (t) out.push(t);
   }
   return out.join('\n') + '\n';
@@ -312,15 +313,30 @@ export function fromVTT(text, header = {}) {
 
 // ---------------------------------------------------------------- form bank records -> cues (docs/FORM_BANK.md; provenance carried)
 const BANK_SRC = { 'inferred-from-project-data': 'inferred', 'pieced-together': 'inferred', 'analysed-from-audio': 'analysis', 'project-rendered-then-analysed': 'analysis' };
-/* fromBank(records, { match }) -> doc: one section cue per record (picked.bars, labels.form_role), refs [record id, form:<role>], meta src / method / conf */
+/* fromBank(records, { match, source, all }) -> doc: one section cue per record (picked.bars, labels.form_role), refs [record id, form:<role>], meta src / method / conf plus
+   licence / author / sha (the record's source.ref, so a cue set is never detached from its origin).
+   Usability (a bank holds many songs): by default ONE source is used, the one with the most records (ties: smallest sha); `source` is a sha256 PREFIX (>= 8 hex) and picks that
+   source instead; `all: true` keeps every source. Within a source an inferred and an analysed record for the same bars and role are deduped: analysis beats inferred, then higher conf.
+   fromBank.report (last call) lists { sources, picked, kept, dropped } for the CLI note. */
+const refOf = (r) => (r && r.source && r.source.ref) || {};
 export function fromBank(records, o = {}) {
-  const cues = []; let n = 0;
-  for (const r of records || []) {
-    if (!r || !r.picked || !Array.isArray(r.picked.bars) || (o.match && !o.match(r))) continue; const [a, b] = r.picked.bars; const role = (r.labels && r.labels.form_role) || 'other'; n++;
+  let recs = (records || []).filter((r) => r && r.picked && Array.isArray(r.picked.bars) && !(o.match && !o.match(r)));
+  const count = new Map(); for (const r of recs) { const h = String(refOf(r).sha256 || ''); count.set(h, (count.get(h) || 0) + 1); }
+  let pick = null;
+  if (o.source) { const p = String(o.source).toLowerCase(); if (!/^[0-9a-f]{8,64}$/.test(p)) throw new Error('E_SHA_PREFIX: a source sha needs at least 8 hex digits, got "' + o.source + '"'); const hits = [...count.keys()].filter((h) => h.startsWith(p)); if (hits.length > 1) throw new Error('E_SHA_AMBIGUOUS: ' + hits.map((h) => h.slice(0, 12)).join(', ')); pick = hits[0] ?? '\u0000none'; }
+  else if (!o.all && count.size > 1) pick = [...count.entries()].sort((x, y) => y[1] - x[1] || (x[0] < y[0] ? -1 : 1))[0][0];
+  const total = recs.length; if (pick !== null) recs = recs.filter((r) => String(refOf(r).sha256 || '') === pick);
+  const rank = (r) => (BANK_SRC[r.method] === 'analysis' ? 1 : 0) * 10 + (+r.confidence || 0); const best = new Map();
+  for (const r of recs) { const k = [refOf(r).sha256 || '', r.picked.bars.join('-'), (r.labels && r.labels.form_role) || 'other'].join('|'); const cur = best.get(k); if (!cur || rank(r) > rank(cur)) best.set(k, r); }
+  const keep = new Set(best.values()); const cues = []; let n = 0;
+  for (const r of recs) {
+    if (!keep.has(r)) continue; const [a, b] = r.picked.bars; const role = (r.labels && r.labels.form_role) || 'other'; n++; const ref = refOf(r);
     const meta = { src: BANK_SRC[r.method] || 'inferred', method: String(r.method || 'bank'), tool: 'form-bank' }; if (Number.isFinite(+r.confidence)) meta.conf = Math.round(+r.confidence * 100) / 100;
+    if (ref.licence) meta.licence = String(ref.licence); if (ref.author) meta.author = String(ref.author); if (ref.sha256) meta.sha = String(ref.sha256).slice(0, 12);
     cues.push(finish({ id: 'g-bank-' + String(r.id || n).replace(/^fb-/, ''), at: normTime(a === b ? String(a) : `${a}-${b}`), kind: r.picked.stage === 'tension' ? 'tension' : 'section', scope: 'track',
       body: (role + (r.evidence && r.evidence.length ? ': ' + r.evidence.slice(0, 2).join('; ') : '')).slice(0, BODY_MAX), refs: [r.id, 'form:' + role].filter((x) => x && /^(fb-[0-9a-f]{16}|form:[\w-]+)$/.test(x)), rel: [], meta }, {}, null, n));
   }
+  fromBank.report = { sources: count.size, picked: pick === null ? null : pick.slice(0, 12), records: total, kept: cues.length, dropped: recs.length - cues.length };
   return { format: 'craftcues@1', header: { ...(o.header || {}) }, notes: [], cues };
 }
 

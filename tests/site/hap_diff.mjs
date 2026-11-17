@@ -4,6 +4,7 @@
    whole --range A-B: only haps A..B-1 of the window (bisect: the smallest range whose runs differ).
    groups: the first hap of every (sound + parameter-name set) group; all: every hap (slow); whole: the whole window, N runs, residual of every pair. */
 import { createRequire } from 'module'; import http from 'http'; import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
+import { runSyntaxEntry } from './lib/syntax.mjs';
 const require = createRequire(import.meta.url); const { chromium } = require(process.env.PLAYWRIGHT_DIR || 'playwright');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'), PREFIX = '/Strudel-craft/';
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
@@ -21,7 +22,7 @@ if (!process.argv.includes('--no-pin')) await ctx.addInitScript(() => { setInter
 const page = await ctx.newPage();
 await page.goto(BASE); await page.waitForFunction(() => window.__sc && window.strudelCraft && window.strudelCraft.packs && window.strudelCraft.capture, null, { timeout: 90000 });
 await page.evaluate(async () => { const P = window.strudelCraft.packs; await P.ready; await P.load('glyphcore/phonk:atoms'); await P.load('glyphcore/phonk:presets'); window.__sc.setView('syntax'); });
-for (let k = 0; k < 5; k++) { await page.evaluate(() => window.strudelCraft.syntax && window.strudelCraft.syntax.go('tracks')); await page.waitForFunction(() => document.querySelectorAll('#sx-tracks .sx-run').length > 1, null, { timeout: 60000 }); await page.waitForTimeout(500); if (await page.evaluate(() => { const b = document.querySelectorAll('#sx-tracks .sx-run')[1]; if (!b) return false; b.click(); return true; })) break; }
+await runSyntaxEntry(page, 'tracks', 1);
 await page.waitForFunction(() => window.__sc.S.playing && !window.__sc.S.busy && window.__sc.Engine.started, null, { timeout: 120000 });
 await page.evaluate(() => { window.strudelCraft.transport.stop(); }); await page.waitForTimeout(1500); /* transport stopped, as in the issue */
 const cdp = await ctx.newCDPSession(page);

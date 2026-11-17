@@ -57,12 +57,12 @@ squashing the drops into them (round 2 had the breakdown 8 LU down: the club mas
 
 Per-section LUFS of the decoded mp3s (club: `master.py --preset dubstep --target-lufs -10.5 --ceiling -2.0`; stream: `--target-lufs -14 --ceiling -2.0`):
 
-| section | club mp3 #161 r1 | club mp3 #161 r2 | club mp3 now | stream mp3 now | onsets / bar | centroid Hz | energy < 150 Hz |
+| section | club mp3 #161 r1 | club mp3 #161 r2 | club mp3 now | stream mp3 now | onsets / bar (club WAV, `genre_score.json`) | centroid Hz | energy < 150 Hz |
 |---|---|---|---|---|---|---|---|
 | intro | -9.8 | -11.8 | -14.1 | -24.3 | 7.4 | 1739 | 0.13 |
 | build | -8.2 | -10.1 | -10.5 | -18.4 | 11.4 | 2209 | 0.06 |
 | drop1 | -9.2 | -9.1 | -9.2 | -12.0 | 13.9 | 528 | 0.73 |
-| break | -8.2 | -9.9 | -13.5 | -24.0 | 0.1 | 423 | 0.03 |
+| break | -8.2 | -9.9 | -13.5 | -24.0 | 0.125 | 423 | 0.03 |
 | build2 | -7.3 | -9.1 | -10.2 | -18.2 | 9.2 | 2413 | 0.02 |
 | drop2 | -8.4 | -9.1 | -9.1 | -10.9 | 14.0 | 510 | 0.60 |
 | switch | -9.5 | -9.1 | -9.1 | -12.1 | 14.5 | 443 | 0.82 |
@@ -77,10 +77,10 @@ Genre score, club WAV 10/13, decoded club mp3 10/13 (misses: LUFS -10.8 as above
 Stream master vs `docs/genres/dubstep.json` (`tools/racks/measure.mjs --score`): 9 pass, 3 miss (PLR 11.95 vs 7-10, loudness range 15.3 LU vs 3-8, low-band share 75.9 % vs 50-70: the dynamics and the drop sub this master keeps), 1 skipped.
 
 Known gaps (kept as measured): whole-track spectral centroid 3485 Hz vs the 700-2800 Hz target: the noise builds, hats and the outro pull the
-frame mean up (drop A 528 Hz, build 2 2413 Hz); no low-mid pad was added to game it. Breakdown onsets 0.06 / bar: see the onset note.
+frame mean up (drop A 528 Hz, build 2 2413 Hz); no low-mid pad was added to game it. Breakdown onsets 0.125 / bar on the club WAV (`genre_score.json`), 0.1875 on the decoded club mp3 (`genre_score_master_mp3.json`): see the onset note.
 
 Onsets: librosa onset detection on the mixed master (`score.py`). The breakdown's arps and chops do not rise above the detector under
-the pumped chords and the room (0.1 / bar). The score's build value (9.6 / bar) is the mean of build (bars 17-24, 12.9 / bar) and build 2 (bars 57-64,
+the pumped chords and the room (0.125 / bar on the club WAV, 0.1875 on the decoded club mp3; both under the detector's useful range for a section with arps and chops). The score's build value (9.6 / bar) is the mean of build (bars 17-24, 12.9 / bar) and build 2 (bars 57-64,
 6.4 / bar, the roll under a full white-noise build): one section passes, the other would not on its own.
 Program event counts are in the composer density report.
 

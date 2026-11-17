@@ -10,6 +10,7 @@
    Prints one JSON object (and writes it with --json). Exit 0 unless the page fails to load. */
 import { createRequire } from 'module'; import http from 'http'; import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 import { compare, mono, readWav } from './lib/glitch.mjs';
+import { runSyntaxEntry } from './lib/syntax.mjs';
 const require = createRequire(import.meta.url); const { chromium } = require('playwright');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'), PREFIX = '/Strudel-craft/';
 const SITE = (() => { const i = process.argv.indexOf('--site'); return i > 0 ? path.resolve(process.argv[i + 1]) : path.join(ROOT, 'site'); })(); /* --site DIR: serve another build (a baseline from git archive) */
@@ -38,8 +39,7 @@ await page.goto(BASE); await page.waitForFunction(() => window.__sc && window.__
 await page.evaluate(async () => { const P = window.strudelCraft.packs; await P.ready; await P.load('glyphcore/phonk:atoms'); await P.load('glyphcore/phonk:presets'); });
 await page.evaluate(() => window.__sc.setView('syntax')); const NTH = PROG === 'v2' ? 1 : 0;
 /* the Syntax view re-renders on strudel:ready; click the entry from inside the page, retried until the program plays */
-for (let k = 0; k < 5; k++) { await page.evaluate(() => window.strudelCraft.syntax && window.strudelCraft.syntax.go('tracks')); await page.waitForFunction((n) => document.querySelectorAll('#sx-tracks .sx-run').length > n, NTH, { timeout: 150000 }); await page.waitForTimeout(500);
-  if (await page.evaluate((n) => { const b = document.querySelectorAll('#sx-tracks .sx-run')[n]; if (!b) return false; b.click(); return true; }, NTH)) break; }
+await runSyntaxEntry(page, 'tracks', NTH, { timeout: 150000 });
  await page.waitForFunction(() => { const s = window.__sc.S; return (!s.busy && s.playing && window.__sc.Engine.started) || document.querySelector('#status').classList.contains('err'); }, null, { timeout: 120000 }).catch(() => {});
 await page.waitForTimeout(6000); /* warm: samples and vox banks fetched and decoded */
 await page.tap('#playBtn'); await page.waitForFunction(() => !window.__sc.S.playing, null, { timeout: 10000 }).catch(() => {});

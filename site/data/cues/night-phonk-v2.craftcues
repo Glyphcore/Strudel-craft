@@ -305,10 +305,10 @@ g-discord-ae9cda85
 clash of bar 80 resolves
 | DIS-02 | resolves:g-discord-b92f7290 | method=roughness src=inferred tool=discord
 
-g-feel-68d5d2e5
+g-feel-58ea0129
 * feel @track
-nearest feel feel-trap (Rolling trap); .groove({ swing: 53.0, push: 0.0, jitter: 0, vel: 0.13, seed: 1 })
-| GRV-01 | conf=0.66 method=feel src=inferred tool=feel
+nearest feel feel-rockhalftime (Rock / metal half-time); .groove({ swing: 53.0, push: 0.0, jitter: 0, vel: 0.13, seed: 1 })
+| GRV-01 | conf=0.81 method=feel src=inferred tool=feel
 
 g-cluster-24b277ed
 1-8 note @track

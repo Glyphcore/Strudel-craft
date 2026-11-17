@@ -17,10 +17,10 @@ check('at least one example cue set is shipped', sets.length >= 1, String(sets.l
 
 /* 2. round-trip fuzz: 500 random canonical docs, print -> parse -> print exact, JSON equal, schema-valid */
 let seed = 7; const rnd = () => ((seed = (seed * 1103515245 + 12345) >>> 0) / 2 ** 32); const pick = (a) => a[Math.floor(rnd() * a.length)];
-const WORDS = ['hook', 'enters', '*late*', 'riser', 'a: b', 'x|y', 'café', '808', 'sub-bass', '"quoted"', 'M9', '->', 'pipe\\|esc'];
+const WORDS = ['hook', 'enters', '*late*', 'riser', 'a: b', 'x|y', 'café', '808', 'sub-bass', '"quoted"', 'M9', '->', 'pipe\\|esc', '\\|', '\\\\', 'end\\', '\\\\|x', '|lead'];
 const time = () => { const a = 1 + Math.floor(rnd() * 80); const r = rnd(); if (r < 0.2) return String(a); if (r < 0.5) return `${a}-${a + Math.floor(rnd() * 8) + 1}`; if (r < 0.7) return `${a}.${1 + Math.floor(rnd() * 4)}-${a + 1}.${1 + Math.floor(rnd() * 4)}`; if (r < 0.8) return `${a}s-${a + 3}.5s`; if (r < 0.9) return '*'; return 'sec:drop-a'; };
 const scope = () => pick(['track', 'sec:drop-a', 'bell', 'bell,stab', 'bell->lead', 'lead~ctr', 'kick+sub', 'tag:conf', 'bus:verb']);
-let rtOk = 0, rtBad = null;
+let rtOk = 0, rtBad = null, lineBad = 0, lineEx = '';
 for (let n = 0; n < 500; n++) {
   const cues = []; const k = 1 + Math.floor(rnd() * 6);
   for (let i = 0; i < k; i++) { const c = { id: `c${n}_${i}`, at: time(), kind: pick(C.KINDS), scope: scope(), body: Array.from({ length: Math.floor(rnd() * 6) }, () => pick(WORDS)).join(' ').trim(), refs: rnd() < 0.5 ? [pick(['MOT-05', 'FS-01', 'hook:cowbell', 'genre:dubstep', 'fb-0123456789abcdef', 'syntax:lanes'])] : [], rel: i && rnd() < 0.4 ? [{ type: pick(C.RELS), target: `c${n}_0` }] : [], meta: rnd() < 0.5 ? { src: pick(C.SOURCES), conf: Math.round(rnd() * 100) / 100, ...(rnd() < 0.3 ? { more: pick(['https://x.test/a b', 'a | b "q"']) } : {}) } : {} };
@@ -28,8 +28,9 @@ for (let n = 0; n < 500; n++) {
   const doc = C.fromJSON({ header: { track: 't' + n, bars: 84, bpm: 128.8, beats: 4, sections: [{ name: 'drop-a', from: 17, to: 32 }] }, notes: rnd() < 0.3 ? ['a note'] : [], cues });
   const t1 = C.print(doc); const r = C.parse(t1); const t2 = C.print(r.doc); const j1 = JSON.stringify(C.toJSON(doc)), j2 = JSON.stringify(C.toJSON(r.doc));
   if (t1 === t2 && j1 === j2 && !r.problems.length && validate(C.toJSON(r.doc))) rtOk++; else if (!rtBad) { const a = t1.split('\n'), b = t2.split('\n'); const i = a.findIndex((x, k) => x !== b[k]); rtBad = { line: i, a: a[i], b: b[i], p: r.problems, jeq: j1 === j2, dj: (() => { let k = 0; while (j1[k] === j2[k]) k++; return [j1.slice(k - 80, k + 80), j2.slice(k - 80, k + 80)]; })(), v: ajv.errorsText(validate.errors) }; }
-  for (const c of r.doc.cues) { const l = C.parseLine(C.printLine(c)); if (!l.cue || JSON.stringify({ ...l.cue, id: c.id, body: l.cue.body }) === '' ) rtOk -= 0; }
+  for (const c of r.doc.cues) { const l = C.parseLine(C.printLine(c)); const flat = String(c.body).replace(/\n/g, ' / '); if (!l.cue || l.cue.body !== flat) { lineBad++; if (!lineEx) lineEx = JSON.stringify({ want: flat, got: l.cue && l.cue.body }); } }
 }
+check('one-line (//@) form: bodies with \\|, \\\\ and bare | round-trip in all 500 sets (escape rule: \\| is a pipe, \\\\ a backslash, other backslashes literal)', lineBad === 0, lineEx);
 check('round-trip fuzz: 500 random canonical cue sets, text -> JSON -> text exact and schema-valid', rtOk === 500, rtBad ? JSON.stringify(rtBad).slice(0, 600) : '');
 { let ok = 0; for (const t of ['17-24 motif @bell: hook | MOT-05 | resolves:a conf=0.5 src=author', '17.3-18.1 tension @lead~ctr: rub \\| two | id=x1', '9-12 => 17-24 foreshadow @bell: tease']) { const a = C.parseLine(t).cue; const b = C.parseLine(C.printLine(a)).cue; if (JSON.stringify(a) === JSON.stringify(b)) ok++; } check('one-line form (inline //@) round-trips', ok === 3, String(ok)); }
 { const c = C.parseLine('M9@17 -> M9@49 callback @bell: returns').cue; check('callback sugar M9@17 -> M9@49 normalises to at 17, pair 49, motif M9', c.at === '17' && c.pair === '49' && c.meta.motif === 'M9' && c.kind === 'callback'); }
@@ -71,4 +72,11 @@ const FIX = `CRAFTCUES 1\nbars: 32\nbpm: 120\nsections: a 1-16, b 17-32\n\ns1\n1
   const tmp = path.join(ROOT, 'tests/cues/.tmp.craftcues'); fs.writeFileSync(tmp, 'CRAFTCUES 1\n\nintro\n1-4 note @track: replaced by analysis? no | src=inferred\n\nnew1\n2 note @track: generated | src=inferred\n');
   const m = C.parse(cli('merge', f, tmp)).doc; fs.unlinkSync(tmp); const base = C.parse(fs.readFileSync(f, 'utf8')).doc;
   check('CLI merge: authored wins by id, new generated ids are added', m.cues.length === base.cues.length + 1 && m.cues.find((c) => c.id === 'intro').meta.src === 'author'); }
+/* from-bank usability: one source by default, inferred/analysed deduped, sha prefix (>= 8 hex), licence/author/sha in meta */
+{ const R = (id, sha, bars, method, conf) => ({ id, confidence: conf, labels: { form_role: 'drop' }, method, picked: { bars, stage: 'section' }, evidence: [], source: { ref: { sha256: sha, licence: 'Artistic 2.0', author: 'A B' } } });
+  const A = 'a'.repeat(64), B = 'b'.repeat(64), recs = [R('fb-0000000000000001', A, [1, 8], 'inferred-from-project-data', 0.5), R('fb-0000000000000002', A, [1, 8], 'project-rendered-then-analysed', 0.55), R('fb-0000000000000003', A, [9, 16], 'inferred-from-project-data', 0.5), R('fb-0000000000000004', B, [1, 8], 'inferred-from-project-data', 0.5)];
+  const d = C.fromBank(recs); check('from-bank: defaults to one source (the largest) and dedupes inferred vs analysed per section (analysis wins)', d.cues.length === 2 && d.cues.every((c) => c.meta.sha === 'aaaaaaaaaaaa') && d.cues.some((c) => c.meta.src === 'analysis' && c.at === '1-8'), JSON.stringify(d.cues.map((c) => [c.at, c.meta.src])));
+  check('from-bank: licence, author and sha ride in the cue meta and survive print/parse', C.parse(C.print(d)).doc.cues.every((c) => c.meta.licence === 'Artistic 2.0' && c.meta.author === 'A B' && c.meta.sha === 'aaaaaaaaaaaa'));
+  check('from-bank: --source-sha takes a prefix (>= 8 hex), --all keeps every source', C.fromBank(recs, { source: 'bbbbbbbb' }).cues.length === 1 && C.fromBank(recs, { all: true }).cues.length === 3);
+  let err = ''; try { C.fromBank(recs, { source: 'bbbb' }); } catch (e) { err = e.message; } check('from-bank: a sha prefix shorter than 8 hex is refused (E_SHA_PREFIX)', /E_SHA_PREFIX/.test(err), err); }
 console.log(fails ? `${fails} FAIL` : 'all PASS'); process.exit(fails ? 1 : 0);

@@ -51,6 +51,10 @@ sugar `M9@17 -> M9@49` (stored as `17 => 49` with `motif=M9`).
 - **Relations** `resolves:` `echoes:` `prepares:` `contrasts:` `answers:` `varies:` + a cue id.
 - **Meta** `key=value`: `id`, `conf` (0..1), `src` (`author` | `inferred` | `analysis`), `method` (bank provenance words: `ledger`, `density`,
   `foreshadow`, `score`, `inferred-from-project-data`, `analysed-from-audio` ...), `tool`, `motif`, `more` (long-form URL), any other key.
+- **Escaping** (one-line form and `//@`): in a body, `\|` is a literal pipe and `\\` a literal backslash; any other backslash is literal (`\d` stays `\d`).
+  The printer doubles a backslash only when a pipe or another backslash follows it, so `a\|b` (backslash, pipe) prints as `a\\\|b` and reads back exactly.
+  In a `.craftcues` block a body line starting with `|` (or with backslashes then `|`) gets one extra leading `\`, which the reader strips. A quoted meta value
+  (`more="a | b"`) keeps its pipes and escapes `"` and `\` with a backslash. The 500-set fuzz in tests/cues/cues.mjs covers `\|`, `\\`, a trailing `\`, and a leading `|`.
 - **Emphasis** `*word*` (bold in captions). Bodies are terse: lint warns past 140 characters; put the detail in a KB card or `more=`.
 
 ### Inline defaults (line -> bar mapping)
@@ -71,7 +75,7 @@ Engine: `site/engine/cues.js` (pure ES module, shared by site and CLI: `parse`, 
 ```
 parse|json IN            canonical JSON          print IN      canonical .craftcues      extract PROGRAM.js [-o OUT]   inline cues as .craftcues
 lint IN... [--kb] [--program P] [--json] [--strict]       merge IN... [-o OUT]           vtt|srt IN... [-o OUT] [--all] [--todo]
-from-bank BANK.jsonl [--source-sha S]                     kb ID...                       at IN BAR (cues active at a bar)
+from-bank BANK.jsonl [--source-sha P|--all]                   kb ID...                       at IN BAR (cues active at a bar)
 header options: --form form.json --bpm B --bars N --beats N --offset S --track NAME;  IN = .craftcues / .crafcues / .json / .vtt / program .js
 ```
 suno-track-lab twin: `engine/craftcues/run.sh` (same commands, plus `emit.py` for Python analysis tools).
@@ -96,6 +100,10 @@ The CLI loads site/data/composition.json, syntax.json, docs/genres/*.json, the s
 Analysis tools emit cues with `src=inferred` or `analysis` and `method` / `tool`: suno-track-lab `engine/composer/run.sh ... --cues OUT`,
 `engine/genre/score.py ... --cues OUT`, `engine/craftcues/run.sh from-bank` (form-bank records carry `conf` and `method` through). Merge them
 with the authored set; the authored text wins by id.
+**from-bank** (`cues.mjs from-bank BANK.jsonl [--source-sha PREFIX | --all]`): a bank holds many songs, so by default ONE source is used (the one with the
+most records; the stderr note names it and the counts), `--source-sha` takes a sha256 prefix of at least 8 hex digits (shorter or ambiguous prefixes are refused,
+exit 2), `--all` keeps every source. Within a source an inferred and an analysed record for the same bars and role are deduped (analysis wins, then higher conf).
+Each cue carries `licence`, `author` and `sha` (first 12 hex of the source) in its meta, next to `src`, `method`, `tool`, `conf`.
 
 ## 6. Site (#163)
 Lazy only (`site/cues.js` entry in the deferred list; `cues-ui.js`, `cues.css`, the engine and the KB load on first use; eager shell unchanged).
@@ -120,5 +128,22 @@ Lazy only (`site/cues.js` entry in the deferred list; `cues-ui.js`, `cues.css`, 
 
 ## 7. Examples
 `docs/tracks/night-phonk-demo/track.v2.craftcues`, `docs/tracks/edm-dubstep-tutorial/track.craftcues` (the 11 lessons as `lesson` cues),
-`docs/tracks/dnb-electro-tutorial/track.craftcues`. Tests: `node tests/cues/cues.mjs` (schema, 500-doc round-trip fuzz, torture extraction with the
+`docs/tracks/dnb-electro-tutorial/track.craftcues`.
+
+**The generated set** (night phonk v2, `docs/tracks/night-phonk-demo/track.v2.generated.craftcues`, 47 cues, `src=inferred` / `analysis`): the composer checks
+and the genre score of the track, emitted as cues, merged into the authored sidecar by id (authored wins) when `node tools/craftcues/build_site.mjs` ships the
+site set. Invocation, from suno-track-lab with `STRUDEL_CRAFT` set to this repo and D=docs/tracks/night-phonk-demo (hooks = racks.json defs merged with racks-v2.json):
+```
+engine/composer/run.sh all $D/track.v2.standalone.strudel.js OUT --form $D/form.v2.json --bars 84 --cues composer.craftcues \
+    -- --packs site/packs.lock.json --hooks HOOKS.json --prelude $D/cli-site-base.js --prelude site/prelude/word.js   # 43 cues: ledger, density, foreshadow, feel, discord, cluster
+python3 engine/genre/score.py MASTER.wav docs/genres/GENRE.json --out score.json --form $D/form.v2.json --cues score.craftcues                # 4 score cues
+node tools/craftcues/cues.mjs merge composer.craftcues score.craftcues -o $D/track.v2.generated.craftcues                                # ids g-<tool>-<hash>: a rerun replaces, never duplicates
+```
+The `feel` cue is the one that moves with the tool: the composer's feel ranking gained half-time detection and the rock / metal half-time feel after the first
+commit of this set, so a rerun names `feel-rockhalftime` (conf 0.81, same `.groove(...)` line) where the first set said `feel-trap` (0.66); the committed file was
+regenerated with the invocation above (only that cue changed). Audio captions: `node tools/craftcues/cues.mjs vtt AUTHORED GENERATED -o audio/<track>/<mp3 stem>.vtt`
+writes the WebVTT next to the mp3; suno-track-lab `engine/audio/build_audio_page.py` adds a `<track kind="captions">` per mp3 that has a `.vtt`, and
+`engine/audio/sync.sh` puts the `.vtt` files in the files map to republish. The merge command for any two sets is `cues.mjs merge IN... -o OUT` (section 3).
+
+Tests: `node tests/cues/cues.mjs` (schema, 500-doc round-trip fuzz, torture extraction with the
 masker, lint rules, KB, CLI), `node tests/cues/vtt_browser.mjs` (Chromium's WebVTT parser), `node tests/site/cues.mjs` (390 px touch UI).

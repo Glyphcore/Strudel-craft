@@ -6,7 +6,7 @@
 //   node tools/craftcues/cues.mjs merge IN... [-o OUT]      merged by id (author > analysis > inferred)
 //   node tools/craftcues/cues.mjs extract PROGRAM [-o OUT]  inline //@ cues of a program as .craftcues
 //   node tools/craftcues/cues.mjs vtt|srt IN... [-o OUT] [--all] [--todo]   captions (merges every IN first)
-//   node tools/craftcues/cues.mjs from-bank BANK.jsonl [--source-sha S] [-o OUT]   form bank records -> cues (tolerates a missing bank)
+//   node tools/craftcues/cues.mjs from-bank BANK.jsonl [--source-sha PREFIX|--all] [-o OUT]   form bank records -> cues (one source by default, deduped; tolerates a missing bank)
 //   node tools/craftcues/cues.mjs kb ID...                 KB cards
 //   node tools/craftcues/cues.mjs at IN BAR                 cues active at a bar position
 // Header options on every command: --form form.json (sections, bars) --bpm B --bars N --beats N --offset S --track NAME
@@ -44,7 +44,7 @@ if (isMain) {
   if (!cmd || cmd === '-h' || cmd === '--help') { console.log(fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').filter((l) => l.startsWith('//')).map((l) => l.slice(3)).join('\n')); process.exit(0); }
   if (cmd === 'kb') { const kb = nodeKB(); for (const id of pos) console.log(opt.json ? JSON.stringify(kb(id)) : cardText(kb(id))); process.exit(pos.every((id) => kb(id).status !== 'unknown') ? 0 : 1); }
   if (!pos.length) die(`usage: cues.mjs ${cmd} IN...`);
-  if (cmd === 'from-bank') { let recs = []; if (fs.existsSync(pos[0])) recs = fs.readFileSync(pos[0], 'utf8').split('\n').filter(Boolean).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean); else console.error(`note: no bank at ${pos[0]} (tolerated, 0 cues)`); const sha = opt['source-sha']; const d = C.fromBank(recs, { header: headerOpts(), match: sha ? (r) => r.source && r.source.ref && r.source.ref.sha256 === sha : null }); out(C.print(d)); process.exit(0); }
+  if (cmd === 'from-bank') { let recs = []; if (fs.existsSync(pos[0])) recs = fs.readFileSync(pos[0], 'utf8').split('\n').filter(Boolean).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean); else console.error(`note: no bank at ${pos[0]} (tolerated, 0 cues)`); let d; try { d = C.fromBank(recs, { header: headerOpts(), source: opt['source-sha'] || null, all: opt.all !== undefined }); } catch (e) { console.error(String(e.message || e)); process.exit(2); } const R = C.fromBank.report; console.error(`from-bank: ${R.kept} cues from ${R.picked ? 'source ' + R.picked : 'all ' + R.sources + ' source(s)'} (${R.records} records, ${R.dropped} deduped; ${R.sources} source(s) in the bank; --source-sha PREFIX (>= 8 hex) picks one, --all keeps every source)`); out(C.print(d)); process.exit(0); }
   const { doc, problems } = loadAll(pos);
   if (cmd === 'parse' || cmd === 'json') out(JSON.stringify(C.toJSON(doc), null, 1) + '\n');
   else if (cmd === 'print' || cmd === 'merge' || cmd === 'extract') out(C.print(doc));

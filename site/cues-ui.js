@@ -95,7 +95,7 @@ function frame() {
   st.p = p; const b = Math.floor(p + 1e-9); const bb = el.querySelector('.cu-bar b'); if (bb.textContent !== String(b)) bb.textContent = String(b);
   if (!tl || tl.doc !== st.doc) { const t = timeline(st.doc); tl = { doc: st.doc, N: t.N }; el.querySelector('.cu-tl').innerHTML = t.svg; }
   const ph = el.querySelector('.cu-tl .ph'); const px = (((p - 1) / tl.N) * 1000).toFixed(1); if (ph && ph.getAttribute('x1') !== px) { ph.setAttribute('x1', px); ph.setAttribute('x2', px); }
-  const act = C.activeAt(st.doc, p).filter((c) => c.at !== '*'); const ids = act.map((c) => c.id).join('|');
+  const act = C.activeAt(st.doc, p).filter((c) => c.at !== '*'); const ids = act.map((c) => c.id).join('|') + (sc.graph && st.code != null && sc.graph.text === st.code ? '#g' : ''); /* the Graph showing the playing program is part of the key: playing in the Rack, then opening the Graph, relights the nodes */
   if (ids === st.shown) return; st.shown = ids; el.dataset.bar = String(b);
   el.querySelector('.cu-chips').innerHTML = act.length ? act.map((c) => `<button type="button" role="listitem" class="cu-chip" data-id="${esc(c.id)}" data-k="${esc(c.kind)}" aria-label="${esc(`${c.kind}${c.scope !== 'track' ? ' on ' + c.scope : ''}: ${c.body}. Open its card`)}"><i>${esc(c.kind)}${c.scope !== 'track' ? ' @' + esc(c.scope) : ''}</i><span>${emph(String(c.body || '').split('\n')[0])}</span></button>`).join('') : '<span class="cu-none">no cue at this bar</span>';
   hot([...new Set(act.flatMap((c) => lanesOf(c.scope)))]);

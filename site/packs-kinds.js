@@ -151,7 +151,7 @@ export const KINDS = {
     check: (d) => (Array.isArray(d.items) ? null : 'items must be an array'),
     items: () => [],
     view: (entries) => firstWins(entries, (d) => d.items, (i) => `${i.kind}|${i.name}`).map(([i]) => i) },
-  // extension kind (#131): the lazy bodies of an indexed recipes@1 ingredient (docs/PACK_SPEC.md 14.4): { family, bodies: { <recipe id>: { code, expr, notes, source, error, lowered, lowered_note, lowered_check } } }.
+  // extension kind (#131): the lazy bodies of an indexed recipes@1 ingredient (docs/PACK_SPEC.md 14.4): { family, bodies: { <recipe id>: { code, expr, notes, source, error, intent, origin, unverified, bpm_hint, rms_dbfs, centroid_hz, peak, lowered, lowered_note, lowered_check } } }.
   // A recipes entry with `body: "<ingredient id>"` and no `code` is an index row; the host merges its body when the row is first opened, played, searched or completed. Data only; registers nothing.
   'x-glyphcore.recipe-bodies': { formats: ['x-glyphcore.recipe-bodies@1'], code: 'never',
     check: (d) => (isObj(d.bodies) ? null : 'bodies must be an object'),

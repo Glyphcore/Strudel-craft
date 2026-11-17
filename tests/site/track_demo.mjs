@@ -4,6 +4,7 @@
    (bar 17) and to drop 2 (bar 49); the glyphcore/phonk pack is in the site lock and loads (atoms and presets ready); no page errors.
    Usage (repo root): node tests/site/track_demo.mjs [--v2] [--live URL] [--debug]   -> PASS/FAIL lines, exit 1 on any FAIL. */
 import { createRequire } from 'module'; import http from 'http'; import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
+import { openSyntax } from './lib/syntax.mjs';
 const require = createRequire(import.meta.url); const { chromium } = require('playwright');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'), SITE = path.join(ROOT, 'site'), PREFIX = '/Strudel-craft/';
 const LIVE = (() => { const i = process.argv.indexOf('--live'); return i > 0 ? process.argv[i + 1] : null; })();
@@ -27,7 +28,7 @@ await page.goto(BASE); await page.waitForFunction(() => window.__sc && window.__
 const pk = await page.evaluate(async () => { const P = window.strudelCraft.packs; await P.ready; await P.load('glyphcore/phonk:atoms'); await P.load('glyphcore/phonk:presets');
   const p = P.list().find((x) => x.id === 'glyphcore/phonk'); return p ? { state: p.state, ings: p.ingredients.map((i) => `${i.id}:${i.state}`) } : null; });
 check('glyphcore/phonk is in the site lock; atoms and presets load', pk && pk.state === 'ready' && pk.ings.includes('atoms:ready') && pk.ings.includes('presets:ready'), JSON.stringify(pk));
-await page.evaluate(() => window.__sc.setView('syntax')); await page.waitForFunction(() => window.strudelCraft.syntax && window.strudelCraft.syntax.go('tracks'), null, { timeout: 30000 }); const btn = page.locator('#sx-tracks .sx-run').nth(V2 ? 1 : 0); await btn.waitFor({ timeout: 30000 }); await btn.scrollIntoViewIfNeeded();
+await openSyntax(page, 'tracks', { timeout: 30000 }); const btn = page.locator('#sx-tracks .sx-run').nth(V2 ? 1 : 0); await btn.waitFor({ timeout: 30000 }); await btn.scrollIntoViewIfNeeded();
 const title = await page.locator('#sx-tracks figcaption span').nth(V2 ? 1 : 0).textContent(); check(`Syntax entry "${TITLE}" is listed`, title === TITLE, title);
 await btn.tap(); await page.waitForTimeout(3000);
 await page.waitForFunction(() => { const s = window.__sc.S; return (!s.busy && s.playing && window.__sc.Engine.started) || document.querySelector('#status').classList.contains('err'); }, null, { timeout: 90000 }).catch(() => {});

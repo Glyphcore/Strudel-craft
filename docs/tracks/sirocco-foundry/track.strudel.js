@@ -45,7 +45,7 @@ hooks.def("metalHit", { chain: [["hook", "hygiene-perc"], ["s", "sine"], ["fm", 
 hooks.def("voxChop", { chain: [["hook", "hygiene-vox"], ["end", 0.3], ["hpf", 300], ["lpf", 4200], ["gain", 0.32]] })
 hooks.def("voxPad", { chain: [["hook", "hygiene-vox"], ["attack", 0.6], ["release", 1.5], ["vowel", "o"], ["lpf", 2400], ["gain", 0.36]] })
 
-//@plain hooks.def("twinChop", { chain: [["hook", "hygiene-vox"], ["s", "sawtooth"], ["vowel", "a"], ["attack", 0.02], ["decay", 0.05], ["sustain", 0.9], ["release", 0.1], ["hpf", 300], ["lpf", 4200], ["compressor", "-30:12:3:0.002:0.08"], ["gain", 0.32]] })
+//@plain hooks.def("twinChop", { chain: [["hook", "hygiene-vox"], ["s", "sawtooth"], ["vowel", "a"], ["attack", 0.02], ["decay", 0.05], ["sustain", 0.9], ["release", 0.1], ["hpf", 300], ["lpf", 4200], ["compressor", "-40:20:3:0.001:0.05"], ["gain", 0.32]] })
 
 // == drums ==
 kick: s("x*4").hook("edmKick").shape(0.5).duckorbit("2:3:4").duckdepth("0.35:0.3:0.3").duckattack("0.36:0.4:0.4").velocity("<1!8 .8!8 .75!12 .6!3 1!97>").hpf("<38!28 120 180 250 38!100>").postgain(0.379)
@@ -59,7 +59,7 @@ hatsH: s(atoms.ds.dsHats).velocity(atoms.ds.dsHatVel).hook("hatClosed").postgain
 hats16H: s(atoms.ds.hats16).velocity(atoms.ds.hat16Vel).hook("hatClosed").postgain(0.643)
 roll: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook("snareTight").mask(atoms.ec.gapMask).postgain(0.343)
 roll4: s(atoms.ec.roll4).velocity(atoms.ec.rollVel4).hook("snareTight").postgain(0.5)
-fillB: s("x*32").velocity(saw.range(0.35, 1)).hook("snareTight").postgain(0.45)
+fillB: s("x*32").velocity(saw.range(0.35, 1)).hook("snareTight").postgain(0.35)
 fill: s("x*16").velocity(saw.range(0.3, 1)).hook("snareTight").postgain(0.267)
 perc: s(atoms.sfMetal).hook("metalHit").note("<g5 d6 eb6 bb5>").orbit(4).room(0.55).roomsize(5).groove({ swing: 55, jitter: 3, seed: 9 }).velocity("<1!72 .85!8 .93!8 1!48>").postgain(0.776)
 
@@ -97,9 +97,9 @@ padP: note("<[c3,g3,bb3,eb4] [c3,g3,bb3,eb4] [c3,g3,bb3,eb4] [c3,g3,bb3,db4]>").
 fpad: s("vs_o").note(atoms.sfVoxPad).hook("voxPad").orbit(3).room(0.4).roomsize(5).postgain(0.027)                                //@craft
 //@plain fpad: s("sawtooth").note(atoms.sfVoxPad).hook("voxPad").orbit(3).room(0.4).roomsize(5).postgain(0.145)
 chop: note(atoms.sfHook).s("<vs_a!4 vs_o!4>").hook("voxChop").orbit(3).room(0.3).roomsize(3).postgain(0.23)                           //@craft
-//@plain chop: note(atoms.sfHook).hook("twinChop").vowel("<a!4 o!4>").orbit(3).room(0.3).roomsize(3).postgain(0.58)
+//@plain chop: note(atoms.sfHook).hook("twinChop").vowel("<a!4 o!4>").orbit(3).room(0.3).roomsize(3).postgain(0.7)
 chopB: note(atoms.sfHookB).s("<vs_a!4 vs_o!4>").hook("voxChop").orbit(3).room(0.3).roomsize(3).postgain(0.215)                         //@craft
-//@plain chopB: note(atoms.sfHookB).hook("twinChop").vowel("<a!4 o!4>").orbit(3).room(0.3).roomsize(3).postgain(0.66)
+//@plain chopB: note(atoms.sfHookB).hook("twinChop").vowel("<a!4 o!4>").orbit(3).room(0.3).roomsize(3).postgain(0.7)
 chopA: note(atoms.sfAnswer).s("<vs_a vs_o>").hook("voxChop").orbit(4).room(0.5).roomsize(4).postgain(0.137)                            //@craft
 //@plain chopA: note(atoms.sfAnswer).hook("twinChop").vowel("<a o>").orbit(4).room(0.5).roomsize(4).postgain(0.39)
 arp: note(atoms.sfArp).hook("ukfArp").orbit(3).room(0.3).roomsize(3).postgain(0.37)
@@ -117,7 +117,7 @@ tagged("#snareH").mute("1b..73b, 88b..89b, @97b")
 tagged("#ghost").mute("1b..77b, @88b")
 tagged("#hats").mute("32b..33b, 57b..97b, @125b")
 tagged("#ohat").mute("1b..9b, 32b..33b, 57b..97b, @121b")
-tagged("#hatsH").mute("1b..75b, @88b")
+tagged("#hatsH").mute("1b..75b, 80b..81b, @88b")
 tagged("#hats16H").mute("1b..89b, @97b")
 tagged("#roll").mute("1b..25b, 33b..65b, @73b")
 tagged("#roll4").mute("1b..13b, @17b")
@@ -127,7 +127,7 @@ tagged("#perc").mute("1b..61b, 73b..81b, 88b..89b, @97b")
 tagged("#rise1").mute("1b..17b, @33b")
 tagged("#rise2").mute("1b..69b, @73b")
 tagged("#pitch2").mute("1b..69b, @73b")
-tagged("#rev").mute("1b..16b, 17b..88b, 89b..96b, @97b")
+tagged("#rev").mute("1b..16b, 17b..80b, 81b..88b, 89b..96b, @97b")
 tagged("#down").mute("1b..57b, 58b..113b, @114b")
 tagged("#impact").mute("1b..33b, 34b..73b, 74b..89b, 90b..97b, @98b")
 tagged("#crash").mute("1b..33b, 34b..49b, 50b..73b, 74b..89b, 90b..97b, 98b..113b, @114b")

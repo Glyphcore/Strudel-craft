@@ -19,7 +19,7 @@ const full = inst({
   registers: [{ from: 'c2', to: 'b3', use: 'morph', gain: 1, tilt: -2 }],
   params: { detune: { min: 0, max: 40, default: 12, to: 'detune', unit: 'cent' } }, vary: { seed: 7, spread: { detune: 0.3 } },
 });
-const good = { 'single cycle': inst({}), 'morph only': { instruments: [{ id: 'm', family: 'f', origin: 'computed', license: 'CC0-1.0', morph: full.instruments[0].morph }] }, 'all optional fields': full, 'empty list': { instruments: [] }, '256 points': inst({ cycle: { points: pts(256) } }) };
+const good = { 'single cycle': inst({}), 'morph only': { instruments: [{ id: 'm', family: 'f', origin: 'computed', license: 'CC0-1.0', morph: full.instruments[0].morph }] }, 'all optional fields': full, 'empty list': { instruments: [] }, '256 points': inst({ cycle: { points: pts(256) } }), 'lowercase riff is a music word (RIFF is the header)': inst({ title: 'bass riff', descriptors: { style: 'riffy' } }) };
 const big = (n, v = 0) => Array.from({ length: n }, () => v);
 const bad = {
   'unknown field with 5000 [x,y] pairs': inst({ extra: pts(5000) }),
@@ -40,6 +40,10 @@ const bad = {
   'data:audio in descriptor value': inst({ descriptors: { note: 'data:audio/wav;base64,AAAA' } }),
   'RIFF header in title': inst({ title: 'RIFF$\u0000\u0000\u0000WAVEfmt ' }),
   'base64 marker mid-string': inst({ title: 'see base64,AAAA' }),
+  'zero-width space inside data:': inst({ title: 'data\u200b:audio/wav' }),
+  'fullwidth colon in data:': inst({ title: 'data\uff1aaudio/wav' }),
+  'non-ASCII title': inst({ title: 'caf\u00e9' }),
+  'DaTa: in any case': inst({ title: 'DaTa:x' }),
   'blob: URL in title': inst({ title: 'blob:https://x/1234' }),
   'http URL in descriptor': inst({ descriptors: { src: 'https://example.com/a.wav' } }),
   'license 41 chars': inst({ license: 'L'.repeat(41) }),

@@ -1,7 +1,8 @@
 # Drawn and computed waveforms as instruments (design note, #182)
 
-Status: design accepted (#182). **Stage 1 is built**: the `waveforms@1` schema, `site/engine/waveforms.js` and `tests/site/waveforms.mjs`. Everything else below stays "coming"
-(pack adapter and Play activation, instruments, drum models, draw surface, code models); the Strudel mechanisms in section 2 exist in unmodified Strudel and are verified there. The draw surface is ui-designer work (section 8, stage 3); this note has no UI.
+Status: design accepted (#182). **Stages 1 and 2 are built**: the `waveforms@1` schema, `site/engine/waveforms.js`, the pack adapter (`site/packs-kinds.js`, activation through `packs.activateSources` on Play),
+the example pack `glyphcore/drawn-core` (`wt_drawn_bass`, `wt_drawn_choir`) and their tests. Everything else below stays "coming"
+(CLI render path, more instruments, drum models, draw surface, code models); the Strudel mechanisms in section 2 exist in unmodified Strudel and are verified there. The draw surface is ui-designer work (section 8, stage 3); this note has no UI.
 
 Aim (#182): sounds in the families the reference catalogues cover, made by our own engine from data and parameters, so no recording is copied or
 shipped. Variation comes from parameter ranges and a seed, never from a file per sound. Related: #180 (device adapter contract), #183
@@ -76,14 +77,14 @@ One instrument = one `id` + these parts, each optional except `cycle` or `morph`
 5. **Parameters** (`params{}`): the declared knobs with ranges (section 5), each mapped to a Strudel control or to a model constant.
 6. **Variation** (`vary{}`): seed and per-parameter spread (section 5).
 
-## 4. Pack kind `waveforms` (schema and engine module built, #182 stage 1; pack adapter coming)
+## 4. Pack kind `waveforms` (built: schema, engine module, pack adapter; #182 stages 1 and 2)
 
 Consistent with PACK_SPEC section 5: a new row in `schemas/craftpack/1/kinds/index.json`, schema `kinds/waveforms.1.schema.json`, adapter
 `packs.registerKind('waveforms', ...)`.
 
 | kind | entry file holds | goes into | code | hosts | today |
 |---|---|---|---|---|---|
-| `waveforms` (schema + engine module built; adapter coming) | `{instruments[{id, title, family, origin, descriptors, license, cycle?, morph?, env?, registers?, params, vary?, notes?}]}` (the `waveforms@1` document) | at Play, for each instrument a program names: mechanism A emits `.partials/.phases`; B and C register an in-memory WAV with `ctx.samples(map)` under a `wt_<id>` or `<id>` key (the same activation point as `sample-source`, `packs.activateSources`); sound names go into intellisense | never (pure data) | site, cli | none |
+| `waveforms` (built) | `{instruments[{id, title, family, origin, descriptors, license, cycle?, morph?, env?, registers?, params, vary?, notes?}]}` (the `waveforms@1` document) | at Play, for each instrument a program names: mechanism A emits `.partials/.phases`; B and C register an in-memory WAV with `ctx.samples(map)` under a `wt_<id>` or `<id>` key (the same activation point as `sample-source`, `packs.activateSources`); sound names go into intellisense | never (pure data) | site, cli | none |
 
 `waveforms@1` instrument, fields (sizes are caps checked by the schema, on top of section 10.2 limits; entry file well under 5 MB):
 
@@ -104,10 +105,10 @@ Caps (built, #182 stage 1; the same rules in `validate()` of `site/engine/wavefo
 closed world (every object lists its fields, any other field is `E_WF_UNKNOWN`); at most 32 instruments; `points` 4 to 256 per curve, each
 point a 2-number pair in -1..1; 2 to 8 keyframes; envelope 2 to 64 points; `registers` up to 8; at most 12 descriptors, 16 params, 16 spread
 entries; every string capped (title 80, license 40, descriptor value 60, ids 48) and every map key matching `^[a-z][a-z0-9_]{0,23}$`; no string or
-key may contain `data:`, `blob:`, `://`, `base64`, `RIFF` or `RIFX` (`E_WF_AUDIO`/`E_WF_KEY`); the document is at most 5 MB (`E_WF_SIZE`,
+key may contain `data:`, `blob:`, `://`, `base64`, `RIFF` or `RIFX` (`E_WF_AUDIO`/`E_WF_KEY`); free strings and keys are printable ASCII only (this closes zero-width and fullwidth look-alikes without unicode normalisation, which a schema cannot do), `RIFF`/`RIFX` match as written (lower-case "riff" is a music word) and `data:`/`blob:`/`base64` in any case; the document is at most 5 MB (`E_WF_SIZE`,
 checked first) and at most 200000 numbers. A schema-valid file measures 3.3 MB at the ceiling (32 instruments, every array full, 20-character
 numbers), so the schema alone keeps under 5 MB, and `validate()` checks the bytes anyway. One rule only `validate()` can state: a param
-default lies in its min..max. `tests/site/waveforms_caps.mjs` runs 36 bypass fixtures through both and fails if either accepts one. Family
+default lies in its min..max. `tests/site/waveforms_caps.mjs` runs 40 bypass fixtures through both and fails if either accepts one. Family
 names: the closed list in section 6 plus `drum-*` families of #182; unknown family is a warning, not an error.
 
 Under #180: each family model exposes its parameter set with ranges as the device adapter contract's declared parameters, so the same
@@ -190,17 +191,18 @@ Each stage is one issue; boxes are observable, one minimal check each (test budg
 **Stage 1: data format and renderers (no UI).**
 - [x] `schemas/craftpack/1/kinds/waveforms.1.schema.json` plus an index row; a fixture with a single-cycle and a morph instrument validates, and a
       fixture with a `data:` string, a 4096-number array, an unknown field or an oversized curve fails in both the schema and `validate()` (`tests/site/waveforms_caps.mjs`).
-- [x] (engine module `site/engine/waveforms.js`, test `tests/site/waveforms.mjs`; wiring into Play via `packs.registerKind` stays coming) An adapter turns `cycle` into A and `morph` into B/C (in-memory WAV, `blob:` URL) at Play; a
+- [x] (engine module `site/engine/waveforms.js`, test `tests/site/waveforms.mjs`; the Play wiring was built in stage 2, below) An adapter turns `cycle` into A and `morph` into B/C (in-memory WAV, `blob:` URL) at Play; a
       committed headless check (the section 2.1 script, generalised) plays each and the destination peak is above -40 dBFS and below -1 dBFS.
 - [x] Seeded variation: the same seed gives byte-identical parameter sets twice; two seeds differ in at least 3 parameters.
 - [x] No audio file added to the repo (`git diff --stat` shows none), and a grep for `RIFF`, `data:audio` finds nothing in packs.
 - [x] Docs follow code: `syntax.json` example, intellisense (`partials`, `phases`; `waveforms` param shapes stay coming), `site/README.md`, PACK_SPEC row, #56.
 
-**Stage 2: first instruments from #183.**
-- [ ] Bass guitar and choir pad as `waveforms@1` instruments in a first-party pack (`glyphcore/drawn-core`, coming), each with `descriptors`,
-      `realism`, registers.
-- [ ] Each rendered once and measured with `tools/racks/measure.mjs` (level, spectral centroid sanity, no clipping).
-- [ ] Both play from a recipe and via `s("<id>")` in the CLI render path.
+**Stage 2: wiring into Play and first instruments from #183 (built).** Adapter: `waveforms` kind in `site/packs-kinds.js` validates with `validate()` on load, registers nothing until a
+program names a `wt_<id>` sound, then builds the WAV tables in memory and calls `samples()` (note-keyed per register). Pack `glyphcore/drawn-core` in `site/data/drawn-core/`.
+- [x] Bass guitar and choir pad as `waveforms@1` instruments in a first-party pack (`glyphcore/drawn-core`), each with `descriptors`,
+      `realism`, registers (computed from short formulas, `origin: computed`; the choir is a `stand-in`).
+- [x] Level measured by the `tests/site/instruments_level.mjs` convention through the real site load path (`tests/site/drawn_pack.mjs`: bass -28.7 dBFS rms, choir -28.3 dBFS, no clipping, sustained). Not done: the `tools/racks/measure.mjs` spectral pass (needs the CLI render path), stays coming.
+- [x] Both play from a recipe in the site (`s("wt_drawn_bass")`, lazy activation). The CLI render path (a blob URL does not exist in node; temp file URL) stays coming.
 
 **Stage 3: draw surface (ui-designer + aaa-web-ui; no implementer-authored UI).**
 - [ ] ui-designer produces the surface spec: draw a single cycle, edit keyframes, draw an amplitude envelope, hear at once (loop at a held note),

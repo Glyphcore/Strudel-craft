@@ -344,11 +344,19 @@
     },
     {
       "id": "drawn-waves", "title": "Drawn waves as partials (data, no audio file)", "needs": "none",
-      "explain": "A wave you draw is stored as control points and turned into harmonic partials: s(\"user\").partials([...]).phases([...]) plays it on plain Strudel. The waveforms pack kind and its engine module (site/engine/waveforms.js, #182 stage 1) produce these lists from a drawn cycle; the draw surface and pack loading are coming (stages 2 and 3).",
+      "explain": "A wave you draw is stored as control points and turned into harmonic partials: s(\"user\").partials([...]).phases([...]) plays it on plain Strudel. The waveforms pack kind (#182) is built: the pack glyphcore/drawn-core ships two original instruments you play by name, wt_drawn_bass and wt_drawn_choir (wavetables built in the page when the program names them, no audio file). The draw surface to make your own is coming (stage 3).",
       "examples": [
         {
           "title": "A hand-shaped wave (partials from a drawn cycle)",
           "code": "setcpm(90/4)\n$: note(\"c2 c2 eb2 g2\").s(\"user\").partials([0.533,0.373,0.041,0.022,0.043,0.009]).phases([-1.2,0.4,2.1,-0.7,1.9,0.3]).lpf(1800).gain(0.6)"
+        },
+        {
+          "title": "A drawn instrument by name (glyphcore/drawn-core)",
+          "code": "setcpm(100/4)\n$: note(\"e1 e1 g1 a1 e1 d2 b1 g1\").s(\"wt_drawn_bass\").decay(0.5).sustain(0).release(0.1).lpf(1400).gain(0.83)"
+        },
+        {
+          "title": "A morphing pad: .wt() moves through the keyframes",
+          "code": "setcpm(80/4)\n$: note(\"<[c3,e3,g3,b3] [a2,c3,e3,g3]>\").s(\"wt_drawn_choir\").wt(\"<0 0.5 1 0.5>\").attack(0.4).release(0.8).unison(3).detune(0.15).lpf(3500).gain(0.35).room(0.3)"
         }
       ]
     }

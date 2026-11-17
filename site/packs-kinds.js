@@ -131,6 +131,27 @@ export const KINDS = {
       const done = new Set(); ing.sources = d.sources;
       ing.activate = async (names) => { const hit = []; for (const x of d.sources) { if (done.has(x.id) || !x.sounds.some((n) => names.has(n))) continue; done.add(x.id); try { await ctx.samples(x.index_url); hit.push({ id: x.id, license: x.license, terms_url: x.terms_url, pack: ctx.pack }); } catch (e) { done.delete(x.id); throw e; } } return hit; };
     } },
+  'waveforms': { formats: ['waveforms@1'], code: 'never', // drawn and computed instruments (#182 stage 2): control points and parameters, no audio; the WAV tables are built in memory
+    check: (d) => (isObj(d) && Array.isArray(d.instruments) ? null : 'waveforms needs instruments[]'),
+    items: (d) => d.instruments.map((i) => ['wt_' + String(i.id).replace(/-/g, '_'), { family: i.family, origin: i.origin, realism: i.realism, license: i.license }]),
+    view: (entries) => entries.flatMap((e) => e.data.instruments.map((i) => ({ pack: e.pack, ingredient: e.ingredient, id: i.id, family: i.family, origin: i.origin, realism: i.realism, license: i.license }))),
+    async apply(ing, d, ctx) { // validate() (the closed-world no-copy check) runs here; nothing is built or registered until a program names one of the sounds (packs.activateSources)
+      const WF = await import('./engine/waveforms.js'), errs = WF.validate(d);
+      if (errs.length) throw new Error(`${errs[0].code} ${errs[0].path}: ${errs[0].msg}` + (errs.length > 1 ? ` (+${errs.length - 1} more)` : ''));
+      const done = new Set(), by = new Map(d.instruments.map((i) => [WF.soundName(i), i])); ing.instruments = d.instruments;
+      ing.activate = async (names) => {
+        const hit = [];
+        for (const [name, inst] of by) {
+          if (done.has(name) || !names.has(name)) continue; done.add(name);
+          try {
+            const t = WF.tables(inst), url = (b) => URL.createObjectURL(new Blob([b], { type: 'audio/wav' })), map = Array.isArray(t.map) ? t.map.map(url) : Object.fromEntries(Object.entries(t.map).map(([k, v]) => [k, v.map(url)]));
+            await ctx.samples({ [t.name]: map }, '');
+            hit.push({ id: inst.id, license: inst.license, pack: ctx.pack, sound: t.name });
+          } catch (e) { done.delete(name); throw e; }
+        }
+        return hit;
+      };
+    } },
   'vox-bank': { formats: ['vox-bank@1'], code: 'never',
     check: (d) => (isObj(d) && isObj(d.maps) ? null : 'a vox bank needs maps'),
     items: (d) => Object.entries({ ...(d.maps.flat || {}), ...(d.maps.pitched || {}) }).filter(([k]) => k !== '_base'),

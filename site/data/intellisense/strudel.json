@@ -1291,6 +1291,20 @@
    "category": "sounds"
   },
   {
+   "label": "wt_drawn_bass",
+   "string": true,
+   "detail": "drawn instrument",
+   "info": "Our own computed bass wavetable (glyphcore/drawn-core, CC0, no audio); built when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "wt_drawn_choir",
+   "string": true,
+   "detail": "drawn instrument",
+   "info": "Our own vowel-morphing pad (stand-in, not a choir); .wt(0..1) moves through ah, oh, oo",
+   "category": "sounds"
+  },
+  {
    "label": "fp_harp",
    "string": true,
    "detail": "instrument sound",

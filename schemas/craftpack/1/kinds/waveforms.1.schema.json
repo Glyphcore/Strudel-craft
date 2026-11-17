@@ -2,7 +2,7 @@
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/waveforms.1.schema.json",
  "title": "waveforms@1",
- "description": "drawn and computed instruments (docs/DRAWN_WAVEFORMS.md). Control points and parameters only, no audio. Closed world: every object lists its fields and sets additionalProperties false; every array, string and key has a length cap; every free string must match $defs/safe (no data:, blob:, ://, base64, RIFF/RIFX); map keys match a short name pattern. With these caps a schema-valid file is at most about 3.3 MB with 20-character numbers (32 instruments, about 5300 numbers each; measured 3.3 MB with 20-character numbers by tests/site/waveforms_caps.mjs), under the 5 MB entry-file limit (PACK_SPEC 10.2); a schema cannot count bytes, so validate() also checks the 5 MB size directly. site/engine/waveforms.js validate() enforces the same rules and is the check the site trusts (plus the one cross-field rule a schema cannot state: a param default lies within its min..max); tests/site/waveforms_caps.mjs runs both over the same bypass fixtures.",
+ "description": "drawn and computed instruments (docs/DRAWN_WAVEFORMS.md). Control points and parameters only, no audio. Closed world: every object lists its fields and sets additionalProperties false; every array, string and key has a length cap; every free string must match $defs/safe (printable ASCII only, so no zero-width or fullwidth look-alikes; no data:, blob:, ://, base64 in any case, RIFF/RIFX as written); map keys match a short name pattern. With these caps a schema-valid file is at most about 3.3 MB with 20-character numbers (32 instruments, about 5300 numbers each; measured 3.3 MB with 20-character numbers by tests/site/waveforms_caps.mjs), under the 5 MB entry-file limit (PACK_SPEC 10.2); a schema cannot count bytes, so validate() also checks the 5 MB size directly. site/engine/waveforms.js validate() enforces the same rules and is the check the site trusts (plus the one cross-field rule a schema cannot state: a param default lies within its min..max); tests/site/waveforms_caps.mjs runs both over the same bypass fixtures.",
  "type": "object",
  "required": ["instruments"],
  "additionalProperties": false,
@@ -97,7 +97,7 @@
   }
  },
  "$defs": {
-  "safe": {"type": "string", "pattern": "^(?![\\s\\S]*(?:[Dd][Aa][Tt][Aa]:|[Bb][Ll][Oo][Bb]:|://|[Bb][Aa][Ss][Ee]64|RIFF|RIFX))[\\s\\S]*$"},
+  "safe": {"type": "string", "pattern": "^(?![ -~]*(?:[Dd][Aa][Tt][Aa]:|[Bb][Ll][Oo][Bb]:|://|[Bb][Aa][Ss][Ee]64|RIFF|RIFX))[ -~]*$"},
   "safe80": {"allOf": [{"$ref": "#/$defs/safe"}, {"maxLength": 80}]},
   "name": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,23}$"},
   "points": {

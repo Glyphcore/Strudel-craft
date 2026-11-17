@@ -513,12 +513,12 @@ export function createPacks(opts = {}) {
     // a view's own retry (Syntax Retry button): failed or unavailable ingredients of `kind` are read again; failure(kind) names why they failed
     retry: async (kind) => { await ready; for (const i of allIngs()) if (i.kind === kind && ['failed', 'unavailable'].includes(i.state)) { i.promise = null; i.data = null; setState(i, 'listed'); } return get(kind); },
     failure: (kind) => { const i = allIngs().find((x) => x.kind === kind && ['failed', 'unavailable', 'blocked'].includes(x.state)); return i ? { ingredient: ingQ(i.pack, i), state: i.state, ...(i.reason || {}) } : null; },
-    // sample-source packs (#183): load the (small, local) entry files and fetch a source's remote map only when `code` names one of its sounds; returns what was activated ({id, license, terms_url, pack})
+    // sample-source (#183) and waveforms (#182) packs: load the (small, local) entry files and fetch a source's remote map only when `code` names one of its sounds; returns what was activated ({id, license, terms_url, pack})
     activateSources: async (code) => {
       await ready; const names = new Set(); const re = /(?:^|[^\w$])(?:s|sound)\s*\(\s*(["'`])([\s\S]*?)\1/g; let m;
       while ((m = re.exec(String(code || '')))) for (const w of m[2].split(/[^\w#.]+/)) { const n = w.split(':')[0]; if (n) names.add(n); }
-      const out = []; if (!names.size) return out;
-      for (const i of allIngs().filter((x) => x.kind === 'sample-source' && x.pack.state === 'ready')) { await loadIng(i); if (i.activate) out.push(...await i.activate(names)); }
+      const out = []; if (!names.size) return out; const wt = [...names].some((n) => n.startsWith('wt_')); // waveforms entries are read only when a program names a wt_ sound
+      for (const i of allIngs().filter((x) => (x.kind === 'sample-source' || (x.kind === 'waveforms' && wt)) && x.pack.state === 'ready')) { await loadIng(i); if (i.activate) out.push(...await i.activate(names)); }
       return out;
     },
     ensure: async (kind) => { await ready; await Promise.all(allIngs().filter((i) => i.kind === kind).map(loadIng)); return items(kind); },

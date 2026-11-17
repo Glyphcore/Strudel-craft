@@ -1,0 +1,44 @@
+{
+ "version": 1,
+ "categories": [
+  {
+   "id": "drawn",
+   "title": "Drawn instruments"
+  }
+ ],
+ "labels": [
+  {
+   "id": "drawn",
+   "title": "Drawn instruments (our own, no audio)",
+   "category": "drawn"
+  }
+ ],
+ "recipes": [
+  {
+   "id": "drawn-bass-line",
+   "title": "Drawn bass line",
+   "intent": "A bass voice built from a computed single cycle (control points, no audio): per-register shapes, plucked with the decay control.",
+   "code": "setcpm(100/4)\n$: note(\"e1 e1 g1 a1 e1 d2 b1 g1\").s(\"wt_drawn_bass\").decay(0.5).sustain(0).release(0.1).lpf(1400).gain(0.83)",
+   "labels": [
+    "drawn"
+   ],
+   "needs": [
+    "glyphcore/drawn-core:instruments"
+   ],
+   "verified": false
+  },
+  {
+   "id": "drawn-choir-pad",
+   "title": "Drawn choir pad",
+   "intent": "A vowel-morphing pad from three computed keyframes (ah, oh, oo) with the wavetable position moving over the chord loop. A stand-in, not a choir recording.",
+   "code": "setcpm(80/4)\n$: note(\"<[c3,e3,g3,b3] [a2,c3,e3,g3]>\").s(\"wt_drawn_choir\").wt(\"<0 0.5 1 0.5>\").attack(0.4).release(0.8).unison(3).detune(0.15).lpf(3500).gain(0.35).room(0.3)",
+   "labels": [
+    "drawn"
+   ],
+   "needs": [
+    "glyphcore/drawn-core:instruments"
+   ],
+   "verified": false
+  }
+ ]
+}

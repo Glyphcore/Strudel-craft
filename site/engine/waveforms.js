@@ -8,11 +8,13 @@
 //   oneShot(inst, o)         -> Float32Array           the cycle repeated with a baked decay (mechanism C)
 //   wavBytes(samples, sr)    -> Uint8Array             16-bit mono PCM WAV
 //   vary(inst, seed)         -> {name: value}          seeded parameter draw (same seed, same values)
+//   soundName(inst), tables(inst)  the `wt_<id>` name and its WAV tables per register (what the pack adapter registers)
 //   program(inst, o)         -> {code, key, wav?}      Strudel code for one note; `wav` is what must be registered with samples({[key]: [url]})
 
 export const FRAME = 2048, MAX_POINTS = 256, MAX_BYTES = 5 * 1024 * 1024, MAX_INSTRUMENTS = 32, MAX_NUMBERS = 200000;
-// Same rule as `$defs/safe` in the schema: a free string or a key may not carry audio or a URL.
-export const UNSAFE_RE = /data:|blob:|:\/\/|base64|RIFF|RIFX/i;
+// Same rule as `$defs/safe` in the schema: data:, blob:, ://, base64 in any case; RIFF and RIFX as written (the binary headers are upper case, and "riff" is
+// a music word); and printable ASCII only, which also closes zero-width and fullwidth look-alikes (a schema cannot normalise unicode, so both paths refuse it).
+export const UNSAFE_RE = { test: (v) => /data:|blob:|:\/\/|base64/i.test(v) || /RIFF|RIFX/.test(v) || !/^[ -~]*$/.test(v) };
 
 // validate(doc): the check the site trusts (the JSON schema is the published mirror of it; tests/site/waveforms_caps.mjs runs both over
 // the same fixtures). Closed world: every object lists its fields, anything else is E_WF_UNKNOWN. Every array, string and key is capped.
@@ -125,11 +127,12 @@ export function partialsOf(cycle, H = 32) {
 }
 
 // n frames from the drawn keyframes: complex harmonic coefficients are interpolated, then re-synthesised (spectral interpolation).
-export function wavetable(inst, n = 16, frame = FRAME) {
-  const kf = (inst.morph ? inst.morph.frames : [{ pos: 0, points: inst.cycle.points }]).slice().sort((a, b) => a.pos - b.pos);
+export function wavetable(inst, n = 16, frame = FRAME, o = {}) {
+  const tilt = o.tilt || 0, gain = o.gain ?? 1, useMorph = inst.morph && (o.use !== 'cycle' || !inst.cycle);
+  const kf = (useMorph ? inst.morph.frames : [{ pos: 0, points: inst.cycle.points }]).slice().sort((a, b) => a.pos - b.pos);
   const H = 48, co = kf.map((f) => {
     const c = sampleCurve(f.points, frame, inst.cycle?.interp || 'spline'), re = [], im = [];
-    for (let k = 1; k <= H; k++) { let r = 0, m = 0; for (let i = 0; i < frame; i++) { const a = 2 * Math.PI * k * i / frame; r += c[i] * Math.cos(a); m -= c[i] * Math.sin(a); } re.push(2 * r / frame); im.push(2 * m / frame); }
+    for (let k = 1; k <= H; k++) { let r = 0, m = 0; for (let i = 0; i < frame; i++) { const a = 2 * Math.PI * k * i / frame; r += c[i] * Math.cos(a); m -= c[i] * Math.sin(a); } const w = Math.pow(k, tilt / 6.02); re.push(w * 2 * r / frame); im.push(w * 2 * m / frame); } // tilt: dB per octave of harmonic number
     return { pos: f.pos, re, im };
   });
   const out = new Float32Array(n * frame);
@@ -143,7 +146,7 @@ export function wavetable(inst, n = 16, frame = FRAME) {
     }
   }
   let pk = 0; for (const v of out) pk = Math.max(pk, Math.abs(v));
-  if (pk > 0) for (let i = 0; i < out.length; i++) out[i] /= pk * 1.1;
+  if (pk > 0) for (let i = 0; i < out.length; i++) out[i] = out[i] / (pk * 1.1) * gain;
   return out;
 }
 
@@ -177,6 +180,18 @@ export function vary(inst, seed = inst.vary?.seed ?? 0) {
 }
 
 // One note of the instrument as Strudel program text. mechanism: 'A' partials, 'B' wavetable, 'C' one-shot.
+// The name a program uses for the instrument: a wavetable voice, so it takes note() and the wt/warp/unison controls. `drawn-bass` -> `wt_drawn_bass`.
+export const soundName = (inst) => 'wt_' + inst.id.replace(/-/g, '_');
+
+// The WAV tables a pack adapter registers for one instrument: {name, map} where map is `[wav]` or, with registers, `{note: [wav]}` (Strudel picks the closest
+// note key and repitches from it). Pure data in, bytes out; the caller makes blob URLs. Registers use the cycle or the morph, with their own gain and tilt.
+export function tables(inst) {
+  const name = soundName(inst), out = inst.morph?.out ?? 16, mk = (o) => wavBytes(wavetable(inst, (o.use === 'cycle' && inst.cycle) || !inst.morph ? 1 : out, FRAME, o));
+  if (!inst.registers || !inst.registers.length) return { name, map: [mk({})] };
+  const map = {}; for (const r of inst.registers) (map[r.from] ||= []).push(mk({ use: r.use, gain: r.gain, tilt: r.tilt }));
+  return { name, map };
+}
+
 export function program(inst, { mechanism = 'A', note = 'c3', seed, gain = 0.5 } = {}) {
   const v = vary(inst, seed), ctl = Object.entries(inst.params || {}).filter(([, c]) => c.to).map(([k, c]) => `.${c.to}(${v[k]})`).join('');
   if (mechanism === 'A') {
@@ -184,7 +199,7 @@ export function program(inst, { mechanism = 'A', note = 'c3', seed, gain = 0.5 }
     return { key: 'user', code: `note("${note}").s("user").partials(${JSON.stringify(mag)}).phases(${JSON.stringify(phase)})${ctl}.gain(${gain})` };
   }
   if (mechanism === 'B') {
-    const key = 'wt_' + inst.id.replace(/-/g, '_'), frames = inst.morph?.out ?? 16;
+    const key = soundName(inst), frames = inst.morph?.out ?? 16;
     return { key, wav: wavBytes(wavetable(inst, frames)), code: `note("${note}").s("${key}")${inst.params?.position ? '' : '.wt(0.5)'}${ctl}.gain(${gain})` };
   }
   const key = inst.id.replace(/-/g, '_');

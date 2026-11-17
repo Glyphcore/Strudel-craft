@@ -1,0 +1,38 @@
+{
+  "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+  "craftpack": "1.0.0",
+  "id": "glyphcore/drawn-core",
+  "version": "1.0.0",
+  "title": "Drawn instruments (our own)",
+  "description": "Two original instruments as control points, no audio: a bass guitar stand-in (single cycle, per-register shapes) and a vowel-morphing choir pad (three keyframes). Wavetables are built in the page when a program names wt_drawn_bass or wt_drawn_choir. CC0-1.0.",
+  "license": "CC0-1.0",
+  "licenseFile": "LICENSE.md",
+  "ingredients": [
+    {
+      "id": "instruments",
+      "kind": "waveforms",
+      "format": "waveforms@1",
+      "version": "1.0.0",
+      "path": "instruments/waveforms.json",
+      "title": "Drawn bass and choir pad",
+      "description": "control points and parameters; wavetables built in memory on first use",
+      "hash": "sha256:9563d371e454c485c6721596840e4158bf732a517662480c900fddcba152226b",
+      "load": "manual",
+      "bytes": 12986
+    },
+    {
+      "id": "recipes",
+      "kind": "recipes",
+      "format": "recipes@1",
+      "version": "1.0.0",
+      "path": "recipes/recipes.json",
+      "title": "Drawn instruments recipes",
+      "hash": "sha256:b53988e4f07aeac45ae1dad1193bab903716752a3b751409eb9e1512c90c7583",
+      "load": "manual",
+      "requires": [
+        "instruments"
+      ],
+      "bytes": 1248
+    }
+  ]
+}

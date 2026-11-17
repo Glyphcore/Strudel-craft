@@ -6,6 +6,7 @@ const ROOTD = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..'
 let chromium; try { ({ chromium } = require('playwright')); } catch { ({ chromium } = require(process.env.PLAYWRIGHT_DIR || '/opt/node-tools/node_modules/playwright')); }
 const T = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.css': 'text/css', '.woff2': 'font/woff2', '.ogg': 'audio/ogg', '.svg': 'image/svg+xml', '.png': 'image/png', '.md': 'text/markdown' };
 const srv = http.createServer((q, s) => { const f = path.join(ROOT, decodeURIComponent(q.url.split('?')[0]).replace(/\/$/, '/index.html')); if (!f.startsWith(ROOT) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { s.writeHead(404).end(); return; } s.writeHead(200, { 'content-type': T[path.extname(f)] || 'application/octet-stream' }).end(fs.readFileSync(f)); }).listen(0);
+const bodiesDnb = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/recipes/dnb.json'), 'utf8')).bodies;
 const V2 = fs.readFileSync(path.join(ROOTD, 'docs/tracks/night-phonk-demo/track.v2.strudel.js'), 'utf8');
 const b = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
 let fails = 0; const check = (name, ok, extra = '') => { if (!ok) fails++; console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${extra ? '  -- ' + extra : ''}`); };
@@ -30,7 +31,6 @@ try {
   await p.tap('.rs-open'); await p.waitForSelector('dialog.rs-sheet[open] .rs-card', { timeout: 30000 });
   await p.waitForFunction(() => document.querySelectorAll('dialog.rs-sheet .rs-card').length > 50, null, { timeout: 20000 });
   for (let i = 0, last = -1; i < 20; i++) { const y = await p.evaluate(() => window.scrollY); if (y === last) break; last = y; await p.waitForTimeout(700); } /* the page settles (editor layout) before the baseline */
-  before = await edScroll();
   const have = await p.evaluate(() => { const ids = [...document.querySelectorAll('dialog.rs-sheet .rs-card')].map((c) => c.dataset.id); const kinds = [...document.querySelectorAll('dialog.rs-sheet .rs-k')].map((k) => k.dataset.kind); return { ids, kinds, w: document.documentElement.scrollWidth, sheetW: document.querySelector('dialog.rs-sheet').getBoundingClientRect().width }; });
   const need = ['import:pack:glyphcore/phonk:atoms', 'atom:ph.kick', 'hook:kick808', 'slot:tone', 'bus:verb', 'lane:kick', 'control:macro', 'vox:ljspeech', 'pack:glyphcore/phonk'];
   check('opens at 390px and lists atoms, imports, racks, slots, buses, lanes, controls, vox and packs of night phonk v2', need.every((i) => have.ids.includes(i)), JSON.stringify(need.filter((i) => !have.ids.includes(i))));
@@ -42,6 +42,8 @@ try {
   /* 2. a plain press opens the row and moves nothing in the editor (#107) */
   /* a real touch at the row's centre, the list scrolled by hand first so the test harness itself never scrolls the page */
   const press = async (sel) => { const r = await p.evaluate((sel) => { const e = document.querySelector(sel); const body = e.closest('.rs-body'); const bb = body.getBoundingClientRect(), eb = e.getBoundingClientRect(); if (eb.top < bb.top || eb.bottom > bb.bottom) body.scrollTop += eb.top - bb.top - 60; const r = e.getBoundingClientRect(); return { x: r.x + Math.min(40, r.width / 2), y: r.y + r.height / 2 }; }, sel); await p.touchscreen.tap(r.x, r.y); };
+  for (let i = 0, last = null; i < 12; i++) { const e = JSON.stringify(await edScroll()); if (e === last) break; last = e; await p.waitForTimeout(500); } /* baseline right before the press, once nothing else is moving */
+  before = await edScroll();
   await press('dialog.rs-sheet .rs-card[data-id="atom:ph.kick"] .rs-head'); await p.waitForSelector('dialog.rs-sheet .rs-card[data-id="atom:ph.kick"] .rs-more');
   const more = await p.$eval('dialog.rs-sheet .rs-card[data-id="atom:ph.kick"] .rs-more', (e) => e.textContent); const after = await edScroll();
   check('plain press expands the row (used-at lines) and does not scroll, select or move the editor', /Used at/.test(more) && after.top === before.top && after.y === before.y && after.sel === before.sel, JSON.stringify({ before, after }));
@@ -76,11 +78,62 @@ try {
   const e1 = await edScroll(); check('Insert reference does not scroll the editor or move the caret', e1.top === e0.top && Math.abs(e1.y - e0.y) < 120 && e1.sel === e0.sel, JSON.stringify({ e0, e1 }));
   if (process.argv[2]) await p.screenshot({ path: process.argv[2] });
 
+  /* 4b. #131 lazy recipes: expanding an indexed recipe fetches exactly its family file, then Craft / lowered, Play and Insert reference work */
+  const dnbReqs = () => reqs.filter((u) => /data\/recipes\/dnb\.json/.test(u)).length; const dnb0 = dnbReqs();
+  await p.fill('dialog.rs-sheet .rs-q', 'amen-chops'); await p.waitForSelector('dialog.rs-sheet .rs-item[data-id$=":amen-chops"]', { timeout: 15000 });
+  await p.tap('dialog.rs-sheet .rs-item[data-id$=":amen-chops"] .rs-head');
+  await p.waitForSelector('dialog.rs-sheet .rs-item[data-id$=":amen-chops"] .rs-forms .fm', { timeout: 20000 }).catch(() => {});
+  const lz = await p.evaluate(() => { const c = document.querySelector('.rs-item[data-id$=":amen-chops"]'); return { text: c.querySelector('.rs-forms').textContent, hasPlay: !!c.querySelector('.rs-play'), hasIns: !!c.querySelector('.rs-ins'), empty: /No example/.test(c.textContent) }; });
+  check('an indexed (lazy) recipe card expands, fetches its one body file, and shows its code with Craft / Strudel tabs', dnb0 === 0 && dnbReqs() === 1 && !lz.empty && /\$:|setcpm/.test(lz.text) && lz.hasPlay && lz.hasIns, JSON.stringify({ dnb0, now: dnbReqs(), empty: lz.empty, hasPlay: lz.hasPlay }));
+  await p.fill('dialog.rs-sheet .rs-q', 'amen'); await p.waitForTimeout(400); await p.tap('dialog.rs-sheet .rs-item[data-id$=":amen-style-break"] .rs-head').catch(() => {}); await p.waitForTimeout(500);
+  check('a second recipe of the same family needs no second fetch', dnbReqs() === 1, String(dnbReqs()));
+  const rcode = await p.evaluate(() => document.querySelector('.rs-item[data-id$=":amen-chops"] .rs-forms pre, .rs-item[data-id$=":amen-chops"] .rs-forms code')?.textContent || '');
+  await p.fill('dialog.rs-sheet .rs-q', 'amen-chops'); await p.waitForSelector('dialog.rs-sheet .rs-item[data-id$=":amen-chops"] .rs-play'); await p.waitForTimeout(300);
+  await p.tap('dialog.rs-sheet .rs-item[data-id$=":amen-chops"] .rs-play');
+  await p.waitForFunction(() => window.strudelCraft.quickplay.state.phase === 'playing' || window.strudelCraft.quickplay.stats.lastPeak > 0.01, null, { timeout: 30000 }).catch(() => {});
+  const qp = await p.evaluate(() => ({ phase: window.strudelCraft.quickplay.state.phase, key: window.strudelCraft.quickplay.state.key, peak: window.strudelCraft.quickplay.stats.lastPeak }));
+  check('Play (#150) auditions the fetched recipe', /res:/.test(qp.key || '') && (qp.phase === 'playing' || qp.peak > 0.01), JSON.stringify(qp));
+  await p.evaluate(() => window.strudelCraft.quickplay.stop('fast'));
+  await p.evaluate(() => { const v = document.getElementById('code').cmView; v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: '$: s("hh*8")\n$: s("sd*2")' }, selection: { anchor: 0 } }); }); await p.waitForTimeout(300);
+  await p.waitForTimeout(800); /* past the editor history's grouping window, so the insert is its own undo step */
+  const rb = await getCode(); await p.tap('dialog.rs-sheet .rs-item[data-id$=":amen-chops"] .rs-ins'); await p.waitForTimeout(400); const ra = await getCode();
+  const wantCode = bodiesDnb['amen-chops'].code;
+  check('Insert reference puts the recipe program in as one block; the rest of the code is unchanged', ra.length > rb.length && ra.includes(wantCode.trim()) && ra.replace(wantCode.trim(), '').replace(/\n{2,}/g, '\n').replace(/^\n|\n$/g, '') === rb.replace(/\n{2,}/g, '\n').replace(/^\n|\n$/g, ''), `${rb.length} -> ${ra.length}`);
+  /* undo / redo of the insert through the editor's own history (one transaction) */
+  await p.evaluate(() => document.querySelector('dialog.rs-sheet').close()); /* the sheet is modal: undo is the editor's, so close it first */
+  await p.evaluate(() => document.getElementById('code').cmView.focus()); await p.keyboard.press('Control+z'); await p.waitForTimeout(300); const undone = await getCode();
+  check('Ctrl+Z (editor focused, sheet closed) restores the code before the insert: it is one undo step', undone === rb, JSON.stringify({ lens: [rb.length, ra.length, undone.length] }));
+  /* redo: not asserted. Ctrl+Y does nothing and Ctrl+Shift+Z is taken by the app's own undo/redo for typed text and plain dispatches too (probe: type 'XYZ', Ctrl+Z, Ctrl+Shift+Z loads a recipe instead), so it is an editor-wide behaviour, not the Insert (issue filed) */
+  await p.tap('.rs-open'); await p.waitForSelector('dialog.rs-sheet[open] .rs-card', { timeout: 15000 }); await p.waitForSelector('dialog.rs-sheet .rs-q', { timeout: 15000 });
+  /* offline: a body already fetched keeps working; a family not fetched yet shows the failure with Retry, and Retry works once back online */
+  const fetched = new Set(reqs.map((u) => (/data\/recipes\/([\w-]+)\.json/.exec(u) || [])[1]).filter(Boolean)); const off = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/catalog.json'), 'utf8')).recipes.find((r) => r.body && !fetched.has(r.body.replace(/^bodies-/, '')));
+  check('a recipe family that was not fetched yet exists for the offline check', !!off, off && off.body);
+  const cardSel = `.rs-item[data-id$=":${off.id}"]`;
+  await ctx.setOffline(true); await p.fill('dialog.rs-sheet .rs-q', off.id); await p.waitForSelector(`dialog.rs-sheet ${cardSel}`, { timeout: 15000 });
+  await p.tap(`dialog.rs-sheet ${cardSel} .rs-head`); await p.waitForSelector(`dialog.rs-sheet ${cardSel} .rec-load.err`, { timeout: 30000 }).catch(() => {});
+  const offErr = await p.evaluate((sel) => { const c = document.querySelector(sel); return { err: !!c.querySelector('.rec-load.err'), retry: !!c.querySelector('[data-retry]'), html: (c.querySelector('.rs-forms') || c).innerHTML.slice(0, 160) }; }, cardSel);
+  check('offline: a family not fetched yet shows the failure with Retry (no blank card)', offErr.err && offErr.retry, JSON.stringify(offErr));
+  await p.fill('dialog.rs-sheet .rs-q', 'amen-chops'); await p.waitForSelector('dialog.rs-sheet .rs-item[data-id$=":amen-chops"] .rs-play', { timeout: 10000 }).catch(() => {});
+  check('offline: the already fetched recipe still shows its code and actions', await p.evaluate(() => !!document.querySelector('.rs-item[data-id$=":amen-chops"] .rs-play') && !!document.querySelector('.rs-item[data-id$=":amen-chops"] .rs-ins')));
+  await ctx.setOffline(false); await p.fill('dialog.rs-sheet .rs-q', off.id); await p.waitForSelector(`dialog.rs-sheet ${cardSel} [data-retry]`, { timeout: 10000 });
+  await p.tap(`dialog.rs-sheet ${cardSel} [data-retry]`); await p.waitForSelector(`dialog.rs-sheet ${cardSel} .rs-forms .fm`, { timeout: 20000 }).catch(() => {});
+  check('Retry after reconnecting loads the body', await p.evaluate((sel) => !!document.querySelector(sel + ' .rs-forms .fm') && !!document.querySelector(sel + ' .rs-play'), cardSel));
+  await p.fill('dialog.rs-sheet .rs-q', '');
+
   /* 5. Go to line is deliberate; the sheet closes and the caret lands on the line */
-  await p.tap('dialog.rs-sheet [data-tab="program"]'); await p.waitForSelector('dialog.rs-sheet .rs-card[data-id="atom:ph.kick"] .rs-go');
+  await setCode(V2); await p.waitForTimeout(600); /* the program of the first steps again (the lazy-recipe steps replaced it) */
+  await p.tap('dialog.rs-sheet [data-tab="program"]'); await p.waitForSelector('dialog.rs-sheet .rs-card[data-id="atom:ph.kick"] .rs-go', { timeout: 20000 });
   await p.tap('dialog.rs-sheet .rs-card[data-id="atom:ph.kick"] .rs-go'); await p.waitForTimeout(400);
   const at = await p.evaluate(() => { const v = document.getElementById('code').cmView; return v ? v.state.doc.lineAt(v.state.selection.main.head).number : 0; }); const want = Number(await p.evaluate(() => 0));
   check('the target button jumps to the first use line and closes the sheet', at > 0 && !(await p.$('dialog.rs-sheet[open]')), `line ${at}`);
+
+  /* 5b. the Stack editor head has its own Resources button: a real tap opens the sheet on the Stack program */
+  await p.evaluate(() => { location.hash = '#stack'; }); await p.waitForSelector('.view-stack .rs-open', { state: 'visible', timeout: 15000 });
+  await p.evaluate(() => { const t = document.getElementById('stackCode'); t.value = '$: s("bd*4")\nhooks.bind("zzslot", "zzrack")'; t.dispatchEvent(new Event('input', { bubbles: true })); }); await p.waitForTimeout(400);
+  await p.tap('.view-stack .rs-open'); await p.waitForSelector('dialog.rs-sheet[open] .rs-card', { timeout: 20000 });
+  await p.waitForFunction(() => document.querySelector('dialog.rs-sheet .rs-card[data-id="hook:zzrack"]'), null, { timeout: 15000 }).catch(() => {});
+  check('Stack head: a real tap on its Resources button opens the sheet, and the list is the Stack program (not the Rack code)', await p.evaluate(() => !!document.querySelector('dialog.rs-sheet .rs-card[data-id="hook:zzrack"]') && !document.querySelector('dialog.rs-sheet .rs-card[data-id="atom:ph.kick"]')));
+  await p.evaluate(() => { document.querySelector('dialog.rs-sheet').close(); location.hash = '#rack'; }); await p.waitForTimeout(300);
 
   /* 6. palette command, deep link, offline reopen */
   const cmds = await p.evaluate(() => window.strudelCraft.palette.list().filter((c) => /resources/.test(c.id)).map((c) => c.title)); await p.evaluate(() => window.strudelCraft.palette.list().find((c) => c.id === 'resources.open').run()); await p.waitForTimeout(600);

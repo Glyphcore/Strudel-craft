@@ -229,6 +229,15 @@ export function atomSnippet(item) {
   if (type === 'scale') return `n("0 2 4 6").scale(${R})`; if (type === 'text') return `// ${R} is plain text`;
   return /rhythm|drum|kick|snare|hat|rim|ghost|roll|stut|accent|struct/i.test(`${nm} ${(item.value && item.value.tags || []).join(' ')}`) ? `s("bd").struct(${R})` : `note(${R}).s("triangle")`;
 }
+// a recipe body ({ code, expr, lowered, lowered_note, lowered_check }) onto an Available entry: snippet, Play text, the block Insert reference puts in
+// (recipe code is a whole program: `$:` / label lines or setcpm are kept as written, a bare expression gets `$: `)
+export const blockText = (code) => { const c = str(code).replace(/\s+$/, ''); return !c ? '' : /^\s*(\$|[A-Za-z_]\w*)\s*:|\bsetcp?m\s*\(/m.test(c) ? c : '$: ' + c; };
+export function applyBody(entry, b) {
+  if (!b) return false; const code = str(b.code || b.expr || ''); entry.snippet = code; entry.insert = { type: 'block', text: blockText(code) }; entry.play = code || undefined; entry.lazy = false; entry.hydrated = true;
+  for (const k of ['lowered', 'lowered_note', 'lowered_check']) if (b[k] !== undefined) entry[k] = b[k];
+  if (!entry.desc && (b.intent || b.notes)) entry.desc = descOf({ intent: b.intent || b.notes });
+  return true;
+}
 export function available(host = {}, { q = '' } = {}) {
   const packs = (host.packs && host.packs.list) || []; const needle = q.trim().toLowerCase(); const items = new Map();
   for (const kind of ['atoms', 'hooks', 'vox-bank', 'recipes']) { try { items.set(kind, (host.packs.items && host.packs.items(kind)) || []); } catch { items.set(kind, []); } }
@@ -241,7 +250,7 @@ export function available(host = {}, { q = '' } = {}) {
         if (ing.kind === 'atoms') { entry.snippet = atomSnippet({ name: i.name, value: v }); entry.insert = { type: 'import', text: importLine(p.id, ing.id) }; entry.ref = `atoms.${i.name}`; entry.play = `${importLine(p.id, ing.id)}\n$: ${entry.snippet}`; entry.type = v.type; }
         else if (ing.kind === 'hooks') { entry.snippet = `hooks.bind("slot", "${i.name}")`; entry.insert = { type: 'bind', text: entry.snippet }; entry.ref = i.name; }
         else if (ing.kind === 'vox-bank') { entry.snippet = `await voxBank('${i.name}')`; entry.insert = { type: 'header', text: entry.snippet }; entry.ref = i.name; }
-        else if (ing.kind === 'recipes') { entry.snippet = str(v.code || v.expr || ''); entry.insert = { type: 'block', text: entry.snippet ? '$: ' + entry.snippet : '' }; entry.ref = i.name; if (entry.snippet) entry.play = entry.snippet; }
+        else if (ing.kind === 'recipes') { entry.ref = i.name; entry.insert = { type: 'block', text: '' }; entry.snippet = ''; if (v.body && !(v.code || v.expr)) { entry.lazy = true; entry.body = v.body; } else applyBody(entry, v); } /* #131: an indexed row has no code; its body is one lazy file per family (applyBody once it is fetched) */
         return entry;
       }).filter((e) => !needle || `${e.name} ${e.desc} ${e.folder} ${e.tags.join(' ')} ${e.pack}`.toLowerCase().includes(needle));
       if (list.length || (!needle && !['atoms', 'hooks', 'vox-bank', 'recipes'].includes(ing.kind))) { if (!kinds.has(ing.kind)) kinds.set(ing.kind, []); kinds.get(ing.kind).push({ id: ing.id, title: ing.title || ing.id, description: ing.description || '', state: ing.state || 'ready', code: !!ing.code, items: list }); }
@@ -309,4 +318,16 @@ export function packsFacade(P) {
   const resolution = JSON.parse(JSON.stringify(P.resolution || {}));
   for (const [pid, lp] of Object.entries(P.loaded || {})) for (const ing of lp.ingredients) for (const [alias, to] of itemAliases(ing.kind, ing.data)) { const k = (resolution[ing.kind] ||= {}); if (!k[alias]) k[alias] = { winner: `${pid}:${to}`, shadowed: [], alias: true }; }
   return { list, items, resolution };
+}
+
+// text form of available() for the CLI (`strudel refs IN --available [--q QUERY]`): pack, kind, item, description, import / insert line, example code state
+export function renderAvailable(av, max = 12) {
+  const out = [];
+  for (const p of av) {
+    out.push('', `${p.id}@${p.version || '?'}${p.license ? ' ' + p.license : ''}  ${p.title}`);
+    for (const k of p.kinds) { const n = k.ingredients.reduce((a, g) => a + g.items.length, 0); if (!n) continue; out.push(`  ${k.noun}s (${n})`);
+      for (const it of k.ingredients.flatMap((g) => g.items).slice(0, max)) out.push(`    ${it.name}${it.desc ? '  - ' + it.desc : ''}${it.lazy ? '  [body not loaded]' : it.snippet ? '' : '  [no example]'}${it.insert && it.insert.text && it.insert.type !== 'block' ? '  insert: ' + it.insert.text : ''}`);
+      if (n > max) out.push(`    ... ${n - max} more (use --q to narrow)`); }
+  }
+  return out.join('\n').trim() + '\n';
 }

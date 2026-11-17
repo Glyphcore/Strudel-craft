@@ -36,6 +36,15 @@ check('insert plan: the import goes after the header run and nothing else change
 check('insert plan: already present is a no-op', R.insertPlan(out, it).noop === true);
 check('insert plan: block goes after the caret line, empty program gets the text', R.applyPlan('$: a\n$: b', R.insertPlan('$: a\n$: b', { insert: { type: 'block', text: '$: c' } }, 3)) === '$: a\n$: c\n$: b' && R.applyPlan('', R.insertPlan('', it)) === it.insert.text + '\n');
 
+// #131 lazy recipe bodies: an indexed recipe row has no code until its family file is read; applyBody puts the body on the entry
+const amen = R.available(host, { q: 'amen-chops' }).flatMap((p) => p.kinds).flatMap((k) => k.ingredients).flatMap((g) => g.items).find((x) => x.name === 'amen-chops');
+const bodies = JSON.parse(fs.readFileSync(path.join(ROOT, 'site/data/recipes/dnb.json'), 'utf8')).bodies;
+check('available: an indexed recipe row is lazy (body file named, no snippet, nothing to insert yet)', amen && amen.lazy === true && amen.body === 'bodies-dnb' && !amen.snippet && !amen.insert.text && !amen.play, JSON.stringify(amen && { lazy: amen.lazy, body: amen.body }));
+check('applyBody: snippet, Play text and a block to insert (whole programs are kept as written), lowered fields copied', R.applyBody(amen, bodies['amen-chops']) && amen.snippet === bodies['amen-chops'].code && amen.play === amen.snippet && amen.insert.text === amen.snippet && amen.lazy === false && (amen.lowered === undefined || typeof amen.lowered === 'string'));
+check('blockText: a bare expression gets "$: ", programs with labels / setcpm do not, empty stays empty', R.blockText('s("bd")') === '$: s("bd")' && R.blockText('$: s("bd")\n') === '$: s("bd")' && R.blockText('kick: s("bd")') === 'kick: s("bd")' && R.blockText('setcpm(30)\n$: s("bd")').startsWith('setcpm') && R.blockText('') === '');
+const ins = R.insertPlan('$: a\n$: b', amen, 3); check('insert plan: a recipe block goes after the caret line and nothing else moves', ins && R.applyPlan('$: a\n$: b', ins) === '$: a\n' + amen.insert.text + '\n$: b');
+check('renderAvailable lists packs, kinds and items', /amen-chops/.test(R.renderAvailable(R.available(host, { q: 'amen' }))));
+
 // CLI twin
 if (!process.argv.includes('--no-cli')) {
   const CLI = path.join(process.env.STRUDEL_CLI || '/home/user/suno-track-lab/engine/strudel-cli', 'strudel');
@@ -47,6 +56,9 @@ if (!process.argv.includes('--no-cli')) {
     check('CLI twin: `strudel refs --json` equals the site model on night phonk v2 (kind, name, status, source, lines)', A.length === B.length && A.every((x, i) => x === B[i]), `cli ${A.length}, model ${B.length}, first diff ${A.find((x, i) => x !== B[i])} vs ${B.find((x, i) => x !== A[i])}`);
     fs.writeFileSync('/tmp/refs_unit_bad.strudel.js', bad); let code1 = 0; try { execFileSync(CLI, ['refs', '/tmp/refs_unit_bad.strudel.js'], { env: { ...process.env, STRUDEL_CRAFT: ROOT }, stdio: 'ignore' }); } catch (e) { code1 = e.status; }
     check('CLI twin: exit 1 on unresolved references', code1 === 1);
+    const av = JSON.parse(execFileSync(CLI, ['refs', V2, '--available', '--q', 'amen-chops', '--json'], { env: { ...process.env, STRUDEL_CRAFT: ROOT }, encoding: 'utf8', maxBuffer: 1 << 26, stdio: ['ignore', 'pipe', 'ignore'] })).available;
+    const ca = av.flatMap((p) => p.kinds).flatMap((k) => k.ingredients).flatMap((g) => g.items).find((x) => x.name === 'amen-chops');
+    check('CLI twin: `refs --available` reads the recipe body through the Strudel-craft loader (code present, nothing lazy), same code as the body file', ca && !ca.lazy && ca.snippet === bodies['amen-chops'].code, ca && JSON.stringify({ lazy: ca.lazy, n: (ca.snippet || '').length }));
   }
 }
 console.log(fails ? `${fails} FAILED` : 'ALL PASS'); process.exit(fails ? 1 : 0);

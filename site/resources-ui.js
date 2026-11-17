@@ -61,7 +61,7 @@ let voxCache = []; const loadVox = () => (sc.voxBanks ? sc.voxBanks.list().then(
 /* ---------------- the panel ---------------- */
 let paneN = 0;
 export function createPanel(root, o = {}) {
-  const st = { tab: o.tab || 'program', kind: 'all', problems: false, q: '', open: new Set(), more: {}, model: null, avail: null, host: null, playing: null, flash: null, busy: false };
+  const st = { tab: o.tab || 'program', kind: 'all', problems: false, q: '', open: new Set(), more: {}, model: null, avail: null, host: null, playing: null, flash: null, busy: false, bodies: new Map(), bodyErr: new Map(), loading: new Set() };
   root.classList.add('rs'); root.innerHTML = '';
   const tabs = document.createElement('div'); tabs.className = 'rs-tabs'; tabs.setAttribute('role', 'tablist');
   tabs.innerHTML = '<button type="button" role="tab" data-tab="program">In this program <b class="rs-n" data-n="program"></b></button><button type="button" role="tab" data-tab="available">Available <b class="rs-n" data-n="available"></b></button>';
@@ -134,10 +134,24 @@ export function createPanel(root, o = {}) {
     for (const holder of body.querySelectorAll('[data-forms]')) mountForms(holder, byId(holder.dataset.forms));
   };
   const lowerOf = (code) => { try { const a = sc.atoms; if (a && a.inline && /\batoms?\b/.test(code)) { const l = a.inline(code); if (l && l !== code) return l; } } catch { /* stays Craft only */ } return null; };
+  /* #131: an indexed recipe has no code until its family file is read: one recipeBodies() fetch per file (hash-verified, cached), a status row with a spinner, Retry on failure */
+  const bodyKey = (it) => `${it.pack}|${it.body}`;
+  const withBodies = (list) => { for (const p of list) for (const k of p.kinds) for (const g of k.ingredients) for (const i of g.items) if (i.lazy) { const b = st.bodies.get(bodyKey(i)); if (b) R.applyBody(i, b[i.name]); } return list; };
+  const loadBody = (it) => {
+    const key = bodyKey(it); if (st.loading.has(key)) return; st.loading.add(key); st.bodyErr.delete(key);
+    const P = sc.packs; Promise.resolve(P && P.recipeBodies ? P.recipeBodies(it.pack, it.body) : null).then((b) => { if (!b) throw new Error(`The recipe file ${it.body} could not be loaded. Check the connection, then retry.`); st.bodies.set(key, b); withBodies(st.avail || []); }).catch((e) => { st.bodyErr.set(key, e && e.message ? e.message : 'could not be loaded'); }).finally(() => { st.loading.delete(key); if (st.tab === 'available') drawAvail(); });
+  };
   const mountForms = (holder, it) => {
-    if (!it) return; const code = it.play || it.snippet || ''; if (!code) { holder.innerHTML = '<p class="rs-hint">No example for this item.</p>'; return; }
-    const craft = it.kind === 'atoms' ? `${it.insert.text}\n$: ${it.snippet}` : code; const lowered = lowerOf(craft);
-    if (sc.forms && sc.forms.render) holder.append(sc.forms.render({ craft, ...(lowered ? { lowered } : {}), ...(!lowered && /\batoms?\b|hooks\./.test(craft) ? { lowered_note: 'it needs the Craft runtime (atoms, hooks)' } : {}) }, { key: 'rs-' + it.id }));
+    if (!it) return;
+    if (it.lazy) {
+      const err = st.bodyErr.get(bodyKey(it));
+      if (err) { holder.innerHTML = `<div class="rec-load err" role="alert"><span>${esc(err)}</span><button type="button" class="ghost" data-retry="${esc(it.id)}">Retry</button></div>`; return; }
+      holder.innerHTML = '<div class="rec-load" role="status"><i class="spin" aria-hidden="true"></i><span>Loading recipe…</span></div>'; loadBody(it); return;
+    }
+    const code = it.play || it.snippet || ''; if (!code) { holder.innerHTML = '<p class="rs-hint">No example for this item.</p>'; return; }
+    const craft = it.kind === 'atoms' ? `${it.insert.text}\n$: ${it.snippet}` : code; const lowered = it.lowered || lowerOf(craft);
+    const form = { craft, ...(lowered ? { lowered } : {}), ...(!lowered && it.lowered_note ? { lowered_note: it.lowered_note } : {}), ...(!lowered && !it.lowered_note && /\batoms?\b|hooks\./.test(craft) ? { lowered_note: 'it needs the Craft runtime (atoms, hooks)' } : {}), ...(it.lowered_check ? { lowered_check: it.lowered_check } : {}) };
+    if (sc.forms && sc.forms.render) holder.append(sc.forms.render(form, { key: 'rs-' + it.id }));
     else holder.innerHTML = `<pre class="rs-pre">${esc(craft)}</pre>`;
   };
 
@@ -147,7 +161,7 @@ export function createPanel(root, o = {}) {
     const kinds = [...new Set([...mentions, ...(st.tab === 'available' ? ['atoms', 'hooks', 'vox-bank'] : [])])];
     await loadVox(); const host = await siteHost(code, kinds.filter((k) => k !== 'vox-bank')); if (me !== seq) return; st.host = host;
     st.model = R.buildModel(code, host); st.code = code;
-    if (st.tab === 'available' || force === 'avail') st.avail = R.available(host, { q: st.q });
+    if (st.tab === 'available' || force === 'avail') st.avail = withBodies(R.available(host, { q: st.q }));
     draw(); o.onModel && o.onModel(st.model);
   };
   const draw = () => {
@@ -172,6 +186,7 @@ export function createPanel(root, o = {}) {
     if (t.dataset.tab) { st.tab = t.dataset.tab; st.open.clear(); draw(); if (st.tab === 'available' && !st.avail) refresh('avail'); else if (st.tab === 'available') drawAvail(); return; }
     if (t.classList.contains('rs-head')) { const id = t.closest('.rs-card').dataset.id; st.open.has(id) ? st.open.delete(id) : st.open.add(id); draw(); return; }
     if (t.classList.contains('rs-k')) { st.kind = t.dataset.kind; draw(); return; }
+    if (t.dataset.retry) { const it = byId(t.dataset.retry); if (it) { st.bodyErr.delete(bodyKey(it)); drawAvail(); } return; }
     if (t.dataset.go) { goto(t.dataset.go); return; }
     if (t.dataset.open) { st.open.add(t.dataset.open); st.kind = 'all'; st.problems = false; st.flash = t.dataset.open; draw(); body.querySelector(`[data-id="${CSS.escape(t.dataset.open)}"]`)?.scrollIntoView({ block: 'nearest' }); return; }
     if (t.dataset.copy) { copy(t.dataset.copy); return; }
@@ -179,10 +194,10 @@ export function createPanel(root, o = {}) {
     if (t.dataset.more) { st.more[t.dataset.more] = (st.more[t.dataset.more] || PAGE) + PAGE; drawAvail(); return; }
     if (t.dataset.fix) { const r = st.model.refs.find((x) => x.id === t.dataset.fix); if (r && r.fixLine) done(insertReference({ insert: { type: 'import', text: r.fixLine } }), r.fixLine); return; }
     if (t.dataset.insert) { const it = byId(t.dataset.insert); if (!it) return; if (it.kind === 'hooks') { const slot = (st.model && st.model.refs.find((r) => r.kind === 'slot' && r.status.includes('info'))); const text = `hooks.bind("${slot ? slot.name : 'slot'}", "${it.name}")`; done(insertReference({ ...it, insert: { type: 'bind', text } }), text); } else done(insertReference(it), it.insert.text, it); return; }
-    if (t.dataset.play) { const it = byId(t.dataset.play); if (it && sc.quickplay) sc.quickplay.press(t, { key: 'res:' + it.id, title: it.name, code: it.play }); return; }
+    if (t.dataset.play) { const it = byId(t.dataset.play); if (it && sc.quickplay) sc.quickplay.press(t, () => ({ key: 'res:' + it.id, title: it.name, code: it.play })); return; }
     if (t.matches('.rs-prob input')) { st.problems = t.checked; draw(); }
   });
-  root.addEventListener('input', (e) => { if (e.target.matches('.rs-q')) { st.q = e.target.value; st.avail = R.available(st.host || {}, { q: st.q }); const pos = e.target.selectionStart; drawAvail(); const q = bar.querySelector('.rs-q'); q.focus({ preventScroll: true }); q.setSelectionRange(pos, pos); } });
+  root.addEventListener('input', (e) => { if (e.target.matches('.rs-q')) { st.q = e.target.value; st.avail = withBodies(R.available(st.host || {}, { q: st.q })); const pos = e.target.selectionStart; drawAvail(); const q = bar.querySelector('.rs-q'); q.focus({ preventScroll: true }); q.setSelectionRange(pos, pos); } });
   root.addEventListener('keydown', (e) => e.stopPropagation());
   const copy = async (text) => { try { await navigator.clipboard.writeText(text); } catch { const x = document.createElement('textarea'); x.value = text; x.style.cssText = 'position:fixed;opacity:0'; document.body.append(x); x.select(); try { document.execCommand('copy'); } catch { /* none */ } x.remove(); } toast('Copied ' + (text.length > 40 ? text.slice(0, 40) + '…' : text), { kind: 'ok', ms: 1800 }); };
   const done = (r, text, it) => {

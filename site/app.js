@@ -325,7 +325,10 @@ const Viz = {
   readColors() { const cs = getComputedStyle(document.documentElement); for (const k of ['sig', 'sig-2', 'text', 'dim', 'faint', 'line', 'line-2', 'panel', 'panel-2', 'warn', 'bad', 'ok']) this.colors[k] = cs.getPropertyValue('--' + k).trim(); this.ver = (this.ver || 0) + 1; },
   /* readouts that change every frame write the data of one persistent text node: replacing the child with textContent measured about 350 ms/s of main thread at 20 writes a second (#180) */
   setText(el, s) { let n = el.firstChild; if (n && n.nodeType === 3 && !n.nextSibling) n.data = s; else el.textContent = s; },
-  fit(c) { const dpr = Math.min(2, window.devicePixelRatio || 1); const w = Math.round(c.clientWidth * dpr), h = Math.round(c.clientHeight * dpr); if (c.width !== w || c.height !== h) { c.width = w; c.height = h; } return dpr; },
+  /* canvas backing size: the CSS size is read once per resize (ResizeObserver) and per dpr, not every frame; a layout read in the frame forced style + layout while the page was busy (#176) */
+  fit(c) { const dpr = Math.min(2, window.devicePixelRatio || 1); let z = this.sizes && this.sizes.get(c);
+    if (!z) { if (!this.sizes) { this.sizes = new WeakMap(); this.ro = typeof ResizeObserver === 'function' ? new ResizeObserver((es) => { for (const e of es) this.sizes.delete(e.target); this.laneSig = ''; }) : null; } z = [c.clientWidth, c.clientHeight]; this.sizes.set(c, z); if (this.ro) this.ro.observe(c); }
+    const w = Math.round(z[0] * dpr), h = Math.round(z[1] * dpr); if (c.width !== w || c.height !== h) { c.width = w; c.height = h; this.laneSig = ''; } return dpr; },
   init() {
     this.viz = $('#viz'); this.lanes = $('#lanes'); this.meter = $('#meter'); this.cycleOut = $('#cycleOut'); this.cpsOut = $('#cpsOut'); this.peakOut = $('#peakOut');
     new ResizeObserver(() => this.drawAll(performance.now())).observe(this.viz);
@@ -409,6 +412,7 @@ const Viz = {
   },
   drawLanes() {
     const c = this.lanes, dpr = this.fit(c), g = c.getContext('2d'), W = c.width, H = c.height, C = this.colors;
+    if (!W || !H) { this.laneSig = ''; return; } /* hidden or not laid out yet: nothing to draw (a 0-size layer canvas makes drawImage throw) */
     const gutter = 64 * dpr; const sch = Engine.scheduler; const playing = S.playing && Engine.started;
     const now = playing ? sch.now() : 0; const c0 = Math.floor(now); const frac = now - c0;
     if (this.cycleOut) { const a = playing ? now.toFixed(2) : '0.00', b = sch ? (sch.cps * 60 * 4).toFixed(0) + ' bpm' : '-'; if (a !== this.txtA) { this.txtA = a; this.setText(this.cycleOut, a); } if (b !== this.txtB) { this.txtB = b; this.setText(this.cpsOut, b); } }

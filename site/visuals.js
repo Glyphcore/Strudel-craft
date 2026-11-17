@@ -90,9 +90,9 @@ function frame() {
   raf = requestAnimationFrame(frame);
   if (document.hidden) return; /* hidden: no painting or highlighting */
   const tn = performance.now();
-  if (VB.rafAt) VB.gap = 0.9 * VB.gap + 0.1 * Math.min(1000, tn - VB.rafAt); VB.rafAt = tn; VB.stressed = VB.gap > 40 || VB.cost > 40;
+  if (VB.rafAt) VB.gap = 0.9 * VB.gap + 0.1 * Math.min(1000, tn - VB.rafAt); VB.rafAt = tn; const rec = document.body.classList.contains('capturing'); VB.stressed = rec || VB.gap > 40 || VB.cost > 40; /* while the Record panel waits/records/renders the recorder owns the main thread: painters and highlight take the stressed duty (#176) */
   /* #180 1b-render frame cap: highlight and painters run at most 20 times a second (10 while the page scrolls or reduced motion is on), never on a hidden page */
-  if (FLAG_VIS !== 'every' && VB.last && tn - VB.last < (tn < scrollUntil || reduced.matches ? 100 : 50) - 1) { VB.skipped++; return; }
+  if (FLAG_VIS !== 'every' && VB.last && tn - VB.last < (rec || tn < scrollUntil || reduced.matches ? 100 : 50) - 1) { VB.skipped++; return; }
   if (FLAG_VIS !== 'every' && FLAG_VIS !== 'requery' && VB.last && tn - VB.last < VB.cost / (VB.stressed ? VB.DUTY_STRESSED : VB.DUTY_FREE)) { VB.skipped++; return; }
   runFrame(); const d = performance.now() - tn; VB.cost = VB.ran ? 0.7 * VB.cost + 0.3 * d : d; VB.ran++; VB.last = tn;
 }

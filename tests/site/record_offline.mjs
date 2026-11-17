@@ -29,6 +29,9 @@ const server = http.createServer((req, res) => { let p = decodeURIComponent(new 
   res.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream', 'cache-control': 'max-age=600' }); fs.createReadStream(f).pipe(res); });
 await new Promise((r) => server.listen(0, '127.0.0.1', r)); const BASE = `http://127.0.0.1:${server.address().port}${PREFIX}`;
 let fails = 0; const report = {}; const check = (n, ok, d = '') => { if (!ok) fails++; console.log(`${ok ? 'PASS' : 'FAIL'}  ${n}${d ? '  -- ' + d : ''}`); };
+/* every long in-page await has a deadline: a starved page (x4 throttle) must end in a clear FAIL, never a silent hang (#176) */
+const bail = async (what, ms) => { check(what, false, `no result after ${ms} ms (page main thread starved or the recorder never finished)`); try { console.log('REPORT ' + JSON.stringify(report)); await Promise.race([browser.close(), new Promise((r) => setTimeout(r, 5000))]); } catch (e) { /* closing */ } process.exit(1); };
+const ev = async (what, ms, fn, a) => { let t; const r = await Promise.race([page.evaluate(fn, a), new Promise((res) => { t = setTimeout(() => res(ev.TIMEOUT), ms); })]); clearTimeout(t); if (r === ev.TIMEOUT) await bail(what, ms); return r; }; ev.TIMEOUT = Symbol('timeout');
 const W = readWav(fs.readFileSync(REF)); const CPS = +arg('--cps', 128.8 / 240); /* the program's own setcpm(128.8 / 4) wins on the site; ref_render.sh keeps it too */
 const refWin = (c0, frames, sr) => { const a = Math.round((c0 - REF_FROM) / CPS * W.sr), b = a + Math.round(frames / sr * W.sr); return { x: mono(W.L.subarray(a, b), W.R.subarray(a, b)), sr: W.sr }; };
 let MG = 1; /* the site's master level (default -6 dB): a take is post master, the CLI render is not; candidates are brought back to unity before comparing */
@@ -50,7 +53,7 @@ MG = 10 ** (-(await page.evaluate(() => window.strudelCraft.transport.masterDb))
 const PCM = `(rec, kind) => { const a = rec.audio[kind]; const m = new Float32Array(a.L.length); for (let i = 0; i < m.length; i++) m[i] = 0.5 * (a.L[i] + a.R[i]); const b = new Uint8Array(m.buffer); let s = ''; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return { b64: btoa(s), sr: a.sr, frames: a.L.length }; }`;
 
 /* 1. offline Record while playing */
-const off = await page.evaluate(async ({ n, at, PCM }) => { const pcm = eval(PCM); const C = window.strudelCraft.capture, S = window.__sc.S; C.configure({ source: 'offline', audio: true, events: true, code: true });
+const off = await ev('offline render of 4 cycles', 240000, async ({ n, at, PCM }) => { const pcm = eval(PCM); const C = window.strudelCraft.capture, S = window.__sc.S; C.configure({ source: 'offline', audio: true, events: true, code: true });
   const seen = new Set(); let stopped = false; const bg0 = window.strudelCraft.bg.stats(); const t0 = performance.now();
   const iv = setInterval(() => { const t = document.querySelector('#capState'); if (t && /Rendering offline \d+ %/.test(t.textContent)) seen.add(t.textContent); if (!S.playing) stopped = true; }, 50);
   const rec = await C.recordOffline(n, { at, name: 'offline' }); clearInterval(iv); const bg1 = window.strudelCraft.bg.stats();
@@ -70,11 +73,11 @@ check('offline render matches the CLI render (onsets >= 90 % matched, p95 <= 5 m
   const n = compare0(rw, { x: y, sr: rw.sr }); report.negativeControl = n; check('negative control: a reference with silenced onsets is not accepted (soft onset match < 90 %, dropouts > 0)', n.matchedSoft < 0.9 * n.refOnsets && n.dropouts > 0, JSON.stringify({ refOnsets: n.refOnsets, matched: n.matched, matchedSoft: n.matchedSoft, dropouts: n.dropouts })); }
 
 /* 2. determinism */
-const again = await page.evaluate(async ({ n, at, id }) => { const C = window.strudelCraft.capture; const rec = await C.recordOffline(n, { at, name: 'offline-again' }); const a = await C.get(id); const env = (x) => x.recipe.outputs.render.envelope; let bad = 0, cnt = 0; const e1 = env(a), e2 = env(rec); for (let i = 0; i < Math.min(e1.length, e2.length); i++) { if (e1[i] < -50 && e2[i] < -50) continue; cnt++; if (Math.abs(e1[i] - e2[i]) > 1.5) bad++; } return { same: rec.recipe.outputs.render.sha256 === a.recipe.outputs.render.sha256, within: cnt ? 1 - bad / cnt : 0 }; }, { n: N, at: AT, id: off.id });
+const again = await ev('second offline render', 240000, async ({ n, at, id }) => { const C = window.strudelCraft.capture; const rec = await C.recordOffline(n, { at, name: 'offline-again' }); const a = await C.get(id); const env = (x) => x.recipe.outputs.render.envelope; let bad = 0, cnt = 0; const e1 = env(a), e2 = env(rec); for (let i = 0; i < Math.min(e1.length, e2.length); i++) { if (e1[i] < -50 && e2[i] < -50) continue; cnt++; if (Math.abs(e1[i] - e2[i]) > 1.5) bad++; } return { same: rec.recipe.outputs.render.sha256 === a.recipe.outputs.render.sha256, within: cnt ? 1 - bad / cnt : 0 }; }, { n: N, at: AT, id: off.id });
 check('offline render is deterministic as far as superdough allows (same sha256, or level fingerprint within 1.5 dB on >= 95 % of blocks: supersaw phases are random on the audio thread)', again.same || again.within >= 0.95, JSON.stringify(again)); report.determinism = again;
 
 /* 3. cancel */
-const cancel = await page.evaluate(async () => { const C = window.strudelCraft.capture; const n0 = (await C.list()).length; const p = C.recordOffline(16, { at: 0, name: 'cancel-me' }); await new Promise((r) => setTimeout(r, 1500)); C.stop(); const r = await p; return { result: r, stored: (await C.list()).length - n0 }; });
+const cancel = await ev('offline render Cancel', 60000, async () => { const C = window.strudelCraft.capture; const n0 = (await C.list()).length; const p = C.recordOffline(16, { at: 0, name: 'cancel-me' }); await new Promise((r) => setTimeout(r, 1500)); C.stop(); const r = await p; return { result: r, stored: (await C.list()).length - n0 }; });
 check('Cancel stops an offline render and stores nothing', cancel.result === null && cancel.stored === 0, JSON.stringify(cancel));
 
 /* 4 + 5. live takes: seek to cycle 16, record cycles 17..21 under throttling; then a take with a forced stall */
@@ -85,7 +88,7 @@ const live = async (stall) => { await page.evaluate(() => { const T = window.str
   await page.evaluate((c) => Object.assign(window.strudelCraft.range.state, { start: c }), LAT - 2); await page.evaluate(() => window.strudelCraft.transport.play());
   await page.waitForFunction(() => window.__sc.S.playing && !window.__sc.S.busy, null, { timeout: 120000 });
   if (THR > 1 && !stall) await cdp.send('Emulation.setCPUThrottlingRate', { rate: THR });
-  const r = await page.evaluate(async ({ n, at, stall, PCM, arg0 }) => { const pcm = eval(PCM); const C = window.strudelCraft.capture; C.configure({ source: 'live', audio: true, events: true, code: true, autoFix: false });
+  const r = await ev(stall ? 'live take with a forced stall' : `live take under x${THR} throttling`, 300000, async ({ n, at, stall, PCM, arg0 }) => { const pcm = eval(PCM); const C = window.strudelCraft.capture; C.configure({ source: 'live', audio: true, events: true, code: true, autoFix: false });
     if (stall) { const iv = setInterval(() => { if (C.state.phase === 'recording' && window.strudelCraft.capture.state.recAudio0 != null) { clearInterval(iv); setTimeout(() => { const t = performance.now(); while (performance.now() - t < 700) { /* a frozen main thread */ } }, 1500); } }, 20); }
     const rec = await C.record({}, { mode: 'cycles', n, at, name: stall ? 'stalled' : 'live' }); if (!rec) return { error: 'no take' };
     return { check: rec.recipe.outputs.capture.check, id: rec.recipe.id, hasRender: !!rec.audio.render, cap: pcm(rec, 'capture'), render: rec.audio.render ? pcm(rec, 'render') : null, start: rec.recipe.timing.start, underLoad: rec.recipe.outputs.render ? rec.recipe.outputs.render.underLoad : null, load: rec.recipe.outputs.render ? rec.recipe.outputs.render.load : null, recipe: arg0 ? rec.recipe : undefined }; }, { n: N, at: LAT, stall, PCM, arg0: !!arg('--dump', null) });
@@ -102,7 +105,7 @@ const LS = await live(true);
 if (LS.error) check('live take with a forced stall', false, LS.error);
 else { const gl = compare(refWin(LS.start, LS.cap.frames, LS.cap.sr), { x: fromB64(LS.cap.b64), sr: LS.cap.sr }); report.liveStall = { check: LS.check, glitch: gl };
   check('a live take with a 700 ms main-thread stall is flagged (re-anchor or dropped events)', LS.check && !LS.check.ok && (LS.check.reanchors > 0 || LS.check.droppedEvents > 0), JSON.stringify(LS.check));
-  const rr = await page.evaluate(async ({ id, PCM }) => { const pcm = eval(PCM); const rec = await window.strudelCraft.capture.rerender(id); return rec ? { replaced: !!rec.replaced, pcm: pcm(rec, 'render') } : null; }, { id: LS.id, PCM });
+  const rr = await ev('offline re-render of the stalled take', 240000, async ({ id, PCM }) => { const pcm = eval(PCM); const rec = await window.strudelCraft.capture.rerender(id); return rec ? { replaced: !!rec.replaced, pcm: pcm(rec, 'render') } : null; }, { id: LS.id, PCM });
   const gr = rr ? compare(refWin(LS.start, rr.pcm.frames, rr.pcm.sr), { x: fromB64(rr.pcm.b64), sr: rr.pcm.sr }) : null; report.liveStallRerender = gr;
   check('its offline re-render replaces it and matches the CLI render (clean)', rr && rr.replaced && SAME(gr), JSON.stringify(gr)); }
 check('no page errors', errors.length === 0, errors.slice(0, 4).join(' | '));

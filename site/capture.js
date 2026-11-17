@@ -958,20 +958,27 @@ function sync() {
   el.hint.textContent = (opts.mode === 'cycles' ? `Cycles: starts and stops on cycle boundaries (${lenSum()}), loops cleanly; with audio + code-state the transport stops at the end for an exact reference render.` : opts.mode === 'until' ? 'Until stop: records until you stop or the play-time limit.' : 'Free: records from now until you stop.') + ` Records ${inc}.` + (WEBM_MIME ? ' Realtime audio takes also keep a WebM/opus copy.' : ' WebM/opus copies are not available in this browser (no MediaRecorder opus); WAV only.');
   if (!busy) { el.state.textContent = st.rendering ? 'Rendering offline' : 'Ready'; el.time.textContent = '00:00.0'; }
 }
+/* Per-frame work is cached (#176): the readout text is written only when it changes, the meter is repainted only when its pixels would change (bar width and colour, at most every 40 ms while recording), canvas size comes from a ResizeObserver instead of a layout read each frame, and the theme colours are read once per phase/theme instead of getComputedStyle each frame. Under a x4 CPU throttle the old per-frame style + layout reads starved the recorder. */
+const dv = { t: '', s: '', key: '', at: 0, size: null, ro: null, col: null, colKey: '' };
+function setText(n, k, v) { if (dv[k] !== v) { dv[k] = v; n.textContent = v; } }
+function meterSize(c) { if (!dv.ro && typeof ResizeObserver === 'function') { dv.ro = new ResizeObserver(() => { dv.size = null; dv.key = ''; }); dv.ro.observe(c); } if (!dv.size) dv.size = [c.clientWidth, c.clientHeight]; return dv.size; }
 function draw() {
   if (!el.w || el.w.hidden && st.phase === 'idle') return;
   const rate = sr(), now = st.tapCtx ? st.tapCtx.currentTime * rate : 0;
-  if (st.phase === 'waiting') { const ck = clock(); const left = (st.recFrame - now) / rate; el.time.textContent = '-' + fmtT(left); el.state.textContent = ck && st.startCycle != null ? `Count-in: ${Math.max(0, Math.ceil(left * ck.cps))}` : 'Starting'; }
+  if (st.phase === 'waiting') { const ck = clock(); const left = (st.recFrame - now) / rate; setText(el.time, 't', '-' + fmtT(left)); setText(el.state, 's', ck && st.startCycle != null ? `Count-in: ${Math.max(0, Math.ceil(left * ck.cps))}` : 'Starting'); }
   else if (st.phase === 'recording') {
-    const t = (now - st.recFrame) / rate; el.time.textContent = fmtT(t);
-    el.state.textContent = st.run.mode === 'cycles' ? `Cycle ${N.cyc(Math.min(st.run.n, t * st.cps)).padStart(N.cyc(st.run.n).length, '\u2007')} / ${N.cyc(st.run.n)}` : st.run.mode === 'until' ? `Cap ${fmtT((st.endFrame - st.recFrame) / rate)}` : 'Recording';
-  }
-  const c = el.meter, dpr = Math.min(2, window.devicePixelRatio || 1), W = Math.round(c.clientWidth * dpr), H = Math.round(c.clientHeight * dpr);
-  if (!W || !H) return; if (c.width !== W) c.width = W; if (c.height !== H) c.height = H;
+    const t = (now - st.recFrame) / rate; setText(el.time, 't', fmtT(t));
+    setText(el.state, 's', st.run.mode === 'cycles' ? `Cycle ${N.cyc(Math.min(st.run.n, t * st.cps)).padStart(N.cyc(st.run.n).length, '\u2007')} / ${N.cyc(st.run.n)}` : st.run.mode === 'until' ? `Cap ${fmtT((st.endFrame - st.recFrame) / rate)}` : 'Recording');
+  } else { dv.t = ''; dv.s = ''; }
+  const t0 = performance.now(); if (t0 - dv.at < 40) return; dv.at = t0;
+  const c = el.meter, dpr = Math.min(2, window.devicePixelRatio || 1), [cw, ch] = meterSize(c), W = Math.round(cw * dpr), H = Math.round(ch * dpr);
+  if (!W || !H) return; const sized = c.width !== W || c.height !== H; if (sized) { c.width = W; c.height = H; }
+  const db = st.peak > 0 ? 20 * Math.log10(st.peak) : -90; const x = Math.round(Math.max(0, Math.min(1, (db + 60) / 60)) * W); const hot = db > -1 || st.phase === 'recording';
+  const key = x + '|' + hot + '|' + W + '|' + H; if (key === dv.key && !sized) { st.peak *= 0.92; return; } dv.key = key;
+  const ck = (el.w.dataset.theme || '') + '|' + (document.documentElement.dataset.theme || '') + '|' + document.documentElement.className; if (!dv.col || dv.colKey !== ck) { const cs = getComputedStyle(el.w); dv.colKey = ck; dv.col = { line: cs.getPropertyValue('--line').trim() || '#262d36', bad: cs.getPropertyValue('--bad').trim() || '#f66', ok: cs.getPropertyValue('--sig-2').trim() || '#2fd6c3' }; }
   const g = c.getContext('2d'); g.clearRect(0, 0, W, H);
-  const cs = getComputedStyle(el.w); const db = st.peak > 0 ? 20 * Math.log10(st.peak) : -90; const x = Math.max(0, Math.min(1, (db + 60) / 60)) * W;
-  g.fillStyle = cs.getPropertyValue('--line').trim() || '#262d36'; g.fillRect(0, 0, W, H);
-  g.fillStyle = db > -1 || st.phase === 'recording' ? (cs.getPropertyValue('--bad').trim() || '#f66') : (cs.getPropertyValue('--sig-2').trim() || '#2fd6c3'); g.fillRect(0, 0, x, H);
+  g.fillStyle = dv.col.line; g.fillRect(0, 0, W, H);
+  g.fillStyle = hot ? dv.col.bad : dv.col.ok; g.fillRect(0, 0, x, H);
   st.peak *= 0.92;
 }
 function peaksOf(a, cols = 160) {

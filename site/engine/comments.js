@@ -3,7 +3,10 @@
 // do not move. Strings, template literals (with nested ${ } code) and regex literals are respected: `//` inside "https://x", `/*` inside a regex or a backtick string is
 // not a comment. Every text pass that splits arguments, scans statements or runs a regex over program text works on blankComments(src), never on raw text.
 const REGEX_AFTER = /^(?:return|typeof|instanceof|in|of|new|delete|void|throw|case|do|else|yield|await)$/;
-export function blankComments(src) {
+/* Per-string memo (#176): the per-frame passes (cue reload check, tempo, samples) ask about the same few program texts many times a second; strings are immutable, so the key is the text itself and an edit is a new key. The cached ranges array is shared: callers must not mutate it. */
+const memo = (fn) => { const m = new Map(); return (t) => { t = String(t); let v = m.get(t); if (v === undefined) { v = fn(t); m.set(t, v); if (m.size > 12) m.delete(m.keys().next().value); } return v; }; };
+export const blankComments = memo(blankComments0);
+function blankComments0(src) {
   const t = String(src); const r = commentRanges(t); if (!r.length) return t;
   const o = t.split(''); for (const [a, b] of r) for (let k = a; k < b; k++) if (o[k] !== '\n' && o[k] !== '\r' && o[k] !== '\u2028' && o[k] !== '\u2029') o[k] = ' ';
   return o.join('');
@@ -11,7 +14,8 @@ export function blankComments(src) {
 /* true when position pos (a caret between characters) sits inside a comment: inside it, or at its end when it is unterminated or a line comment */
 export const inComment = (src, pos) => { const t = String(src); return commentRanges(t).some(([a, b]) => pos > a && (pos < b || (pos === b && !(t[a + 1] === '*' && b - a >= 4 && t.slice(a, b).endsWith('*/'))))); };
 /* commentRanges(src) -> [[from, to)] of every comment (a line comment ends before its newline; an unterminated block comment runs to the end). */
-export function commentRanges(src) {
+export const commentRanges = memo((src) => commentRanges0(src));
+function commentRanges0(src) {
   const t = String(src); if (!/\/[\/*]/.test(t)) return [];
   const n = t.length; const ranges = []; const blank = (a, b) => { ranges.push([a, b]); };
   let last = ''; let lastWord = ''; const stack = []; // stack: brace depths where a template ${ resumes

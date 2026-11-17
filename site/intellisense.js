@@ -179,6 +179,21 @@ async function mount() {
     { tag: t.invalid, color: 'var(--bad)' },
   ]));
   const lint = await import(`https://esm.sh/@codemirror/lint@6.8.5`);
+  /* editor-wide undo / redo (#177): CodeMirror's historyKeymap covers Ctrl+Z, Ctrl+Y and Ctrl/Cmd+Shift+Z, but with Caps Lock on (or
+     any layout reporting the unshifted letter) Ctrl+Shift+Z arrives as key "z" and would run undo; handle it here. The app's own
+     shortcuts ignore keys typed in the editor. Alt+Z / Alt+Shift+Z step the app's version history instead (app.js). */
+  const editorRedoKey = (e, v) => { if ((e.ctrlKey || e.metaKey) && e.shiftKey && !e.altKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); cmds.redo(v); return true; } return false; };
+  /* on-screen undo / redo buttons (phones have no shortcuts): disabled when the editor's history is empty; one tap = one undo step */
+  function wireHistoryButtons(ids) {
+    for (const id of ids) {
+      const ta = document.getElementById(id); const v = ta && ta.cmView; if (!v) continue;
+      const head = ta.closest('.editor'); const u = head && head.querySelector('[data-ed-undo]'); const r = head && head.querySelector('[data-ed-redo]'); if (!u || !r) continue;
+      const sync = () => { u.disabled = !cmds.undoDepth(v.state); r.disabled = !cmds.redoDepth(v.state); };
+      u.addEventListener('click', () => { cmds.undo(v); v.focus(); }); r.addEventListener('click', () => { cmds.redo(v); v.focus(); });
+      for (const b of [u, r]) b.addEventListener('pointerdown', (e) => e.preventDefault()); /* the editor keeps its selection and focus */
+      v.dispatch({ effects: smod.StateEffect.appendConfig.of(EditorView.updateListener.of(sync)) }); sync();
+    }
+  }
   const [vmod, smod, cmds, inlineMod] = await Promise.all([import(`https://esm.sh/@codemirror/view@${V.view}`), import('https://esm.sh/@codemirror/state@6'), import('https://esm.sh/@codemirror/commands@6'), import('./inline.js')]);
   const ghost = inlineMod.setupInline(api, { EditorView, Decoration: vmod.Decoration, WidgetType: vmod.WidgetType, StateField: smod.StateField, StateEffect: smod.StateEffect, Prec: smod.Prec, keymap, ac, indentMore: cmds.indentMore });
   api.ghost = ghost; api.startCompletion = (view) => ac.startCompletion(view);
@@ -284,7 +299,7 @@ async function mount() {
     const desc = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value'); let view; let syncing = false; let learnT = 0;
     view = new EditorView({
       doc: desc.get.call(ta), parent: ta.parentNode,
-      extensions: [ghost.extension, hlField, wField, sigField, refField, basicSetup, lint.lintGutter(), javascript(), theme, hl, hover, EditorView.lineWrapping, ac.autocompletion({ override: [source], activateOnTyping: true, icons: false }),
+      extensions: [smod.Prec.highest(EditorView.domEventHandlers({ keydown: (e, v) => editorRedoKey(e, v) })), ghost.extension, hlField, wField, sigField, refField, basicSetup, lint.lintGutter(), javascript(), theme, hl, hover, EditorView.lineWrapping, ac.autocompletion({ override: [source], activateOnTyping: true, icons: false }),
         EditorView.contentAttributes.of({ 'aria-label': ta.getAttribute('aria-label') || (id === 'code' ? 'Recipe code' : 'Stack program'), autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false' }),
         EditorView.updateListener.of((u) => { if (!u.docChanged || syncing) return; const v = u.state.doc.toString(); desc.set.call(ta, v); ta.dispatchEvent(new Event('input', { bubbles: true })); clearTimeout(learnT); learnT = setTimeout(() => learn(v), 1200); })],
     });
@@ -295,6 +310,7 @@ async function mount() {
     import('./literals.js').then((m) => m.attach(view, id)).catch((e) => console.warn('literal editors unavailable:', e.message));
   }
   const viewFor = (v) => document.getElementById(v === 'stack' ? 'stackCode' : 'code').cmView;
+  wireHistoryButtons(['code', 'stackCode']);
   window.addEventListener('live:error', (e) => {
     const view = viewFor(e.detail.view); if (!view) return; const doc = view.state.doc;
     const ln = e.detail.line && e.detail.line >= 1 && e.detail.line <= doc.lines ? doc.line(e.detail.line) : doc.line(doc.lines);

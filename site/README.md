@@ -8,7 +8,7 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
 - **Stage**: scope + log-frequency spectrum (Hz / dB axes) of the master output, and pattern lanes for the current cycle with a moving playhead.
 - **Views** (`1`-`7`): Rack (browser, code editor, inspector), Stack (layer recipes into one `$:` program with per-layer mute and `postgain` level), Ref (plugin/function reference), Practice (best practices), Perform (pad banks and control boards), Syntax (runnable examples of the new paradigms, and the composition concepts of docs/COMPOSITION.md), Graph (blueprint node editor over the shared model; loaded on first open).
 - Old URLs `compose.html`, `plugins.html`, `practices.html` redirect to `#stack`, `#ref`, `#practice`. A recipe deep link is `index.html#r/<recipe-id>`.
-- Shortcuts: press `?` in the app for the cheat sheet (Space, arrows / J K, Enter, `[` `]`, `-` `=`, A, `/`, Esc, Ctrl/Cmd+Enter, Ctrl/Cmd+Z, C, O, T).
+- Shortcuts: press `?` in the app for the cheat sheet (Space, arrows / J K, Enter, `[` `]`, `-` `=`, A, `/`, Esc, Ctrl/Cmd+Enter, Ctrl/Cmd+Z, C, O, T). Undo / redo (#177): in the code box Ctrl/Cmd+Z, Ctrl+Y and Ctrl/Cmd+Shift+Z (also with Caps Lock) are the editor's text undo / redo; elsewhere Ctrl+Z is the knob / stack undo. Alt+Z / Alt+Shift+Z step the version history (not while typing in a field). The Code and Stack heads have 44px undo, redo and version-history buttons for phones (undo / redo disabled when the editor has nothing to step); programmatic edits (Insert, ghost accept) are one undo step.
   Key scoping (`onKey` in app.js): a focused widget that handles its own keys (`[data-keys="own"]`, `role="menu"` / `menuitem`,
   `aria-haspopup="menu"`, e.g. the copy button) owns Enter, Space, the arrows, Home / End and Esc; any other focused button, link or
   summary owns Enter (and Space, except links) for its own activation. Those keys never also reach the global shortcuts, so a key on a
@@ -311,6 +311,8 @@ editor's signature / completion context (no popups inside a comment). The acorn 
 the same module through `STRUDEL_CRAFT` (`engine/strudel-cli/lib/comments.mjs`). A new text pass must call it first; tests: `tests/site/comments.mjs`.
 
 ## Code editor and intellisense (`intellisense.js`)
+
+Undo / redo: `intellisense.js` adds a highest-precedence Ctrl/Cmd+Shift+Z handler (Caps Lock reports key `z`, which CodeMirror reads as undo) and wires the `[data-ed-undo]` / `[data-ed-redo]` head buttons to `undo` / `redo` from `@codemirror/commands`, enabled by `undoDepth` / `redoDepth`; test `node tests/site/editor_history.mjs`.
 The `#code` and `#stackCode` textareas are upgraded to CodeMirror 6 (`codemirror@6.0.1`, `@codemirror/autocomplete@6.18.6`,
 `@codemirror/lang-javascript@6.2.3`, loaded from esm.sh). The textarea stays the source of truth (its `value` is kept in sync both ways),
 so if the CDN is unreachable the plain editable textarea remains. Hovering a known function shows its signature.

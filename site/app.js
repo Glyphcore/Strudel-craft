@@ -853,7 +853,7 @@ const KEYS = [
   ['Space', 'Play / stop'], ['↑ ↓  or  K J', 'Previous / next recipe (auditions while playing)'], ['Enter', 'Play the selected recipe'],
   ['[  ]', 'Tempo −1 / +1 BPM (Shift: ±10)'], ['−  =', 'Master −1 / +1 dB'], ['A', 'Add / remove selected recipe in the stack'],
   ['1 - 7', 'Rack / Stack / Ref / Practice / Perform / Syntax / Graph'], ['/', 'Search recipes'], ['Esc', 'Clear search, close dialog, leave a field'],
-  ['Ctrl/⌘ + Enter', 'Run the code in the editor'], ['Ctrl/⌘ + Z', 'Undo knob or stack change (Shift: redo)'],
+  ['Ctrl/⌘ + Enter', 'Run the code in the editor'], ['Ctrl/⌘ + Z', 'Undo (in the code box: text edits; elsewhere: knob or stack change)'], ['Ctrl + Y, Ctrl/⌘ + Shift + Z', 'Redo (same scope as undo)'], ['Alt + Z, Alt + Shift + Z', 'Step the version history back / forward (not while typing in a field)'],
   ['C', 'Copy code (Craft form as written)'], ['O', 'Open in strudel.cc'], ['T', 'Toggle theme'], ['H', 'Version history (undo, timeline, diff, search)'], ['?', 'This cheat sheet'],
 ];
 const KEY_WIDGET = '[data-keys="own"], [role="menu"], [role="menuitem"], [aria-haspopup="menu"], [aria-haspopup="true"]';
@@ -881,6 +881,11 @@ function onKey(e) {
   }
   if (mod && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); e.shiftKey ? History.redo() : History.undo(); return; }
   if (mod && e.key === 'y') { e.preventDefault(); History.redo(); return; }
+  if (e.altKey && !mod && e.code === 'KeyZ') { /* version history (git-like timeline) step; Ctrl+Z / Ctrl+Y stay with the editor and with knob / stack undo */
+    const H = window.strudelCraft.history; e.preventDefault();
+    if (H) (e.shiftKey ? H.redo() : H.undo()).then((id) => say(id ? (e.shiftKey ? 'History: redone' : 'History: undone') : (e.shiftKey ? 'History: nothing to redo' : 'History: nothing to undo'))).catch(() => {});
+    return;
+  }
   if (mod || e.altKey) return;
   const k = e.key;
   const act = {
@@ -951,6 +956,7 @@ async function boot() {
   $('#stackClear').addEventListener('click', () => setStack([], 'clear stack'));
   $$('.views a').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); setView(a.dataset.view); }));
   document.addEventListener('keydown', onKey);
+  document.addEventListener('click', (e) => { if (e.target.closest && e.target.closest('[data-ed-versions]')) { const b = $('#histBtn'); if (b) b.click(); } });
   /* Space activates a focused button on keyup: only swallow it where Space is the global play shortcut (not on controls, see onKey) */
   document.addEventListener('keyup', (e) => { const t = e.target; if (e.key !== ' ' || isField(t) || $('#help').open) return; const c = t && t.closest && (t.closest(KEY_WIDGET) || t.closest(ACTIVATES)); if (c && !c.matches('a')) return; e.preventDefault(); });
   window.addEventListener('hashchange', route);

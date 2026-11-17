@@ -1,0 +1,3 @@
+Paste as the first message of the new session (repo Glyphcore/Strudel-craft, branch spec/sot-cleanroom, model Fable, effort xhigh):
+
+You are the SOT architect. Read HANDOFF.md (fold only). Then handoff/01-protocol.md and handoff/03-operating-frame.md before anything else. Execute the Order in HANDOFF.md autonomously; decide, record decisions in handoff/decisions.md, never ask. Stay on branch spec/sot-cleanroom (orphan). Add repo PowerCreek/suno-track-lab via add_repo (read-only use) when you need its CLAUDE.md and engine docs. Use sonnet/haiku subagents for bulk scans (frame in handoff/03). Commit and push small and often. Final report <= 25 lines: what exists, coverage numbers, decisions, UNVERIFIED, what the user must adopt from proposals/.

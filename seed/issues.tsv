@@ -1,0 +1,163 @@
+1	closed	status:review,type:workflow	Adopt issues protocol + labels
+2	closed	status:review,type:feature	CLI: local sample folders, custom IR and bounce-in-place
+3	closed	type:feature	Pitch-preserving warp and formant shift (rubberband stage)
+4	closed	type:feature	Slicer: beat-detected slice maps for slice/splice
+5	closed	type:feature	Spectral stage: freeze and paulstretch pre-render
+6	closed	type:feature	Envelope-follower ducking between stems (two-pass)
+7	closed	type:feature	Granulator: grain-cloud stage (size, spray, pitch jitter)
+8	closed	type:feature	Vocoder: carrier/modulator stem stage
+9	closed	type:feature	External renderers as sample sources (sf2, Karplus-Strong)
+10	closed	type:feature	Site: AAA instrument UI rebuild
+11	closed		Mod matrix: LFO/envelope routed to any param across layers
+12	closed		Time/volume gating (Gross Beat-style) on a rendered layer
+13	closed		Follow actions / clip launching scene graph
+14	closed		Offline bounce/resample loop: render -> sample map -> re-render
+15	closed		Multiband sidechain ducking (offline crossover + per-band follower)
+16	closed		Spectral resonator FX (offline STFT stage)
+17	closed	type:bug	Bug: multiband sidechain release overshoots (5/60 ms measured 70.1 ms)
+18	closed	type:feature	Loudness metering: integrated LUFS, short-term, true peak, LRA (BS.1770-4 / EBU R128)
+19	closed	type:feature	MIDI clip import/export (SMF <-> Strudel patterns)
+20	open	status:todo,type:workflow	Licence decision: live mic/line input (AGPL boundary)
+22	closed	type:bug	bug: MIDI import drops tempo changes and duplicates unnamed track names
+23	closed	type:bug	bug: LUFS true-peak under-reads 0.3-0.55 dB above 16 kHz
+24	closed		feature: master-bus chain presets (EQ -> glue comp -> limiter, LUFS target)
+25	closed	type:feature	feature: arrangement/scene timeline (scenes -> linear song)
+26	closed	type:bug	strudel events: stdout truncated at 65536 bytes when piped
+27	closed	type:feature	strudel check: warn when a pattern gets a plain (non-mini) string that looks like mini-notation
+28	closed	type:feature	Continuous in-note LFO on filter cutoff and FM depth (tempo-synced wobble)
+29	closed	type:feature	OTT-style multiband compressor (upward and downward) as a post stem processor
+30	closed	type:bug	Ducking: target orbit must exist before the ducker plays, and depth is not in dB
+31	closed	type:feature	E2E glue: stem mixdown with WAV-FX chains + genre target scorer
+32	closed	type:feature	Behavioral smoke tests (UI + CLI)
+34	closed	type:bug	Stop leaves ~-25 dBFS output for ~500 ms before silence
+35	closed	type:bug	master.py: output true peak exceeds the -1.0 dBTP ceiling (report says -1.10, meter says -0.86)
+36	closed	type:feature	mixdown.py: bar-range / region parameter for FX steps (gate, vocoder, resonate apply to the whole stem)
+37	closed	type:bug	master --preset folk-pop (target -14) fails genre score lufs (min -14) by 0.02 LU
+38	closed	type:bug	bug: `strudel events | head -c N` dies with unhandled EPIPE stack trace
+39	closed	type:feature	feature: per-layer stem re-render with content-hash cache (`stems --layers`)
+40	closed	type:feature	feature: section automation lanes in mix.json (gain/FX params per bar, breakpoint curves)
+41	closed	type:feature	feature: `strudel info` arrange-length check (per-layer bar sums vs song length)
+42	closed	status:done	word-vocals P1: forced word/syllable alignment -> word-keyed sample bank (strudel.json)
+43	closed	status:review	word-vocals P2: pattern surface .word()/syllable n-index + note() repitch from bank metadata
+44	open	status:in-progress	word-vocals P3: pluggable sample/intellisense provider (word completions) for CLI and site
+45	open	status:in-progress	word-vocals P4: formant-preserving repitch variants (pyworld; rubberband as external binary)
+46	closed	status:review	word-vocals P5: optional TTS fallback bank (Shabda speech) with per-clip licence
+47	closed	status:review	Hooks P1: slots, time-gated bindings, journal, config JSON, CLI --hooks
+48	closed	status:review	Hooks P2: taps, wire, modules, variables, decorators
+49	closed	status:in-progress	Hooks P3: shared model schema and code <-> model round trip
+50	closed		Hooks P4: component library (save, instance, versions, history adapter, --library)
+51	closed	status:review	Hooks P5: intellisense providers for hooks, taps, variables, components
+52	closed		Hooks P6: Graph view, blueprint node editor (ui-designer)
+53	closed	status:review	Hooks P7: pad engine, input-provider registry, looper, strudel perf
+54	closed	status:review	Hooks P8: controls engine (type registry, ctl, slider shim, mapping, automation lanes)
+55	closed	status:review	Hooks P9: Perform views, pad banks and control boards, inline controls (ui-designer)
+56	open	tracker	Live tracker: in-flight requests
+57	closed		word-vocals P4b: word(...).formant(true) prelude helper picks nearest formant variant
+58	closed	status:review,type:workflow	Library store: switch site/library-store.js from fallback to window.strudelCraft.history
+59	open	status:in-progress,type:bug	Site shell Lighthouse performance is 87, below the 90 gate
+60	closed		Typed param intellisense + AST-bound controls + inert validation
+61	closed	status:review	Atoms A1: core (type registry, schema, compile pass, params, composition, ids, CLI)
+62	closed	status:review	Atoms A2: migration (extract, parse, inline), catalog atoms, strudel.cc export
+63	closed	status:review	Atoms A3: consumers (intellisense, typed arg editors, hooks/model/pads $atom, pack ingredient)
+64	open	status:in-progress	Atoms A4: graph atom cards (lazy, reference-counted), atom browser, reference popover (ui-designer)
+65	closed	status:review,type:feature	Packs P1: craftpack spec 1.0, JSON Schemas, validator, hashing, lock and registry tools
+66	open	status:todo,type:workflow	Licence decision: first-party pack content (glyphcore/core and glyphcore/vox-*)
+67	open	status:in-progress,type:feature	Packs P2: site pack loader, kind adapters, service-worker pack cache, pack sheet
+68	closed	status:review,type:feature	Packs P3: CLI pack loader (--packs, --pack, install/verify/list, render.json credits)
+69	open	status:todo,type:feature	Packs P4: migrate site content to glyphcore/core on the packs branch, shipped lock, deploy bundling; vox packs prepared
+70	open	status:todo,type:feature	Packs P5: contributor guide, template pack layout, pack CI workflow, registry CI
+71	open	status:in-progress,type:feature	Packs P6: sandbox host for third-party code ingredients (providers, renderers, editors, painters, palette run)
+72	closed	status:done	Audio capture + download (Rack/Stack master tap, loopable takes, WAV/compressed, exact render)
+73	closed		Installable PWA (Android Chrome)
+74	closed		Lanes L1: event layer (memoised taps, lane-scoped taps, tags and selections, lane graph check)
+75	closed		Lanes L2: audio split, merge, named sends and returns on superdough buses (no re-synthesis)
+76	open	status:review	Lanes L3: capture and recall (events, audio, level; causal and ahead-of-time; CLI passes; Remake)
+77	closed	status:review	Lanes L4: model, graph data, typed param shapes, intellisense, atoms and AST ids for lanes
+78	open	status:in-progress	Lanes L5: lane cards, split fan, bus and capture nodes, tag chips in the Graph and Perform views (ui-designer)
+79	open	status:review,type:feature	Vox bank sung: sung English words without .NET (SoulX-Singer score render, VocalSet timbre prompt)
+80	closed	status:review	Copy code widget on every code field (Rack, Stack, Syntax examples)
+81	closed	status:todo,type:bug	Rack Code panel-head overflows at 360px once code is edited (Revert clipped, scrollWidth 386)
+82	closed	status:review,type:bug	Lanes L4 data: graph() still refuses a read after the "Export tap" fix (branch-local tap shadows the exported one of the same name)
+83	closed	type:bug	Atoms toolkit: W_ATOM_UNUSED false positive (and refs undercount) for atoms used only as composition arguments
+84	closed	status:review,type:bug	tests: standalone.mjs upgrade case blocked by a site modal; audio.mjs [stale] Rack default silent
+85	closed		Bank browser: see what each vox bank holds, audition and insert; bank-aware word()/s("vs_ completions
+86	open	status:todo,type:bug	strudel check: surface lanes E_ codes instead of a generic "split is not a function"
+87	closed	type:bug	Lanes L3: a live window capture closes at once on look-ahead queries from the visuals (captureState says frozen at cycle 0.2)
+88	open	status:todo,type:bug	Record: offline render right after stopping playback throws "cannot connect to an AudioNode belonging to a different audio context" (voice onended during the context swap)
+89	closed	status:done	Track demo: night phonk (glyphcore/phonk pack + standalone track, 2:29)
+90	closed	status:todo,type:bug	hooks.map gate: union gates throw and "Nb" bar points are read as cycle N (controls gateOpen)
+91	closed	type:workflow	Site adapter for pack kind `hooks` (hooks@1 rack defs), so glyphcore/phonk's pack track plays on the site
+92	closed	status:in-progress,type:bug	Site: AudioNode "destination is not connected" page errors with word() lanes in a send program
+93	closed	status:review	Track demo: night phonk v2 (hi-energy pump, confrontational drop, drops juxtaposed with relief)
+94	closed	type:feature,status:done	Rack quality standard: band-scoped racks (hygiene racks, `.hook()`), audit tool, fixes for the phonk pack
+95	closed	type:workflow,status:done	DAW survey and refactor plan (docs/DAW_SURVEY.md, docs/REFACTOR_PLAN.md) + R1 mixer read model
+96	open	status:todo,type:feature	Refactor R2: per-strip meters (CLI manifest per strip, site analyser per lane, `strudel lanes --mixer`)
+97	open	status:todo,type:feature	Refactor R3: take lanes over recipes (takes per lane and bar range, comp list, `strudel remake --comp`)
+98	open	status:todo,type:feature	Refactor R4: freeze a lane by hash (plays its bounce until the lane's resolved text changes)
+99	open	status:todo,type:feature	Refactor R5: project@1 (time model, mixer, take lanes, pins), save / load, DAWproject export
+100	open	status:todo,type:feature	Refactor R6: summing groups through returns (`.group`), strip latency field and delay compensation
+101	open	status:todo,type:feature	Refactor R7: one undo stack over model operations (a transaction is one step)
+102	closed	status:done	Audio engine A: measure the real bottlenecks (long tasks, scheduler lateness, late haps, glitch metric) on night phonk v1/v2
+103	closed	status:done	Audio engine B: keep the UI from starving the scheduler (visuals hap cache, query batching, per-query memo, diagnostics; engine worker)
+104	closed	status:done	Audio engine C: Record without speakers (offline render host, chunked and cancellable) and self-checking live takes
+105	open	status:review,type:bug	CLI renders with supersaw are not bit-identical between runs (worklet phases outside the seeded generator)
+106	open	status:review,type:feature	Rack audit coverage: sample-bank recipes and browser-only Syntax examples are skipped; Chromium aliasing not measured
+107	closed	type:bug,status:done	Fix: pressing a control scrolls the editor to its code and kills the gesture (phone)
+108	closed	status:done	Live Record take does not match the offline render / CLI of the same window (record_offline.mjs live rows red)
+109	closed	type:feature,status:done	Groove: pat.groove (swing, push/pull, humanize, drift; seeded, deterministic) + stdlib groove presets
+110	closed	type:workflow,status:done	Concept framework: family data -> pack ingredients, catalog recipes, Syntax, audit targets (tools/concepts, docs/CONVENTIONS.md, add-a-concept checklist)
+111	closed	type:feature,status:done	Hip-hop / trap / hyphy components and forms + dovetail atoms and recipes (glyphcore/phonk 1.3.0)
+112	closed	type:feature,status:done	Feel templates: slots drums/top/bass/harmony/fx/groove as atoms@1 ingredients (feel-boombap, -lazy, -trap, -hyphy, -cloud); pick = one import line
+113	closed	status:done	Perform mode presets: saveable one-tap configurations with built-ins, export/import
+114	closed	type:bug,status:done	Perform: tap pad "2-hit output" has no visible source; show every output's source, mark unread pads
+115	open	status:review	Offline host renders of one recipe are not bit-identical (-16..-18 dB between runs, 120-2000 Hz): find the remaining nondeterminism
+116	closed	type:bug,status:done	Perform pads: presets' pads make no sound on a program without tap readers (audition voices)
+117	closed	status:done	Show both forms of every recipe's code: Craft (authored) and Strudel (lowered)
+118	closed	type:bug,status:done	Perform pads follow-ups from #116 critic: preset toast over pad row, pad grid below the fold at 844px, syntax.json reader example
+119	closed	type:bug	Perform pad reader: trigger form sounds ~0.3 s after the press (PAD_LEAD_S); tighten to ~50 ms
+120	closed		Folders, tags and tag-driven appearance for recipes, atoms, racks, feels, grooves, takes and library components; package audit
+121	open	status:review,type:feature	DnB / electro / house-techno-trance: sourced references and genre targets (docs/DNB_ELECTRO_REFERENCES.md, genres dnb/electro/house.json, master presets)
+122	open	status:in-progress,type:feature	DnB, electro and house/techno/trance/big-room components, forms and dovetails as concept families -> pack glyphcore/dnb-electro (multi-pack concepts builder, per-role rack targets)
+123	closed	type:feature,status:done	Feel templates: liquid, neuro, jump-up, electro-house, techno-driving, trance-uplifting, big-room (glyphcore/dnb-electro feel-*, .groove presets)
+124	open	status:review,type:feature	Tutorial track: docs/tracks/dnb-electro-tutorial (~3 min DnB, lesson per section) + 8-bar-per-section electro and house/techno examples; render, master, genre score, mp3, site
+125	closed	type:feature	Sound standard: measured per-genre and per-role acceptance (docs/genres/*.json, RACK_STANDARD section, tools/racks/measure)
+126	open	status:todo,type:feature	Sound standard: per-role measured criteria and scoring on soloed lane renders
+127	closed	status:in-progress	EDM foundations (edm-core) + pack glyphcore/edm + multi-pack concept builder
+128	closed	status:in-progress	Dubstep family: UKF half-time, melodic dubstep, riddim, brostep components, forms and feels (glyphcore/edm)
+129	closed	status:in-progress	Tutorial track docs/tracks/edm-dubstep-tutorial: ~3 min annotated dubstep lesson track, master, genre score, publish
+130	open	status:todo,type:feature	measure.mjs: duck-depth estimator that reads exponential-release ducks, and accurate limit docs
+131	closed	status:review,type:workflow	Eager shell budget vs catalog growth: genre packs push data/catalog.json past the #59 budget (load concept recipes per pack, lazily)
+132	closed	type:bug	Bug: site refuses the glyphcore/phonk:grooves hooks ingredient (groove step not on the hooks allowlist); make refusal per def; CI guard for pack steps
+133	open	status:todo,type:bug	dnb-electro pack (unlanded, /home/user/wt-dnb) uses hooks step `ftype`, not on site/data/hooks-steps.json: add before landing
+134	open	status:todo,type:bug	site/craftpack.json (shim pack) fails `packs validate` schema checks; tests/smoke.sh allowlist guard skips it by glob
+135	open	status:todo	Folder tree, tag chips and edit modal for Library components, Perform takes and the Atoms browser (follow-up of #120)
+136	open	status:review,type:feature	Track: "Sirocco Foundry" (house / wet industrial dubstep hybrid, 140 BPM, full length, measured)
+137	open	status:review,type:feature	Track: "Velvet Static" (sentimental DnB with wavephonk floats, 174 BPM, full length, measured)
+138	open	status:todo,type:bug	Pack hooks residuals from #91: silent name clash between packs (`pump`), bank+s join bypass of the source rule, hooks_pack.mjs flake
+139	closed	status:in-progress	Record length in bars/cycles/seconds with typed input, start bar and "to end of track"
+140	open	status:todo,type:bug	CLI renders of AudioWorklet voices (shape, distort, supersaw) are 100-250x slower than native voices under host load
+141	open	status:todo,type:bug	Lowering check drift: catalog edm-pump-shaper event 0 differs (node tools/lowering/build.mjs --check exits 1)
+142	closed	status:review,type:bug	Comments break the linter in the code box (comment-blind text passes)
+143	closed	type:bug	CLI strudel check prints ~26 duplicated W_PACK_SHADOW atoms warnings on every program (even without atoms)
+144	closed	status:review,type:feature	Composition catalog: docs/COMPOSITION.md (111 concepts, 19 families) + generated site data in the Syntax view (Craft/Strudel tabs, folders/tags)
+145	closed	status:review,type:feature	Composition research: docs/COMPOSITION_RESEARCH.md (per-genre producer-reported components, forms, layering; cited, paraphrased, UNVERIFIED marked)
+146	closed	type:feature	engine/composer (suno-track-lab): motif ledger, density, foreshadow, spectrogram scan, feel pick, discord (roughness + borrowing), layer relations, cluster-bars
+147	closed	status:review,type:feature	Composer skill: brief -> motif seed -> section map -> density plan -> foreshadow plan -> design-choice checks -> build -> engine/composer checks -> refine
+148	open	status:todo,type:bug	tests/site/taxonomy.mjs: computed-colour sample races the 120 ms theme transition (flaky light-theme AA check)
+149	open	status:review	Syntax view navigation at 132+ sections (organizer-driven, lazy, deep links)
+150	closed		Quick play button on Syntax labels and Recipes rows (audition in place, no jump)
+151	open	status:review	forms.mjs failures (lowering check, LOWERING.md counts, drift copy) + composition doc cleanup
+152	open	status:review,type:workflow	Research ethics: DAW-project study, sound sources and "inspired by" guides (docs/RESEARCH_ETHICS.md)
+153	open	status:review,type:feature	tools/dawstudy: structure-statistics parsers (.als, .flp, .mmp/.mmpz, .ardour, .rpp), schema, forms aggregator, engine/dawstudy/run.sh
+154	open	status:in-progress,type:feature	DAW study sources + form profiles per genre (docs/DAW_STUDY_SOURCES.md, docs/FORM_PROFILES.md, docs/dawstudy/*)
+155	open	status:review,type:feature	Pack glyphcore/industrial (CC0): synthesized mechanical hits, industrial kit, riddim/growl basses, FX, grammars, 4 feels
+156	open	status:review,type:feature	EDM depth (glyphcore/edm): 16/32-bar arrangement grammars, OTT/multiband and resampling patterns, serial FM + shaping in budget, vocal chops/formants, transitions, mastering recipes
+157	open	status:review,type:feature	Pack glyphcore/rockmetal (CC0): synthesized guitar-like voices, bass guitar, rock/metal kits, forms, feels, riff grammars
+158	open	status:review,type:feature	Mastering fundamentals: docs/MASTERING.md, master presets rock/metal/industrial/trap (+house/dnb), engine/master/check.py per-file report with pass/fail
+159	open	status:review,type:feature	Composition fundamentals for rock/metal/industrial + composer genre profiles (density targets) from study data
+160	open	status:review	Resources / Library pane: references the program uses, and everything available (phone first + workspace pane) with CLI twin `strudel refs`
+161	open	status:in-progress	EDM tutorial polish: club mp3 true peak, lesson comments, motif returns and build layers
+162	open	status:review	CraftCues 1/3: score annotation format, schema, Node tools, KB resolver
+163	open	status:review	CraftCues 2/3: site UI - live captions, Score sheet, KB cards, Resources Cues section, Record cues + .vtt
+164	open	status:review	CraftCues 3/3: cue sets for the committed tracks, composer / score.py / form-bank emitters, audio page captions
+165	open	status:todo,type:workflow	Follow-ups from #122: neuroBass site-vs-CLI band-profile parity; five sample-bank catalog recipes unverified without a pinned CC0 kit

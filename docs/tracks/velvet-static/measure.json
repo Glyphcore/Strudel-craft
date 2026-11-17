@@ -1,412 +1,225 @@
 {
  "track": "Velvet Static",
- "issue": "Glyphcore/Strudel-craft#137",
- "tool": "tools/racks/measure.mjs --bpm 174 (render: tools/racks/render_track.cjs, offline recorder, 44.1 kHz)",
- "note": "offline renders are not bit-identical run to run (#115); take b of 4 is the delivered file; all numbers are of that take unless a table says otherwise",
- "whole_normalised_minus14_9_lufs": {
+ "issue": "Glyphcore/Strudel-craft#137 (rework after the critic reject)",
+ "tool": "tools/racks/measure.mjs --bpm 174; render tools/racks/render_track.cjs (site offline recorder, 44.1 kHz)",
+ "note": "offline renders are not bit-identical run to run (#115). The delivered file is one take of the final code with one static gain. Stems are 8-bar renders (bars 49-56) of the same code (before the last float / transition level moves, which do not touch bars 49-56).",
+ "whole_normalised": {
   "file_seconds": 224.828,
   "sample_rate": 44100,
-  "lufs_integrated": -14.9,
-  "lra_lu": 7.53,
-  "true_peak_dbtp": -1.23,
-  "sample_peak_dbfs": -1.24,
-  "plr_db": 13.67,
-  "crest_db": 16.02,
-  "dc_offset_dbfs": -63.71,
+  "lufs_integrated": -14.5,
+  "lra_lu": 8.8,
+  "true_peak_dbtp": -1.71,
+  "sample_peak_dbfs": -1.71,
+  "plr_db": 12.79,
+  "crest_db": 14.72,
+  "dc_offset_dbfs": -61.13,
   "clipped_samples": 0,
-  "low_share_pct": 39.27,
-  "spectral_tilt_db_oct": -4.47,
-  "spectral_centroid_hz": 640,
-  "lr_correlation_below_120": 0.999,
-  "side_to_mid_db_below_120": -35.82,
+  "low_share_pct": 52.59,
+  "spectral_tilt_db_oct": -4.8,
+  "spectral_centroid_hz": 496,
+  "lr_correlation_below_120": 1,
+  "side_to_mid_db_below_120": -45.2,
   "tempo_bpm": 174,
   "bars": 163,
-  "onsets_per_bar": 11,
-  "spectral_centroid_densest_8_bars_hz": 560,
+  "onsets_per_bar": 10.5,
+  "spectral_centroid_densest_8_bars_hz": 452,
   "densest_8_bars_start_bar": 120
  },
- "whole_score_drum_and_bass": [
-  "PASS delivery-loudness            value -14.9  range [-15, -13]  basis platform",
-  "PASS delivery-true-peak           value -1.23  range [-inf, -1]  basis platform",
-  "PASS tempo                        value 174  range [170, 176]  basis convention",
-  "MISS plr                          value 13.67  range [7, 10]  basis convention (provisional)",
-  "MISS loudness-range               value 7.53  range [3, 7]  basis convention (provisional)",
-  "MISS low-band-share               value 39.27  range [45, 65]  basis convention (provisional)",
-  "PASS spectral-tilt                value -4.47  range [-6, -3]  basis convention",
-  "MISS onsets-per-bar               value 11  range [16, 40]  basis convention (provisional)",
-  "SKIP kick-bass-duck               value n/a  range [2, 5]  basis convention  not measured (needs --kick and --bass)",
-  "PASS mono-low-side-to-mid         value -35.82  range [-inf, -20]  basis convention",
-  "PASS mono-low-correlation         value 0.999  range [0.95, inf]  basis convention",
-  "PASS no-clipping                  value 0  range [0, 0]  basis convention",
-  "PASS dc-offset                    value -63.71  range [-inf, -60]  basis convention"
- ],
- "mp3_320k_decoded": {
-  "file_seconds": 224.828,
-  "sample_rate": 44100,
-  "lufs_integrated": -14.9,
-  "lra_lu": 7.53,
-  "true_peak_dbtp": -1.22,
-  "sample_peak_dbfs": -1.23,
-  "plr_db": 13.68,
-  "crest_db": 16.03,
-  "dc_offset_dbfs": -63.7,
-  "clipped_samples": 0,
-  "low_share_pct": 39.27,
-  "spectral_tilt_db_oct": -4.47,
-  "spectral_centroid_hz": 640,
-  "lr_correlation_below_120": 0.999,
-  "side_to_mid_db_below_120": -35.8,
-  "tempo_bpm": 174,
-  "bars": 163,
-  "onsets_per_bar": 11,
-  "spectral_centroid_densest_8_bars_hz": 561,
-  "densest_8_bars_start_bar": 120
+ "score_drum_and_bass": {
+  "whole": [
+   "PASS delivery-loudness            value -14.5  range [-15, -13]  basis platform",
+   "PASS delivery-true-peak           value -1.71  range [-inf, -1]  basis platform",
+   "PASS tempo                        value 174  range [170, 176]  basis convention",
+   "MISS plr                          value 12.79  range [7, 10]  basis convention (provisional)",
+   "MISS loudness-range               value 8.8  range [3, 7]  basis convention (provisional)",
+   "PASS low-band-share               value 52.59  range [45, 65]  basis convention",
+   "PASS spectral-tilt                value -4.8  range [-6, -3]  basis convention",
+   "MISS onsets-per-bar               value 10.5  range [16, 40]  basis convention (provisional)",
+   "SKIP kick-bass-duck               value n/a  range [2, 5]  basis convention  not measured (needs --kick and --bass)",
+   "PASS mono-low-side-to-mid         value -45.2  range [-inf, -20]  basis convention",
+   "PASS mono-low-correlation         value 1  range [0.95, inf]  basis convention",
+   "PASS no-clipping                  value 0  range [0, 0]  basis convention",
+   "PASS dc-offset                    value -61.13  range [-inf, -60]  basis convention"
+  ],
+  "drop1": [
+   "MISS delivery-loudness            value -12.78  range [-15, -13]  basis platform",
+   "PASS delivery-true-peak           value -2.78  range [-inf, -1]  basis platform",
+   "PASS tempo                        value 174  range [170, 176]  basis convention",
+   "MISS plr                          value 10.01  range [7, 10]  basis convention (provisional)",
+   "MISS loudness-range               value 1.34  range [3, 7]  basis convention (provisional)",
+   "PASS low-band-share               value 60.98  range [45, 65]  basis convention",
+   "PASS spectral-tilt                value -4.75  range [-6, -3]  basis convention",
+   "MISS onsets-per-bar               value 15  range [16, 40]  basis convention (provisional)",
+   "SKIP kick-bass-duck               value n/a  range [2, 5]  basis convention  not measured (needs --kick and --bass)",
+   "PASS mono-low-side-to-mid         value -45.22  range [-inf, -20]  basis convention",
+   "PASS mono-low-correlation         value 1  range [0.95, inf]  basis convention",
+   "PASS no-clipping                  value 0  range [0, 0]  basis convention",
+   "MISS dc-offset                    value -56.25  range [-inf, -60]  basis convention (provisional)"
+  ],
+  "drop2": [
+   "MISS delivery-loudness            value -11.41  range [-15, -13]  basis platform",
+   "PASS delivery-true-peak           value -1.71  range [-inf, -1]  basis platform",
+   "PASS tempo                        value 174  range [170, 176]  basis convention",
+   "PASS plr                          value 9.69  range [7, 10]  basis convention",
+   "MISS loudness-range               value 0.73  range [3, 7]  basis convention (provisional)",
+   "PASS low-band-share               value 55.93  range [45, 65]  basis convention",
+   "PASS spectral-tilt                value -5.01  range [-6, -3]  basis convention",
+   "MISS onsets-per-bar               value 14.6  range [16, 40]  basis convention (provisional)",
+   "SKIP kick-bass-duck               value n/a  range [2, 5]  basis convention  not measured (needs --kick and --bass)",
+   "PASS mono-low-side-to-mid         value -46.99  range [-inf, -20]  basis convention",
+   "PASS mono-low-correlation         value 1  range [0.95, inf]  basis convention",
+   "PASS no-clipping                  value 0  range [0, 0]  basis convention",
+   "MISS dc-offset                    value -56.64  range [-inf, -60]  basis convention (provisional)"
+  ]
  },
  "sections_normalised": {
   "intro": {
-   "lufs_integrated": -14.24,
-   "true_peak_dbtp": -2.74,
-   "spectral_centroid_hz": 942,
-   "low_share_pct": 3.07,
-   "onsets_per_bar": 12.5,
-   "plr_db": 11.5,
-   "dc_offset_dbfs": -61.1
+   "lufs_integrated": -19.16,
+   "true_peak_dbtp": -8.66,
+   "spectral_centroid_hz": 914,
+   "low_share_pct": 10.12,
+   "onsets_per_bar": 11.1,
+   "plr_db": 10.49,
+   "dc_offset_dbfs": -67.74
   },
   "build1": {
-   "lufs_integrated": -16.39,
-   "true_peak_dbtp": -3.27,
-   "spectral_centroid_hz": 722,
-   "low_share_pct": 23.7,
-   "onsets_per_bar": 12.4,
-   "plr_db": 13.12,
-   "dc_offset_dbfs": -60.11
+   "lufs_integrated": -15.48,
+   "true_peak_dbtp": -4.14,
+   "spectral_centroid_hz": 547,
+   "low_share_pct": 30.92,
+   "onsets_per_bar": 12.6,
+   "plr_db": 11.34,
+   "dc_offset_dbfs": -58.4
   },
   "drop1": {
-   "lufs_integrated": -13.75,
-   "true_peak_dbtp": -1.23,
-   "spectral_centroid_hz": 526,
-   "low_share_pct": 54.51,
-   "onsets_per_bar": 15.6,
-   "plr_db": 12.52,
-   "dc_offset_dbfs": -59.91
+   "lufs_integrated": -12.78,
+   "true_peak_dbtp": -2.78,
+   "spectral_centroid_hz": 431,
+   "low_share_pct": 60.98,
+   "onsets_per_bar": 15,
+   "plr_db": 10.01,
+   "dc_offset_dbfs": -56.25
   },
   "float": {
-   "lufs_integrated": -19.93,
-   "true_peak_dbtp": -6.94,
-   "spectral_centroid_hz": 429,
-   "low_share_pct": 69.05,
-   "onsets_per_bar": 9.1,
-   "plr_db": 12.99,
-   "dc_offset_dbfs": -89.04
+   "lufs_integrated": -19.17,
+   "true_peak_dbtp": -6.11,
+   "spectral_centroid_hz": 381,
+   "low_share_pct": 75.71,
+   "onsets_per_bar": 8.8,
+   "plr_db": 13.06,
+   "dc_offset_dbfs": -74.68
   },
   "build2": {
-   "lufs_integrated": -16.55,
-   "true_peak_dbtp": -1.64,
-   "spectral_centroid_hz": 940,
-   "low_share_pct": 20.05,
-   "onsets_per_bar": 12.4,
-   "plr_db": 14.91,
-   "dc_offset_dbfs": -61.5
+   "lufs_integrated": -16.46,
+   "true_peak_dbtp": -5.55,
+   "spectral_centroid_hz": 797,
+   "low_share_pct": 28.37,
+   "onsets_per_bar": 12.3,
+   "plr_db": 10.91,
+   "dc_offset_dbfs": -58.93
   },
   "drop2": {
-   "lufs_integrated": -13.16,
-   "true_peak_dbtp": -1.33,
-   "spectral_centroid_hz": 552,
-   "low_share_pct": 48.17,
-   "onsets_per_bar": 15.6,
-   "plr_db": 11.83,
-   "dc_offset_dbfs": -63.23
+   "lufs_integrated": -11.41,
+   "true_peak_dbtp": -1.71,
+   "spectral_centroid_hz": 462,
+   "low_share_pct": 55.93,
+   "onsets_per_bar": 14.6,
+   "plr_db": 9.69,
+   "dc_offset_dbfs": -56.64
   },
   "bridge": {
-   "lufs_integrated": -14.45,
-   "true_peak_dbtp": -3.12,
-   "spectral_centroid_hz": 931,
-   "low_share_pct": 3.73,
-   "onsets_per_bar": 7.3,
-   "plr_db": 11.33,
-   "dc_offset_dbfs": -64.59
+   "lufs_integrated": -19.31,
+   "true_peak_dbtp": -2.78,
+   "spectral_centroid_hz": 927,
+   "low_share_pct": 12.36,
+   "onsets_per_bar": 5.1,
+   "plr_db": 16.53,
+   "dc_offset_dbfs": -76.61
   },
   "outro": {
-   "lufs_integrated": -24.13,
-   "true_peak_dbtp": -8.12,
-   "spectral_centroid_hz": 851,
+   "lufs_integrated": -22.04,
+   "true_peak_dbtp": -9.77,
+   "spectral_centroid_hz": 897,
    "low_share_pct": 0,
-   "onsets_per_bar": 1.1,
-   "plr_db": 16.02,
-   "dc_offset_dbfs": -78.23
+   "onsets_per_bar": 0.7,
+   "plr_db": 12.27,
+   "dc_offset_dbfs": -73.93
   }
  },
  "drop_minus_float_lu": {
-  "drop1": 6.18,
-  "drop2": 6.77
+  "drop1": 6.39,
+  "drop2": 7.76
  },
- "section_score_drum_and_bass": {
-  "drop1": [
-   "PASS delivery-loudness            value -13.75  range [-15, -13]  basis platform",
-   "PASS delivery-true-peak           value -1.23  range [-inf, -1]  basis platform",
-   "PASS tempo                        value 174  range [170, 176]  basis convention",
-   "MISS plr                          value 12.52  range [7, 10]  basis convention (provisional)",
-   "MISS loudness-range               value 2.31  range [3, 7]  basis convention (provisional)",
-   "PASS low-band-share               value 54.51  range [45, 65]  basis convention",
-   "PASS spectral-tilt                value -4.81  range [-6, -3]  basis convention",
-   "MISS onsets-per-bar               value 15.6  range [16, 40]  basis convention (provisional)",
-   "SKIP kick-bass-duck               value n/a  range [2, 5]  basis convention  not measured (needs --kick and --bass)",
-   "PASS mono-low-side-to-mid         value -42.95  range [-inf, -20]  basis convention",
-   "PASS mono-low-correlation         value 1  range [0.95, inf]  basis convention",
-   "PASS no-clipping                  value 0  range [0, 0]  basis convention",
-   "MISS dc-offset                    value -59.91  range [-inf, -60]  basis convention (provisional)"
-  ],
-  "drop2": [
-   "PASS delivery-loudness            value -13.16  range [-15, -13]  basis platform",
-   "PASS delivery-true-peak           value -1.33  range [-inf, -1]  basis platform",
-   "PASS tempo                        value 174  range [170, 176]  basis convention",
-   "MISS plr                          value 11.83  range [7, 10]  basis convention (provisional)",
-   "MISS loudness-range               value 0.97  range [3, 7]  basis convention (provisional)",
-   "PASS low-band-share               value 48.17  range [45, 65]  basis convention",
-   "PASS spectral-tilt                value -4.96  range [-6, -3]  basis convention",
-   "MISS onsets-per-bar               value 15.6  range [16, 40]  basis convention (provisional)",
-   "SKIP kick-bass-duck               value n/a  range [2, 5]  basis convention  not measured (needs --kick and --bass)",
-   "PASS mono-low-side-to-mid         value -45.56  range [-inf, -20]  basis convention",
-   "PASS mono-low-correlation         value 1  range [0.95, inf]  basis convention",
-   "PASS no-clipping                  value 0  range [0, 0]  basis convention",
-   "PASS dc-offset                    value -63.23  range [-inf, -60]  basis convention"
-  ]
+ "floats_under_drop1_lu": {
+  "intro": 6.38,
+  "float": 6.39,
+  "bridge": 6.53,
+  "outro": 9.26,
+  "build1": 2.7,
+  "build2": 3.68
  },
- "stems_bars_49_56_unnormalised": {
+ "stems_bars_49_56": {
   "sn": {
-   "lufs": -27.96,
-   "peak_dbfs": -13.3
+   "lufs": -21.1,
+   "peak_dbfs": -9.13
   },
   "su": {
-   "lufs": -21.91,
-   "peak_dbfs": -11.34
+   "lufs": -15.5,
+   "peak_dbfs": -8.8
   },
   "pa": {
-   "lufs": -21.81,
-   "peak_dbfs": -9.89
+   "lufs": -16.6,
+   "peak_dbfs": -7.41
   },
   "kick": {
-   "lufs": -24.32,
-   "peak_dbfs": -14.15
+   "lufs": -22.41,
+   "peak_dbfs": -12.11
   },
   "bass": {
-   "lufs": -20.77,
-   "peak_dbfs": -9.37
+   "lufs": -15.38,
+   "peak_dbfs": -8.33
+  },
+  "held": {
+   "lufs": -16.78,
+   "peak_dbfs": -10.38
+  },
+  "ghost": {
+   "lufs": -33.82,
+   "peak_dbfs": -16.56
   }
  },
- "snarl_below_sub_plus_pad_db": 9.11,
- "sub_plus_pad_lufs": -18.85,
+ "snarl_below_sub_plus_pad_db": 8.1,
+ "sub_plus_pad_lufs": -13.0,
+ "band_150_900_db": {
+  "snarl": -27.2,
+  "sub": -30.2,
+  "pad": -23.8,
+  "mix_with_snarl": -20.1,
+  "mix_without_snarl": -20.7
+ },
+ "mix_with_without": {
+  "mix_with": {
+   "lufs": -12.19,
+   "onsets_per_bar": 15
+  },
+  "mix_without": {
+   "lufs": -12.26,
+   "onsets_per_bar": 15
+  },
+  "mix_noghost": {
+   "lufs": -12.28,
+   "onsets_per_bar": 15.1
+  }
+ },
  "duck_drop1_bars_49_56": {
-  "mix_bass_stem_with_rests": {
-   "duck_depth_db": 14.03,
-   "duck_kicks_used": 19
+  "rhythmic_bass_stem": {
+   "duck_depth_db": 13.69,
+   "duck_kicks_used": 20
   },
   "held_f1_sub_stem": {
-   "duck_depth_db": 5.51,
-   "duck_kicks_used": 19
+   "duck_depth_db": 4.59,
+   "duck_kicks_used": 20
   },
-  "reliability": "unreliable (exponential release reads 1 to 2 dB shallow, RACK_STANDARD section 8); the rhythmic bass stem also counts its own rests"
- },
- "takes_of_final_code": {
-  "a": {
-   "lufs_integrated": -16.58,
-   "true_peak_dbtp": -2.75,
-   "plr_db": 13.83,
-   "dc_offset_dbfs": -67.82
-  },
-  "b": {
-   "lufs_integrated": -16.64,
-   "true_peak_dbtp": -2.98,
-   "plr_db": 13.66,
-   "dc_offset_dbfs": -65.42
-  },
-  "c": {
-   "lufs_integrated": -16.61,
-   "true_peak_dbtp": -2.62,
-   "plr_db": 13.99,
-   "dc_offset_dbfs": -65.94
-  },
-  "d": {
-   "lufs_integrated": -16.55,
-   "true_peak_dbtp": -2.17,
-   "plr_db": 14.39,
-   "dc_offset_dbfs": -68.35
-  }
- },
- "refinement_rounds_sections": {
-  "r0": {
-   "intro": {
-    "lufs": -19.96,
-    "tp": -5.22,
-    "centroid": 818,
-    "low_pct": 19.91,
-    "onsets": 6.8
-   },
-   "build1": {
-    "lufs": -22.12,
-    "tp": -4.82,
-    "centroid": 683,
-    "low_pct": 68.91,
-    "onsets": 11.8
-   },
-   "drop1": {
-    "lufs": -14.88,
-    "tp": -0.69,
-    "centroid": 307,
-    "low_pct": 79.75,
-    "onsets": 13.1
-   },
-   "float": {
-    "lufs": -16.88,
-    "tp": -2.41,
-    "centroid": 548,
-    "low_pct": 65.64,
-    "onsets": 9
-   },
-   "build2": {
-    "lufs": -20.25,
-    "tp": -5.58,
-    "centroid": 836,
-    "low_pct": 67.92,
-    "onsets": 12
-   },
-   "drop2": {
-    "lufs": -13.46,
-    "tp": -0.37,
-    "centroid": 271,
-    "low_pct": 79.65,
-    "onsets": 13.1
-   },
-   "bridge": {
-    "lufs": -19.16,
-    "tp": -6.09,
-    "centroid": 809,
-    "low_pct": 18.66,
-    "onsets": 6.1
-   },
-   "outro": {
-    "lufs": -30.85,
-    "tp": -10.8,
-    "centroid": 756,
-    "low_pct": 0.02,
-    "onsets": 0.4
-   }
-  },
-  "r1": {
-   "intro": {
-    "lufs": -22.01,
-    "tp": -8.42,
-    "centroid": 866,
-    "low_pct": 17.02,
-    "onsets": 7.5
-   },
-   "build1": {
-    "lufs": -23.32,
-    "tp": -7,
-    "centroid": 655,
-    "low_pct": 68.51,
-    "onsets": 11.9
-   },
-   "drop1": {
-    "lufs": -16.97,
-    "tp": -3.9,
-    "centroid": 364,
-    "low_pct": 75.26,
-    "onsets": 13.5
-   },
-   "float": {
-    "lufs": -19.47,
-    "tp": -5.79,
-    "centroid": 548,
-    "low_pct": 63.09,
-    "onsets": 9
-   },
-   "build2": {
-    "lufs": -22.47,
-    "tp": -7.61,
-    "centroid": 1152,
-    "low_pct": 54.97,
-    "onsets": 11.9
-   },
-   "drop2": {
-    "lufs": -15.97,
-    "tp": -3.94,
-    "centroid": 346,
-    "low_pct": 73.65,
-    "onsets": 13.2
-   },
-   "bridge": {
-    "lufs": -21.69,
-    "tp": -9.25,
-    "centroid": 853,
-    "low_pct": 17.31,
-    "onsets": 6.4
-   },
-   "outro": {
-    "lufs": -33.95,
-    "tp": -13.1,
-    "centroid": 911,
-    "low_pct": 0.03,
-    "onsets": 0.3
-   }
-  },
-  "r4": {
-   "intro": {
-    "lufs": -20.24,
-    "tp": -7.89,
-    "centroid": 1019,
-    "low_pct": 5.52,
-    "onsets": 9.4
-   },
-   "build1": {
-    "lufs": -19.84,
-    "tp": -6.69,
-    "centroid": 774,
-    "low_pct": 23.11,
-    "onsets": 12.3
-   },
-   "drop1": {
-    "lufs": -15.68,
-    "tp": -3.36,
-    "centroid": 681,
-    "low_pct": 42.44,
-    "onsets": 15.5
-   },
-   "float": {
-    "lufs": -22.33,
-    "tp": -8.03,
-    "centroid": 607,
-    "low_pct": 60.48,
-    "onsets": 9.1
-   },
-   "build2": {
-    "lufs": -19.62,
-    "tp": -4.78,
-    "centroid": 1028,
-    "low_pct": 12.43,
-    "onsets": 12.5
-   },
-   "drop2": {
-    "lufs": -14.91,
-    "tp": -2.27,
-    "centroid": 705,
-    "low_pct": 40.31,
-    "onsets": 15.4
-   },
-   "bridge": {
-    "lufs": -21.57,
-    "tp": -8.32,
-    "centroid": 1019,
-    "low_pct": 8.63,
-    "onsets": 7.2
-   },
-   "outro": {
-    "lufs": -36.25,
-    "tp": -14.98,
-    "centroid": 1134,
-    "low_pct": 0.03,
-    "onsets": 0.4
-   }
-  }
+  "reliability": "unreliable flag (exponential release reads 1 to 2 dB shallow, RACK_STANDARD section 8); the rhythmic stem counts its own rests as ducks"
  }
 }

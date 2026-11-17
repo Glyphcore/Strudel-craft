@@ -3,8 +3,8 @@
    (no DOM, no AudioContext): the program is evaluated and queried here, never rendered. It owns the transport clock (a worker timer, not throttled when the page
    is hidden) and publishes timed events 1 to 2 s ahead as batches over the port:
      page -> worker: {t:'init', bundle, prelude, preludeUrl} | {t:'start', code, cps, lastEnd, secAt, cycAt, la, anchor:[ctxTime, perfNow]} | {t:'code', code}
-                     | {t:'set', cps?, lastEnd?, secAt?, cycAt?} | {t:'anchor', a:[ctxTime, perfNow]} | {t:'la', la} | {t:'stop'}
-     worker -> page: {t:'ready'} | {t:'started', n} | {t:'error', msg} | {t:'batch', epoch, haps:[{b, e, wb, we, v, ph, d}], st:{cps, lastBegin, lastEnd, lastTick, secAt, cycAt, ticks}}
+                     | {t:'set', cps?, lastEnd?, secAt?, cycAt?} | {t:'q', id, c} | {t:'anchor', a:[ctxTime, perfNow]} | {t:'la', la} | {t:'stop'}
+     worker -> page: {t:'ready'} | {t:'started', n} | {t:'error', msg} | {t:'q', id, c, haps:[{wb, we, pb, pe, v, cx}]} | {t:'batch', epoch, haps:[{b, e, wb, we, v, ph, d}], st:{cps, lastBegin, lastEnd, lastTick, secAt, cycAt, ticks}}
    The per-tick arithmetic is the Cyclist's (cycle <-> seconds through seconds_at_cps_change / num_cycles_at_cps_change), the same as site/bgplay.js. Event type = the
    event bus of the device adapter contract (#180): {kind:'hap'|'note', source:'pattern', t: audio time, ...}; virtual MIDI in joins the same stream later. */
 'use strict';
@@ -24,7 +24,7 @@ self.document = doc; self.dispatchEvent = noop; self.CustomEvent = class { const
 self.strudelCraft = self.strudelCraft || {};
 
 let repl = null, S = null, timer = 0, running = false, epoch = 0, LA = 1.2, phase = 0, code = '';
-const START_GUARD = 0.5 /* first events keep this much margin while the page is busy starting the run */, TICK_MS = 50, QSPAN = 0.05, PRECISION = 1e4, MIN_LATENCY = 0.01, LATENCY = 0.1;
+const START_GUARD = 1.0 /* first events keep this much margin while the page is busy starting the run */, TICK_MS = 50, QSPAN = 0.05, PRECISION = 1e4, MIN_LATENCY = 0.01, LATENCY = 0.1;
 const clean = (v) => { /* structured clone refuses functions: keep plain data only */
   if (v === null || typeof v !== 'object') return typeof v === 'function' ? undefined : v;
   if (Array.isArray(v)) return v.map(clean);
@@ -71,10 +71,13 @@ self.onmessage = async (e) => {
   const m = e.data;
   try {
     if (m.t === 'init') await init(m);
-    else if (m.t === 'start') { code = m.code; await evalCode(code); begin(m); postMessage({ t: 'started', epoch }); }
+    else if (m.t === 'start') { code = m.code; await evalCode(code); begin(m); postMessage({ t: 'started', epoch, reset: true }); }
     else if (m.t === 'code') { /* live edit: new pattern, same clock; haps already published (up to the lookahead) still play */
-      await evalCode(m.code); postMessage({ t: 'started', epoch }); }
-    else if (m.t === 'set') { epoch++; for (const k of ['cps', 'lastEnd']) if (m[k] != null) S[k] = m[k]; if (m.cycAt != null) S.num_cycles_at_cps_change = m.cycAt; if (m.secAt != null) S.seconds_at_cps_change = m.secAt; S.num_ticks_since_cps_change = 0; phase = audioNow() + MIN_LATENCY; postMessage({ t: 'started', epoch }); }
+      await evalCode(m.code); postMessage({ t: 'started', epoch, reset: true }); }
+    else if (m.t === 'set') { epoch++; for (const k of ['cps', 'lastEnd']) if (m[k] != null) S[k] = m[k]; if (m.cycAt != null) S.num_cycles_at_cps_change = m.cycAt; if (m.secAt != null) S.seconds_at_cps_change = m.secAt; S.num_ticks_since_cps_change = 0; phase = audioNow() + (m.guard || MIN_LATENCY); postMessage({ t: 'started', epoch }); }
+    else if (m.t === 'q') { /* event mirror (visuals, lanes, highlights): the haps of cycle `c` incl. fragments, as plain data with the source locations the highlight needs */
+      let haps = []; try { haps = S.pattern ? S.pattern.queryArc(m.c, m.c + 1).map((h) => ({ wb: h.whole ? +h.whole.begin : null, we: h.whole ? +h.whole.end : null, pb: +h.part.begin, pe: +h.part.end, v: clean(h.value), cx: clean(h.context) })) : []; } catch (e) { haps = []; }
+      postMessage({ t: 'q', id: m.id, c: m.c, haps }); }
     else if (m.t === 'anchor') ANCHOR = m.a;
     else if (m.t === 'la') LA = m.la;
     else if (m.t === 'stop') { running = false; clearInterval(timer); }

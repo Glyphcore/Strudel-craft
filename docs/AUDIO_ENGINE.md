@@ -191,12 +191,18 @@ page-thread clock of section 1 stays the default and the fallback.
   `site/engine-worker-host.js` (page side, lazy) turns each delivered event into a voice with the page's unmodified superdough (`onTrigger`, absolute `t`), mirrors the clock
   fields (`lastEnd`, `lastTick`, `cps`, ...) so `now()`, seek, loop and the transport readout keep working, forwards live edits (`evaluate` wrapper) and re-syncs the Worker when
   something else moves the clock (tempo knob, seek). The Worker's audio-clock estimate is re-anchored from `AudioContext.currentTime` on every batch.
-- **Eligibility.** A program is sent to the Worker only if its evaluate text names no page state a query could read: `hooks.*`, `ctl()`, `.tap()`, `.use()`, `pad()`, `capture` /
-  `recall` / `.from()`, `strudelCraft`, `window.` / `document.` / `localStorage` (the lanes pass has already turned `.send` / `.split` / `.merge` into plain Strudel). Anything else, or
-  a program that fails to evaluate in the Worker, runs on the page-thread clock unchanged (also a live edit that becomes ineligible switches back, and the reverse).
-- **Known limits (stage 1).** The pattern is still evaluated once on the page, so visuals, highlights and lane captures read the page pattern (the mirror of the event stream is
-  the next step); live event captures (the scheduler's own queries) record nothing while the Worker drives; a live edit, a seek or a tempo change is heard up to the lookahead
-  (0.6 s, 2 s hidden) later instead of 0.2 s; Perform pads and `ctl()` programs are not eligible (their live path stays the page's `catchUp`); the run starts 0.5 s after Play.
+- **Eligibility.** A program is sent to the Worker only if its evaluate text names no page state a query could read and no callback that has to run where the pattern is queried:
+  `hooks.*`, `ctl()`, `.tap()`, `.use()`, `pad()`, `capture` / `recall` / `.from()`, `strudelCraft`, `window.` / `document.` / `localStorage`, and the callbacks and side effects
+  `.onTrigger(fn)`, `.log()`, `.midi()`, `.osc()`, `.serial()`, `.mqtt()` (functions do not cross the port, so in the Worker they would never fire; stage 1 judged them eligible by
+  mistake, fixed in 1b). The lanes pass has already turned `.send` / `.split` / `.merge` into plain Strudel. Anything else, or a program that fails to evaluate in the Worker, runs on the
+  page-thread clock unchanged (a live edit that becomes ineligible switches back, and the reverse).
+- **Event mirror (1b-engine).** While the Worker drives, the visuals hap cache (`visuals.js cachedHaps`) and the lanes view (`app.js queryLanes`) no longer query the page copy of the
+  pattern: `strudelCraft.bg.cycleHaps(c)` asks the Worker (`{t:'q', c}`) for the haps of cycle `c` (fragments included, source locations kept for the highlight), rebuilds real `Hap`
+  objects from the plain data (Strudel's own `Hap`, `TimeSpan`, `Fraction`), caches them (current and future cycles refreshed every 3.5 s, like the visuals' own TTL) and drops the cache on
+  every live edit. While a cycle is pending the callers keep their last picture; when the Worker does not drive they query the page pattern as before (`cycleHaps` returns `undefined`).
+- **Known limits.** The pattern is still evaluated once on the page (the page copy exists for painters' `getPainters()`, lane captures and the editor, it is no longer queried for
+  visuals or lanes); live event captures (the scheduler's own queries) record nothing while the Worker drives; a live edit, a seek or a tempo change is heard up to the lookahead
+  (0.6 s, 2 s hidden) later instead of 0.2 s; Perform pads and `ctl()` programs are not eligible (their live path stays the page's `catchUp`); the run starts 1 s after Play.
 - **Measured** (`tests/site/background_audio_load.mjs`, phone profile, headless, 20 s, x1; page = flag off, worker = flag on):
 
 | program | engine | late haps | min margin | main-thread script ms/s | query + tick ms/s | long tasks (worst) |

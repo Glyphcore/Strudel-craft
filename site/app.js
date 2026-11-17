@@ -378,7 +378,8 @@ const Viz = {
     const key = c0 + '|' + (S.playingId || '') + '|' + Engine.evalCount;
     if (this.laneCache.key === key) return this.laneCache;
     let haps = [];
-    try { haps = pat.queryArc(c0, c0 + 1).filter((h) => h.hasOnset && h.hasOnset()); } catch (e) { haps = []; }
+    const mh = window.strudelCraft.bg && window.strudelCraft.bg.cycleHaps ? window.strudelCraft.bg.cycleHaps(c0) : undefined; if (mh === 'pending') return this.laneCache; /* engine Worker drives: its event mirror */
+    try { haps = (mh || pat.queryArc(c0, c0 + 1)).filter((h) => h.hasOnset && h.hasOnset()); } catch (e) { haps = []; }
     const lanes = []; const out = [];
     for (const h of haps) {
       const v = h.value || {}; const name = typeof v === 'object' ? String(v.s != null ? v.s : (v.note != null || v.n != null ? 'synth' : 'event')) + (v.bank ? '' : '') : 'event';

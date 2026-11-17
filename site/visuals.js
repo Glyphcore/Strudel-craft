@@ -75,7 +75,7 @@ function cachedHaps(pat, t, back) {
   let q = 0; /* at most one cycle query per run (the current cycle first): a cold cache fills over a few runs instead of one 4-cycle stall */
   const need = (c) => { const e = VC.cycles.get(c); return !e || (c >= cur && now - e.at > VC.TTL); };
   const order = []; for (let c = c0; c <= c1; c++) order.push(c); order.sort((x, y) => Math.abs(x - cur) - Math.abs(y - cur));
-  for (const c of order) if (q < 1 && need(c)) { let hs = []; try { hs = pat.queryArc(c, c + 1); } catch (err) { hs = []; } VC.queries++; q++; VC.cycles.set(c, { at: now, haps: hs }); }
+  for (const c of order) if (q < 1 && need(c)) { const mh = sc.bg && sc.bg.cycleHaps ? sc.bg.cycleHaps(c) : undefined; if (mh === 'pending') continue; /* engine Worker drives: haps come from its event mirror */ let hs = mh || []; if (!mh) try { hs = pat.queryArc(c, c + 1); } catch (err) { hs = []; } VC.queries++; q++; VC.cycles.set(c, { at: now, haps: hs }); }
   for (let c = c0; c <= c1; c++) { const e = VC.cycles.get(c); if (e) for (const h of e.haps) if (c === c0 || !h.whole || h.hasOnset()) out.push(h); }
   for (const c of VC.cycles.keys()) if (c < c0 - 1 || c > c1 + 1) VC.cycles.delete(c);
   return out;
@@ -97,7 +97,8 @@ function runFrame() {
   const st = sc.engineState && sc.engineState(); if (!st || !st.playing || !st.pattern || !st.scheduler) { clearHighlight(); return; }
   let t; try { t = st.scheduler.now(); } catch (e) { return; }
   let haps = [];
-  const painters0 = st.pattern.getPainters ? st.pattern.getPainters() : [];
+  if (VC.pp !== st.pattern) { VC.pp = st.pattern; VC.painters = st.pattern.getPainters ? st.pattern.getPainters() : []; } /* getPainters() is a zero-width query of the whole program (about 14 ms with the site passes); the painters are part of the compiled pattern, so once per pattern */
+  const painters0 = VC.painters;
   if (FLAG_VIS === 'requery') { try { haps = st.pattern.queryArc(Math.max(0, t - 2), t + 2); } catch (e) { haps = []; } } /* A/B: the old per-frame 4-cycle query */
   else haps = cachedHaps(st.pattern, t, painters0.length ? 2 : 1);
   try {

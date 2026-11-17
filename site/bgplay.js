@@ -310,6 +310,6 @@ function openDiagnostics() {
 
 bindLifecycle();
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addHelpSettings); else addHelpSettings();
-sc.bg = { install, catchUp, engine: () => ({ flag: FLAG_ENGINE, worker: B.worker ? B.worker.state() : null }), onPlay, onStop, stats, segments, gapsBetween, events: () => B.log.slice(), setPolicy, setWake, openDiagnostics, POLICIES, LOOKAHEAD,
+sc.bg = { install, catchUp, cycleHaps: (c) => (B.worker ? B.worker.cycleHaps(c) : undefined), engine: () => ({ flag: FLAG_ENGINE, worker: B.worker ? B.worker.state() : null }), onPlay, onStop, stats, segments, gapsBetween, events: () => B.log.slice(), setPolicy, setWake, openDiagnostics, POLICIES, LOOKAHEAD,
   get installed() { return B.installed; }, get played() { return B.played; }, get paused() { return stats().pausedSec; }, get policy() { return B.policy; },
   set trace(on) { B.trace = on ? [] : null; }, get trace() { return B.trace; } };

@@ -2,6 +2,13 @@
  "family": "edm-depth",
  "bodies": {
   "ed-serial-fm": {
+   "intent": "FM at ratio 0.5 with a falling index, then one shape stage.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 140.0,
+   "rms_dbfs": -25.8,
+   "centroid_hz": 915,
+   "peak": 0.3316,
    "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-depth\")\n$: note(atoms.ed.growl).hook(\"serialFM\")",
    "lowered": "setcpm(140/4)\n$: note(\"c2 ~ c2 c2 ~ ~ eb2 ~ c2 ~ ~ c2 ~ g1 ~ ~\").hpf(70).lpf(9000).s(\"sawtooth\").fm(6).fmh(0.5).fmattack(0.002).fmdecay(0.18).fmsustain(0.25).attack(0.004).sustain(0.8).release(0.05).hpf(100).ftype(\"24db\").lpf(2600).shape(0.35).gain(0.28)",
    "notes": "",
@@ -10,6 +17,13 @@
    "error": null
   },
   "ed-multiband-layers": {
+   "intent": "One growl played three times through low, mid and high band moves.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 140.0,
+   "rms_dbfs": -28.9,
+   "centroid_hz": 1295,
+   "peak": 0.2416,
    "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-depth\")\n$: note(atoms.ed.growl).hook(\"fmFormant | mbLow\")\n$: note(atoms.ed.growl).hook(\"fmFormant | mbMid\")\n$: note(atoms.ed.growl).hook(\"fmFormant | mbHigh\")",
    "lowered": "setcpm(140/4)\n$: note(\"c2 ~ c2 c2 ~ ~ eb2 ~ c2 ~ ~ c2 ~ g1 ~ ~\").hpf(70).lpf(9000).s(\"square\").fm(2).fmh(2).fmdecay(0.3).fmsustain(0.5).vowel(\"<a e o e>\").attack(0.005).sustain(0.8).release(0.05).hpf(100).lpf(3500).gain(0.35).ftype(\"24db\").lpf(180).compressor(-18).compressorRatio(4).compressorAttack(0.01).compressorRelease(0.12)\n$: note(\"c2 ~ c2 c2 ~ ~ eb2 ~ c2 ~ ~ c2 ~ g1 ~ ~\").hpf(70).lpf(9000).s(\"square\").fm(2).fmh(2).fmdecay(0.3).fmsustain(0.5).vowel(\"<a e o e>\").attack(0.005).sustain(0.8).release(0.05).hpf(100).lpf(3500).gain(0.35).ftype(\"24db\").hpf(180).lpf(2500).compressor(-26).compressorRatio(6).compressorAttack(0.003).compressorRelease(0.08).postgain(0.5)\n$: note(\"c2 ~ c2 c2 ~ ~ eb2 ~ c2 ~ ~ c2 ~ g1 ~ ~\").hpf(70).lpf(9000).s(\"square\").fm(2).fmh(2).fmdecay(0.3).fmsustain(0.5).vowel(\"<a e o e>\").attack(0.005).sustain(0.8).release(0.05).hpf(100).lpf(3500).gain(0.35).ftype(\"24db\").hpf(2500).compressor(-30).compressorRatio(8).compressorAttack(0.002).compressorRelease(0.06).postgain(0.8)",
    "notes": "",
@@ -18,6 +32,13 @@
    "error": null
   },
   "ed-vocal-chops": {
+   "intent": "Pitched chops whose vowel moves with the rhythm, the whole phrase.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 140.0,
+   "rms_dbfs": -38.5,
+   "centroid_hz": 1092,
+   "peak": 0.104,
    "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-depth\")\n$: note(atoms.ed.chopNotes).hook(\"formantChop\").vowel(atoms.ed.chopVowels).add(note(atoms.ed.chopStep))",
    "lowered": "setcpm(140/4)\n$: note(\"c5 ~ eb5 c5 ~ g4 ~ bb4 c5 ~ ~ eb5 ~ f5 eb5 ~\").hpf(150).lpf(8000).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0).release(0.03).hpf(200).lpf(5000).gain(0.3).vowel(\"a ~ e a ~ o ~ i a ~ ~ e ~ o a ~\").add(note(\"<0 3 7 5>\"))",
    "notes": "",
@@ -26,6 +47,13 @@
    "error": null
   },
   "ed-stutter-tapestop": {
+   "intent": "A bar of 16th stutter on the bass, then a tape-stop fall on the last.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 140.0,
+   "rms_dbfs": -32.0,
+   "centroid_hz": 1489,
+   "peak": 0.3211,
    "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-depth\n$: note(\"<[c2 ~ c2 c2 ~ ~ eb2 ~ c2 ~ ~ c2 ~ g1 ~ ~] ~ [c2 ~ c2 c2 ~ ~ eb2 ~ c2 ~ ~ c2 ~ g1 ~ ~]>\").hook(\"fmFormant\")\n$: note(\"<~ [c3,eb3,g3]*16 ~>\").hook(\"formantChop\").vowel(\"a\")\n$: note(\"<~ [~ ~ ~ [c3,eb3,g3]] ~>\").hook(\"tapeStop\")",
    "lowered": "setcpm(140/4)\n$: note(\"<[c2 ~ c2 c2 ~ ~ eb2 ~ c2 ~ ~ c2 ~ g1 ~ ~] ~ [c2 ~ c2 c2 ~ ~ eb2 ~ c2 ~ ~ c2 ~ g1 ~ ~]>\").hpf(70).lpf(9000).s(\"square\").fm(2).fmh(2).fmdecay(0.3).fmsustain(0.5).vowel(\"<a e o e>\").attack(0.005).sustain(0.8).release(0.05).hpf(100).lpf(3500).gain(0.35)\n$: note(\"<~ [c3,eb3,g3]*16 ~>\").hpf(150).lpf(8000).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0).release(0.03).hpf(200).lpf(5000).gain(0.3).vowel(\"a\")\n$: note(\"<~ [~ ~ ~ [c3,eb3,g3]] ~>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"sawtooth\").note(\"c4\").penv(-12).pdecay(0.6).attack(0.005).decay(0.7).sustain(0).hpf(300).lpf(3000).lpenv(-2).lpdecay(0.6).gain(0.2)",
    "notes": "",
@@ -34,6 +62,13 @@
    "error": null
   },
   "ed-map16": {
+   "intent": "Intro 4, build 4, drop 8 with masks.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 140.0,
+   "rms_dbfs": -36.2,
+   "centroid_hz": 856,
+   "peak": 0.1614,
    "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-depth\")\n$: note(atoms.ed.growl).hook(\"fmFormant\").mask(atoms.ed.m16Mask)\n$: note(\"<c4!4 c4!4 ~!8>\").hook(\"formantChop\").vowel(\"o\").mask(\"<1!8 0!8>\")",
    "lowered": "setcpm(140/4)\n$: note(\"c2 ~ c2 c2 ~ ~ eb2 ~ c2 ~ ~ c2 ~ g1 ~ ~\").hpf(70).lpf(9000).s(\"square\").fm(2).fmh(2).fmdecay(0.3).fmsustain(0.5).vowel(\"<a e o e>\").attack(0.005).sustain(0.8).release(0.05).hpf(100).lpf(3500).gain(0.35).mask(\"<0!8 1!8>\")\n$: note(\"<c4!4 c4!4 ~!8>\").hpf(150).lpf(8000).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0).release(0.03).hpf(200).lpf(5000).gain(0.3).vowel(\"o\").mask(\"<1!8 0!8>\")",
    "notes": "",

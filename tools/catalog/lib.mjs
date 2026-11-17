@@ -1,4 +1,4 @@
-// The catalog is two shapes (#131): the eager INDEX site/data/catalog.json (what the first paint needs: id, title, folder, tags, labels, pack, hash,
+// The catalog is two shapes (#131, slimmed by #166): the eager INDEX site/data/catalog.json (what the first paint needs: id, title, folder, tags, labels, pack, hash,
 // lowered flag ...) and one lazy BODY file per family, site/data/recipes/<family>.json (code, expr, notes, source, error, lowered, lowered_note,
 // lowered_check), listed in site/craftpack.json as `x-glyphcore.recipe-bodies` ingredients `bodies-<family>` (load: lazy). An index entry names its
 // body ingredient in `body`; `stackable` and `has_lowered` are index-only flags. A monolithic catalog (no `body` anywhere, what an older
@@ -6,14 +6,14 @@
 // back through catalogFiles(). Never read data/catalog.json directly for code, notes or lowered text.
 //   import { readCatalog, catalogFiles, writeCatalog } from '../catalog/lib.mjs';
 import fs from 'node:fs'; import path from 'node:path';
-export const BODY_FIELDS = ['code', 'expr', 'notes', 'source', 'error', 'lowered', 'lowered_note', 'lowered_check'];
+export const BODY_FIELDS = ['intent', 'code', 'expr', 'notes', 'source', 'error', 'lowered', 'lowered_note', 'lowered_check', 'origin', 'unverified', 'bpm_hint', 'rms_dbfs', 'centroid_hz', 'peak']; // #166: the inspector-only measurements and provenance live in the body, not in the eager index
 export const SYNTH = ['body', 'stackable', 'has_lowered'];
 export const famOf = (r) => r.family || 'base';
 export const bodyId = (fam) => 'bodies-' + fam;
 export const bodyFile = (id) => `data/recipes/${id.replace(/^bodies-/, '')}.json`;
 const FLOATS = (s) => s.replace(/"(peak|rms_dbfs|bpm_hint)": (-?\d+)(,?)\n/g, '"$1": $2.0$3\n'); // same text as engine/strudel/build_catalog.py (Python floats)
-export const dumpIndex = (idx) => FLOATS(JSON.stringify(idx, null, 1));
-export const dumpBody = (fam, bodies) => JSON.stringify({ family: fam, bodies }, null, 1) + '\n';
+export const dumpIndex = (idx) => JSON.stringify(idx) + '\n'; // #166: compact (the index is read by machines; the pretty form cost 30% of its bytes)
+export const dumpBody = (fam, bodies) => FLOATS(JSON.stringify({ family: fam, bodies }, null, 1)) + '\n';
 const siteDir = (root) => path.join(root, 'site');
 
 /** the full catalog {version, ..., labels, recipes[]} with every recipe's body merged in (pure data; synthetic index flags removed) */

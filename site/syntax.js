@@ -32,12 +32,13 @@ const FALLBACK = [{ id: 'core', title: 'Core (bundled)', needs: 'core', explain:
 ] }];
 const load = (again) => (again && window.strudelCraft.packs.retry ? window.strudelCraft.packs.retry('syntax') : window.strudelCraft.packs.syntax()).then((d) => { if (!d || !Array.isArray(d.sections) || !d.sections.length) { const f = window.strudelCraft.packs.failure && window.strudelCraft.packs.failure('syntax'); throw f ? Object.assign(new Error(`${f.ingredient} ${f.state}: ${f.message || ''}`), { code: f.code }) : Object.assign(new Error('the syntax data has no sections'), { code: 'E_SYNTAX_EMPTY' }); } return d; })
   .catch((e) => { const msg = `${(e && e.code) || 'E_SYNTAX_LOAD'}: ${(e && e.message) || e}`; console.warn('syntax: ' + msg); return { sections: FALLBACK, error: msg }; });
-let data = load();
+/* #166: the syntax data (209 KB + composition 165 KB) is fetched on first use (the view opening, a quick play, the first editor completion), not at module load */
+let dataP = null; const getData = () => (dataP = dataP || load());
 
 /* intellisense snippets */
 function registerSnippets() {
   if (!sc.intellisense || !sc.intellisense.register) return false;
-  sc.intellisense.register({ id: 'syntax', items: async () => (await data).sections.flatMap((s) => (s.examples || []).filter((e) => e.code && !e.coming).map((e) => ({
+  sc.intellisense.register({ id: 'syntax', items: async () => (await getData()).sections.flatMap((s) => (s.examples || []).filter((e) => e.code && !e.coming).map((e) => ({
     label: e.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''), category: 'syntax examples', detail: s.title, info: e.code, apply: e.code }))) });
   return true;
 }
@@ -120,7 +121,7 @@ function structure(d) {
   return `<nav class="sx-jump" data-keys="own" aria-label="Jump to a family">${groups.map((x) => `<a href="#syntax" data-g="${x.g}">${esc(groupTitle(x.g))} <b>${x.items.length}</b></a>`).join('')}</nav>`
     + `\u0000` + `<div class="sx-lists"><div class="sx-pinned sx-chips" hidden></div><div class="sx-recent sx-chips" hidden></div></div><div class="sx-groups" data-keys="own">${groups.map((x) => `<section class="sx-grp" data-g="${x.g}" data-total="${x.items.length}" aria-label="${esc(groupTitle(x.g))}"><h2 class="sx-gh"><button type="button" class="sx-ghead" data-g="${x.g}" aria-expanded="false"><span class="sx-gico" aria-hidden="true"></span><span class="sx-gt">${esc(groupTitle(x.g))}</span><span class="sx-gn">${x.items.length}</span><i class="sx-chev" aria-hidden="true"></i></button></h2><div class="sx-gbody" hidden>${x.items.map(sec).join('')}</div></section>`).join('')}</div>`; }
 async function render(force) {
-  const root = $('#syntax'); if (!root) return; const d = await data; sxData = d; sxSecs = sxEntries(d);
+  const root = $('#syntax'); if (!root) return; const d = await getData(); sxData = d; sxSecs = sxEntries(d);
   if (root.querySelector('.sx-groups') && !force && !d.error === !root.querySelector('.sx-error')) { root.querySelectorAll('.sx-sec').forEach((el) => { const s = d.sections.find((x) => x.id === el.id.slice(3)), b = builtOf(s), bd = el.querySelector('.sx-badge'); if (bd && bd.dataset.built !== String(b)) { bd.dataset.built = String(b); bd.textContent = b ? 'built' : 'coming'; const body = el.querySelector('.sx-body'); if (body.dataset.ready) { delete body.dataset.ready; if (!body.hidden) fillBody(el); } } }); return; }
   const parts = structure(d).split('\u0000');
   root.innerHTML = `<div class="panel-head"><h2>Syntax</h2><span class="sx-sub">New paradigms and composition concepts, each with runnable examples</span></div>
@@ -139,16 +140,16 @@ async function render(force) {
     if ((k === 'ArrowDown' || k === 'ArrowUp' || k === 'Home' || k === 'End') && (t.matches('.sx-ghead, .sx-head') || (t.matches('.sx-search') && k === 'ArrowDown'))) { const l = list(), i = l.indexOf(t); const n = k === 'Home' ? l[1] : k === 'End' ? l[l.length - 1] : l[Math.max(0, Math.min(l.length - 1, i + (k === 'ArrowDown' ? 1 : -1)))]; if (n) { ev.preventDefault(); n.focus(); } return; }
     if (t.matches('.sx-ghead') && (k === 'ArrowRight' || k === 'ArrowLeft')) { const open = t.getAttribute('aria-expanded') === 'true'; if ((k === 'ArrowRight') !== open) { ev.preventDefault(); showGroup(t.dataset.g, k === 'ArrowRight'); } } });
   root.addEventListener('click', async (ev) => {
-    if (ev.target.closest('.sx-retry')) { ev.target.closest('.sx-retry').disabled = true; data = load(true); await render(true); const d2 = await data; sc.ui && sc.ui.toast(d2.error ? 'Syntax examples still unavailable: ' + d2.error : 'Syntax examples loaded', { kind: d2.error ? 'error' : 'ok' }); return; }
+    if (ev.target.closest('.sx-retry')) { ev.target.closest('.sx-retry').disabled = true; dataP = load(true); await render(true); const d2 = await dataP; sc.ui && sc.ui.toast(d2.error ? 'Syntax examples still unavailable: ' + d2.error : 'Syntax examples loaded', { kind: d2.error ? 'error' : 'ok' }); return; }
     const gh = ev.target.closest('.sx-ghead'); if (gh) { const open = gh.getAttribute('aria-expanded') !== 'true'; if (sxQuery || (sxOrg && (sxOrg.state.folder || sxOrg.state.tags.length))) { gh.setAttribute('aria-expanded', String(open)); gh.closest('.sx-grp').querySelector('.sx-gbody').hidden = !open; return; } showGroup(gh.dataset.g, open); return; }
     const hd = ev.target.closest('.sx-head'); if (hd) { const el = hd.closest('.sx-sec'), open = hd.getAttribute('aria-expanded') !== 'true'; setSec(el, open); if (open) { const id = el.id.slice(3); NAV.recent = [id, ...NAV.recent.filter((x) => x !== id)].slice(0, 8); navSave(); paintLists(); setHash(id); } else if (decodeURIComponent(location.hash) === '#syntax=' + el.id.slice(3)) setHash(''); return; }
-    const qb = ev.target.closest('.qp'); if (qb) { const d3 = await data; const [, sid, ix] = qb.dataset.qp.split(':'); const s3 = d3.sections.find((x) => x.id === sid); if (!s3) return;
+    const qb = ev.target.closest('.qp'); if (qb) { const d3 = await getData(); const [, sid, ix] = qb.dataset.qp.split(':'); const s3 = d3.sections.find((x) => x.id === sid); if (!s3) return;
       import('./quickplay.js').then((m) => m.press(qb, () => qpSpec(s3, +ix, [...qb.closest('.sx-sec').querySelectorAll('.sx-ex')][+ix] || null))).catch((err) => sc.ui && sc.ui.toast('Quick play could not load: ' + err.message, { kind: 'error' })); return; }
     const pn = ev.target.closest('.sx-pin'); if (pn) { const id = pn.dataset.pin; NAV.pins = NAV.pins.includes(id) ? NAV.pins.filter((x) => x !== id) : [id, ...NAV.pins]; navSave(); paintLists(); return; }
     const gt = ev.target.closest('.sx-go'); if (gt) { go(gt.dataset.go); return; }
     const jp = ev.target.closest('.sx-jump a'); if (jp) { ev.preventDefault(); const g = jp.dataset.g; if (sxQuery) { sxQuery = ''; root.querySelector('.sx-search').value = ''; } NAV.open.add(g); navSave(); sxApply(); groupEl(g).scrollIntoView({ block: 'start', behavior: 'auto' }); return; }
     if (ev.target.closest('.sx-clear')) { const q2 = root.querySelector('.sx-search'); q2.value = ''; sxQuery = ''; sxApply(); return; }
-    const b = ev.target.closest('.sx-run'); if (!b) return; const d = await data;
+    const b = ev.target.closest('.sx-run'); if (!b) return; const d = await getData();
     const sec = d.sections.find((s) => s.id === b.dataset.sec); const ex = sec.examples[+b.dataset.i];
     if (ex.action === 'perform') { window.__sc.setView('perform'); return; }
     window.__sc.setView('rack'); const ta = document.getElementById('code'); ta.value = ex.code; ta.dispatchEvent(new Event('input'));

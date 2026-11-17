@@ -638,7 +638,7 @@ function renderList(keepId) {
     const inStack = S.stack.some((l) => l.id === r.id);
     const e = effOf(r), st = S.org ? S.org.entryStyle(e) : null;
     return el('li', { 'data-id': r.id, 'aria-current': i === S.sel ? 'true' : 'false', class: S.playing && r.id === S.playingId ? 'playing' : null },
-      el('button', { type: 'button', class: 'row', 'data-i': i, title: r.intent + (e.folder ? ' (' + e.folder + ')' : '') },
+      el('button', { type: 'button', class: 'row', 'data-i': i, title: (r.intent || r.title) + (e.folder ? ' (' + e.folder + ')' : '') },
         el('span', { class: 'n', 'aria-hidden': 'true' }, String(S.recipes.indexOf(r) + 1).padStart(2, '0')),
         st ? S.orgMod.ico(st) : null,
         el('span', { class: 'tt' }, el('span', { class: 't' }, r.title), e.folder || (e.tags || []).length ? el('span', { class: 'sub' }, [e.folder, (e.tags || []).filter((x) => !['verified', 'unverified'].includes(x) && !(e.folder || '').split('/').includes(x)).slice(0, 2).join(' ')].filter(Boolean).join(' · ')) : null),
@@ -668,11 +668,11 @@ function formsBlock(r) {
   return F.render({ craft: r.code, lowered: r.lowered, lowered_note: r.lowered_note, lowered_check: r.lowered_check }, { insert: (code, which) => {
     const ta = $('#code'); ta.value = code; ta.dispatchEvent(new Event('input')); say('Inserted the ' + (which === 'craft' ? 'Craft' : 'Strudel') + ' form into the editor'); } });
 }
-/* the row is in the index but its family body is still on the way: title, intent and a status row (spinner, or the failure with Retry); the full inspector replaces it when the body lands */
+/* the row is in the index but its family body is still on the way: title and a status row (spinner; the intent is in the body since #166, or the failure with Retry); the full inspector replaces it when the body lands */
 function renderPending(r, updateHash, failed) {
   const code = $('#code'); if (document.activeElement !== code) code.value = '';
   $('#dirty').hidden = true; $('#revertBtn').disabled = true;
-  $('#inspector').replaceChildren(el('h2', {}, 'Inspector'), el('p', { class: 'title' }, r.title), el('p', { class: 'intent', html: mdInline(r.intent.charAt(0).toUpperCase() + r.intent.slice(1)) }),
+  $('#inspector').replaceChildren(el('h2', {}, 'Inspector'), el('p', { class: 'title' }, r.title),
     failed ? el('div', { class: 'rec-load err', role: 'alert' }, el('span', {}, failed), el('button', { type: 'button', class: 'ghost', onclick: () => renderPending(r, updateHash) }, 'Retry'))
       : el('div', { class: 'rec-load', role: 'status' }, el('i', { class: 'spin', 'aria-hidden': 'true' }), el('span', {}, 'Loading recipe…')));
   if (updateHash && S.view === 'rack') history.replaceState(null, '', '#r/' + r.id);

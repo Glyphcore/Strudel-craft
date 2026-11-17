@@ -12,9 +12,9 @@
       "format": "recipes@1",
       "version": "1.0.0",
       "path": "data/catalog.json",
-      "hash": "sha256:d38af091babd57684e189828e40b4e2976859313eb71be715040f70b3a93b380",
+      "hash": "sha256:96e1f82cba5ad4a88ebc39b8bb03e984589461befa1aef3379b4f0a87dbc144a",
       "load": "eager",
-      "bytes": 147931
+      "bytes": 72348
     },
     {
       "id": "bodies-base",
@@ -23,8 +23,8 @@
       "version": "1.0.0",
       "path": "data/recipes/base.json",
       "load": "lazy",
-      "hash": "sha256:881326f0e26e6982cdbe8a7c6206e705e0eadd3244e6f704783f24fa4db50173",
-      "bytes": 20023
+      "hash": "sha256:a294cb9b62338fe845d026edf138dba3021d8aa9b424cf3002509c9d9e175d79",
+      "bytes": 28967
     },
     {
       "id": "bodies-dnb",
@@ -33,8 +33,8 @@
       "version": "1.0.0",
       "path": "data/recipes/dnb.json",
       "load": "lazy",
-      "hash": "sha256:14d2330ad37ba3e040b65da6c1236e009e0944a686be52e6fba4bde738f07a38",
-      "bytes": 17774
+      "hash": "sha256:dbe17946262523e935634a6b54d9e248d67c8c871a59b7b503f671fc2a49415c",
+      "bytes": 22222
     },
     {
       "id": "bodies-dovetail",
@@ -43,8 +43,8 @@
       "version": "1.0.0",
       "path": "data/recipes/dovetail.json",
       "load": "lazy",
-      "hash": "sha256:39e2b7d57ee8392279dd1f2fe081454af81aa9c887d13a45470e1257af5d3fbe",
-      "bytes": 8566
+      "hash": "sha256:6eb1a22e30ded5610a4215150540f0dacecb98f308d2e927e0229b44a3f59868",
+      "bytes": 10783
     },
     {
       "id": "bodies-dubstep",
@@ -53,8 +53,8 @@
       "version": "1.0.0",
       "path": "data/recipes/dubstep.json",
       "load": "lazy",
-      "hash": "sha256:01fe87f725a2796dcf8b4fba152ef133c924b00f9db93fc8ffa37758c38ffb31",
-      "bytes": 41815
+      "hash": "sha256:21c69b0cdeb40a27d454270885e8099a9a7ec631a3e64c6f3b74a2d60e5874d6",
+      "bytes": 47608
     },
     {
       "id": "bodies-edm-core",
@@ -63,8 +63,8 @@
       "version": "1.0.0",
       "path": "data/recipes/edm-core.json",
       "load": "lazy",
-      "hash": "sha256:2a73a67d9d26616dc19508b721f08d9db38ce0777ede3d9286352152fb8c7b05",
-      "bytes": 14048
+      "hash": "sha256:78c49e202c27a6ac138a6fdc3743c8014b670624f780486d911e3cbbb675c658",
+      "bytes": 18711
     },
     {
       "id": "bodies-edm-depth",
@@ -73,8 +73,8 @@
       "version": "1.0.0",
       "path": "data/recipes/edm-depth.json",
       "load": "lazy",
-      "hash": "sha256:df347fbac68567c05cf7815972f52b499c0103bcb25cf0e146fe4700e1f1da22",
-      "bytes": 4468
+      "hash": "sha256:a0ef0a989c326abde7521c849c715dbc4fb503c0b90a895a8a960c535a7edcaa",
+      "bytes": 5511
     },
     {
       "id": "bodies-edmfeels",
@@ -83,8 +83,8 @@
       "version": "1.0.0",
       "path": "data/recipes/edmfeels.json",
       "load": "lazy",
-      "hash": "sha256:9eb66e703b501d70ebe936edef29540c68e142520d0e96c8c5f6980270f09c07",
-      "bytes": 20122
+      "hash": "sha256:0365a6a36719aed6b9353748cd20844a8b7996acfdd86fdffbc543490cc394b7",
+      "bytes": 21877
     },
     {
       "id": "bodies-electro",
@@ -93,8 +93,8 @@
       "version": "1.0.0",
       "path": "data/recipes/electro.json",
       "load": "lazy",
-      "hash": "sha256:d20ad13ee209f9797fe5f7df7d0070172ca01470029d0abedac9bfa60b991d4e",
-      "bytes": 6946
+      "hash": "sha256:6298a4167639499eef95b37f34fc2abbefec6009b19c73cc7f517fca9628e24b",
+      "bytes": 9184
     },
     {
       "id": "bodies-feels",
@@ -103,8 +103,8 @@
       "version": "1.0.0",
       "path": "data/recipes/feels.json",
       "load": "lazy",
-      "hash": "sha256:1225db4d427046428b7b1b7c96f381f45039fe523e03ad90896c7a780595eaea",
-      "bytes": 16592
+      "hash": "sha256:1d7e22e35cc4a5ab628afe768cafda7dbf22e031141181a8cd521bbefd1814b7",
+      "bytes": 17810
     },
     {
       "id": "bodies-groove",
@@ -113,8 +113,8 @@
       "version": "1.0.0",
       "path": "data/recipes/groove.json",
       "load": "lazy",
-      "hash": "sha256:329e7fdac671f5a26184b8001386c9c53b7706cfdc01f8a7edd30e76d52938c3",
-      "bytes": 4644
+      "hash": "sha256:1737a37084c64c78040525f5bc5f320b84951c6c91187a0ce48cfb280e117649",
+      "bytes": 5850
     },
     {
       "id": "bodies-hiphop",
@@ -123,8 +123,8 @@
       "version": "1.0.0",
       "path": "data/recipes/hiphop.json",
       "load": "lazy",
-      "hash": "sha256:8b87e819e3949b0edfb50777f9acd5dce11b9c829d7a8fe1189021805739aaf7",
-      "bytes": 17740
+      "hash": "sha256:f12bb6462522ee2ea1580a64b30abed175812a28c52f889c9caf7d4aeb7fdd85",
+      "bytes": 22300
     },
     {
       "id": "bodies-house",
@@ -133,8 +133,8 @@
       "version": "1.0.0",
       "path": "data/recipes/house.json",
       "load": "lazy",
-      "hash": "sha256:e83e82e3e5f711bd647e117df977d40ce585c8206ed12d59b1ac08a5ed98e247",
-      "bytes": 11081
+      "hash": "sha256:def17fcb22feb4737b2b42340d054c8856acdcd0a24be9709d7da4cc7377eab1",
+      "bytes": 13688
     },
     {
       "id": "bodies-industrial",
@@ -143,8 +143,8 @@
       "version": "1.0.0",
       "path": "data/recipes/industrial.json",
       "load": "lazy",
-      "hash": "sha256:e3efbbf626d10dabcfcc9cec27bbcc5383dc84a9a58339fd08df21084dd4cc0a",
-      "bytes": 25684
+      "hash": "sha256:913f9aeb6b04a1fda9b3bc5a9023e5bf4eea78462b4ec06ef31a566a0e3accba",
+      "bytes": 29251
     },
     {
       "id": "bodies-rockmetal",
@@ -153,8 +153,8 @@
       "version": "1.0.0",
       "path": "data/recipes/rockmetal.json",
       "load": "lazy",
-      "hash": "sha256:5ae31f091180c8f6d47980e395b6c62e56f0b742191217cd2fff1be1f0a6f9fe",
-      "bytes": 25536
+      "hash": "sha256:12c10f7a57085ea7abc4da26baf790375eedc097d8575de85cccb0fb64b32a0f",
+      "bytes": 29216
     },
     {
       "id": "strudel-docs",
@@ -213,7 +213,7 @@
       "version": "1.0.0",
       "path": "data/syntax.json",
       "hash": "sha256:7be656ce3d0815d1b213dbe12fe6e73ee266641fe568931734105732687a29b6",
-      "load": "eager",
+      "load": "lazy",
       "bytes": 209210
     },
     {

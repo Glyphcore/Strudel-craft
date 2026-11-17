@@ -2,6 +2,13 @@
  "family": "base",
  "bodies": {
   "four-on-the-floor": {
+   "intent": "steady kick for house or techno.",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "bpm_hint": null,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
    "code": "$: s(\"bd*4\").bank(\"RolandTR909\")",
    "notes": "`bd*4` is four kicks per cycle. Add a hat in recipe 2.",
    "source": "https://strudel.cc/learn/samples/",
@@ -9,6 +16,13 @@
    "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR909_bd not found! Is it loaded?"
   },
   "offbeat-hat": {
+   "intent": "open-hat feel between kicks.",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "bpm_hint": null,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
    "code": "$: s(\"~ hh ~ hh ~ hh ~ hh\").bank(\"RolandTR808\").gain(0.8)",
    "notes": "`~` rests shift the hat to the offbeats.",
    "source": "https://strudel.cc/learn/samples/",
@@ -16,6 +30,13 @@
    "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR808_hh not found! Is it loaded?"
   },
   "euclid-groove": {
+   "intent": "non-straight rhythm from euclidean distribution.",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "bpm_hint": null,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
    "code": "$: s(\"bd(3,8), hh(5,8,2), sd(2,8,4)\").bank(\"RolandTR909\")",
    "notes": "`(beats,segments,rotation)`. Source: https://strudel.cc/learn/mini-notation/",
    "source": "https://strudel.cc/learn/mini-notation/",
@@ -23,6 +44,15 @@
    "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR909_bd not found! Is it loaded?"
   },
   "reese-style-detuned-bass": {
+   "intent": "thick, moving bass from two detuned saws.",
+   "unverified": [
+    "see notes"
+   ],
+   "origin": "RECIPES.md",
+   "bpm_hint": null,
+   "rms_dbfs": -18.8,
+   "centroid_hz": 270,
+   "peak": 0.4949,
    "code": "$: stack(\n  note(\"c2 c2 eb2 g1\").s(\"sawtooth\"),\n  note(\"c2 c2 eb2 g1\").s(\"sawtooth\").add(note(0.12))\n).hpf(30).lpf(400).lpq(8).attack(0.005).gain(0.38)",
    "notes": "the `add(note(0.12))` detune is UNVERIFIED (it is a semitone offset via documented `add`). A true supersaw is `s(\"supersaw\")`, which appears in a documented example. Keep `lpq` below about 15 for stability (judgement, UNVERIFIED).",
    "source": "https://strudel.cc/learn/effects/",
@@ -30,6 +60,13 @@
    "error": null
   },
   "sub-bass": {
+   "intent": "clean low sine under the kick.",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "bpm_hint": null,
+   "rms_dbfs": -12.8,
+   "centroid_hz": 36,
+   "peak": 0.4898,
    "code": "$: note(\"c1 c1 eb1 bb0\").s(\"sine\").hpf(28).lpf(120).attack(0.01).release(0.08).gain(0.85)",
    "notes": "low-pass keeps it sub. Remove the filter for purer sine.",
    "source": "https://strudel.cc/learn/synths/",
@@ -37,6 +74,13 @@
    "error": null
   },
   "pad-swell": {
+   "intent": "slow-attack chord pad with a room tail.",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "bpm_hint": null,
+   "rms_dbfs": -22.1,
+   "centroid_hz": 395,
+   "peak": 0.28,
    "code": "$: note(\"<[c3,eb3,g3] [bb2,d3,f3]>\").s(\"triangle\")\n  .hpf(180).lpf(6000).attack(2).release(3).room(0.5).roomsize(6).gain(0.4)",
    "notes": "`attack`/`release` in seconds, `roomsize` 0 to 10.",
    "source": "https://strudel.cc/learn/effects/",
@@ -44,6 +88,13 @@
    "error": null
   },
   "filter-sweep-build": {
+   "intent": "rising cutoff on a sawtooth loop, over bars.",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "bpm_hint": null,
+   "rms_dbfs": -17.8,
+   "centroid_hz": 1340,
+   "peak": 0.4794,
    "code": "$: note(\"c2*4\").s(\"sawtooth\")\n  .hpf(30).lpf(sine.slow(8).range(200,4000)).lpq(6).attack(0.005)",
    "notes": "`sine.slow(8).range(200,4000)` is a signal on `lpf`. Cutoff is 0 to 20000 Hz.",
    "source": "https://strudel.cc/learn/signals/",
@@ -51,6 +102,13 @@
    "error": null
   },
   "riser": {
+   "intent": "noise rising in pitch and brightness into a drop.",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "bpm_hint": null,
+   "rms_dbfs": -40.7,
+   "centroid_hz": 7012,
+   "peak": 0.0547,
    "code": "$: s(\"white\").hpf(saw.range(200,8000).slow(8)).lpf(11000).ftype(\"24db\")\n  .gain(saw.slow(8)).room(0.3)",
    "notes": "`saw.slow(8)` runs 0 to 1 over 8 cycles, so the riser fades in.",
    "source": "https://strudel.cc/learn/signals/",
@@ -58,6 +116,13 @@
    "error": null
   },
   "breakdown-drop-arrangement-over-bars": {
+   "intent": "sections of 8 cycles: pad, drums, then both.",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "bpm_hint": 128.0,
+   "rms_dbfs": -21.4,
+   "centroid_hz": 452,
+   "peak": 0.2583,
    "code": "const drums = s(\"bd*4,hh*8\").bank(\"RolandTR909\")\nconst pad = note(\"c3 eb3 g3 bb3\").s(\"triangle\").slow(2).room(0.4)\nsetcpm(128/4)\narrange([8, pad], [8, drums], [8, stack(drums, pad)])",
    "notes": "`arrange([cycles, pattern], ...)` syntax is verified from the Strudel FAQ mirror (https://warm.strudel.cc/learn/faq). Confirm on strudel.cc. `setcpm(BPM/4)` for 4/4.",
    "source": "https://warm.strudel.cc/learn/faq",
@@ -65,6 +130,13 @@
    "error": null
   },
   "half-time": {
+   "intent": "backbeat on beat 3 at half speed.",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "bpm_hint": null,
+   "rms_dbfs": null,
+   "centroid_hz": null,
+   "peak": 0.0,
    "code": "$: s(\"bd ~ ~ ~ ~ ~ ~ ~, ~ ~ ~ ~ sd ~ ~ ~, hh*8\").bank(\"RolandTR808\")",
    "notes": "one kick and one snare per cycle; cycle length is one bar at the set tempo. Use `.slow(2)` on the hat to thin it.",
    "source": "https://strudel.cc/learn/samples/",
@@ -72,6 +144,13 @@
    "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound RolandTR808_bd not found! Is it loaded?"
   },
   "call-and-response": {
+   "intent": "phrase, then answer in the next cycle.",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "bpm_hint": null,
+   "rms_dbfs": -21.6,
+   "centroid_hz": 3042,
+   "peak": 0.2888,
    "code": "$: note(\"<[c4 e4 g4 e4] ~>\").s(\"triangle\").room(0.3)\n$: note(\"<~ [g4 a4 b4 c5]>\").s(\"square\").gain(0.5)",
    "notes": "alternation `< >` swaps the phrase and answer each cycle.",
    "source": "https://strudel.cc/learn/mini-notation/",
@@ -79,6 +158,13 @@
    "error": null
   },
   "minor-motif": {
+   "intent": "short repeating melody in A minor.",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "bpm_hint": null,
+   "rms_dbfs": -21.4,
+   "centroid_hz": 637,
+   "peak": 0.3426,
    "code": "$: n(\"0 2 <3 4> 2\").scale(\"A:minor\").s(\"triangle\").slow(2)",
    "notes": "`scale(\"A:minor\")` uses root:scale syntax from the tonal page. Numbers index the scale.",
    "source": "https://strudel.cc/learn/tonal/",
@@ -86,6 +172,13 @@
    "error": null
   },
   "chord-stabs": {
+   "intent": "short plucked chords on each beat pair.",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "bpm_hint": null,
+   "rms_dbfs": -27.8,
+   "centroid_hz": 1076,
+   "peak": 0.4962,
    "code": "$: chord(\"<Am7 F^7 C G>*2\").voicing()\n  .s(\"sawtooth\").hpf(120).lpf(1800).decay(0.2).sustain(0).gain(0.5)",
    "notes": "`^` marks major seventh. `decay` and `sustain(0)` cut each chord short.",
    "source": "https://strudel.cc/learn/tonal/",
@@ -93,6 +186,13 @@
    "error": null
   },
   "sidechain-pump": {
+   "intent": "pad ducks under the kick.",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "bpm_hint": null,
+   "rms_dbfs": -24.9,
+   "centroid_hz": 1024,
+   "peak": 0.2583,
    "code": "$: note(\"<c3 eb3 g3 bb3>\").s(\"sawtooth\").orbit(2).hpf(100).lpf(900)\n$: s(\"bd:4!4\").beat(\"0,4,8,11,14\",16)\n  .duckorbit(2).duckattack(0.2).duckdepth(1)",
    "notes": "the pattern on `orbit(2)` is the one that ducks. Structure taken from the duck section of https://strudel.cc/learn/effects/. Ducked layer is listed first: otherwise superdough reports 'duck target orbit 2 does not exist'. The offline renderer also logs a harmless t=0 stop-time warning for ducking (ignored by the verifier).",
    "source": "https://strudel.cc/learn/effects/",
@@ -100,6 +200,13 @@
    "error": "needs a sample bank, none loaded in the headless renderer: [webaudio] error: sound bd not found! Is it loaded?"
   },
   "fade-out": {
+   "intent": "volume steps down to silence over the last bars.",
+   "unverified": [],
+   "origin": "RECIPES.md",
+   "bpm_hint": null,
+   "rms_dbfs": -19.0,
+   "centroid_hz": 417,
+   "peak": 0.3769,
    "code": "$: note(\"c3 eb3 g3\").s(\"triangle\").hpf(80).gain(\"<1 .8 .6 .4 .2 0>\")",
    "notes": "`gain` accepts a pattern, so each cycle drops one step. Use `saw.range(1,0).slow(8)` for a smooth fade (signal form documented on https://strudel.cc/learn/signals/).",
    "source": "https://strudel.cc/learn/signals/",
@@ -107,6 +214,13 @@
    "error": null
   },
   "synth-kick": {
+   "intent": "Four low thumps from a sine with a falling pitch, no sample bank needed.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -22.3,
+   "centroid_hz": 158,
+   "peak": 0.2703,
    "code": "$: note(\"g1*4\").s(\"sine\").hpf(30).penv(24).pdecay(0.08).decay(0.25).sustain(0)",
    "notes": "Pitch envelope drops 24 semitones in 0.08 s; decay cuts the tail. Same idea as the kick mapping in docs/STRUDEL_PORT.md. Tuned to G1 (49 Hz) so the body sits above the 30 Hz high-pass.",
    "source": "https://strudel.cc/learn/effects/",
@@ -114,6 +228,13 @@
    "error": null
   },
   "synth-hat-offbeat": {
+   "intent": "Short filtered noise between the beats.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -34.9,
+   "centroid_hz": 10728,
+   "peak": 0.2716,
    "code": "$: s(\"~ white ~ white ~ white ~ white\").hpf(7000).lpf(14500).ftype(\"24db\").decay(0.05).sustain(0).gain(0.5)",
    "notes": "`white` is the built-in noise source. hpf keeps only the top; decay/sustain(0) make it short.",
    "source": "https://strudel.cc/learn/synths/",
@@ -121,6 +242,13 @@
    "error": null
   },
   "synth-backbeat": {
+   "intent": "One short noise burst on beat 2 of each bar, band-limited.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -40.8,
+   "centroid_hz": 3735,
+   "peak": 0.1743,
    "code": "$: s(\"~ white\").hpf(900).lpf(3500).decay(0.15).sustain(0).gain(0.6)",
    "notes": "Two-step bar, so the burst lands on the second half (a half-time feel).",
    "source": "https://strudel.cc/learn/effects/",
@@ -128,6 +256,13 @@
    "error": null
   },
   "synth-euclid": {
+   "intent": "Three pulses spread over eight steps, uneven on purpose.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -23.8,
+   "centroid_hz": 121,
+   "peak": 0.2796,
    "code": "$: note(\"g1(3,8)\").s(\"sine\").hpf(40).penv(12).pdecay(0.06).decay(0.2).sustain(0)",
    "notes": "`(beats,segments)` euclidean mini-notation.",
    "source": "https://strudel.cc/learn/mini-notation/",
@@ -135,6 +270,13 @@
    "error": null
   },
   "syncopated-bass": {
+   "intent": "Bass that leaves gaps and lands off the beat.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -23.5,
+   "centroid_hz": 305,
+   "peak": 0.3856,
    "code": "$: note(\"c2 ~ c2 eb2 ~ g1 ~ c2\").s(\"sawtooth\").hpf(30).lpf(500).attack(0.005).decay(0.25).sustain(0.2)",
    "notes": "Rests (`~`) make the groove; lower the lpf for darker.",
    "source": "https://strudel.cc/learn/effects/",
@@ -142,6 +284,17 @@
    "error": null
   },
   "supersaw-pad": {
+   "intent": "Slow chord pad with stereo spread from a detuned saw stack.",
+   "unverified": [
+    "unison",
+    "detune",
+    "spread"
+   ],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -24.8,
+   "centroid_hz": 878,
+   "peak": 0.3362,
    "code": "$: note(\"<[c3,eb3,g3] [bb2,d3,f3]>\").s(\"supersaw\").unison(3).detune(0.3).spread(0.8).hpf(200).lpf(1500).attack(1).release(2).gain(0.35)",
    "notes": "`s(\"supersaw\")` is in a documented example; `unison`, `detune`, `spread` come from docs/STRUDEL_PORT.md (not on the fetched official pages).",
    "source": "https://strudel.cc/learn/effects/",
@@ -149,6 +302,13 @@
    "error": null
   },
   "pluck": {
+   "intent": "Plucked notes: a filter envelope closes quickly on each note.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -25.9,
+   "centroid_hz": 761,
+   "peak": 0.2365,
    "code": "$: note(\"c4 eb4 g4 bb4\").s(\"triangle\").lpf(2000).lpenv(3).lpa(0).lpd(0.15).decay(0.2).sustain(0)",
    "notes": "`lpenv` is the filter envelope depth; lpa/lpd its attack/decay.",
    "source": "https://strudel.cc/learn/effects/",
@@ -156,6 +316,13 @@
    "error": null
   },
   "minor-arp": {
+   "intent": "Rising and falling arpeggio in A minor, twice per cycle.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -21.9,
+   "centroid_hz": 632,
+   "peak": 0.2329,
    "code": "$: n(\"[0 2 4 7 4 2]*2\").scale(\"A:minor\").s(\"triangle\").hpf(150).lpf(8000).gain(0.6)",
    "notes": "Scale degrees via `scale(\"A:minor\")`.",
    "source": "https://strudel.cc/learn/tonal/",
@@ -163,6 +330,13 @@
    "error": null
   },
   "chord-progression": {
+   "intent": "Am7 - Fmaj7 - C - G, one chord per cycle, voiced automatically.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -17.0,
+   "centroid_hz": 660,
+   "peak": 0.4823,
    "code": "$: chord(\"<Am7 F^7 C G>\").voicing().s(\"triangle\").hpf(80).lpf(7000).attack(0.05).release(0.4).gain(0.35)",
    "notes": "`^` = major seventh. `voicing()` picks chord tones near a default anchor.",
    "source": "https://strudel.cc/learn/tonal/",
@@ -170,6 +344,13 @@
    "error": null
   },
   "root-bass": {
+   "intent": "Bass that plays the root of each chord, two hits per cycle.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -14.1,
+   "centroid_hz": 88,
+   "peak": 0.3255,
    "code": "$: note(\"<a1 f1 c2 g1>*2\").s(\"sine\").hpf(25).lpf(300).attack(0.005).gain(0.8)",
    "notes": "Match the roots to the chord recipe above.",
    "source": "https://strudel.cc/learn/effects/",
@@ -177,6 +358,13 @@
    "error": null
   },
   "delay-echo": {
+   "intent": "A sparse line with repeating echoes.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -27.0,
+   "centroid_hz": 644,
+   "peak": 0.1615,
    "code": "$: note(\"c4 ~ eb4 ~\").s(\"triangle\").delay(0.5).delaytime(0.375).delayfeedback(0.55).gain(0.5)",
    "notes": "delay = send level, delaytime in seconds, feedback 0 to 1 (below 1).",
    "source": "https://strudel.cc/learn/effects/",
@@ -184,6 +372,15 @@
    "error": null
   },
   "stereo-jux": {
+   "intent": "Wide image: original left, reversed pattern right.",
+   "unverified": [
+    "rev"
+   ],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -24.8,
+   "centroid_hz": 691,
+   "peak": 0.2777,
    "code": "$: note(\"c3 eb3 g3 bb3\").s(\"sawtooth\").hpf(80).lpf(1200).jux(rev)",
    "notes": "`jux` applies a function to the right channel only. `rev` appears in a jux example only.",
    "source": "https://strudel.cc/learn/effects/",
@@ -191,6 +388,13 @@
    "error": null
   },
   "big-reverb": {
+   "intent": "A single short note blooming into a long room.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -30.2,
+   "centroid_hz": 612,
+   "peak": 0.2363,
    "code": "$: note(\"c4 ~ ~ ~\").s(\"triangle\").room(0.9).roomsize(9).decay(0.3).sustain(0)",
    "notes": "roomsize 0 to 10.",
    "source": "https://strudel.cc/learn/effects/",
@@ -198,6 +402,13 @@
    "error": null
   },
   "dry-tight": {
+   "intent": "No reverb, short notes, close and intimate.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -27.2,
+   "centroid_hz": 306,
+   "peak": 0.2423,
    "code": "$: note(\"c3 eb3 g3 eb3\").s(\"triangle\").room(0).decay(0.1).sustain(0).hpf(100).lpf(2500)",
    "notes": "Contrast with the big reverb recipe.",
    "source": "https://strudel.cc/learn/effects/",
@@ -205,6 +416,13 @@
    "error": null
   },
   "phaser-sweep": {
+   "intent": "Slow swirling motion on a held saw.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -30.4,
+   "centroid_hz": 830,
+   "peak": 0.0786,
    "code": "$: note(\"<c3 eb3>\").s(\"sawtooth\").lpf(1500).phaser(2).phaserdepth(0.8).gain(0.4)",
    "notes": "phaser = speed; depth 0 to 1.",
    "source": "https://strudel.cc/learn/effects/",
@@ -212,6 +430,13 @@
    "error": null
   },
   "tremolo-pad": {
+   "intent": "Amplitude wobble on a chord.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -24.1,
+   "centroid_hz": 952,
+   "peak": 0.2388,
    "code": "$: note(\"[c3,eb3,g3]\").s(\"triangle\").hpf(100).tremolo(6).tremoloshape(\"sine\").tremolodepth(0.8).gain(0.5)",
    "notes": "tremolo speed in Hz; tremolodepth amount; tremoloshape(\"sine\") keeps the wobble smooth (the default shape is a ramp, which clicks).",
    "source": "https://strudel.cc/learn/effects/",
@@ -219,6 +444,13 @@
    "error": null
   },
   "vowel-voice": {
+   "intent": "Saw notes shaped like vowel sounds, a different vowel each cycle.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -36.2,
+   "centroid_hz": 1190,
+   "peak": 0.0794,
    "code": "$: note(\"c3 eb3 g3 eb3\").s(\"sawtooth\").vowel(\"<a e i o>\").gain(0.5)",
    "notes": "`vowel` is a formant filter, not a sampled voice.",
    "source": "https://strudel.cc/learn/effects/",
@@ -226,6 +458,13 @@
    "error": null
   },
   "fm-bell": {
+   "intent": "Metallic bell tones from frequency modulation.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -18.2,
+   "centroid_hz": 3982,
+   "peak": 0.4066,
    "code": "$: note(\"c5 g5 eb5 bb4\").s(\"sine\").hpf(300).lpf(6500).fm(4).fmh(2.5).decay(0.6).sustain(0).room(0.4)",
    "notes": "fm = modulation index, fmh = harmonicity ratio.",
    "source": "https://strudel.cc/learn/synths/",
@@ -233,6 +472,13 @@
    "error": null
   },
   "lofi-crunch": {
+   "intent": "Bit and sample-rate reduction for a degraded, gritty tone.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -22.9,
+   "centroid_hz": 4125,
+   "peak": 0.25,
    "code": "$: note(\"c3 eb3 g3 bb3\").s(\"square\").hpf(80).crush(6).coarse(4).lpf(2500).gain(0.4)",
    "notes": "crush 1 to 16 bits (lower = rougher); coarse divides the sample rate.",
    "source": "https://strudel.cc/learn/effects/",
@@ -240,6 +486,13 @@
    "error": null
   },
   "perlin-drift": {
+   "intent": "Cutoff wanders smoothly by itself.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -21.7,
+   "centroid_hz": 854,
+   "peak": 0.2994,
    "code": "$: note(\"c2*8\").s(\"sawtooth\").hpf(30).lpf(perlin.range(300,3000)).lpq(5).attack(0.005).gain(0.5)",
    "notes": "perlin = smooth noise 0..1; `.range` scales it. The cutoff is read once per note.",
    "source": "https://strudel.cc/learn/signals/",
@@ -247,6 +500,13 @@
    "error": null
   },
   "crescendo": {
+   "intent": "Volume rises over eight cycles.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -33.2,
+   "centroid_hz": 633,
+   "peak": 0.1371,
    "code": "$: note(\"c3*4\").s(\"sawtooth\").hpf(80).lpf(1200).gain(saw.range(0.1,1).slow(8))",
    "notes": "saw ramps 0 to 1 each period.",
    "source": "https://strudel.cc/learn/signals/",
@@ -254,6 +514,13 @@
    "error": null
   },
   "accents": {
+   "intent": "Strong-weak-medium-weak pulse on a bass note.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -17.5,
+   "centroid_hz": 291,
+   "peak": 0.422,
    "code": "$: note(\"c2*8\").s(\"square\").hpf(30).lpf(600).attack(0.005).velocity(\"1 0.4 0.7 0.4\").gain(0.7)",
    "notes": "velocity multiplies gain, 0 to 1.",
    "source": "https://strudel.cc/learn/effects/",
@@ -261,6 +528,13 @@
    "error": null
   },
   "sidechain-synth": {
+   "intent": "Pad ducks under a synth kick.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -19.4,
+   "centroid_hz": 695,
+   "peak": 0.5799,
    "code": "$: note(\"<c3 eb3 g3 bb3>\").s(\"sawtooth\").orbit(2).hpf(100).lpf(900)\n$: note(\"g1*4\").s(\"sine\").hpf(30).penv(24).pdecay(0.08).decay(0.25).sustain(0).duckorbit(2).duckattack(0.2).duckdepth(1)",
    "notes": "The pattern on orbit 2 is the one that ducks. Ducked layer is listed first: otherwise superdough reports 'duck target orbit 2 does not exist'. The offline renderer also logs a harmless t=0 stop-time warning for ducking (ignored by the verifier).",
    "source": "https://strudel.cc/learn/effects/",
@@ -268,6 +542,13 @@
    "error": null
   },
   "build-drop": {
+   "intent": "Pad alone, then pulse and pad, then everything, 4 cycles each.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": 124.0,
+   "rms_dbfs": -16.9,
+   "centroid_hz": 437,
+   "peak": 0.6158,
    "code": "setcpm(124/4)\nconst kick = note(\"g1*4\").s(\"sine\").hpf(30).penv(24).pdecay(0.08).decay(0.25).sustain(0)\nconst pad = note(\"<[c3,eb3,g3] [bb2,d3,f3]>\").s(\"triangle\").slow(2).room(0.4)\nconst top = s(\"~ white ~ white\").hpf(7000).decay(0.05).sustain(0).gain(0.4)\narrange([4, pad], [4, stack(kick, pad)], [4, stack(kick, pad, top)])",
    "notes": "`arrange([cycles, pattern], ...)` from the FAQ mirror. Not stackable in the compose page (it has top-level statements).",
    "source": "https://warm.strudel.cc/learn/faq",
@@ -275,6 +556,15 @@
    "error": null
   },
   "layers-in": {
+   "intent": "Three layers join at bars 1, 3 and 5 using masks.",
+   "unverified": [
+    "mask"
+   ],
+   "origin": "new",
+   "bpm_hint": 120.0,
+   "rms_dbfs": -30.0,
+   "centroid_hz": 302,
+   "peak": 0.3484,
    "code": "setcpm(120/4)\n$: note(\"g1*4\").s(\"sine\").hpf(30).penv(24).pdecay(0.08).decay(0.25).sustain(0).mask(\"<0 0 1 1 1 1>\")\n$: note(\"c2 ~ c2 eb2\").s(\"sawtooth\").hpf(30).lpf(500).attack(0.005).decay(0.2).sustain(0.1).mask(\"<0 1 1 1 1 1>\")\n$: note(\"<[c4,eb4,g4]>\").s(\"triangle\").hpf(150).room(0.4).gain(0.4).mask(\"<0 0 0 0 1 1>\")",
    "notes": "`mask` with a `<>` pattern switches a layer on/off per cycle (used by docs/STRUDEL_PORT.md; not on the fetched official pages).",
    "source": "https://warm.strudel.cc/learn/faq",
@@ -282,6 +572,13 @@
    "error": null
   },
   "filter-open-intro": {
+   "intent": "Cutoff steps up each cycle to reveal the loop.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -21.6,
+   "centroid_hz": 340,
+   "peak": 0.2901,
    "code": "$: note(\"c2 c3 c2 eb2\").s(\"sawtooth\").hpf(30).lpf(\"<400 600 1000 1600 2600 4000>\").lpq(4).attack(0.005).gain(0.5)",
    "notes": "A `<>` list on `lpf` is one value per cycle.",
    "source": "https://strudel.cc/learn/effects/",
@@ -289,6 +586,13 @@
    "error": null
   },
   "random-thin": {
+   "intent": "Sixteenth ticks with random gaps; differs each cycle.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -40.6,
+   "centroid_hz": 10623,
+   "peak": 0.1448,
    "code": "$: s(\"white*16?\").hpf(7000).lpf(14500).ftype(\"24db\").decay(0.03).sustain(0).gain(0.3)",
    "notes": "`?` removes events at random (50%); `?0.2` removes fewer.",
    "source": "https://strudel.cc/learn/mini-notation/",
@@ -296,6 +600,15 @@
    "error": null
   },
   "polymeter": {
+   "intent": "Three-note and four-note lines share one pulse, drifting against each other.",
+   "unverified": [
+    "{ }%n polymeter syntax"
+   ],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -21.2,
+   "centroid_hz": 344,
+   "peak": 0.3197,
    "code": "$: note(\"{c3 eb3 g3, c2 g2 bb2 d3}%4\").s(\"triangle\").hpf(60).gain(0.5)",
    "notes": "Curly braces with `%steps`; not on the fetched official pages.",
    "source": "https://strudel.cc/learn/mini-notation/",
@@ -303,6 +616,13 @@
    "error": null
   },
   "dark-drone": {
+   "intent": "Low held saw with a slowly breathing filter.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -21.3,
+   "centroid_hz": 221,
+   "peak": 0.3256,
    "code": "$: note(\"<c1 c1>\").s(\"sawtooth\").hpf(30).lpf(sine.range(100,500).slow(8)).lpq(4).attack(0.05).release(0.2).gain(0.5)",
    "notes": "Low root, low cutoff, slow movement.",
    "source": "https://strudel.cc/learn/signals/",
@@ -310,6 +630,13 @@
    "error": null
   },
   "sparse-line": {
+   "intent": "Two notes a bar with plenty of silence and a soft tail.",
+   "unverified": [],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -31.0,
+   "centroid_hz": 650,
+   "peak": 0.147,
    "code": "$: note(\"c4 ~ ~ ~ ~ ~ eb4 ~\").s(\"triangle\").room(0.6).roomsize(6).gain(0.5)",
    "notes": "Rests carry the feel.",
    "source": "https://strudel.cc/learn/mini-notation/",
@@ -317,6 +644,15 @@
    "error": null
   },
   "tense-riser": {
+   "intent": "A held tone gliding upward over eight cycles.",
+   "unverified": [
+    "glide timing"
+   ],
+   "origin": "new",
+   "bpm_hint": null,
+   "rms_dbfs": -28.9,
+   "centroid_hz": 944,
+   "peak": 0.134,
    "code": "$: note(\"c3\").s(\"sawtooth\").lpf(1500).penv(12).pattack(8).pdecay(0.01).gain(0.4)",
    "notes": "Pitch envelope attack stretches the climb. Check by ear: panchor/pcurve behaviour is documented loosely.",
    "source": "https://strudel.cc/learn/effects/",

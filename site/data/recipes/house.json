@@ -2,6 +2,13 @@
  "family": "house",
  "bodies": {
   "house-four-on-the-floor": {
+   "intent": "Kick on every beat, open hat on every offbeat, clap on 2 and 4, 16th closed hats with accents.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 124.0,
+   "rms_dbfs": -21.7,
+   "centroid_hz": 6636,
+   "peak": 0.327,
    "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.kick).hook(\"houseKick\")\n$: s(atoms.hs.offHat).hook(\"offHat\")\n$: s(atoms.hs.clap).hook(\"houseClap\")\n$: s(atoms.hs.hats).velocity(atoms.hs.hatVel).hook(\"closedHat\")",
    "lowered": "setcpm(124/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9)\n$: s(\"x*16\").velocity(\"[.5 .3 .8 .3]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8500).decay(0.025).sustain(0).gain(0.3)",
    "lowered_check": {
@@ -16,6 +23,13 @@
    "error": null
   },
   "offbeat-open-hat": {
+   "intent": "The open hat on every offbeat 8th: the house lift.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 124.0,
+   "rms_dbfs": -37.3,
+   "centroid_hz": 10668,
+   "peak": 0.1545,
    "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.offHat).hook(\"offHat\")",
    "lowered": "setcpm(124/4)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3)",
    "lowered_check": {
@@ -30,6 +44,13 @@
    "error": null
   },
   "house-swing-groove": {
+   "intent": "The same groove with the house shuffle on the hats and clap: 16ths at 56 % swing (groove-swing(56)) and a small timing and velocity spread (groove-human(1, 0.1)).",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 122.0,
+   "rms_dbfs": -21.8,
+   "centroid_hz": 6528,
+   "peak": 0.3524,
    "code": "setcpm(122/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.kick).hook(\"houseKick\")\n$: s(atoms.hs.offHat).hook(\"offHat | groove-swing(56) | groove-human(1, 0.1, 1)\")\n$: s(atoms.hs.clap).hook(\"houseClap | groove-swing(56) | groove-human(1, 0.1, 2)\")\n$: s(atoms.hs.hats).velocity(atoms.hs.hatVel).hook(\"closedHat | groove-swing(56) | groove-human(1, 0.1, 3)\")",
    "lowered": "setcpm(122/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3).swingBy(0.12, 8).mul(velocity(rand.late(1.37).range(0.9, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9).swingBy(0.12, 8).mul(velocity(rand.late(2.37).range(0.9, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"x*16\").velocity(\"[.5 .3 .8 .3]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8500).decay(0.025).sustain(0).gain(0.3).swingBy(0.12, 8).mul(velocity(rand.late(3.37).range(0.9, 1))).late(rand.late(3).range(0, 0.00125).segment(16)).early(0.000625)",
    "lowered_check": {
@@ -45,6 +66,13 @@
    "error": null
   },
   "house-bass": {
+   "intent": "Saw bass on the offbeat 8ths between the kicks.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 124.0,
+   "rms_dbfs": -32.2,
+   "centroid_hz": 411,
+   "peak": 0.2186,
    "code": "setcpm(124/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.bass).hook(\"houseBass\")",
    "lowered": "setcpm(124/4)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ ab1 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4)",
    "lowered_check": {
@@ -59,6 +87,13 @@
    "error": null
   },
   "techno-rolling-bass": {
+   "intent": "Every 16th the kick leaves free, under a four-on-the-floor kick.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 132.0,
+   "rms_dbfs": -20.7,
+   "centroid_hz": 300,
+   "peak": 0.2972,
    "code": "setcpm(132/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.kick).hook(\"houseKick\")\n$: note(atoms.hs.rolling).hook(\"houseBass | groove-human(0.8, 0.08, 2)\")",
    "lowered": "setcpm(132/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8)\n$: note(\"~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f2\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4).mul(velocity(rand.late(2.37).range(0.92, 1))).late(rand.late(2).range(0, 0.001).segment(16)).early(0.0005)",
    "lowered_check": {
@@ -74,6 +109,13 @@
    "error": null
   },
   "techno-rumble": {
+   "intent": "Mono sine rumble in the kick's gaps, slow attack, low-passed at 160 Hz.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 132.0,
+   "rms_dbfs": -20.5,
+   "centroid_hz": 45,
+   "peak": 0.2145,
    "code": "setcpm(132/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.rumble).hook(\"rumble\")",
    "lowered": "setcpm(132/4)\n$: note(\"~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1\").hpf(25).s(\"sine\").hpf(32).attack(0.03).decay(0.12).sustain(0.4).release(0.1).lpf(160).gain(0.42)",
    "lowered_check": {
@@ -88,6 +130,13 @@
    "error": null
   },
   "trance-pluck": {
+   "intent": "Saw pluck with a 3-octave filter envelope on a 16th arp that follows Fm - Db - Ab - Eb, with a dotted-8th echo.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 138.0,
+   "rms_dbfs": -30.1,
+   "centroid_hz": 2288,
+   "peak": 0.1368,
    "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.arp).hook(\"pluck\").delay(0.3).delaytime(0.326).delayfeedback(0.35)",
    "lowered": "setcpm(138/4)\n$: note(\"<[f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5] [f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5] [eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5] [eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4]>\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.22).sustain(0).lpf(1600).lpenv(2).lpdecay(0.18).gain(0.26).delay(0.3).delaytime(0.326).delayfeedback(0.35)",
    "lowered_check": {
@@ -102,6 +151,13 @@
    "error": null
   },
   "supersaw-chords": {
+   "intent": "Unison-7 supersaw chords, one per bar: i - VI - III - VII.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 138.0,
+   "rms_dbfs": -32.0,
+   "centroid_hz": 2431,
+   "peak": 0.1587,
    "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.chords).hook(\"bigChords\")",
    "lowered": "setcpm(138/4)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>\").hpf(100).lpf(9000).s(\"supersaw\").hpf(180).unison(7).detune(0.3).spread(0.7).attack(0.02).sustain(0.8).release(0.6).lpf(6000).gain(0.11)",
    "lowered_check": {
@@ -116,6 +172,13 @@
    "error": null
   },
   "trance-gate": {
+   "intent": "A sustained supersaw chord opened and closed by a 16-step gate (struct + 90 ms decay): the gate is the rhythm.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 138.0,
+   "rms_dbfs": -33.6,
+   "centroid_hz": 1869,
+   "peak": 0.2044,
    "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: note(atoms.hs.chords).hook(\"gatePad\")",
    "lowered": "setcpm(138/4)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>\").hpf(120).lpf(9000).struct(\"x ~ x x x ~ x x x ~ x x x ~ x x\").s(\"supersaw\").unison(5).detune(0.3).spread(0.6).attack(0.003).decay(0.09).sustain(0.1).release(0.04).lpf(4500).gain(0.15)",
    "lowered_check": {
@@ -130,6 +193,13 @@
    "error": null
   },
   "big-room-drop": {
+   "intent": "Stripped: a big kick, a clap and one lead motif, the lead ducked by the kick (orbit 5).",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 128.0,
+   "rms_dbfs": -22.8,
+   "centroid_hz": 1213,
+   "peak": 0.335,
    "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(atoms.hs.kick).hook(\"bigKick | sidechain(5, 0.6, 0.16)\")\n$: s(atoms.hs.clap).hook(\"houseClap\")\n$: note(atoms.hs.lead).hook(\"roomLead | ducked(5)\")",
    "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).attack(0.003).penv(32).pdecay(0.06).decay(0.4).sustain(0).hpf(38).lpf(5000).gain(0.78).duckorbit(5).duckdepth(0.6).duckattack(0.16)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9)\n$: note(\"<[f4 ~ f4 ~ ab4 ~ f4 ~ c5 ~ ~ ~ ab4 ~ g4 ~] [f4 ~ f4 ~ ab4 ~ f4 ~ db5 ~ ~ ~ c5 ~ ab4 ~]>\").hpf(150).lpf(8000).s(\"supersaw\").unison(3).detune(0.12).spread(0.3).attack(0.005).decay(0.3).sustain(0.4).release(0.1).lpf(4500).gain(0.16).orbit(5)",
    "lowered_check": {
@@ -144,6 +214,13 @@
    "error": null
   },
   "trance-drop": {
+   "intent": "Four-on-the-floor, offbeat bass, gated supersaw chords and the pluck arp, all ducked by the kick on orbit 3.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 138.0,
+   "rms_dbfs": -21.5,
+   "centroid_hz": 4542,
+   "peak": 0.4044,
    "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(atoms.hs.kick).hook(\"houseKick | sidechain(3, 0.5, 0.14)\")\n$: s(atoms.hs.offHat).hook(\"offHat\")\n$: note(atoms.hs.bass).hook(\"houseBass | ducked(3)\")\n$: note(atoms.hs.chords).hook(\"gatePad | ducked(3)\")\n$: note(atoms.hs.arp).hook(\"pluck | ducked(3)\")",
    "lowered": "setcpm(138/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8).duckorbit(3).duckdepth(0.5).duckattack(0.14)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ ab1 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4).orbit(3)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>\").hpf(120).lpf(9000).struct(\"x ~ x x x ~ x x x ~ x x x ~ x x\").s(\"supersaw\").unison(5).detune(0.3).spread(0.6).attack(0.003).decay(0.09).sustain(0.1).release(0.04).lpf(4500).gain(0.15).orbit(3)\n$: note(\"<[f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5] [f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5] [eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5] [eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4]>\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.22).sustain(0).lpf(1600).lpenv(2).lpdecay(0.18).gain(0.26).orbit(3)",
    "lowered_check": {

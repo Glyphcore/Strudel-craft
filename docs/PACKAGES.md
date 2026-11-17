@@ -18,7 +18,7 @@ Mostly yes, with one provisional exception. Three packs ship in `site/packs.lock
 tools, the lowering check, the rack audit, six test suites) and pre-empt #66 / #69, so it was not moved; the ids are stable and aliases (section 5) carry any later rename.
 
 ## 2. Audit (generated: `python3 tools/packs/audit.py --write-doc`)
-Recipes ship as an index (`site/data/catalog.json`: id, title, folder, tags, labels, flags) plus lazy per-family bodies (`site/data/recipes/<family>.json`, ingredients `bodies-<family>` of `glyphcore/shim`, docs/PACK_SPEC.md 14.5): the eager shell stays small as genre families are added (#131). The rows below count index rows.
+Recipes ship as an index (`site/data/catalog.json`, compact JSON: id, title, folder, tags, labels, family, flags; intent and measurements are in the bodies, #166) plus lazy per-family bodies (`site/data/recipes/<family>.json`, ingredients `bodies-<family>` of `glyphcore/shim`, docs/PACK_SPEC.md 14.5): the eager shell stays small as genre families are added (#131). The rows below count index rows.
 
 An **orphan** is an entry outside every pack manifest. Columns folder and tags count entries that carry the field in the pack data.
 

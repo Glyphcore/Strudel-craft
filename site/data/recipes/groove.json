@@ -2,6 +2,13 @@
  "family": "groove",
  "bodies": {
   "groove-mpc-swing": {
+   "intent": "16th hats at 58 % swing: every second 16th sits late, the downbeats stay put.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 90.0,
+   "rms_dbfs": -35.0,
+   "centroid_hz": 10719,
+   "peak": 0.2172,
    "code": "setcpm(90/4)\n$: s(\"x*16\").hook(\"hat(0.03) | groove-swing(58)\").velocity(\"[1 .6]*8\")",
    "lowered": "setcpm(90/4)\n$: s(\"x*16\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).swingBy(0.16, 8).velocity(\"[1 .6]*8\")",
    "lowered_check": {
@@ -17,6 +24,13 @@
    "error": null
   },
   "groove-lazy-snare": {
+   "intent": "Kick slightly early, snare dragged 12 % of a 16th, hats straight: the backbeat sits behind the beat.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 86.0,
+   "rms_dbfs": -20.7,
+   "centroid_hz": 7256,
+   "peak": 0.5436,
    "code": "setcpm(86/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick | groove-push(-3)\")\n$: s(atoms.hh.boomSnare).hook(\"clap | groove-push(12)\")\n$: s(atoms.hh.boomHats).hook(\"hat\")",
    "lowered": "setcpm(86/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).early(0.001875)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).late(0.0075)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.05).sustain(0).gain(0.45)",
    "lowered_check": {
@@ -32,6 +46,13 @@
    "error": null
   },
   "groove-humanize": {
+   "intent": "Hats with 4 % timing spread and 15 % velocity spread; deterministic, so an offline render repeats exactly.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 90.0,
+   "rms_dbfs": -37.1,
+   "centroid_hz": 10376,
+   "peak": 0.2236,
    "code": "setcpm(90/4)\n$: s(\"x*8\").hook(\"hat | groove-human(4, 0.15, 3)\")",
    "lowered": "setcpm(90/4)\n$: s(\"x*8\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.05).sustain(0).gain(0.45).mul(velocity(rand.late(3.37).range(0.85, 1))).late(rand.late(3).range(0, 0.005).segment(16)).early(0.0025)",
    "lowered_check": {
@@ -47,6 +68,13 @@
    "error": null
   },
   "groove-drag-vs-rush": {
+   "intent": "The same clap twice: dragged (+10 %) in the left ear, rushed (-10 %) in the right.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 90.0,
+   "rms_dbfs": -44.0,
+   "centroid_hz": 2162,
+   "peak": 0.0966,
    "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomSnare).hook(\"clap | groove-push(10)\").pan(0.1)\n$: s(atoms.hh.boomSnare).hook(\"clap | groove-push(-10)\").pan(0.9)",
    "lowered": "setcpm(90/4)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).late(0.00625).pan(0.1)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).early(0.00625).pan(0.9)",
    "lowered_check": {
@@ -61,6 +89,13 @@
    "error": null
   },
   "groove-drift": {
+   "intent": "A keys part whose timing wanders slowly (smooth over four bars), like a player without a click.",
+   "unverified": [],
+   "origin": "concepts",
+   "bpm_hint": 80.0,
+   "rms_dbfs": -24.1,
+   "centroid_hz": 296,
+   "peak": 0.3303,
    "code": "setcpm(80/4)\n$: note(\"[c3,eb3,g3,bb3]*4\").hook(\"rhodes | groove-cloud(2)\")",
    "lowered": "setcpm(80/4)\n$: note(\"[c3,eb3,g3,bb3]*4\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22).swingBy(0.12, 8).mul(velocity(rand.late(2.37).range(0.92, 1))).late(rand.late(2).range(0, 0.00625).segment(16)).late(perlin.late(2).range(0, 0.00625).slow(4).segment(16)).early(0.003125)",
    "lowered_check": {

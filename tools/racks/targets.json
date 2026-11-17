@@ -444,6 +444,25 @@
   "indRiddim": {
    "class": "growl"
   },
+  "seedGrowl": {
+   "class": "growl"
+  },
+  "seedHouse": {
+   "class": "growl"
+  },
+  "metalHit": {
+   "class": "perc"
+  },
+  "voxChop": {
+   "class": "vox"
+  },
+  "voxPad": {
+   "class": "vox"
+  },
+  "twinChop": {
+   "class": "vox",
+   "skip": "plain-Strudel twin of the vox sample lanes (sawtooth + formant); levelled by stem renders in docs/tracks/sirocco-foundry/check.mjs, silent in the audit phrase"
+  },
   "metalGrowl": {
    "class": "growl"
   },
@@ -1345,6 +1364,10 @@
   "edm/Song form as gates (intro, build, drop A, breakdown, build 2, drop B, switch-up, outro)": {
    "class": "demo",
    "bars": 4
+  },
+  "dubstep/Track demo: Sirocco Foundry (house into wet industrial dubstep, 3:39)": {
+   "class": "demo",
+   "bars": 16
   },
   "dubstep/Pick a dubstep feel (one import line)": {
    "class": "demo",

@@ -1539,6 +1539,11 @@
    "title": "Growl on a bus: band-split drive (.split)",
    "bars": 2,
    "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-dubstep\")\ngrowl: note(atoms.ds.growlLine).s(\"sawtooth\").fm(2).fmh(1).fmdecay(0.25).fmsustain(0.3).vowel(\"<a o>\").lpf(3200).attack(0.005).gain(0.4)\n  .split(lo => lo.lpf(100).hpf(30),                             // fundamental stays clean\n         hi => hi.hpf(100).distort(1.2).postgain(0.45).lpf(9000)) // drive the mids, scope the top after the drive\nsub: note(atoms.ds.subLine).hook(\"subSine\")"
+  },
+  {
+   "title": "Track demo: Sirocco Foundry (house into wet industrial dubstep, 3:39)",
+   "bars": 16,
+   "codeFile": "docs/tracks/sirocco-foundry/track.standalone.strudel.js"
   }
  ],
  "feels": {

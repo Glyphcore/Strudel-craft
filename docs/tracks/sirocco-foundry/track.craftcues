@@ -1,0 +1,86 @@
+CRAFTCUES 1
+track: sirocco-foundry
+title: Sirocco Foundry (house into wet industrial dubstep, 128 bars)
+program: docs/tracks/sirocco-foundry/track.strudel.js
+bars: 128
+bpm: 140
+beats: 4
+offset: 0
+sections: intro 1-16, build1 17-32, drop1 33-56, breakdown 57-72, drop2 73-96, drop3 97-112, outro 113-128
+
+NOTE Sections, the one seed motif, the vowel hook and its returns (README.md arrangement as built). Everything unlistened; ids point to the composer catalog (docs/COMPOSITION.md).
+
+grid
+* feel @track
+140 meter, one cycle = one bar; house is four-on-the-floor, drop 2 is halftime on the same meter
+| genre:house genre:dubstep | src=author
+
+seed-motif
+1-128 motif @seedB,seedG,growl2,growlR
+the owner's seed rhythm [c2@3 c2] [~ eb2] [c2@2 g1@2] ~ is the house bass (seedB, low-passed) and the dubstep growl (seedG)
+| MOT-01 | src=author
+
+intro
+1-16 section @disco,hats,kick
+filtered disco loop: high-pass opens 2600 to 140 Hz over 16 bars, kick from 9
+| HAR-01 | prepares:build1 src=author
+
+hook-teaser
+13-16 foreshadow @chop
+vowel-chop hook teased, not stated
+| FS-01 VOX-01 | prepares:hook-a src=author
+
+build1
+17-32 tension @seedB,stabs1,rise1,roll
+thinned on purpose: rising high-pass on bass and kick, noise riser, 8-bar roll, no sub before 33
+| TEN-02 TR-01 | prepares:hook-a src=author
+
+kick-gap
+32 transition @kick
+1-bar kick drop-out, then the impact on 33
+| TR-01 | src=author
+
+drop1
+33-56 section @kick,clap,seedH,subH,stabs1,chop
+house payoff: kick-ducked bass and music (duckorbit), off-beat open hat, stabs
+| GRV-03 genre:house | src=author
+
+hook-a
+41-48 motif @chop
+vowel-chop hook stated whole, chord tones on the strong 16ths
+| MOT-05 VOX-01 | src=author
+
+hook-b
+49-56 callback @chopB
+hook B, embellished, with stab rhythm B and the arp
+| MOT-05 | echoes:hook-a src=author
+
+breakdown
+57-72 release @pad,fpad,metalTail,perc
+no kick: pad, formant vox pad, sparse wet metal hits from 61
+| TEN-03 | src=author
+
+breakdown-build
+65-72 tension @roll4,rise2,pitch2
+halftime roll, high-pass build and pitch riser end one beat early (the gap)
+| TEN-02 TR-01 | prepares:drop2 src=author
+
+drop2
+73-96 section @seedG,growl2,kickH,snareH,subD
+industrial halftime: seed growl, sparse first 8 bars, wet metal hits and chop answers from 81, hole in bar 88
+| GRV-03 genre:dubstep | src=author
+
+switch-up
+89-96 call-response @growl2,chopA
+new growl voice (vowel sweep, filter steps), chop answers in the gaps
+| TEN-02 | contrasts:drop1 src=author
+
+drop3
+97-112 resolution @seedH,stabsUp,growlR,chop,chopB
+both worlds: house groove, stabs up an octave, growl answers in bar 4 of every 4
+| MOT-05 | resolves:drop2 src=author
+
+outro
+113-128 release @discoOut,pad,fpad
+elements leave in reverse order of the intro, last hook echo 121-124, wet tail to silence
+| FS-01 | echoes:intro src=author

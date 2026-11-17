@@ -56,6 +56,7 @@ try {
   await run('setcpm(240/4)\n$: s("bd hh")'); await page.waitForFunction(() => window.strudelCraft.quickplay.state.phase === 'playing', null, { timeout: 30000 });
   await page.waitForTimeout(9500); const still = await page.evaluate(() => ({ ph: window.strudelCraft.quickplay.state.phase, c: window.strudelCraft.quickplay.run && window.strudelCraft.quickplay.run.cyc }));
   check('a looping entry keeps playing past 8 cycles until stopped', still.ph === 'playing' && still.c > 8, JSON.stringify(still));
+  await page.evaluate(() => { window.strudelCraft.quickplay.state.bars = 999; }); /* the run is already past cycle 8: an 8-bar run would end (and hide the tray) before the stop tap below; a long N keeps the chip test about the chip */
   await page.locator('#qptray .qp-mode').tap(); await page.locator('#qptray .qp-mode').tap();
   check('mode chip cycles End > Loop > N bars and is remembered', (await page.evaluate(() => localStorage.getItem('sc.qp.mode'))) === '"bars"' && /bars/i.test(await page.locator('#qptray .qp-mode').innerText()), (await page.evaluate(() => localStorage.getItem('sc.qp.mode'))) + ' ' + await page.locator('#qptray .qp-mode').innerText());
   await page.locator('#qptray .qp-mode').tap(); await page.locator('#qptray .qp-stop').tap(); await page.waitForFunction(() => window.strudelCraft.quickplay.state.phase === 'idle', null, { timeout: 5000 });

@@ -158,10 +158,7 @@ function makeClock(S, getTime, onTrigger, latency) {
     }
     const c = ctx(); if (c && c.state === 'running' && B.lastT && t > B.lastT) B.played += Math.min(t - B.lastT, LOOKAHEAD.max + 0.5);
     B.lastT = t;
-    /* a stressed page (late ticks raised the lookahead) outside a Quick play audition queries 0.2 s windows like ?sched=batch: every query pays a fixed 5.5 ms of hooks / lanes / maps passes, and at x4 20 queries a second
-       saturated the main thread (a spiral: the recorder and the page never got a turn, #176); 5 a second leave room. Back to 0.05 s windows when the boost has decayed. */
-    const qp = window.strudelCraft && window.strudelCraft.quickplay && window.strudelCraft.quickplay.state; const span = B.boost > 0.25 && !(qp && qp.phase && qp.phase !== 'idle') ? Math.max(QSPAN, 0.2) : QSPAN; B.span = span;
-    while (phase < t + B.lookahead) { phase = Math.round(phase * PRECISION) / PRECISION; shift = 0; cb(phase, span); phase += span + shift; tick++; }
+    while (phase < t + B.lookahead) { phase = Math.round(phase * PRECISION) / PRECISION; shift = 0; cb(phase, QSPAN); phase += QSPAN + shift; tick++; }
   };
   const timer = workerTimer(TICK_MS, onTick);
   B.clockKind = timer.kind === 'worker' ? 'worker' : 'main-thread (no Worker)';

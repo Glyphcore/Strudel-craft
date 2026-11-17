@@ -20,7 +20,7 @@ const compare = (ref, cand) => { const g = compare0(ref, cand); const hr = { x: 
 const require = createRequire(import.meta.url); const { chromium } = require('playwright');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'), PREFIX = '/Strudel-craft/';
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
-const SITE = path.resolve(arg('--site', path.join(ROOT, 'site'))), REF = arg('--ref', null), REF_FROM = +arg('--ref-from', 15), THR = +arg('--throttle', 4), AT = 17, N = 4;
+const SITE = path.resolve(arg('--site', path.join(ROOT, 'site'))), REF = arg('--ref', null), REF_FROM = +arg('--ref-from', 15), THR = +arg('--throttle', 4), AT = 17, N = 4, THR_MS = +arg('--throttle-ms', 6000);
 if (!REF) { console.log('FAIL  --ref REF.wav is required (tests/site/ref_render.sh DIR v2 16 8)'); process.exit(1); }
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.ogg': 'audio/ogg', '.wav': 'audio/wav', '.mp3': 'audio/mpeg', '.webmanifest': 'application/manifest+json' };
 const server = http.createServer((req, res) => { let p = decodeURIComponent(new URL(req.url, 'http://x').pathname); if (!p.startsWith(PREFIX)) { res.writeHead(404); return res.end(); }
@@ -87,12 +87,13 @@ const LAT = AT; /* the same window the offline render is validated on; the seek 
 const live = async (stall) => { await page.evaluate(() => { const T = window.strudelCraft.transport; if (T.playing) T.stop(); }); await page.waitForTimeout(800);
   await page.evaluate((c) => Object.assign(window.strudelCraft.range.state, { start: c }), LAT - 2); await page.evaluate(() => window.strudelCraft.transport.play());
   await page.waitForFunction(() => window.__sc.S.playing && !window.__sc.S.busy, null, { timeout: 120000 });
-  if (THR > 1 && !stall) await cdp.send('Emulation.setCPUThrottlingRate', { rate: THR });
+  /* x4 for the first THR_MS of the take only (the node-side timer still fires on a starved page): the take then finishes and is self-checked; a whole-take x4 saturates the main-thread scheduler (#176) */
+  let tt = null; if (THR > 1 && !stall) { await cdp.send('Emulation.setCPUThrottlingRate', { rate: THR }); tt = setTimeout(() => cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 }).catch(() => {}), THR_MS); }
   const r = await ev(stall ? 'live take with a forced stall' : `live take under x${THR} throttling`, 300000, async ({ n, at, stall, PCM, arg0 }) => { const pcm = eval(PCM); const C = window.strudelCraft.capture; C.configure({ source: 'live', audio: true, events: true, code: true, autoFix: false });
     if (stall) { const iv = setInterval(() => { if (C.state.phase === 'recording' && window.strudelCraft.capture.state.recAudio0 != null) { clearInterval(iv); setTimeout(() => { const t = performance.now(); while (performance.now() - t < 700) { /* a frozen main thread */ } }, 1500); } }, 20); }
     const rec = await C.record({}, { mode: 'cycles', n, at, name: stall ? 'stalled' : 'live' }); if (!rec) return { error: 'no take' };
     return { check: rec.recipe.outputs.capture.check, id: rec.recipe.id, hasRender: !!rec.audio.render, cap: pcm(rec, 'capture'), render: rec.audio.render ? pcm(rec, 'render') : null, start: rec.recipe.timing.start, underLoad: rec.recipe.outputs.render ? rec.recipe.outputs.render.underLoad : null, load: rec.recipe.outputs.render ? rec.recipe.outputs.render.load : null, recipe: arg0 ? rec.recipe : undefined }; }, { n: N, at: LAT, stall, PCM, arg0: !!arg('--dump', null) });
-  if (THR > 1 && !stall) await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+  if (tt) clearTimeout(tt); if (THR > 1 && !stall) await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
   return r; };
 const L4 = await live(false); if (arg('--dump', null) && L4.cap) fs.writeFileSync(arg('--dump', null) + '/live_x4.f32', Buffer.from(fromB64(L4.cap.b64).buffer)); if (arg('--dump', null)) fs.writeFileSync(arg('--dump', null) + '/live_x4.json', JSON.stringify({ start: L4.start, check: L4.check, recipe: L4.recipe }));
 if (L4.error) check(`live take under x${THR} throttling`, false, L4.error);

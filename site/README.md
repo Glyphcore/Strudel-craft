@@ -107,6 +107,11 @@ CPU x4 gave 127 skipped queries and 25 dropped haps; a 2.5 s main-thread stall g
 - Keep alive, legitimately: a Screen Wake Lock while playing in the foreground (setting "Keep the screen on while playing", default on,
   re-acquired on return) and Media Session metadata with play / pause / stop handlers (lock-screen and notification controls where the
   browser shows them). No silent-audio loop or other keep-alive hack is used.
+- Phone control (#178): `node tests/site/background_audio.mjs` (site) and `node tests/site/background_audio_control.mjs` (a bare upstream
+  `@strudel/web` 1.3.0 page, no site code) play `note("c4*8")` on a 360x780 touch profile through four cases: foreground, hidden 30-60 s with 1 Hz
+  main-thread timers, continuous touch scrolling, CPU x4. Result: the site has 0 late events and 0 gaps in all four; upstream has 482 drop logs
+  and 26 holes in the hidden case and is clean in the other three. Both open the AudioContext with the default `latencyHint` ("interactive"),
+  so that is not a deviation from upstream. Not covered: heavy programs (see docs/AUDIO_ENGINE.md), real phones (iOS Safari, Android screen off).
 - Play-time clamp: counts played time only (audio-clock time while the context runs), not wall time; the transport readout shows
   "N left · played m:ss · paused m:ss".
 - Background citizen: no drawing while hidden (stage scope, lanes, meter, inline `_scope` / `_pianoroll` widgets, graph playhead), the

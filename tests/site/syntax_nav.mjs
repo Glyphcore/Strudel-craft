@@ -26,17 +26,17 @@ async function measure(w) {
     while (!(document.querySelectorAll('#syntax .sx-sec').length >= 100 && (document.querySelector('#syntax .sx-ex, #syntax .sx-grp')))) await new Promise((r) => requestAnimationFrame(r));
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))); return performance.now() - t0; });
   await page.waitForTimeout(1500);
-  const scroll = await page.evaluate(async () => { const H = document.documentElement.scrollHeight - innerHeight, fr = []; let last = performance.now(), y = 0; const step = Math.max(40, Math.min(H / 120, 400));
-    await new Promise((done) => { const f = (t) => { fr.push(t - last); last = t; y += step; scrollTo(0, y); if (y < H && fr.length < 300) requestAnimationFrame(f); else done(); }; requestAnimationFrame(f); });
+  const scroll = await page.evaluate(async () => { const H = document.documentElement.scrollHeight - innerHeight, fr = []; let last = performance.now(), y = 0; const step = 120; /* fixed px per frame on every tree, so before/after are comparable */
+    await new Promise((done) => { const f = (t) => { fr.push(t - last); last = t; y += step; scrollTo(0, y); if (y < H && y < 12000 && fr.length < 300) requestAnimationFrame(f); else done(); }; requestAnimationFrame(f); });
     fr.shift(); fr.sort((a, b) => a - b); return { frames: fr.length, slow: fr.filter((x) => x > 50).length, p50: fr[fr.length >> 1], p95: fr[Math.floor(fr.length * 0.95)], max: fr[fr.length - 1], pageH: H + innerHeight, nodes: document.querySelectorAll('#syntax *').length }; });
   await c.detach(); await ctx.close(); return { w, open: Math.round(open), ...Object.fromEntries(Object.entries(scroll).map(([k, v]) => [k, typeof v === 'number' ? Math.round(v * 10) / 10 : v])), errs };
 }
 const med = (a) => a.slice().sort((x, y) => x - y)[a.length >> 1];
 const M = []; for (const w of [390, 1440]) { const runs = []; for (let i = 0; i < 3; i++) runs.push(await measure(w)); const m = { ...runs[0], open: med(runs.map((r) => r.open)), p95: med(runs.map((r) => r.p95)), p50: med(runs.map((r) => r.p50)), slow: med(runs.map((r) => r.slow)), max: med(runs.map((r) => r.max)), errs: runs.flatMap((r) => r.errs), runs: runs.map((r) => r.open + '/' + r.p95).join(' ') }; M.push(m); console.log('MEASURE ' + JSON.stringify(m)); }
 if (MEASURE_ONLY) { await browser.close(); server.close(); process.exit(0); }
-const m390 = M[0]; check('perf bound: cold open of the Syntax view at 390px, CPU x4, under 2500 ms (before: ~4000)', m390.open < 2500, m390.open + ' ms');
-check('perf bound: scroll at 390px, CPU x4: fewer than 20 frames over 50 ms and p95 under 120 ms (before: 44 and 167; the idle app alone shows p95 up to 70)', m390.slow < 20 && m390.p95 < 120, m390.slow + ' slow, p95 ' + m390.p95 + ' ms');
-check('perf bound: Syntax DOM under 6000 nodes while collapsed', m390.nodes < 6000, String(m390.nodes));
+const m390 = M[0]; check('perf bound: cold open of the Syntax view at 390px, CPU x4, under 2500 ms (measured 2026-11-17, 3 runs: 810-1281 ms; the tree before #149 was 984-1224 ms, so this is a regression bound, not a speed-up claim)', m390.open < 2500, m390.open + ' ms');
+check('perf bound: scroll at 390px, CPU x4: fewer than 20 frames over 50 ms and p95 under 120 ms (measured, fixed 120 px/frame over the first 12000 px: 5 slow, p95 66 ms; before #149 0 slow, p95 17 ms; the idle app alone shows p95 up to 70)', m390.slow < 20 && m390.p95 < 120, m390.slow + ' slow, p95 ' + m390.p95 + ' ms');
+check('perf bound: Syntax DOM under 6000 nodes while collapsed (measured 2013; 6446 before #149)', m390.nodes < 6000, String(m390.nodes));
 
 /* ---- the 390px touch flow ---- */
 const { ctx, page, errs } = await newPage(390, 844); await boot(page);
@@ -79,8 +79,11 @@ await page.close(); await ctx.close();
   check('keyboard: ArrowDown from the search moves focus into the list', await n.page.evaluate(() => document.activeElement && /sx-ghead|sx-head/.test(document.activeElement.className)));
   await n.page.screenshot({ path: path.resolve(SITE, '../docs/screens/phone-390-syntax-nav.png') }); check('console clean (390px flow)', n.errs.length === 0, n.errs.slice(0, 2).join(' | '));
   await n.ctx.close(); }
-{ const d = await newPage(1440, 900); await boot(d.page, '#syntax'); await d.page.waitForSelector('#syntax .sx-grp'); await d.page.waitForTimeout(500); await d.page.screenshot({ path: path.resolve(SITE, '../docs/screens/desktop-1440-syntax-nav.png') });
-  check('desktop: families listed, console clean', await d.page.locator('#syntax .sx-grp').count() >= 15 && d.errs.length === 0, d.errs.slice(0, 2).join(' | ')); await d.ctx.close(); }
+for (const [vw, vh] of [[1440, 900], [1024, 700], [390, 844]]) { const d = await newPage(vw, vh); await boot(d.page, '#syntax'); await d.page.waitForSelector('#syntax .sx-grp'); await d.page.waitForTimeout(500);
+  if (vw === 1440) await d.page.screenshot({ path: path.resolve(SITE, '../docs/screens/desktop-1440-syntax-nav.png') });
+  if (vw === 1440) check('desktop: families listed, console clean', await d.page.locator('#syntax .sx-grp').count() >= 15 && d.errs.length === 0, d.errs.slice(0, 2).join(' | '));
+  const bh = await d.page.evaluate(() => { scrollTo(0, 600); return Math.round(document.querySelector('#syntax .sx-bar').getBoundingClientRect().height); });
+  check(`sticky .sx-bar is at most 35% of the viewport at ${vw}x${vh}`, bh <= vh * 0.35, `${bh}px of ${vh} (${Math.round(bh / vh * 100)}%)`); await d.ctx.close(); }
 { const s = await newPage(360, 740); await boot(s.page, '#syntax'); await s.page.waitForSelector('#syntax .sx-grp'); const ov = await s.page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check('360px: no horizontal overflow', ov <= 0, String(ov)); await s.ctx.close(); }
 await browser.close(); server.close(); console.log(fail ? `${fail} FAILED` : 'ALL PASS'); process.exit(fail ? 1 : 0);

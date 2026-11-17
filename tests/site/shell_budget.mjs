@@ -22,7 +22,7 @@ export const EAGER = [
    fetched on first open and precached for offline. Back to the pre-#127 budget (470,000): a new genre family adds bodies, not eager bytes.
    Before #131: 592,892 measured against 510,000 (catalog.json 283,699). */
 /* #166: the index drops the inspector-only fields (intent, origin, unverified, bpm_hint, rms_dbfs, centroid_hz, peak move to the lazy bodies) and is written compact:
-   data/catalog.json 147,931 -> 72,348. Measured 393,627 on 2026-11-17 (was 469,268 of 470,000); BUDGET = measured + 10%. Byte table: docs/PERFORMANCE.md. */
+   data/catalog.json 147,931 -> 72,348. Measured 408,896 on 2026-11-17 (was 469,268 of 470,000); BUDGET = measured + 10%. Byte table: docs/PERFORMANCE.md. */
 export const BUDGET_MEASURED = 393_627;
 export const BUDGET = 433_000;
 

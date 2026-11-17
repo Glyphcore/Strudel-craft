@@ -2387,7 +2387,7 @@
     ],
     [
      "Measure",
-     "composer scan: presence band rising over the build bars, then every band energy jumping together on the drop bar (read from per-bar band energy; scan has no onset detector)."
+     "composer scan: presence band rising over the build bars, then every band energy jumping together on the drop bar (read from per-bar band energy, not from onset times)."
     ],
     [
      "Anti-patterns",

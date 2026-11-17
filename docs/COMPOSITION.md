@@ -1194,7 +1194,7 @@ $: s("<~ ~ ~ [~ ~ ~ [sd sd sd sd]]>").hpf(120).lpf(10000).ftype("24db")
 - **Definition.** A riser that ends exactly on the downbeat, an impact that starts on it (dt.rise / dt.hit).
 - **Why it works.** Continuous pitch / noise rise predicts an endpoint; the impact confirms it.
 - **When.** Builds into drops, section changes in cinematic and EDM forms (and any genre that wants them).
-- **Measure.** composer scan: presence band rising over the build bars, then every band energy jumping together on the drop bar (read from per-bar band energy; scan has no onset detector). (engine/composer `scan`)
+- **Measure.** composer scan: presence band rising over the build bars, then every band energy jumping together on the drop bar (read from per-bar band energy, not from onset times). (engine/composer `scan`)
 - **Anti-patterns.** A riser that stops before the downbeat (dead air) or overruns it.
 - **Tags.** composition, transition, riser, measured, lowered
 

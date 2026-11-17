@@ -100,7 +100,7 @@ const errs = [];
   const want = shimData('controls/types.json').types.map((t) => t.id); const regd = await P(page, () => [...window.__ct]);
   check('parity: 16 control types, all registered in the controls registry', r.ctl === 16 && want.length === 16 && want.every((id) => regd.includes(id)), String(r.ctl));
   const sx = await P(page, async () => { document.querySelector('.views a[data-view="syntax"]').click(); await new Promise((ok) => setTimeout(ok, 1500)); return document.querySelectorAll('.sx-sec').length; });
-  check('parity: Syntax view section count', sx === shimData('syntax.json').sections.length, `${sx}`);
+  check('parity: Syntax view section count', sx === shimData('syntax.json').sections.length + shimData('composition.json').sections.length, `${sx} rendered = syntax.json + composition.json (#144) sections`);
   await ctx.close();
 }
 
@@ -223,7 +223,7 @@ const errs = [];
   check('offline: an uncached manual ingredient reports unavailable', bank.state === 'unavailable' && bank.reason.code === 'E_PACK_UNAVAILABLE', JSON.stringify(bank));
   await ctx.setOffline(false); swVersion = 'sc-test2';
   await page.evaluate(async () => { const reg = await navigator.serviceWorker.getRegistration(); reg.update(); await new Promise((ok) => { const t = setInterval(() => { const w = reg.installing || reg.waiting; if (w && w.state === 'installed') { w.postMessage('SKIP_WAITING'); } }, 100); setTimeout(() => { clearInterval(t); ok(); }, 4000); }); }).catch(() => {});
-  await page.waitForTimeout(1500); let keys = []; for (let i = 0; i < 10 && !keys.includes('sc-test2'); i++) { await page.waitForTimeout(500); keys = await page.evaluate(() => caches.keys()).catch(() => []); }
+  await page.waitForTimeout(1500); let keys = []; for (let i = 0; i < 20 && !(keys.includes('sc-test2') && !keys.includes('sc-dev')); i++) /* activate deletes the old cache after the new worker takes over; under load that takes more than 5 s */ { await page.waitForTimeout(500); keys = await page.evaluate(() => caches.keys()).catch(() => []); }
   check('offline: cache sc-packs-1 survives a service-worker version change', keys.includes('sc-packs-1') && keys.includes('sc-test2') && !keys.includes('sc-dev'), keys.join());
   swVersion = null; await ctx.close();
 }

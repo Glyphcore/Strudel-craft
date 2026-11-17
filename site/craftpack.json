@@ -222,9 +222,9 @@
       "format": "syntax@1",
       "version": "1.0.0",
       "path": "data/composition.json",
-      "hash": "sha256:65777f8689c765620f874c0aee4156422d7ee9a143bc61bdcff9b25de8dfb145",
+      "hash": "sha256:193a7a5322fdc4681c7ed0fe9e66c7d0fbb5f10e923fc5f30f52591248bd3808",
       "load": "lazy",
-      "bytes": 165040,
+      "bytes": 165034,
       "title": "Composition concepts",
       "description": "Catalog of composition design concepts (docs/COMPOSITION.md): motif, interplay, foreshadow, layering, groove, harmony, discordance, assonance, complement, synergy, clustering; Craft and Strudel forms"
     },

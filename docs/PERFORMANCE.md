@@ -14,7 +14,7 @@ Network view: `node tests/site/first_paint_bytes.mjs [SITE_DIR] [--idle MS]` (by
 | craftpack.json (shim manifest) | 19,111 | 19,110 |
 | packs-kinds.js / engine/packs-core.js | 17,184 / 13,401 | same |
 | remaining 12 small files (vox manifest, fonts, ui/pwa/palette/forms, css, lock) | 65,502 | 65,502 |
-| **total** | **469,268** (budget 470,000) | **393,627** (budget 433,000) |
+| **total** | **469,268** (budget 470,000) | **408,896** (budget 433,000) |
 
 By category (after): code 219,901 (incl. index.html), CSS 61,068, recipe index 72,348, manifests and lock 30,354, font 9,956.
 

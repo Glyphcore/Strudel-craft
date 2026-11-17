@@ -59,11 +59,13 @@ try {
     const r = await p.$$eval('.cm-tooltip-autocomplete li, .cm-tooltip-autocomplete completion-section', (ls) => ls.map((l) => l.textContent));
     await p.keyboard.press('Escape'); return r;
   };
-  const before = await popup();
+  /* the audition in step 2 loads the sung bank and makes it active (prelude active()), so the 'before' state must be set explicitly */
+  const act0 = await p.evaluate(async () => { try { await window.strudelCraft.voxBanks.use('demo'); } catch (e) { return 'use(demo) failed ' + e.message; } return window.strudelCraft.voxBanks.active(); });
+  await p.waitForTimeout(800); const before = await popup();
   const sw = await p.evaluate(async () => { try { return await window.strudelCraft.voxBanks.use('sung'); } catch (e) { return 'ERR ' + e.message; } });
   const after = await popup();
   const sec = (l) => l.filter((t) => /^words · /.test(t));
-  check('word(" completions come from the active bank and change after switching (demo -> sung)', sec(before)[0] === 'words · demo' && sec(after)[0] === 'words · sung' && after.some((t) => /^love/.test(t)) && JSON.stringify(before) !== JSON.stringify(after), JSON.stringify({ sw, before: before.slice(0, 4), after: after.slice(0, 4) }));
+  check('word(" completions come from the active bank and change after switching (demo -> sung)', sec(before)[0] === 'words · demo' && sec(after)[0] === 'words · sung' && after.some((t) => /^love/.test(t)) && JSON.stringify(before) !== JSON.stringify(after), JSON.stringify({ act0, sw, before: before.slice(0, 4), after: after.slice(0, 4) }));
   check('voxBank.list() is richer and voxBank.words(name) lists entries', await p.evaluate(async () => { const l = window.voxBank.list(); const s = l.find((x) => x.name === 'sung'); const w = await window.voxBank.words('vocalset'); return !!(s && s.active && s.clips === 998 && s.kind === 'word' && s.licence && w.some((e) => e.key === 'vs_a_forte' && e.notes.length)); }));
   const hover = await p.evaluate(async () => window.strudelCraft.voxBanks.describeActive()); check('hover / long-press text names the active bank and its size', /Active bank: sung · word bank · 200 words · 998 clips/.test(hover), hover);
   const sx = await p.evaluate(async () => (await window.strudelCraft.packs.syntax()).sections.some((s) => s.id === 'banks')); check('Syntax view has a Banks section', sx);

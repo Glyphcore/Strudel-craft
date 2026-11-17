@@ -47,7 +47,7 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
   registered when the first completion popup opens).
 - Eager-shell budget (#59): `node tests/site/shell_budget.mjs` (also part of `smoke.mjs`, static, no browser) fails when a script,
   stylesheet or preload is added to `index.html` without being on its `EAGER` allow-list, when the eager shell (index.html + eager files +
-  their static imports, raw bytes) passes `BUDGET` (433,000 bytes = measured + 10%; measured 393,627 on 2026-11-17, was 469,268 of 470,000 before #166; `data/catalog.json`, the recipe index, is 72,348 bytes: compact JSON, and `intent` plus the inspector-only fields moved to the lazy bodies; byte table by file and category in docs/PERFORMANCE.md, re-measure with `node tests/site/first_paint_bytes.mjs`),
+  their static imports, raw bytes) passes `BUDGET` (433,000 bytes = measured + 10%; measured 408,896 on 2026-11-17, was 469,268 of 470,000 before #166; `data/catalog.json`, the recipe index, is 72,348 bytes: compact JSON, and `intent` plus the inspector-only fields moved to the lazy bodies; byte table by file and category in docs/PERFORMANCE.md, re-measure with `node tests/site/first_paint_bytes.mjs`),
   when a deferred (`LATER`) module is pulled into the eager graph, or when a shipped-lock manifest or recipes entry is not preloaded.
   `--list` prints the files by size. Lighthouse itself stays a manual gate: `tests/site/lighthouse_relative.mjs` (it serves `.mjs` as
   JavaScript like Pages does since 2026-11-16; `--legacy-mime` reproduces the older numbers, in which acorn and every module importing it

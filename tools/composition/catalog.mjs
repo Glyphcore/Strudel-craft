@@ -326,7 +326,7 @@ add('tr', 'TR-02', 'Riser and impact', { def: 'A riser that ends exactly on the 
   why: 'Continuous pitch / noise rise predicts an endpoint; the impact confirms it.',
   when: 'Builds into drops, section changes in cinematic and EDM forms (and any genre that wants them).',
   code: 'atoms.import("pack:glyphcore/edm:atoms-edm-core")\n$: s("white").hook("hygiene-riser").attack(3.5).release(0.05).lpf(saw.range(400, 8000).slow(2)).gain(0.2).struct("<x ~>").slow(2)\n$: note("c1").s("sine").hook("hygiene-impact").decay(1.2).struct("<~ ~ x ~>")',
-  check: 'composer scan: presence band rising over the build bars, then every band energy jumping together on the drop bar (read from per-bar band energy; scan has no onset detector).',
+  check: 'composer scan: presence band rising over the build bars, then every band energy jumping together on the drop bar (read from per-bar band energy, not from onset times).',
   anti: ['A riser that stops before the downbeat (dead air) or overruns it'], tags: ['riser', 'transition'], tool: 'scan', needs: 'hooks' });
 add('tr', 'TR-03', 'Drop-out bar', { def: 'All or most layers stop for the bar or beat before the new section (see TEN-04).',
   why: 'Contrast by subtraction at the seam.',

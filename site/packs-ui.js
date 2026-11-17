@@ -73,13 +73,19 @@ export async function open(o = {}) {
 }
 /* #183: the source warnings a user pack can carry, in plain words (what it means for the user), the code and the technical message kept below */
 const PLAIN = {
-  W_PACK_SOURCE_PIN: (src) => `Sounds can change under you: ${src} reads its files from a moving branch, not a fixed version, so a recipe may sound different later or break if the files move.`,
-  W_PACK_SOURCE_HOST: (src, host) => `Not available offline: ${src} loads its files from ${host}, which this app does not keep on the device. Playing it needs the network.`,
+  W_PACK_SOURCE_PIN: (src, host, many) => `Sounds can change under you: ${src} ${many ? 'read their' : 'reads its'} files from a moving branch, not a fixed version, so a recipe may sound different later or break if the files move.`,
+  W_PACK_SOURCE_HOST: (src, host, many) => `Not available offline: ${src} ${many ? 'load their' : 'loads its'} files from ${host}, which this app does not keep on the device. Playing it needs the network.`,
 };
-function warnItem(e) {
-  const f = PLAIN[e.code]; if (!f) return h('li', { 'data-kind': /^W_/.test(e.code) ? 'warn' : 'err' }, h('code', {}, e.code), ' ', e.message);
-  const src = (/source ([^:]+):/.exec(e.message) || [])[1] || 'a source', host = (/base host (\S+)/.exec(e.message) || [])[1] || 'another site';
-  return h('li', { 'data-kind': 'warn', 'data-code': e.code }, h('p', { class: 'pk-plain' }, f(src, host)), h('p', { class: 'pk-tech' }, h('code', {}, e.code), ' ', e.message));
+const and = (a) => (a.length < 2 ? a[0] : a.slice(0, -1).join(', ') + ' and ' + a.slice(-1));
+function warnItems(own) { // one row per source-warning code for the pack (its sources and hosts named together); other codes as before
+  const out = [], seen = new Map();
+  for (const e of own) {
+    if (!PLAIN[e.code]) { out.push(h('li', { 'data-kind': /^W_/.test(e.code) ? 'warn' : 'err' }, h('code', {}, e.code), ' ', e.message)); continue; }
+    let g = seen.get(e.code); if (!g) { g = { code: e.code, srcs: [], hosts: [], msgs: [] }; seen.set(e.code, g); out.push(g); }
+    const src = (/source ([^:]+):/.exec(e.message) || [])[1] || 'a source', host = (/base host (\S+)/.exec(e.message) || [])[1] || 'another site';
+    if (!g.srcs.includes(src)) g.srcs.push(src); if (!g.hosts.includes(host)) g.hosts.push(host); g.msgs.push(e.message);
+  }
+  return out.map((g) => (g.nodeType ? g : h('li', { 'data-kind': 'warn', 'data-code': g.code }, h('p', { class: 'pk-plain' }, PLAIN[g.code](and(g.srcs), and(g.hosts), g.srcs.length > 1)), h('p', { class: 'pk-tech' }, h('code', {}, g.code), ' ', g.msgs.join('; ')))));
 }
 async function loadCache() { const p = P(); if (!p || !p.cacheInfo) return; const [c, s] = await Promise.all([p.cacheInfo(), p.storage()]); const same = JSON.stringify([c, s]) === JSON.stringify([cinfo, store]); cinfo = c; store = s; if (!same && d && d.open) render(); }
 export function close() { if (d && d.open) d.close(); }
@@ -199,7 +205,7 @@ function packCard(p, x, rep, count) {
       field('Manifest', [h('code', { title: x.manifest || '' }, short(x.manifest)), ' ', verification(x)]),
       cacheField(x),
       offl ? field('Offline', offl) : null),
-    own.length ? h('ul', { class: 'pk-errs', 'aria-label': 'Errors and warnings for ' + x.id }, own.map(warnItem)) : null,
+    own.length ? h('ul', { class: 'pk-errs', 'aria-label': 'Errors and warnings for ' + x.id }, warnItems(own)) : null,
     x.ingredients.length ? ingredients(p, x) : null,
     acts.length ? h('div', { class: 'pk-acts' }, acts) : null);
 }

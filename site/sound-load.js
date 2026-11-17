@@ -9,7 +9,7 @@
 const sc = (window.strudelCraft = window.strudelCraft || {});
 const AUDIO = /\.(wav|flac|mp3|ogg|oga|m4a|aac|opus|aif|aiff)(?:[?#]|$)/i, GRACE = 120, SETTLE = 500;
 const orig = window.fetch.bind(window);
-let srcs = [], failEl = null, b = null, toastEl = null, shown = 0, lastBatch = null;
+let srcs = [], failEl = null, readyEl = null, readyT = 0, b = null, toastEl = null, shown = 0, lastBatch = null;
 const toast = (m, o) => { try { return sc.ui && sc.ui.toast(m, o); } catch (e) { return null; } };
 const mb = (n) => (n / 1048576).toFixed(n < 10485760 ? 1 : 0) + ' MB';
 
@@ -24,10 +24,11 @@ function labelOf(url) {
 const names = (set) => { const a = [...set]; return a.length <= 2 ? a.join(' and ') : `${a.slice(0, 2).join(', ')} and ${a.length - 2} more`; };
 const refresh = () => { try { const P = sc.packs; if (P && P.get) P.get('sample-source').then((v) => { if (Array.isArray(v)) { srcs = v; paint(); } }, () => {}); } catch (e) { /* no packs on this host */ } };
 const labels = (urls) => new Set(urls.map(labelOf));
-function text() { return `Loading sounds: ${names(labels(b.urls))}. ${b.done} of ${b.total} files, ${mb(b.bytes)}. Notes start as their files arrive.`; }
+function text() { return `Loading sounds: ${names(labels(b.urls))}. ${b.done} of ${b.total} files, ${mb(b.bytes)}. Notes whose file is not here yet are skipped this time round.`; }
 function paint() {
   if (!b || !b.visible) return;
-  if (!toastEl || !toastEl.isConnected) { toastEl = toast(text(), { kind: 'info', sticky: true }); if (toastEl) { toastEl.dataset.soundLoad = 'loading'; toastEl.style.fontVariantNumeric = 'tabular-nums'; const t = toastEl; requestAnimationFrame(() => { t.style.minHeight = t.offsetHeight + 'px'; }); } shown++; return; } // its height is held, so updates and the ready line never move the toast stack
+  if ((!toastEl || !toastEl.isConnected) && readyEl && readyEl.isConnected) { clearTimeout(readyT); toastEl = readyEl; readyEl = null; toastEl.dataset.soundLoad = 'loading'; } // one load toast at a time: a new batch takes over the ready toast instead of stacking
+  if (!toastEl || !toastEl.isConnected) { toastEl = toast(text(), { kind: 'info', sticky: true }); if (toastEl) { toastEl.dataset.soundLoad = 'loading'; toastEl.style.fontVariantNumeric = 'tabular-nums'; const sp = toastEl.querySelector('span'); if (sp) sp.style.cssText = 'display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;height:4.2em;line-height:1.4'; } shown++; return; } // a fixed three-line text box: updates and the ready line never change the toast's height, so the toast stack never moves
   const s = toastEl.querySelector('span, .toast-act'); if (s) s.textContent = text();
 }
 const kill = (t) => { const x = t && t.querySelector('.toast-x'); if (x) x.click(); };
@@ -45,7 +46,7 @@ function finish() {
   }
   if (!x.visible) return; // a warm cache: nothing was shown, nothing to clear
   const s = loading && loading.querySelector('span, .toast-act');
-  if (s) { s.textContent = `Sounds ready: ${x.done} files, ${mb(x.bytes)}. Notes skipped while loading play the next time they come round.`; loading.dataset.soundLoad = 'ready'; setTimeout(() => kill(loading), 2200); }
+  if (s) { s.textContent = `Sounds ready: ${x.done} files, ${mb(x.bytes)}. Notes skipped while loading play the next time they come round.`; loading.dataset.soundLoad = 'ready'; if (readyEl && readyEl !== loading) kill(readyEl); clearTimeout(readyT); readyEl = loading; readyT = setTimeout(() => { kill(loading); if (readyEl === loading) readyEl = null; }, 2200); }
 }
 function begin(url) {
   if (!b) { refresh(); b = { t0: performance.now(), total: 0, done: 0, inflight: 0, bytes: 0, urls: [], failed: [], visible: false, settle: 0, grace: 0 }; }

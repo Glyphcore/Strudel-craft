@@ -1,0 +1,163 @@
+{
+ "engine": "strudel-cli chunk_render 160 bars, master.py --preset dnb --target-lufs -14 --ceiling -1.5 after a static -6.5 dB pre-gain",
+ "raw_render": {
+  "lufs": -8.6,
+  "true_peak_dbtp": 5.27,
+  "plr": 13.86,
+  "dc_dbfs": -70.59
+ },
+ "whole_score_dnb": [
+  "drum-and-bass: /tmp/claude-0/-home-user/d7687152-e639-5f4c-a8f5-7e9621ad3d6e/scratchpad/r2/velvet-static.wav",
+  "PASS delivery-loudness            value -14  range [-15, -13]  basis platform",
+  "PASS delivery-true-peak           value -2.06  range [-inf, -1]  basis platform",
+  "PASS tempo                        value 174  range [170, 176]  basis convention",
+  "MISS plr                          value 11.94  range [7, 10]  basis convention (provisional)",
+  "MISS loudness-range               value 13.38  range [3, 7]  basis convention (provisional)",
+  "PASS low-band-share               value 57.67  range [45, 65]  basis convention",
+  "PASS spectral-tilt                value -4.63  range [-6, -3]  basis convention",
+  "MISS onsets-per-bar               value 10.6  range [16, 40]  basis convention (provisional)",
+  "SKIP kick-bass-duck               value n/a  range [2, 5]  basis convention  not measured (needs --kick and --bass)",
+  "PASS mono-low-side-to-mid         value -43.88  range [-inf, -20]  basis convention",
+  "PASS mono-low-correlation         value 1  range [0.95, inf]  basis convention",
+  "PASS no-clipping                  value 0  range [0, 0]  basis convention",
+  "PASS dc-offset                    value -83.47  range [-inf, -60]  basis convention",
+  "pass 9  miss 3  skip 1  unreliable 0 -> OK"
+ ],
+ "sections": {
+  "intro": {
+   "lufs": -17.56,
+   "tp": -5.19,
+   "plr": 12.38,
+   "lra": 1.2,
+   "centroid": 928,
+   "low_share": 15.3,
+   "onsets": 10.1,
+   "dc": -80.56
+  },
+  "build1": {
+   "lufs": -14.55,
+   "tp": -4.28,
+   "plr": 10.27,
+   "lra": 1.36,
+   "centroid": 534,
+   "low_share": 28.33,
+   "onsets": 12.8,
+   "dc": -79.01
+  },
+  "drop1": {
+   "lufs": -11.58,
+   "tp": -2.09,
+   "plr": 9.5,
+   "lra": 0.84,
+   "centroid": 430,
+   "low_share": 65.94,
+   "onsets": 15.2,
+   "dc": -78.26,
+   "score": [
+    "MISS delivery-loudness            value -11.58  range [-15, -13]  basi",
+    "PASS delivery-true-peak           value -2.09  range [-inf, -1]  basis",
+    "PASS tempo                        value 174  range [170, 176]  basis c",
+    "PASS plr                          value 9.5  range [7, 10]  basis conv",
+    "MISS loudness-range               value 0.84  range [3, 7]  basis conv",
+    "MISS low-band-share               value 65.94  range [45, 65]  basis c",
+    "PASS spectral-tilt                value -4.58  range [-6, -3]  basis c",
+    "MISS onsets-per-bar               value 15.2  range [16, 40]  basis co",
+    "SKIP kick-bass-duck               value n/a  range [2, 5]  basis conve",
+    "PASS mono-low-side-to-mid         value -44.14  range [-inf, -20]  bas",
+    "PASS mono-low-correlation         value 1  range [0.95, inf]  basis co",
+    "PASS no-clipping                  value 0  range [0, 0]  basis convent",
+    "PASS dc-offset                    value -78.26  range [-inf, -60]  bas"
+   ]
+  },
+  "float": {
+   "lufs": -19.34,
+   "tp": -4.92,
+   "plr": 14.43,
+   "lra": 2.51,
+   "centroid": 256,
+   "low_share": 79.87,
+   "onsets": 8.8,
+   "dc": -103.27
+  },
+  "build2": {
+   "lufs": -17.6,
+   "tp": -6.59,
+   "plr": 11.01,
+   "lra": 1.05,
+   "centroid": 649,
+   "low_share": 16.26,
+   "onsets": 12,
+   "dc": -83.88
+  },
+  "drop2": {
+   "lufs": -12.19,
+   "tp": -2.06,
+   "plr": 10.14,
+   "lra": 3.34,
+   "centroid": 482,
+   "low_share": 59.91,
+   "onsets": 15.2,
+   "dc": -81.94,
+   "score": [
+    "MISS delivery-loudness            value -12.19  range [-15, -13]  basi",
+    "PASS delivery-true-peak           value -2.06  range [-inf, -1]  basis",
+    "PASS tempo                        value 174  range [170, 176]  basis c",
+    "MISS plr                          value 10.14  range [7, 10]  basis co",
+    "PASS loudness-range               value 3.34  range [3, 7]  basis conv",
+    "PASS low-band-share               value 59.91  range [45, 65]  basis c",
+    "PASS spectral-tilt                value -4.78  range [-6, -3]  basis c",
+    "MISS onsets-per-bar               value 15.2  range [16, 40]  basis co",
+    "SKIP kick-bass-duck               value n/a  range [2, 5]  basis conve",
+    "PASS mono-low-side-to-mid         value -44.39  range [-inf, -20]  bas",
+    "PASS mono-low-correlation         value 1  range [0.95, inf]  basis co",
+    "PASS no-clipping                  value 0  range [0, 0]  basis convent",
+    "PASS dc-offset                    value -81.94  range [-inf, -60]  bas"
+   ]
+  },
+  "bridge": {
+   "lufs": -25.54,
+   "tp": -5.89,
+   "plr": 19.65,
+   "lra": 1.26,
+   "centroid": 1026,
+   "low_share": 13.88,
+   "onsets": 7.3,
+   "dc": -92.55
+  },
+  "outro": {
+   "lufs": -20.03,
+   "tp": -8.5,
+   "plr": 11.53,
+   "lra": 19.86,
+   "centroid": 929,
+   "low_share": 0,
+   "onsets": 2.2,
+   "dc": -90.81
+  }
+ },
+ "step_bar31_to_33_db": {
+  "raw_program": 4.0,
+  "mastered": 2.6
+ },
+ "drop2_8bar_blocks_lufs_mastered": [
+  -14.4,
+  -12.6,
+  -11.2,
+  -11.3
+ ],
+ "drop_minus_float_lu": {
+  "drop1": 7.8,
+  "drop2": 7.0
+ },
+ "section_lufs_k_sum_mastered": {
+  "intro": -17.6,
+  "build1": -14.7,
+  "drop1": -11.6,
+  "float": -19.4,
+  "build2": -17.8,
+  "drop2": -12.4,
+  "bridge": -25.5,
+  "outro": -28.6
+ },
+ "note": "engine/genre/score.py reads 0 targets: docs/genres/*.json now use a criteria list, score.py reads genre.targets (dict)"
+}

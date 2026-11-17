@@ -35,12 +35,12 @@
       "version": "1.0.0",
       "path": "recipes/recipes.json",
       "title": "VCSL instruments (referenced) recipes",
-      "hash": "sha256:8e3ececc1f375bc7f9be0b2b353a8a157c14db014d8e5e3b540c88045de5a048",
+      "hash": "sha256:bcc26f6291df7a6114a64feb648c0d6cee180d0406fb7e229ca082298412a5bc",
       "load": "manual",
       "requires": [
         "sources"
       ],
-      "bytes": 1381
+      "bytes": 1385
     }
   ]
 }

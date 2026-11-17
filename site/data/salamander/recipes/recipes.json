@@ -18,7 +18,7 @@
    "id": "salamander-piano-chords",
    "title": "Salamander piano chords",
    "intent": "Grand piano chords; Salamander Grand Piano V3 (CC BY 3.0, Alexander Holm), referenced and fetched on play.",
-   "code": "setcpm(70/4)\n$: note(\"<[c3,e3,g3,c4] [a2,e3,a3,c4] [f2,c3,f3,a3] [g2,d3,g3,b3]>\").s(\"piano\").gain(0.47)",
+   "code": "setcpm(70/4)\n$: note(\"<[c3,e3,g3,c4] [a2,e3,a3,c4] [f2,c3,f3,a3] [g2,d3,g3,b3]>\").s(\"piano\").gain(0.78)",
    "labels": [
     "instruments"
    ],

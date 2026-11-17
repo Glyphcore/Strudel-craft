@@ -7,7 +7,7 @@
       "id": "glyphcore/shim",
       "version": "1.0.0",
       "source": "file:.",
-      "manifest": "sha256:3c63551cfd551aa51c8f30de0a89dcfd2d5672ac9643a2360675e654aae08f59",
+      "manifest": "sha256:3568bbaf61a8c27d117c849572a9af1f0ed895d2ca45d5d5bdb48ef9fbf64673",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}
@@ -79,7 +79,7 @@
       "id": "glyphcore/salamander-piano",
       "version": "1.0.0",
       "source": "file:data/salamander",
-      "manifest": "sha256:94eda1760848a3ee57aca97ffb2c169db128d6d1713acc11e6dd3ecd08913c8d",
+      "manifest": "sha256:9806cd716e50404a5c7fdc22e9dd3f08534ce540256b41b2342f73f1ff6aa4ae",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}
@@ -88,7 +88,7 @@
       "id": "glyphcore/vcsl",
       "version": "1.0.0",
       "source": "file:data/vcsl",
-      "manifest": "sha256:d0daebd405bae409aa09d2ba552ab4736d79b50060e8829308f1932dca601b22",
+      "manifest": "sha256:afb8923735c635e5b16dc65c2dc9e2d6a9066abdccdd72bacd92af2abb079628",
       "priority": 0,
       "allowCode": [],
       "dependencies": {}

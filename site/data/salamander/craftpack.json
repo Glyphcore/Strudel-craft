@@ -35,7 +35,7 @@
       "version": "1.0.0",
       "path": "recipes/recipes.json",
       "title": "Salamander Grand Piano (referenced) recipes",
-      "hash": "sha256:2589059b9694a32ecdc83a17b6f65f6ef5066d82a569eab2cdb25cd2af1a9766",
+      "hash": "sha256:f384808f9f5176fe15e50eb95b2e1559bae1ae1ddf25fdf565fe790b13c55b56",
       "load": "manual",
       "requires": [
         "sources"

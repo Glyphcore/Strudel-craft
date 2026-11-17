@@ -322,19 +322,19 @@
       "id": "instruments",
       "title": "Real instruments: referenced sample packs",
       "needs": "core",
-      "explain": "Packs glyphcore/vcsl (Versilian Community Sample Library, CC0, 128 sounds) and glyphcore/salamander-piano (Salamander Grand Piano V3, CC BY 3.0, credit Alexander Holm) reference Strudel's own sample maps instead of hosting audio: nothing is fetched until a program names one of their sounds (s(\"piano\"), s(\"marimba\")), then the map and only the files played load from raw.githubusercontent.com. The pack kind is sample-source@1 (index_url, sounds[], license, attribution, terms_url). Credits and licences show in the Packs view (the audio keeps its own licence, the pack manifests are CC0); these sample sets are quiet, so the examples carry large gain values (peaks about 0.4); CC BY audio needs its credit kept with the track. glyphcore/freepats (CC0, hosted, three instruments) plays fp_harp, fp_organ, fp_xylophone. Offline: a sound already played is cached on this device; a never-played sound needs the network. Guitar, bass, bowed strings, brass and choir are not covered yet (coming).",
+      "explain": "Packs glyphcore/vcsl (Versilian Community Sample Library, CC0, 128 sounds) and glyphcore/salamander-piano (Salamander Grand Piano V3, CC BY 3.0, credit Alexander Holm) reference Strudel's own sample maps instead of hosting audio: nothing is fetched until a program names one of their sounds (s(\"piano\"), s(\"marimba\")), then the map and only the files played load from raw.githubusercontent.com. The pack kind is sample-source@1 (index_url, sounds[], license, attribution, terms_url). Credits and licences show in the Packs view (the audio keeps its own licence, the pack manifests are CC0); these sample sets are quiet, so the examples carry large gain values (rms within 2 dB of the stock synth recipes, peaks 0.2 to 0.4); CC BY audio needs its credit kept with the track. glyphcore/freepats (CC0, hosted, three instruments) plays fp_harp, fp_organ, fp_xylophone. Offline: a sound already played is cached on this device; a never-played sound needs the network. Guitar, bass, bowed strings, brass and choir are not covered yet (coming).",
       "examples": [
         {
           "title": "Piano chords (Salamander, CC BY 3.0)",
-          "code": "setcpm(70/4)\n$: note(\"<[c3,e3,g3,c4] [a2,e3,a3,c4] [f2,c3,f3,a3] [g2,d3,g3,b3]>\").s(\"piano\").gain(0.47)"
+          "code": "setcpm(70/4)\n$: note(\"<[c3,e3,g3,c4] [a2,e3,a3,c4] [f2,c3,f3,a3] [g2,d3,g3,b3]>\").s(\"piano\").gain(0.78)"
         },
         {
           "title": "Marimba and harp (VCSL, CC0)",
-          "code": "setcpm(100/4)\n$: note(\"c3 e3 g3 c4 g3 e3 d3 f3\").s(\"marimba\").gain(25)\n$: note(\"c4 e4 g4 c5\").s(\"harp\").slow(2).gain(2)"
+          "code": "setcpm(100/4)\n$: note(\"c3 e3 g3 c4 g3 e3 d3 f3\").s(\"marimba\").gain(18)\n$: note(\"c4 e4 g4 c5\").s(\"harp\").slow(2).gain(2.5)"
         },
         {
           "title": "Acoustic percussion set (VCSL, CC0)",
-          "code": "setcpm(95/4)\n$: s(\"bassdrum1 [hihat hihat] snare_modern [hihat bassdrum1]\").gain(4)"
+          "code": "setcpm(95/4)\n$: s(\"bassdrum1 [hihat hihat] snare_modern [hihat bassdrum1]\").gain(8.5)"
         },
         {
           "title": "Hosted CC0 instruments (FreePats)",

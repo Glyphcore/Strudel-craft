@@ -28,6 +28,9 @@ async function run(code, engine, secs, after) {
 }
 const key = (e) => (+e[0]).toFixed(4) + '|' + e[2];
 const win = (tr) => tr.filter((e) => e[0] >= 3 && e[0] < 9);
+/* the relaxed timing check: a deviation passes only when a resync explains it and the event sets still match */
+const timingOk = (db, rs, miss, extra) => db < 0.005 || (rs > 0 && miss === 0 && extra === 0);
+check('timing check self-test: fails on drift without a resync, on a resync with a different event set; passes on a resync with equal sets', !timingOk(0.2, 0, 0, 0) && !timingOk(1.4, 0, 0, 0) && !timingOk(1.4, 2, 3, 0) && !timingOk(1.4, 2, 0, 5) && timingOk(1.4, 2, 0, 0) && timingOk(0.001, 0, 0, 0));
 for (const p of progs) {
   const code = fs.readFileSync(path.resolve(ROOT, p), 'utf8'), name = path.basename(path.dirname(p));
   let A = await run(code, 'page', 16); for (let k = 0; k < 2 && (A.st.perf.lateHaps > 0 || A.st.perf.minMarginMs < 0); k++) A = await run(code, 'page', 16); /* the page clock is the thing under test for lateness: a run where it dropped events is not a reference, retry */
@@ -38,7 +41,7 @@ for (const p of progs) {
   check(`${name}: same events (onset, value) in cycles 3..9`, a.length > 50 && miss === 0 && extra === 0, `${a.length} page / ${b.length} worker events, ${miss} missing, ${extra} extra`);
   const dev = (tr, cps) => { const d = win(tr).map((e) => e[1] - e[0] / cps); const m = d.slice().sort((x, y) => x - y)[Math.floor(d.length / 2)]; return Math.max(...d.map((x) => Math.abs(x - m))); };
   const da = dev(A.tr, A.cps), db = dev(B.tr, B.cps);
-  const rs = B.eng.worker.resyncs || 0; check(`${name}: timing law holds (target - onset/cps constant within 5 ms; a resync after a page stall pauses the position by design)`, db < 0.005 || (rs > 0 && miss === 0 && extra === 0), `page ${(da * 1000).toFixed(1)} ms, worker ${(db * 1000).toFixed(1)} ms, resyncs ${rs}`);
+  const rs = B.eng.worker.resyncs || 0; check(`${name}: timing law holds (target - onset/cps constant within 5 ms; a resync after a page stall pauses the position by design)`, timingOk(db, rs, miss, extra), `page ${(da * 1000).toFixed(1)} ms, worker ${(db * 1000).toFixed(1)} ms, resyncs ${rs}`);
   check(`${name}: no late event on the worker path`, B.st.perf.lateHaps === 0 && B.errs.length === 0, `late ${B.st.perf.lateHaps}, min margin ${B.st.perf.minMarginMs} ms (page path ${A.st.perf.minMarginMs} ms)`);
 }
 /* live edit and stop/play on the Worker; an ineligible program stays on the page clock */

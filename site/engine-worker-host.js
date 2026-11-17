@@ -23,6 +23,8 @@ export async function attach(env) {
   const mir = { cache: new Map(), pend: new Map(), id: 0, TTL: 3500, req: 0, ms: 0 };
   const st = { mode: 'page', epoch: 0, pending: null, workerCode: null, last: null, batches: 0, haps: 0, dropped: 0, errors: [], log: [], resyncs: 0, rsLog: [], minM: Infinity, late: 0, lateLog: [], hidden: !!document.hidden };
   const LA_FG = 0.6, LA_BG = 2.0;
+  /* ?resync=off (or localStorage sc.flag.resync) keeps stage 1's behaviour for comparison: a late delivered event is handed to superdough, which drops it (a hole), and the position never pauses */
+  const RESYNC = (() => { try { return (new URLSearchParams(location.search).get('resync') || localStorage.getItem('sc.flag.resync') || 'on') !== 'off'; } catch (e) { return true; } })();
   const la = () => (document.hidden ? LA_BG : LA_FG);
   const anchor = () => [getTime(), performance.timeOrigin + performance.now()];
   w.onerror = (e) => { st.errors.push('worker: ' + e.message); (window.errorLogger || console.warn)('engine worker: ' + e.message); };
@@ -44,7 +46,7 @@ export async function attach(env) {
     /* the page was blocked longer than the lookahead (a start, a freeze): events already past would be dropped by superdough. Play the ones before the first late event, and have the Worker
        resume from that cycle with a fresh margin (the musical position pauses, as after an underrun on the page clock; nothing is skipped or doubled). */
     let list = m.haps, t0 = getTime(), late = Infinity; for (const h of m.haps) if (h.t - t0 < 0 && h.wb < late) late = h.wb;
-    if (late !== Infinity) { list = m.haps.filter((h) => h.wb < late); st.resyncs++; if (st.rsLog.length < 20) st.rsLog.push([+t0.toFixed(2), +(Math.min(...m.haps.map((h) => h.t)) - t0).toFixed(3), m.haps.length]); st.last = null; ctl.note('worker-resync', { cycle: +late.toFixed(3) }); w.postMessage({ t: 'set', lastEnd: late, guard: 1.0 }); }
+    if (RESYNC && late !== Infinity) { list = m.haps.filter((h) => h.wb < late); st.resyncs++; if (st.rsLog.length < 20) st.rsLog.push([+t0.toFixed(2), +(Math.min(...m.haps.map((h) => h.t)) - t0).toFixed(3), m.haps.length]); st.last = null; ctl.note('worker-resync', { cycle: +late.toFixed(3) }); w.postMessage({ t: 'set', lastEnd: late, guard: 1.0 }); }
     for (const h of list) {
       st.haps++; ctl.account(h.t, h.d, h); const mm = h.t - getTime(); if (mm < st.minM) st.minM = mm; if (mm < 0) { st.late++; if (st.lateLog.length < 12) st.lateLog.push([+(mm * 1000).toFixed(0), +getTime().toFixed(2), m.haps.length]); }
       const hap = { value: h.v, whole: { begin: { valueOf: () => h.wb }, end: { valueOf: () => h.we } }, part: { begin: { valueOf: () => h.pb }, end: { valueOf: () => h.pe } }, duration: h.d * h.cps, context: {}, ensureObjectValue() {}, hasOnset: () => true };
@@ -90,5 +92,5 @@ export async function attach(env) {
     stop() { if (st.mode === 'worker') w.postMessage({ t: 'stop' }); st.mode = 'page'; base.stop(); },
   };
   S.clock = clock; const started = S.started;
-  return { cycleHaps, state: () => ({ mirror: { requests: mir.req, cached: mir.cache.size }, mode: st.mode, batches: st.batches, haps: st.haps, dropped: st.dropped, errors: st.errors.slice(), log: st.log.slice(), minMarginMs: st.minM === Infinity ? null : Math.round(st.minM * 1000), late: st.late, resyncs: st.resyncs, rsLog: st.rsLog, lateLog: st.lateLog, epoch: st.epoch }), clock, worker: w, wasStarted: started };
+  return { cycleHaps, state: () => ({ mirror: { requests: mir.req, cached: mir.cache.size }, mode: st.mode, batches: st.batches, haps: st.haps, dropped: st.dropped, errors: st.errors.slice(), log: st.log.slice(), minMarginMs: st.minM === Infinity ? null : Math.round(st.minM * 1000), resync: RESYNC, late: st.late, resyncs: st.resyncs, rsLog: st.rsLog, lateLog: st.lateLog, epoch: st.epoch }), clock, worker: w, wasStarted: started };
 }

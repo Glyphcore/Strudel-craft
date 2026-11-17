@@ -208,6 +208,7 @@ export function createPacks(opts = {}) {
         let data; try { data = JSON.parse(new TextDecoder().decode(bytes)); } catch (e) { throw Object.assign(new Error('entry file is not JSON'), { code: 'E_PACK_SCHEMA' }); }
         const bad = data && typeof data === 'object' ? ad.check(data) : 'entry file must be an object';
         if (bad) throw Object.assign(new Error(bad), { code: 'E_PACK_SCHEMA' });
+        if (ad.warnings) for (const w of ad.warnings(data)) warn(w.code, `${ingQ(pack, ing)}: ${w.message}`, { id: pack.id }); // advisory only: the pack still loads
         ing.data = ad.prepare ? await ad.prepare(data) : data; dirty = true;
         if (ad.apply) { const d = await ad.apply(ing, ing.data, ctxFor(pack, ing)); if (typeof d === 'function') ing.dispose = d; }
         if (ing.code && ad.sandbox && !gate(pack, ing)) { const d = await ad.sandbox(ing, ing.data, sandboxCtx(pack, ing, ing.data)); if (typeof d === 'function') ing.dispose = d; setState(ing, 'ready'); } // the module itself starts on first use, never here

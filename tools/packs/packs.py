@@ -358,6 +358,27 @@ def check_entry_taxonomy(kind, data, ing, E, W):
                     W.append(("W_PACK_TAG", f"{ing['path']}#{item}", f"tag {t!r} is not in the pack taxonomy (free tags are allowed)"))
 
 
+# hosts whose files site/sw.js runtime-caches for offline (shellFetch `bank`); keep in step with sw.js (tests/site/source_base.mjs checks it)
+CACHED_HOSTS = ("raw.githubusercontent.com",)
+
+
+def check_source_bases(data, ing, E, W):
+    """sample-source `base` (inline map form): any pack needs an https base (E_PACK_SCHEMA naming the field); a shipped pack should pin a 40-hex commit
+    and sit on a host the service worker caches, otherwise W_PACK_SOURCE_PIN / W_PACK_SOURCE_HOST (an error under --strict; a user pack just loads with the warning)."""
+    for i, src in enumerate(data.get("sources") or [] if isinstance(data, dict) else []):
+        if not isinstance(src, dict) or "base" not in src:
+            continue
+        w, base = f"{ing['path']}#/sources/{i}/base", src["base"]
+        m = re.match(r"^https://([^/?#]+)(/[^?#]*)?$", base) if isinstance(base, str) else None
+        if not m:
+            E.append(("E_PACK_SCHEMA", w, f"sample-source base must be an https URL, got {base!r}"))
+            continue
+        if m[1].lower() not in CACHED_HOSTS:
+            W.append(("W_PACK_SOURCE_HOST", w, f"base host {m[1]} is not cached for offline by sw.js ({', '.join(CACHED_HOSTS)})"))
+        if not re.search(r"/[0-9a-f]{40}(/|$)", m[2] or ""):
+            W.append(("W_PACK_SOURCE_PIN", w, "base is not pinned to a 40-hex commit (a branch or tag can change under the pack)"))
+
+
 def validate_entry(root, ing, b, raw, kinds, items, E, W, newer):
     kind, fmt = ing.get("kind"), ing.get("format", "")
     k = kinds.get(kind)
@@ -382,6 +403,8 @@ def validate_entry(root, ing, b, raw, kinds, items, E, W, newer):
             continue
         E.append((schema_code(ptr, msg), f"{ing['path']}#{ptr or '/'}", msg))
     check_entry_taxonomy(kind, data, ing, E, W)
+    if kind == "sample-source":
+        check_source_bases(data, ing, E, W)
     if kind == "hooks":
         check_site_allowlist(data, ing, E)
     if kind in LIST_ITEMS and isinstance(data, dict):

@@ -29,6 +29,9 @@ jobs:
         run: |
           python3 tools/packs/shim.py
           python3 tools/packs/shim.py --check
+      - name: Validate the referenced and hosted instrument packs strictly (sample-source base must be https, pinned to a 40-hex commit, on a host sw.js caches; #183)
+        run: |
+          for d in vsco drumkits vcsl salamander freepats; do python3 tools/packs/packs.py validate site/data/$d --strict; done
       - name: Pin the vox bank index pack (glyphcore/vox, data/vox/craftpack.json; the Banks browser reads bank files through it, #85)
         run: |
           python3 tools/vox/bank_index.py

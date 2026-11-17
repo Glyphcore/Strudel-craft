@@ -50,6 +50,7 @@ const cleanDocs = async (d) => {
 };
 
 // ---------------------------------------------------------------- adapters
+const CACHED_HOSTS = ['raw.githubusercontent.com']; // hosts sw.js runtime-caches (shellFetch `bank`); tests/site/source_base.mjs keeps this in step with sw.js
 const noop = () => {};
 const ctxTrack = (ing, p) => { ing.pending = Promise.resolve(p).catch(() => {}); }; // the registration settles after `load`; tests await ing.pending
 const edSrc = (d) => (isObj(d.editors) ? d.editors : d); // the shim file keeps the editors spec under `editors`
@@ -123,8 +124,23 @@ export const KINDS = {
       const map = {}; for (const [k, v] of Object.entries(d)) { if (k === '_base') continue; if (ctx.wins('sounds', k)) map[k] = v; map[ctx.alias(k)] = v; }
       ctx.track(ctx.samples(map, ctx.assetDir(ing.path, d._base)));
     } },
-  'sample-source': { formats: ['sample-source@1'], code: 'never', // referenced remote sample maps (#183): no audio in the pack, nothing fetched until a program uses one of a source's sound names
-    check: (d) => (Array.isArray(d.sources) && d.sources.every((x) => isObj(x) && Array.isArray(x.sounds) && x.sounds.length && (/^https:\/\//.test(x.index_url || '') || (isObj(x.map) && /^https:\/\//.test(x.base || '')))) ? null : 'sample-source needs sources[] with sounds[] and either an https index_url or map + https base'),
+    'sample-source': { formats: ['sample-source@1'], code: 'never', // referenced remote sample maps (#183): no audio in the pack, nothing fetched until a program uses one of a source's sound names
+    check: (d) => { // any pack: every source needs sounds[] and either an https index_url or an inline map + https base; the message names the field
+      if (!Array.isArray(d.sources)) return 'sample-source needs sources[]';
+      for (const [i, x] of d.sources.entries()) {
+        if (!isObj(x) || !Array.isArray(x.sounds) || !x.sounds.length) return `sources[${i}].sounds must be a non-empty array`;
+        if (x.index_url != null && !/^https:\/\//.test(x.index_url)) return `sources[${i}].index_url must be an https URL`;
+        if (x.map != null || x.base != null) { if (!isObj(x.map)) return `sources[${i}].map must be an object`; if (!/^https:\/\//.test(x.base || '')) return `sources[${i}].base must be an https URL`; }
+        else if (x.index_url == null) return `sources[${i}] needs index_url or map + base`;
+      }
+      return null;
+    },
+    warnings: (d) => d.sources.filter((x) => x.base != null).flatMap((x, i) => { // user packs may use any https base; say what the shipped rule would flag (tools/packs/packs.py check_source_bases)
+      const m = /^https:\/\/([^/?#]+)(\/[^?#]*)?/.exec(x.base), out = [];
+      if (m && !CACHED_HOSTS.includes(m[1].toLowerCase())) out.push({ code: 'W_PACK_SOURCE_HOST', message: `source ${x.id}: base host ${m[1]} is not cached for offline by the service worker` });
+      if (!m || !/\/[0-9a-f]{40}(\/|$)/.test(m[2] || '')) out.push({ code: 'W_PACK_SOURCE_PIN', message: `source ${x.id}: base is not pinned to a 40-hex commit, the files can change under the pack` });
+      return out;
+    }),
     items: (d) => d.sources.flatMap((x) => x.sounds.map((n) => [n, { source: x.id, license: x.license, terms_url: x.terms_url }])),
     view: (entries) => entries.flatMap((e) => e.data.sources.map((x) => ({ pack: e.pack, ingredient: e.ingredient, ...x }))),
     apply(ing, d, ctx) { // registers nothing yet: activate(names) fetches a source's map (samples(index_url), or registers its inline map + base) the first time a program names one of its sounds

@@ -44,7 +44,7 @@
    Engine.load() (first Play, idle compiles) awaits window.strudelCraft.booted, so the first Play still needs one tap. */
 const sc = (window.strudelCraft = window.strudelCraft || {});
 const LATER = ['engine/index.js', 'atoms-site.js', 'visuals.js', 'intellisense.js', 'hooks-intellisense.js', 'lanes-intellisense.js', 'word-intellisense.js',
-  'history.js', 'bgplay.js', 'tracker.js', 'copycode.js', 'transport-range.js', 'capture.js', 'workspace.js', 'vox-banks.js', 'refs.js', 'quickplay.js', 'resources.js', 'cues.js'];
+  'history.js', 'bgplay.js', 'tracker.js', 'copycode.js', 'transport-range.js', 'capture.js', 'workspace.js', 'vox-banks.js', 'refs.js', 'quickplay.js', 'resources.js', 'cues.js', 'drawn-user.js'];
 /* render host (index.html?host=render, capture.js / docs/AUDIO_ENGINE.md): only the engine side loads, no editor helpers, tracker or workspace */
 const HOSTED = /[?&]host=render\b/.test(location.search), NOHOST = ['intellisense.js', 'hooks-intellisense.js', 'lanes-intellisense.js', 'word-intellisense.js', 'tracker.js', 'copycode.js', 'workspace.js', 'history.js', 'transport-range.js', 'bgplay.js', 'quickplay.js', 'resources.js', 'cues.js'];
 if (HOSTED) for (const u of NOHOST) LATER.splice(LATER.indexOf(u), 1);
@@ -53,7 +53,7 @@ const CSS = ['copycode.css', 'capture.css'];
    Chromium keeps a failed module URL in its module map, so a retry imports '<file>?retry=<n>' (a fresh fetch). */
 const NAME = { 'engine/index.js': 'controls engine', 'atoms-site.js': 'atoms', 'visuals.js': 'visuals', 'intellisense.js': 'editor intellisense', 'hooks-intellisense.js': 'hooks intellisense',
   'lanes-intellisense.js': 'lanes intellisense', 'word-intellisense.js': 'word intellisense', 'history.js': 'version history', 'bgplay.js': 'background playback', 'tracker.js': 'live tracker',
-  'copycode.js': 'copy code', 'transport-range.js': 'transport range', 'capture.js': 'Record panel', 'workspace.js': 'workspace', 'vox-banks.js': 'vocal banks', 'refs.js': 'reference inspector', 'quickplay.js': 'quick play', 'resources.js': 'resources pane', 'cues.js': 'score cues',
+  'copycode.js': 'copy code', 'transport-range.js': 'transport range', 'capture.js': 'Record panel', 'workspace.js': 'workspace', 'vox-banks.js': 'vocal banks', 'refs.js': 'reference inspector', 'quickplay.js': 'quick play', 'resources.js': 'resources pane', 'cues.js': 'score cues', 'drawn-user.js': 'drawn instruments',
   'copycode.css': 'copy code styles', 'capture.css': 'Record panel styles' };
 const q = (u, n) => u + (n ? '?retry=' + n : '');
 const sheet = (h, n) => new Promise((ok) => document.head.append(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: q(h, n), onload: () => ok(null), onerror: () => ok(h) })));
@@ -74,6 +74,7 @@ sc.shellPainted.then(go);
 /* the bold display face and the mono face are not needed for the first frame (font-display: swap would show the fallback anyway): fetched after it */
 sc.shellPainted.then(() => { try { for (const [fam, url, weight] of [['Chakra Petch', 'fonts/ChakraPetch-700.woff2', '700'], ['JetBrains Mono', 'fonts/JetBrainsMono.woff2', '400 700']]) { const f = new FontFace(fam, `url(${url}) format("woff2")`, { weight, style: 'normal', display: 'swap' }); document.fonts.add(f); f.load().catch(() => {}); } } catch (e) { /* no Font Loading API: system fallback fonts */ } });
 for (const t of ['pointerdown', 'keydown']) addEventListener(t, () => go(), { once: true, capture: true });
+addEventListener('click', (e) => { if (e.target.closest && e.target.closest('#drawBtn')) sc.booted.then(() => sc.drawn && sc.drawn.open()); }); /* #182: draw surface, drawn-user.js */
 </script>
 </head>
 <body>
@@ -94,6 +95,7 @@ for (const t of ['pointerdown', 'keydown']) addEventListener(t, () => go(), { on
   </nav>
   <button type="button" class="icon more" id="moreBtn" aria-label="More tools" aria-expanded="false" aria-controls="tools"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6" class="fill"/><circle cx="12" cy="12" r="1.6" class="fill"/><circle cx="19" cy="12" r="1.6" class="fill"/></svg></button>
   <div class="tools" id="tools">
+    <button type="button" class="icon" id="drawBtn" aria-label="Draw an instrument" title="Draw an instrument: wave, morph, envelope"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 14c2-6 4-6 6 0s4 6 6 0 4-6 6 0"/></svg></button>
     <button type="button" class="icon" id="helpBtn" aria-label="Keyboard shortcuts" aria-haspopup="dialog" title="Shortcuts (?)">?</button>
     <button type="button" class="icon" id="themeBtn" aria-label="Toggle light or dark theme" title="Theme (T)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" class="fill"/></svg></button>
   </div>

@@ -1,0 +1,59 @@
+/* Draw surface (#182 stage 3; draw.js). Loaded with the surface, never with the shell. Site tokens only (style.css); signal colour = the drawn wave and what you hear. */
+.dw{position:fixed;top:var(--top);right:0;left:0;bottom:var(--tp);z-index:13;display:flex;flex-direction:column;gap:10px;padding:10px max(12px,env(safe-area-inset-right)) 76px max(12px,env(safe-area-inset-left));background:var(--panel);border-top:1px solid var(--line-2);overflow-y:auto;overscroll-behavior:contain;box-shadow:0 -14px 40px rgba(0,0,0,.4)}
+.dw[hidden]{display:none}
+.dw h2{font-size:.72rem}
+.dw-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dw-head h2{color:var(--sig);letter-spacing:.16em}
+.dw-name,.dw-chip{text-transform:none}
+.dw-name{font-family:var(--mono);font-size:.8rem;color:var(--text);max-width:52vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 10px}
+.dw-flag{width:8px;height:8px;border-radius:50%;background:transparent;flex:none}
+.dw.dirty .dw-flag{background:var(--warn)}
+.dw-head .icon{margin-left:auto;font-size:1.4rem}
+.dw-tabs{display:flex;gap:2px;padding:2px;border:1px solid var(--line-2);border-radius:var(--r2);background:var(--panel-2);order:5;flex:1 1 100%}
+.dw-tabs [role=tab]{flex:1;border:0;background:transparent;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;font-weight:700;font-size:.74rem}
+.dw-tabs [aria-selected=true]{background:var(--panel-3);color:var(--text);box-shadow:inset 0 -2px 0 var(--sig)}
+.dw-stage{display:flex;flex-direction:column;gap:6px}
+.dw-wave,.dw-envp{display:flex;flex-direction:column;gap:6px}
+.dw[data-tab=env] .dw-wave,.dw:not([data-tab=env]) .dw-envp{display:none}
+.dw:not([data-tab=morph]) .dw-keys{display:none}
+.dw canvas{display:block;width:100%;border:1px solid var(--line);border-radius:var(--r2);background:var(--bg);touch-action:none;cursor:crosshair}
+.dw canvas:focus-visible{outline:2px solid var(--sig-2);outline-offset:2px}
+.dw-pad{height:clamp(150px,30vh,320px)}
+.dw-harm{height:64px;cursor:ns-resize}
+.dw-envc{height:clamp(150px,30vh,300px)}
+.dw-read{font-family:var(--mono);font-size:.72rem;color:var(--faint);min-height:1.2em}
+.dw-envout{color:var(--text);font-size:.8rem;white-space:pre}
+.dw-keys{display:flex;gap:4px;flex-wrap:wrap}
+.dw-key{min-width:44px;font-family:var(--mono)}
+.dw-key[aria-pressed=true]{border-color:var(--sig);color:var(--sig);box-shadow:var(--glow)}
+.dw-shapes{display:flex;flex-wrap:wrap;gap:4px}
+.dw-shapes button{font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;padding:0 10px}
+.dw-deck{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center}
+.dw-notes{display:flex;gap:2px;padding:2px;border:1px solid var(--line-2);border-radius:var(--r2)}
+.dw-notes button{border:0;background:transparent;font-family:var(--mono);color:var(--dim)}
+.dw-notes [aria-checked=true]{background:var(--panel-3);color:var(--text);box-shadow:inset 0 -2px 0 var(--sig-2)}
+.dw-hear{min-height:52px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;gap:10px}
+.dw-hear svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2}
+.dw-hear[aria-pressed=true]{background:var(--sig);color:var(--sig-ink);border-color:var(--sig);box-shadow:var(--glow)}
+.dw-acts{display:flex;flex-wrap:wrap;gap:6px;grid-column:1/-1}
+.dw-acts > *{flex:1 1 auto}
+.dw-save{border-color:var(--sig);color:var(--sig)}
+.dw-lib{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:10px}
+.dw-saved{display:flex;flex-wrap:wrap;gap:6px}
+.dw-chip{font-family:var(--mono);font-size:.76rem}
+.dw-chip[aria-current=true]{border-color:var(--sig-2);color:var(--sig-2)}
+.dw-none,.dw-rule{color:var(--faint);font-size:.78rem;margin:0}
+.dw-form{display:flex;flex-direction:column;gap:6px}
+.dw-hint{font-family:var(--mono);font-size:.76rem;color:var(--sig-2);margin:0}
+/* desktop: a docked panel on the right, the Rack stays readable on the left */
+@media (min-width:1000px){
+  .dw{left:auto;width:min(720px,56vw);border-top:0;border-left:1px solid var(--line-2);display:grid;grid-template-columns:1fr 240px;grid-template-rows:auto 1fr auto;align-content:start;column-gap:14px}
+  .dw-head{grid-column:1/-1}
+  .dw-tabs{order:0;flex:0 1 320px}
+  .dw-stage{grid-column:1;grid-row:2}
+  .dw-deck{grid-column:2;grid-row:2;grid-template-columns:1fr;align-content:start}
+  .dw-notes{justify-content:stretch}.dw-notes button{flex:1}
+  .dw-lib{grid-column:1/-1}
+  .dw-pad{height:clamp(220px,40vh,380px)}
+}
+@media (prefers-reduced-motion:reduce){.dw *{transition:none!important}}

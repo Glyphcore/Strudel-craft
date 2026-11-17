@@ -1,9 +1,9 @@
 # Drawn and computed waveforms as instruments (design note, #182)
 
-Status: design accepted (#182). **Stages 1, 2 and 4 are built, and the measured pass and stage 5 (steel guitar, FM percussion, synthetic spaces) too** (stage 3, the draw surface, is ui-designer's and on hold): the `waveforms@1` schema, `site/engine/waveforms.js`, the pack adapter (`site/packs-kinds.js`, activation through `packs.activateSources` on Play),
+Status: design accepted (#182). **Stages 1 to 4 are built, and the measured pass and stage 5 (steel guitar, FM percussion, synthetic spaces) too**, including stage 3, the draw surface (`site/draw.js`, `site/draw.css`, `site/drawn-user.js`): the `waveforms@1` schema, `site/engine/waveforms.js`, the pack adapter (`site/packs-kinds.js`, activation through `packs.activateSources` on Play),
 the example pack `glyphcore/drawn-core` (`wt_drawn_bass`, `wt_drawn_choir`, `wt_drawn_electric`, `wt_drawn_viola`, `wt_drawn_cello`, and the computed kit `dr_kick`, `dr_snare`, `dr_hat_closed`,
 `dr_hat_open`, `dr_clap`, `dr_tom`) and their tests. Everything else below stays "coming"
-(the CLI render path, the code-bearing `instrument-models` kind, the draw surface); the Strudel mechanisms in section 2 exist in unmodified Strudel and are verified there. The draw surface is ui-designer work (section 8, stage 3); this note has no UI.
+(the CLI render path, the code-bearing `instrument-models` kind, drawn pitch and filter envelopes, per-register shapes in the surface); the Strudel mechanisms in section 2 exist in unmodified Strudel and are verified there.
 
 Aim (#182): sounds in the families the reference catalogues cover, made by our own engine from data and parameters, so no recording is copied or
 shipped. Variation comes from parameter ranges and a seed, never from a file per sound. Related: #180 (device adapter contract), #183
@@ -224,7 +224,7 @@ spectral limits but the ear test of section 6 is what rates them; a measurement 
 | family models needing code (Karplus-Strong, FM kit models) | D `registerSound` inside the sandbox | `instrument-models` (coming) |
 | reference use | descriptors only | `waveforms` (`descriptors`, informative) |
 
-## 8. Staged build plan (all coming)
+## 8. Staged build plan
 
 Each stage is one issue; boxes are observable, one minimal check each (test budget in `docs/ISSUES_PROTOCOL.md`).
 
@@ -244,11 +244,11 @@ program names a `wt_<id>` sound, then builds the WAV tables in memory and calls 
 - [x] Level measured by the `tests/site/instruments_level.mjs` convention through the real site load path (`tests/site/drawn_pack.mjs`: bass -28.7 dBFS rms, choir -28.3 dBFS, no clipping, sustained). Not done: the `tools/racks/measure.mjs` spectral pass (needs the CLI render path), stays coming.
 - [x] Both play from a recipe in the site (`s("wt_drawn_bass")`, lazy activation). The CLI render path (a blob URL does not exist in node; temp file URL) stays coming.
 
-**Stage 3: draw surface (ui-designer + aaa-web-ui; no implementer-authored UI).**
-- [ ] ui-designer produces the surface spec: draw a single cycle, edit keyframes, draw an amplitude envelope, hear at once (loop at a held note),
-      save into the recipe/pack as data. Site modal for names and confirms, toasts for notices, never native dialogs (CLAUDE.md).
-- [ ] The surface never accepts an audio file or shows a recording to trace (section 1).
-- [ ] Output validates against `waveforms@1` and plays through the stage 1 adapter.
+**Stage 3: draw surface (built, ui-designer + aaa-web-ui).** `site/draw.js` + `site/draw.css` (loaded when opened), `site/drawn-user.js` (store, activation, completions; a LATER module). Opened by the Draw button in the top bar or Ctrl+K > Draw an instrument.
+- [x] The surface: draw a single cycle (64-point pad, harmonics 1..16 as bars, start shapes), edit up to 8 morph keyframes, draw an ADSR amplitude envelope, hear at once (a held C2/C3/C4 note retriggered through the envelope; the wave is swapped on every stroke), save as data under a name (`localStorage['sc.drawn']`, one `waveforms@1` document; Export downloads it as a pack ingredient). Site modal for the name and confirms, toasts for notices, never native dialogs.
+- [x] It never accepts an audio file or shows a recording to trace: no file input, no audio or video element, a dropped file is refused with a toast; the name form asks for a description in words (stored as `descriptors.sentence`), never a reference sound.
+- [x] Output validates against `waveforms@1` (`validate()` before every save and again before registration; a tampered store entry registers nothing) and plays through the stage 1 adapter route: on Play, `wt_<id>` is built with `tables()` and registered in memory (`packs.activateSources` is wrapped by `drawn-user.js`, so the offline render host gets it too). Test: `tests/site/draw_surface.mjs`.
+- Coming: drawn pitch and filter envelopes (`env.pitch`, `env.filter`), per-register shapes and the shape transforms of section 5 as surface controls, and sharing a drawn set as a pack from the surface (today: Export, then publish as a pack).
 
 **Stage 4: drum models and more instrument families (built, except where marked).** Engine `site/engine/drums.js` (six DSP models, seeded noise), `model` field in schema and `validate()`, `dr_` names in the adapter, pack ingredients `instruments` (5 wavetable instruments) and `drums` (6 models x 4 variants), recipes `drawn-kit-basic`, `drawn-guitar-chords`, `drawn-bowed-duo`.
 - [x] Electric guitar, viola and cello as instruments with honest ratings: electric guitar `usable` (distorted chords only), viola `stand-in`, cello `stand-in`; bass guitar `usable`, choir pad `stand-in`.

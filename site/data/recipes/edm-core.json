@@ -4,6 +4,10 @@
   "edm-kick-four-floor": {
    "intent": "Sine kick with a fast pitch drop on every beat.",
    "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.fourFloor).hook(\"edmKick\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(36).pdecay(0.05).decay(0.3).sustain(0).shape(0.35).lpf(4000).hpf(38).gain(0.8)",
    "lowered_check": {
     "equal": true,
@@ -11,20 +15,20 @@
     "events": 16,
     "hash": "b6c30d0c43"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 128.0,
    "rms_dbfs": -17.2,
    "centroid_hz": 188,
-   "peak": 0.4253,
-   "error": null
+   "peak": 0.4253
   },
   "edm-sub-sine": {
    "intent": "A mono sine sub under C minor roots, 5 ms attack, held to the next note.",
    "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<c1 c1 f1 g1>\").hook(\"subSine\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: note(\"<c1 c1 f1 g1>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5)",
    "lowered_check": {
     "equal": true,
@@ -32,20 +36,20 @@
     "events": 4,
     "hash": "9240574b29"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -16.0,
    "centroid_hz": 40,
-   "peak": 0.3897,
-   "error": null
+   "peak": 0.3897
   },
   "edm-clap": {
    "intent": "Band-passed noise clap on 2 and 4.",
    "code": "setcpm(128/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"~ x ~ x\").hook(\"edmClap\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(128/4)\n$: s(\"~ x ~ x\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1.1).attack(0.001).decay(0.17).sustain(0).gain(0.85)",
    "lowered_check": {
     "equal": true,
@@ -53,20 +57,20 @@
     "events": 8,
     "hash": "90737786ee"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 128.0,
    "rms_dbfs": -41.0,
    "centroid_hz": 2591,
-   "peak": 0.1044,
-   "error": null
+   "peak": 0.1044
   },
   "edm-hats-offbeat": {
    "intent": "Open hats on the and of every beat, 16th shaker under them.",
    "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.offHats).hook(\"hatOpen\")\n$: s(atoms.ec.hats16).velocity(atoms.ec.accent16).hook(\"shaker\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(128/4)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.2).sustain(0).gain(0.3)\n$: s(\"x*16\").velocity(\"[1 .5 .75 .5]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5500).attack(0.012).decay(0.06).sustain(0).gain(0.3)",
    "lowered_check": {
     "equal": true,
@@ -74,20 +78,20 @@
     "events": 80,
     "hash": "20a4e0c156"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 128.0,
    "rms_dbfs": -31.0,
    "centroid_hz": 10118,
-   "peak": 0.2605,
-   "error": null
+   "peak": 0.2605
   },
   "edm-crash": {
    "intent": "A long noise crash that marks the first beat of a drop.",
    "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(\"<x ~>\").hook(\"crash\").mask(atoms.ec.dropMask)",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"<x ~>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(5000).decay(1.6).sustain(0).gain(0.22).mask(\"<1!3 [1 1 1 0]>\")",
    "lowered_check": {
     "equal": true,
@@ -95,20 +99,20 @@
     "events": 2,
     "hash": "14dc6ac53f"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -35.3,
    "centroid_hz": 9956,
-   "peak": 0.1581,
-   "error": null
+   "peak": 0.1581
   },
   "edm-sidechain-duck": {
    "intent": "Every kick ducks the supersaw chords on orbit 2 by depth 0.5 (-10.7 dB); they swell back over 200 ms: the pump.",
    "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.fourFloor).hook(\"edmKick | sidechain(2, 0.5, 0.2)\")\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hook(\"superChord | ducked(2)\")",
+   "expr": null,
+   "notes": "duckorbit on the kick (the trigger) and orbit on the chords (the target): Strudel's sidechain. One orbit = one delay and one reverb, so keep ducked parts that need different sends on separate orbits.",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(36).pdecay(0.05).decay(0.3).sustain(0).shape(0.35).lpf(4000).hpf(38).gain(0.8).duckorbit(2).duckdepth(0.5).duckattack(0.2)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).orbit(2)",
    "lowered_check": {
     "equal": true,
@@ -116,20 +120,20 @@
     "events": 32,
     "hash": "657b78c9bd"
    },
-   "notes": "duckorbit on the kick (the trigger) and orbit on the chords (the target): Strudel's sidechain. One orbit = one delay and one reverb, so keep ducked parts that need different sends on separate orbits.",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 128.0,
    "rms_dbfs": -18.1,
    "centroid_hz": 1274,
-   "peak": 0.5317,
-   "error": null
+   "peak": 0.5317
   },
   "edm-pump-shaper": {
    "intent": "A beat-synced ramp tremolo dips the held chords on every beat and swells back, with no kick needed.",
    "code": "setcpm(128/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hook(\"superChord | lfoPump(0.7)\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(128/4)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).tremolosync(4).tremolodepth(0.7).tremoloshape(\"ramp\")",
    "lowered_check": {
     "equal": true,
@@ -137,20 +141,20 @@
     "events": 16,
     "hash": "46540302fd"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 128.0,
    "rms_dbfs": -35.0,
    "centroid_hz": 2268,
-   "peak": 0.1152,
-   "error": null
+   "peak": 0.1152
   },
   "edm-snare-roll-8": {
    "intent": "Quarters, eighths, sixteenths, then 32nds in the last bar, velocity rising from 0.35 to 1.",
    "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/edm:atoms-edm-core\")\n$: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook(\"snareTight\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"<x*4!2 x*8!2 x*16!3 x*32>\").velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55)",
    "lowered_check": {
     "equal": true,
@@ -158,20 +162,20 @@
     "events": 48,
     "hash": "cb4bf4837c"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -24.6,
    "centroid_hz": 4179,
-   "peak": 0.359,
-   "error": null
+   "peak": 0.359
   },
   "edm-noise-riser": {
    "intent": "White noise fades in over 4 bars at 140 bpm while its low-pass opens four octaves.",
    "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/4\").hook(\"noiseRiser(6.86)\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"x/4\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(6.86).sustain(1).release(0.2).hpf(300).lpf(700).lpenv(4).lpattack(6.86).lpsustain(1).gain(0.28)",
    "lowered_check": {
     "equal": true,
@@ -179,20 +183,20 @@
     "events": 1,
     "hash": "c55895dcae"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -33.5,
    "centroid_hz": 4461,
-   "peak": 0.1657,
-   "error": null
+   "peak": 0.1657
   },
   "edm-white-noise-build": {
    "intent": "Noise at full level whose high-pass climbs four octaves over 4 bars: it thins and rises.",
    "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/4\").hook(\"hpBuild(6.86)\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"x/4\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(1).sustain(1).release(0.2).hpf(200).hpenv(4).hpattack(6.86).hpsustain(1).lpf(11000).gain(0.22)",
    "lowered_check": {
     "equal": true,
@@ -200,20 +204,20 @@
     "events": 1,
     "hash": "a628646dbc"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -29.0,
    "centroid_hz": 7061,
-   "peak": 0.1505,
-   "error": null
+   "peak": 0.1505
   },
   "edm-pitch-riser": {
    "intent": "A saw that glides up two octaves over 4 bars.",
    "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/4\").hook(\"pitchRiser(6.86)\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"x/4\").hpf(150).lpf(12500).ftype(\"24db\").s(\"sawtooth\").note(\"c4\").penv(24).pattack(6.86).panchor(0).attack(2).sustain(1).release(0.1).lpf(4000).gain(0.16)",
    "lowered_check": {
     "equal": true,
@@ -221,20 +225,20 @@
     "events": 1,
     "hash": "30be3fbffd"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -32.5,
    "centroid_hz": 2098,
-   "peak": 0.0908,
-   "error": null
+   "peak": 0.0908
   },
   "edm-impact": {
    "intent": "Sine boom on C1 with a two-octave pitch drop and a 2 s tail.",
    "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/2\").hook(\"impactBoom\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"x/2\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(0.25).decay(2.2).sustain(0).shape(0.25).lpf(3000).gain(0.7)",
    "lowered_check": {
     "equal": true,
@@ -242,20 +246,20 @@
     "events": 2,
     "hash": "7ed8c93455"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -18.0,
    "centroid_hz": 45,
-   "peak": 0.3509,
-   "error": null
+   "peak": 0.3509
   },
   "edm-sub-drop": {
    "intent": "A clean sine falling from about 130 Hz to C1 over a second.",
    "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"x/2\").hook(\"subDrop\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"x/2\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(1).decay(2.5).sustain(0).lpf(400).gain(0.6)",
    "lowered_check": {
     "equal": true,
@@ -263,20 +267,20 @@
     "events": 2,
     "hash": "c1964cb860"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -22.8,
    "centroid_hz": 59,
-   "peak": 0.2216,
-   "error": null
+   "peak": 0.2216
   },
   "edm-reverse-swell": {
    "intent": "Noise fades in over a bar and stops dead on the next downbeat.",
    "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"<x ~>\").hook(\"reverseSwell(1.71)\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"<x ~>\").hpf(200).lpf(12000).ftype(\"24db\").s(\"white\").attack(1.71).sustain(1).release(0.02).hpf(1500).lpf(9000).gain(0.28)",
    "lowered_check": {
     "equal": true,
@@ -284,20 +288,20 @@
     "events": 2,
     "hash": "9202b8d517"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -34.6,
    "centroid_hz": 6095,
-   "peak": 0.1452,
-   "error": null
+   "peak": 0.1452
   },
   "edm-downlifter": {
    "intent": "Noise whose low-pass falls from 11 kHz to 1 kHz after the downbeat.",
    "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"<x ~>\").hook(\"downSweep\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"<x ~>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(0.005).decay(2).sustain(0).hpf(300).lpf(1000).lpenv(3.5).lpattack(0.001).lpdecay(1.8).lpsustain(0).gain(0.3)",
    "lowered_check": {
     "equal": true,
@@ -305,20 +309,20 @@
     "events": 2,
     "hash": "f5ef5298ff"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -35.0,
    "centroid_hz": 4755,
-   "peak": 0.1796,
-   "error": null
+   "peak": 0.1796
   },
   "edm-supersaw-chords": {
    "intent": "7-voice supersaw, wide above 180 Hz, C minor to A-flat major.",
    "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<[c3,g3,c4,eb4] [ab2,eb3,ab3,c4]>\").hook(\"superChord\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: note(\"<[c3,g3,c4,eb4] [ab2,eb3,ab3,c4]>\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16)",
    "lowered_check": {
     "equal": true,
@@ -326,20 +330,20 @@
     "events": 16,
     "hash": "908fbfbfbd"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -29.3,
    "centroid_hz": 2385,
-   "peak": 0.1798,
-   "error": null
+   "peak": 0.1798
   },
   "edm-pluck": {
    "intent": "Saw pluck whose filter closes with each note.",
    "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hook(\"edmPluck\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.2).sustain(0).lpf(1500).lpenv(2).lpdecay(0.18).lpsustain(0).gain(0.35)",
    "lowered_check": {
     "equal": true,
@@ -347,20 +351,20 @@
     "events": 32,
     "hash": "9e63d9f917"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -30.4,
    "centroid_hz": 2030,
-   "peak": 0.1613,
-   "error": null
+   "peak": 0.1613
   },
   "edm-pad": {
    "intent": "Slow supersaw pad whose filter opens over two seconds.",
    "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"<[c3,eb3,g3,bb3] [bb2,d3,f3,a3]>\").hook(\"edmPad\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: note(\"<[c3,eb3,g3,bb3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"supersaw\").unison(4).detune(0.2).attack(1).sustain(0.8).release(2.5).lpf(1600).lpenv(1).lpattack(2).gain(0.18)",
    "lowered_check": {
     "equal": true,
@@ -368,20 +372,20 @@
     "events": 16,
     "hash": "84947bd309"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -28.4,
    "centroid_hz": 1127,
-   "peak": 0.2237,
-   "error": null
+   "peak": 0.2237
   },
   "edm-ott-squash": {
    "intent": "The pluck through deep fast compression with makeup gain: tails and detail come up against the attack.",
    "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hook(\"edmPluck | ott(0.5)\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: note(\"c4 eb4 g4 bb4 c5 bb4 g4 eb4\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.2).sustain(0).lpf(1500).lpenv(2).lpdecay(0.18).lpsustain(0).gain(0.35).compressor(-30).compressorRatio(6).compressorKnee(6).compressorAttack(0.003).compressorRelease(0.08).postgain(0.5)",
    "lowered_check": {
     "equal": true,
@@ -389,20 +393,20 @@
     "events": 32,
     "hash": "321c04b6ff"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -25.8,
    "centroid_hz": 2021,
-   "peak": 0.2721,
-   "error": null
+   "peak": 0.2721
   },
   "edm-filter-build": {
    "intent": "Chords whose low-pass opens bar by bar from 300 Hz to 6 kHz while the high-pass empties the low end.",
    "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: note(\"[c3,eb3,g3,bb3]*4\").hook(\"superChord | filterBuild | thinBuild\")",
+   "expr": null,
+   "notes": "",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: note(\"[c3,eb3,g3,bb3]*4\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).lpf(\"<300 450 700 1000 1500 2300 3600 6000>\").hpf(\"<30 50 80 130 200 320 500 800>\")",
    "lowered_check": {
     "equal": true,
@@ -410,20 +414,20 @@
     "events": 64,
     "hash": "189fbb9bca"
    },
-   "notes": "",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -29.6,
    "centroid_hz": 1275,
-   "peak": 0.2445,
-   "error": null
+   "peak": 0.2445
   },
   "edm-build-grammar": {
    "intent": "8 bars of build (snare roll, noise riser, filter opening, a silent last beat), then the drop lands with kick, sub and an impact.",
    "code": "setcpm(140/4)\n// racks: pack:glyphcore/edm:racks-edm-core\n$: s(\"<x*4!2 x*8!2 x*16!3 x*32 ~ ~>\").hook(\"snareTight\").velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").mask(\"<1!7 [1 1 1 0] 0 0>\")\n$: s(\"<x ~ ~ ~ ~ ~ ~ ~ ~ ~>\").hook(\"noiseRiser(13.3)\")\n$: note(\"[c3,eb3,g3,bb3]*4\").hook(\"superChord\").lpf(\"<300 450 700 1000 1500 2300 3600 6000 6000 6000>\").mask(\"<1!7 [1 1 1 0] 1 1>\")\n$: s(\"<~!8 x ~>\").hook(\"impactBoom\")\n$: s(\"<~!8 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hook(\"edmKick\")\n$: note(\"<~!8 c1@2>\").hook(\"subSine\")",
+   "expr": null,
+   "notes": "With hooks the same build is gates: ec.build, ec.gap, ec.rise8({ at: \"25b\" }), ec.hit({ at: \"25b\" }) (Syntax: EDM foundations).",
+   "source": "docs/EDM_REFERENCES.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"<x*4!2 x*8!2 x*16!3 x*32 ~ ~>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55).velocity(\"<.35 .42 .5 .58 .66 .76 .88 1>\").mask(\"<1!7 [1 1 1 0] 0 0>\")\n$: s(\"<x ~ ~ ~ ~ ~ ~ ~ ~ ~>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(13.3).sustain(1).release(0.2).hpf(300).lpf(700).lpenv(4).lpattack(13.3).lpsustain(1).gain(0.28)\n$: note(\"[c3,eb3,g3,bb3]*4\").hpf(100).lpf(9000).s(\"supersaw\").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16).lpf(\"<300 450 700 1000 1500 2300 3600 6000 6000 6000>\").mask(\"<1!7 [1 1 1 0] 1 1>\")\n$: s(\"<~!8 x ~>\").hpf(25).lpf(5000).s(\"sine\").note(\"c1\").penv(24).pdecay(0.25).decay(2.2).sustain(0).shape(0.25).lpf(3000).gain(0.7)\n$: s(\"<~!8 [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]!2>\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.001).penv(36).pdecay(0.05).decay(0.3).sustain(0).shape(0.35).lpf(4000).hpf(38).gain(0.8)\n$: note(\"<~!8 c1@2>\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.08).shape(0.15).lpf(220).gain(0.5)",
    "lowered_check": {
     "equal": true,
@@ -431,16 +435,12 @@
     "events": 113,
     "hash": "87f2448244"
    },
-   "notes": "With hooks the same build is gates: ec.build, ec.gap, ec.rise8({ at: \"25b\" }), ec.hit({ at: \"25b\" }) (Syntax: EDM foundations).",
-   "source": "docs/EDM_REFERENCES.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -27.8,
    "centroid_hz": 2291,
-   "peak": 0.2458,
-   "error": null
+   "peak": 0.2458
   }
  }
 }

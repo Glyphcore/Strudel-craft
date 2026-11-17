@@ -4,6 +4,10 @@
   "feel-liquid": {
    "intent": "rolling two-step with ghost notes behind the beat, shaker, held sub, liquid pad and vocal chops (172-176 bpm).",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: s(atoms.dnb.kick).hook(\"dnbKick | groove-swing(54) | groove-human(2.5, 0.15, 1)\")\n$: s(atoms.dnb.snare).hook(\"dnbSnare | groove-swing(54) | groove-human(2.5, 0.15, 2)\")\n$: s(atoms.dnb.ghosts).velocity(atoms.dnb.ghostVel).hook(\"ghostSnare | groove-swing(54) | groove-human(2.5, 0.15, 3) | groove-push(3)\")\n$: s(atoms.dnb.shaker).velocity(atoms.dnb.shakerVel).hook(\"dnbShaker | groove-swing(54) | groove-human(2.5, 0.15, 4)\")\n$: note(atoms.dnb.chop).hook(\"vocalChop | groove-swing(54) | groove-human(2.5, 0.15, 5)\")\n$: note(atoms.dnb.sub).hook(\"dnbSub | groove-human(0.5, 0.05, 6)\")\n$: note(atoms.dnb.chords).hook(\"liquidPad | groove-human(0.5, 0.05, 7)\")",
+   "expr": null,
+   "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-liquid (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-liquid\", { as: \"feel\" }).",
+   "source": "docs/CONVENTIONS.md",
+   "error": null,
    "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.003).penv(24).pdecay(0.035).decay(0.2).sustain(0).hpf(38).lpf(5000).gain(0.8).swingBy(0.08, 8).mul(velocity(rand.late(1.37).range(0.85, 1))).late(rand.late(1).range(0, 0.003125).segment(16)).early(0.001563)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85).swingBy(0.08, 8).mul(velocity(rand.late(2.37).range(0.85, 1))).late(rand.late(2).range(0, 0.003125).segment(16)).early(0.001563)\n$: s(\"~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~\").velocity(\"[.55 .4 .6 .45]*4\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.6).attack(0.002).decay(0.07).sustain(0).hpf(200).lpf(6000).gain(0.3).swingBy(0.08, 8).mul(velocity(rand.late(3.37).range(0.85, 1))).late(rand.late(3).range(0, 0.003125).segment(16)).early(0.001563).late(0.001875)\n$: s(\"x*16\").velocity(\"[.35 .2 .6 .2]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(6000).attack(0.008).decay(0.05).sustain(0).gain(0.3).swingBy(0.08, 8).mul(velocity(rand.late(4.37).range(0.85, 1))).late(rand.late(4).range(0, 0.003125).segment(16)).early(0.001563)\n$: note(\"<[~ ~ c5 ~ ~ ~ ab4 ~ ~ ~ ~ ~ c5 ~ eb5 ~] [~ ~ f4 ~ ~ ~ ab4 ~ ~ ~ ~ ~ g4 ~ f4 ~]>\").hpf(150).lpf(8000).s(\"sawtooth\").vowel(\"a\").attack(0.005).decay(0.12).sustain(0).lpf(3500).gain(0.3).swingBy(0.08, 8).mul(velocity(rand.late(5.37).range(0.85, 1))).late(rand.late(5).range(0, 0.003125).segment(16)).early(0.001563)\n$: note(\"<[f1@10 f1@6]!2 [db2@10 db2@6]!2 [bb1@10 bb1@6]!2 [c2@10 c2@6]!2>\").hpf(25).s(\"sine\").hpf(30).attack(0.008).decay(0.4).sustain(0.85).release(0.12).lpf(250).gain(0.5).postgain(0.8).mul(velocity(rand.late(6.37).range(0.95, 1))).late(rand.late(6).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f3,ab3,c4,eb4,g4]!2 [db3,f3,ab3,c4,eb4]!2 [bb2,db3,f3,ab3,c4]!2 [c3,eb3,g3,bb3]!2>\").hpf(180).lpf(6000).s(\"sawtooth\").vib(5).vibmod(0.04).attack(1.2).sustain(0.8).release(2.5).lpf(1600).lpenv(1).lpattack(2).gain(0.14).mul(velocity(rand.late(7.37).range(0.95, 1))).late(rand.late(7).range(0, 0.000625).segment(16)).early(0.000313)",
    "lowered_check": {
     "equal": false,
@@ -12,35 +16,35 @@
     "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (131 Craft, 133 Strudel)); with the groove taken out of both forms the events are identical",
     "hash": "7807a586db"
    },
-   "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-liquid (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-liquid\", { as: \"feel\" }).",
-   "source": "docs/CONVENTIONS.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 174.0,
    "rms_dbfs": -18.9,
    "centroid_hz": 3759,
-   "peak": 0.4515,
-   "error": null
+   "peak": 0.4515
   },
   "feel-neuro": {
    "intent": "machine-tight two-step, rolling ghosts, 8th hats and a 16th neuro riff (add a sub lane on atoms.feel.bass with dnbSub) (172-176 bpm).",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: s(atoms.dnb.kick).hook(\"dnbKick | groove-human(0.5, 0.05, 1)\")\n$: s(atoms.dnb.snare).hook(\"dnbSnare | groove-human(0.5, 0.05, 2)\")\n$: s(atoms.dnb.ghostsRoll).velocity(atoms.dnb.ghostVel).hook(\"ghostSnare | groove-human(0.5, 0.05, 3)\")\n$: s(atoms.dnb.hats).hook(\"dnbHat | groove-human(0.5, 0.05, 4)\")\n$: note(atoms.dnb.neuro).hook(\"neuroBass | groove-human(0.5, 0.05, 6)\")",
-   "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.003).penv(24).pdecay(0.035).decay(0.2).sustain(0).hpf(38).lpf(5000).gain(0.8).mul(velocity(rand.late(1.37).range(0.95, 1))).late(rand.late(1).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85).mul(velocity(rand.late(2.37).range(0.95, 1))).late(rand.late(2).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~ ~ x x\").velocity(\"[.55 .4 .6 .45]*4\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.6).attack(0.002).decay(0.07).sustain(0).hpf(200).lpf(6000).gain(0.3).mul(velocity(rand.late(3.37).range(0.95, 1))).late(rand.late(3).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.35).mul(velocity(rand.late(4.37).range(0.95, 1))).late(rand.late(4).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f1 ~ f1 f1 ~ f1 ~ ~ f2 ~ f1 ~ ab1 ~ f1 ~] [f1 ~ ~ f1 ~ ~ f1 ~ eb2 ~ ~ f1 c2 ~ f1 ~]>\").hpf(70).lpf(9000).s(\"sawtooth\").hpf(110).fm(4).fmh(1).attack(0.004).sustain(0.6).release(0.06).lpf(2500).lpq(8).lpenv(2).lpdecay(0.22).vowel(\"a\").gain(2.2).mul(velocity(rand.late(6.37).range(0.95, 1))).late(rand.late(6).range(0, 0.000625).segment(16)).early(0.000313)",
+   "expr": null,
    "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-neuro (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-neuro\", { as: \"feel\" }).",
    "source": "docs/CONVENTIONS.md",
-   "unverified": [],
+   "error": null,
+   "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.003).penv(24).pdecay(0.035).decay(0.2).sustain(0).hpf(38).lpf(5000).gain(0.8).mul(velocity(rand.late(1.37).range(0.95, 1))).late(rand.late(1).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85).mul(velocity(rand.late(2.37).range(0.95, 1))).late(rand.late(2).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~ ~ x x\").velocity(\"[.55 .4 .6 .45]*4\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.6).attack(0.002).decay(0.07).sustain(0).hpf(200).lpf(6000).gain(0.3).mul(velocity(rand.late(3.37).range(0.95, 1))).late(rand.late(3).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.35).mul(velocity(rand.late(4.37).range(0.95, 1))).late(rand.late(4).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f1 ~ f1 f1 ~ f1 ~ ~ f2 ~ f1 ~ ab1 ~ f1 ~] [f1 ~ ~ f1 ~ ~ f1 ~ eb2 ~ ~ f1 c2 ~ f1 ~]>\").hpf(70).lpf(9000).s(\"sawtooth\").hpf(110).fm(4).fmh(1).attack(0.004).sustain(0.6).release(0.06).lpf(2500).lpq(8).lpenv(2).lpdecay(0.22).vowel(\"a\").gain(2.2).mul(velocity(rand.late(6.37).range(0.95, 1))).late(rand.late(6).range(0, 0.000625).segment(16)).early(0.000313)",
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 174.0,
    "rms_dbfs": -21.0,
    "centroid_hz": 4554,
-   "peak": 0.4216,
-   "error": null
+   "peak": 0.4216
   },
   "feel-jumpup": {
    "intent": "bouncy two-step pushed slightly forward, a wobble bass with octave jumps (172-176 bpm).",
    "code": "setcpm(174/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-dnb\")\n$: s(atoms.dnb.kick).hook(\"dnbKick | groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 1)\")\n$: s(atoms.dnb.snare).hook(\"dnbSnare | groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 2)\")\n$: s(atoms.dnb.ghosts).velocity(atoms.dnb.ghostVel).hook(\"ghostSnare | groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 3)\")\n$: s(atoms.dnb.hats).hook(\"dnbHat | groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 4)\")\n$: note(atoms.dnb.wobble).hook(\"jumpWobble | groove-swing(52) | groove-push(-2) | groove-human(1, 0.12, 6)\")",
+   "expr": null,
+   "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-jumpup (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-jumpup\", { as: \"feel\" }).",
+   "source": "docs/CONVENTIONS.md",
+   "error": null,
    "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.003).penv(24).pdecay(0.035).decay(0.2).sustain(0).hpf(38).lpf(5000).gain(0.8).swingBy(0.04, 8).early(0.00125).mul(velocity(rand.late(1.37).range(0.88, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85).swingBy(0.04, 8).early(0.00125).mul(velocity(rand.late(2.37).range(0.88, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~\").velocity(\"[.55 .4 .6 .45]*4\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.6).attack(0.002).decay(0.07).sustain(0).hpf(200).lpf(6000).gain(0.3).swingBy(0.04, 8).early(0.00125).mul(velocity(rand.late(3.37).range(0.88, 1))).late(rand.late(3).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.35).swingBy(0.04, 8).early(0.00125).mul(velocity(rand.late(4.37).range(0.88, 1))).late(rand.late(4).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"<[f2@3 f2@3 f2@2 f3@3 f2@3 ab2@2] [f2@3 f2@3 f2@2 c3@3 bb2@3 ab2@2]>\").hpf(70).lpf(9000).s(\"sawtooth\").hpf(130).attack(0.004).sustain(0.8).release(0.05).lpf(300).lpq(10).lpenv(4).lpattack(0.05).lpdecay(0.12).lpsustain(0).gain(0.28).swingBy(0.04, 8).early(0.00125).mul(velocity(rand.late(6.37).range(0.88, 1))).late(rand.late(6).range(0, 0.00125).segment(16)).early(0.000625)",
    "lowered_check": {
     "equal": false,
@@ -49,20 +53,20 @@
     "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
     "hash": "f5444e222a"
    },
-   "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-jumpup (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-jumpup\", { as: \"feel\" }).",
-   "source": "docs/CONVENTIONS.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 174.0,
    "rms_dbfs": -23.4,
    "centroid_hz": 4566,
-   "peak": 0.3884,
-   "error": null
+   "peak": 0.3884
   },
   "feel-electrohouse": {
    "intent": "four-on-the-floor, offbeat hat, filtered saw bass and supersaw stabs on the offbeats (126-130 bpm).",
    "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-electro\")\n$: s(atoms.el.ehKick).hook(\"houseKick | groove-human(0.5, 0.05, 1)\")\n$: s(atoms.el.ehClap).hook(\"clap808 | groove-human(0.5, 0.05, 2)\")\n$: s(atoms.el.ehHat).hook(\"offHat | groove-human(0.5, 0.05, 4)\")\n$: note(atoms.el.ehStabLine).hook(\"sawStab | groove-human(0.5, 0.05, 5)\")\n$: note(atoms.el.ehBass).hook(\"filterBass | groove-human(0.5, 0.05, 6)\")",
+   "expr": null,
+   "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-electrohouse (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-electrohouse\", { as: \"feel\" }).",
+   "source": "docs/CONVENTIONS.md",
+   "error": null,
    "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8).mul(velocity(rand.late(1.37).range(0.95, 1))).late(rand.late(1).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1100).bpq(1.5).attack(0.002).decay(0.2).sustain(0).gain(0.95).mul(velocity(rand.late(2.37).range(0.95, 1))).late(rand.late(2).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3).mul(velocity(rand.late(4.37).range(0.95, 1))).late(rand.late(4).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[~ ~ [f3,ab3,c4,f4] ~ ~ ~ [f3,ab3,c4,f4] ~ ~ ~ [f3,ab3,c4,f4] ~ ~ ~ [f3,ab3,c4,f4] ~] [~ ~ [db3,f3,ab3,db4] ~ ~ ~ [db3,f3,ab3,db4] ~ ~ ~ [db3,f3,ab3,db4] ~ ~ ~ [db3,f3,ab3,db4] ~] [~ ~ [eb3,g3,bb3,eb4] ~ ~ ~ [eb3,g3,bb3,eb4] ~ ~ ~ [eb3,g3,bb3,eb4] ~ ~ ~ [eb3,g3,bb3,eb4] ~] [~ ~ [c3,eb3,g3,c4] ~ ~ ~ [c3,eb3,g3,c4] ~ ~ ~ [c3,eb3,g3,c4] ~ ~ ~ [c3,eb3,g3,c4] ~]>\").hpf(100).lpf(9000).s(\"supersaw\").hpf(180).unison(7).detune(0.35).spread(0.6).attack(0.003).decay(0.28).sustain(0).lpf(5000).lpenv(1).lpdecay(0.2).gain(0.13).mul(velocity(rand.late(5.37).range(0.95, 1))).late(rand.late(5).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f2 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).sustain(0.5).release(0.08).lpf(500).lpq(6).lpenv(2.5).lpdecay(0.15).gain(0.28).mul(velocity(rand.late(6.37).range(0.95, 1))).late(rand.late(6).range(0, 0.000625).segment(16)).early(0.000313)",
    "lowered_check": {
     "equal": false,
@@ -71,20 +75,20 @@
     "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
     "hash": "30aaecf55c"
    },
-   "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-electrohouse (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-electrohouse\", { as: \"feel\" }).",
-   "source": "docs/CONVENTIONS.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 128.0,
    "rms_dbfs": -21.8,
    "centroid_hz": 4571,
-   "peak": 0.3122,
-   "error": null
+   "peak": 0.3122
   },
   "feel-techno": {
    "intent": "four-on-the-floor, offbeat ride, 16th hats with accents, rolling bass in the kick's gaps (128-135 bpm).",
    "code": "setcpm(132/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.kick).hook(\"houseKick | groove-human(0.8, 0.08, 1)\")\n$: s(atoms.hs.offHat).hook(\"ride | groove-human(0.8, 0.08, 3)\")\n$: s(atoms.hs.hats).velocity(atoms.hs.hatVel).hook(\"closedHat | groove-human(0.8, 0.08, 4)\")\n$: note(atoms.hs.rolling).hook(\"houseBass | groove-human(0.8, 0.08, 6)\")",
+   "expr": null,
+   "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-techno (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-techno\", { as: \"feel\" }).",
+   "source": "docs/CONVENTIONS.md",
+   "error": null,
    "lowered": "setcpm(132/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8).mul(velocity(rand.late(1.37).range(0.92, 1))).late(rand.late(1).range(0, 0.001).segment(16)).early(0.0005)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.3).sustain(0).gain(0.16).mul(velocity(rand.late(3.37).range(0.92, 1))).late(rand.late(3).range(0, 0.001).segment(16)).early(0.0005)\n$: s(\"x*16\").velocity(\"[.5 .3 .8 .3]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8500).decay(0.025).sustain(0).gain(0.3).mul(velocity(rand.late(4.37).range(0.92, 1))).late(rand.late(4).range(0, 0.001).segment(16)).early(0.0005)\n$: note(\"~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f1 ~ f1 f1 f2\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4).mul(velocity(rand.late(6.37).range(0.92, 1))).late(rand.late(6).range(0, 0.001).segment(16)).early(0.0005)",
    "lowered_check": {
     "equal": false,
@@ -93,20 +97,20 @@
     "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (144 Craft, 145 Strudel)); with the groove taken out of both forms the events are identical",
     "hash": "090b383946"
    },
-   "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-techno (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-techno\", { as: \"feel\" }).",
-   "source": "docs/CONVENTIONS.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 132.0,
    "rms_dbfs": -20.9,
    "centroid_hz": 4616,
-   "peak": 0.3315,
-   "error": null
+   "peak": 0.3315
   },
   "feel-trance": {
    "intent": "four-on-the-floor, offbeat bass, pluck arp and trance-gated supersaw chords (136-140 bpm).",
    "code": "setcpm(138/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.kick).hook(\"houseKick | groove-human(0.5, 0.05, 1)\")\n$: s(atoms.hs.clap).hook(\"houseClap | groove-human(0.5, 0.05, 2)\")\n$: s(atoms.hs.offHat).hook(\"offHat | groove-human(0.5, 0.05, 4)\")\n$: note(atoms.hs.arp).hook(\"pluck | groove-human(0.5, 0.05, 5)\")\n$: note(atoms.hs.bass).hook(\"houseBass | groove-human(0.5, 0.05, 6)\")\n$: note(atoms.hs.chords).hook(\"gatePad | groove-human(0.5, 0.05, 7)\")",
+   "expr": null,
+   "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-trance (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-trance\", { as: \"feel\" }).",
+   "source": "docs/CONVENTIONS.md",
+   "error": null,
    "lowered": "setcpm(138/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.003).penv(26).pdecay(0.04).decay(0.28).sustain(0).hpf(38).lpf(6000).gain(0.8).mul(velocity(rand.late(1.37).range(0.95, 1))).late(rand.late(1).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9).mul(velocity(rand.late(2.37).range(0.95, 1))).late(rand.late(2).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3).mul(velocity(rand.late(4.37).range(0.95, 1))).late(rand.late(4).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5 f4 c5 ab4 c5] [f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5 f4 db5 ab4 db5] [eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5 eb4 c5 ab4 c5] [eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4 eb4 bb4 g4 bb4]>\").hpf(120).lpf(7000).s(\"sawtooth\").attack(0.002).decay(0.22).sustain(0).lpf(1600).lpenv(2).lpdecay(0.18).gain(0.26).mul(velocity(rand.late(5.37).range(0.95, 1))).late(rand.late(5).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[~ ~ f1 ~ ~ ~ f1 ~ ~ ~ f1 ~ ~ ~ ab1 ~] [~ ~ db2 ~ ~ ~ db2 ~ ~ ~ eb2 ~ ~ ~ c2 ~]>\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.004).decay(0.15).sustain(0.2).release(0.05).lpf(450).lpenv(1.5).lpdecay(0.1).gain(0.4).mul(velocity(rand.late(6.37).range(0.95, 1))).late(rand.late(6).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f3,ab3,c4,f4] [db3,f3,ab3,db4] [ab2,c3,eb3,ab3] [eb3,g3,bb3,eb4]>\").hpf(120).lpf(9000).struct(\"x ~ x x x ~ x x x ~ x x x ~ x x\").s(\"supersaw\").unison(5).detune(0.3).spread(0.6).attack(0.003).decay(0.09).sustain(0.1).release(0.04).lpf(4500).gain(0.15).mul(velocity(rand.late(7.37).range(0.95, 1))).late(rand.late(7).range(0, 0.000625).segment(16)).early(0.000313)",
    "lowered_check": {
     "equal": false,
@@ -115,20 +119,20 @@
     "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (313 Craft, 312 Strudel)); with the groove taken out of both forms the events are identical",
     "hash": "a9879324c5"
    },
-   "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-trance (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-trance\", { as: \"feel\" }).",
-   "source": "docs/CONVENTIONS.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 138.0,
    "rms_dbfs": -20.7,
    "centroid_hz": 4301,
-   "peak": 0.4022,
-   "error": null
+   "peak": 0.4022
   },
   "feel-bigroom": {
    "intent": "stripped drop: a big kick, a clap, an offbeat hat and one lead motif (126-130 bpm).",
    "code": "setcpm(128/4)\natoms.import(\"pack:glyphcore/dnb-electro:atoms-house\")\n$: s(atoms.hs.kick).hook(\"bigKick | groove-human(0.5, 0.05, 1)\")\n$: s(atoms.hs.clap).hook(\"houseClap | groove-human(0.5, 0.05, 2)\")\n$: s(atoms.hs.offHat).hook(\"offHat | groove-human(0.5, 0.05, 4)\")\n$: note(atoms.hs.lead).hook(\"roomLead | groove-human(0.5, 0.05, 5)\")",
+   "expr": null,
+   "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-bigroom (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-bigroom\", { as: \"feel\" }).",
+   "source": "docs/CONVENTIONS.md",
+   "error": null,
    "lowered": "setcpm(128/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).attack(0.003).penv(32).pdecay(0.06).decay(0.4).sustain(0).hpf(38).lpf(5000).gain(0.78).mul(velocity(rand.late(1.37).range(0.95, 1))).late(rand.late(1).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1500).bpq(1).attack(0.002).decay(0.16).sustain(0).gain(0.9).mul(velocity(rand.late(2.37).range(0.95, 1))).late(rand.late(2).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7500).decay(0.12).sustain(0).gain(0.3).mul(velocity(rand.late(4.37).range(0.95, 1))).late(rand.late(4).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f4 ~ f4 ~ ab4 ~ f4 ~ c5 ~ ~ ~ ab4 ~ g4 ~] [f4 ~ f4 ~ ab4 ~ f4 ~ db5 ~ ~ ~ c5 ~ ab4 ~]>\").hpf(150).lpf(8000).s(\"supersaw\").unison(3).detune(0.12).spread(0.3).attack(0.005).decay(0.3).sustain(0.4).release(0.1).lpf(4500).gain(0.16).mul(velocity(rand.late(5.37).range(0.95, 1))).late(rand.late(5).range(0, 0.000625).segment(16)).early(0.000313)",
    "lowered_check": {
     "equal": false,
@@ -137,16 +141,12 @@
     "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (69 Craft, 68 Strudel)); with the groove taken out of both forms the events are identical",
     "hash": "077dce2ae2"
    },
-   "notes": "Craft form of the feel template glyphcore/dnb-electro:feel-bigroom (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/dnb-electro:feel-bigroom\", { as: \"feel\" }).",
-   "source": "docs/CONVENTIONS.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 128.0,
    "rms_dbfs": -21.7,
    "centroid_hz": 4708,
-   "peak": 0.3379,
-   "error": null
+   "peak": 0.3379
   }
  }
 }

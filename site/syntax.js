@@ -32,7 +32,7 @@ const FALLBACK = [{ id: 'core', title: 'Core (bundled)', needs: 'core', explain:
 ] }];
 const load = (again) => (again && window.strudelCraft.packs.retry ? window.strudelCraft.packs.retry('syntax') : window.strudelCraft.packs.syntax()).then((d) => { if (!d || !Array.isArray(d.sections) || !d.sections.length) { const f = window.strudelCraft.packs.failure && window.strudelCraft.packs.failure('syntax'); throw f ? Object.assign(new Error(`${f.ingredient} ${f.state}: ${f.message || ''}`), { code: f.code }) : Object.assign(new Error('the syntax data has no sections'), { code: 'E_SYNTAX_EMPTY' }); } return d; })
   .catch((e) => { const msg = `${(e && e.code) || 'E_SYNTAX_LOAD'}: ${(e && e.message) || e}`; console.warn('syntax: ' + msg); return { sections: FALLBACK, error: msg }; });
-/* #166: the syntax data (209 KB + composition 165 KB) is fetched on first use (the view opening, a quick play, the first editor completion), not at module load */
+/* #166: the syntax data (209 KB + composition 165 KB) is fetched on first use (syntax.js itself loads when the Syntax view opens or a quick play of a syntax example needs it; the snippet provider has no items before that), not at module load */
 let dataP = null; const getData = () => (dataP = dataP || load());
 
 /* intellisense snippets */

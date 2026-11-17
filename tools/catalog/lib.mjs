@@ -31,7 +31,8 @@ export function catalogFiles(cat) {
   const byFam = new Map(); const recipes = [];
   for (const r of cat.recipes) {
     const fam = famOf(r), idx = {}, body = {};
-    for (const [k, v] of Object.entries(r)) { if (SYNTH.includes(k)) continue; if (BODY_FIELDS.includes(k)) body[k] = v; else idx[k] = v; }
+    for (const [k, v] of Object.entries(r)) { if (SYNTH.includes(k)) continue; if (!BODY_FIELDS.includes(k)) idx[k] = v; }
+    for (const k of BODY_FIELDS) if (r[k] !== undefined) body[k] = r[k]; // canonical body key order (BODY_FIELDS), whatever order a builder wrote
     idx.stackable = !!r.expr; if (r.lowered || r.lowered_note) idx.has_lowered = !!r.lowered; idx.body = bodyId(fam);
     if (!byFam.has(fam)) byFam.set(fam, {}); byFam.get(fam)[r.id] = body; recipes.push(idx);
   }

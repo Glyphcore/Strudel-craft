@@ -1,12 +1,22 @@
 #!/usr/bin/env python3
 """Package audit (docs/PACKAGES.md section 2): where every catalog recipe, atom, rack, feel and groove entry actually comes from, whether it has a
 namespaced id (author/pack:item), version and licence, and which entries are orphans (outside every pack manifest).
-    python3 tools/packs/audit.py [--json] [--write-doc]      --write-doc rewrites the generated block of docs/PACKAGES.md
+    python3 tools/packs/audit.py [--json] [--write-doc] [--check]      --write-doc rewrites the generated block of docs/PACKAGES.md; --check exits 1 when that block is stale
 """
 import json, re, sys
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 def rd(p): return json.loads((ROOT / p).read_text())
+def full_recipes():
+    """index rows with their lazy body merged in (#131/#166: origin, intent and measurements live in data/recipes/<family>.json)"""
+    out = []; files = {}
+    for r in rd("site/data/catalog.json")["recipes"]:
+        b = r.get("body")
+        if b:
+            if b not in files: files[b] = rd("site/data/recipes/" + b.replace("bodies-", "") + ".json")["bodies"]
+            r = {**r, **files[b].get(r["id"], {})}
+        out.append(r)
+    return out
 def pack_rows():
     rows = []
     extra = [(f"site/data/{d.name}/craftpack.json", f"site/data/{d.name}") for d in sorted((ROOT / "site/data").iterdir()) if (d / "craftpack.json").exists() and d.name not in ("phonk", "vox")]
@@ -20,7 +30,7 @@ def main():
     def add(cls, source, n, pack, orphan, note, tagged=0, foldered=0):
         r = next((x for x in rows if x["pack"] == pack), None) if pack else None
         out["rows"].append(dict(cls=cls, source=source, n=n, pack=pack, version=r["version"] if r else None, license=r["license"] if r else None, orphan=orphan, note=note, tagged=tagged, foldered=foldered))
-    cat = rd("site/data/catalog.json")["recipes"]
+    cat = full_recipes()
     byorigin = {}
     for r in cat: byorigin.setdefault(r.get("origin", "?"), []).append(r)
     for o, l in byorigin.items():
@@ -67,6 +77,10 @@ if __name__ == "__main__":
     o = main()
     if "--json" in sys.argv: print(json.dumps(o, indent=1))
     else: print(table(o))
+    if "--check" in sys.argv:
+        m = re.search(r"<!-- audit:begin -->\n(.*?)\n<!-- audit:end -->", (ROOT / "docs" / "PACKAGES.md").read_text(), flags=re.S)
+        if not m or m[1] != table(o): print("docs/PACKAGES.md audit table is stale: run python3 tools/packs/audit.py --write-doc"); sys.exit(1)
+        print("audit table in docs/PACKAGES.md is current")
     if "--write-doc" in sys.argv:
         f = ROOT / "docs" / "PACKAGES.md"; t = f.read_text()
         t2 = re.sub(r"(<!-- audit:begin -->\n).*?(\n<!-- audit:end -->)", lambda m: m[1] + table(o) + m[2], t, flags=re.S)

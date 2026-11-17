@@ -4,6 +4,10 @@
   "feel-boombap": {
    "intent": "swing 57 on 16ths, snare and keys a little behind, vinyl bed (86-94 bpm).",
    "code": "setcpm(90/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick | groove-pocket(1)\")\n$: s(atoms.hh.boomSnare).hook(\"clap | groove-pocket(2) | groove-push(4)\")\n$: s(atoms.hh.boomHats).velocity(\"[1 .6]*8\").hook(\"hat(0.04) | groove-pocket(4)\")\n$: note(atoms.hh.boomBass).hook(\"bbBass | groove-pocket(6) | groove-push(3)\")\n$: note(atoms.hh.boomChords).hook(\"rhodes | groove-pocket(7) | groove-push(6)\")\n$: s(\"x\").hook(\"vinyl\")",
+   "expr": null,
+   "notes": "Craft form of the feel template glyphcore/phonk:feel-boombap (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-boombap\", { as: \"feel\" }).",
+   "source": "docs/CONVENTIONS.md",
+   "error": null,
    "lowered": "setcpm(90/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).swingBy(0.14, 8).mul(velocity(rand.late(1.37).range(0.88, 1))).late(rand.late(1).range(0, 0.00375).segment(16)).late(perlin.late(1).range(0, 0.00125).slow(4).segment(16)).early(0.0025)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).swingBy(0.14, 8).mul(velocity(rand.late(2.37).range(0.88, 1))).late(rand.late(2).range(0, 0.00375).segment(16)).late(perlin.late(2).range(0, 0.00125).slow(4).segment(16)).early(0.0025).late(0.0025)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x\").velocity(\"[1 .6]*8\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.04).sustain(0).gain(0.45).swingBy(0.14, 8).mul(velocity(rand.late(4.37).range(0.88, 1))).late(rand.late(4).range(0, 0.00375).segment(16)).late(perlin.late(4).range(0, 0.00125).slow(4).segment(16)).early(0.0025)\n$: note(\"c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5).swingBy(0.14, 8).mul(velocity(rand.late(6.37).range(0.88, 1))).late(rand.late(6).range(0, 0.00375).segment(16)).late(perlin.late(6).range(0, 0.00125).slow(4).segment(16)).early(0.0025).late(0.001875)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22).swingBy(0.14, 8).mul(velocity(rand.late(7.37).range(0.88, 1))).late(rand.late(7).range(0, 0.00375).segment(16)).late(perlin.late(7).range(0, 0.00125).slow(4).segment(16)).early(0.0025).late(0.00375)\n$: s(\"x\").hpf(200).lpf(12500).ftype(\"24db\").s(\"pink\").hpf(1500).lpf(8000).sustain(1).gain(0.06)",
    "lowered_check": {
     "equal": false,
@@ -12,20 +16,20 @@
     "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (92 Craft, 93 Strudel)); with the groove taken out of both forms the events are identical",
     "hash": "7c6d43cfb8"
    },
-   "notes": "Craft form of the feel template glyphcore/phonk:feel-boombap (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-boombap\", { as: \"feel\" }).",
-   "source": "docs/CONVENTIONS.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 90.0,
    "rms_dbfs": -18.9,
    "centroid_hz": 3880,
-   "peak": 0.6209,
-   "error": null
+   "peak": 0.6209
   },
   "feel-lazy": {
    "intent": "everything behind the beat (push 8), kick a little ahead of the rest, snare dragged furthest, slow drift (78-86 bpm).",
    "code": "setcpm(82/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.boomKick).hook(\"bbKick | groove-lazy(1) | groove-push(-10)\")\n$: s(atoms.hh.boomSnare).hook(\"clap | groove-lazy(2) | groove-push(6)\")\n$: s(\"x*8\").velocity(\"[1 .7]*4\").hook(\"hat(0.05) | groove-lazy(4)\")\n$: note(atoms.hh.boomBass).hook(\"bbBass | groove-lazy(6)\")\n$: note(atoms.hh.boomChords).hook(\"rhodes | groove-lazy(7) | groove-push(4)\")\n$: s(\"x\").hook(\"vinyl\")",
+   "expr": null,
+   "notes": "Craft form of the feel template glyphcore/phonk:feel-lazy (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-lazy\", { as: \"feel\" }).",
+   "source": "docs/CONVENTIONS.md",
+   "error": null,
    "lowered": "setcpm(82/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).swingBy(0.1, 8).mul(velocity(rand.late(1.37).range(0.9, 1))).late(rand.late(1).range(0, 0.005).segment(16)).late(perlin.late(1).range(0, 0.00375).slow(4).segment(16)).late(0.000625).early(0.00625)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).swingBy(0.1, 8).mul(velocity(rand.late(2.37).range(0.9, 1))).late(rand.late(2).range(0, 0.005).segment(16)).late(perlin.late(2).range(0, 0.00375).slow(4).segment(16)).late(0.000625).late(0.00375)\n$: s(\"x*8\").velocity(\"[1 .7]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.05).sustain(0).gain(0.45).swingBy(0.1, 8).mul(velocity(rand.late(4.37).range(0.9, 1))).late(rand.late(4).range(0, 0.005).segment(16)).late(perlin.late(4).range(0, 0.00375).slow(4).segment(16)).late(0.000625)\n$: note(\"c2 ~ ~ ~ ~ ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5).swingBy(0.1, 8).mul(velocity(rand.late(6.37).range(0.9, 1))).late(rand.late(6).range(0, 0.005).segment(16)).late(perlin.late(6).range(0, 0.00375).slow(4).segment(16)).late(0.000625)\n$: note(\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3]>\").hpf(80).lpf(7000).s(\"sine\").fm(1.2).fmh(1).attack(0.01).decay(0.9).sustain(0.3).release(0.5).lpf(3500).gain(0.22).swingBy(0.1, 8).mul(velocity(rand.late(7.37).range(0.9, 1))).late(rand.late(7).range(0, 0.005).segment(16)).late(perlin.late(7).range(0, 0.00375).slow(4).segment(16)).late(0.000625).late(0.0025)\n$: s(\"x\").hpf(200).lpf(12500).ftype(\"24db\").s(\"pink\").hpf(1500).lpf(8000).sustain(1).gain(0.06)",
    "lowered_check": {
     "equal": false,
@@ -34,20 +38,20 @@
     "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (89 Craft, 88 Strudel)); with the groove taken out of both forms the events are identical",
     "hash": "613c25d58c"
    },
-   "notes": "Craft form of the feel template glyphcore/phonk:feel-lazy (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-lazy\", { as: \"feel\" }).",
-   "source": "docs/CONVENTIONS.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 82.0,
    "rms_dbfs": -19.8,
    "centroid_hz": 3944,
-   "peak": 0.5552,
-   "error": null
+   "peak": 0.5552
   },
   "feel-trap": {
    "intent": "straight grid, velocity life on the hats and rolls, 808 and pad tight (130-150 bpm (half-time)).",
    "code": "setcpm(140/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.trapKick).hook(\"knock808 | groove-rolling(1)\")\n$: s(atoms.hh.trapClap).hook(\"clap | groove-rolling(2)\")\n$: s(atoms.hh.trapHats).velocity(atoms.hh.rollVel).hook(\"hat(0.03) | groove-rolling(4)\")\n$: note(atoms.hh.trapBell).hook(\"trapBell | groove-rolling(5)\")\n$: note(atoms.hh.trap808).velocity(\"0.6\").hook(\"sub808 | groove-straight(6)\")\n$: note(atoms.hh.trapChords).hook(\"airPad | groove-straight(7)\")\n$: s(\"<~ ~ ~ x>\").hook(\"downlifter\")",
+   "expr": null,
+   "notes": "Craft form of the feel template glyphcore/phonk:feel-trap (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-trap\", { as: \"feel\" }).",
+   "source": "docs/CONVENTIONS.md",
+   "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>\").hpf(30).lpf(7000).hpf(30).lpf(7000).s(\"sine\").freq(55).penv(36).pdecay(0.04).decay(0.28).sustain(0).noise(0.12).shape(0.4).gain(0.8).hpf(40).mul(velocity(rand.late(1.37).range(0.82, 1))).late(rand.late(1).range(0, 0.001875).segment(16)).early(0.000938)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).mul(velocity(rand.late(2.37).range(0.82, 1))).late(rand.late(2).range(0, 0.001875).segment(16)).early(0.000938)\n$: s(\"<[x*16] [x x x x x x x x x x x x [x x x] [x x x] [x x x x] [x x x x x x]]>\").velocity(\"[1 .55 .8 .55]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).mul(velocity(rand.late(4.37).range(0.82, 1))).late(rand.late(4).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~\").hpf(300).lpf(8000).s(\"sine\").fm(1.5).fmh(4).decay(0.5).sustain(0).gain(0.3).mul(velocity(rand.late(5.37).range(0.82, 1))).late(rand.late(5).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>\").velocity(\"0.6\").hpf(25).s(\"sine\").attack(0.004).pdecay(0.14).decay(0.6).sustain(0.7).release(0.1).shape(0.45).lpf(600).gain(0.45).postgain(0.87).mul(velocity(rand.late(6.37).range(0.96, 1))).late(rand.late(6).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"<[c4,eb4,g4] [ab3,c4,eb4] [bb3,d4,f4] [g3,b3,d4]>\").hpf(180).lpf(6000).s(\"triangle\").attack(1.2).sustain(0.8).release(2.5).lpf(1800).gain(0.16).mul(velocity(rand.late(7.37).range(0.96, 1))).late(rand.late(7).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"<~ ~ ~ x>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").hpf(400).attack(0.005).decay(2).sustain(0).lpf(1200).lpenv(3).lpattack(0.001).lpdecay(2).lpsustain(0).gain(0.3)",
    "lowered_check": {
     "equal": false,
@@ -56,20 +60,20 @@
     "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (160 Craft, 161 Strudel)); with the groove taken out of both forms the events are identical",
     "hash": "27e5b43dd4"
    },
-   "notes": "Craft form of the feel template glyphcore/phonk:feel-trap (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-trap\", { as: \"feel\" }).",
-   "source": "docs/CONVENTIONS.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 140.0,
    "rms_dbfs": -15.3,
    "centroid_hz": 4575,
-   "peak": 0.7925,
-   "error": null
+   "peak": 0.7925
   },
   "feel-hyphy": {
    "intent": "light swing, claps rushing a hair, snaps on the ands, bounce kick and a square lead (98-106 bpm).",
    "code": "setcpm(100/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.hyphyKick).hook(\"bbKick | groove-bounce(1)\")\n$: s(atoms.hh.hyphyClap).hook(\"clap | groove-bounce(2) | groove-push(-3)\")\n$: s(atoms.hh.hyphySnap).hook(\"snap | groove-bounce(3)\")\n$: s(atoms.hh.boomHats).velocity(\"[1 .5]*8\").hook(\"hat(0.03) | groove-bounce(4)\")\n$: note(atoms.hh.hyphyLead).hook(\"hyphyLead | groove-bounce(5)\")\n$: note(\"c2 ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~ ~ c2 ~ ~\").hook(\"bbBass | groove-bounce(6)\")\n$: note(atoms.hh.chops).hook(\"chopStab | groove-bounce(7)\")",
+   "expr": null,
+   "notes": "Craft form of the feel template glyphcore/phonk:feel-hyphy (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-hyphy\", { as: \"feel\" }).",
+   "source": "docs/CONVENTIONS.md",
+   "error": null,
    "lowered": "setcpm(100/4)\n$: s(\"x ~ ~ x ~ ~ x ~ ~ ~ x ~ ~ x ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).hpf(40).attack(0.002).penv(30).pdecay(0.05).decay(0.32).sustain(0).shape(0.3).lpf(3000).gain(0.75).swingBy(0.06, 8).mul(velocity(rand.late(1.37).range(0.85, 1))).late(rand.late(1).range(0, 0.0025).segment(16)).early(0.003125)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).swingBy(0.06, 8).mul(velocity(rand.late(2.37).range(0.85, 1))).late(rand.late(2).range(0, 0.0025).segment(16)).early(0.003125).early(0.001875)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(80).lpf(8000).s(\"white\").bpf(2400).bpq(2).lpf(5000).decay(0.05).sustain(0).gain(0.8).swingBy(0.06, 8).mul(velocity(rand.late(3.37).range(0.85, 1))).late(rand.late(3).range(0, 0.0025).segment(16)).early(0.003125)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x x\").velocity(\"[1 .5]*8\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.03).sustain(0).gain(0.45).swingBy(0.06, 8).mul(velocity(rand.late(4.37).range(0.85, 1))).late(rand.late(4).range(0, 0.0025).segment(16)).early(0.003125)\n$: note(\"c5 ~ ~ eb5 ~ ~ g5 ~ f5 ~ eb5 ~ c5 ~ ~ ~\").hpf(150).lpf(8000).s(\"square\").lpf(2800).lpenv(1).attack(0.01).decay(0.2).sustain(0.5).release(0.15).vib(6).vibmod(0.15).gain(0.26).swingBy(0.06, 8).mul(velocity(rand.late(5.37).range(0.85, 1))).late(rand.late(5).range(0, 0.0025).segment(16)).early(0.003125)\n$: note(\"c2 ~ ~ c2 ~ ~ eb2 ~ ~ ~ g1 ~ ~ c2 ~ ~\").hpf(40).lpf(3500).s(\"triangle\").lpf(700).attack(0.005).decay(0.3).sustain(0.4).release(0.12).gain(0.5).swingBy(0.06, 8).mul(velocity(rand.late(6.37).range(0.85, 1))).late(rand.late(6).range(0, 0.0025).segment(16)).early(0.003125)\n$: note(\"[c4,eb4,g4] ~ ~ [c4,eb4,g4] ~ ~ [bb3,d4,f4] ~ ~ ~ [ab3,c4,eb4] ~ [ab3,c4,eb4] ~ ~ ~\").hpf(120).lpf(8000).s(\"sawtooth\").attack(0.003).decay(0.14).sustain(0).lpf(1600).lpenv(2.5).lpdecay(0.12).gain(0.2).swingBy(0.06, 8).mul(velocity(rand.late(7.37).range(0.85, 1))).late(rand.late(7).range(0, 0.0025).segment(16)).early(0.003125)",
    "lowered_check": {
     "equal": false,
@@ -78,20 +82,20 @@
     "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
     "hash": "8345117aa5"
    },
-   "notes": "Craft form of the feel template glyphcore/phonk:feel-hyphy (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-hyphy\", { as: \"feel\" }).",
-   "source": "docs/CONVENTIONS.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 100.0,
    "rms_dbfs": -17.8,
    "centroid_hz": 3805,
-   "peak": 0.6329,
-   "error": null
+   "peak": 0.6329
   },
   "feel-cloud": {
    "intent": "loose and floating: swing 56, everything a little late, slow drift, big pad (60-75 bpm).",
    "code": "setcpm(70/4)\natoms.import(\"pack:glyphcore/phonk:atoms-hiphop\")\n$: s(atoms.hh.trapKick).hook(\"knock808 | groove-cloud(1)\")\n$: s(atoms.hh.trapClap).hook(\"clap | groove-cloud(2) | groove-push(6)\")\n$: s(\"x*8\").velocity(\"[.9 .5]*4\").hook(\"hat(0.04) | groove-cloud(4)\")\n$: note(atoms.hh.trapBell).hook(\"trapBell | groove-cloud(5) | groove-push(6)\")\n$: note(atoms.hh.trap808).velocity(\"0.6\").hook(\"sub808 | groove-cloud(6)\")\n$: note(atoms.hh.cloudChords).hook(\"airPad | groove-cloud(7) | groove-push(10)\")\n$: s(\"x\").hook(\"vinyl\")",
+   "expr": null,
+   "notes": "Craft form of the feel template glyphcore/phonk:feel-cloud (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-cloud\", { as: \"feel\" }).",
+   "source": "docs/CONVENTIONS.md",
+   "error": null,
    "lowered": "setcpm(70/4)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>\").hpf(30).lpf(7000).hpf(30).lpf(7000).s(\"sine\").freq(55).penv(36).pdecay(0.04).decay(0.28).sustain(0).noise(0.12).shape(0.4).gain(0.8).hpf(40).swingBy(0.12, 8).mul(velocity(rand.late(1.37).range(0.92, 1))).late(rand.late(1).range(0, 0.00625).segment(16)).late(perlin.late(1).range(0, 0.00625).slow(4).segment(16)).early(0.003125)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").bpf(1200).bpq(1.2).attack(0.002).decay(0.14).sustain(0).gain(0.9).swingBy(0.12, 8).mul(velocity(rand.late(2.37).range(0.92, 1))).late(rand.late(2).range(0, 0.00625).segment(16)).late(perlin.late(2).range(0, 0.00625).slow(4).segment(16)).early(0.003125).late(0.00375)\n$: s(\"x*8\").velocity(\"[.9 .5]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(7000).decay(0.04).sustain(0).gain(0.45).swingBy(0.12, 8).mul(velocity(rand.late(4.37).range(0.92, 1))).late(rand.late(4).range(0, 0.00625).segment(16)).late(perlin.late(4).range(0, 0.00625).slow(4).segment(16)).early(0.003125)\n$: note(\"c5 ~ g4 ~ eb5 ~ d5 ~ c5 ~ g4 ~ bb4 ~ g4 ~\").hpf(300).lpf(8000).s(\"sine\").fm(1.5).fmh(4).decay(0.5).sustain(0).gain(0.3).swingBy(0.12, 8).mul(velocity(rand.late(5.37).range(0.92, 1))).late(rand.late(5).range(0, 0.00625).segment(16)).late(perlin.late(5).range(0, 0.00625).slow(4).segment(16)).early(0.003125).late(0.00375)\n$: note(\"<[c2@10 c2@6] [c2@3 eb2@7 g1@4 bb1@2]>\").velocity(\"0.6\").hpf(25).s(\"sine\").attack(0.004).pdecay(0.14).decay(0.6).sustain(0.7).release(0.1).shape(0.45).lpf(600).gain(0.45).postgain(0.87).swingBy(0.12, 8).mul(velocity(rand.late(6.37).range(0.92, 1))).late(rand.late(6).range(0, 0.00625).segment(16)).late(perlin.late(6).range(0, 0.00625).slow(4).segment(16)).early(0.003125)\n$: note(\"<[eb3,g3,bb3,d4] [c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [bb2,d3,f3,a3]>\").hpf(180).lpf(6000).s(\"triangle\").attack(1.2).sustain(0.8).release(2.5).lpf(1800).gain(0.16).swingBy(0.12, 8).mul(velocity(rand.late(7.37).range(0.92, 1))).late(rand.late(7).range(0, 0.00625).segment(16)).late(perlin.late(7).range(0, 0.00625).slow(4).segment(16)).early(0.003125).late(0.00625)\n$: s(\"x\").hpf(200).lpf(12500).ftype(\"24db\").s(\"pink\").hpf(1500).lpf(8000).sustain(1).gain(0.06)",
    "lowered_check": {
     "equal": false,
@@ -100,16 +104,12 @@
     "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (111 Craft, 113 Strudel)); with the groove taken out of both forms the events are identical",
     "hash": "7ce6918e31"
    },
-   "notes": "Craft form of the feel template glyphcore/phonk:feel-cloud (atoms and rack | groove hooks); the Strudel tab has racks and grooves written out. To use the whole template: atoms.import(\"pack:glyphcore/phonk:feel-cloud\", { as: \"feel\" }).",
-   "source": "docs/CONVENTIONS.md",
-   "unverified": [],
    "origin": "concepts",
-   "expr": null,
+   "unverified": [],
    "bpm_hint": 70.0,
    "rms_dbfs": -16.0,
    "centroid_hz": 2308,
-   "peak": 0.8811,
-   "error": null
+   "peak": 0.8811
   }
  }
 }

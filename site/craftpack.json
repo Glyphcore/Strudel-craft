@@ -23,7 +23,7 @@
       "version": "1.0.0",
       "path": "data/recipes/base.json",
       "load": "lazy",
-      "hash": "sha256:a294cb9b62338fe845d026edf138dba3021d8aa9b424cf3002509c9d9e175d79",
+      "hash": "sha256:c938a73cc78924436b5edc4ee4212e53146a1b06142c7fe170012dc4ea3aa9f7",
       "bytes": 28967
     },
     {
@@ -33,7 +33,7 @@
       "version": "1.0.0",
       "path": "data/recipes/dnb.json",
       "load": "lazy",
-      "hash": "sha256:33880f0aea7e9f24f521411ec71c0caf1176b2ae39bf909f80d3afa370718c22",
+      "hash": "sha256:1fe5cc362f47554bcf15f7f27c31e6586c1652b8430771b364a9e6f30821d850",
       "bytes": 22222
     },
     {
@@ -43,7 +43,7 @@
       "version": "1.0.0",
       "path": "data/recipes/dovetail.json",
       "load": "lazy",
-      "hash": "sha256:6acfd58354801050de74377124e5c484c9597a07c2faa01b748e26d7dede098e",
+      "hash": "sha256:e125c208332b25214d6609a94841ade02f5e6ed71aea41eeb5a66244df2637c0",
       "bytes": 10783
     },
     {
@@ -53,7 +53,7 @@
       "version": "1.0.0",
       "path": "data/recipes/dubstep.json",
       "load": "lazy",
-      "hash": "sha256:c1eccdfdc6f34f50f12a1e48968580f227efe53c2c60b8876c3c7eca49fa5819",
+      "hash": "sha256:ac66f44a692636cefaef120cd0caa66b78ad3fdf8f9ea7865900adb71829c2f4",
       "bytes": 47608
     },
     {
@@ -63,7 +63,7 @@
       "version": "1.0.0",
       "path": "data/recipes/edm-core.json",
       "load": "lazy",
-      "hash": "sha256:f868e1557b9442cff77a24ab86c849f8761875771818f9ed5bd56309541658be",
+      "hash": "sha256:1c6c75ed5ee264cc100c68434ccd9b44aa39737dbfcbe906cd5c0b349c311e5a",
       "bytes": 18711
     },
     {
@@ -73,7 +73,7 @@
       "version": "1.0.0",
       "path": "data/recipes/edm-depth.json",
       "load": "lazy",
-      "hash": "sha256:9552da04d4c967520b63fd97fd0db55df839879477eebbe396ff35b1e259d62a",
+      "hash": "sha256:93b1b65ab639a1b090bff3634d6ea874565b304893d75a32d6c4b062f3a6c759",
       "bytes": 5511
     },
     {
@@ -83,7 +83,7 @@
       "version": "1.0.0",
       "path": "data/recipes/edmfeels.json",
       "load": "lazy",
-      "hash": "sha256:39ec026ebebf031f5a7e1eee32226e8b9572afdd45cfe241cb9bfa961cda4d84",
+      "hash": "sha256:c39be71c9d2ca696ee593574e3b0ca8f55430fed7562e4d2e89372cab9ae2144",
       "bytes": 21877
     },
     {
@@ -93,7 +93,7 @@
       "version": "1.0.0",
       "path": "data/recipes/electro.json",
       "load": "lazy",
-      "hash": "sha256:954630be618cabb30a29acb7698c3a63ddba3951d0d8013ddd2dc9826ce0cb7d",
+      "hash": "sha256:dc4b1c5d5f0b45d1a330508f620e29b88d54dbdedd1cd24b75b7da3a9857fcea",
       "bytes": 9184
     },
     {
@@ -103,7 +103,7 @@
       "version": "1.0.0",
       "path": "data/recipes/feels.json",
       "load": "lazy",
-      "hash": "sha256:b3e2d94813e66507b985dbc31d761b9bf8992ef067c72ec957d78ce4b1758346",
+      "hash": "sha256:b12c08cf64f7c7ee97889b4f27ee674422d46f9c3e850fe724b73e6e26dc141d",
       "bytes": 17810
     },
     {
@@ -113,7 +113,7 @@
       "version": "1.0.0",
       "path": "data/recipes/groove.json",
       "load": "lazy",
-      "hash": "sha256:ea45b162810e5de6914f5555bdb61d0940a8944b2ccedea75b1d013e40db73a3",
+      "hash": "sha256:3733ce5796f9f9e8abd7c79cdae374680fb2e286be355ba43b67d905dc01a261",
       "bytes": 5850
     },
     {
@@ -123,7 +123,7 @@
       "version": "1.0.0",
       "path": "data/recipes/hiphop.json",
       "load": "lazy",
-      "hash": "sha256:e63032885e86c100723f814f9fd651e7f3f84dd74a18dcf21b35cad076a19593",
+      "hash": "sha256:6d2a881431caa1bfa9205486ba6bce0e8ff765534738183a7338c441a999a9b2",
       "bytes": 22300
     },
     {
@@ -133,7 +133,7 @@
       "version": "1.0.0",
       "path": "data/recipes/house.json",
       "load": "lazy",
-      "hash": "sha256:c4dc9eabf2e411fd44476ad96ed107660785026f1b48a55b8f26abdf1a0517d6",
+      "hash": "sha256:7463e999c73dbfc17564dc2871339d0e7b48869ea7eaeb44f306c8fb130ba43f",
       "bytes": 13688
     },
     {
@@ -143,7 +143,7 @@
       "version": "1.0.0",
       "path": "data/recipes/industrial.json",
       "load": "lazy",
-      "hash": "sha256:499d03535f7022ae7d6a0cedd01d9f2e4d28747b5480d890371a756bc5c5ea6f",
+      "hash": "sha256:05eba14d920cdd4975043654986b2bd350342885871d947d21cdc2b0776d4759",
       "bytes": 29251
     },
     {
@@ -153,7 +153,7 @@
       "version": "1.0.0",
       "path": "data/recipes/rockmetal.json",
       "load": "lazy",
-      "hash": "sha256:b9f8d16d5d2b105c2661cf31979ce60a81f0af566a02a2a436d77381687af8ed",
+      "hash": "sha256:17a14531c7485d214608cbfa1984f04f8cab485ec4ec42167faa1d53ffa8ca38",
       "bytes": 29216
     },
     {

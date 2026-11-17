@@ -521,6 +521,23 @@ export function createPacks(opts = {}) {
       for (const i of allIngs().filter((x) => x.kind === 'sample-source' && x.pack.state === 'ready')) { await loadIng(i); if (i.activate) out.push(...await i.activate(names)); }
       return out;
     },
+    // #184: fetch the sample files a program is about to play before the scheduler starts, so the first haps do not wait for the network and then all fire at once (a stacked onset burst).
+    // Only sounds that packs provide (sample-source names, `sounds` keys); pitched maps: the file nearest each note named in the code, other maps: up to 8 files. Bounded: 24 files, 8 s.
+    prewarm: async (code) => {
+      await ready; const sm = globalThis.soundMap && globalThis.soundMap.get && globalThis.soundMap.get(); if (!sm) return 0;
+      const names = new Set(), re = /(?:^|[^\w$])(?:s|sound)\s*\(\s*(["'`])([\s\S]*?)\1/g; let m;
+      while ((m = re.exec(String(code || '')))) for (const w of m[2].split(/[^\w#.]+/)) { const n = w.split(':')[0]; if (n) names.add(n); }
+      const mine = new Set(); for (const i of allIngs()) { if (i.pack.state !== 'ready' || i.state !== 'ready' || !i.data) continue; if (i.kind === 'sample-source') i.data.sources.forEach((x) => x.sounds.forEach((n) => mine.add(n))); else if (i.kind === 'sounds') Object.keys(i.data).forEach((k) => k !== '_base' && mine.add(k)); }
+      const midi = (n) => { const q = /^([a-g])([#bs]?)(-?\d)$/i.exec(n); return q ? ({ c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 }[q[1].toLowerCase()] + ({ '#': 1, s: 1, b: -1 }[q[2]] || 0) + (+q[3] + 1) * 12) : null; };
+      const notes = [...String(code || '').matchAll(/(?<![\w#])([a-g][#bs]?-?\d)(?![\w])/gi)].map((x) => midi(x[1])).filter((x) => x != null);
+      const urls = new Set();
+      for (const n of names) { if (!mine.has(n) || !sm[n] || !sm[n].data || !sm[n].data.samples) continue; const smp = sm[n].data.samples;
+        if (Array.isArray(smp)) smp.slice(0, 8).forEach((u) => urls.add(u));
+        else { const keys = Object.keys(smp).map((k) => [k, midi(k)]).filter((k) => k[1] != null); for (const nt of new Set(notes.length ? notes : keys.slice(0, 3).map((k) => k[1]))) { let best = null; for (const k of keys) if (!best || Math.abs(k[1] - nt) < Math.abs(best[1] - nt)) best = k; if (best) { const f = smp[best[0]]; urls.add(Array.isArray(f) ? f[0] : f); } } } }
+      const list = [...urls].slice(0, 24); if (!list.length) return 0;
+      await Promise.race([Promise.all(list.map((u) => fetch(u).then((r) => r.arrayBuffer()).catch(() => null))), new Promise((ok) => setTimeout(ok, 8000))]);
+      return list.length;
+    },
     ensure: async (kind) => { await ready; await Promise.all(allIngs().filter((i) => i.kind === kind).map(loadIng)); return items(kind); },
     cacheInfo, storage, persist, refresh, uncache, update, revalidate: (id) => revalidate(packs.get(id) || {}),
     add, remove, prefer, grant, revoke, codeInfo, codeEnabled, setCodeEnabled, trusts, offline, propose, accept, proposals: () => proposalList.map((p) => ({ ...p })), peek: async (source) => { const p = proposalList.find((x) => x.source === source && x.state === 'new'); if (!p) return null; proposalList.splice(proposalList.indexOf(p), 1); return propose(source); },

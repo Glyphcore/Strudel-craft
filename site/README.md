@@ -185,6 +185,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/atoms/a3.mjs            # atoms consumers: intellisense data, hooks / model / pads / maps $atom, packs (#63)
     node tests/site/atoms.mjs          # Playwright: atom completion, signature help, "use atoms.name", scrub on a reference arg (#63)
     node tests/atoms/a4_lazy.mjs       # atoms lazy declaration pass: lazy == eager, 5000 declared parse budget (#64)
+    node tests/site/editor_history.mjs # Playwright: Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z (and Caps Lock) edit undo, Insert one step, 390px touch buttons, Alt+Z version history (#177)
     node tests/site/editor_interact.mjs # Playwright: literal popover stays in the viewport + drag (mouse/touch), caret on pointerdown for every node type (cold load), inlay hints inline / not copied / no caret stops (#169)
     node tests/site/atoms_ui.mjs       # Playwright: atom cards, derived cards, browser, popover, keyboard path, 5000-atom paint (#64; also in smoke)
     STRUDEL_MODULES=... node tests/lanes/l1.mjs  # lanes L1: tap cache, lane scope, tags, selections, checks (#74); CLI box prints SKIP without the `strudel` CLI

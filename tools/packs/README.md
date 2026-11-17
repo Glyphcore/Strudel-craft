@@ -49,4 +49,4 @@ vocals) is committed while the first-party content licence is open (#66).
   which lists only the `W_PACK_LICENSE` warning. Noted on #65 rather than diverging silently.
 - `packs install` / `verify` / `list` (fetching and caching) are in the CLI loader (`engine/strudel-cli/lib/packs.mjs`, #68, built).
 
-`sample-source` entries (#183): `base` must be https (`E_PACK_SCHEMA`); `W_PACK_SOURCE_PIN` (not a 40-hex commit) and `W_PACK_SOURCE_HOST` (host not cached by `site/sw.js`, currently only `raw.githubusercontent.com`) are warnings, so they fail `--strict` (shipped packs) but not a plain validate or a user pack. Test: `node tests/site/source_base.mjs`.
+`sample-source` entries (#183): `base` must be https (`E_PACK_SCHEMA`); `W_PACK_SOURCE_PIN` (the `<ref>` position `/<owner>/<repo>/<ref>/` is not a 40-hex commit) and `W_PACK_SOURCE_HOST` (host not cached by `site/sw.js`, currently only `raw.githubusercontent.com`) are warnings, so they fail `--strict` (shipped packs) but not a plain validate or a user pack. Test: `node tests/site/source_base.mjs`.

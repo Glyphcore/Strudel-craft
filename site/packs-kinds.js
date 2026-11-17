@@ -50,7 +50,7 @@ const cleanDocs = async (d) => {
 };
 
 // ---------------------------------------------------------------- adapters
-const CACHED_HOSTS = ['raw.githubusercontent.com']; // hosts sw.js runtime-caches (shellFetch `bank`); tests/site/source_base.mjs keeps this in step with sw.js
+const CACHED_HOSTS = { 'raw.githubusercontent.com': /^\/[^/]+\/[^/]+\/[0-9a-f]{40}(\/|$)/ }; // host -> path whose <ref> position (/<owner>/<repo>/<ref>/) must be a 40-hex commit; // hosts sw.js runtime-caches (shellFetch `bank`); tests/site/source_base.mjs keeps this in step with sw.js
 const noop = () => {};
 const ctxTrack = (ing, p) => { ing.pending = Promise.resolve(p).catch(() => {}); }; // the registration settles after `load`; tests await ing.pending
 const edSrc = (d) => (isObj(d.editors) ? d.editors : d); // the shim file keeps the editors spec under `editors`
@@ -137,8 +137,8 @@ export const KINDS = {
     },
     warnings: (d) => d.sources.filter((x) => x.base != null).flatMap((x, i) => { // user packs may use any https base; say what the shipped rule would flag (tools/packs/packs.py check_source_bases)
       const m = /^https:\/\/([^/?#]+)(\/[^?#]*)?/.exec(x.base), out = [];
-      if (m && !CACHED_HOSTS.includes(m[1].toLowerCase())) out.push({ code: 'W_PACK_SOURCE_HOST', message: `source ${x.id}: base host ${m[1]} is not cached for offline by the service worker` });
-      if (!m || !/\/[0-9a-f]{40}(\/|$)/.test(m[2] || '')) out.push({ code: 'W_PACK_SOURCE_PIN', message: `source ${x.id}: base is not pinned to a 40-hex commit, the files can change under the pack` });
+      if (m && !(m[1].toLowerCase() in CACHED_HOSTS)) out.push({ code: 'W_PACK_SOURCE_HOST', message: `source ${x.id}: base host ${m[1]} is not cached for offline by the service worker` });
+      if (!m || !(CACHED_HOSTS[m[1].toLowerCase()] || /^\/[^/]+\/[^/]+\/[0-9a-f]{40}(\/|$)/).test(m[2] || '')) out.push({ code: 'W_PACK_SOURCE_PIN', message: `source ${x.id}: base is not pinned: the <ref> position (/<owner>/<repo>/<ref>/) must be a 40-hex commit, the files can change under the pack` });
       return out;
     }),
     items: (d) => d.sources.flatMap((x) => x.sounds.map((n) => [n, { source: x.id, license: x.license, terms_url: x.terms_url }])),

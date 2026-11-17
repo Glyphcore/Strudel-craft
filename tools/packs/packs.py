@@ -359,7 +359,8 @@ def check_entry_taxonomy(kind, data, ing, E, W):
 
 
 # hosts whose files site/sw.js runtime-caches for offline (shellFetch `bank`); keep in step with sw.js (tests/site/source_base.mjs checks it)
-CACHED_HOSTS = ("raw.githubusercontent.com",)
+# host -> path regex whose <ref> position must be a 40-hex commit (raw host: /<owner>/<repo>/<ref>/...)
+CACHED_HOSTS = {"raw.githubusercontent.com": r"^/[^/]+/[^/]+/[0-9a-f]{40}(/|$)"}
 
 
 def check_source_bases(data, ing, E, W):
@@ -373,10 +374,11 @@ def check_source_bases(data, ing, E, W):
         if not m:
             E.append(("E_PACK_SCHEMA", w, f"sample-source base must be an https URL, got {base!r}"))
             continue
-        if m[1].lower() not in CACHED_HOSTS:
+        pin = CACHED_HOSTS.get(m[1].lower())
+        if pin is None:
             W.append(("W_PACK_SOURCE_HOST", w, f"base host {m[1]} is not cached for offline by sw.js ({', '.join(CACHED_HOSTS)})"))
-        if not re.search(r"/[0-9a-f]{40}(/|$)", m[2] or ""):
-            W.append(("W_PACK_SOURCE_PIN", w, "base is not pinned to a 40-hex commit (a branch or tag can change under the pack)"))
+        if not re.search(pin or r"^/[^/]+/[^/]+/[0-9a-f]{40}(/|$)", m[2] or ""):
+            W.append(("W_PACK_SOURCE_PIN", w, "base is not pinned: the <ref> position (/<owner>/<repo>/<ref>/) must be a 40-hex commit (a branch or tag can change under the pack)"))
 
 
 def validate_entry(root, ing, b, raw, kinds, items, E, W, newer):

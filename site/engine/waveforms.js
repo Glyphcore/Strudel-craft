@@ -11,10 +11,15 @@
 //   soundName(inst), tables(inst)  the `wt_<id>` name and its WAV tables per register (what the pack adapter registers)
 //   program(inst, o)         -> {code, key, wav?}      Strudel code for one note; `wav` is what must be registered with samples({[key]: [url]})
 
+import { FAMILIES, fill, render as renderDrum } from './drums.js';
+
 export const FRAME = 2048, MAX_POINTS = 256, MAX_BYTES = 5 * 1024 * 1024, MAX_INSTRUMENTS = 32, MAX_NUMBERS = 200000;
-// Same rule as `$defs/safe` in the schema: data:, blob:, ://, base64 in any case; RIFF and RIFX as written (the binary headers are upper case, and "riff" is
-// a music word); and printable ASCII only, which also closes zero-width and fullwidth look-alikes (a schema cannot normalise unicode, so both paths refuse it).
-export const UNSAFE_RE = { test: (v) => /data:|blob:|:\/\/|base64/i.test(v) || /RIFF|RIFX/.test(v) || !/^[ -~]*$/.test(v) };
+// Same rule as `$defs/safe` in the schema: data:, blob:, ://, base64 in any case; RIFF and RIFX as written (the binary headers are upper case, and "riff" is a music
+// word); only printable ASCII plus a Latin allowlist (Latin-1 letters, Latin Extended-A/B, minus the compatibility forms that normalise to ASCII such as the long s).
+// A schema cannot normalise unicode, so both paths use the allowlist; validate() also re-tests the NFKC form as a second belt.
+const LATIN = /^[ -~\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u0131\u0134-\u013e\u0141-\u0148\u014a-\u017e\u0180-\u01c3\u01cd-\u01f0\u01f4-\u024f]*$/;
+const BAD = (v) => /data:|blob:|:\/\/|base64/i.test(v) || /RIFF|RIFX/.test(v);
+export const UNSAFE_RE = { test: (v) => BAD(v) || BAD(v.normalize('NFKC')) || !LATIN.test(v) };
 
 // validate(doc): the check the site trusts (the JSON schema is the published mirror of it; tests/site/waveforms_caps.mjs runs both over
 // the same fixtures). Closed world: every object lists its fields, anything else is E_WF_UNKNOWN. Every array, string and key is capped.
@@ -62,6 +67,11 @@ export function validate(doc) {
     license: (x, q) => str(x, q, 40),
     descriptors: (x, q) => map(x, q, 12, NAME, (y, r) => (typeof y === 'string' ? str(y, r, 60) : num(y, r, -100000, 100000))),
     cycle: curve,
+    model: (x, q) => obj(x, q, {
+      kind: (y, r) => en(y, r, Object.keys(FAMILIES)),
+      params: (y, r) => map(y, r, 8, NAME, (z, t) => { num(z, t, -100000, 100000); const k = t.slice(t.lastIndexOf('.') + 1), f = FAMILIES[x && x.kind]; if (f && Object.hasOwn(f, k) && typeof z === 'number' && (z < f[k][1] || z > f[k][2])) bad('E_WF_PARAM', t, `${k} outside ${f[k][1]}..${f[k][2]}`); else if (f && !Object.hasOwn(f, k)) bad('E_WF_UNKNOWN', t, `${k} is not a parameter of ${x.kind}`); }),
+      variants: (y, r) => int(y, r, 1, 16),
+    }, ['kind']),
     morph: (x, q) => obj(x, q, {
       frames: (y, r) => arr(y, r, 2, 8, (f, s) => obj(f, s, { pos: (z, t) => num(z, t, 0, 1), points }, ['pos', 'points'])),
       interp: (y, r) => en(y, r, ['spectral', 'linear']),
@@ -81,7 +91,7 @@ export function validate(doc) {
   obj(doc, '', { instruments: (v, p) => arr(v, p, 0, MAX_INSTRUMENTS, (it, q) => {
     inst(it, q);
     if (isObj(it)) {
-      if (!it.cycle && !it.morph) bad('E_WF_SHAPE', q, 'cycle or morph required');
+      if (!it.cycle && !it.morph && !it.model) bad('E_WF_SHAPE', q, 'cycle, morph or model required');
       for (const [k, c] of Object.entries(it.params || {})) if (isObj(c) && !(c.min <= c.default && c.default <= c.max)) bad('E_WF_PARAM', `${q}.params.${k}`, 'default outside min..max');
     }
   }) }, ['instruments']);
@@ -181,11 +191,20 @@ export function vary(inst, seed = inst.vary?.seed ?? 0) {
 
 // One note of the instrument as Strudel program text. mechanism: 'A' partials, 'B' wavetable, 'C' one-shot.
 // The name a program uses for the instrument: a wavetable voice, so it takes note() and the wt/warp/unison controls. `drawn-bass` -> `wt_drawn_bass`.
-export const soundName = (inst) => 'wt_' + inst.id.replace(/-/g, '_');
+export const soundName = (inst) => (inst.model ? 'dr_' : 'wt_') + inst.id.replace(/-/g, '_'); // a model is a computed one-shot (dr_), a wave is a wavetable voice (wt_)
 
 // The WAV tables a pack adapter registers for one instrument: {name, map} where map is `[wav]` or, with registers, `{note: [wav]}` (Strudel picks the closest
 // note key and repitches from it). Pure data in, bytes out; the caller makes blob URLs. Registers use the cycle or the morph, with their own gain and tilt.
 export function tables(inst) {
+  if (inst.model) { // computed one-shots: `variants` related hits from one parameter set; s("dr_kick:2") picks variant 2 (n)
+    const m = inst.model, n = m.variants ?? 1, base = fill(m.kind, m.params), seed0 = inst.vary?.seed ?? 0, spread = inst.vary?.spread || {}, out = [];
+    for (let v = 0; v < n; v++) {
+      const p = { ...base }, r = mulberry32((seed0 + v * 101) >>> 0);
+      for (const k of Object.keys(FAMILIES[m.kind]).sort()) { const u = r() * 2 - 1, [, lo, hi] = FAMILIES[m.kind][k], sp = v === 0 ? 0 : (spread[k] ?? 0); p[k] = Math.min(hi, Math.max(lo, base[k] + u * sp * (hi - lo))); }
+      out.push(wavBytes(renderDrum(m.kind, p, seed0 + v), 44100));
+    }
+    return { name: soundName(inst), map: out };
+  }
   const name = soundName(inst), out = inst.morph?.out ?? 16, mk = (o) => wavBytes(wavetable(inst, (o.use === 'cycle' && inst.cycle) || !inst.morph ? 1 : out, FRAME, o));
   if (!inst.registers || !inst.registers.length) return { name, map: [mk({})] };
   const map = {}; for (const r of inst.registers) (map[r.from] ||= []).push(mk({ use: r.use, gain: r.gain, tilt: r.tilt }));

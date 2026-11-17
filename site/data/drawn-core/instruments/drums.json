@@ -1,0 +1,198 @@
+{
+ "instruments": [
+  {
+   "id": "kick",
+   "title": "Kick (computed)",
+   "family": "kick",
+   "origin": "computed",
+   "realism": "usable",
+   "license": "CC0-1.0",
+   "descriptors": {
+    "kind": "electronic drum voice, computed",
+    "note": "not an acoustic kit"
+   },
+   "model": {
+    "kind": "kick",
+    "params": {
+     "start_hz": 180,
+     "end_hz": 48,
+     "sweep_s": 0.08,
+     "body_decay_s": 0.35,
+     "click": 0.25,
+     "drive": 0.2,
+     "level": 0.9
+    },
+    "variants": 4
+   },
+   "vary": {
+    "seed": 101,
+    "spread": {
+     "start_hz": 0.15,
+     "end_hz": 0.15,
+     "body_decay_s": 0.2,
+     "click": 0.3,
+     "drive": 0.3
+    }
+   }
+  },
+  {
+   "id": "snare",
+   "title": "Snare (computed)",
+   "family": "snare",
+   "origin": "computed",
+   "realism": "usable",
+   "license": "CC0-1.0",
+   "descriptors": {
+    "kind": "electronic drum voice, computed",
+    "note": "not an acoustic kit"
+   },
+   "model": {
+    "kind": "snare",
+    "params": {
+     "tone_hz": 190,
+     "tone_decay_s": 0.12,
+     "noise_decay_s": 0.2,
+     "noise_hp_hz": 1500,
+     "snap": 0.5,
+     "level": 0.9
+    },
+    "variants": 4
+   },
+   "vary": {
+    "seed": 202,
+    "spread": {
+     "tone_hz": 0.2,
+     "noise_decay_s": 0.2,
+     "noise_hp_hz": 0.15,
+     "snap": 0.3
+    }
+   }
+  },
+  {
+   "id": "hat-closed",
+   "title": "Closed hat (computed)",
+   "family": "hat-closed",
+   "origin": "computed",
+   "realism": "usable",
+   "license": "CC0-1.0",
+   "descriptors": {
+    "kind": "electronic drum voice, computed",
+    "note": "not an acoustic kit"
+   },
+   "model": {
+    "kind": "hat-closed",
+    "params": {
+     "tone_hz": 330,
+     "metal": 0.7,
+     "hp_hz": 7000,
+     "decay_s": 0.05,
+     "level": 0.8
+    },
+    "variants": 4
+   },
+   "vary": {
+    "seed": 303,
+    "spread": {
+     "tone_hz": 0.2,
+     "metal": 0.2,
+     "decay_s": 0.25
+    }
+   }
+  },
+  {
+   "id": "hat-open",
+   "title": "Open hat (computed)",
+   "family": "hat-open",
+   "origin": "computed",
+   "realism": "usable",
+   "license": "CC0-1.0",
+   "descriptors": {
+    "kind": "electronic drum voice, computed",
+    "note": "not an acoustic kit"
+   },
+   "model": {
+    "kind": "hat-open",
+    "params": {
+     "tone_hz": 330,
+     "metal": 0.7,
+     "hp_hz": 7000,
+     "decay_s": 0.35,
+     "level": 0.8
+    },
+    "variants": 4
+   },
+   "vary": {
+    "seed": 404,
+    "spread": {
+     "tone_hz": 0.2,
+     "metal": 0.2,
+     "decay_s": 0.2
+    }
+   }
+  },
+  {
+   "id": "clap",
+   "title": "Clap (computed)",
+   "family": "clap",
+   "origin": "computed",
+   "realism": "usable",
+   "license": "CC0-1.0",
+   "descriptors": {
+    "kind": "electronic drum voice, computed",
+    "note": "not an acoustic kit"
+   },
+   "model": {
+    "kind": "clap",
+    "params": {
+     "bursts": 4,
+     "burst_gap_s": 0.012,
+     "tail_decay_s": 0.18,
+     "bp_hz": 1200,
+     "bp_q": 1.2,
+     "level": 0.9
+    },
+    "variants": 4
+   },
+   "vary": {
+    "seed": 505,
+    "spread": {
+     "burst_gap_s": 0.2,
+     "tail_decay_s": 0.2,
+     "bp_hz": 0.15
+    }
+   }
+  },
+  {
+   "id": "tom",
+   "title": "Tom (computed)",
+   "family": "tom",
+   "origin": "computed",
+   "realism": "usable",
+   "license": "CC0-1.0",
+   "descriptors": {
+    "kind": "electronic drum voice, computed",
+    "note": "not an acoustic kit"
+   },
+   "model": {
+    "kind": "tom",
+    "params": {
+     "start_hz": 140,
+     "end_hz": 90,
+     "sweep_s": 0.12,
+     "decay_s": 0.4,
+     "click": 0.15,
+     "level": 0.9
+    },
+    "variants": 4
+   },
+   "vary": {
+    "seed": 606,
+    "spread": {
+     "start_hz": 0.2,
+     "end_hz": 0.2,
+     "decay_s": 0.2
+    }
+   }
+  }
+ ]
+}

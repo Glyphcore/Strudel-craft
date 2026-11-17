@@ -1305,6 +1305,69 @@
    "category": "sounds"
   },
   {
+   "label": "wt_drawn_electric",
+   "string": true,
+   "detail": "drawn instrument",
+   "info": "Our own computed electric guitar cycle (stand-in for distorted playing), glyphcore/drawn-core, CC0",
+   "category": "sounds"
+  },
+  {
+   "label": "wt_drawn_viola",
+   "string": true,
+   "detail": "drawn instrument",
+   "info": "Our own bowed-string stand-in (reads as synth strings), CC0",
+   "category": "sounds"
+  },
+  {
+   "label": "wt_drawn_cello",
+   "string": true,
+   "detail": "drawn instrument",
+   "info": "Our own bowed-string stand-in, fairer in the low register, CC0",
+   "category": "sounds"
+  },
+  {
+   "label": "dr_kick",
+   "string": true,
+   "detail": "computed drum",
+   "info": "Our own computed kick, four seeded variants (dr_kick:0 to :3), glyphcore/drawn-core, CC0",
+   "category": "sounds"
+  },
+  {
+   "label": "dr_snare",
+   "string": true,
+   "detail": "computed drum",
+   "info": "Our own computed snare, four seeded variants (dr_snare:0 to :3), glyphcore/drawn-core, CC0",
+   "category": "sounds"
+  },
+  {
+   "label": "dr_hat_closed",
+   "string": true,
+   "detail": "computed drum",
+   "info": "Our own computed closed hat, four seeded variants (dr_hat_closed:0 to :3), glyphcore/drawn-core, CC0",
+   "category": "sounds"
+  },
+  {
+   "label": "dr_hat_open",
+   "string": true,
+   "detail": "computed drum",
+   "info": "Our own computed open hat, four seeded variants (dr_hat_open:0 to :3), glyphcore/drawn-core, CC0",
+   "category": "sounds"
+  },
+  {
+   "label": "dr_clap",
+   "string": true,
+   "detail": "computed drum",
+   "info": "Our own computed clap, four seeded variants (dr_clap:0 to :3), glyphcore/drawn-core, CC0",
+   "category": "sounds"
+  },
+  {
+   "label": "dr_tom",
+   "string": true,
+   "detail": "computed drum",
+   "info": "Our own computed tom, four seeded variants (dr_tom:0 to :3), glyphcore/drawn-core, CC0",
+   "category": "sounds"
+  },
+  {
    "label": "fp_harp",
    "string": true,
    "detail": "instrument sound",

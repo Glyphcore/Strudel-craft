@@ -517,7 +517,7 @@ export function createPacks(opts = {}) {
     activateSources: async (code) => {
       await ready; const names = new Set(); const re = /(?:^|[^\w$])(?:s|sound)\s*\(\s*(["'`])([\s\S]*?)\1/g; let m;
       while ((m = re.exec(String(code || '')))) for (const w of m[2].split(/[^\w#.]+/)) { const n = w.split(':')[0]; if (n) names.add(n); }
-      const out = []; if (!names.size) return out; const wt = [...names].some((n) => n.startsWith('wt_')); // waveforms entries are read only when a program names a wt_ sound
+      const out = []; if (!names.size) return out; const wt = [...names].some((n) => /^(?:wt|dr)_/.test(n)); // waveforms entries are read only when a program names a wt_ (wavetable) or dr_ (computed drum) sound
       for (const i of allIngs().filter((x) => (x.kind === 'sample-source' || (x.kind === 'waveforms' && wt)) && x.pack.state === 'ready')) { await loadIng(i); if (i.activate) out.push(...await i.activate(names)); }
       return out;
     },

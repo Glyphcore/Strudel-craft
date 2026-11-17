@@ -1,8 +1,9 @@
 # Drawn and computed waveforms as instruments (design note, #182)
 
-Status: design accepted (#182). **Stages 1 and 2 are built**: the `waveforms@1` schema, `site/engine/waveforms.js`, the pack adapter (`site/packs-kinds.js`, activation through `packs.activateSources` on Play),
-the example pack `glyphcore/drawn-core` (`wt_drawn_bass`, `wt_drawn_choir`) and their tests. Everything else below stays "coming"
-(CLI render path, more instruments, drum models, draw surface, code models); the Strudel mechanisms in section 2 exist in unmodified Strudel and are verified there. The draw surface is ui-designer work (section 8, stage 3); this note has no UI.
+Status: design accepted (#182). **Stages 1, 2 and 4 are built** (stage 3, the draw surface, is ui-designer's and on hold): the `waveforms@1` schema, `site/engine/waveforms.js`, the pack adapter (`site/packs-kinds.js`, activation through `packs.activateSources` on Play),
+the example pack `glyphcore/drawn-core` (`wt_drawn_bass`, `wt_drawn_choir`, `wt_drawn_electric`, `wt_drawn_viola`, `wt_drawn_cello`, and the computed kit `dr_kick`, `dr_snare`, `dr_hat_closed`,
+`dr_hat_open`, `dr_clap`, `dr_tom`) and their tests. Everything else below stays "coming"
+(CLI render path, steel guitar, FM percussion, synthetic-room presets, code models, draw surface); the Strudel mechanisms in section 2 exist in unmodified Strudel and are verified there. The draw surface is ui-designer work (section 8, stage 3); this note has no UI.
 
 Aim (#182): sounds in the families the reference catalogues cover, made by our own engine from data and parameters, so no recording is copied or
 shipped. Variation comes from parameter ranges and a seed, never from a file per sound. Related: #180 (device adapter contract), #183
@@ -86,6 +87,10 @@ Consistent with PACK_SPEC section 5: a new row in `schemas/craftpack/1/kinds/ind
 |---|---|---|---|---|---|
 | `waveforms` (built) | `{instruments[{id, title, family, origin, descriptors, license, cycle?, morph?, env?, registers?, params, vary?, notes?}]}` (the `waveforms@1` document) | at Play, for each instrument a program names: mechanism A emits `.partials/.phases`; B and C register an in-memory WAV with `ctx.samples(map)` under a `wt_<id>` or `<id>` key (the same activation point as `sample-source`, `packs.activateSources`); sound names go into intellisense | never (pure data) | site, cli | none |
 
+A computed instrument has `model` instead of (or beside) `cycle`/`morph`: `{kind: kick|snare|hat-closed|hat-open|clap|tom, params: {...}, variants: 1..16}`. The parameter names and ranges are the section 6.1 table
+(`FAMILIES` in `site/engine/drums.js`; `validate()` refuses a foreign parameter, `E_WF_UNKNOWN`, or one outside its range, `E_WF_PARAM`; the schema bounds only the shape, the per-family ranges are a `validate()` rule). The pack adapter renders
+`variants` one-shots in memory (variant 0 is the declared set, the others draw each parameter from `vary.spread` with the seed) and registers them as `dr_<id>`; `s("dr_kick:2")` picks variant 2. A model is a one-shot sample (mechanism C), not a wavetable.
+
 `waveforms@1` instrument, fields (sizes are caps checked by the schema, on top of section 10.2 limits; entry file well under 5 MB):
 
 ```json
@@ -105,10 +110,10 @@ Caps (built, #182 stage 1; the same rules in `validate()` of `site/engine/wavefo
 closed world (every object lists its fields, any other field is `E_WF_UNKNOWN`); at most 32 instruments; `points` 4 to 256 per curve, each
 point a 2-number pair in -1..1; 2 to 8 keyframes; envelope 2 to 64 points; `registers` up to 8; at most 12 descriptors, 16 params, 16 spread
 entries; every string capped (title 80, license 40, descriptor value 60, ids 48) and every map key matching `^[a-z][a-z0-9_]{0,23}$`; no string or
-key may contain `data:`, `blob:`, `://`, `base64`, `RIFF` or `RIFX` (`E_WF_AUDIO`/`E_WF_KEY`); free strings and keys are printable ASCII only (this closes zero-width and fullwidth look-alikes without unicode normalisation, which a schema cannot do), `RIFF`/`RIFX` match as written (lower-case "riff" is a music word) and `data:`/`blob:`/`base64` in any case; the document is at most 5 MB (`E_WF_SIZE`,
+key may contain `data:`, `blob:`, `://`, `base64`, `RIFF` or `RIFX` (`E_WF_AUDIO`/`E_WF_KEY`); keys are printable ASCII; free strings (title, license, descriptor values) are printable ASCII plus a Latin allowlist (Latin-1 letters and Latin Extended-A/B, so names such as "Dvorak" with its accents and "Lodz" with its stroke survive), minus the compatibility forms that normalise to ASCII (the long s, ligatures) and with no combining marks, zero-width, fullwidth, emoji or other scripts (a schema cannot normalise unicode, so both paths use the allowlist, and `validate()` also re-tests the NFKC form), `RIFF`/`RIFX` match as written (lower-case "riff" is a music word) and `data:`/`blob:`/`base64` in any case; the document is at most 5 MB (`E_WF_SIZE`,
 checked first) and at most 200000 numbers. A schema-valid file measures 3.3 MB at the ceiling (32 instruments, every array full, 20-character
 numbers), so the schema alone keeps under 5 MB, and `validate()` checks the bytes anyway. One rule only `validate()` can state: a param
-default lies in its min..max. `tests/site/waveforms_caps.mjs` runs 40 bypass fixtures through both and fails if either accepts one. Family
+default lies in its min..max. `tests/site/waveforms_caps.mjs` runs 46 bypass fixtures (plus 7 good ones, including accented Latin credits) through both and fails if either accepts one. Family
 names: the closed list in section 6 plus `drum-*` families of #182; unknown family is a warning, not an error.
 
 Under #180: each family model exposes its parameter set with ranges as the device adapter contract's declared parameters, so the same
@@ -148,7 +153,7 @@ For the bowed and choir cases the licensed route (#181 soundfonts, the `sample-s
 note's instruments are the "our own sound" option, labelled as such (`origin`, `family`, and a realism field so the browser never oversells one).
 `realism: "stand-in" | "usable" | "good"` is a proposed informative field on each instrument (coming).
 
-### 6.1 Numeric parameter table per family (coming; ranges are starting values, tuned by ear and by measurement in stage 2/4)
+### 6.1 Numeric parameter table per family (ranges are starting values; **built** for the six drum families in `site/engine/drums.js`, coming for the rest)
 
 Ranges are `min..max` with the default first. Units: Hz, s, cents, 0..1 unless stated. "Control" is the Strudel control the adapter emits (or the
 model constant for family models of mechanism D). Drum families are computed (no drawing); the drawn ones take a `cycle`/`morph`.
@@ -210,9 +215,11 @@ program names a `wt_<id>` sound, then builds the WAV tables in memory and calls 
 - [ ] The surface never accepts an audio file or shows a recording to trace (section 1).
 - [ ] Output validates against `waveforms@1` and plays through the stage 1 adapter.
 
-**Stage 4: remaining #183 gaps and family drum models.**
-- [ ] Electric guitar and cello/viola stand-ins as instruments, honestly labelled `stand-in`.
-- [ ] Drum family models of #182 (kick, snare, hats, clap, tom) as parameter sets with seeded kits; measured as in stage 2.
+**Stage 4: drum models and more instrument families (built, except where marked).** Engine `site/engine/drums.js` (six DSP models, seeded noise), `model` field in schema and `validate()`, `dr_` names in the adapter, pack ingredients `instruments` (5 wavetable instruments) and `drums` (6 models x 4 variants), recipes `drawn-kit-basic`, `drawn-guitar-chords`, `drawn-bowed-duo`.
+- [x] Electric guitar, viola and cello as instruments with honest ratings: electric guitar `usable` (distorted chords only), viola `stand-in`, cello `stand-in`; bass guitar `usable`, choir pad `stand-in`.
+- [x] Drum models as parameter sets with seeded variants: kick, snare, closed hat, open hat, clap, tom, rated `usable` (electronic drum voices, not an acoustic kit). `tests/site/waveforms_drums.mjs`: length, peak, decay, spectral centroid band, ordering kick 201 < snare 6334 < hat 13131 Hz, same seed identical, another seed differs, 4 distinct variants each, range/foreign-parameter refusals.
+- [x] Played through the real load path with levels per the `instruments_level.mjs` convention (`tests/site/drawn_pack.mjs`, 5 recipes) plus, for the kit, a crest check (peak/rms >= 3, so hits and not a drone) and all six `dr_` sounds registered.
+- [ ] Not built, stays coming: steel guitar (Karplus-Strong, needs the code-bearing kind of stage 5), FM percussion, synthetic-room presets (a recipe of `room`/`roomsize`/`roomlp`/`roomdim` controls needs no model; no instrument entry yet), the CLI render path, the `tools/racks/measure.mjs` spectral pass.
 
 **Stage 5: code-bearing models (needs a decision on trust tier first).**
 - [ ] `instrument-models` kind (`registerSound`, Karplus-Strong steel guitar) in the sandbox host (PACK_SPEC 10.4).

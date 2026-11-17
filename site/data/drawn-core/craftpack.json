@@ -4,7 +4,7 @@
   "id": "glyphcore/drawn-core",
   "version": "1.0.0",
   "title": "Drawn instruments (our own)",
-  "description": "Two original instruments as control points, no audio: a bass guitar stand-in (single cycle, per-register shapes) and a vowel-morphing choir pad (three keyframes). Wavetables are built in the page when a program names wt_drawn_bass or wt_drawn_choir. CC0-1.0.",
+  "description": "Original instruments as control points and parameters, no audio: a bass guitar, an electric guitar, a viola and a cello (single cycles with per-register shapes), a vowel-morphing choir pad (three keyframes) and a computed drum kit (kick, snare, closed and open hat, clap, tom; seeded variants). Wavetables and one-shots are built in the page when a program names a wt_drawn_* or dr_* sound. CC0-1.0.",
   "license": "CC0-1.0",
   "licenseFile": "LICENSE.md",
   "ingredients": [
@@ -16,9 +16,21 @@
       "path": "instruments/waveforms.json",
       "title": "Drawn bass and choir pad",
       "description": "control points and parameters; wavetables built in memory on first use",
-      "hash": "sha256:9563d371e454c485c6721596840e4158bf732a517662480c900fddcba152226b",
+      "hash": "sha256:d40a6743533dd72dd63972ba093dc3531a5fbac9d7366522e473d62ad868a14d",
       "load": "manual",
-      "bytes": 12986
+      "bytes": 23073
+    },
+    {
+      "id": "drums",
+      "kind": "waveforms",
+      "format": "waveforms@1",
+      "version": "1.0.0",
+      "path": "instruments/drums.json",
+      "title": "Computed drum kit",
+      "description": "six drum models as parameter sets, four seeded variants each; one-shots built in memory on first use",
+      "hash": "sha256:ff821cf9c3a52bb171689cd19c45402c9a4889405efc2c1c33d9daf2e683b2c7",
+      "load": "manual",
+      "bytes": 3631
     },
     {
       "id": "recipes",
@@ -27,12 +39,13 @@
       "version": "1.0.0",
       "path": "recipes/recipes.json",
       "title": "Drawn instruments recipes",
-      "hash": "sha256:b53988e4f07aeac45ae1dad1193bab903716752a3b751409eb9e1512c90c7583",
+      "hash": "sha256:24170ebaa401f64c9e1c451f26ac10b9e2842f0eec83953cae3b95936dc70beb",
       "load": "manual",
       "requires": [
-        "instruments"
+        "instruments",
+        "drums"
       ],
-      "bytes": 1248
+      "bytes": 3123
     }
   ]
 }

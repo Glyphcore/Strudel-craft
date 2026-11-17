@@ -39,6 +39,48 @@
     "glyphcore/drawn-core:instruments"
    ],
    "verified": false
+  },
+  {
+   "id": "drawn-kit-basic",
+   "title": "Drawn drum kit (computed)",
+   "intent": "Kick, snare, closed and open hat, clap and tom from the computed drum models; four seeded variants of each (s(\"dr_kick:2\")). Electronic drum voices, not an acoustic kit.",
+   "code": "setcpm(110/4)\n$: s(\"dr_kick:0 ~ [~ dr_kick:2] ~, ~ dr_snare:1 ~ dr_snare:2, ~ ~ dr_clap:0 ~\").gain(0.43)\n$: s(\"dr_hat_closed*8\").n(\"<0 1 2 3>\").gain(0.26)\n$: s(\"~ ~ ~ dr_hat_open:1, ~ ~ ~ ~ ~ ~ ~ dr_tom:3\").gain(0.34)",
+   "labels": [
+    "drawn"
+   ],
+   "needs": [
+    "glyphcore/drawn-core:instruments",
+    "glyphcore/drawn-core:drums"
+   ],
+   "verified": false
+  },
+  {
+   "id": "drawn-guitar-chords",
+   "title": "Drawn electric guitar chords",
+   "intent": "Power chords from a computed bright cycle with distortion. A stand-in tuned for distorted playing; clean parts are thin.",
+   "code": "setcpm(100/4)\n$: note(\"<[e2,b2,e3] [g2,d3,g3] [a2,e3,a3] [g2,d3,g3]>\").s(\"wt_drawn_electric\").decay(0.4).sustain(0.2).release(0.15).distort(0.5).lpf(4500).gain(0.8)",
+   "labels": [
+    "drawn"
+   ],
+   "needs": [
+    "glyphcore/drawn-core:instruments",
+    "glyphcore/drawn-core:drums"
+   ],
+   "verified": false
+  },
+  {
+   "id": "drawn-bowed-duo",
+   "title": "Drawn viola and cello",
+   "intent": "A viola line over a cello line from computed cycles with vibrato and a slow bow attack. Bowed-string stand-ins that read as synth strings; the cello is fairer in its low register.",
+   "code": "setcpm(72/4)\n$: note(\"<c4 e4 g4 e4>\").s(\"wt_drawn_viola\").attack(0.12).release(0.4).vib(5.5).vibmod(0.3).lpf(4000).gain(0.5)\n$: note(\"<c2 g1 a1 f1>\").s(\"wt_drawn_cello\").attack(0.16).release(0.5).vib(5).vibmod(0.3).gain(0.6)",
+   "labels": [
+    "drawn"
+   ],
+   "needs": [
+    "glyphcore/drawn-core:instruments",
+    "glyphcore/drawn-core:drums"
+   ],
+   "verified": false
   }
  ]
 }

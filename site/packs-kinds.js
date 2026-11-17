@@ -133,7 +133,7 @@ export const KINDS = {
     } },
   'waveforms': { formats: ['waveforms@1'], code: 'never', // drawn and computed instruments (#182 stage 2): control points and parameters, no audio; the WAV tables are built in memory
     check: (d) => (isObj(d) && Array.isArray(d.instruments) ? null : 'waveforms needs instruments[]'),
-    items: (d) => d.instruments.map((i) => ['wt_' + String(i.id).replace(/-/g, '_'), { family: i.family, origin: i.origin, realism: i.realism, license: i.license }]),
+    items: (d) => d.instruments.map((i) => [(i.model ? 'dr_' : 'wt_') + String(i.id).replace(/-/g, '_'), { family: i.family, origin: i.origin, realism: i.realism, license: i.license }]),
     view: (entries) => entries.flatMap((e) => e.data.instruments.map((i) => ({ pack: e.pack, ingredient: e.ingredient, id: i.id, family: i.family, origin: i.origin, realism: i.realism, license: i.license }))),
     async apply(ing, d, ctx) { // validate() (the closed-world no-copy check) runs here; nothing is built or registered until a program names one of the sounds (packs.activateSources)
       const WF = await import('./engine/waveforms.js'), errs = WF.validate(d);

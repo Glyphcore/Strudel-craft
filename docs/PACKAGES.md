@@ -140,7 +140,7 @@ Use it when an entry is renamed or moves between packs (for example the catalog 
 - **User override**: Folders and tags > Appearance opens the site modal: pick the tag or folder, a colour from the fixed set, an icon and a pattern; stored in `localStorage sc.taxonomy` `styles` and exported with the rest.
 
 ## 7. UI, deep links, CLI
-- **Built:** Recipes (`site/organizer.js`, mounted in `app.js`), Syntax (`syntax.js`) and Banks (`voxbrowser.js`) share one organizer: collapsible folder tree with counts, breadcrumbs, tag chips with Match all / any, sort (catalog, name, folder, pack),
+- **Built:** Recipes (`site/organizer.js`, mounted in `app.js`), Syntax (`syntax.js`) and Banks (`voxbrowser.js`) share one organizer: collapsible folder tree with counts (bounded, self-scrolling filter region with a remembered toggle, #178), breadcrumbs, tag chips with Match all / any, sort (catalog, name, folder, pack),
   search over names, tags and folder paths, a pack badge on every row, targets of 44 px at 390 px. Presses never focus or scroll the editor (#107). The state persists (`sc.org.<view>`).
 - Deep links: `#folder=hiphop/trap&tag=drums,kick&mode=or` (Recipes). A `#r/<id>` link is not combined with a filter link.
 - User organization (built for recipes): Inspector > Folder and tags (site modal) moves a recipe to a folder and adds your tags; Folders and tags > New folder, Appearance, Export, Import. The document is `taxonomy@1`

@@ -10,7 +10,16 @@
 .org summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--dim);border-bottom:2px solid var(--dim);transform:rotate(45deg);margin-left:10px;transition:transform var(--t1) var(--ease)}
 .org[open] summary::after{transform:rotate(225deg)}
 .org summary span:first-child{margin-right:auto}
-.org-body{padding:0 10px 8px;max-height:52vh;overflow:auto;overscroll-behavior:contain}
+.org-body{padding:0 10px 8px}
+/* bounded filter region (#178): the host is the one scroller (crumbs, summary toggle, tree, chips), so any number of selected tags or open folders can never push the list or the entries out of their container; the summary stays pinned as the toggle */
+.org-host{flex:none;min-height:0;max-height:min(40vh,400px);overflow:auto;overscroll-behavior:contain;border-radius:var(--r2)}
+.org-host[hidden]{display:none}
+.org-host .org{margin-top:8px}
+.org-host .org-crumbs{max-height:100px;overflow-y:auto;overscroll-behavior:contain}
+.org summary{position:sticky;top:0;z-index:2;background:var(--panel);border-radius:var(--r2)}
+.org[open] summary{border-bottom:1px solid var(--line);border-radius:var(--r2) var(--r2) 0 0}
+.org-host:has(.org:not([open])) .org-crumbs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.org-host:has(.org:not([open])) .org-crumbs>*{flex:none}
 .org-sec h3{margin:8px 0 4px;font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--faint)}
 .org-crumbs[hidden]{display:none}
 .org-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:2px 4px;margin-top:8px}
@@ -64,5 +73,4 @@
 .org-swb .tx-ico{border-color:transparent}
 .org-prev{display:flex;align-items:center;gap:10px;color:var(--text);font-size:.8rem}
 dialog.scm:has(.org-form){max-height:92vh;overflow:auto}
-@media (min-width:761px){.org-body{max-height:44vh}}
 @media (prefers-reduced-motion:reduce){.org-tgl i,.org summary::after{transition:none}}

@@ -77,15 +77,19 @@ export function createOrganizer(o) {
   const link = (o.link !== false) ? T.parseLink(location.hash) : null; if (link) { S.folder = link.folder; S.tags = link.tags; S.mode = link.mode; }
   const sorts = o.sorts || ['catalog', 'name', 'folder', 'pack'];
   const SORTNAME = { catalog: 'Catalog order', name: 'Name', folder: 'Folder', pack: 'Pack', tags: 'Most tags' };
-  const save = () => lsSet(KEY(o.kind), { folder: S.folder, tags: S.tags, mode: S.mode, sort: S.sort, open: [...S.open] });
+  const save = () => lsSet(KEY(o.kind), { folder: S.folder, tags: S.tags, mode: S.mode, sort: S.sort, open: [...S.open], ph: det.open }); /* ph = the panel's own open state, kept across filter changes */
   const crumbs = h('nav', { class: 'org-crumbs', 'aria-label': 'Folder path', hidden: true });
   const det = h('details', { class: 'org', id: 'org-' + o.kind }); const sum = h('summary', {}, h('span', {}, 'Folders and tags'), h('span', { class: 'pill', 'data-org-count': '' }));
   const tree = h('ul', { class: 'org-tree', role: 'tree', 'aria-label': 'Folders', 'data-keys': 'own' }), chipsBox = h('div', { class: 'org-chips', role: 'group', 'aria-label': 'Tags' , 'data-keys': 'own' });
   const modeBtn = h('button', { type: 'button', class: 'ghost org-mode', role: 'switch', title: 'Tags match all (AND) or any (OR)' }), sortSel = h('select', { class: 'org-sort', 'aria-label': 'Sort' }, ...sorts.map((s) => h('option', { value: s }, SORTNAME[s] || s)));
   const acts = h('div', { class: 'org-acts' });
-  det.append(sum, h('div', { class: 'org-body' }, h('div', { class: 'org-sec' }, h('h3', {}, 'Folders'), tree), h('div', { class: 'org-sec' }, h('div', { class: 'org-tags-head' }, h('h3', {}, 'Tags'), modeBtn, sortSel), chipsBox), acts));
+  const body = h('div', { class: 'org-body' }); body.append(h('div', { class: 'org-sec' }, h('h3', {}, 'Folders'), tree), h('div', { class: 'org-sec' }, h('div', { class: 'org-tags-head' }, h('h3', {}, 'Tags'), modeBtn, sortSel), chipsBox), acts); det.append(sum, body);
   o.host.replaceChildren(crumbs, det);
-  det.open = !!saved.ph || S.open.has('*') || !!link;
+  /* the panel's open state is remembered; first visit: collapsed, except the Recipes browser on a tall wide desktop (the panel itself is bounded, see organizer.css) */
+  const dflt = o.kind === 'recipes' && window.matchMedia && matchMedia('(min-width:1100px) and (min-height:1000px)').matches;
+  let skip = 0; const wantOpen = saved.ph === undefined ? (dflt || S.open.has('*') || !!link) : !!saved.ph; /* a deep link opens the panel on a first visit only: a closed panel stays closed */
+  if (wantOpen) { det.open = true; skip = saved.ph === undefined ? 1 : 0; }
+  sum.setAttribute('aria-controls', 'org-body-' + o.kind); sum.setAttribute('aria-expanded', String(det.open)); body.id = 'org-body-' + o.kind;
 
   const all = () => o.entries().map(withOverlay);
   let tax = getTax(); const refreshTax = () => { tax = getTax(); };
@@ -142,7 +146,7 @@ export function createOrganizer(o) {
     refreshTax(); const list = all(); renderCrumbs(); renderTree(list); renderChips(list); renderActs(list);
     for (const e of o.host.querySelectorAll('[data-org-live]')) e.remove();
   }
-  det.addEventListener('toggle', () => { saved.ph = det.open; lsSet(KEY(o.kind), { ...lsGet(KEY(o.kind), {}), ph: det.open }); });
+  det.addEventListener('toggle', () => { sum.setAttribute('aria-expanded', String(det.open)); if (skip && det.open) { skip = 0; return; } skip = 0; saved.ph = det.open; lsSet(KEY(o.kind), { ...lsGet(KEY(o.kind), {}), ph: det.open }); });
   modeBtn.addEventListener('click', () => { S.mode = S.mode === 'or' ? 'and' : 'or'; fire(); render(); });
   sortSel.addEventListener('change', () => { S.sort = sortSel.value; fire(); });
   store.subscribe(() => { render(); o.onChange && o.onChange(S); });

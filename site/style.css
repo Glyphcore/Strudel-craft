@@ -67,7 +67,8 @@ button:disabled{opacity:.45;cursor:not-allowed}
    the document grew to 386px and mobile Chrome rescaled the layout viewport (page shifted sideways, the fixed transport slid partly off screen) */
 .panel-head .acts{margin-left:auto;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;min-width:0;max-width:100%}
 .browser,.side{position:sticky;top:calc(var(--top) + 12px);align-self:start;max-height:calc(100vh - var(--top) - var(--tp) - 28px);display:flex;flex-direction:column;min-height:0}
-.side{overflow:auto}
+.side,.browser{overflow:auto}
+.browser>:not(.list){flex:none}
 .center{display:flex;flex-direction:column;gap:12px;min-width:0}
 .view{display:none}
 .deck[data-view="rack"] .view[data-for="rack"],.deck[data-view="stack"] .view[data-for="stack"],.deck[data-view="ref"] .view[data-for="ref"],.deck[data-view="practice"] .view[data-for="practice"],.deck[data-view="perform"] .view[data-for="perform"],.deck[data-view="syntax"] .view[data-for="syntax"]{display:block}
@@ -94,7 +95,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .switch{display:flex;align-items:center;gap:8px;min-height:44px;font-size:.8rem;color:var(--dim);cursor:pointer}
 .switch input{width:18px;height:18px;accent-color:var(--sig)}
 .count-line{margin:8px 2px;font-family:var(--mono);font-size:.74rem;color:var(--faint)}
-.list{list-style:none;margin:0;padding:0;overflow:auto;flex:1;min-height:120px;border:1px solid var(--line);border-radius:var(--r2);background:var(--panel)}
+.list{list-style:none;margin:0;padding:0;overflow:auto;flex:1 1 0;min-height:max(120px,45vh);border:1px solid var(--line);border-radius:var(--r2);background:var(--panel)}
 .list li{display:flex;align-items:stretch;border-bottom:1px solid var(--line);position:relative}
 .list li:last-child{border-bottom:0}
 .row{flex:1;min-width:0;justify-content:flex-start;text-align:left;border:0;border-radius:0;background:transparent;padding:6px 8px 6px 12px;text-transform:none;letter-spacing:.01em;font-weight:500;font-size:.9rem;gap:10px}
@@ -235,7 +236,7 @@ dialog::backdrop{background:rgba(5,6,8,.7)}
   .center{display:contents}
   .stage{order:1}.side{order:2}.center>.view{order:3}.browser{order:4}
   .deck[data-view="ref"] .browser,.deck[data-view="practice"] .browser,.deck[data-view="ref"] .side,.deck[data-view="practice"] .side{display:none}
-  .list{overflow:visible;max-height:none}
+  .list{overflow:visible;max-height:none;flex:none}
   .stage{position:sticky;top:0;z-index:8;box-shadow:0 8px 20px rgba(0,0,0,.35)}
   .stage-head{padding:8px 12px 4px}
   .viz{height:84px}.lanes{height:68px}
@@ -404,7 +405,8 @@ dialog.scm{width:min(420px,calc(100vw - 24px))}
 .sx-pin{flex:none;width:48px;min-height:48px;display:grid;place-items:center;border:0;border-radius:0;background:transparent;color:var(--text)}.sx-pin svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6}.sx-pin[aria-pressed=true]{color:var(--sig-2)}.sx-pin[aria-pressed=true] svg{fill:currentColor}
 .sx-body{padding:4px 14px 12px}.sx-body p{margin:0 0 10px;color:var(--text);line-height:1.5;max-width:70ch}
 .sx-orghost{padding:8px 14px 0}
-@media (min-width:900px){.sx-bar{padding:10px 20px 0}.sx-jump{flex-wrap:wrap;overflow:visible}.sx-jump a{min-height:36px}.sx-lists{padding:0 20px}}
+@media (min-width:900px){.sx-bar{padding:10px 20px 0}.sx-jump{scrollbar-width:thin}.sx-jump a{min-height:36px}.sx-lists{padding:0 20px}}
+@media (max-height:560px){.sx-bar{position:static}}
 .sx-badge{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border-radius:var(--r1);border:1px solid var(--sig-2);color:var(--sig-2)}
 .sx-badge[data-built=false]{border-color:var(--warn);color:var(--warn)}
 .sx-ex{margin:0 0 10px;border:1px solid var(--line-2);border-radius:var(--r2);overflow:hidden;background:var(--panel-2)}

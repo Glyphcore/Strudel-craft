@@ -45,6 +45,15 @@ check('blockText: a bare expression gets "$: ", programs with labels / setcpm do
 const ins = R.insertPlan('$: a\n$: b', amen, 3); check('insert plan: a recipe block goes after the caret line and nothing else moves', ins && R.applyPlan('$: a\n$: b', ins) === '$: a\n' + amen.insert.text + '\n$: b');
 check('renderAvailable lists packs, kinds and items', /amen-chops/.test(R.renderAvailable(R.available(host, { q: 'amen' }))));
 
+// one search scope (pane and CLI): index fields by default; recipe body text (intent, notes) only with deep
+const idsOf = (q, o = {}) => R.availableIds(R.available(host, { q, ...o }));
+const dub = Object.entries(JSON.parse(fs.readFileSync(path.join(ROOT, 'site/data/recipes/dubstep.json'), 'utf8')).bodies).find(([id, b]) => /amen/i.test(b.intent || '') && !/amen/i.test(id));
+check('search scope: a recipe whose body text (not its index fields) holds the word is not found by default', !!dub && !idsOf('amen').some((i) => i.endsWith(':' + dub[0])), dub && dub[0]);
+const bmap = new Map([['glyphcore/shim|bodies-dubstep', JSON.parse(fs.readFileSync(path.join(ROOT, 'site/data/recipes/dubstep.json'), 'utf8')).bodies]]);
+check('search scope: loaded bodies do not change the default result (display only)', JSON.stringify(idsOf('amen')) === JSON.stringify(idsOf('amen', { bodies: bmap })));
+check('search scope: deep (with the family files) finds it, and only adds ids', idsOf('amen', { deep: true, bodies: bmap }).some((i) => i.endsWith(':' + dub[0])) && idsOf('amen').every((i) => idsOf('amen', { deep: true, bodies: bmap }).includes(i)));
+check('available: shipped vox banks are items of glyphcore/vox (same list in the pane and the CLI)', idsOf('ljspeech').some((i) => /^glyphcore\/vox:banks:ljspeech$/.test(i)));
+check('lazyFiles lists each family body file once', R.lazyFiles(host).length >= 5 && new Set(R.lazyFiles(host).map((f) => f.pack + '|' + f.body)).size === R.lazyFiles(host).length);
 // CLI twin
 if (!process.argv.includes('--no-cli')) {
   const CLI = path.join(process.env.STRUDEL_CLI || '/home/user/suno-track-lab/engine/strudel-cli', 'strudel');

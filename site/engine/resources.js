@@ -235,30 +235,48 @@ export const blockText = (code) => { const c = str(code).replace(/\s+$/, ''); re
 export function applyBody(entry, b) {
   if (!b) return false; const code = str(b.code || b.expr || ''); entry.snippet = code; entry.insert = { type: 'block', text: blockText(code) }; entry.play = code || undefined; entry.lazy = false; entry.hydrated = true;
   for (const k of ['lowered', 'lowered_note', 'lowered_check']) if (b[k] !== undefined) entry[k] = b[k];
-  if (!entry.desc && (b.intent || b.notes)) entry.desc = descOf({ intent: b.intent || b.notes });
+  entry.intent = descOf({ intent: b.intent || '' }); entry.notes = descOf({ intent: b.notes || '' }); /* body text: shown, and searched only with `deep` */
   return true;
 }
-export function available(host = {}, { q = '' } = {}) {
+// ONE search scope for the Available list, in the pane and in `strudel refs --available`:
+//   default: index fields only (name, title, labels, family, folder, tags, pack; for atoms, racks and banks also their one-line description, which is part of the item data);
+//   deep:    adds the body text of recipes (intent, notes). The pane loads the family files first (lazyFiles), the CLI loader has merged them already.
+// `bodies`: Map "pack|body" -> { recipeId: body } the caller has fetched (shown with the entry; never used for matching unless deep).
+export function lazyFiles(host = {}) { const seen = new Map(); try { for (const i of (host.packs && host.packs.items && host.packs.items('recipes')) || []) { const v = i.value || {}; if (v.body && !(v.code || v.expr)) seen.set(`${i.pack}|${v.body}`, { pack: i.pack, body: v.body }); } } catch { /* none */ } return [...seen.values()]; }
+function voxItems(host, existing) { // the shipped / pack banks the site knows (banks.json): one item per bank under its pack, as the Banks browser lists them
+  const have = new Set(existing.map((i) => i.name)); const out = [];
+  for (const b of host.vox || []) { if (!b.pack || have.has(b.name)) continue; out.push({ name: b.name, id: `${b.pack}:${b.name}`, pack: b.pack, ingredient: 'banks', virtual: true, shadowed: [], value: { description: `${b.kind === 'sound' ? 'sound' : 'word'} bank, ${b.words ?? '?'} ${b.kind === 'sound' ? 'keys' : 'words'}, ${b.clips ?? '?'} clips`, tags: ['vox', b.kind === 'sound' ? 'sound-bank' : 'word-bank'], folder: 'vox/' + (b.kind === 'sound' ? 'sound' : 'word') } }); }
+  return out;
+}
+export function available(host = {}, { q = '', deep = false, bodies = null } = {}) {
   const packs = (host.packs && host.packs.list) || []; const needle = q.trim().toLowerCase(); const items = new Map();
   for (const kind of ['atoms', 'hooks', 'vox-bank', 'recipes']) { try { items.set(kind, (host.packs.items && host.packs.items(kind)) || []); } catch { items.set(kind, []); } }
+  items.set('vox-bank', [...items.get('vox-bank'), ...voxItems(host, items.get('vox-bank'))]);
+  const hay = (e) => [e.name, e.kind === 'recipes' ? e.title : e.desc, (e.labels || []).join(' '), e.family, e.folder, (e.tags || []).join(' '), e.pack, ...(deep ? [e.intent, e.notes] : [])].join(' ').toLowerCase();
   const out = [];
   for (const p of packs) {
-    const kinds = new Map();
-    for (const ing of p.ingredients || []) {
+    const kinds = new Map(); const ings = [...(p.ingredients || [])];
+    if ((items.get('vox-bank') || []).some((i) => i.virtual && i.pack === p.id) && !ings.some((i) => i.kind === 'vox-bank')) ings.push({ id: 'banks', kind: 'vox-bank', title: 'Vox banks', description: 'word and sound banks', state: 'ready' });
+    for (const ing of ings) {
       const list = (items.get(ing.kind) || []).filter((i) => i.pack === p.id && (!i.ingredient || i.ingredient === ing.id)).map((i) => {
-        const v = i.value || {}; const entry = { id: `${p.id}:${ing.id}:${i.name}`, name: i.name, kind: ing.kind, pack: p.id, ingredient: ing.id, version: p.version, license: p.license, desc: descOf(v) || chainDesc(v) || (v.type ? `${v.type} atom` : ''), params: paramsOf(v), folder: v.folder || '', tags: (v.tags || []).slice(), shadowed: (i.shadowed || []).length > 0 };
+        const v = i.value || {}; const entry = { id: `${p.id}:${ing.id}:${i.name}`, name: i.name, kind: ing.kind, pack: p.id, ingredient: ing.id, version: p.version, license: p.license, desc: ing.kind === 'recipes' ? str(v.title) : descOf(v) || chainDesc(v) || (v.type ? `${v.type} atom` : ''), params: paramsOf(v), folder: v.folder || '', tags: (v.tags || []).slice(), shadowed: (i.shadowed || []).length > 0 };
         if (ing.kind === 'atoms') { entry.snippet = atomSnippet({ name: i.name, value: v }); entry.insert = { type: 'import', text: importLine(p.id, ing.id) }; entry.ref = `atoms.${i.name}`; entry.play = `${importLine(p.id, ing.id)}\n$: ${entry.snippet}`; entry.type = v.type; }
-        else if (ing.kind === 'hooks') { entry.snippet = `hooks.bind("slot", "${i.name}")`; entry.insert = { type: 'bind', text: entry.snippet }; entry.ref = i.name; }
+        else if (ing.kind === 'hooks') { entry.snippet = `hooks.bind("slot", "${i.name}")`; entry.insert = { type: 'bind', text: entry.snippet }; entry.ref = i.name; /* a bare bind is not a program: no Play (docs/RESOURCES.md) */ }
         else if (ing.kind === 'vox-bank') { entry.snippet = `await voxBank('${i.name}')`; entry.insert = { type: 'header', text: entry.snippet }; entry.ref = i.name; }
-        else if (ing.kind === 'recipes') { entry.ref = i.name; entry.insert = { type: 'block', text: '' }; entry.snippet = ''; if (v.body && !(v.code || v.expr)) { entry.lazy = true; entry.body = v.body; } else applyBody(entry, v); } /* #131: an indexed row has no code; its body is one lazy file per family (applyBody once it is fetched) */
+        else if (ing.kind === 'recipes') {
+          entry.ref = i.name; entry.title = str(v.title); entry.labels = (v.labels || []).slice(); entry.family = str(v.family); entry.insert = { type: 'block', text: '' }; entry.snippet = '';
+          if (v.body && !(v.code || v.expr)) { entry.lazy = true; entry.body = v.body; const fb = bodies && bodies.get ? bodies.get(`${p.id}|${v.body}`) : null; if (fb && fb[i.name]) applyBody(entry, fb[i.name]); } else applyBody(entry, v); /* #131: an indexed row has no code; its body is one lazy file per family */
+        }
         return entry;
-      }).filter((e) => !needle || `${e.name} ${e.desc} ${e.folder} ${e.tags.join(' ')} ${e.pack}`.toLowerCase().includes(needle));
+      }).filter((e) => !needle || hay(e).includes(needle));
       if (list.length || (!needle && !['atoms', 'hooks', 'vox-bank', 'recipes'].includes(ing.kind))) { if (!kinds.has(ing.kind)) kinds.set(ing.kind, []); kinds.get(ing.kind).push({ id: ing.id, title: ing.title || ing.id, description: ing.description || '', state: ing.state || 'ready', code: !!ing.code, items: list }); }
     }
     if (kinds.size || (!needle)) out.push({ id: p.id, version: p.version, title: p.title || p.id, description: p.description || '', license: p.license || null, state: p.state || 'ready', layer: p.layer || null, kinds: [...kinds].map(([kind, ingredients]) => ({ kind, noun: KIND_NOUN[kind] || kind, ingredients, count: ingredients.reduce((n, g) => n + g.items.length, 0) })) });
   }
   return out;
 }
+// the ids the Available list holds for a query (sorted): what the pane and `strudel refs --available --q` must agree on
+export const availableIds = (av) => av.flatMap((p) => p.kinds.flatMap((k) => k.ingredients.flatMap((g) => g.items.map((i) => i.id)))).sort();
 
 // ---------------------------------------------------------------- insert planning (pure): where a reference goes without moving anything the user wrote
 // Imports and `await voxBank(...)` lines go after the last line of the program's header run (setcpm / atoms.import / voxBank / leading comments);

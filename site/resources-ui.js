@@ -43,17 +43,16 @@ async function siteHost(code, kinds) {
   const P = sc.packs; const host = {};
   if (P) {
     await P.ready; await Promise.all(kinds.map((k) => P.ensure(k).catch(() => null)));
-    const items = (kind) => { let out = []; try { out = P.items(kind) || []; } catch { out = []; } if (kind === 'vox-bank' && sc.voxBanks) out = out.concat(voxCache.map((b) => ({ name: b.name, id: `glyphcore/vox:${b.name}`, pack: b.pack || 'glyphcore/vox', ingredient: undefined, value: { description: `${b.kind === 'sound' ? 'sound' : 'word'} bank, ${b.words ?? '?'} ${b.kind === 'sound' ? 'keys' : 'words'}, ${b.clips ?? '?'} clips`, tags: ['vox', b.kind === 'sound' ? 'sound-bank' : 'word-bank'], folder: 'vox/' + (b.kind === 'sound' ? 'sound' : 'word') }, shadowed: [] }))); return out; };
+    const items = (kind) => { try { return P.items(kind) || []; } catch { return []; } };
     const names = {}; for (const k of ['atoms', 'hooks']) for (const i of items(k)) (names[`${i.pack}:${i.ingredient}`] ||= []).push(i.name);
     const list = P.list().map((p) => ({ ...p, ingredients: p.ingredients.map((i) => ({ ...i, names: names[`${p.id}:${i.id}`] || [] })) }));
-    if (sc.voxBanks && voxCache.length && !list.some((p) => p.ingredients.some((i) => i.kind === 'vox-bank'))) { const vp = list.find((p) => p.id === 'glyphcore/vox'); if (vp) vp.ingredients = [...vp.ingredients, { id: 'banks', kind: 'vox-bank', title: 'Vox banks', description: 'word and sound banks', state: 'ready', names: voxCache.map((b) => b.name) }]; }
     host.packs = { list, items, resolution: (P.report() || {}).resolution || {} };
   }
   const A = sc.atoms; host.atoms = { env: null, refs: [], error: null };
   if (A && /\batoms?\b/.test(code)) { try { const env = A.env(code); host.atoms.env = env; if (env) host.atoms.refs = A.compile(code, env, {}).refs || []; } catch (e) { host.atoms.error = { code: e.code, message: e.message }; } }
   const stdlib = [...Object.keys(HYGIENE), ...Object.keys(GROOVES)]; host.hooks = { json: null, plan: null, diagnostics: [], stdlib };
   const H = sc.hooks; if (H) { try { host.hooks.json = JSON.parse(H.toJSON()); } catch { /* none */ } try { const pl = H.plan(); host.hooks.plan = pl; host.hooks.diagnostics = pl.diagnostics || []; } catch { /* none */ } }
-  host.vox = voxCache.map((b) => ({ name: b.name, short: b.short, kind: b.kind, pack: b.origin === 'shipped' || !b.origin ? 'glyphcore/vox' : null }));
+  host.vox = voxCache.map((b) => ({ name: b.name, short: b.short, kind: b.kind, words: b.words, clips: b.clips, pack: b.origin === 'shipped' || !b.origin ? 'glyphcore/vox' : null }));
   return host;
 }
 let voxCache = []; const loadVox = () => (sc.voxBanks ? sc.voxBanks.list().then((l) => { voxCache = l || []; }, () => {}) : Promise.resolve());
@@ -61,7 +60,7 @@ let voxCache = []; const loadVox = () => (sc.voxBanks ? sc.voxBanks.list().then(
 /* ---------------- the panel ---------------- */
 let paneN = 0;
 export function createPanel(root, o = {}) {
-  const st = { tab: o.tab || 'program', kind: 'all', problems: false, q: '', open: new Set(), more: {}, model: null, avail: null, host: null, playing: null, flash: null, busy: false, bodies: new Map(), bodyErr: new Map(), loading: new Set() };
+  const st = { tab: o.tab || 'program', kind: 'all', problems: false, q: '', open: new Set(), more: {}, model: null, avail: null, host: null, playing: null, flash: null, busy: false, bodies: new Map(), bodyErr: new Map(), loading: new Set(), deep: false, deepN: null };
   root.classList.add('rs'); root.innerHTML = '';
   const tabs = document.createElement('div'); tabs.className = 'rs-tabs'; tabs.setAttribute('role', 'tablist');
   tabs.innerHTML = '<button type="button" role="tab" data-tab="program">In this program <b class="rs-n" data-n="program"></b></button><button type="button" role="tab" data-tab="available">Available <b class="rs-n" data-n="available"></b></button>';
@@ -110,7 +109,7 @@ export function createPanel(root, o = {}) {
   const itemRow = (it) => {
     const open = st.open.has(it.id); const src = `${it.pack}@${it.version || '?'}${it.license ? ' · ' + it.license : ''}`;
     return `<li class="rs-card rs-item" data-id="${esc(it.id)}" data-kind="${it.kind}" ${open ? 'data-open="true"' : ''}>
-      <button type="button" class="rs-head" aria-expanded="${open}" aria-label="${esc(it.name)}, ${esc(R.KIND_NOUN[it.kind] || it.kind)}"><span class="rs-name">${esc(it.name)}</span><span class="rs-kind">${esc(R.KIND_NOUN[it.kind] || it.kind)}</span>${it.shadowed ? '<span class="rs-chip" data-s="shadowed">shadowed</span>' : ''}<span class="rs-src">${esc(src)}</span>${it.desc ? `<span class="rs-desc">${esc(it.desc)}</span>` : ''}</button>
+      <button type="button" class="rs-head" aria-expanded="${open}" aria-label="${esc(it.name)}, ${esc(R.KIND_NOUN[it.kind] || it.kind)}"><span class="rs-name">${esc(it.name)}</span><span class="rs-kind">${esc(R.KIND_NOUN[it.kind] || it.kind)}</span>${it.shadowed ? '<span class="rs-chip" data-s="shadowed">shadowed</span>' : ''}<span class="rs-src">${esc(src)}</span>${it.desc ? `<span class="rs-desc">${esc(it.desc)}</span>` : ''}${it.intent ? `<span class="rs-desc">${esc(it.intent)}</span>` : ''}</button>
       ${open ? `<div class="rs-more">${it.tags && it.tags.length ? `<div class="rs-tags">${it.tags.map((t) => `<span class="rs-tag">${esc(t)}</span>`).join('')}</div>` : ''}
         ${it.params.length ? `<div class="rs-params"><span class="rs-l">Params</span>${it.params.map(paramText).join('')}</div>` : ''}
         <div class="rs-forms" data-forms="${esc(it.id)}"></div>
@@ -119,7 +118,8 @@ export function createPanel(root, o = {}) {
   const byId = (id) => { for (const p of st.avail || []) for (const k of p.kinds) for (const g of k.ingredients) for (const i of g.items) if (i.id === id) return i; return null; };
   const drawAvail = () => {
     bar.hidden = false; orgHost.hidden = !org;
-    bar.innerHTML = `<input type="search" class="rs-q" placeholder="Search packs, atoms, racks, banks" value="${esc(st.q)}" aria-label="Search available resources" autocomplete="off" autocapitalize="off" spellcheck="false">`;
+    bar.innerHTML = `<input type="search" class="rs-q" placeholder="Search packs, atoms, racks, banks" value="${esc(st.q)}" aria-label="Search available resources" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <label class="rs-prob rs-deep"><input type="checkbox" class="rs-deep-i" ${st.deep ? 'checked' : ''}> Search descriptions too${st.deepN ? ` <i class="rs-deepn" role="status">loading recipe files ${st.deepN[0]}/${st.deepN[1]}…</i>` : ''}</label>`;
     const body0 = body; if (!st.avail) { body0.innerHTML = '<p class="rs-hint">Loading installed packs…</p>'; return; }
     if (org) org.refresh();
     const ov = (i) => ({ id: i.id, kind: 'resource', title: i.name, pack: i.pack, folder: i.folder || `${i.pack.split('/')[1]}/${i.kind}`, tags: [...new Set([...(i.tags || []), i.kind === 'vox-bank' ? 'vox' : i.kind])] });
@@ -136,10 +136,20 @@ export function createPanel(root, o = {}) {
   const lowerOf = (code) => { try { const a = sc.atoms; if (a && a.inline && /\batoms?\b/.test(code)) { const l = a.inline(code); if (l && l !== code) return l; } } catch { /* stays Craft only */ } return null; };
   /* #131: an indexed recipe has no code until its family file is read: one recipeBodies() fetch per file (hash-verified, cached), a status row with a spinner, Retry on failure */
   const bodyKey = (it) => `${it.pack}|${it.body}`;
+  const avail = (host) => withBodies(R.available(host || st.host || {}, { q: st.q, deep: st.deep, bodies: st.bodies })); /* one scope with `strudel refs --available`: index fields; deep adds recipe body text */
   const withBodies = (list) => { for (const p of list) for (const k of p.kinds) for (const g of k.ingredients) for (const i of g.items) if (i.lazy) { const b = st.bodies.get(bodyKey(i)); if (b) R.applyBody(i, b[i.name]); } return list; };
   const loadBody = (it) => {
     const key = bodyKey(it); if (st.loading.has(key)) return; st.loading.add(key); st.bodyErr.delete(key);
     const P = sc.packs; Promise.resolve(P && P.recipeBodies ? P.recipeBodies(it.pack, it.body) : null).then((b) => { if (!b) throw new Error(`The recipe file ${it.body} could not be loaded. Check the connection, then retry.`); st.bodies.set(key, b); withBodies(st.avail || []); }).catch((e) => { st.bodyErr.set(key, e && e.message ? e.message : 'could not be loaded'); }).finally(() => { st.loading.delete(key); if (st.tab === 'available') drawAvail(); });
+  };
+  /* "Search descriptions too": read every family file once (with progress), then match the recipes' body text as well */
+  const deepLoad = async () => {
+    if (st.deep) {
+      const files = R.lazyFiles(st.host || {}).filter((f) => !st.bodies.has(`${f.pack}|${f.body}`)); let n = 0, bad = 0; st.deepN = files.length ? [0, files.length] : null; drawAvail();
+      const P = sc.packs; const queue = files.slice(); const worker = async () => { for (let f = queue.shift(); f; f = queue.shift()) { try { const b = P && P.recipeBodies ? await P.recipeBodies(f.pack, f.body) : null; if (b) st.bodies.set(`${f.pack}|${f.body}`, b); else bad++; } catch { bad++; } st.deepN = [++n, files.length]; const e = root.querySelector('.rs-deepn'); if (e) e.textContent = `loading recipe files ${n}/${files.length}…`; } };
+      await Promise.all([worker(), worker(), worker()]); st.deepN = null; if (bad) toast(`${bad} recipe file${bad === 1 ? '' : 's'} could not be loaded; those recipes match on their index fields only`, { kind: 'info' });
+    }
+    st.avail = avail(); drawAvail();
   };
   const mountForms = (holder, it) => {
     if (!it) return;
@@ -161,7 +171,7 @@ export function createPanel(root, o = {}) {
     const kinds = [...new Set([...mentions, ...(st.tab === 'available' ? ['atoms', 'hooks', 'vox-bank'] : [])])];
     await loadVox(); const host = await siteHost(code, kinds.filter((k) => k !== 'vox-bank')); if (me !== seq) return; st.host = host;
     st.model = R.buildModel(code, host); st.code = code;
-    if (st.tab === 'available' || force === 'avail') st.avail = withBodies(R.available(host, { q: st.q }));
+    if (st.tab === 'available' || force === 'avail') st.avail = avail(host);
     draw(); o.onModel && o.onModel(st.model);
   };
   const draw = () => {
@@ -195,9 +205,10 @@ export function createPanel(root, o = {}) {
     if (t.dataset.fix) { const r = st.model.refs.find((x) => x.id === t.dataset.fix); if (r && r.fixLine) done(insertReference({ insert: { type: 'import', text: r.fixLine } }), r.fixLine); return; }
     if (t.dataset.insert) { const it = byId(t.dataset.insert); if (!it) return; if (it.kind === 'hooks') { const slot = (st.model && st.model.refs.find((r) => r.kind === 'slot' && r.status.includes('info'))); const text = `hooks.bind("${slot ? slot.name : 'slot'}", "${it.name}")`; done(insertReference({ ...it, insert: { type: 'bind', text } }), text); } else done(insertReference(it), it.insert.text, it); return; }
     if (t.dataset.play) { const it = byId(t.dataset.play); if (it && sc.quickplay) sc.quickplay.press(t, () => ({ key: 'res:' + it.id, title: it.name, code: it.play })); return; }
+    if (t.matches('.rs-deep-i')) { st.deep = t.checked; deepLoad(); return; }
     if (t.matches('.rs-prob input')) { st.problems = t.checked; draw(); }
   });
-  root.addEventListener('input', (e) => { if (e.target.matches('.rs-q')) { st.q = e.target.value; st.avail = withBodies(R.available(st.host || {}, { q: st.q })); const pos = e.target.selectionStart; drawAvail(); const q = bar.querySelector('.rs-q'); q.focus({ preventScroll: true }); q.setSelectionRange(pos, pos); } });
+  root.addEventListener('input', (e) => { if (e.target.matches('.rs-q')) { st.q = e.target.value; st.avail = avail(); const pos = e.target.selectionStart; drawAvail(); const q = bar.querySelector('.rs-q'); q.focus({ preventScroll: true }); q.setSelectionRange(pos, pos); } });
   root.addEventListener('keydown', (e) => e.stopPropagation());
   const copy = async (text) => { try { await navigator.clipboard.writeText(text); } catch { const x = document.createElement('textarea'); x.value = text; x.style.cssText = 'position:fixed;opacity:0'; document.body.append(x); x.select(); try { document.execCommand('copy'); } catch { /* none */ } x.remove(); } toast('Copied ' + (text.length > 40 ? text.slice(0, 40) + '…' : text), { kind: 'ok', ms: 1800 }); };
   const done = (r, text, it) => {

@@ -31,12 +31,13 @@ function check(id, craft, lowered, old) { // -> lowered_check | undefined
 }
 
 // ---------- catalog ----------
-const cat = readCatalog(DROOT); const catFiles = catalogFiles(cat); // #131: the full catalog (index + family bodies) in, the split files out
+const cat = readCatalog(DROOT); // #131: the full catalog (index + family bodies) in, the split files out (after the checks below)
 for (const r of cat.recipes) {
   stats.catalog.total++; const c = classify(r.code);
   if (r.lowered) { stats.catalog.lowered++; const lc = check('catalog ' + r.id, r.code, r.lowered, r.lowered_check); if (lc) r.lowered_check = lc; else delete r.lowered_check; }
   else { stats.catalog.identical++; if (c.state !== 'plain') drift.push(`catalog ${r.id}: uses ${c.state === 'sugar' ? 'sugar' : c.kind} but has no "lowered" (regenerate: node tools/concepts/build.mjs)`); delete r.lowered_check; }
 }
+const catFiles = catalogFiles(cat); // after the loop: a check written above must reach the body files (#161: built before the loop, new checks were dropped)
 for (const [rel, text] of Object.entries(catFiles)) { const f = path.join(DROOT, rel), cur = fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : null; if (cur !== text) { stale.push(rel); if (!CHECK) { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, text); } } } // same text as tools/concepts/build.mjs (both validated by --check)
 
 // ---------- syntax (one example per line; only lines that change are rewritten) ----------

@@ -18,40 +18,45 @@
 // (.withValue(dry)); on a live site the full racks cost nothing noticeable.
 setcpm(140/4)
 const dry = (v) => { const o = { ...v }; delete o.shape; delete o.distort; delete o.distortvol; return o }   // drop the worklet drive stages
-const FADE = "<1!88 1 .88 .76 .64 .52 .4 .28 .16 1!8>"   // outro drum fade (bars 89-96), as data
+const FADE = "<1!88 .5 .44 .38 .32 .26 .2 .14 .08 1!8>"   // outro drums: half level, then fading out (bars 89-96), as data
+// LESSON 0b - dynamics: the drop is only big if the rest is smaller. REL is a per-bar gain table for every lane that plays outside the
+// drops: intro and outro at 0.5 (-6 dB), builds 0.35 (-9 dB), breakdown 0.4 (-8 dB), drops 1. The master limiter flattens loud parts, so the
+// contrast is written into the mix, not left to the master.
+const REL = "<.5!16 .35!8 1!16 .4!16 .35!8 1!24 .5!16>"
+const SHAKE = "<.5!16 .35!8 .4!16 .4!16 .35!8 1!24 .5 .44 .38 .32 .26 .2 .14 .08 0!8>"   // REL, -8 dB under drop A (it only adds air there), outro fade
 const WIDE = (x) => x.s("sawtooth").layer((v) => v.add(note(-0.15)).pan(0.25), (v) => v, (v) => v.add(note(0.15)).pan(0.75))   // a 3-saw supersaw
 atoms.import("pack:glyphcore/edm:atoms-edm-core")
 atoms.import("pack:glyphcore/edm:atoms-dubstep")
 
 // LESSON 1 (bars 1-16, intro) - start with the key, not the drop. A slow pad states the chords; its low-pass is automated bar by
 // bar (500 Hz -> 1.7 kHz) so the intro brightens without getting louder, and the drop still has room above it.
-pad: WIDE(note(atoms.ds.chords).hook("atmosPad")).gain(0.1).orbit(3).room(0.35).roomsize(4)
+pad: WIDE(note(atoms.ds.chords).hook("atmosPad")).gain(0.1).postgain(REL).orbit(3).room(0.35).roomsize(4)
   .lpf("<500 580 660 740 820 900 980 1060 1140 1220 1300 1380 1460 1540 1620 1700 1400!88>")
   .velocity("<1!96 .85 .72 .6 .48 .36 .25 .15 .08>")          // outro: an 8-bar fade written as data
   .mask("<1!16 0!24 1!16 0!32 1!16>")                        // intro, breakdown, outro
 
 // LESSON 2 (bars 9-16) - add rhythm before weight. A shaker on 16ths and a kick on the 1 only: the half-time pulse appears,
 // still no bass. Shakers soften their attack (12 ms) so they sit behind the kick.
-shaker: s(atoms.ec.hats16).velocity(atoms.ec.accent16).hook("shaker").postgain(FADE).mask("<0!8 1!32 0!16 1!8 0!24 1!8 0!8>")   // intro, build 1, drop A (under the hats), build 2, outro
-kickIntro: s(atoms.ds.halfKick).hook("dsKick").withValue(dry).velocity(0.5).mask("<0!8 1!16 0!80>")   // bars 9-24: the pulse runs through build 1
-chops: note(atoms.ds.chopLine).hook("vowelChop").orbit(3).room(0.35).roomsize(4).velocity(0.8)
+shaker: s(atoms.ec.hats16).velocity(atoms.ec.accent16).hook("shaker").postgain(SHAKE).mask("<0!8 1!32 0!16 1!8 0!24 1!8 0!8>")   // intro, build 1, drop A (under the hats), build 2, outro
+kickIntro: s(atoms.ds.halfKick).hook("dsKick").withValue(dry).velocity(0.5).postgain(REL).mask("<0!8 1!16 0!80>")   // bars 9-24: the pulse runs through build 1
+chops: note(atoms.ds.chopLine).hook("vowelChop").postgain(REL).orbit(3).room(0.35).roomsize(4).velocity(0.8)
   .mask("<0!12 1!4 0!32 1!8 0!48>")                         // a hint of the hook in bars 13-16, back in the breakdown
 
 // LESSON 3 (bars 17-24, build) - tension is three rising curves and one gap: density (the roll steps through 4, 4, 8, 8, 16, 16,
 // 16 and 32 hits per bar, ec.roll8), brightness (the chord low-pass opens x1.5 per bar, ec.open8, while the high-pass empties the low end,
 // ec.thin8) and level (a noise riser fades in for 8 bars). Then the breath: the last beat before the drop is silent (ec.gapMask).
-roll: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook("snareTight").postgain(1.8).mask(atoms.ec.mBuilds)
+roll: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).hook("snareTight").postgain(0.63).mask(atoms.ec.mBuilds)   // 1.8 x REL 0.35
   .mask("<1!23 [1 1 1 0] 1!80>")                            // the gap: ec.gapMask, here only before drop A
-buildChords: WIDE(note(atoms.ds.chords).segment(8).hook("superChord")).release(0.15).gain(0.06).orbit(3).room(0.35).roomsize(4)
+buildChords: WIDE(note(atoms.ds.chords).segment(8).hook("superChord")).release(0.15).gain(0.06).postgain(REL).orbit(3).room(0.35).roomsize(4)
   .lpf(atoms.ec.open8).hpf(atoms.ec.thin8).mask(atoms.ec.mBuilds).mask("<1!23 [1 1 1 0] 1!80>")
-riser: s("x").slow(8).hook("noiseRiser(13.71)").mask(atoms.ec.mBuild)   // len = 8 bars x 240 / 140 bpm = 13.71 s
+riser: s("x").slow(8).hook("noiseRiser(13.71)").postgain(REL).mask(atoms.ec.mBuild)   // len = 8 bars x 240 / 140 bpm = 13.71 s
 
 // LESSON 4 (bar 25, the drop lands) - mark the downbeat with three different things at once: an impact (sub boom), a crash
 // (air) and the full kit. Each lives in its own band, so together they hit harder than any one of them louder.
 // LESSON 3b (foreshadow) - a drop lands harder when the ear has heard a hint of it. The growl motif plays filtered and quiet in
 // bars 21-24 (low-pass 700 Hz, velocity 0.45) and the talk motif in bars 61-64; both return once, filtered, in the outro.
-growlEcho: note(atoms.ds.growlLine).hook("growlBass").lpf(700).velocity(0.45).orbit(2).mask("<0!20 1!4 0!64 1!4 0!12>").mask("<1!23 [1 1 1 0] 1!80>")
-talkEcho: note(atoms.ds.talkLine).hook("talkBass").withValue(dry).lpf(800).velocity(0.45).orbit(2).mask("<0!60 1!4 0!28 1!4 0!8>")
+growlEcho: note(atoms.ds.growlLine).hook("growlBass").lpf(700).velocity(0.45).postgain(REL).orbit(2).mask("<0!20 1!4 0!64 1!4 0!12>").mask("<1!23 [1 1 1 0] 1!80>")
+talkEcho: note(atoms.ds.talkLine).hook("talkBass").withValue(dry).lpf(800).velocity(0.45).postgain(REL).orbit(2).mask("<0!60 1!4 0!28 1!4 0!8>")
 impact: s("x").hook("impactBoom").withValue(dry).mask("<0!24 1 0!39 1 0!39>")
 crash: s("x").hook("crash").mask("<0!24 1 0!39 1 0!11 1 0!27>")
 
@@ -78,23 +83,23 @@ laser: note(atoms.ds.laserLine).hook("laserZap").mask(atoms.ec.mDrops).mask(atom
 // music bus every beat. The pack also has lfoPump (a beat-synced ramp tremolo, the volume-shaper trick, recipe edm-pump-shaper);
 // the ghost trigger does the same with native gain automation, at a fraction of the render cost. An arp moves, and the lead
 // arrives in bar 49 to give the second half of the track a melody to come back to.
-down: s("x").hook("downSweep").mask("<0!40 1 0!47 1 0!15>")
+down: s("x").hook("downSweep").postgain(REL).mask("<0!40 1 0!47 1 0!15>")
 pumpTrig: s(atoms.ec.fourFloor).s("sine").gain(0).duckorbit(3).duckdepth(0.45).duckattack(0.3).mask(atoms.ec.mBreak)   // ducks orbit 3 to -9.6 dB
-breakChords: WIDE(note(atoms.ds.chords).hook("ukfChord")).gain(0.07).orbit(3).room(0.35).roomsize(4).mask(atoms.ec.mBreak)
-arp: note(atoms.ds.arp).hook("ukfArp").orbit(3).room(0.35).roomsize(4).postgain(1.6).mask(atoms.ec.mBreak)
-lead: WIDE(note(atoms.ds.leadLine).hook("ukfLead")).gain(0.12).orbit(3).room(0.35).roomsize(4).mask("<0!48 1!8 0!8 1!12 0!28>")   // breakdown from 49, and back in drop B: the melody returns
+breakChords: WIDE(note(atoms.ds.chords).hook("ukfChord")).gain(0.07).postgain(REL).orbit(3).room(0.35).roomsize(4).mask(atoms.ec.mBreak)
+arp: note(atoms.ds.arp).hook("ukfArp").orbit(3).room(0.35).roomsize(4).postgain(0.64).mask(atoms.ec.mBreak)   // 1.6 x REL 0.4
+lead: WIDE(note(atoms.ds.leadLine).hook("ukfLead")).gain(0.12).postgain(REL).orbit(3).room(0.35).roomsize(4).mask("<0!48 1!8 0!8 1!12 0!28>")   // breakdown from 49, and back in drop B: the melody returns
 
 // LESSON 8 (bars 57-64, build 2) - never build the same way twice. The roll and filter return, but the riser is a white-noise
 // build (the high-pass climbs four octaves, so it thins while it rises) plus a pitch riser, and instead of a gap a reverse swell
 // sucks into the downbeat of drop B: it fades in over one bar and stops dead on bar 65.
-whiteBuild: s("x").slow(8).hook("hpBuild(13.71)").mask(atoms.ec.mBuild2)
-pitchUp: s("x").slow(8).hook("pitchRiser(13.71)").mask(atoms.ec.mBuild2)
-swell: s("x").hook("reverseSwell(1.71)").mask("<0!7 1 0!7 1 0!47 1 0!40>")   // into bars 9, 17 (ear candy) and 65
+whiteBuild: s("x").slow(8).hook("hpBuild(13.71)").postgain(REL).mask(atoms.ec.mBuild2)
+pitchUp: s("x").slow(8).hook("pitchRiser(13.71)").postgain(REL).mask(atoms.ec.mBuild2)
+swell: s("x").hook("reverseSwell(1.71)").postgain(REL).mask("<0!7 1 0!7 1 0!47 1 0!40>")   // into bars 9, 17 (ear candy) and 65
 
 // LESSON 9 (bars 65-76, drop B) - the second drop must change something. Here the bass becomes a wobble: a resonant low-pass whose
 // LFO is synced to the bar, with the rate itself a pattern (quarters, eighths, quarters then 16ths, triplets: ds.wobbleSync).
 // 16th hats raise the density; the melodic chords stay underneath, ducked, so the drop keeps the key of the breakdown.
-wobble: note(atoms.ds.wobbleLine).hook("wobbleBass").withValue(dry).postgain(3).lpsync(atoms.ds.wobbleSync).orbit(2).mask("<0!64 1!12 0!28>")
+wobble: note(atoms.ds.wobbleLine).hook("wobbleBass").withValue(dry).postgain(1.2)   /* drop B measured 6 LU over drop A at 3 */.lpsync(atoms.ds.wobbleSync).orbit(2).mask("<0!64 1!12 0!28>")
 hats16: s(atoms.ds.hats16).velocity(atoms.ds.hat16Vel).hook("hatClosed").mask(atoms.ec.mDropB)
 dropChords: WIDE(note(atoms.ds.chords).hook("ukfChord")).gain(0.09).orbit(3).room(0.35).roomsize(4).velocity(0.7).mask("<0!24 1!16 0!24 1!12 0!28>")   // drop A and drop B: the key stays present under the bass
 
@@ -103,7 +108,7 @@ dropChords: WIDE(note(atoms.ds.chords).hook("ukfChord")).gain(0.09).orbit(3).roo
 riddim: note(atoms.ds.riddimLine).hook("riddimBass").withValue(dry).postgain(1.8).orbit(2).mask(atoms.ec.mSwitch)
 screech: note(atoms.ds.screechLine).hook("screechLead").velocity(0.8).mask(atoms.ec.mSwitch)
 
-// LESSON 11 (bars 89-104, outro) - give the next DJ 16 bars: the drums and shaker play 8 more bars and fade as data (postgain
-// FADE, 1 -> 0.16), then only the pad is left, fading over the last 8 bars (its velocity). The growl and talk motifs come back
+// LESSON 11 (bars 89-104, outro) - give the next DJ 16 bars: the drums and shaker play 8 more bars at half level and fade as
+// data (postgain FADE / SHAKE, 0.5 -> 0.08), then only the pad is left, fading over the last 8 bars (its velocity). The growl and talk motifs come back
 // once, filtered (the callback: the ear recognises the drop on the way out).
 // The downlifter on bar 89 tells the ear the energy is leaving. Master last: python3 engine/master/master.py ... --preset dubstep.

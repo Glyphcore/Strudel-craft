@@ -7,7 +7,7 @@ let fails = 0; const check = (n, ok, x = '') => { if (!ok) fails++; console.log(
 let Ajv; try { Ajv = require('ajv'); } catch { Ajv = require('/opt/node-tools/node_modules/ajv'); } /* ajv 6 (draft-07 engine; the schema keeps to keywords it shares with 2020-12) */
 const SCH = JSON.parse(fs.readFileSync(path.join(ROOT, 'schemas/craftcues.v1.json'), 'utf8')); delete SCH.$schema;
 const ajv = new (Ajv.default || Ajv)({ allErrors: true, validateSchema: false }); const validate = ajv.compile(SCH);
-const CLI = path.join(ROOT, 'tools/craftcues/cues.mjs'); const cli = (...a) => execFileSync('node', [CLI, ...a], { encoding: 'utf8' });
+const CLI = path.join(ROOT, 'tools/craftcues/cues.mjs'); const cli = (...a) => execFileSync('node', [CLI, ...a], { encoding: 'utf8', env: { ...process.env, FORM_BANK: '/nonexistent/bank.jsonl' } }); /* the fb- check is about a missing bank */
 
 /* 1. examples: every shipped cue set parses, lints without errors and its JSON validates */
 const sets = [...fs.readdirSync(path.join(ROOT, 'docs/tracks'), { recursive: true })].filter((f) => /\.craftcues$/.test(f)).map((f) => path.join(ROOT, 'docs/tracks', f));
@@ -23,7 +23,7 @@ const scope = () => pick(['track', 'sec:drop-a', 'bell', 'bell,stab', 'bell->lea
 let rtOk = 0, rtBad = null;
 for (let n = 0; n < 500; n++) {
   const cues = []; const k = 1 + Math.floor(rnd() * 6);
-  for (let i = 0; i < k; i++) { const c = { id: `c${n}_${i}`, at: time(), kind: pick(C.KINDS), scope: scope(), body: Array.from({ length: Math.floor(rnd() * 6) }, () => pick(WORDS)).join(' ').trim(), refs: rnd() < 0.5 ? [pick(['MOT-05', 'FS-01', 'hook:cowbell', 'genre:dubstep', 'fb-0123456789abcdef', 'syntax:lanes'])] : [], rel: i && rnd() < 0.4 ? [{ type: pick(C.RELS), target: `c${n}_0` }] : [], meta: rnd() < 0.5 ? { src: pick(C.SOURCES), conf: Math.round(rnd() * 100) / 100, ...(rnd() < 0.3 ? { more: 'https://x.test/a b' } : {}) } : {} };
+  for (let i = 0; i < k; i++) { const c = { id: `c${n}_${i}`, at: time(), kind: pick(C.KINDS), scope: scope(), body: Array.from({ length: Math.floor(rnd() * 6) }, () => pick(WORDS)).join(' ').trim(), refs: rnd() < 0.5 ? [pick(['MOT-05', 'FS-01', 'hook:cowbell', 'genre:dubstep', 'fb-0123456789abcdef', 'syntax:lanes'])] : [], rel: i && rnd() < 0.4 ? [{ type: pick(C.RELS), target: `c${n}_0` }] : [], meta: rnd() < 0.5 ? { src: pick(C.SOURCES), conf: Math.round(rnd() * 100) / 100, ...(rnd() < 0.3 ? { more: pick(['https://x.test/a b', 'a | b "q"']) } : {}) } : {} };
     if (rnd() < 0.15) { c.pair = time(); if (c.pair === '*') delete c.pair; } if (rnd() < 0.1) c.body += '\nsecond line'; cues.push(c); }
   const doc = C.fromJSON({ header: { track: 't' + n, bars: 84, bpm: 128.8, beats: 4, sections: [{ name: 'drop-a', from: 17, to: 32 }] }, notes: rnd() < 0.3 ? ['a note'] : [], cues });
   const t1 = C.print(doc); const r = C.parse(t1); const t2 = C.print(r.doc); const j1 = JSON.stringify(C.toJSON(doc)), j2 = JSON.stringify(C.toJSON(r.doc));
@@ -47,6 +47,12 @@ check('inline cue defaults: lane label of the line, arrange segment bars, ids, h
 check('inline relation resolves within the program (lint: no orphan)', !C.lint(ex.doc).some((d) => d.code === 'E_ORPHAN'));
 { const bl = blankComments(prog).split('\n'); const real = [8, 9, 11, 12, 13, 16, 17].every((n) => !/\/\/@|\/\*@|motif|release|density|section:/.test(bl[n - 1])); const kept = [3, 4, 5, 6].every((n) => bl[n - 1] === TORTURE[n - 1]);
   check('the #142 masker blanks every real cue (code sees spaces) and leaves //@ inside strings, templates and regex untouched', real && kept && blankComments(prog).length === prog.length); }
+/* critic regressions (#162 review): one line each */
+{ const d = C.extract('//@! sections: intro 1-8, drop-a 9-24\n//@ sec:drop-a section: the drop\n').doc.cues[0]; check('inline //@ sec:name keeps its time (no body leak)', d.at === 'sec:drop-a' && d.kind === 'section' && d.body === 'the drop', JSON.stringify([d.at, d.body])); }
+{ const r = C.parseLine('M9@17 -> M9@49: body'); check('callback pair accepts a colon right after it (M9@17 -> M9@49: body)', r.cue && r.cue.at === '17' && r.cue.pair === '49' && r.cue.body === 'body' && !r.problems.length, JSON.stringify(r.problems)); }
+{ const d = C.extract('const u = "https://x.test/a"\nx: arrange([4, s("a")], [8, s("b") //@ note: seg two\n])\n').doc.cues[0]; check('arrange default times survive // inside a string (masker, not a regex)', d && d.at === '5-12', d && d.at); }
+{ const c = C.parseLine('17 note: x | more="a | b" src=author').cue; const b = C.parseLine(C.printLine({ ...c, id: 'z' })).cue; check('a quoted meta value containing | round-trips', c.meta.more === 'a | b' && b.meta.more === 'a | b' && b.meta.src === 'author', JSON.stringify(b.meta)); }
+
 /* 4. lint rules */
 const FIX = `CRAFTCUES 1\nbars: 32\nbpm: 120\nsections: a 1-16, b 17-32\n\ns1\n1-16 section @track: a\n\ns2\n12-20 section @track: overlaps a\n\nt\n5-8 tension @bell: up\n\nr\n6-9 release @bell: down | resolves:t\n\nlong\n3 note @track: ${'x'.repeat(150)}\n\nout\n30-40 note @track: past the end\n\norph\n2 note @track: who | echoes:nobody | ZZZ-99\n\ns1\n4 note @track: duplicate id\n`;
 { const r = C.parse(FIX); const ds = C.lint(r.doc, { problems: r.problems, kb: (id) => ({ status: /^ZZZ/.test(id) ? 'unknown' : 'resolved' }) }); const codes = new Set(ds.map((d) => d.code));

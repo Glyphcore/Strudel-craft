@@ -434,8 +434,9 @@ affects the sound), shipped sidecars in `data/cues/` (`index.json` matches a rec
 copies `docs/tracks/*/*.craftcues`), and cues saved in this browser (localStorage `sc.cues.<program>`). `cues.js` is a tiny lazy entry (palette
 commands Show score cues / Add cue at the current bar / Captions on / off, the Score button in the editor heads, `#cues`, a 600 ms watcher that loads
 the UI only when a playing program has cues, the `//@` intellisense source). While playing: a captions strip above the transport (bar, chips of the
-active cues, a timeline lane with spans, section ticks, playhead and relation arcs; layer cues set `[data-cue-hot]` on their lane rows and graph
-nodes). A chip press opens the KB card in the site modal (nothing in the editor moves; Go to code is a separate button). Score sheet: by section,
+active cues, a timeline lane with spans, section ticks, playhead and relation arcs; the arcs exist only in this strip). Layer cues set
+`[data-cue-hot]` on the Graph view's track nodes and Lanes cards only while the Graph shows the playing program; `@tag:x` resolves to the lanes
+carrying that tag. Inline edits use the comment ranges (block-comment cues included) or are refused with a toast. A chip press opens the KB card in the site modal (nothing in the editor moves; Go to code is a separate button). Score sheet: by section,
 kind / layer / concept filters, edit (inline cues are rewritten in place), add at bar, import and export `.craftcues` / `.vtt` / JSON. Quick play shows
 the strip for examples with `//@` cues (`qp:play` event); the Resources sheet gets a Cues section; Record takes store `cues` and the WAV download
 writes a `.vtt`. Tests: `node tests/cues/cues.mjs`, `node tests/cues/vtt_browser.mjs`, `node tests/site/cues.mjs [shot.png]` (390 px touch).

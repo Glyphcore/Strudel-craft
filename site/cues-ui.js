@@ -5,7 +5,7 @@
    - Score sheet: cues by section, filters (kind, layer, concept), edit in place (site modal), add at the current bar, import / export .craftcues / .vtt / JSON.
    Cues of a program = inline //@ comments (edits rewrite that one comment) + a shipped sidecar (data/cues/index.json) + cues saved in this browser
    (localStorage sc.cues.<program key>, a .craftcues text). Merge by id: browser edits, then inline, then the sidecar. */
-import * as C from './engine/cues.js'; import { makeKB } from './engine/cues-kb.js';
+import * as C from './engine/cues.js'; import { makeKB } from './engine/cues-kb.js'; import { commentRanges } from './engine/comments.js'; import { scan as laneScan } from './engine/lanes.js';
 const sc = (window.strudelCraft = window.strudelCraft || {});
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const emph = (s) => esc(s).replace(/\*([^*\n]+)\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
@@ -36,7 +36,8 @@ export async function load(s = source(), force = false) {
   const doc = C.merge(local, inline.doc, ...side); doc.header = { ...side.reduce((a, d) => ({ ...a, ...d.header }), {}), ...inline.doc.header, ...(local ? local.header : {}) };
   for (const c of doc.cues) if (!c._origin) c._origin = 'sidecar';
   if (my !== loadSeq) return doc;
-  st.doc = doc; st.code = s.code; st.key = key; st.problems = inline.problems; tl = null; st.shown = null; return doc;
+  let lanes = []; try { lanes = laneScan(s.code || '').lanes.map((l) => ({ id: l.id, tags: l.tags || [] })); } catch (e) { /* not lane code */ }
+  st.doc = doc; st.code = s.code; st.key = key; st.problems = inline.problems; st.lanes = lanes; tl = null; st.shown = null; return doc;
 }
 export const current = () => st.doc;
 function saveLocal(fn) { const mine = ls.get(st.key); const d = mine ? C.parse(mine).doc : { format: 'craftcues@1', header: {}, notes: [], cues: [] }; fn(d); ls.set(st.key, d.cues.length || d.notes.length ? C.print(d) : null); st.code = null; }
@@ -56,6 +57,7 @@ function position() {
   const T = sc.transport; if (!T || !T.playing) return null; const s = T.scheduler; if (!s || !s.started) return null; let c = 0; try { c = s.now(); } catch (e) { return null; } return c + 1; /* 1 cycle = 1 bar (setcpm(bpm / 4)) */
 }
 export const bar = () => st.p;
+export const hotCount = () => st.hot.length;
 
 /* ---------------- captions strip ---------------- */
 function strip() {
@@ -77,9 +79,13 @@ function timeline(doc) {
   for (const c of doc.cues) { const s = sp.get(c.id); if (!s) continue; if (c.pair) { const t = C.spanOf(c.pair, h); if (t) arc(x(s[0]), x(t[0]), 'pair'); } for (const r of c.rel || []) { const t = sp.get(r.target); if (t) arc(x(t[0]), x(s[0]), 'rel'); } if (/->|~|\+/.test(c.scope)) arc(x(s[0]), x(Math.min(N + 1, s[1])), 'rel'); }
   out.push('<line class="ph" x1="0" x2="0" y1="0" y2="22"/>'); return { svg: out.join(''), N };
 }
+/* the lanes a scope names in the playing program: lanes as written, tag:x -> every lane carrying tag x (Lanes .tags), bus: scopes name no lane */
+export function lanesOf(scope, lanes = st.lanes || []) { const out = new Set(); for (const it of C.scopeParts(scope).items) { if (it.lane) out.add(it.lane); else if (it.tag) for (const l of lanes) if (l.tags.includes(it.tag)) out.add(l.id); } return [...out]; }
+/* highlight only what shows the PLAYING program: the Graph view's track nodes and its Lanes cards (lanes-ui buttons), when the graph's text is the program that plays */
 function hot(lanes) {
   for (const e of st.hot) e.removeAttribute('data-cue-hot'); st.hot = [];
-  for (const l of lanes) { for (const e of document.querySelectorAll(`[data-lane="${CSS.escape(l)}"]`)) { e.setAttribute('data-cue-hot', 'true'); st.hot.push(e); } for (const e of document.querySelectorAll('.gn-head')) if (e.querySelector('b') && e.querySelector('b').textContent === l) { e.setAttribute('data-cue-hot', 'true'); st.hot.push(e); } }
+  const G = sc.graph; if (!lanes.length || !G || st.code == null || G.text !== st.code) return;
+  for (const l of lanes) for (const e of document.querySelectorAll(`#graph .gn-head[data-node="track:${CSS.escape(l)}"], #graph [data-lane="${CSS.escape(l)}"]`)) { e.setAttribute('data-cue-hot', 'true'); st.hot.push(e); }
 }
 let tl = null;
 function frame() {
@@ -92,7 +98,7 @@ function frame() {
   const act = C.activeAt(st.doc, p).filter((c) => c.at !== '*'); const ids = act.map((c) => c.id).join('|');
   if (ids === st.shown) return; st.shown = ids; el.dataset.bar = String(b);
   el.querySelector('.cu-chips').innerHTML = act.length ? act.map((c) => `<button type="button" role="listitem" class="cu-chip" data-id="${esc(c.id)}" data-k="${esc(c.kind)}" aria-label="${esc(`${c.kind}${c.scope !== 'track' ? ' on ' + c.scope : ''}: ${c.body}. Open its card`)}"><i>${esc(c.kind)}${c.scope !== 'track' ? ' @' + esc(c.scope) : ''}</i><span>${emph(String(c.body || '').split('\n')[0])}</span></button>`).join('') : '<span class="cu-none">no cue at this bar</span>';
-  hot([...new Set(act.flatMap((c) => C.scopeLanes(c.scope)))]);
+  hot([...new Set(act.flatMap((c) => lanesOf(c.scope)))]);
 }
 let reloading = false, lastCheck = 0;
 function maybeReload() { const now = performance.now(); if (reloading || now - lastCheck < 400) return; lastCheck = now; if (st.clock === 'quick') return; const s = source(); if (s.code === st.code) return; reloading = true; load(s).then(() => { tl = null; st.shown = null; }).finally(() => { reloading = false; }); }
@@ -103,7 +109,24 @@ export function toggleCaptions(on) { const v = on === undefined ? off() : on; tr
 /* ---------------- editor: deliberate go to code, inline edits as one change ---------------- */
 function gotoLine(line) { const t = activeTa(); if (!t) return false; const v = t.cmView; if (v) { const ln = v.state.doc.line(Math.max(1, Math.min(line, v.state.doc.lines))); v.dispatch({ selection: { anchor: ln.from }, scrollIntoView: true, userEvent: 'select' }); v.focus(); return true; } const off0 = t.value.split('\n').slice(0, line - 1).join('\n').length + (line > 1 ? 1 : 0); t.focus(); t.setSelectionRange(off0, off0); return true; }
 function replaceInEditor(from, to, insert) { const t = activeTa(); if (!t) return false; const v = t.cmView; if (v) { v.dispatch({ changes: { from, to, insert }, userEvent: 'input', scrollIntoView: false }); return true; } const a = t.selectionStart; t.value = t.value.slice(0, from) + insert + t.value.slice(to); t.setSelectionRange(a, a); t.dispatchEvent(new Event('input', { bubbles: true })); return true; }
-function inlineSpan(line) { const t = activeTa(); if (!t) return null; const text = t.value; const lines = text.split('\n'); if (line < 1 || line > lines.length) return null; const start = lines.slice(0, line - 1).reduce((a, l) => a + l.length + 1, 0); const i = lines[line - 1].indexOf('//@'); return i < 0 ? null : { from: start + i, to: start + lines[line - 1].length }; }
+/* the editable span of the inline cue on program line `line`, found with the #142 comment ranges (never a //@ inside a string):
+   { from, to, prefix } where [from, to) is the cue text: a //@ comment (prefix '//@ ') or one line of a block comment cue (prefix '') */
+export function inlineSpan(text, line) {
+  const starts = [0]; for (let i = 0; i < text.length; i++) if (text[i] === '\n') starts.push(i + 1); const ls = starts[line - 1]; if (ls == null) return null; const le = line < starts.length ? starts[line] - 1 : text.length;
+  for (const [a, b] of commentRanges(text)) {
+    if (b < ls || a > le) continue;
+    if (text.startsWith('//@', a) && !text.startsWith('//@!', a) && a >= ls && a <= le) return { from: a, to: b, prefix: '//@ ' };
+    if (text.startsWith('/*@', a)) { const end = text.slice(b - 2, b) === '*/' ? b - 2 : b; let f = Math.max(ls, a + 3), t = Math.min(le, end); if (f >= t) continue; f += /^\s*\*?\s?/.exec(text.slice(f, t))[0].length; while (t > f && /\s/.test(text[t - 1])) t--; if (t > f) return { from: f, to: t, prefix: '' }; }
+  }
+  return null;
+}
+/* rewrite one inline cue in the editor as one change; refuses (toast, nothing saved) when the editor does not show the cue's program or the span is gone */
+export function editInline(c, n) {
+  const t = activeTa(); const text = t ? t.value : ''; const why = (m) => { sc.ui && sc.ui.toast(m, { kind: 'error' }); return false; };
+  if (!t || st.code == null || text !== st.code) return why('This cue lives in the code of the playing program: open that program in the editor to edit it');
+  const sp = inlineSpan(text, c._line); if (!sp) return why(`Cue ${c.id}: its comment on line ${c._line} was not found; edit it in the code`);
+  replaceInEditor(sp.from, sp.to, sp.prefix + C.printLine({ ...n, id: /^L\d+$/.test(n.id) ? null : n.id })); st.code = null; return true;
+}
 
 /* ---------------- KB card (site modal) ---------------- */
 export async function openCard(c) {
@@ -139,7 +162,7 @@ async function editCue(c, o = {}) {
   const build = () => { const line = `${f('at').value.trim()} ${f('kind').value} ${f('scope').value.trim() || '@track'}: ${f('body').value.replace(/\n/g, ' ').replace(/\|/g, '\\|').trim()} ${f('tok').value.trim()}`; return C.parseLine(line); };
   const v = await sc.ui.form({ title: o.add ? `Add cue at bar ${c.at}` : `Edit cue ${c.id}`, body, okText: 'Save', collect: () => ({ r: build(), inline: o.add && f('inline').checked }), validate: () => { const r = build(); return r.problems.filter((p) => p.level === 'error').map((p) => p.msg).join('; ') || null; } });
   if (!v || !v.r.cue) return null; const n = v.r.cue; n.id = c.id || n.id;
-  if (c._origin === 'inline' && c._line) { const sp = inlineSpan(c._line); if (sp) { replaceInEditor(sp.from, sp.to, '//@ ' + C.printLine({ ...n, id: /^L\d+$/.test(n.id) ? null : n.id })); st.code = null; await load(); return n; } }
+  if (c._origin === 'inline' && c._line) { if (editInline(c, n)) await load(); return n; } /* inline cues are edited in the code or refused, never shadowed by a local copy */
   if (v.inline) { const t = activeTa(); const text = t ? t.value : ''; replaceInEditor(text.length, text.length, (text.endsWith('\n') || !text ? '' : '\n') + '//@ ' + C.printLine({ ...n, id: null }) + '\n'); st.code = null; await load(); return n; }
   saveLocal((d) => { const fin = { id: n.id, at: n.at, ...(n.pair ? { pair: n.pair } : {}), kind: n.kind, scope: n.scope || 'track', body: n.body, refs: n.refs, rel: n.rel, meta: n.meta }; const i = d.cues.findIndex((x) => x.id === n.id); if (i >= 0) d.cues[i] = fin; else d.cues.push(fin); });
   await load(); if (st.sheet && st.sheet.open) drawScore(); return n;
@@ -199,5 +222,5 @@ export async function resourcesSection(code) {
   const K = await kb(); return `<section class="rs-cues" data-cues="${ids.length}"><h3>Cues <b class="rs-n">${ids.length}</b></h3><ul class="cu-kb">${ids.map((id) => { const k = K(id); const n = d.cues.filter((c) => c.refs.includes(id)).length; return `<li data-ref="${esc(id)}"><b>${esc(id)}</b> <span data-s="${esc(k.status)}">${esc(k.kb)} · ${esc(k.status)}</span> <i>${n} cue${n === 1 ? '' : 's'}</i><small>${esc(k.title)}${k.def ? ' - ' + esc(k.def) : ''}</small>${k.link ? `<a href="${esc(k.link)}"${/^https?:/.test(k.link) ? ' target="_blank" rel="noopener"' : ''}>Open</a>` : ''}</li>`; }).join('')}</ul></section>`;
 }
 export async function forTake(code) { const d = await load({ id: (source() || {}).id, code }); return d.cues.length ? C.toJSON(d) : null; }
-sc.cues = Object.assign(sc.cues || {}, { openScore, addAtBar, toggle: toggleCaptions, attach, attachQuick, load, current, bar, openCard, exportAs, importText, resourcesSection, forTake, engine: C });
+sc.cues = Object.assign(sc.cues || {}, { openScore, addAtBar, toggle: toggleCaptions, editInline, inlineSpan, lanesOf, hotCount, attach, attachQuick, load, current, bar, openCard, exportAs, importText, resourcesSection, forTake, engine: C });
 Object.defineProperties(sc.cues, { doc: { get: () => st.doc, configurable: true }, strip: { get: () => st.strip, configurable: true }, clock: { get: () => st.clock, configurable: true } });

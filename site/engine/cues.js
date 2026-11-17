@@ -5,7 +5,7 @@
 //   parseLine(line)                    one cue line `TIME [KIND] [@SCOPE] [: BODY] [| TOKENS]...` (shared by sidecar and inline //@ comments)
 //   extract(code, { header })          inline //@ and /*@ */ cues of a Craft program (found with the #142 comment ranges, so never in strings)
 //   lint(doc, { kb }) / merge(...docs) / toVTT(doc) / toSRT(doc) / spanOf(at, header) / activeAt(doc, bar)
-import { commentRanges } from './comments.js';
+import { commentRanges, blankComments } from './comments.js';
 
 export const VERSION = 1;
 export const KINDS = ['section', 'layer-role', 'concept', 'motif', 'tension', 'release', 'transition', 'dovetail', 'call-response', 'clash', 'resolution',
@@ -50,7 +50,7 @@ export function barText(p, h = {}) { const beats = +h.beats || 4; const bar = Ma
 
 // ---------------------------------------------------------------- one cue line
 const unesc = (s) => s.replace(/\\\|/g, '|');
-const splitBars = (s) => { const out = []; let cur = ''; for (let i = 0; i < s.length; i++) { if (s[i] === '\\' && s[i + 1] === '|') { cur += '\\|'; i++; continue; } if (s[i] === '|') { out.push(cur); cur = ''; continue; } cur += s[i]; } out.push(cur); return out; };
+const splitBars = (s) => { const out = []; let cur = ''; let qt = false; for (let i = 0; i < s.length; i++) { const c = s[i]; if (c === '\\' && (s[i + 1] === '|' || (qt && s[i + 1] === '"') || (qt && s[i + 1] === '\\'))) { cur += c + s[i + 1]; i++; continue; } if (c === '"' && (qt || /[a-z][\w-]*=$/.test(cur))) { qt = !qt; cur += c; continue; } if (c === '|' && !qt) { out.push(cur); cur = ''; continue; } cur += c; } out.push(cur); return out; }; /* a quoted meta value (more="a | b") keeps its pipes */
 const tokens = (s) => { const out = []; const re = /([a-z][\w-]*)="((?:\\.|[^"\\])*)"|\S+/g; let m; while ((m = re.exec(s))) out.push(m[1] ? { k: m[1], v: m[2].replace(/\\(.)/g, '$1') } : m[0]); return out; };
 export function normScope(s) {
   s = String(s || '').trim().replace(/^@/, ''); if (!s || s === 'track') return 'track';
@@ -69,7 +69,7 @@ export const scopeLanes = (sc) => scopeParts(sc).items.filter((x) => x.lane).map
 export function parseLine(line, o = {}) {
   const problems = []; const segs = splitBars(String(line)); let head = segs.shift().trim();
   const cue = { at: null, kind: null, scope: null, body: '', refs: [], rel: [], meta: {} };
-  const sugar = /^([A-Za-z]\w*)@(\S+?)\s*->\s*(?:\1)?@(\S+)(?=\s|:|$)/.exec(head);
+  const sugar = /^([A-Za-z]\w*)@(\S+?)\s*->\s*(?:\1)?@(\S+?)(?=\s|:\s|:$|:(?=\S)|$)/.exec(head);
   if (sugar) { cue.at = normTime(sugar[2]); cue.pair = normTime(sugar[3]); cue.meta.motif = sugar[1]; head = head.slice(sugar[0].length).trim(); if (!cue.at || !cue.pair) problems.push(err('E_TIME', `bad callback times in "${sugar[0]}"`)); }
   else {
     const pm = /^(\S+?)\s*=>\s*(\S+?)(?=\s|:\s|:$|$)/.exec(head); const tm = pm || /^(\S+?)(?=\s|:\s|:$|$)/.exec(head);
@@ -101,7 +101,7 @@ function tokenLine(c, withId) {
 }
 const timeText = (c) => (c.pair ? `${c.at} => ${c.pair}` : c.at);
 /* printLine(cue) -> the one-line form used inside //@ comments (body newlines become " / ") */
-export function printLine(c) { const b = String(c.body || '').replace(/\n/g, ' / ').replace(/\|/g, '\\|'); const t = tokenLine(c, true); return `${timeText(c)} ${c.kind} @${c.scope}${b ? ': ' + b : ''}${t ? ' ' + t : ''}`; }
+export function printLine(c) { const b = String(c.body || '').replace(/\n/g, ' / ').replace(/\|/g, '\\|'); const t = tokenLine(c, true); return `${timeText(c)} ${c.kind || 'note'} @${c.scope || 'track'}${b ? ': ' + b : ''}${t ? ' ' + t : ''}`; }
 
 // ---------------------------------------------------------------- sidecar document
 function parseHeaderValue(k, v) {
@@ -199,7 +199,7 @@ export function extract(code, o = {}) {
     return null;
   };
   const markers = []; for (const [a, b] of rs) { const t = raw.slice(a, b); const m = /^\/\/\s*==+\s*(.*?)\s+(\d+)-(\d+)\s*(?:==+.*)?$/.exec(t); if (m) markers.push({ line: lineOf(starts, a), a: +m[2], b: +m[3] }); }
-  const segs = arrangeSegments(raw.replace(/\/\/[^\n]*/g, (x) => ' '.repeat(x.length)));
+  const segs = arrangeSegments(blankComments(raw)); /* the #142 masker: '//' inside strings (URLs) stays code */
   let n = 0;
   for (const [a, b] of rs) {
     const t = raw.slice(a, b); let bodies;
@@ -210,7 +210,7 @@ export function extract(code, o = {}) {
       const ln = lineOf(starts, off); const alone = !codeLine(ln).trim(); let text = body.trim(); if (!text) continue;
       let def = null; const seg = segs.find((s) => off >= s.from && off < s.to); if (seg) def = seg.a === seg.b ? String(seg.a) : `${seg.a}-${seg.b}`;
       else { const mk = markers.filter((m) => m.line <= ln).pop(); if (mk) def = `${mk.a}-${mk.b}`; }
-      if (!normTime(text.split(/[\s:]/)[0]) && !/^[A-Za-z]\w*@\d/.test(text)) text = (def || '*') + ' ' + text;
+      const first = (/^(\S+?)(?=\s|:\s|:$|$)/.exec(text) || [''])[0]; if (!normTime(first) && !/^\S+\s*=>/.test(text) && !/^[A-Za-z]\w*@\d/.test(text)) text = (def || '*') + ' ' + text;
       const { cue, problems: pr } = parseLine(text); for (const p of pr) problems.push({ ...p, line: ln });
       if (!cue) continue; n++;
       if (!cue.scope) { const lane = laneFor(ln, alone); if (lane) cue.scope = lane; }

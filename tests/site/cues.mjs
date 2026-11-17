@@ -10,15 +10,18 @@ let chromium; try { ({ chromium } = require('playwright')); } catch { ({ chromiu
 const T = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.css': 'text/css', '.woff2': 'font/woff2', '.ogg': 'audio/ogg', '.svg': 'image/svg+xml', '.png': 'image/png', '.craftcues': 'text/plain' };
 const srv = http.createServer((q, s) => { const f = path.join(ROOT, decodeURIComponent(q.url.split('?')[0]).replace(/\/$/, '/index.html')); if (!f.startsWith(ROOT) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { s.writeHead(404).end(); return; } s.writeHead(200, { 'content-type': T[path.extname(f)] || 'application/octet-stream' }).end(fs.readFileSync(f)); }).listen(0);
 const V2 = fs.readFileSync(path.join(ROOTD, 'docs/tracks/night-phonk-demo/track.v2.strudel.js'), 'utf8');
-const INLINE = '// @daw bars=16\nsetcpm(240/4)\n//@ 1-8 section: first half | form:intro\nbell: n("0 2 4 3").scale("C4:minor").s("triangle").decay(0.1).gain(0.3) //@ 1-16 motif: the bell cell | MOT-01 | id=cell\n//@ 9-16 section: second half | form:drop\nbass: n("<0 -2>").scale("C2:minor").s("sawtooth").lpf(500).gain(0.3)\n';
+const INLINE = '// @daw bars=16\nsetcpm(240/4)\n//@ 1-8 section: first half | form:intro\nbell: n("0 2 4 3").scale("C4:minor").s("triangle").decay(0.1).gain(0.3) //@ 1-16 motif: the bell cell | MOT-01 | id=cell\n//@ 9-16 section: second half | form:drop\nbass: n("<0 -2>").scale("C2:minor").s("sawtooth").lpf(500).gain(0.3).tags("low")\n//@ 1-16 mix-note @tag:low: the low lanes | id=lows\n';
+const EDIT = '// @daw bars=16\nsetcpm(240/4)\nconst label = String(\'//@ x\') //@ 1-16 motif @bell: real | id=r1\nbell: s("bd").gain(0)\n/*@\n 1-8 note: block one\n 9-16 note: block two */\n';
 let fails = 0; const check = (name, ok, extra = '') => { if (!ok) fails++; console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${extra ? '  -- ' + extra : ''}`); };
 const b = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] }); const errs = [];
 try {
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, serviceWorkers: 'block', acceptDownloads: true });
-  const p = await ctx.newPage(); p.on('pageerror', (e) => errs.push(String(e))); p.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resource|AudioContext|404/.test(m.text())) errs.push(m.text()); });
-  await p.route(/api\.github\.com/, (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '[]' }));
-  const reqs = []; p.on('request', (r) => reqs.push(r.url()));
-  await p.goto(`http://localhost:${srv.address().port}/index.html#rack`); await p.waitForFunction(() => window.strudelCraft && window.strudelCraft.packs && window.strudelCraft.cues && window.strudelCraft.palette && document.querySelector('#code') && document.querySelector('.cu-score-open'), null, { timeout: 60000 });
+  let p = null; const reqs = [];
+  const openPage = async () => { p = await ctx.newPage(); p.on('pageerror', (e) => errs.push(String(e))); p.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resource|AudioContext|404/.test(m.text())) errs.push(m.text()); });
+    await p.route(/api\.github\.com/, (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '[]' }));
+    p.on('request', (r) => reqs.push(r.url()));
+  await p.goto(`http://localhost:${srv.address().port}/index.html#rack`); await p.waitForFunction(() => window.strudelCraft && window.strudelCraft.packs && window.strudelCraft.cues && window.strudelCraft.palette && document.querySelector('#code') && document.querySelector('.cu-score-open'), null, { timeout: 60000 }); };
+  await openPage();
   check('nothing of the cues UI loads before a program with cues plays or the sheet opens', !reqs.some((u) => /cues-ui\.js|cues\.css|engine\/cues/.test(u)));
   await p.evaluate(async () => { await window.strudelCraft.packs.ready; await window.strudelCraft.packs.load('glyphcore/phonk:atoms'); await window.strudelCraft.packs.load('glyphcore/phonk:atoms-v2'); });
   const setCode = (c) => p.evaluate((c) => { window.__sc.setView('rack'); const ta = document.getElementById('code'); const v = ta.cmView; if (v) v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: c } }); else { ta.value = c; ta.dispatchEvent(new Event('input', { bubbles: true })); } document.activeElement && document.activeElement.blur(); }, c);
@@ -38,8 +41,6 @@ try {
     check(`bar ${bar}: the strip shows ${ids.join(', ')}`, ids.every((i) => r.ids.includes(i)), `strip bar ${r.bar}: ${r.ids.join(',')}`);
   }
   check('caption bar within 1 bar of the transport bar at every check', drift.every((d) => d <= 1), JSON.stringify(drift));
-  const hot = await p.evaluate(() => ({ hot: document.querySelectorAll('[data-cue-hot="true"]').length, rows: [...document.querySelectorAll('[data-lane]')].filter((e) => e.getBoundingClientRect().width > 0).length }));
-  check('layer-scoped cues light the lane rows / graph nodes they name when those are on screen', hot.rows === 0 || hot.hot > 0, JSON.stringify(hot));
   /* 2. chip tap: KB card, nothing moves */
   await p.evaluate(() => window.strudelCraft.range.seek(16.25)); await p.waitForSelector('.cu-strip .cu-chip[data-id="drop-a"]', { timeout: 20000 });
   await p.evaluate(() => { const v = document.getElementById('code').cmView; if (v) v.dispatch({ selection: { anchor: 120 } }); }); await p.waitForTimeout(1500);
@@ -66,10 +67,14 @@ try {
   await p.waitForFunction(() => [...document.querySelectorAll('dialog.cu-sheet .cu-item')].some((x) => /added from the test/.test(x.textContent)), null, { timeout: 10000 }).catch(() => {});
   check('Add cue at bar writes a cue that the sheet lists (stored in this browser)', await p.evaluate(() => [...document.querySelectorAll('dialog.cu-sheet .cu-item')].some((x) => /added from the test/.test(x.textContent)) && Object.keys(localStorage).some((k) => /^sc\.cues\./.test(k))));
   await p.evaluate(() => document.querySelector('dialog.cu-sheet').close()); await p.evaluate(() => window.__sc.stop()); await p.waitForTimeout(300);
+  /* a fresh page for the inline program: right after stop + play the transport clock can come back negative (a transport issue outside CraftCues) */
+  await p.close(); await openPage();
   /* 5. inline //@ program: strip, Go to code is deliberate */
   await setCode(INLINE); await p.evaluate(() => window.__sc.play()); await p.waitForFunction(() => { const s = window.strudelCraft.transport.scheduler; return window.strudelCraft.transport.playing && s && s.started; }, null, { timeout: 30000 }); await p.waitForTimeout(800);
-  for (let i = 0; i < 6; i++) { await p.evaluate(() => window.strudelCraft.range.seek(0.25)); await p.waitForTimeout(700); if (await p.evaluate(() => window.strudelCraft.transport.scheduler.now() < 12)) break; }
-  await p.waitForFunction(() => document.querySelector('.cu-strip .cu-chip[data-id="cell"]'), null, { timeout: 60000 }).catch(async () => { console.log('DEBUG', JSON.stringify(await p.evaluate(() => ({ playing: window.strudelCraft.transport.playing, src: (window.strudelCraft.transport.source() || {}).code?.slice(0, 40), ids: window.strudelCraft.cues.doc && window.strudelCraft.cues.doc.cues.map((c) => c.id).slice(0, 8), hidden: document.querySelector('.cu-strip').hidden, chips: [...document.querySelectorAll('.cu-chip')].map((c) => c.dataset.id) })))); });
+  for (let i = 0; i < 6; i++) { await p.evaluate(() => window.strudelCraft.range.seek(0.25)); await p.waitForTimeout(700); if (await p.evaluate(() => { const n = window.strudelCraft.transport.scheduler.now(); return n >= 0 && n < 12; })) break; }
+  /* the transport can come back at a negative or old cycle right after stop + play: re-seek until the clock is inside the 16-bar program */
+  for (let i = 0; i < 60; i++) { const st = await p.evaluate(() => ({ chip: !!document.querySelector('.cu-strip .cu-chip[data-id="cell"]'), now: window.strudelCraft.transport.scheduler.now() })); if (st.chip) break; if (!(st.now >= 0 && st.now < 14)) await p.evaluate(() => window.strudelCraft.range.seek(0.25)); await p.waitForTimeout(500); }
+  await p.waitForFunction(() => document.querySelector('.cu-strip .cu-chip[data-id="cell"]'), null, { timeout: 10000 }).catch(async () => { console.log('DEBUG', JSON.stringify(await p.evaluate(() => ({ playing: window.strudelCraft.transport.playing, src: (window.strudelCraft.transport.source() || {}).code?.slice(0, 40), ids: window.strudelCraft.cues.doc && window.strudelCraft.cues.doc.cues.map((c) => c.id).slice(0, 8), hidden: document.querySelector('.cu-strip').hidden, bar: window.strudelCraft.cues.bar(), now: window.strudelCraft.transport.scheduler.now(), dbar: document.querySelector('.cu-strip').dataset.bar, chips: [...document.querySelectorAll('.cu-chip')].map((c) => c.dataset.id) })))); });
   await p.evaluate(() => { const v = document.getElementById('code').cmView; if (v) v.dispatch({ selection: { anchor: 10 } }); }); await p.waitForTimeout(800);
   const b2 = await ed(); await tapEl('.cu-strip .cu-chip[data-id="cell"]'); await p.waitForSelector('dialog.scm[open] .cu-go', { timeout: 10000 }); const a2 = await ed();
   check('inline cue: the chip opens the card with a Go to code button; the press alone moves nothing', a2.sel === b2.sel && a2.top === b2.top);
@@ -83,6 +88,24 @@ try {
   check('the take stores the program cues (recipe field cues, craftcues@1)', take.cues && take.cues.format === 'craftcues@1' && take.cues.cues.length >= 3 && ['cell', 'L3', 'L5'].every((i) => take.cues.cues.some((c) => c.id === i)), take.cues ? String(take.cues.cues.length) : 'none');
   const names = []; p.on('download', (d) => names.push(d.suggestedFilename())); await p.evaluate((id) => window.strudelCraft.capture.download(id, 'wav16'), take.id); await p.waitForTimeout(2500);
   check('the WAV download writes a .vtt with the same base name', names.some((n) => /\.wav$/.test(n)) && names.some((n) => /\.vtt$/.test(n) && names.some((w) => w.replace(/\.wav$/, '') === n.replace(/\.vtt$/, ''))), names.join(' '));
+  await p.evaluate(() => window.__sc.stop()); await p.waitForTimeout(300);
+  /* 6b. highlight follows the PLAYING program: Graph view showing it, bell lane node (lane scope) and bass (tag:low scope) */
+  await p.evaluate(() => window.__sc.setView('graph')); await p.waitForFunction(() => window.strudelCraft.graph, null, { timeout: 60000 });
+  await p.evaluate((c) => window.strudelCraft.graph.load(c), INLINE); await p.evaluate(() => window.__sc.play()); await p.waitForTimeout(1500);
+  for (let i = 0; i < 6; i++) { await p.evaluate(() => window.strudelCraft.range.seek(0.25)); await p.waitForTimeout(700); if (await p.evaluate(() => { const n = window.strudelCraft.transport.scheduler.now(); return n >= 0 && n < 12; })) break; }
+  await p.waitForFunction(() => document.querySelector('#graph .gn-head[data-node="track:bell"][data-cue-hot="true"]'), null, { timeout: 20000 }).catch(() => {});
+  const hl = await p.evaluate(() => ({ rows: document.querySelectorAll('#graph .gn-head[data-node^="track:"]').length, bell: document.querySelector('#graph .gn-head[data-node="track:bell"]')?.dataset.cueHot === 'true', bass: document.querySelector('#graph .gn-head[data-node="track:bass"]')?.dataset.cueHot === 'true', same: window.strudelCraft.graph.text === window.strudelCraft.transport.source().code }));
+  check('Graph view showing the playing program: lane nodes exist and the cue lanes light up (bell by lane scope, bass by @tag:low)', hl.rows > 0 && hl.same && hl.bell && hl.bass, JSON.stringify(hl));
+  await p.evaluate(() => window.strudelCraft.graph.load('// another program\nfoo: s("bd")\nbell: s("x")')); await p.waitForTimeout(1500);
+  check('a Graph showing another program gets no highlight', await p.evaluate(() => !document.querySelector('#graph [data-cue-hot="true"]')));
+  await p.evaluate(() => window.__sc.stop()); await p.evaluate(() => window.__sc.setView('rack')); await p.waitForTimeout(300);
+  /* 6c. in-place edits: the real comment span (never a //@ inside a string), and block-comment cues */
+  await setCode(EDIT); await p.evaluate(() => window.__sc.play()); await p.waitForFunction(() => window.strudelCraft.cues.doc && window.strudelCraft.cues.doc.cues.some((c) => c.id === 'r1'), null, { timeout: 30000 });
+  const ed1 = await p.evaluate(() => { const S = window.strudelCraft.cues; const c = S.doc.cues.find((x) => x.id === 'r1'); const n = S.engine.parseLine('1-16 motif @bell: edited | id=r1').cue; const ok = S.editInline(c, n); return { ok, code: document.getElementById('code').value }; });
+  check('editing an inline cue rewrites only its comment: the //@ inside the string and the code stay', ed1.ok && ed1.code.split('\n')[2] === 'const label = String(\'//@ x\') //@ 1-16 motif @bell: edited | id=r1', ed1.code.split('\n')[2]);
+  await p.waitForFunction(() => window.strudelCraft.cues.doc && window.strudelCraft.cues.doc.cues.some((c) => c.body === 'edited') && window.strudelCraft.cues.doc.cues.some((c) => c.body === 'block two'), null, { timeout: 30000 }).catch(() => {});
+  const ed2 = await p.evaluate(() => { const S = window.strudelCraft.cues; const c = S.doc.cues.find((x) => x.body === 'block two'); if (!c) return { ok: false, code: 'no block cue' }; const n = S.engine.parseLine('9-16 note: block edited').cue; n.id = c.id; const ok = S.editInline(c, n); return { ok, code: document.getElementById('code').value, local: Object.keys(localStorage).filter((k) => /^sc\.cues\./.test(k)).map((k) => localStorage.getItem(k)).join('').includes('block edited') }; });
+  check('editing a /*@ */ block cue rewrites that line of the block (no silent local override)', ed2.ok && / 9-16 note @track: block edited \*\/\n$/.test(ed2.code) && /String\('\/\/@ x'\) \/\/@ 1-16 motif @bell: edited/.test(ed2.code) && !ed2.local, JSON.stringify(ed2.code).slice(-120));
   await p.evaluate(() => window.__sc.stop()); await p.waitForTimeout(300);
   /* 7. quick play of the Syntax cues example shows the strip on the audition clock */
   await p.evaluate(() => { location.hash = '#syntax=cues'; }); await p.waitForTimeout(1500);

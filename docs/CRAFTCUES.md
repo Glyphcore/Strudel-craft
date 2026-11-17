@@ -89,7 +89,8 @@ echo span; whole-track (`*`) cues go into the leading NOTE; `todo` cues only wit
 `makeKB({ composition, syntax, genres, formBank, resource })` -> `resolve(id)` -> `{ id, kb, status: resolved | unknown | unchecked | not-loaded,
 title, def, link }`. Links: composition `#syntax=mot-05`, syntax `#syntax=<id>`, Resources ids `#res=<id>`, genres and form bank the docs.
 The CLI loads site/data/composition.json, syntax.json, docs/genres/*.json, the shipped pack catalogs (hooks, atoms, vox banks) and the form bank
-(`$FORM_BANK`, default suno-track-lab data/form-bank/bank.jsonl; absence tolerated). `cues.mjs kb MOT-05 hook:cowbell` prints the cards.
+(`$FORM_BANK`, default `$SUNO_TRACK_LAB/data/form-bank/bank.jsonl`; absence tolerated). Genres are read from `$SUNO_TRACK_LAB/docs/genres/*.json`
+(default `SUNO_TRACK_LAB=/home/user/suno-track-lab`; wavephonk, dubstep-ukf ...) and then this repo's docs/genres (same id: this repo wins). `cues.mjs kb MOT-05 hook:cowbell` prints the cards.
 
 ## 5. Generated cues
 Analysis tools emit cues with `src=inferred` or `analysis` and `method` / `tool`: suno-track-lab `engine/composer/run.sh ... --cues OUT`,
@@ -99,11 +100,16 @@ with the authored set; the authored text wins by id.
 ## 6. Site (#163)
 Lazy only (`site/cues.js` entry in the deferred list; `cues-ui.js`, `cues.css`, the engine and the KB load on first use; eager shell unchanged).
 - **Captions strip** above the transport while a program with cues plays: the bar, chips of the cues active at that bar, and a thin timeline lane
-  with every span, section ticks, the playhead and arcs for cross-bar pairs, relations and cross-layer scopes. A layer-scoped cue lights the lane
-  rows and graph nodes it names (`[data-cue-hot]`). A chip press opens the cue's KB card in the site modal; nothing in the editor moves. "Go to code"
+  with every span, section ticks, the playhead and arcs for cross-bar pairs, relations and cross-layer scopes. The arcs live only in this strip
+  timeline lane; the Rack, Graph and Record timelines do not draw them. Highlight: when the Graph view shows the program that is playing (its text
+  equals the playing source), the track nodes (`.gn-head[data-node="track:<lane>"]`) and Lanes cards (`[data-lane]`) of the lanes a cue names get
+  `[data-cue-hot]`; `@tag:x` resolves to every lane carrying tag x (`.tags(...)`, the Lanes scan), `@bus:x` names no lane. A Graph showing another
+  program, and the Rack view (it has no lane rows), are not highlighted. A chip press opens the cue's KB card in the site modal; nothing in the editor moves. "Go to code"
   on the card of an inline cue is the deliberate jump. Hide with the strip's x or Ctrl+K "Captions on / off".
 - **Score sheet** (`Score` button in the editor heads, Ctrl+K "Show score cues", `#cues`): cues by section, kind pills, layer and concept filters,
-  Edit (site modal; an inline cue is rewritten in place as one editor change), Add cue at the current bar (stored in this browser, or written into
+  Edit (site modal; an inline cue is rewritten in place as one editor change: the span comes from the #142 comment ranges, so a `//@` inside a
+  string is never touched, and a `/*@ */` cue rewrites its own line of the block; when the editor does not show the playing program the edit is
+  refused with a toast, never saved as a hidden local copy), Add cue at the current bar (stored in this browser, or written into
   the code as a `//@` line), Import `.craftcues` / `.vtt` / JSON, Export `.craftcues` / `.vtt` / JSON.
 - Sources merged by id: cues edited in this browser (localStorage `sc.cues.<program>`), inline `//@`, shipped sidecars (`site/data/cues/index.json`
   matches a recipe id or the program's first line; built by `node tools/craftcues/build_site.mjs`).

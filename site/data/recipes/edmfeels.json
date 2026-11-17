@@ -31,6 +31,13 @@
    "source": "docs/CONVENTIONS.md",
    "error": null,
    "lowered": "setcpm(174/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(52).attack(0.003).penv(24).pdecay(0.035).decay(0.2).sustain(0).hpf(38).lpf(5000).gain(0.8).mul(velocity(rand.late(1.37).range(0.95, 1))).late(rand.late(1).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.75).attack(0.001).decay(0.17).sustain(0).hpf(170).lpf(9000).gain(0.85).mul(velocity(rand.late(2.37).range(0.95, 1))).late(rand.late(2).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ x ~ ~ x ~ ~ x ~ ~ ~ ~ x x\").velocity(\"[.55 .4 .6 .45]*4\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle\").note(\"g3\").noise(0.6).attack(0.002).decay(0.07).sustain(0).hpf(200).lpf(6000).gain(0.3).mul(velocity(rand.late(3.37).range(0.95, 1))).late(rand.late(3).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"x ~ x ~ x ~ x ~ x ~ x ~ x ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").hpf(8000).decay(0.035).sustain(0).gain(0.35).mul(velocity(rand.late(4.37).range(0.95, 1))).late(rand.late(4).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"<[f1 ~ f1 f1 ~ f1 ~ ~ f2 ~ f1 ~ ab1 ~ f1 ~] [f1 ~ ~ f1 ~ ~ f1 ~ eb2 ~ ~ f1 c2 ~ f1 ~]>\").hpf(70).lpf(9000).s(\"sawtooth\").hpf(110).fm(4).fmh(1).attack(0.004).sustain(0.6).release(0.06).lpf(2500).lpq(8).lpenv(2).lpdecay(0.22).vowel(\"a\").gain(2.2).mul(velocity(rand.late(6.37).range(0.95, 1))).late(rand.late(6).range(0, 0.000625).segment(16)).early(0.000313)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (97 Craft, 99 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "95df55f70c"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 174.0,

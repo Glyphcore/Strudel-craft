@@ -9,6 +9,12 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~\").hpf(80).lpf(8000).s(\"square, white\").note(\"g3\").fm(5).fmh(1.41).fmattack(0.001).fmdecay(0.12).fmsustain(0.15).attack(0.001).decay(0.35).sustain(0).hpf(120).ftype(\"24db\").lpf(7000).room(0.15).size(0.3).gain(0.42)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "732bbea27c"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -24,6 +30,12 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~\").hpf(80).lpf(8000).s(\"triangle, pink\").note(\"c3\").fm(8).fmh(2.76).fmattack(0.001).fmdecay(0.06).fmsustain(0.1).attack(0.001).decay(0.5).sustain(0).hpf(80).ftype(\"24db\").lpf(6000).room(0.2).size(0.4).gain(0.4)\n$: s(\"~ ~ x ~\").hpf(80).lpf(8000).s(\"sine\").note(\"g4\").fm(3).fmh(3.9).fmattack(0.001).fmdecay(0.4).fmsustain(0.1).attack(0.001).decay(1).sustain(0).hpf(200).ftype(\"24db\").lpf(8000).gain(0.35)\n$: s(\"~ x ~ x\").hpf(80).lpf(8000).s(\"triangle\").note(\"d4\").fm(2).fmh(2.76).fmdecay(0.2).fmsustain(0.2).attack(0.001).decay(0.6).sustain(0).hpf(150).ftype(\"24db\").lpf(7000).gain(0.4)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 20,
+    "hash": "c563fcbb18"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -39,6 +51,13 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"~ x ~ ~ ~ ~ x ~ ~ ~ ~ x ~ ~ ~ ~\").hpf(80).lpf(8000).s(\"white\").attack(0.0005).decay(0.008).sustain(0).bpf(3000).bpq(2).hpf(1000).ftype(\"24db\").lpf(8000).gain(0.7)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ [x x] [x x] [x x x] [x x x]\").hpf(80).lpf(8000).s(\"white\").attack(0.0005).decay(0.012).sustain(0).bpf(2200).bpq(4).hpf(600).ftype(\"24db\").lpf(7000).gain(0.65)\n$: s(\"x*16\").velocity(\"[.5 .3 .8 .3]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.03).sustain(0).hpf(5000).ftype(\"24db\").lpf(11000).gain(0.4).mul(velocity(rand.late(5.37).range(0.8, 1))).late(rand.late(5).range(0, 0.00375).segment(16)).early(0.001875)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (116 Craft, 115 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "20147c2bd2"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -54,6 +73,12 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: note(\"~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c5 ~ ~ ~\").hpf(300).lpf(10000).s(\"sawtooth\").note(\"c5\").penv(7).pattack(0.3).vib(6).vibmod(0.3).attack(0.08).decay(0.3).sustain(0.6).release(0.2).hpf(400).lpf(5000).lpq(6).gain(0.18)\n$: s(\"~ ~ x ~\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(0.05).decay(0.6).sustain(0).hpf(2500).ftype(\"24db\").lpf(9000).gain(0.3)\n$: note(\"<~ c5>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"sawtooth\").note(\"c5\").penv(-24).pdecay(0.8).attack(0.01).decay(1).sustain(0).hpf(200).lpf(4000).gain(0.2)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 10,
+    "hash": "ede9a5b1dd"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -69,6 +94,12 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~\").hpf(25).lpf(5000).s(\"sine, brown\").freq(60).penv(12).pdecay(0.05).attack(0.001).decay(0.4).sustain(0).hpf(30).ftype(\"24db\").lpf(2000).gain(0.75)\n$: s(\"~ ~ x ~\").hpf(25).lpf(5000).s(\"sine, square\").freq(48).penv(24).pdecay(0.04).attack(0.001).decay(0.3).sustain(0).hpf(30).ftype(\"24db\").lpf(3000).gain(0.55)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 16,
+    "hash": "6dd5af1059"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -84,6 +115,12 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"[x*8]\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.25).sustain(0).hpf(5000).ftype(\"24db\").lpf(12000).gain(0.3).degradeBy(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 14,
+    "hash": "5f13af1d9d"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -99,6 +136,12 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: note(\"c3\").hpf(200).lpf(12500).ftype(\"24db\").s(\"brown, pink\").attack(0.5).sustain(1).release(0.5).hpf(500).ftype(\"24db\").lpf(6000).gain(0.07)\n$: note(\"c3\").hpf(200).lpf(12500).ftype(\"24db\").s(\"pink\").vowel(\"o\").attack(1).sustain(1).release(1).hpf(300).ftype(\"24db\").lpf(4000).room(0.5).size(0.8).gain(0.06)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 12,
+    "hash": "6d8e2e3e08"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -114,6 +157,13 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).attack(0.002).penv(30).pdecay(0.03).decay(0.3).sustain(0).hpf(38).lpf(4000).gain(0.85)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").fm(4).fmh(1.41).fmdecay(0.05).fmsustain(0.1).attack(0.001).decay(0.2).sustain(0).hpf(160).ftype(\"24db\").lpf(9000).gain(0.5)\n$: s(\"x*16\").velocity(\"[.5 .3 .8 .3]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.03).sustain(0).hpf(5000).ftype(\"24db\").lpf(11000).gain(0.4).mul(velocity(rand.late(3.37).range(0.85, 1))).late(rand.late(3).range(0, 0.0025).segment(16)).early(0.00125)\n$: s(\"~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~\").hpf(80).lpf(8000).s(\"square, white\").note(\"g3\").fm(5).fmh(1.41).fmattack(0.001).fmdecay(0.12).fmsustain(0.15).attack(0.001).decay(0.35).sustain(0).hpf(120).ftype(\"24db\").lpf(7000).room(0.15).size(0.3).gain(0.42)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (104 Craft, 103 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "e0da62a399"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -129,6 +179,12 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).attack(0.002).penv(30).pdecay(0.03).decay(0.3).sustain(0).hpf(38).lpf(4000).gain(0.85)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").fm(4).fmh(1.41).fmdecay(0.05).fmsustain(0.1).attack(0.001).decay(0.2).sustain(0).hpf(160).ftype(\"24db\").lpf(9000).gain(0.5)\n$: s(\"<[~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~] [~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~] [~ ~ x ~ ~ x ~ ~ ~ ~ x ~ ~ ~ x ~] [x ~ x ~ ~ x ~ x ~ ~ x ~ x ~ ~ x]>\").hpf(80).lpf(8000).s(\"triangle, pink\").note(\"c3\").fm(8).fmh(2.76).fmattack(0.001).fmdecay(0.06).fmsustain(0.1).attack(0.001).decay(0.5).sustain(0).hpf(80).ftype(\"24db\").lpf(6000).room(0.2).size(0.4).gain(0.4)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 44,
+    "hash": "0f1a4f6cdf"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -144,6 +200,12 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).attack(0.002).penv(30).pdecay(0.03).decay(0.3).sustain(0).hpf(38).lpf(4000).gain(0.85)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").fm(4).fmh(1.41).fmdecay(0.05).fmsustain(0.1).attack(0.001).decay(0.2).sustain(0).hpf(160).ftype(\"24db\").lpf(9000).gain(0.5)\n$: note(\"c1@10 c1@6\").hpf(25).s(\"sine\").attack(0.005).decay(0.2).sustain(0.9).release(0.06).lpf(300).gain(0.55)\n$: note(\"<[c2 ~ ~ c2 ~ ~ c2 ~ ~ ~ c2 ~ c2 ~ ~ ~] [c2 ~ c2 ~ ~ c2 ~ ~ eb2 ~ ~ c2 ~ ~ g1 ~]>\").hpf(70).lpf(9000).s(\"square\").fm(1).fmh(1.5).attack(0.004).decay(0.2).sustain(0.4).release(0.04).hpf(120).ftype(\"24db\").lpf(1100).lpq(5).lpenv(2).lpdecay(0.1).gain(0.3)\n$: s(\"~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~\").hpf(80).lpf(8000).s(\"white\").attack(0.0005).decay(0.008).sustain(0).bpf(3000).bpq(2).hpf(1000).ftype(\"24db\").lpf(8000).gain(0.7)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 58,
+    "hash": "d84113c5c4"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -159,6 +221,12 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: note(\"c2 ~ ~ ~ c2 c2 ~ ~ eb2 ~ ~ ~ c2 ~ ~ ~\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2.5).fmh(1.41).fmattack(0.005).fmdecay(0.3).fmsustain(0.4).vowel(\"<o e>\").attack(0.005).sustain(0.8).release(0.05).hpf(100).lpf(3500).gain(0.35).mask(\"<1 0>\")\n$: note(\"c2 ~ ~ ~ ~ ~ c2 ~ ~ ~ ~ ~ c2 ~ ~ ~\").hpf(70).lpf(9000).s(\"square, triangle\").fm(6).fmh(2.76).fmattack(0.001).fmdecay(0.06).fmsustain(0.2).attack(0.003).decay(0.18).sustain(0.3).release(0.04).hpf(90).ftype(\"24db\").lpf(4000).gain(0.32).mask(\"<0 1>\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 22,
+    "hash": "2c5399d40c"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -174,6 +242,12 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(130/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).attack(0.002).penv(30).pdecay(0.03).decay(0.3).sustain(0).hpf(38).lpf(4000).gain(0.85)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.12).sustain(0).bpf(1500).bpq(1.5).hpf(300).ftype(\"24db\").lpf(8000).gain(0.65)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.12).sustain(0).hpf(5000).ftype(\"24db\").lpf(11000).gain(0.3)\n$: note(\"~ c2 c2 c2 ~ c2 c2 c2 ~ c2 c2 c2 ~ c2 c2 c2\").hpf(40).lpf(3500).s(\"triangle, square\").attack(0.008).decay(0.12).sustain(0.2).release(0.03).ftype(\"24db\").hpf(45).lpf(600).lpenv(1.5).lpdecay(0.08).gain(0.4)\n$: s(\"<~ [~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ [x x] [x x] [x x x] [x x x]]>\").hpf(80).lpf(8000).s(\"white\").attack(0.0005).decay(0.012).sustain(0).bpf(2200).bpq(4).hpf(600).ftype(\"24db\").lpf(7000).gain(0.65)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 156,
+    "hash": "6198601d87"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 130.0,
@@ -189,6 +263,12 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"<x ~ ~>\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(3.43).sustain(1).release(0.1).hpf(400).hpenv(4).hpattack(3.43).hpsustain(1).lpf(11000).gain(0.25).clip(2)\n$: s(\"<~ [~ ~ ~ [x x x x]] ~>\").hpf(80).lpf(8000).s(\"white\").attack(0.0005).decay(0.012).sustain(0).bpf(2200).bpq(4).hpf(600).ftype(\"24db\").lpf(7000).gain(0.65)\n$: s(\"<~ ~ x>\").hpf(25).lpf(5000).s(\"sine, brown\").freq(45).penv(36).pdecay(0.08).attack(0.001).decay(1.2).sustain(0).hpf(28).ftype(\"24db\").lpf(3000).gain(0.7)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 8,
+    "hash": "d36bf42fc8"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -204,6 +284,13 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).attack(0.002).penv(30).pdecay(0.03).decay(0.3).sustain(0).hpf(38).lpf(4000).gain(0.85).mul(velocity(rand.late(1.37).range(0.95, 1))).late(rand.late(1).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").fm(4).fmh(1.41).fmdecay(0.05).fmsustain(0.1).attack(0.001).decay(0.2).sustain(0).hpf(160).ftype(\"24db\").lpf(9000).gain(0.5).mul(velocity(rand.late(2.37).range(0.95, 1))).late(rand.late(2).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~ ~ x ~ ~\").hpf(80).lpf(8000).s(\"square, white\").note(\"g3\").fm(5).fmh(1.41).fmattack(0.001).fmdecay(0.12).fmsustain(0.15).attack(0.001).decay(0.35).sustain(0).hpf(120).ftype(\"24db\").lpf(7000).room(0.15).size(0.3).gain(0.42).mul(velocity(rand.late(3.37).range(0.95, 1))).late(rand.late(3).range(0, 0.000625).segment(16)).early(0.000313)\n$: s(\"x*16\").velocity(\"[.5 .3 .8 .3]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.03).sustain(0).hpf(5000).ftype(\"24db\").lpf(11000).gain(0.4).mul(velocity(rand.late(4.37).range(0.85, 1))).late(rand.late(4).range(0, 0.0025).segment(16)).early(0.00125)\n$: note(\"~ c4 ~ ~ ~ ~ c4 ~ ~ ~ ~ c4 ~ ~ ~ ~\").hpf(80).lpf(8000).s(\"white\").attack(0.0005).decay(0.008).sustain(0).bpf(3000).bpq(2).hpf(1000).ftype(\"24db\").lpf(8000).gain(0.7).mul(velocity(rand.late(5.37).range(0.95, 1))).late(rand.late(5).range(0, 0.000625).segment(16)).early(0.000313)\n$: note(\"c2 ~ ~ c2 ~ ~ c2 ~ ~ ~ c2 ~ c2 ~ ~ ~\").hpf(70).lpf(9000).s(\"square\").fm(1).fmh(1.5).attack(0.004).decay(0.2).sustain(0.4).release(0.04).hpf(120).ftype(\"24db\").lpf(1100).lpq(5).lpenv(2).lpdecay(0.1).gain(0.3).mul(velocity(rand.late(6.37).range(0.95, 1))).late(rand.late(6).range(0, 0.000625).segment(16)).early(0.000313)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (135 Craft, 137 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "fb8885a705"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -219,6 +306,13 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).attack(0.002).penv(30).pdecay(0.03).decay(0.3).sustain(0).hpf(38).lpf(4000).gain(0.85).mul(velocity(rand.late(1.37).range(0.92, 1))).late(rand.late(1).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"e3\").fm(4).fmh(1.41).fmdecay(0.05).fmsustain(0.1).attack(0.001).decay(0.2).sustain(0).hpf(160).ftype(\"24db\").lpf(9000).gain(0.5).mul(velocity(rand.late(2.37).range(0.92, 1))).late(rand.late(2).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~\").hpf(80).lpf(8000).s(\"sine\").note(\"g4\").fm(3).fmh(3.9).fmattack(0.001).fmdecay(0.4).fmsustain(0.1).attack(0.001).decay(1).sustain(0).hpf(200).ftype(\"24db\").lpf(8000).gain(0.35).mul(velocity(rand.late(3.37).range(0.92, 1))).late(rand.late(3).range(0, 0.00125).segment(16)).early(0.000625)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.12).sustain(0).hpf(5000).ftype(\"24db\").lpf(11000).gain(0.3).mul(velocity(rand.late(4.37).range(0.92, 1))).late(rand.late(4).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c5 ~ ~ ~\").hpf(300).lpf(10000).s(\"sawtooth\").note(\"c5\").penv(7).pattack(0.3).vib(6).vibmod(0.3).attack(0.08).decay(0.3).sustain(0.6).release(0.2).hpf(400).lpf(5000).lpq(6).gain(0.18).mul(velocity(rand.late(5.37).range(0.92, 1))).late(rand.late(5).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"c2 ~ ~ ~ c2 c2 ~ ~ eb2 ~ ~ ~ c2 ~ ~ ~\").hpf(70).lpf(9000).s(\"sawtooth\").fm(2.5).fmh(1.41).fmattack(0.005).fmdecay(0.3).fmsustain(0.4).vowel(\"<o e>\").attack(0.005).sustain(0.8).release(0.05).hpf(100).lpf(3500).gain(0.35).mul(velocity(rand.late(6.37).range(0.92, 1))).late(rand.late(6).range(0, 0.00125).segment(16)).early(0.000625)\n$: note(\"c3\").hpf(200).lpf(12500).ftype(\"24db\").s(\"brown, pink\").attack(0.5).sustain(1).release(0.5).hpf(500).ftype(\"24db\").lpf(6000).gain(0.07).mul(velocity(rand.late(7.37).range(0.92, 1))).late(rand.late(7).range(0, 0.00125).segment(16)).early(0.000625)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (72 Craft, 73 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "a8bfe1cc64"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -234,6 +328,13 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(130/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(50).attack(0.002).penv(30).pdecay(0.03).decay(0.3).sustain(0).hpf(38).lpf(4000).gain(0.85).mul(velocity(rand.late(1.37).range(0.96, 1))).late(rand.late(1).range(0, 0.000375).segment(16)).early(0.000188)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.12).sustain(0).bpf(1500).bpq(1.5).hpf(300).ftype(\"24db\").lpf(8000).gain(0.65).mul(velocity(rand.late(2.37).range(0.96, 1))).late(rand.late(2).range(0, 0.000375).segment(16)).early(0.000188)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ [x x] [x x] [x x x] [x x x]\").hpf(80).lpf(8000).s(\"white\").attack(0.0005).decay(0.012).sustain(0).bpf(2200).bpq(4).hpf(600).ftype(\"24db\").lpf(7000).gain(0.65).mul(velocity(rand.late(3.37).range(0.96, 1))).late(rand.late(3).range(0, 0.000375).segment(16)).early(0.000188)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.12).sustain(0).hpf(5000).ftype(\"24db\").lpf(11000).gain(0.3).mul(velocity(rand.late(4.37).range(0.96, 1))).late(rand.late(4).range(0, 0.000375).segment(16)).early(0.000188)\n$: note(\"~ c4 ~ ~ ~ ~ c4 ~ ~ ~ ~ c4 ~ ~ ~ ~\").hpf(80).lpf(8000).s(\"white\").attack(0.0005).decay(0.008).sustain(0).bpf(3000).bpq(2).hpf(1000).ftype(\"24db\").lpf(8000).gain(0.7).mul(velocity(rand.late(5.37).range(0.96, 1))).late(rand.late(5).range(0, 0.000375).segment(16)).early(0.000188)\n$: note(\"~ c2 c2 c2 ~ c2 c2 c2 ~ c2 c2 c2 ~ c2 c2 c2\").hpf(40).lpf(3500).s(\"triangle, square\").attack(0.008).decay(0.12).sustain(0.2).release(0.03).ftype(\"24db\").hpf(45).lpf(600).lpenv(1.5).lpdecay(0.08).gain(0.4).mul(velocity(rand.late(6.37).range(0.96, 1))).late(rand.late(6).range(0, 0.000375).segment(16)).early(0.000188)\n$: note(\"c3\").hpf(200).lpf(12500).ftype(\"24db\").s(\"pink\").vowel(\"o\").attack(1).sustain(1).release(1).hpf(300).ftype(\"24db\").lpf(4000).room(0.5).size(0.8).gain(0.06).mul(velocity(rand.late(7.37).range(0.96, 1))).late(rand.late(7).range(0, 0.000375).segment(16)).early(0.000188)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
+    "hash": "1942d87ddf"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 130.0,
@@ -249,6 +350,13 @@
    "source": "docs/INDUSTRIAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(120/4)\n$: s(\"x ~ ~ x ~ ~ ~ ~ x ~ x ~ ~ ~ ~ ~\").hpf(25).lpf(5000).s(\"sine, brown\").freq(60).penv(12).pdecay(0.05).attack(0.001).decay(0.4).sustain(0).hpf(30).ftype(\"24db\").lpf(2000).gain(0.75).mul(velocity(rand.late(1.37).range(0.75, 1))).late(rand.late(1).range(0, 0.005).segment(16)).early(0.0025)\n$: s(\"~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~\").hpf(25).lpf(5000).s(\"sine, square\").freq(48).penv(24).pdecay(0.04).attack(0.001).decay(0.3).sustain(0).hpf(30).ftype(\"24db\").lpf(3000).gain(0.55).mul(velocity(rand.late(2.37).range(0.75, 1))).late(rand.late(2).range(0, 0.005).segment(16)).early(0.0025)\n$: s(\"x ~ x ~ ~ x ~ x ~ ~ x ~ x ~ ~ x\").hpf(80).lpf(8000).s(\"triangle, pink\").note(\"c3\").fm(8).fmh(2.76).fmattack(0.001).fmdecay(0.06).fmsustain(0.1).attack(0.001).decay(0.5).sustain(0).hpf(80).ftype(\"24db\").lpf(6000).room(0.2).size(0.4).gain(0.4).mul(velocity(rand.late(3.37).range(0.75, 1))).late(rand.late(3).range(0, 0.005).segment(16)).early(0.0025)\n$: s(\"x*16\").velocity(\"[.5 .3 .8 .3]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.03).sustain(0).hpf(5000).ftype(\"24db\").lpf(11000).gain(0.4).mul(velocity(rand.late(4.37).range(0.75, 1))).late(rand.late(4).range(0, 0.005).segment(16)).early(0.0025)\n$: note(\"[c6*8]\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.25).sustain(0).hpf(5000).ftype(\"24db\").lpf(12000).gain(0.3).mul(velocity(rand.late(5.37).range(0.75, 1))).late(rand.late(5).range(0, 0.005).segment(16)).early(0.0025)\n$: note(\"c2 ~ ~ ~ ~ ~ c2 ~ ~ ~ ~ ~ c2 ~ ~ ~\").hpf(70).lpf(9000).s(\"square, triangle\").fm(6).fmh(2.76).fmattack(0.001).fmdecay(0.06).fmsustain(0.2).attack(0.003).decay(0.18).sustain(0.3).release(0.04).hpf(90).ftype(\"24db\").lpf(4000).gain(0.32).mul(velocity(rand.late(6.37).range(0.75, 1))).late(rand.late(6).range(0, 0.005).segment(16)).early(0.0025)\n$: note(\"c3\").hpf(200).lpf(12500).ftype(\"24db\").s(\"brown, pink\").attack(0.5).sustain(1).release(0.5).hpf(500).ftype(\"24db\").lpf(6000).gain(0.07).mul(velocity(rand.late(7.37).range(0.75, 1))).late(rand.late(7).range(0, 0.005).segment(16)).early(0.0025)\n$: s(\"~ x\").hpf(150).lpf(12500).ftype(\"24db\").s(\"white\").attack(0.05).decay(0.6).sustain(0).hpf(2500).ftype(\"24db\").lpf(9000).gain(0.3).mul(velocity(rand.late(8.37).range(0.75, 1))).late(rand.late(8).range(0, 0.005).segment(16)).early(0.0025)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
+    "hash": "1be7daf0c0"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 120.0,

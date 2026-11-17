@@ -9,6 +9,12 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(120/4)\n$: note(\"[e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [g2,d3,g3] ~ [a2,e3,a3]\").hpf(70).lpf(7000).s(\"sawtooth, triangle\").attack(0.002).decay(0.8).sustain(0.2).release(0.2).hpf(80).lpf(1500).lpenv(2).lpdecay(0.3).room(0.15).size(0.3).gain(0.22).mask(\"<1 0 0>\")\n$: note(\"[e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [g2,d3,g3] ~ [a2,e3,a3]\").hpf(70).lpf(7000).s(\"sawtooth, square\").fm(0.5).fmh(2).attack(0.002).decay(0.5).sustain(0.5).release(0.1).hpf(90).lpf(2000).lpq(2).lpenv(1).lpdecay(0.2).gain(0.1).mask(\"<0 1 0>\")\n$: note(\"[e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [g2,d3,g3] ~ [a2,e3,a3]\").hpf(70).lpf(7000).s(\"sawtooth, square\").attack(0.002).decay(0.4).sustain(0.7).release(0.08).hpf(100).ftype(\"24db\").lpf(3200).lpq(1.5).distort(1.2).distortvol(0.35).gain(0.12).mask(\"<0 0 1>\")",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 120,
+    "hash": "f0bbdca8a0"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 120.0,
@@ -24,6 +30,12 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(120/4)\n$: note(\"<[e2 e2 ~ e2 ~ e2 e2 ~ e2 ~ e2 e2 ~ ~ ~ ~] [[e2 ~ e2 e2]*4]>\").hpf(70).lpf(7000).s(\"sawtooth, square\").fm(0.5).fmh(2).attack(0.001).decay(0.09).sustain(0).ftype(\"24db\").hpf(100).lpf(900).lpenv(1.5).lpdecay(0.05).gain(0.18)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 80,
+    "hash": "1b34d166b1"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 120.0,
@@ -39,6 +51,12 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(120/4)\n$: note(\"b4 ~ d5 e5 ~ d5 b4 a4 g4 ~ a4 b4 ~ ~ ~ ~\").hpf(150).lpf(8000).s(\"sawtooth\").attack(0.01).sustain(0.8).release(0.2).hpf(200).lpf(4000).lpq(3).delay(0.2).delaytime(0.375).delayfeedback(0.3).room(0.25).gain(0.2).vib(5.5).vibmod(0.25)\n$: note(\"~ ~ ~ ~ e5 ~ ~ ~ ~ ~ ~ ~ b5 ~ ~ ~\").hpf(300).lpf(8000).s(\"sine\").attack(0.002).decay(1.2).sustain(0).hpf(300).lpf(6000).room(0.3).gain(0.3)\n$: note(\"<~ e5>\").hpf(150).lpf(8000).s(\"sine\").attack(1.5).sustain(1).release(0.4).vib(5).vibmod(0.2).hpf(150).lpf(3000).gain(0.22)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 46,
+    "hash": "81ca2e48a0"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 120.0,
@@ -54,6 +72,12 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(120/4)\n$: note(\"e1 e1 ~ e1 ~ e1 e1 ~ g1 ~ g1 ~ a1 ~ a1 ~\").hpf(40).lpf(3500).s(\"triangle\").attack(0.004).decay(0.4).sustain(0.5).release(0.08).hpf(35).lpf(1200).lpenv(1).lpdecay(0.15).gain(0.55).mask(\"<1 0>\")\n$: note(\"e1 e1 ~ e1 ~ e1 e1 ~ g1 ~ g1 ~ a1 ~ a1 ~\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.002).decay(0.3).sustain(0.5).release(0.06).hpf(35).lpf(900).lpenv(2).lpdecay(0.08).gain(0.4).mask(\"<0 1>\")\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ x ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.002).penv(20).pdecay(0.04).decay(0.35).sustain(0).hpf(38).lpf(5000).gain(0.85)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 48,
+    "hash": "cd47ede243"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 120.0,
@@ -69,6 +93,13 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(120/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ x ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.002).penv(20).pdecay(0.04).decay(0.35).sustain(0).hpf(38).lpf(5000).gain(0.85)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.25).sustain(0).hpf(150).ftype(\"24db\").lpf(9000).room(0.2).size(0.4).gain(0.5)\n$: s(\"x*8\").velocity(\"[1 .6]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.04).sustain(0).hpf(6000).ftype(\"24db\").lpf(13000).gain(0.3).mul(velocity(rand.late(3.37).range(0.9, 1))).late(rand.late(3).range(0, 0.001875).segment(16)).early(0.000938)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~] ~>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.002).decay(1.4).sustain(0).hpf(5000).ftype(\"24db\").lpf(13000).gain(0.18)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (62 Craft, 61 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "31fc281833"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 120.0,
@@ -84,6 +115,12 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"x*16\").velocity(\"[1 .8]*8\").hpf(30).lpf(7000).s(\"sine\").freq(60).attack(0.001).penv(24).pdecay(0.02).decay(0.15).sustain(0).hpf(45).lpf(6000).gain(0.8)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.25).sustain(0).hpf(150).ftype(\"24db\").lpf(9000).room(0.2).size(0.4).gain(0.5)\n$: s(\"x*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.5).sustain(0).hpf(5000).ftype(\"24db\").lpf(12000).gain(0.16)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 88,
+    "hash": "c8d66981c5"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -99,6 +136,12 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(180/4)\n$: s(\"<[[x ~]*8] [x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~]>\").hpf(30).lpf(7000).s(\"sine\").freq(60).attack(0.001).penv(24).pdecay(0.02).decay(0.15).sustain(0).hpf(45).lpf(6000).gain(0.8)\n$: s(\"<[[~ x]*8] [~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~]>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.25).sustain(0).hpf(150).ftype(\"24db\").lpf(9000).room(0.2).size(0.4).gain(0.5)\n$: s(\"<~ [x*4]>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.5).sustain(0).hpf(5000).ftype(\"24db\").lpf(12000).gain(0.16)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 80,
+    "hash": "df7ec8df3d"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 180.0,
@@ -114,6 +157,12 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(120/4)\n$: note(\"<[~ ~ ~ ~ ~ ~ ~ ~ d3 d3 b2 b2 g2 g2 e2 e2] ~ ~>\").hpf(80).lpf(8000).s(\"sine\").attack(0.002).penv(8).pdecay(0.08).decay(0.4).sustain(0).hpf(80).lpf(5000).gain(0.7)\n$: s(\"<~ [~ ~ ~ ~ ~ ~ ~ ~ x x x x [x x] [x x] [x x] [x x]] ~>\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.25).sustain(0).hpf(150).ftype(\"24db\").lpf(9000).room(0.2).size(0.4).gain(0.5)\n$: s(\"<~ ~ [x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~]>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.002).decay(1.4).sustain(0).hpf(5000).ftype(\"24db\").lpf(13000).gain(0.18)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ x ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.002).penv(20).pdecay(0.04).decay(0.35).sustain(0).hpf(38).lpf(5000).gain(0.85)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 53,
+    "hash": "7b96f0609d"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 120.0,
@@ -129,6 +178,12 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(120/4)\n$: note(\"<[e3,g3,b3] [c3,e3,g3] [d3,f#3,a3] [b2,d3,f#3]>\").hpf(80).lpf(7000).s(\"sine, square\").attack(0.01).sustain(1).release(0.1).vib(6).vibmod(0.1).hpf(90).lpf(3000).gain(0.15)\n$: note(\"<[e3,g3,b3] [c3,e3,g3] [d3,f#3,a3] [b2,d3,f#3]>\").hpf(180).lpf(6000).s(\"sawtooth\").attack(0.4).sustain(1).release(0.6).hpf(180).lpf(2500).gain(0.12)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 36,
+    "hash": "196f565fbe"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 120.0,
@@ -144,6 +199,12 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: note(\"e2 ~ ~ e2 ~ ~ e2 ~ ~ ~ e2 ~ e2 ~ ~ ~\").hpf(70).lpf(7000).s(\"sawtooth, square\").fm(0.5).fmh(2).attack(0.001).decay(0.09).sustain(0).ftype(\"24db\").hpf(100).lpf(900).lpenv(1.5).lpdecay(0.05).gain(0.18)\n$: s(\"x ~ ~ x ~ ~ x ~ ~ ~ x ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(60).attack(0.001).penv(24).pdecay(0.02).decay(0.15).sustain(0).hpf(45).lpf(6000).gain(0.8)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.25).sustain(0).hpf(150).ftype(\"24db\").lpf(9000).room(0.2).size(0.4).gain(0.5)\n$: s(\"<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~] ~>\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.002).decay(1.4).sustain(0).hpf(5000).ftype(\"24db\").lpf(13000).gain(0.18)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 70,
+    "hash": "487c706509"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -159,6 +220,12 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(120/4)\n$: note(\"<[e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [g2,d3,g3] ~ [a2,e3,a3]!3 [e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [d3,a3,d4] [c3,g3,c4] ~>\").hpf(70).lpf(7000).s(\"sawtooth, square\").fm(0.5).fmh(2).attack(0.002).decay(0.5).sustain(0.5).release(0.1).hpf(90).lpf(2000).lpq(2).lpenv(1).lpdecay(0.2).gain(0.1)\n$: note(\"e1 e1 ~ e1 ~ e1 e1 ~ g1 ~ g1 ~ a1 ~ a1 ~\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.002).decay(0.3).sustain(0.5).release(0.06).hpf(35).lpf(900).lpenv(2).lpdecay(0.08).gain(0.4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ x ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.002).penv(20).pdecay(0.04).decay(0.35).sustain(0).hpf(38).lpf(5000).gain(0.85)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.25).sustain(0).hpf(150).ftype(\"24db\").lpf(9000).room(0.2).size(0.4).gain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 82,
+    "hash": "bd13a40941"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 120.0,
@@ -174,6 +241,12 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(70/4)\n$: note(\"[e2,b2,e3]@4 [f2,c3,f3]@2 [d3,a3,d4]@2\").hpf(70).lpf(7000).s(\"sawtooth, square\").fm(0.5).fmh(2).attack(0.002).decay(0.5).sustain(0.5).release(0.1).hpf(90).lpf(2000).lpq(2).lpenv(1).lpdecay(0.2).gain(0.1)\n$: note(\"e1@4 f1@2 d1@2\").hpf(40).lpf(3500).s(\"triangle\").attack(0.004).decay(0.4).sustain(0.5).release(0.08).hpf(35).lpf(1200).lpenv(1).lpdecay(0.15).gain(0.55)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.002).penv(20).pdecay(0.04).decay(0.35).sustain(0).hpf(38).lpf(5000).gain(0.85)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.25).sustain(0).hpf(150).ftype(\"24db\").lpf(9000).room(0.2).size(0.4).gain(0.5)",
+   "lowered_check": {
+    "equal": true,
+    "cycles": 4,
+    "events": 96,
+    "hash": "6b0d3ef34f"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 70.0,
@@ -189,6 +262,13 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(120/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ x ~ x ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.002).penv(20).pdecay(0.04).decay(0.35).sustain(0).hpf(38).lpf(5000).gain(0.85).mul(velocity(rand.late(1.37).range(0.9, 1))).late(rand.late(1).range(0, 0.001875).segment(16)).early(0.000938)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.25).sustain(0).hpf(150).ftype(\"24db\").lpf(9000).room(0.2).size(0.4).gain(0.5).mul(velocity(rand.late(2.37).range(0.9, 1))).late(rand.late(2).range(0, 0.001875).segment(16)).early(0.000938)\n$: s(\"x*8\").velocity(\"[1 .6]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.04).sustain(0).hpf(6000).ftype(\"24db\").lpf(13000).gain(0.3).mul(velocity(rand.late(4.37).range(0.9, 1))).late(rand.late(4).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"b4 ~ d5 e5 ~ d5 b4 a4 g4 ~ a4 b4 ~ ~ ~ ~\").hpf(150).lpf(8000).s(\"sawtooth\").attack(0.01).sustain(0.8).release(0.2).hpf(200).lpf(4000).lpq(3).delay(0.2).delaytime(0.375).delayfeedback(0.3).room(0.25).gain(0.2).mul(velocity(rand.late(5.37).range(0.9, 1))).late(rand.late(5).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"e1 e1 ~ e1 ~ e1 e1 ~ g1 ~ g1 ~ a1 ~ a1 ~\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.002).decay(0.3).sustain(0.5).release(0.06).hpf(35).lpf(900).lpenv(2).lpdecay(0.08).gain(0.4).mul(velocity(rand.late(6.37).range(0.9, 1))).late(rand.late(6).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"[e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [g2,d3,g3] ~ [a2,e3,a3]\").hpf(70).lpf(7000).s(\"sawtooth, square\").fm(0.5).fmh(2).attack(0.002).decay(0.5).sustain(0.5).release(0.1).hpf(90).lpf(2000).lpq(2).lpenv(1).lpdecay(0.2).gain(0.1).mul(velocity(rand.late(7.37).range(0.9, 1))).late(rand.late(7).range(0, 0.001875).segment(16)).early(0.000938)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (251 Craft, 252 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "cb14ab5597"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 120.0,
@@ -204,6 +284,13 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(112/4)\n$: s(\"[x ~ ~] [~ ~ ~] [x ~ x] [~ ~ ~]\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.002).penv(20).pdecay(0.04).decay(0.35).sustain(0).hpf(38).lpf(5000).gain(0.85).mul(velocity(rand.late(1.37).range(0.9, 1))).late(rand.late(1).range(0, 0.001875).segment(16)).early(0.000938)\n$: s(\"~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.25).sustain(0).hpf(150).ftype(\"24db\").lpf(9000).room(0.2).size(0.4).gain(0.5).mul(velocity(rand.late(2.37).range(0.9, 1))).late(rand.late(2).range(0, 0.001875).segment(16)).early(0.000938)\n$: s(\"[x ~ x]*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.04).sustain(0).hpf(6000).ftype(\"24db\").lpf(13000).gain(0.3).mul(velocity(rand.late(4.37).range(0.9, 1))).late(rand.late(4).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"e1 e1 ~ e1 ~ e1 e1 ~ g1 ~ g1 ~ a1 ~ a1 ~\").hpf(40).lpf(3500).s(\"triangle\").attack(0.004).decay(0.4).sustain(0.5).release(0.08).hpf(35).lpf(1200).lpenv(1).lpdecay(0.15).gain(0.55).mul(velocity(rand.late(6.37).range(0.9, 1))).late(rand.late(6).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"<[e3,g3,b3] [c3,e3,g3] [d3,f#3,a3] [b2,d3,f#3]>\").hpf(80).lpf(7000).s(\"sine, square\").attack(0.01).sustain(1).release(0.1).vib(6).vibmod(0.1).hpf(90).lpf(3000).gain(0.15).mul(velocity(rand.late(7.37).range(0.9, 1))).late(rand.late(7).range(0, 0.001875).segment(16)).early(0.000938)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (119 Craft, 121 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "684a64756f"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 112.0,
@@ -219,6 +306,13 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(140/4)\n$: s(\"x ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.002).penv(20).pdecay(0.04).decay(0.35).sustain(0).hpf(38).lpf(5000).gain(0.85).late(0.001875).mul(velocity(rand.late(1.37).range(0.9, 1))).late(rand.late(1).range(0, 0.001875).segment(16)).early(0.000938)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.25).sustain(0).hpf(150).ftype(\"24db\").lpf(9000).room(0.2).size(0.4).gain(0.5).late(0.001875).mul(velocity(rand.late(2.37).range(0.9, 1))).late(rand.late(2).range(0, 0.001875).segment(16)).early(0.000938)\n$: s(\"x*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.5).sustain(0).hpf(5000).ftype(\"24db\").lpf(12000).gain(0.16).late(0.001875).mul(velocity(rand.late(4.37).range(0.9, 1))).late(rand.late(4).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"e1 e1 ~ e1 ~ e1 e1 ~ g1 ~ g1 ~ a1 ~ a1 ~\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.002).decay(0.3).sustain(0.5).release(0.06).hpf(35).lpf(900).lpenv(2).lpdecay(0.08).gain(0.4).late(0.001875).mul(velocity(rand.late(6.37).range(0.9, 1))).late(rand.late(6).range(0, 0.001875).segment(16)).early(0.000938)\n$: note(\"[e2,b2,e3] ~ [e2,b2,e3] [e2,b2,e3] ~ [g2,d3,g3] ~ [a2,e3,a3]\").hpf(70).lpf(7000).s(\"sawtooth, square\").attack(0.002).decay(0.4).sustain(0.7).release(0.08).hpf(100).ftype(\"24db\").lpf(3200).lpq(1.5).distort(1.2).distortvol(0.35).gain(0.12).late(0.001875).mul(velocity(rand.late(7.37).range(0.9, 1))).late(rand.late(7).range(0, 0.001875).segment(16)).early(0.000938)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
+    "hash": "b5be0c937c"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 140.0,
@@ -234,6 +328,13 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(180/4)\n$: s(\"x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(60).attack(0.001).penv(24).pdecay(0.02).decay(0.15).sustain(0).hpf(45).lpf(6000).gain(0.8).mul(velocity(rand.late(1.37).range(0.94, 1))).late(rand.late(1).range(0, 0.001).segment(16)).early(0.0005)\n$: s(\"~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.25).sustain(0).hpf(150).ftype(\"24db\").lpf(9000).room(0.2).size(0.4).gain(0.5).mul(velocity(rand.late(2.37).range(0.94, 1))).late(rand.late(2).range(0, 0.001).segment(16)).early(0.0005)\n$: s(\"x*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.5).sustain(0).hpf(5000).ftype(\"24db\").lpf(12000).gain(0.16).mul(velocity(rand.late(4.37).range(0.94, 1))).late(rand.late(4).range(0, 0.001).segment(16)).early(0.0005)\n$: note(\"[e1 ~ e1 e1]*4\").hpf(40).lpf(3500).s(\"sawtooth\").attack(0.002).decay(0.3).sustain(0.5).release(0.06).hpf(35).lpf(900).lpenv(2).lpdecay(0.08).gain(0.4).mul(velocity(rand.late(6.37).range(0.94, 1))).late(rand.late(6).range(0, 0.001).segment(16)).early(0.0005)\n$: note(\"[e2 ~ e2 e2]*4\").hpf(70).lpf(7000).s(\"sawtooth, square\").fm(0.5).fmh(2).attack(0.001).decay(0.09).sustain(0).ftype(\"24db\").hpf(100).lpf(900).lpenv(1.5).lpdecay(0.05).gain(0.18).mul(velocity(rand.late(7.37).range(0.94, 1))).late(rand.late(7).range(0, 0.001).segment(16)).early(0.0005)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event count differs (207 Craft, 209 Strudel)); with the groove taken out of both forms the events are identical",
+    "hash": "ab72784e4b"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 180.0,
@@ -249,6 +350,13 @@
    "source": "docs/ROCKMETAL_REFERENCES.md",
    "error": null,
    "lowered": "setcpm(70/4)\n$: s(\"x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~\").hpf(30).lpf(7000).s(\"sine\").freq(55).attack(0.002).penv(20).pdecay(0.04).decay(0.35).sustain(0).hpf(38).lpf(5000).gain(0.85).late(0.003125).mul(velocity(rand.late(1.37).range(0.88, 1))).late(rand.late(1).range(0, 0.003125).segment(16)).early(0.001563)\n$: s(\"~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~\").hpf(120).lpf(10000).ftype(\"24db\").s(\"triangle, white\").note(\"d3\").attack(0.001).decay(0.25).sustain(0).hpf(150).ftype(\"24db\").lpf(9000).room(0.2).size(0.4).gain(0.5).late(0.003125).mul(velocity(rand.late(2.37).range(0.88, 1))).late(rand.late(2).range(0, 0.003125).segment(16)).early(0.001563)\n$: s(\"x*4\").hpf(5000).lpf(14500).ftype(\"24db\").s(\"white\").attack(0.001).decay(0.5).sustain(0).hpf(5000).ftype(\"24db\").lpf(12000).gain(0.16).late(0.003125).mul(velocity(rand.late(4.37).range(0.88, 1))).late(rand.late(4).range(0, 0.003125).segment(16)).early(0.001563)\n$: note(\"<~ e5>\").hpf(150).lpf(8000).s(\"sine\").attack(1.5).sustain(1).release(0.4).vib(5).vibmod(0.2).hpf(150).lpf(3000).gain(0.22).late(0.003125).mul(velocity(rand.late(5.37).range(0.88, 1))).late(rand.late(5).range(0, 0.003125).segment(16)).early(0.001563)\n$: note(\"e1@4 f1@2 d1@2\").hpf(40).lpf(3500).s(\"triangle\").attack(0.004).decay(0.4).sustain(0.5).release(0.08).hpf(35).lpf(1200).lpenv(1).lpdecay(0.15).gain(0.55).late(0.003125).mul(velocity(rand.late(6.37).range(0.88, 1))).late(rand.late(6).range(0, 0.003125).segment(16)).early(0.001563)\n$: note(\"[e2,b2,e3]@4 [f2,c3,f3]@2 [d3,a3,d4]@2\").hpf(70).lpf(7000).s(\"sawtooth, square\").fm(0.5).fmh(2).attack(0.002).decay(0.5).sustain(0.5).release(0.1).hpf(90).lpf(2000).lpq(2).lpenv(1).lpdecay(0.2).gain(0.1).late(0.003125).mul(velocity(rand.late(7.37).range(0.88, 1))).late(rand.late(7).range(0, 0.003125).segment(16)).early(0.001563)",
+   "lowered_check": {
+    "equal": false,
+    "approx": true,
+    "cycles": 4,
+    "reason": "a groove (swing, push, humanize) is approximated in plain Strudel: it shifts onsets, not note lengths, and its random jitter is a different sequence (event 0 differs); with the groove taken out of both forms the events are identical",
+    "hash": "87c57e6a56"
+   },
    "origin": "concepts",
    "unverified": [],
    "bpm_hint": 70.0,

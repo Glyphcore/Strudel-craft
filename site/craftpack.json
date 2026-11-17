@@ -12,9 +12,9 @@
       "format": "recipes@1",
       "version": "1.0.0",
       "path": "data/catalog.json",
-      "hash": "sha256:96e1f82cba5ad4a88ebc39b8bb03e984589461befa1aef3379b4f0a87dbc144a",
+      "hash": "sha256:04f86f2edfb91e22bcc09372bd890185193c0f32ce27ab512ce73aed4856603a",
       "load": "eager",
-      "bytes": 72348
+      "bytes": 72338
     },
     {
       "id": "bodies-base",
@@ -33,8 +33,8 @@
       "version": "1.0.0",
       "path": "data/recipes/dnb.json",
       "load": "lazy",
-      "hash": "sha256:1fe5cc362f47554bcf15f7f27c31e6586c1652b8430771b364a9e6f30821d850",
-      "bytes": 22222
+      "hash": "sha256:20f0cef0085f34c165db7a01695323499675c1c347ea275fc204c863d6983d25",
+      "bytes": 22329
     },
     {
       "id": "bodies-dovetail",
@@ -53,8 +53,8 @@
       "version": "1.0.0",
       "path": "data/recipes/dubstep.json",
       "load": "lazy",
-      "hash": "sha256:ac66f44a692636cefaef120cd0caa66b78ad3fdf8f9ea7865900adb71829c2f4",
-      "bytes": 47608
+      "hash": "sha256:151b438284d6b80479d72894ea1de717bcd22c7fb16f9bf167cefc4eee38f276",
+      "bytes": 48748
     },
     {
       "id": "bodies-edm-core",
@@ -73,8 +73,8 @@
       "version": "1.0.0",
       "path": "data/recipes/edm-depth.json",
       "load": "lazy",
-      "hash": "sha256:93b1b65ab639a1b090bff3634d6ea874565b304893d75a32d6c4b062f3a6c759",
-      "bytes": 5511
+      "hash": "sha256:71749612a5630aa3f23eba2b34485754d361b9e49b7761340e664ef5855a1ac1",
+      "bytes": 6045
     },
     {
       "id": "bodies-edmfeels",
@@ -83,8 +83,8 @@
       "version": "1.0.0",
       "path": "data/recipes/edmfeels.json",
       "load": "lazy",
-      "hash": "sha256:c39be71c9d2ca696ee593574e3b0ca8f55430fed7562e4d2e89372cab9ae2144",
-      "bytes": 21877
+      "hash": "sha256:0ac0194d409a656051e3f9bb88a9d6b72645abcbaf588b09dc957364dfb32a47",
+      "bytes": 22264
     },
     {
       "id": "bodies-electro",
@@ -143,8 +143,8 @@
       "version": "1.0.0",
       "path": "data/recipes/industrial.json",
       "load": "lazy",
-      "hash": "sha256:05eba14d920cdd4975043654986b2bd350342885871d947d21cdc2b0776d4759",
-      "bytes": 29251
+      "hash": "sha256:f2890756316e8b0dea4aa67c4021db47f5897809743b7effab69b057259ccfac",
+      "bytes": 32702
     },
     {
       "id": "bodies-rockmetal",
@@ -153,8 +153,8 @@
       "version": "1.0.0",
       "path": "data/recipes/rockmetal.json",
       "load": "lazy",
-      "hash": "sha256:17a14531c7485d214608cbfa1984f04f8cab485ec4ec42167faa1d53ffa8ca38",
-      "bytes": 29216
+      "hash": "sha256:cbc5f05bd38cd1bfc489b2d8ddcf4897374f16d85baad5f326319247a48529ee",
+      "bytes": 32668
     },
     {
       "id": "strudel-docs",

@@ -34,14 +34,17 @@ window.strudelCraft = window.strudelCraft || {}; window.strudelCraft.intellisens
 const packs = () => window.strudelCraft.packs;
 
 /* 1b. typed params (docs/CONTROL_BINDING.md section 1): params[fn][i] = { name, shape, ... } merged with mod_ranges + control types */
-const shapes = Promise.all([packs().paramShapes().catch(() => ({})), packs().controlTypes().catch(() => ({ types: [] }))])
+/* #170: the editor's data (typed params, intellisense docs) comes from the IndexedDB cache when this build + pack set has one (decor.js);
+   the packs refresh it in the background, so a warm start mounts the editor without waiting for the pack ingredients */
+const viaCache = (name, load) => { const D = window.strudelCraft.decor; return D && D.cached ? D.cached(name, load).catch(() => load()) : load(); };
+const shapes = viaCache('params', () => Promise.all([packs().paramShapes().catch(() => ({})), packs().controlTypes().catch(() => ({ types: [] }))])
   .then(([d, ty]) => {
     const mr = { ranges: d.ranges || {} };
     const types = new Map((ty.types || []).map((t) => [t.id, t])); const drawnType = (id) => { let t = types.get(id); const seen = new Set(); while (t && !t.drawn && t.render && t.render.fallback && !seen.has(t.id)) { seen.add(t.id); t = types.get(t.render.fallback); } return t ? t.id : 'knob'; };
     const P = {};
     for (const [fn, ps] of Object.entries(d.params || {})) P[fn] = ps.map((q) => { const r = q.range && mr.ranges ? mr.ranges[q.range] : null; const o = { ...(r ? { min: r.min, max: r.max } : {}), ...q }; if (o.shape === 'number') o.control = drawnType(o.control || 'knob'); return o; });
     return P;
-  });
+  }));
 api.params = () => shapes;
 shapes.then((P) => { api.__paramsSync = P; });
 /* argument context: innermost open call at pos, its arg index and whether the cursor is inside a string */
@@ -127,7 +130,7 @@ api.learn = learn; api.forget = () => { user = []; try { localStorage.removeItem
 
 /* editor */
 async function mount() {
-  const [{ EditorView, basicSetup }, ac, { javascript }, { keymap }] = await Promise.all([
+  const [{ EditorView }, ac, { javascript }, { keymap }] = await Promise.all([
     import(`https://esm.sh/codemirror@${V.cm}${DEPS}`), import(`https://esm.sh/@codemirror/autocomplete@${V.ac}${DEPS}`),
     import(`https://esm.sh/@codemirror/lang-javascript@${V.js}${DEPS}`), import(`https://esm.sh/@codemirror/view@${V.view}`)]);
   /* popup accept = node-aware merge (inline.js mergeAccept): replaces the node under the caret, no duplicate parens/args/chain calls, one transaction */
@@ -167,7 +170,8 @@ async function mount() {
     }
     return { from, options: [...opts, ...added].map(mergedApply), validFor: /^[\w$]*$/ };
   }
-  const [{ HighlightStyle, syntaxHighlighting }, { tags: t }] = await Promise.all([import('https://esm.sh/@codemirror/language@6'), import('https://esm.sh/@lezer/highlight@1')]);
+  const [lang, { tags: t }, srch, { atom, safeColor }] = await Promise.all([import('https://esm.sh/@codemirror/language@6'), import('https://esm.sh/@lezer/highlight@1'), import('https://esm.sh/@codemirror/search@6'), import('./style-atoms.js')]);
+  const { HighlightStyle, syntaxHighlighting } = lang;
   const hl = syntaxHighlighting(HighlightStyle.define([
     { tag: [t.string, t.special(t.string)], color: 'var(--sig)' },
     { tag: [t.number, t.bool, t.null], color: 'var(--warn)' },
@@ -178,7 +182,6 @@ async function mount() {
     { tag: [t.punctuation, t.bracket, t.operator, t.separator], color: 'var(--faint)' },
     { tag: t.invalid, color: 'var(--bad)' },
   ]));
-  const lint = await import(`https://esm.sh/@codemirror/lint@6.8.5`);
   /* editor-wide undo / redo (#177): CodeMirror's historyKeymap covers Ctrl+Z, Ctrl+Y and Ctrl/Cmd+Shift+Z, but with Caps Lock on (or
      any layout reporting the unshifted letter) Ctrl+Shift+Z arrives as key "z" and would run undo; handle it here. The app's own
      shortcuts ignore keys typed in the editor. Alt+Z / Alt+Shift+Z step the app's version history instead (app.js). */
@@ -197,7 +200,7 @@ async function mount() {
   const [vmod, smod, cmds, inlineMod] = await Promise.all([import(`https://esm.sh/@codemirror/view@${V.view}`), import('https://esm.sh/@codemirror/state@6'), import('https://esm.sh/@codemirror/commands@6'), import('./inline.js')]);
   const ghost = inlineMod.setupInline(api, { EditorView, Decoration: vmod.Decoration, WidgetType: vmod.WidgetType, StateField: smod.StateField, StateEffect: smod.StateEffect, Prec: smod.Prec, keymap, ac, indentMore: cmds.indentMore });
   api.ghost = ghost; api.startCompletion = (view) => ac.startCompletion(view);
-  const docs = new Map(); (await packs().completions()).forEach((d) => docs.set(d.label, d));
+  const docs = new Map(); ((await viaCache('docs', () => packs().completions())) || []).forEach((d) => docs.set(d.label, d));
   const { hoverTooltip } = await import(`https://esm.sh/@codemirror/view@${V.view}`);
   const hover = hoverTooltip((view, pos) => {
     const { from, to, text } = view.state.doc.lineAt(pos); let s = pos, e = pos;
@@ -230,9 +233,9 @@ async function mount() {
       dom.append(d); return { dom };
     } }),
   });
-  const theme = EditorView.theme({ '.cm-sig-active': { color: 'var(--sig-2)', fontWeight: '700' }, '.cm-sighelp small': { color: 'var(--dim)' }, '.cm-tooltip.cm-sighelp, .cm-tooltip.cm-tooltip-hover': { pointerEvents: 'none' }, /* informational tooltips (sig help, word hover, lint hover) sit above the caret line; taps on the code under them must reach the editor */ '.cm-cursor, .cm-dropCursor': { borderLeftColor: 'var(--sig-2)' }, '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': { background: 'var(--sig-2-soft) !important' }, '.cm-matchingBracket': { background: 'var(--panel-3)', outline: '1px solid var(--line-2)' }, '.cm-lintRange-error': { backgroundImage: 'none', borderBottom: '2px wavy var(--bad)' }, '.cm-diagnostic-error': { borderLeftColor: 'var(--bad)' }, '.cm-tooltip-autocomplete ul li': { padding: '6px 8px', minHeight: '32px' }, '&': { background: 'var(--panel-2)', color: 'var(--text)', fontSize: '.86rem', borderRadius: '0 0 var(--r2) var(--r2)' }, '.cm-content': { fontFamily: 'var(--mono)', padding: '10px 0', caretColor: 'var(--sig-2)' }, '.cm-gutters': { background: 'transparent', border: '0', color: 'var(--dim)' }, '&.cm-focused': { outline: '2px solid var(--sig-2)', outlineOffset: '-2px' }, '.cm-scroller': { minHeight: '150px', lineHeight: '1.6' }, '.cm-tooltip': { background: 'var(--panel)', border: '1px solid var(--line, #333)', color: 'var(--text)' }, '.cm-tooltip-autocomplete ul li[aria-selected]': { background: 'var(--sig-2)', color: '#000' }, '.cm-completionSection': { color: 'var(--dim)', fontSize: '.72rem', textTransform: 'uppercase', padding: '4px 8px' }, '.cm-sig': { padding: '4px 8px', fontFamily: 'var(--mono)', fontSize: '.78rem', maxWidth: '320px' }, '.cm-activeLine, .cm-activeLineGutter': { background: 'transparent' } });
+  const theme = EditorView.theme({ '.cm-sig-active': { color: 'var(--sig-2)', fontWeight: '700' }, '.cm-sighelp small': { color: 'var(--dim)' }, '.cm-tooltip.cm-sighelp, .cm-tooltip.cm-tooltip-hover': { pointerEvents: 'none' }, /* informational tooltips (sig help, word hover, lint hover) sit above the caret line; taps on the code under them must reach the editor */ '.cm-cursor, .cm-dropCursor': { borderLeftColor: 'var(--sig-2)' }, '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': { background: 'var(--sig-2-soft) !important' }, '.cm-sc-state .cm-gutterElement': { padding: '0' }, '.cm-sc-state .cm-gutterElement > i': { display: 'block', width: '5px', height: '100%' }, '.cm-sc-err': { borderLeft: '3px solid var(--bad)' }, '.cm-tooltip-autocomplete ul li': { padding: '6px 8px', minHeight: '32px' }, '&': { background: 'var(--panel-2)', color: 'var(--text)', fontSize: '.86rem', borderRadius: '0 0 var(--r2) var(--r2)' }, '.cm-content': { fontFamily: 'var(--mono)', padding: '10px 0', caretColor: 'var(--sig-2)' }, '.cm-gutters': { background: 'transparent', border: '0', color: 'var(--dim)' }, '&.cm-focused': { outline: '2px solid var(--sig-2)', outlineOffset: '-2px' }, '.cm-scroller': { minHeight: '150px', lineHeight: '1.6' }, '.cm-tooltip': { background: 'var(--panel)', border: '1px solid var(--line, #333)', color: 'var(--text)' }, '.cm-tooltip-autocomplete ul li[aria-selected]': { background: 'var(--sig-2)', color: '#000' }, '.cm-completionSection': { color: 'var(--dim)', fontSize: '.72rem', textTransform: 'uppercase', padding: '4px 8px' }, '.cm-sig': { padding: '4px 8px', fontFamily: 'var(--mono)', fontSize: '.78rem', maxWidth: '320px' }, '.cm-activeLine, .cm-activeLineGutter': { background: 'transparent' } });
   /* visual feedback hooks: active-event highlights and inline widget canvases (visuals.js) */
-  const setHl = smod.StateEffect.define(), setW = smod.StateEffect.define();
+  const setW = smod.StateEffect.define();
   class CanvasW extends vmod.WidgetType {
     /* inline visual: a block widget below the calling line, in the scroll flow, as wide as the content; height reserved up front */
     constructor(el) { super(); this.el = el; this.h = (window.strudelCraft.visualsWidgetHeight || (() => 140))(el); }
@@ -243,31 +246,80 @@ async function mount() {
       return d; }
     destroy(dom) { if (dom.__ro) dom.__ro.disconnect(); }
     ignoreEvent() { return true; } }
-  const hlField = smod.StateField.define({ create: () => vmod.Decoration.none, update(v, tr) { v = v.map(tr.changes); for (const e of tr.effects) if (e.is(setHl)) v = vmod.Decoration.set(e.value.map((h) => vmod.Decoration.mark({ class: 'cm-sc-active', attributes: h.color ? { style: `outline-color:${h.color};background:color-mix(in srgb, ${h.color} 25%, transparent)` } : {} }).range(h.from, h.to)), true); return v; }, provide: (f) => EditorView.decorations.from(f) });
   const wField = smod.StateField.define({ create: () => vmod.Decoration.none, update(v, tr) { v = v.map(tr.changes); for (const e of tr.effects) if (e.is(setW)) v = vmod.Decoration.set(e.value.map((w) => vmod.Decoration.widget({ widget: new CanvasW(w.el), block: true, side: 1 }).range(w.pos)), true); return v; }, provide: (f) => EditorView.decorations.from(f) });
+  /* #170 identity layer (docs/EDITOR_DECOR.md): every token of the text is a span with a stable data-tok id and every line carries data-ln; ids are
+     assigned when a line's text changes (mapped through edits otherwise) and never for a state change. Visual state (playhead, reference marks,
+     error line, bracket match, selection matches) is a rule in a style atom (style-atoms.js) that targets those ids: the code DOM is not touched. */
+  let TOK = 0; const TRE = /[ \t]+|[\w$#]+|[^\s\w$#]/gu;
+  function tokRanges(doc, a, b) {
+    const out = [];
+    for (let n = doc.lineAt(a).number, last = doc.lineAt(b).number; n <= last; n++) {
+      const L = doc.line(n); const ln = 'l' + (++TOK).toString(36); out.push(vmod.Decoration.line({ attributes: { 'data-ln': ln }, ln }).range(L.from));
+      TRE.lastIndex = 0; let m; while ((m = TRE.exec(L.text))) { const tok = (++TOK).toString(36); out.push(vmod.Decoration.mark({ attributes: { 'data-tok': tok }, tok }).range(L.from + m.index, L.from + TRE.lastIndex)); }
+    }
+    return out;
+  }
+  const tokField = smod.StateField.define({
+    create: (st) => vmod.Decoration.set(tokRanges(st.doc, 0, st.doc.length), true),
+    update(v, tr) {
+      if (!tr.docChanged) return v; let lo = Infinity, hi = -1; tr.changes.iterChangedRanges((fa, ta, fb, tb) => { if (fb < lo) lo = fb; if (tb > hi) hi = tb; });
+      const d = tr.state.doc; const a = d.lineAt(Math.min(lo, d.length)).from, b = d.lineAt(Math.min(hi, d.length)).to;
+      return v.map(tr.changes).update({ filterFrom: a, filterTo: b, filter: () => false, add: tokRanges(d, a, b), sort: true });
+    },
+    provide: (f) => EditorView.decorations.from(f),
+  });
+  const toksIn = (st, from, to) => { const ids = []; if (from < to) st.field(tokField).between(from, to, (f, e, v) => { if (v.spec.tok && e > from && f < to) ids.push(v.spec.tok); }); return ids; };
+  const lineId = (st, pos) => { let id = null; st.field(tokField).between(pos, pos, (f, e, v) => { if (v.spec.ln) { id = v.spec.ln; return false; } }); return id; };
+  /* line-state gutter: one stable marker per line (data-ln); reference and error lines are atom rules on it */
+  class LnMark extends vmod.GutterMarker { constructor(id) { super(); this.id = id; } eq(o) { return o.id === this.id; } toDOM() { const i = document.createElement('i'); if (this.id) i.dataset.ln = this.id; return i; } }
+  const stateGutter = vmod.gutter({ class: 'cm-sc-state', lineMarker: (view, line) => { const id = lineId(view.state, line.from); return id ? new LnMark(id) : null; }, lineMarkerChange: (u) => u.docChanged, initialSpacer: () => new LnMark('') });
+  const T = (t) => `.cm-content [data-tok="${t}"]`, G = (l) => `.cm-sc-state [data-ln="${l}"]`; /* measured (#170): an id selector costs the same per sheet change in Chromium (the change walks the tree either way) */
+  const viewOf = (id) => { const t = document.getElementById(id); return t && t.cmView; };
   /* reference inspector marks (refs.js): soft background on the source span, matching tint on related spans, gutter indicator */
-  const setRef = smod.StateEffect.define();
-  class RefGutter extends vmod.GutterMarker { constructor(c) { super(); this.elementClass = c; } }
-  const refField = smod.StateField.define({ create: () => ({ deco: vmod.Decoration.none, gut: smod.RangeSet.empty }), update(v, tr) {
-    let { deco, gut } = v; deco = deco.map(tr.changes); gut = gut.map(tr.changes);
-    for (const e of tr.effects) if (e.is(setRef)) { const n = tr.state.doc.length; const ok = (r) => r && r[0] >= 0 && r[1] <= n && r[0] < r[1]; const rs = [];
-      if (ok(e.value.primary)) rs.push(vmod.Decoration.mark({ class: 'cm-ref-primary', attributes: { 'data-ref': e.value.id || '' } }).range(e.value.primary[0], e.value.primary[1]));
-      for (const r of e.value.related || []) if (ok(r)) rs.push(vmod.Decoration.mark({ class: 'cm-ref-related' }).range(r[0], r[1]));
-      deco = vmod.Decoration.set(rs, true);
-      const lines = new Set(); if (ok(e.value.primary)) lines.add(tr.state.doc.lineAt(e.value.primary[0]).from); for (const r of e.value.related || []) if (ok(r)) lines.add(tr.state.doc.lineAt(r[0]).from);
-      gut = smod.RangeSet.of([...lines].sort((a, b) => a - b).map((f) => new RefGutter(ok(e.value.primary) && tr.state.doc.lineAt(e.value.primary[0]).from === f ? 'cm-ref-gutter' : 'cm-ref-gutter rel').range(f)), true); }
-    return { deco, gut };
-  }, provide: (f) => [EditorView.decorations.from(f, (v) => v.deco), vmod.gutterLineClass.from(f, (v) => v.gut)] });
-  api.refMarks = (id, marks) => { const t = document.getElementById(id); const v = t && t.cmView; if (!v) return; v.dispatch({ effects: [setRef.of(marks || {})].concat(marks && marks.primary && marks.scroll !== false ? [EditorView.scrollIntoView(marks.primary[0], { y: 'center' })] : []) }); };
-  api.refView = (id) => { const t = document.getElementById(id); return t && t.cmView; };
+  api.refMarks = (id, marks) => {
+    const v = viewOf(id); if (!v) return; const st = v.state, n = st.doc.length; const ok = (r) => r && r[0] >= 0 && r[1] <= n && r[0] < r[1];
+    const prim = marks && ok(marks.primary) ? marks.primary : null; const rel = ((marks && marks.related) || []).filter(ok); const want = new Map(); const lines = new Map();
+    for (const r of rel) { for (const t of toksIn(st, r[0], r[1])) want.set('t' + t, `${T(t)}{background:color-mix(in srgb,var(--sig-2) 10%,transparent);text-decoration:underline dashed var(--sig-2);text-underline-offset:3px}`); lines.set(lineId(st, st.doc.lineAt(r[0]).from), 'rel'); }
+    if (prim) { for (const t of toksIn(st, prim[0], prim[1])) want.set('t' + t, `${T(t)}{background:var(--sig-2-soft);box-shadow:inset 0 -1.5px 0 var(--sig-2)}`); lines.set(lineId(st, st.doc.lineAt(prim[0]).from), 'pri'); }
+    for (const [l, k] of lines) if (l) want.set('l' + l, k === 'pri' ? `${G(l)}{box-shadow:inset 3px 0 0 var(--sig-2)}` : `${G(l)}{box-shadow:inset 2px 0 0 color-mix(in srgb,var(--sig-2) 55%,transparent)}`);
+    atom('editor-refs:' + id).replace(want); v.__refs = prim || rel.length ? { id: (marks && marks.id) || '', primary: prim, related: rel } : null;
+    if (prim && marks.scroll !== false) v.dispatch({ effects: EditorView.scrollIntoView(prim[0], { y: 'center' }) });
+  };
+  api.refView = (id) => viewOf(id);
+  /* runtime error (live:error): the line is underlined and its gutter marker turns red, from one atom; hover shows the message */
+  function setError(id, e) {
+    const v = viewOf(id); if (!v) return; const A = atom('editor-error:' + id);
+    if (!e) { A.clear(); v.__err = null; return; }
+    const doc = v.state.doc; const L = e.line && e.line >= 1 && e.line <= doc.lines ? doc.line(e.line) : doc.line(doc.lines); const l = lineId(v.state, L.from);
+    A.replace([['line', `.cm-content [data-ln="${l}"]{text-decoration:underline wavy var(--bad);text-decoration-skip-ink:none;text-underline-offset:4px}`], ['gut', `${G(l)}{box-shadow:inset 3px 0 0 var(--bad);background:color-mix(in srgb,var(--bad) 22%,transparent)}`]]);
+    v.__err = { line: L.number, ln: l, message: String(e.message || '') };
+  }
+  const errHover = hoverTooltip((view, pos) => { const e = view.__err; if (!e) return null; const L = view.state.doc.lineAt(pos); if (lineId(view.state, L.from) !== e.ln) return null;
+    return { pos: L.from, end: L.to, above: true, create() { const dom = document.createElement('div'); dom.className = 'cm-sig cm-sc-err'; dom.setAttribute('role', 'tooltip'); dom.textContent = e.message; return { dom }; } }; });
+  /* caret state: matching bracket and other occurrences of a selected word, as atom rules (replaces CodeMirror's class-toggling bracketMatching / highlightSelectionMatches) */
+  const caretState = (id) => EditorView.updateListener.of((u) => {
+    if (!u.selectionSet && !u.docChanged) return; const st = u.state, sel = st.selection.main; const want = [];
+    if (sel.empty) { const m = lang.matchBrackets(st, sel.head, -1) || lang.matchBrackets(st, sel.head, 1);
+      if (m) { const d = m.matched ? '{background:var(--panel-3);outline:1px solid var(--line-2)}' : '{color:var(--bad)}'; for (const r of [m.start, m.end]) if (r) for (const t of toksIn(st, r.from, r.to)) want.push(['b' + t, T(t) + d]); } }
+    else if (sel.to - sel.from <= 60) { const w = st.sliceDoc(sel.from, sel.to);
+      if (/^[\w$]+$/.test(w)) { const re = new RegExp('(?<![\\w$])' + w.replace(/\$/g, '\\$') + '(?![\\w$])', 'g'); const text = st.doc.toString(); let m, k = 0;
+        while ((m = re.exec(text)) && k < 200) { if (m.index === sel.from) continue; k++; for (const t of toksIn(st, m.index, m.index + w.length)) want.push(['s' + t, `${T(t)}{background:color-mix(in srgb,var(--sig-2) 18%,transparent)}`]); } } }
+    atom('editor-caret:' + id).replace(want);
+  });
+  /* test and tooling surface: what the atoms currently show, as text */
+  api.decorState = (id) => { const v = viewOf(id); if (!v) return null; const sl = (r) => v.state.sliceDoc(r[0], r[1]);
+    return { active: (v.__hs || []).map((h) => v.state.sliceDoc(h.from, h.to)), primary: v.__refs && v.__refs.primary ? sl(v.__refs.primary) : null, related: v.__refs ? v.__refs.related.map(sl) : [], refId: v.__refs ? v.__refs.id : null, error: v.__err ? { line: v.__err.line, message: v.__err.message } : null,
+      atoms: ['playhead', 'refs', 'error', 'caret'].reduce((o, k) => { o[k] = atom('editor-' + k + ':' + id).size; return o; }, {}) }; };
   /* while a pointer is down in an editor (and shortly after), visual decorations wait: no transaction may race the tap's selection */
   let ptrBusy = 0; const busy = () => performance.now() < ptrBusy;
   document.addEventListener('pointerdown', (e) => { if (e.target.closest && e.target.closest('.cm-editor')) ptrBusy = performance.now() + 10000; }, true);
   const release = () => { if (ptrBusy) ptrBusy = performance.now() + 300; }; document.addEventListener('pointerup', release, true); document.addEventListener('pointercancel', release, true);
   const vizApi = {
     doc: (id) => { const t = document.getElementById(id); return t && t.cmView ? t.cmView.state.doc.toString() : ''; },
-    setHighlights: (id, hs) => { const t = document.getElementById(id); const v = t && t.cmView; if (!v) return; const n = v.state.doc.length; const list = hs.filter((h) => h.to <= n); const key = JSON.stringify(list.map((h) => [h.from, h.to, h.color]));
-      if ((key === v.__hKey && v.__hDoc === v.state.doc) || busy()) return; v.__hKey = key; v.__hDoc = v.state.doc; v.dispatch({ effects: setHl.of(list) }); },
+    /* playhead: the tokens under each active event's source location, one atom rule per token; no transaction, nothing in the code DOM changes */
+    setHighlights: (id, hs) => { const v = viewOf(id); if (!v) return; const st = v.state, n = st.doc.length; const want = new Map(); v.__hs = hs.filter((h) => h.to <= n && h.from < h.to);
+      for (const h of v.__hs) { const c = safeColor(h.color); const r = c ? `{outline:1.5px solid ${c};border-radius:2px;background:color-mix(in srgb,${c} 25%,transparent)}` : '{outline:1.5px solid var(--sig-2);border-radius:2px;background:var(--sig-2-soft)}'; for (const t of toksIn(st, h.from, h.to)) want.set(t, T(t) + r); }
+      atom('editor-playhead:' + id).replace(want); },
     /* only dispatch when the widget set really changes: a transaction while a tap's DOM selection is pending makes the caret snap back */
     setWidgets: (id, ws) => { const t = document.getElementById(id); const v = t && t.cmView; if (!v) return; const n = v.state.doc.length; const lineEnd = (p) => v.state.doc.lineAt(Math.min(p, n)).to;
       const list = ws.filter((w) => w.pos <= n).map((w) => ({ ...w, pos: lineEnd(w.pos) })).sort((a, b) => a.pos - b.pos);
@@ -294,12 +346,18 @@ async function mount() {
     sd.addEventListener('pointerup', (e) => { view.__down = false; undo = null; }, true);
     sd.addEventListener('pointercancel', (e) => { view.__down = false; if (undo && e.pointerType === 'touch') view.dispatch({ selection: undo, userEvent: 'select.pointer' }); undo = null; }, true); /* a scroll started: the caret stays where it was */
   }
+  /* CodeMirror's basicSetup minus the features that toggle classes in the code DOM on caret moves (active line, active line gutter, bracket
+     matching, selection matches, crosshair cursor): bracket and selection matches are caretState atoms, the active line was themed invisible */
+  const setup = [vmod.lineNumbers(), vmod.highlightSpecialChars(), cmds.history(), lang.foldGutter(), vmod.drawSelection(), vmod.dropCursor(), smod.EditorState.allowMultipleSelections.of(true),
+    lang.indentOnInput(), lang.syntaxHighlighting(lang.defaultHighlightStyle, { fallback: true }), ac.closeBrackets(), vmod.rectangularSelection(),
+    keymap.of([...ac.closeBracketsKeymap, ...cmds.defaultKeymap, ...srch.searchKeymap, ...cmds.historyKeymap, ...lang.foldKeymap, ...ac.completionKeymap])];
   for (const id of ['code', 'stackCode']) {
     const ta = document.getElementById(id); if (!ta) continue;
+    if (window.strudelCraft.decor) window.strudelCraft.decor.release(ta); /* the decorated pre-paint leaves in the same task the editor arrives: no frame between */
     const desc = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value'); let view; let syncing = false; let learnT = 0;
     view = new EditorView({
       doc: desc.get.call(ta), parent: ta.parentNode,
-      extensions: [smod.Prec.highest(EditorView.domEventHandlers({ keydown: (e, v) => editorRedoKey(e, v) })), ghost.extension, hlField, wField, sigField, refField, basicSetup, lint.lintGutter(), javascript(), theme, hl, hover, EditorView.lineWrapping, ac.autocompletion({ override: [source], activateOnTyping: true, icons: false }),
+      extensions: [smod.Prec.highest(EditorView.domEventHandlers({ keydown: (e, v) => editorRedoKey(e, v) })), ghost.extension, tokField, wField, sigField, setup, stateGutter, javascript(), theme, hl, hover, errHover, caretState(id), EditorView.editorAttributes.of({ 'data-ed': id }), EditorView.lineWrapping, ac.autocompletion({ override: [source], activateOnTyping: true, icons: false }),
         EditorView.contentAttributes.of({ 'aria-label': ta.getAttribute('aria-label') || (id === 'code' ? 'Recipe code' : 'Stack program'), autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false' }),
         EditorView.updateListener.of((u) => { if (!u.docChanged || syncing) return; const v = u.state.doc.toString(); desc.set.call(ta, v); ta.dispatchEvent(new Event('input', { bubbles: true })); clearTimeout(learnT); learnT = setTimeout(() => learn(v), 1200); })],
     });
@@ -311,12 +369,9 @@ async function mount() {
   }
   const viewFor = (v) => document.getElementById(v === 'stack' ? 'stackCode' : 'code').cmView;
   wireHistoryButtons(['code', 'stackCode']);
-  window.addEventListener('live:error', (e) => {
-    const view = viewFor(e.detail.view); if (!view) return; const doc = view.state.doc;
-    const ln = e.detail.line && e.detail.line >= 1 && e.detail.line <= doc.lines ? doc.line(e.detail.line) : doc.line(doc.lines);
-    view.dispatch(lint.setDiagnostics(view.state, [{ from: ln.from, to: ln.to, severity: 'error', message: e.detail.message }]));
-  });
-  window.addEventListener('live:ok', (e) => { const view = viewFor(e.detail.view); if (view) view.dispatch(lint.setDiagnostics(view.state, [])); });
+  const edFor = (v) => (v === 'stack' ? 'stackCode' : 'code'); void viewFor;
+  window.addEventListener('live:error', (e) => setError(edFor(e.detail.view), { line: e.detail.line, message: e.detail.message }));
+  window.addEventListener('live:ok', (e) => setError(edFor(e.detail.view), null));
   if (window.strudelCraft.visuals) window.strudelCraft.visuals.attach(vizApi); else window.addEventListener('load', () => window.strudelCraft.visuals && window.strudelCraft.visuals.attach(vizApi));
   document.documentElement.dataset.editor = 'cm6';
 }

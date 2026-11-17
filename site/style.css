@@ -131,6 +131,8 @@ body.playing .stage{box-shadow:var(--glow)}
 /* editor */
 .editor textarea{display:block;width:100%;min-height:150px;resize:vertical;border:0;background:var(--panel-2);padding:14px;font-size:.86rem;line-height:1.6;color:var(--text);border-radius:0 0 var(--r2) var(--r2);tab-size:2}
 .editor textarea:focus-visible{outline:2px solid var(--sig-2);outline-offset:-2px}
+/* #170: the code text is never painted undecorated: transparent until decor.js lays its token overlay or the editor mounts; shown plain after 6 s if neither loads */
+#code,#stackCode{color:transparent;caret-color:var(--sig-2);animation:sc-ta-show 0s 6s forwards}@keyframes sc-ta-show{to{color:var(--text)}}
 .dirty{font-family:var(--mono);font-size:.68rem;text-transform:uppercase;color:var(--warn)}
 
 /* inspector */
@@ -359,7 +361,6 @@ dialog.scm{width:min(420px,calc(100vw - 24px))}
 .toast-do{min-height:44px;padding:0 12px;border:1px solid var(--line-2);border-radius:var(--r1);background:transparent;color:var(--sig-2);font-weight:600;white-space:nowrap}
 .toast-act{flex:1;text-align:left;min-height:44px;border:0;background:transparent;color:var(--sig-2);font-weight:600}
 .build{font-family:var(--mono);font-size:.62rem;color:var(--faint);white-space:nowrap}
-.cm-sc-active{outline:1.5px solid var(--sig-2);outline-offset:0;border-radius:2px;background:var(--sig-2-soft)}
 .cm-sc-widget{padding:4px 0;box-sizing:border-box;width:100%;overflow:hidden;user-select:none;-webkit-user-select:none;cursor:default}
 .cm-sc-widget .sc-widget{display:block;width:100%;height:140px;border-radius:var(--r1);background:var(--panel-3);pointer-events:none}
 .sc-widget{display:block;max-width:100%;border-radius:var(--r1);background:var(--panel-3)}
@@ -445,10 +446,6 @@ dialog.scm{width:min(420px,calc(100vw - 24px))}
 @media (prefers-reduced-motion:no-preference){.lit-pop{animation:litIn .12s ease-out}@keyframes litIn{from{opacity:0;transform:translateY(-3px)}}}
 
 /* reference inspector (CONTROL_BINDING section 8): one signal colour links a control and its source */
-.cm-ref-primary{background:var(--sig-2-soft);border-radius:2px;box-shadow:0 0 0 1px var(--sig-2)}
-.cm-ref-related{background:color-mix(in srgb,var(--sig-2) 10%,transparent);border-bottom:1px dashed var(--sig-2)}
-.cm-gutterElement.cm-ref-gutter{box-shadow:inset 3px 0 0 var(--sig-2);color:var(--sig-2)}
-.cm-gutterElement.cm-ref-gutter.rel{box-shadow:inset 2px 0 0 color-mix(in srgb,var(--sig-2) 55%,transparent)}
 .ref-glow{outline:2px solid var(--sig-2);outline-offset:2px;box-shadow:0 0 14px color-mix(in srgb,var(--sig-2) 55%,transparent)}
 .ref-glow-rel{outline:1px dashed var(--sig-2);outline-offset:2px}
 .ref-tip{position:fixed;z-index:62;max-width:min(300px,calc(100vw - 12px));padding:6px 26px 6px 8px;background:var(--panel);color:var(--text);border:1px solid var(--sig-2);border-radius:var(--r1);box-shadow:0 8px 24px rgba(0,0,0,.45);font-family:var(--mono);font-size:.72rem;pointer-events:auto}

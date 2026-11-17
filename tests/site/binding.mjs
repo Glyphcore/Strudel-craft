@@ -120,7 +120,7 @@ await setDoc(CODE); await settle();
 // 11. caret is freely placeable while the code is invalid, after it clears and after a value menu opened
 { const BAD = `$: note("c3 e3 g3").s("sawtooth").lpf(800)).room(0.2)\n$: s("sawtooth*2").gain(0.4)\n`;
   await setDoc(BAD); await settle();
-  const st = await page.evaluate(() => ({ dot: document.querySelector('#liveChip').dataset.v, err: !!document.querySelector('.cm-lintRange-error, .cm-lint-marker-error') }));
+  const st = await page.evaluate(() => ({ dot: document.querySelector('#liveChip').dataset.v, err: !!window.strudelCraft.intellisense.decorState('code').error })); /* #170: the error line is a style atom (decorState) */
   const tapAt = async (needle, k) => { const p = await at(needle, k); await tap(p); await page.waitForTimeout(120); return page.evaluate(() => document.getElementById('code').cmView.state.selection.main.head); };
   const want = (needle, k) => page.evaluate(([n, k]) => document.getElementById('code').cmView.state.doc.toString().indexOf(n) + k, [needle, k]);
   const hits = [];
@@ -173,8 +173,8 @@ await setDoc(CODE); await settle();
 { await page.evaluate(() => document.querySelector('.pc-inline').scrollIntoView({ block: 'center' })); await page.waitForTimeout(600);
   const k = await page.evaluate(() => { const e = document.querySelector('.pc-inline .pc-cell [role=slider]'); const r = e.getBoundingClientRect(); const vv = window.visualViewport; return { x: r.left + r.width / 2 - vv.offsetLeft, y: r.top + r.height / 2 - vv.offsetTop, id: e.closest('.pc-cell').dataset.site }; });
   await touch('touchStart', k.x, k.y); await page.waitForTimeout(700); await touch('touchEnd'); await page.waitForTimeout(150);
-  const t = await page.evaluate(() => { const tip = document.getElementById('scRefTip'); const dd = (n) => tip && tip.querySelector(`dd[data-k="${n}"]`)?.textContent; const pm = document.querySelector('.cm-ref-primary');
-    return { shown: !!tip && !tip.hidden, id: dd('id'), path: dd('path'), described: !!document.querySelector('[aria-describedby="scRefTip"]'), span: pm ? [...document.querySelectorAll('.cm-ref-primary')].map((x) => x.textContent).join('') : '', gutter: !!document.querySelector('.cm-ref-gutter') }; });
+  const t = await page.evaluate(() => { const tip = document.getElementById('scRefTip'); const dd = (n) => tip && tip.querySelector(`dd[data-k="${n}"]`)?.textContent; const ds = window.strudelCraft.intellisense.decorState('code');
+    return { shown: !!tip && !tip.hidden, id: dd('id'), path: dd('path'), described: !!document.querySelector('[aria-describedby="scRefTip"]'), span: ds.primary || '', gutter: [...document.querySelectorAll('.cm-sc-state [data-ln]')].some((e) => getComputedStyle(e).boxShadow !== 'none') }; });
   check('long-press a knob: tooltip shows id + path, source span highlighted with gutter mark', t.shown && t.id === k.id && /^L\d+\//.test(t.path || '') && t.described && /^slider\(800/.test(t.span) && t.gutter, JSON.stringify(t));
   await page.keyboard.press('Escape'); await page.evaluate(() => window.strudelCraft.refs.clear());
   const p3 = await at('slider(800', 8); await tap(p3); await page.waitForTimeout(250);
@@ -200,7 +200,7 @@ const snap = () => page.evaluate(() => { const r = (s) => { const e = document.q
 const before = await snap();
 await page.evaluate(() => { const v = document.getElementById('code').cmView; const t = v.state.doc.toString(); const i = t.indexOf('.lpf('); v.dispatch({ changes: { from: i + 4, to: i + 5, insert: ')' }, userEvent: 'input' }); });
 await settle();
-const broken = await snap(); const marks = await page.evaluate(() => ({ dot: document.querySelector('#liveChip').dataset.v, underline: !!document.querySelector('.cm-lintRange-error'), gutter: !!document.querySelector('.cm-lint-marker-error'), playing: window.__sc.S.playing }));
+const broken = await snap(); const marks = await page.evaluate(() => ({ dot: document.querySelector('#liveChip').dataset.v, underline: [...document.querySelectorAll('#code ~ .cm-editor .cm-line, .cm-editor[data-ed=code] .cm-line')].some((e) => getComputedStyle(e).textDecorationStyle === 'wavy'), gutter: [...document.querySelectorAll('.cm-sc-state [data-ln]')].some((e) => getComputedStyle(e).boxShadow !== 'none'), playing: window.__sc.S.playing }));
 check('broken code: audio + controls unchanged, no layout shift', JSON.stringify(before) === JSON.stringify(broken) && marks.playing, JSON.stringify({ before, broken }));
 check('broken code: gutter marker, underline, chip dot', marks.dot === 'invalid' && marks.underline && marks.gutter, JSON.stringify(marks));
 { const hp = []; for (const [n, k] of [['note(', 2], ['sawtooth*2', 3], ['binding', 2], ['.lpf', 2]]) { const p = await at(n, k); await tap(p); await page.waitForTimeout(150); hp.push([n, await page.evaluate(() => document.getElementById('code').cmView.state.selection.main.head), await page.evaluate(([n, k]) => document.getElementById('code').cmView.state.doc.toString().indexOf(n) + k, [n, k])]); }

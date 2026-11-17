@@ -90,7 +90,7 @@ is not used. Single quotes keep the id a plain string (double quotes become mini
 
 ## 5. Inert while invalid
 
-When validate or compile fails: the editor gets a lint underline and a gutter marker, the chip dot turns red and the message is in
+When validate or compile fails: the editor gets a wavy underline on the line and a red gutter marker (style atom `editor-error:<editor>`, #170, docs/EDITOR_DECOR.md; hover shows the message), the chip dot turns red and the message is in
 the chip title and the diagnostic tooltip. Nothing else changes: the playing pattern, the controls strip, values and mappings stay
 on the last good compile. No message row is inserted (no layout shift); no overlay covers code or controls.
 
@@ -166,7 +166,7 @@ One shared service, `window.strudelCraft.refs`, for every surface (inline strip,
 |---|---|
 | `resolve(id)` | `{ id, kind: 'control' \| 'literal', view, site \| literal, off }`; accepts site ids, literal ids and label aliases (`controls.resolve`) |
 | `related(id)` | `{ spans, ids, dests, slot }`: the mapped param (the call name the site sits in), explicit map dests (`.dest(` and `hooks.map` lines), the hook slot string, `tap('label')` sites, other controls with the same label |
-| `highlight(id \| null, { scroll = true, editor })` | marks the source span (`.cm-ref-primary`, soft background) plus a gutter indicator (`.cm-ref-gutter`), tints related spans in the same colour (`.cm-ref-related`), adds `.ref-glow` / `.ref-glow-rel` to every element carrying the id; fires `refs:highlight` |
+| `highlight(id \| null, { scroll = true, editor })` | marks the source span (soft background) plus a gutter indicator, tints related spans in the same colour (rules in the style atom `editor-refs:<editor>` on the spans' `data-tok` / `data-ln` ids, #170; `intellisense.decorState(editor)` reads them back as text), adds `.ref-glow` / `.ref-glow-rel` to every element carrying the id; fires `refs:highlight` |
 | `gotoCode(id)` | the only call that scrolls the editor to the span (`highlight` with `scroll: true`); used by the tooltip target button and the 500 ms long-press |
 | `describe(id)` | `{ id, path, label, type, shape, value, range, maps, slot, view }` |
 | `tip(el, id)`, `hideTip()`, `clear()` | the tooltip; `clear` drops every mark and glow |

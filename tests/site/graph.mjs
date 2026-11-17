@@ -334,7 +334,7 @@ export async function graphSection({ browser, BASE, OUT, check, watch, metrics }
     await page.goto(BASE + '#graph'); await gx(page); await page.evaluate(() => window.__graph.reset()); await page.evaluate(() => window.__graph.fit()); await settle(page);
     const side = await page.evaluate(() => ({ canvas: document.querySelector('.gx-canvas').getBoundingClientRect().width, code: document.querySelector('.gx-code').getBoundingClientRect().width }));
     await page.click('.gn[data-id="track:bass"] .gn-head'); await page.waitForTimeout(150);
-    const mark = await page.evaluate(() => (document.querySelector('.gx-mirror mark') || {}).textContent || '');
+    const mark = await page.evaluate(() => ([...document.querySelectorAll('.gx-mirror [data-sp]')].find((e) => getComputedStyle(e).boxShadow !== 'none') || {}).textContent || ''); /* #170: the selection is a style-atom rule on the statement's data-sp span */
     const caret = await page.evaluate(() => { const ta = document.querySelector('#gxCode'); const i = ta.value.indexOf('kick: s('); return i; });
     await page.evaluate((i) => { const ta = document.querySelector('#gxCode'); ta.focus(); ta.setSelectionRange(i + 3, i + 3); ta.dispatchEvent(new MouseEvent('click', { bubbles: true })); }, caret);
     const sel = await page.evaluate(() => window.__graph.sel);

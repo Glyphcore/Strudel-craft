@@ -378,6 +378,16 @@ The `#code` and `#stackCode` textareas are upgraded to CodeMirror 6 (`codemirror
 `@codemirror/lang-javascript@6.2.3`, loaded from esm.sh). The textarea stays the source of truth (its `value` is kept in sync both ways),
 so if the CDN is unreachable the plain editable textarea remains. Hovering a known function shows its signature.
 
+Decorated first paint and style atoms (#170, docs/EDITOR_DECOR.md): the code text is never painted undecorated. `style.css` keeps the
+`#code` / `#stackCode` text transparent until a decorator is up; `decor.js` (first deferred module) lays a token-coloured overlay over each
+textarea, and `intellisense.js` swaps it for CodeMirror in the same task. The editor's params and docs are cached in IndexedDB (`sc-decor`)
+by build hash + pack set (`strudelCraft.decor.stats()`), so a warm start mounts from the cache. In the editor every token is a span with a
+stable `data-tok` and every line has `data-ln`, written only when the text changes; the playhead, reference marks, the error line, bracket
+match and selection matches are rules in style atoms (`style-atoms.js`: `strudelCraft.styleAtoms.atom(name)` -> `set / delete / replace /
+clear / remove`, `list()`), so playback, hover and selection never touch the code DOM. `strudelCraft.intellisense.decorState('code')` returns
+what the atoms show (`active`, `primary`, `related`, `error`). Test: `node tests/site/decor_atoms.mjs` (`--measure <siteDir>` for the
+8-bar main-thread numbers).
+
 Completions come from a runtime registry. Built-in providers:
 - `strudel-docs`: static data, `data/intellisense/strudel.json` (`items[]`: `label, detail, info, category, method?, string?`).
 - `catalog`: recipe presets from `data/catalog.json` plus the recipe bodies, fetched on the first completion request (inserts the recipe `expr`, the plain expression; recipes with Craft syntax also offer `<id>.craft`, the Craft program).
@@ -552,7 +562,7 @@ from the tag style map (strongest tag by `taxonomy.priority`, then the category 
 
 ## Visual feedback (`visuals.js`)
 As on strudel.cc/learn/visual-feedback, using Strudel's own draw code in `@strudel/web` 1.3.0 (unmodified):
-- active events in the mini-notation are outlined in the editor while playing (tinted by `.color()`);
+- active events in the mini-notation are outlined in the editor while playing (tinted by `.color()`; rules in the `editor-playhead` style atom, the code DOM is untouched, #170);
 - global `.pianoroll() .punchcard() .spiral() .scope() .tscope() .fscope() .wordfall() .pitchwheel()` draw on a full-page
   `#test-canvas` layer (no pointer events); onPaint painters are driven by our frame loop;
 - inline `_pianoroll` `_punchcard` `_spiral` `_scope` `_tscope` `_fscope` `_wordfall` `_pitchwheel` render as CodeMirror block

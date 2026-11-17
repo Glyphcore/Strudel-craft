@@ -35,7 +35,7 @@ const hw = await page.evaluate(() => { const c = window.strudelCraft.perform.con
   const away = Math.min(0.99, t + 0.2); c.input('value', n, away, opt); const v1 = c.get(n); c.input('value', n, Math.min(1, away + 0.05), opt); const v2 = c.get(n); c.input('value', n, t, opt); const v3 = c.get(n); return { v0, v1, v2, v3, t }; });
 check('hardware input still uses pickup (ignored until it crosses the current value)', hw.v1 === hw.v0 && hw.v2 === hw.v0, JSON.stringify(hw));
 await page.evaluate((i) => window.strudelCraft.refs.highlight(i, { scroll: false }), id); await page.waitForTimeout(200);
-check('highlight(scroll:false) marks the span without scrolling', (await st()).top === s0.top && await page.locator('.cm-ref-primary').count() > 0);
+check('highlight(scroll:false) marks the span without scrolling', (await st()).top === s0.top && await page.evaluate(() => !!window.strudelCraft.intellisense.decorState('code').primary));
 await page.evaluate((i) => window.strudelCraft.refs.gotoCode(i), id); await page.waitForTimeout(500);
 const s2 = await st(); check('explicit gotoCode scrolls the editor to the span', Math.abs(s2.top - s0.top) > 100, `${s0.top} -> ${s2.top}`);
 /* tooltip target button */

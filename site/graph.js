@@ -7,6 +7,7 @@
 import * as acorn from './vendor/acorn-8.19.0.mjs';
 import { parse, generate, applyOp, graph, layout } from './model.js';
 import { lib, extract, replaceWithInstance, expand } from './library.js';
+import { atom } from './style-atoms.js';
 
 const sc = (window.strudelCraft = window.strudelCraft || {});
 const ui = () => sc.ui;
@@ -582,15 +583,21 @@ function renderSelbar() {
     h('button', { type: 'button', class: 'ghost', 'data-act': 'done' }, 'Done'));
 }
 function setMulti(on) { G.multi = on; $('#gxMulti').setAttribute('aria-pressed', String(on)); if (on) say('Multi-select: tap nodes to add them'); renderSelbar(); }
+// #170: the mirror holds the code once per text change, every statement span tagged data-sp (its node id); the selection-sync highlight is
+// a style atom rule per selected id (style-atoms.js), so selecting a lane never touches the mirror's DOM
+const selAtom = atom('graph-code-sel');
+function writeMirror() {
+  const t = codeTa.value; const sp = G.spans.filter((s) => s.end <= t.length).sort((a, b) => a.start - b.start); const key = t.length + ':' + sp.map((s) => s.id + '@' + s.start + '-' + s.end).join(',');
+  if (mirror.__t === t && mirror.__k === key) return; mirror.__t = t; mirror.__k = key;
+  const f = document.createDocumentFragment(); let at = 0;
+  for (const s of sp) { if (s.start < at) continue; f.append(t.slice(at, s.start)); const e = document.createElement('span'); e.dataset.sp = s.id; e.textContent = t.slice(s.start, s.end); f.append(e); at = s.end; }
+  f.append(t.slice(at) + '\n'); mirror.replaceChildren(f);
+}
 function syncMirror(scroll = true) {
-  if (!mirror) return; const t = codeTa.value;
+  if (!mirror) return; writeMirror(); const t = codeTa.value;
   const ids = G.wire && G.wire.startsWith('bind:') ? ['bind:' + G.wire.split(':')[1]] : [...G.sel];
   const sp = G.spans.filter((s) => ids.includes(s.id)).sort((a, b) => a.start - b.start);
-  // the mirror's text is transparent and only positions the marks: with nothing selected it stays empty (no copy of a large document)
-  if (!sp.length) { if (mirror.firstChild) mirror.replaceChildren(); return; }
-  let out = '', at = 0;
-  for (const s of sp) { if (s.start < at || s.end > t.length) continue; out += esc(t.slice(at, s.start)) + '<mark>' + esc(t.slice(s.start, s.end)) + '</mark>'; at = s.end; }
-  mirror.innerHTML = out + esc(t.slice(at)) + '\n';
+  selAtom.replace(ids.map((id) => [id, `.gx-mirror [data-sp="${CSS.escape(id)}"]{background:var(--sig-soft);box-shadow:0 0 0 1px var(--sig);border-radius:2px}`]));
   if (scroll && sp.length && document.activeElement !== codeTa) { const line = t.slice(0, sp[0].start).split('\n').length - 1; const lh = parseFloat(getComputedStyle(codeTa).lineHeight) || 20; codeTa.scrollTop = Math.max(0, (line - 2) * lh); }
   mirror.scrollTop = codeTa.scrollTop;
 }

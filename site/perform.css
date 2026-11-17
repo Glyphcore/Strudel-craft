@@ -133,7 +133,7 @@
    The stage keeps its title/readouts/scope as a slim strip; the lanes canvas and the position/loop row (all still in the other views) fold away, and the
    tabs + Presets + mode controls share compact rows. Outputs and sources, looper and hint sit below the grid. */
 @media (max-width:760px){
-  .deck[data-view="perform"] .stage .lanes,.deck[data-view="perform"] .stage .trange{display:none}
+  .deck[data-view="perform"] .stage .tl,.deck[data-view="perform"] .stage .trange{display:none}
   .deck[data-view="perform"] .stage .viz{height:36px}
   .deck[data-view="perform"] .stage-head{padding:6px 12px 2px}
   .deck[data-view="perform"] .stage-head h1{font-size:1rem;margin:0}

@@ -125,7 +125,7 @@ button.badge.pkb{min-height:44px;min-width:0;padding:0 8px;color:var(--sig-2);ba
 .readouts i{font-style:normal;font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:var(--faint)}
 .readouts b{font-size:1rem;font-weight:600;font-variant-numeric:tabular-nums}
 .viz{display:block;width:100%;height:200px;border-top:1px solid var(--line)}
-.lanes{display:block;width:100%;height:150px;border-top:1px solid var(--line);background:var(--panel-2)}
+.tl{display:flex;flex-direction:column;height:230px;border-top:1px solid var(--line);background:var(--panel-2)}.tl-scroll{flex:1;min-height:0;position:relative;overflow:auto}.lanes{display:block;position:sticky;top:0;left:0}
 body.playing .stage{box-shadow:var(--glow)}
 
 /* editor */
@@ -241,7 +241,7 @@ dialog::backdrop{background:rgba(5,6,8,.7)}
   .list{overflow:visible;max-height:none;flex:none}
   .stage{position:sticky;top:0;z-index:8;box-shadow:0 8px 20px rgba(0,0,0,.35)}
   .stage-head{padding:8px 12px 4px}
-  .viz{height:84px}.lanes{height:68px}
+  .viz{height:64px}.tl{height:212px}
   .inspector{min-height:520px}
   .list{min-height:60vh}
   .list li{scroll-margin-top:230px;scroll-margin-bottom:calc(var(--tp) + 12px)}
@@ -279,7 +279,7 @@ dialog::backdrop{background:rgba(5,6,8,.7)}
   .tools button[aria-label]::after{content:attr(aria-label);font-size:.72rem}
   .tools .tp-follow{font-size:.72rem}
   .stage{position:static;box-shadow:none}
-  .viz{height:56px}.lanes{height:44px}
+  .viz{height:48px}.tl{height:150px}
   .list{min-height:0}
   .list li{scroll-margin-top:calc(var(--top) + 8px)}
   .deck{padding-bottom:calc(var(--tp) + 40px + env(safe-area-inset-bottom))}
@@ -295,7 +295,7 @@ dialog::backdrop{background:rgba(5,6,8,.7)}
   .meter{width:56px;height:16px}
   .kl i{display:none}
 }
-@media (max-height:500px) and (orientation:landscape){.views a{font-size:.72rem}.viz{height:48px}.lanes{height:36px}}
+@media (max-height:500px) and (orientation:landscape){.views a{font-size:.72rem}.viz{height:48px}.tl{height:120px}}
 @media (max-width:440px){#playLabel{display:none}.tp-main .play{width:56px}.peak{display:none}.meter{width:40px}.tp-knobs{gap:6px}.tp-knobs .knob{flex-direction:column;gap:0;padding:0 4px;min-height:48px}.tp-knobs .knob svg{width:30px;height:30px}.tp-knobs .knob .kl b{font-size:.62rem}}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{transition-duration:0s!important;animation:none!important;scroll-behavior:auto!important}

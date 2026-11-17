@@ -940,7 +940,7 @@
   }
  },
  "lanes_ui": {
-  "date": "2026-11-15T18:22:39.480Z",
+  "date": "2026-11-17T21:18:33.656Z",
   "split": {
    "fan": {
     "lanes": 1,
@@ -1212,7 +1212,7 @@
      "ok|Bounced groove: take \"capture groove\" is in the Record list (open it)"
     ],
     "take": {
-     "id": "rcmwi5vtt3ggeo",
+     "id": "rcmwl71n2gu1ea",
      "name": "capture-groove",
      "from": "groove",
      "audio": [
@@ -1220,7 +1220,7 @@
      ],
      "cycles": 2,
      "li": true,
-     "liText": "audiocapture-groove2.0c · 1.000 cps · c0.0-2.0 · from groove · 4 deps RecipeWAV"
+     "liText": "audiocapture-groove2.0c · 1.000 cps · c0.0-2.0 · from groove · 14 deps RecipeWAV"
     },
     "state_after": "frozen|Frozen"
    },
@@ -1269,7 +1269,7 @@
     },
     "copied": "cap_groove",
     "play": {
-     "rms": 0.054937829307426946,
+     "rms": 0.05138942426993526,
      "fails": 0,
      "haps": 1,
      "sound": true
@@ -1293,11 +1293,11 @@
      "w": "empty|Empty"
     },
     {
-     "c": 0.07,
+     "c": 0.18,
      "w": "recording|Recording"
     },
     {
-     "c": 2.1,
+     "c": 2.19,
      "w": "frozen|Frozen"
     }
    ]

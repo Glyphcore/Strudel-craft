@@ -509,6 +509,8 @@
   "syntax.js",
   "taxonomy-store.js",
   "taxonomy.css",
+  "timeline.css",
+  "timeline.js",
   "tracker.js",
   "transport-range.js",
   "ui.js",

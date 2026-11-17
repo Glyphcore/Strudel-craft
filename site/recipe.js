@@ -154,7 +154,7 @@ const DB = new Promise((res) => {
 const mem = new Map();
 function tx(mode, fn) { return DB.then((db) => { if (!db) return fn(null); return new Promise((ok, no) => { const t = db.transaction('recipes', mode); const r = fn(t.objectStore('recipes')); t.oncomplete = () => ok(r && r.result); t.onerror = () => no(t.error); t.onabort = () => no(t.error || new Error('storage full')); }); }); }
 export const store = {
-  async put(rec) { if (await DB) await tx('readwrite', (s) => s.put(rec)); else mem.set(rec.id, rec); return rec; },
+  async put(rec) { if (await DB) await tx('readwrite', (s) => s.put(rec)); else mem.set(rec.id, rec); try { dispatchEvent(new CustomEvent('sc-take', { detail: { id: rec.id } })); } catch (e) { /* no window */ } return rec; },
   async get(id) { return (await DB) ? tx('readonly', (s) => s.get(id)) : mem.get(id); },
   async remove(id) { if (await DB) await tx('readwrite', (s) => s.delete(id)); else mem.delete(id); },
   async list() { const all = (await DB) ? await tx('readonly', (s) => s.getAll()) : [...mem.values()]; return (all || []).sort((a, b) => (a.recipe.created < b.recipe.created ? 1 : -1)); },

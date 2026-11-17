@@ -44,16 +44,16 @@
    Engine.load() (first Play, idle compiles) awaits window.strudelCraft.booted, so the first Play still needs one tap. */
 const sc = (window.strudelCraft = window.strudelCraft || {});
 const LATER = ['decor.js', 'engine/index.js', 'atoms-site.js', 'visuals.js', 'intellisense.js', 'hooks-intellisense.js', 'lanes-intellisense.js', 'word-intellisense.js',
-  'history.js', 'bgplay.js', 'tracker.js', 'copycode.js', 'transport-range.js', 'capture.js', 'workspace.js', 'vox-banks.js', 'refs.js', 'quickplay.js', 'resources.js', 'cues.js', 'drawn-user.js', 'sound-load.js'];
+  'history.js', 'bgplay.js', 'tracker.js', 'copycode.js', 'transport-range.js', 'capture.js', 'workspace.js', 'vox-banks.js', 'refs.js', 'quickplay.js', 'resources.js', 'cues.js', 'drawn-user.js', 'sound-load.js', 'timeline.js'];
 /* render host (index.html?host=render, capture.js / docs/AUDIO_ENGINE.md): only the engine side loads, no editor helpers, tracker or workspace */
-const HOSTED = /[?&]host=render\b/.test(location.search), NOHOST = ['decor.js', 'intellisense.js', 'hooks-intellisense.js', 'lanes-intellisense.js', 'word-intellisense.js', 'tracker.js', 'copycode.js', 'workspace.js', 'history.js', 'transport-range.js', 'bgplay.js', 'quickplay.js', 'resources.js', 'cues.js', 'sound-load.js'];
+const HOSTED = /[?&]host=render\b/.test(location.search), NOHOST = ['decor.js', 'intellisense.js', 'hooks-intellisense.js', 'lanes-intellisense.js', 'word-intellisense.js', 'tracker.js', 'copycode.js', 'workspace.js', 'history.js', 'transport-range.js', 'bgplay.js', 'quickplay.js', 'resources.js', 'cues.js', 'sound-load.js', 'timeline.js'];
 if (HOSTED) for (const u of NOHOST) LATER.splice(LATER.indexOf(u), 1);
 const CSS = ['copycode.css', 'capture.css'];
 /* a module or stylesheet that fails to load (offline, blocked, a bad deploy) is named in a toast with Retry; the rest keeps working.
    Chromium keeps a failed module URL in its module map, so a retry imports '<file>?retry=<n>' (a fresh fetch). */
 const NAME = { 'decor.js': 'code decorator', 'engine/index.js': 'controls engine', 'atoms-site.js': 'atoms', 'visuals.js': 'visuals', 'intellisense.js': 'editor intellisense', 'hooks-intellisense.js': 'hooks intellisense',
   'lanes-intellisense.js': 'lanes intellisense', 'word-intellisense.js': 'word intellisense', 'history.js': 'version history', 'bgplay.js': 'background playback', 'tracker.js': 'live tracker',
-  'copycode.js': 'copy code', 'transport-range.js': 'transport range', 'capture.js': 'Record panel', 'workspace.js': 'workspace', 'vox-banks.js': 'vocal banks', 'refs.js': 'reference inspector', 'quickplay.js': 'quick play', 'resources.js': 'resources pane', 'cues.js': 'score cues', 'drawn-user.js': 'drawn instruments', 'sound-load.js': 'sound loading notice',
+  'copycode.js': 'copy code', 'transport-range.js': 'transport range', 'capture.js': 'Record panel', 'workspace.js': 'workspace', 'vox-banks.js': 'vocal banks', 'refs.js': 'reference inspector', 'quickplay.js': 'quick play', 'resources.js': 'resources pane', 'cues.js': 'score cues', 'drawn-user.js': 'drawn instruments', 'sound-load.js': 'sound loading notice', 'timeline.js': 'timeline',
   'copycode.css': 'copy code styles', 'capture.css': 'Record panel styles' };
 const q = (u, n) => u + (n ? '?retry=' + n : '');
 const sheet = (h, n) => new Promise((ok) => document.head.append(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: q(h, n), onload: () => ok(null), onerror: () => ok(h) })));
@@ -128,7 +128,7 @@ addEventListener('click', (e) => { if (e.target.closest && e.target.closest('#dr
         <div class="readouts" aria-hidden="true"><span><i>Cycle</i><b id="cycleOut">0.00</b></span><span><i>CPS</i><b id="cpsOut">-</b></span></div>
       </div>
       <canvas id="viz" class="viz" aria-label="Scope and spectrum of the master output" role="img"></canvas>
-      <canvas id="lanes" class="lanes" aria-label="Pattern lanes for the current cycle with playhead" role="img"></canvas>
+      <div class="tl" id="tl"><div class="tl-scroll" id="tlScroll"><canvas id="lanes" class="lanes" role="img" aria-label="Timeline"></canvas></div></div>
       <div class="trange" id="trange"><label class="sr" for="trPos">Position</label>
         <input id="trPos" class="tr-pos" type="range" min="0" max="16" step="0.01" value="0" aria-valuetext="cycle 0">
         <div class="tr-row">

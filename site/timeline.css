@@ -1,0 +1,20 @@
+/* Timeline (#175): toolbar, scroll extent and long-press menu. The canvas draws everything else (timeline.js). */
+.tl{position:relative}
+.tl-bar{display:flex;align-items:center;gap:4px;padding:0 6px;height:44px;flex:none;overflow-x:auto;scrollbar-width:none;background:var(--panel);border-bottom:1px solid var(--line)}
+.tl-bar::-webkit-scrollbar{display:none}
+.tl-b{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:44px;height:44px;padding:0 10px;flex:none;border:1px solid var(--line-2);border-radius:var(--r1,6px);background:var(--panel-2);color:var(--text);font:600 .72rem var(--mono,monospace);text-transform:uppercase;letter-spacing:.06em;cursor:pointer;touch-action:manipulation}
+.tl-b svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tl-b:hover{border-color:var(--sig-2)}
+.tl-b:focus-visible,.tl-scroll:focus-visible{outline:2px solid var(--sig-2);outline-offset:-2px}
+.tl-follow[data-state="on"]{color:var(--sig-ink);background:var(--sig);border-color:var(--sig)}
+.tl-follow[data-state="paused"]{border-color:var(--sig);color:var(--sig);animation:tl-pulse 1.4s ease-in-out infinite}
+.tl-follow[data-state="off"]{color:var(--faint)}
+@keyframes tl-pulse{50%{box-shadow:0 0 0 3px var(--sig-soft)}}
+@media (prefers-reduced-motion:reduce){.tl-follow[data-state="paused"]{animation:none}}
+.tl-sel{margin-left:auto;padding:0 6px;font:.7rem var(--mono,monospace);color:var(--dim);white-space:nowrap}
+.tl-scroll{touch-action:pan-x pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.tl-sp{position:absolute;left:0;top:0;width:1px;height:1px;pointer-events:none;visibility:hidden}
+.tl-menu{position:absolute;z-index:5;min-width:190px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r2,8px);box-shadow:0 8px 24px rgba(0,0,0,.45);display:flex;flex-direction:column;padding:2px}
+.tl-menu[hidden]{display:none}
+.tl-menu button{height:44px;padding:0 12px;border:0;background:none;color:var(--text);text-align:left;font:.82rem var(--mono,monospace);border-radius:var(--r1,6px);cursor:pointer}
+.tl-menu button:hover,.tl-menu button:focus-visible{background:var(--panel-3);outline:none}

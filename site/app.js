@@ -321,7 +321,7 @@ function knob({ label, min, max, step, value, def, fmt, onChange, cls }) {
 
 /* ---------- visuals ---------- */
 const Viz = {
-  colors: {}, frames: [], cost: [], last: 0, raf: 0, running: false, laneCache: { key: '', haps: [], lanes: [] }, peaks: [-Infinity, -Infinity], hold: [-Infinity, -Infinity],
+  colors: {}, frames: [], cost: [], last: 0, raf: 0, running: false, peaks: [-Infinity, -Infinity], hold: [-Infinity, -Infinity],
   readColors() { const cs = getComputedStyle(document.documentElement); for (const k of ['sig', 'sig-2', 'text', 'dim', 'faint', 'line', 'line-2', 'panel', 'panel-2', 'warn', 'bad', 'ok']) this.colors[k] = cs.getPropertyValue('--' + k).trim(); this.ver = (this.ver || 0) + 1; },
   /* readouts that change every frame write the data of one persistent text node: replacing the child with textContent measured about 350 ms/s of main thread at 20 writes a second (#180) */
   setText(el, s) { let n = el.firstChild; if (n && n.nodeType === 3 && !n.nextSibling) n.data = s; else el.textContent = s; },
@@ -383,53 +383,11 @@ const Viz = {
     for (let i = 0; i < span; i++) { const x = (i / (span - 1)) * W, y = H * 0.45 - tb[z + i] * H * 0.4; i ? g.lineTo(x, y) : g.moveTo(x, y); }
     g.stroke(); g.globalAlpha = 1; labels();
   },
-  queryLanes(c0) {
-    const sch = Engine.scheduler; const pat = sch && sch.pattern; if (!pat) return this.laneCache;
-    const key = c0 + '|' + (S.playingId || '') + '|' + Engine.evalCount;
-    if (this.laneCache.key === key) return this.laneCache;
-    let haps = [];
-    const mh = window.strudelCraft.bg && window.strudelCraft.bg.cycleHaps ? window.strudelCraft.bg.cycleHaps(c0) : undefined; if (mh === 'pending') return this.laneCache; /* engine Worker drives: its event mirror */
-    try { haps = (mh || pat.queryArc(c0, c0 + 1)).filter((h) => h.hasOnset && h.hasOnset()); } catch (e) { haps = []; }
-    const lanes = []; const out = [];
-    for (const h of haps) {
-      const v = h.value || {}; const name = typeof v === 'object' ? String(v.s != null ? v.s : (v.note != null || v.n != null ? 'synth' : 'event')) + (v.bank ? '' : '') : 'event';
-      let li = lanes.indexOf(name); if (li < 0) { if (lanes.length >= 8) li = 7; else { lanes.push(name); li = lanes.length - 1; } }
-      out.push({ b: Number(h.whole.begin) - c0, e: Number(h.whole.end) - c0, li, note: typeof v === 'object' ? (v.note != null ? v.note : v.n) : null });
-    }
-    this.laneCache = { key, haps: out, lanes };
-    return this.laneCache;
-  },
-  /* The static layer (beat grid, lane names, separators) is drawn once per size, colour set and lane list into an offscreen canvas; a frame blits it and draws only the hap bars and the playhead, and a frame whose pixels would be identical (same playhead pixel, same active haps) draws nothing. */
-  laneLayer(W, H, dpr, names, playing) {
-    const C = this.colors, key = [W, H, this.ver, playing, names.join('\u0001')].join('|'); const L = this.layer || (this.layer = { c: document.createElement('canvas'), key: '' });
-    if (L.key === key) return L.c;
-    L.c.width = W; L.c.height = H; const g = L.c.getContext('2d'); const gutter = 64 * dpr;
-    for (let i = 0; i <= 16; i++) { const x = Math.round(gutter + (i / 16) * (W - gutter)) + 0.5; g.strokeStyle = i % 4 ? C.line : C['line-2']; g.lineWidth = 1; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H); g.stroke(); }
-    g.font = `${10 * dpr}px "JetBrains Mono", monospace`;
-    if (!playing) { g.fillStyle = C.faint; g.fillText('LANES', 8 * dpr, 16 * dpr); }
-    else { const lh = H / Math.max(1, names.length); names.forEach((name, i) => { g.fillStyle = C.dim; g.fillText(name.slice(0, 9), 8 * dpr, i * lh + lh / 2 + 4 * dpr); if (i) { g.strokeStyle = C.line; g.beginPath(); g.moveTo(0, Math.round(i * lh) + 0.5); g.lineTo(W, Math.round(i * lh) + 0.5); g.stroke(); } }); }
-    L.key = key; return L.c;
-  },
+  /* #175: the lanes are the rolling timeline (site/timeline.js, lazy): this only keeps the cycle / tempo readouts and tells it the evaluation key */
   drawLanes() {
-    const c = this.lanes, dpr = this.fit(c), g = c.getContext('2d'), W = c.width, H = c.height, C = this.colors;
-    if (!W || !H) { this.laneSig = ''; return; } /* hidden or not laid out yet: nothing to draw (a 0-size layer canvas makes drawImage throw) */
-    const gutter = 64 * dpr; const sch = Engine.scheduler; const playing = S.playing && Engine.started;
-    const now = playing ? sch.now() : 0; const c0 = Math.floor(now); const frac = now - c0;
+    const sch = Engine.scheduler; const playing = S.playing && Engine.started; const now = playing ? sch.now() : 0;
     if (this.cycleOut) { const a = playing ? now.toFixed(2) : '0.00', b = sch ? (sch.cps * 60 * 4).toFixed(0) + ' bpm' : '-'; if (a !== this.txtA) { this.txtA = a; this.setText(this.cycleOut, a); } if (b !== this.txtB) { this.txtB = b; this.setText(this.cpsOut, b); } }
-    const { haps, lanes } = playing ? this.queryLanes(c0) : { haps: [], lanes: [] };
-    const px = Math.round(gutter + frac * (W - gutter)); let act = ''; for (const h of haps) act += frac >= h.b && frac < h.e ? '1' : '0';
-    const sig = [W, H, this.ver, playing, this.laneCache.key, px, act].join('|'); if (playing && sig === this.laneSig) return; if (!playing && sig === this.laneSig) return; this.laneSig = sig;
-    g.clearRect(0, 0, W, H); g.drawImage(this.laneLayer(W, H, dpr, lanes, playing), 0, 0);
-    if (!playing) return;
-    const n = Math.max(1, lanes.length); const lh = H / n; const pad = Math.max(Math.min(6 * dpr, lh * 0.2), (lh - 30 * dpr) / 2);
-    for (const h of haps) {
-      const x0 = gutter + clamp(h.b, 0, 1) * (W - gutter), x1 = gutter + clamp(h.e, 0, 1) * (W - gutter);
-      const on = frac >= h.b && frac < h.e;
-      g.fillStyle = on ? C.sig : C['sig-2']; g.globalAlpha = on ? 1 : 0.55;
-      g.fillRect(x0 + 1, h.li * lh + pad, Math.max(2 * dpr, x1 - x0 - 2), lh - pad * 2);
-    }
-    g.globalAlpha = 1;
-    g.fillStyle = C.sig; g.fillRect(px - dpr, 0, 2 * dpr, H);
+    const T = window.strudelCraft.timeline; if (T) T.ping((S.playingId || '') + '|' + Engine.evalCount);
   },
   drawMeter(t) {
     const c = this.meter, dpr = this.fit(c), g = c.getContext('2d'), W = c.width, H = c.height, C = this.colors;

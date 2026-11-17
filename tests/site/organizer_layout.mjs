@@ -1,4 +1,4 @@
-// Organizer layout (#178): the folder tree + tag chips must never push the Recipes list or the Syntax entries out of their container.
+// Organizer layout (#179): the folder tree + tag chips must never push the Recipes list or the Syntax entries out of their container.
 // For Recipes and Syntax at 1440x900, 1024x700, 768x1024, 390x844, 360x740 with the folder tree and all tags expanded and 8 tags selected (wrapping rows):
 // bounded filter region, list/entries >= 45% of the viewport and not clipped by any ancestor, filters and entries do not intersect, the toggle hides/shows
 // the filters and is remembered, the last row is reachable, a press never scrolls the editor (#107).

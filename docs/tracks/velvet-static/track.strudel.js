@@ -19,19 +19,25 @@
 // Sidechain: the kick lanes duck orbit 2 (the bass return `bus2` sits on it); orbit 3 is on the master return and is not ducked (see the bus stage at the end of the file).
 // Buses (Strudel orbits, for the room and delay of each group): 1 drums, 2 bass, 3 music, 4 snare room, 5 fx.
 setcpm(174 / 4)
-await voxBank('sung'); await voxBank('vocalset')
+const VOX = 'https://raw.githubusercontent.com/Glyphcore/strudel-craft/main/site/data/vox/'
+await samples(VOX + 'sung/pitched/strudel.json'); await samples(VOX + 'vocalset/pitched/strudel.json')
 atoms.import("pack:glyphcore/edm:atoms-edm-core")
 atoms.import("pack:glyphcore/phonk:atoms")
 atoms.import("pack:glyphcore/phonk:atoms-v2")
 
 // == arrangement helpers (plain JS: gates as data) ==
 const SEC = { intro: [1, 16], build1: [17, 32], drop1: [33, 64], float: [65, 88], build2: [89, 96], drop2: [97, 128], bridge: [129, 144], outro: [145, 160] }
-const rl = (f) => { const r = []; for (let i = 0; i < 160;) { let j = i; while (j < 160 && f(j) === f(i)) j++; r.push(j - i > 1 ? f(i) + '!' + (j - i) : '' + f(i)); i = j } return '<' + r.join(' ') + '>' }
+const rl = (f) => { const r = []; for (let i = 0; i < 160;) { let j = i; while (j < 160 && f(j) === f(i)) j++; r.push(j - i > 1 ? f(i) + '!' + (j - i) : '' + f(i)); i = j } return mini('<' + r.join(' ') + '>') }   // a Pattern: a plain runtime string is not mini-parsed by the controls (.postgain(str) stays a string)
 const on = (...ns) => { const a = Array(160).fill(0); for (const n of ns) { const [s, e = s] = SEC[n] || String(n).match(/\d+/g).map(Number); for (let i = s; i <= e; i++) a[i - 1] = 1 } return rl((i) => a[i]) }
 const hole = (...bs) => rl((i) => (bs.includes(i + 1) ? '[1 0]' : '1'))   // second half of these bars is silent (the breath before a drop)
 const fall = (hz, ...bs) => rl((i) => (bs.includes(i + 1) ? Math.round(hz * 0.4) : bs.includes(i + 2) ? Math.round(hz * 0.7) : hz))   // filter closes into these bars
 const TR = "<0!96 2!64>"   // drop 2, bridge, outro sit a whole tone up (Gm)
-const H = hole(32, 96)
+const H = hole(32, 96, 112)   // the breath before drop 1, drop 2 and the switch-up at bar 113
+const padLp = rl((i) => { const b = i + 1; const base = b >= 97 && b <= 112 ? 1800 : 2600; return b === 63 || b === 127 ? Math.round(base * 0.7) : b === 64 || b === 128 ? Math.round(base * 0.4) : base })   // drop 2: pad filter 1800 Hz in 97-112, opens to 2600 at 113
+const leadLp = rl((i) => { const b = i + 1; const base = b >= 97 && b <= 112 ? 4500 : 6500; return b === 63 || b === 127 ? Math.round(base * 0.7) : b === 64 || b === 128 ? Math.round(base * 0.4) : base })
+// level ride on both returns (a fader move after the compressor, as data; a bar's value is its gain): build 1 steps down into bar 31 so drop 1 lands as a hard step
+// after the half-bar gap in bar 32; build 2 sits under drop 2; drop 2 is a ladder (97-104 -4.4 dB, 105-112 -2.2 dB, 113 on 0 dB: the switch-up)
+const ride = rl((i) => { const b = i + 1; return b <= 24 ? 1 : b <= 26 ? 0.9 : b <= 28 ? 0.8 : b <= 30 ? 0.7 : b === 31 ? 0.55 : b === 32 ? 0.7 : b >= 89 && b <= 92 ? 0.75 : b >= 93 && b <= 104 ? 0.6 : b >= 105 && b <= 112 ? 0.78 : 1 })
 const dlh = rl((i) => (i >= 64 && i < 88 ? 0.33 : i >= 128 && i < 144 ? 0.1 : 0.3))   // the same for the hat racks (their own level 0.3)
 const dlt = rl((i) => (i >= 64 && i < 88 ? 0.44 : i >= 128 && i < 144 ? 0.14 : 0.4))
 const dl = rl((i) => (i >= 64 && i < 88 ? 1.1 : i >= 128 && i < 144 ? 0.35 : 1))   // float and bridge drum level, as data
@@ -55,6 +61,7 @@ atom("vs.lead", { type: "mini", body: "<[c5@3 eb5 ~@2 f5@2 eb5@2 c5@2 ~@4] [ab4@
 atom("vs.leadR", { type: "mini", body: "<[eb5@6 c5@2 ab4@4 c5@4] [eb5@4 f5@2 eb5@2 c5@8] [d5@6 bb4@2 g4@4 bb4@4] [bb4@4 d5@4 eb5@8] [c5@6 ab4@2 f4@4 ab4@4] [c5@4 eb5@2 c5@2 ab4@8] [db5@6 c5@2 ab4@4 f4@4] [ab4@4 c5@4 db5@4 eb5@4]>" })
 atom("vs.leadP", { type: "mini", body: "<[g4@4 bb4@4 d5@8] [c5@4 a4@4 f#4@4 ~@4]>" })
 atom("vs.kick", { type: "mini", body: "<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~]!3 [x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ x ~]>" })
+atom("vs.kickC", { type: "mini", body: "<[x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ x ~]>" })
 atom("vs.kickB", { type: "mini", body: "<[x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ ~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~] [x ~ ~ ~ ~ ~ ~ x ~ ~ x ~ ~ ~ x ~]>" })
 atom("vs.kickG", { type: "mini", body: "<~ [~ ~ ~ ~ ~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~] ~ [~ ~ ~ x ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~]>" })
 atom("vs.snare", { type: "mini", body: "[~ x ~ x]" })
@@ -101,30 +108,31 @@ hooks.bind("chop", "velvetChop"); hooks.bind("ooh", "oohPad"); hooks.bind("keys"
 
 // == drums (orbit 1, never ducked; the kick is the sidechain trigger for orbits 2 and 3) ==
 kick: s(atoms.vs.kick).use("kick").orbit(1).duckorbit("2:3").duckdepth("0.15:0.2").duckattack("0.12:0.2").mask(on('33-48', '93-96')).mask(H).dry(0).send("master", 1)
-kickB: s(atoms.vs.kickB).use("kick").orbit(1).duckorbit("2:3").duckdepth("0.15:0.2").duckattack("0.12:0.2").mask(on('49-64', '97-128')).mask(H).dry(0).send("master", 1)
+kickB: s(atoms.vs.kickB).use("kick").orbit(1).duckorbit("2:3").duckdepth("0.15:0.2").duckattack("0.12:0.2").mask(on('49-64', '97-112')).mask(H).dry(0).send("master", 1)
+kickC: s(atoms.vs.kickC).use("kick").orbit(1).duckorbit("2:3").duckdepth("0.15:0.2").duckattack("0.12:0.2").mask(on('113-128')).mask(H).dry(0).send("master", 1)
 kickG: s(atoms.vs.kickG).use("kick").velocity(0.4).orbit(1).mask(on('drop1', 'drop2')).mask(H).dry(0).send("master", 1)
 heart: s(atoms.ph2.heart).use("heart").orbit(1).postgain(dl).duckorbit("2:3").duckdepth("0.2:0.2").duckattack("0.2:0.3").mask(on('9-32', 'float', '89-92', '137-144')).mask(H).dry(0).send("master", 1)
 snare: s(atoms.vs.snare).use("snare").orbit(4).room(0.2).roomsize(2).duckorbit("3").duckdepth(0.2).duckattack(0.12).mask(on('drop1', 'drop2', '93-96')).mask(H).dry(0).send("master", 1)
 snareF: s(atoms.vs.snareF).use("snareF").orbit(4).room(0.45).roomsize(2).postgain(dl).mask(on('13-16', '25-32', 'float', '89-92', '137-144')).mask(H).dry(0).send("master", 1)
 ghost: s(atoms.vs.sgA).use("ghost").velocity(rand.range(0.3, 0.6)).orbit(4).room(0.15).roomsize(2).groove({ swing: 56, jitter: 4, vel: 0.2, seed: 5 }).mask(on('drop1')).mask(H).dry(0).send("master", 1)
-ghost2: s(atoms.vs.sgB).use("ghost").velocity(rand.range(0.35, 0.7)).orbit(4).room(0.15).roomsize(2).groove({ swing: 56, jitter: 4, vel: 0.2, seed: 6 }).postgain(0.8).mask(on('drop2')).dry(0).send("master", 1)
+ghost2: s(atoms.vs.sgB).use("ghost").velocity(rand.range(0.35, 0.7)).orbit(4).room(0.15).roomsize(2).groove({ swing: 56, jitter: 4, vel: 0.2, seed: 6 }).postgain(0.8).mask(on('105-128')).dry(0).send("master", 1)
 fill: s(atoms.vs.fill).use("snare").velocity(saw.range(0.2, 0.5)).orbit(4).room(0.2).roomsize(2).postgain(0.5).mask(on(16, 40, 48, 56, 88, 104, 112, 120)).dry(0).send("master", 1)
 stut: s(atoms.ph2.stut).use("snareF").velocity(0.7).orbit(4).room(0.3).roomsize(2).postgain(0.45).mask(on('65-86')).dry(0).send("master", 1)
 roll: s(atoms.ec.roll8).velocity(atoms.ec.rollVel8).use("ghost").orbit(4).room(0.15).roomsize(2).postgain(0.4).mask(on('25-32', '89-96')).mask(H).dry(0).send("master", 1)
 hats: s(atoms.vs.hats).use("hat").velocity(atoms.vs.hatv).groove({ swing: 56, jitter: 3, vel: 0.2, seed: 11 }).pan(0.56).mask(on('25-64', '93-128')).mask(H).dry(0).send("master", 1)
 hroll: s(atoms.vs.roll32).use("hat").velocity(saw.range(0.2, 0.4)).pan(0.6).mask(on(40, 48, 56, 64, 104, 112, 120)).dry(0).send("master", 1)
-hats32: s(atoms.vs.hats32).use("hat").velocity(0.45).groove({ swing: 56, jitter: 3, vel: 0.2, seed: 13 }).pan(0.62).mask(on('41-64', '97-128')).mask(H).dry(0).send("master", 1)
-ohat: s(atoms.vs.oh).use("open").pan(0.42).mask(on('41-64', '97-128')).mask(H).dry(0).send("master", 1)
+hats32: s(atoms.vs.hats32).use("hat").velocity(0.45).groove({ swing: 56, jitter: 3, vel: 0.2, seed: 13 }).pan(0.62).mask(on('41-64', '113-128')).mask(H).dry(0).send("master", 1)
+ohat: s(atoms.vs.oh).use("open").pan(0.42).mask(on('41-64', '105-128')).mask(H).dry(0).send("master", 1)
 hatF: s(atoms.vs.hatF).use("hat").velocity(atoms.vs.hatFv).groove({ swing: 60, jitter: 4, vel: 0.25, seed: 3 }).pan(0.56).postgain(dlh).mask(on('5-24', 'float', '89-92', '137-144')).mask(H).dry(0).send("master", 1)
 tick: s(atoms.vs.tickF).use("hat").velocity(0.35).pan(0.4).postgain(dlt).mask(on('17-24', '133-136')).dry(0).send("master", 1)
 rim: s(atoms.ph2.rim).use("rim").velocity(0.3).pan(0.38).orbit(4).room(0.3).roomsize(2).postgain(dl).mask(on('13-16', '73-88', '133-144')).dry(0).send("master", 1)
 
 // == bass (orbit 2): sub under, the owner's snarl band-limited and mixed below it ==
-sub: note(atoms.vs.sub).add(note(TR)).use("sub").orbit(2).mask(on('25-64', '97-128')).mask(H).velocity(swell).dry(0).send("bus2", 1)
+sub: note(atoms.vs.sub).add(note(TR)).use("sub").orbit(2).mask(on('25-31', '33-64', '97-128')).mask(H).velocity(swell).dry(0).send("bus2", 1)
 subR: note(atoms.vs.subR).use("sub808").orbit(2).postgain(0.49).mask(on('65-86')).dry(0).send("bus2", 1)
 subP: note(atoms.vs.subP).use("sub808").orbit(2).postgain(0.5).mask(on('87-88')).dry(0).send("bus2", 1)
 snarl: note(atoms.vs.snarl).add(note(TR)).use("snarl").orbit(2).velocity("<.8!120 .95!8 .8!32>").lpf(fall(900, 64, 128)).late(0.011).mask(on('33-64', '97-128')).mask(H).dry(0).send("bus2", 1)
-snarlB: note(atoms.vs.snarl).use("snarl").orbit(2).lpf(saw.range(250, 900).slow(8)).velocity(1.1).mask(on('25-32')).mask(H).dry(0).send("bus2", 1)
+snarlB: note(atoms.vs.snarl).use("snarl").orbit(2).lpf(saw.range(250, 900).slow(8)).velocity(1.1).mask(on('25-31')).mask(H).dry(0).send("bus2", 1)
 snarlF: note(atoms.vs.snarl).use("snarl").orbit(2).lpf(420).velocity(1).mask(on('77-86')).dry(0).send("bus2", 1)
 
 // == harmony (orbit 3, one reverb and one delay for the whole bus) ==
@@ -133,24 +141,24 @@ cloudR: note(atoms.vs.chordsRel).use("cloud").orbit(3).room(0.7).roomsize(5).pos
 cloudP: note(atoms.vs.pivot).use("cloud").orbit(3).room(0.7).roomsize(5).mask(on('87-88')).dry(0).send("master", 1)
 padB: note(atoms.vs.chords).use("pad").orbit(3).room(0.35).roomsize(5).lpf(atoms.ec.open8).postgain(1.1).mask(on('17-32')).mask(H).dry(0).send("master", 1)
 padB2: note(atoms.vs.chordsB2).use("pad").orbit(3).room(0.4).roomsize(5).lpf(atoms.ec.open8).postgain(1.1).mask(on('89-96')).mask(H).dry(0).send("master", 1)
-pad: note(atoms.vs.chords).add(note(TR)).use("pad").orbit(3).room(0.35).roomsize(5).lpf(fall(2600, 64, 128)).mask(on('33-64', '97-128')).mask(H).dry(0).send("master", 1)
-keys: note(atoms.vs.chords).add(note(TR)).struct(atoms.vs.keys).use("keys").orbit(3).room(0.3).roomsize(5).postgain(0.7).late(0.007).mask(on('97-128')).dry(0).send("master", 1)
-arp: note(atoms.vs.arp).add(note(TR)).use("arp").orbit(3).room(0.3).roomsize(5).delay(0.2).delaytime(0.2586).delayfeedback(0.35).groove({ swing: 56, jitter: 2, vel: 0.15, seed: 9 }).late(0.005).mask(on('41-64', '97-128')).mask(H).dry(0).send("master", 1)
+pad: note(atoms.vs.chords).add(note(TR)).use("pad").orbit(3).room(0.35).roomsize(5).lpf(padLp).mask(on('33-64', '97-128')).mask(H).dry(0).send("master", 1)
+keys: note(atoms.vs.chords).add(note(TR)).struct(atoms.vs.keys).use("keys").orbit(3).room(0.3).roomsize(5).postgain(0.7).late(0.007).mask(on('105-128')).dry(0).send("master", 1)
+arp: note(atoms.vs.arp).add(note(TR)).use("arp").orbit(3).room(0.3).roomsize(5).delay(0.2).delaytime(0.2586).delayfeedback(0.35).groove({ swing: 56, jitter: 2, vel: 0.15, seed: 9 }).late(0.005).mask(on('41-64', '105-128')).mask(H).dry(0).send("master", 1)
 ooh: s("<vs_o_pp vs_o_pp vs_o_pp vs_o_pp>/2").note(atoms.vs.ooh).add(note(TR)).use("ooh").orbit(3).room(0.5).roomsize(5).postgain(1.3).mask(on('3-16', '129-144')).velocity(lv(0.65, 0.32)).dry(0).send("master", 1)
 oohA: s("vs_a_pp").note(atoms.vs.oohR).use("ooh").orbit(3).room(0.6).roomsize(5).postgain(0.49).mask(on('65-86')).dry(0).send("master", 1)
 
 // foreshadowing (docs/COMPOSITION.md FS-01, FS-05, MOT-05): "teaser" = a filtered fragment of the motif in the build; "callback" = the motif in augmentation (slow(2)) in the outro
 // == melody (orbit 3): one motif. The lead states it, the chop answers it an octave down, the snarl keeps its rhythm ==
 leadI: note(atoms.vs.lead).add(note(TR)).use("lead").lpf(saw.range(1200, 6500).slow(16)).orbit(3).room(0.35).roomsize(5).delay(0.25).delaytime(0.2586).delayfeedback(0.35).postgain(1.3).mask(on('intro', 'bridge')).velocity(lv(0.65, 0.24)).dry(0).send("master", 1)
-lead: note(atoms.vs.lead).add(note(TR)).use("lead").lpf(fall(6500, 64, 128)).orbit(3).room(0.3).roomsize(5).delay(0.25).delaytime(0.2586).delayfeedback(0.35).mask(on('33-36', '41-64', '97-128')).mask(H).dry(0).send("master", 1)
-chop: note(atoms.vs.lead).sub(note(12)).add(note(TR)).s("vox_la vox_na vox_da vox_la").use("chop").orbit(3).room(0.4).roomsize(5).delay(0.25).delaytime(0.2586).delayfeedback(0.35).late(0.016).mask(on(37, 38, 39, 40, 45, 46, 47, 48, 53, 54, 55, 56, 61, 62, 63, 64, 101, 102, 103, 104, 109, 110, 111, 112, 117, 118, 119, 120, 125, 126, 127, 128)).mask(H).dry(0).send("master", 1)
+lead: note(atoms.vs.lead).add(note(TR)).use("lead").lpf(leadLp).orbit(3).room(0.3).roomsize(5).delay(0.25).delaytime(0.2586).delayfeedback(0.35).mask(on('33-36', '41-64', '97-128')).mask(H).dry(0).send("master", 1)
+chop: note(atoms.vs.lead).sub(note(12)).add(note(TR)).s("vox_la vox_na vox_da vox_la").use("chop").orbit(3).room(0.4).roomsize(5).delay(0.25).delaytime(0.2586).delayfeedback(0.35).late(0.016).mask(on(37, 38, 39, 40, 45, 46, 47, 48, 53, 54, 55, 56, 61, 62, 63, 64, 109, 110, 111, 112, 117, 118, 119, 120, 125, 126, 127, 128)).mask(H).dry(0).send("master", 1)
 teaser: note(atoms.vs.lead).linger(0.25).use("lead").lpf(900).velocity(0.6).orbit(3).room(0.5).roomsize(5).mask(on('25-31')).dry(0).send("master", 1)
 callback: note(atoms.vs.lead).slow(2).add(note(TR)).use("lead").lpf(2200).velocity(0.7).orbit(3).room(0.6).roomsize(5).delay(0.25).delaytime(0.2586).delayfeedback(0.4).mask(on('145-152')).dry(0).send("master", 1)
 voxl: note(atoms.vs.leadR).use("vlead").orbit(3).room(0.5).roomsize(5).delay(0.25).delaytime(0.2586).delayfeedback(0.3).postgain(0.49).mask(on('65-86')).dry(0).send("master", 1)
 voxlP: note(atoms.vs.leadP).use("vlead").orbit(3).room(0.5).roomsize(5).postgain(0.5).mask(on('87-88')).dry(0).send("master", 1)
 
 // == transitions and texture (orbit 5 fx reverb; never ducked) ==
-riser: s("x").slow(16).hook("noiseRiser(22.07)").orbit(5).mask(on('17-32')).dry(0).send("master", 1)
+riser: s("x").slow(16).clip(0.97).hook("noiseRiser(21.4)").orbit(5).mask(on('17-32')).dry(0).send("master", 1)
 riser2: s("x").slow(8).hook("noiseRiser(11.03)").orbit(5).mask(on('89-96')).dry(0).send("master", 1)
 pitchUp: s("x").slow(8).hook("pitchRiser(11.03)").orbit(5).mask(on('89-96')).dry(0).send("master", 1)
 rev: s("x").hook("reverseSwell(1.38)").orbit(5).postgain(0.5).mask(on(16, 64, 96, 128, 144)).dry(0).send("master", 1)
@@ -163,6 +171,6 @@ down: s("x").hook("downSweep").orbit(5).postgain(0.3).mask(on(65, 89, 129, 145))
 // so the kick's orbit duck (duckorbit "2:3") still reaches them: a bus bypasses the orbit gain, a return on the orbit does not (a single master bus lost the duck).
 // Threshold -8 dB, ratio 20, no knee, 1 ms attack (the compressor looks ahead 6 ms), 80 ms release; the browser compressor adds its own make-up gain. It only squashes
 // the peaks above the threshold. The music orbit (3) is therefore not ducked.
-master: ret("master").compressor("-8:20:0:0.001:0.08")
+master: ret("master").hpf(18).compressor("-8:20:0:0.001:0.08").postgain(ride)
 
-bus2: ret("bus2").orbit(2).compressor("-8:20:0:0.001:0.08")
+bus2: ret("bus2").orbit(2).hpf(18).compressor("-8:20:0:0.001:0.08").postgain(ride)

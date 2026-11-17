@@ -561,6 +561,63 @@
   },
   "tapeStopMove": {
    "class": "move"
+  },
+  "velvetKick": {
+   "class": "kick"
+  },
+  "velvetHeart": {
+   "class": "kick"
+  },
+  "velvetSnare": {
+   "class": "snare"
+  },
+  "velvetSnareF": {
+   "class": "snare"
+  },
+  "velvetGhost": {
+   "class": "snare"
+  },
+  "velvetHat": {
+   "class": "hat"
+  },
+  "velvetOpen": {
+   "class": "hat"
+  },
+  "velvetRim": {
+   "class": "perc"
+  },
+  "velvetSub": {
+   "class": "sub"
+  },
+  "velvetSub808": {
+   "class": "sub"
+  },
+  "velvetSnarl": {
+   "class": "growl"
+  },
+  "velvetPad": {
+   "class": "pad"
+  },
+  "cloudPad": {
+   "class": "pad"
+  },
+  "silkLead": {
+   "class": "lead"
+  },
+  "voxLead": {
+   "class": "lead"
+  },
+  "velvetChop": {
+   "class": "vox"
+  },
+  "oohPad": {
+   "class": "vox"
+  },
+  "velvetKeys": {
+   "class": "pluck"
+  },
+  "velvetArp": {
+   "class": "arp"
   }
  },
  "catalog": {

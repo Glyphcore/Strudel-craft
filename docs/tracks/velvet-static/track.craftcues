@@ -1,0 +1,61 @@
+CRAFTCUES 1
+track: velvet-static
+title: Velvet Static (160 bars, 174 bpm, F minor, unlistened)
+program: docs/tracks/velvet-static/track.strudel.js
+bars: 160
+bpm: 174
+beats: 4
+offset: 0
+sections: intro 1-16, build1 17-32, drop1 33-64, float 65-88, build2 89-96, drop2 97-128, bridge 129-144, outro 145-160
+
+NOTE Authored cues for Velvet Static (#137, README arrangement map; CraftCues #164). Everything is unlistened.
+
+intro
+1-16 lesson @cloud,ooh,leadI
+Float intro: cloud pad, "ooh" from bar 3, the lead states the motif with its filter opening over 16 bars
+| TEN-03 form:intro | src=author
+
+build-1
+17-31 foreshadow @padB,snarlB,teaser,riser
+Build: pad filter opens, the seed bass voice (snarl) filters in, sub swells, motif teaser; level ride steps down into bar 31
+| FS-01 | prepares:drop-1 src=author
+
+gap
+32.3 lesson @master
+Clean stop: sub, snarl and the riser end by the middle of bar 32, the second half is silent
+| TEN-02 | src=author
+
+drop-1
+33-64 lesson @kick,snare,sub,snarl,chop
+Drop 1 lands as a hard step from the build; two-step kick, ghost snares, sub under the snarl; variation at 49
+| TEN-03 form:drop-1 | src=author
+
+float
+65-88 lesson @heart,oohA,voxl,cloudR
+Float in Ab major: halftime wavephonk, vocal-style lead on its own melody, snarl nearly out
+| TEN-03 form:float | src=author
+
+drop-2
+97-104 lesson @kickB,sub,snarl,pad
+Drop 2 a whole tone up (Gm), entering 4.4 dB under its peak: pad filter at 1800 Hz, no keys, arp or ghost snares yet
+| TEN-03 form:drop-2 | src=author
+
+drop-2-ladder
+105-112 lesson @keys,arp,ghost2,ohat
+Layer ladder: keys, arpeggio, denser ghost snares and open hats enter, 2.2 dB under the peak
+| TEN-01 | src=author
+
+switch-up
+113-128 lesson @kickC,hats32,pad,lead
+Switch-up at bar 113 (breath on 112): new kick pattern, 32nd ghost hats, pad filter opens to 2600 Hz and the lead to 6500 Hz, full level
+| TEN-01 | src=author
+
+bridge
+129-144 lesson @cloud,ooh,leadI
+Bridge float in Gm: pad, "ooh" and lead, drums thin
+| TEN-03 form:bridge | src=author
+
+outro
+145-160 callback @callback,cloud,ooh
+The motif returns once in augmentation (slow 2), pad and "ooh" fade to silence
+| FS-05 | src=author

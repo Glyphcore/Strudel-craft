@@ -161,8 +161,8 @@ between runs, the pairs do not). Per played minute.
   Live take flag: the "no false negative" judge counts missing onsets by the soft rule (strict alone misses 17-23 % of a clean take).
   Product behaviour (#108): a render made under a busy main thread is off (attached render under x4: 0.66-0.70 on the above-120 Hz 5 ms-hop level, `rerender` of the same recipe
   afterwards 0.88). Renders attached to a take (record, rerender) therefore wait until the main thread is calm (longest gap between 10 ms timer ticks over 500 ms <= 45 ms), at most
-  about 10 s; then they render anyway and the take gets `outputs.render.underLoad {gapMs, waitedMs}`, an "under load" chip and a "Rendered under load ... Re-render offline" row. Cancel
-  works while waiting, the transport is untouched. record_offline.mjs asserts: attached render waited and matches, or is flagged underLoad (after >= 9 s wait).
+  about 10 s; then they render anyway and the take gets `outputs.render.underLoad` (always a boolean on an attached render; `outputs.render.load {gapMs, waitedMs, calm}` holds the numbers), an "under load" chip and a "Rendered under load ... Re-render offline" row. Cancel
+  works while waiting, the transport is untouched. record_offline.mjs asserts: attached render waited and matches, or is flagged underLoad === true (after >= 9 s wait); underLoad must be a boolean. The live self-check also flags main-thread long tasks >= 100 ms (the cause of missing voices with no frame gap).
   Tracked: #115 (x1 fixed above; the x4 remainder keeps the wait and flag).
 
 - Offline renders repeat: two renders of the same recipe in the render host are within 1.5 dB on 99 % of 10 ms blocks (92 % before the

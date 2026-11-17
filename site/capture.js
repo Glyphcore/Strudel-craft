@@ -357,8 +357,8 @@ function frameGaps(a, b) { const cs = st.chunks.filter((c) => c.f0 + c.L.length 
   for (const c of cs) { if (c.f0 > at) { gaps++; missing += c.f0 - at; } at = Math.max(at, c.f0 + c.L.length); } if (at < b) { gaps++; missing += b - at; } return { gaps, missing }; }
 function selfCheck(a, b) {
   const p1 = perfNow(), p0 = st.perf0 || p1, fg = frameGaps(a, b);
-  const c = { frameGaps: fg.gaps, missingFrames: fg.missing, droppedEvents: p1.late - p0.late, reanchors: p1.underruns - p0.underruns, longTasks: p1.lt - p0.lt, outputGlitches: p1.glitch != null && p0.glitch != null ? p1.glitch - p0.glitch : null };
-  const why = [c.frameGaps ? `${c.frameGaps} gap${c.frameGaps > 1 ? 's' : ''} in the tap (${c.missingFrames} frames)` : '', c.droppedEvents ? `${c.droppedEvents} event${c.droppedEvents > 1 ? 's' : ''} scheduled too late (dropped)` : '', c.reanchors ? `${c.reanchors} clock re-anchor${c.reanchors > 1 ? 's' : ''} (timing jumps)` : '', c.outputGlitches ? `${c.outputGlitches} output glitch${c.outputGlitches > 1 ? 'es' : ''}` : ''].filter(Boolean);
+  const c = { frameGaps: fg.gaps, missingFrames: fg.missing, droppedEvents: p1.late - p0.late, reanchors: p1.underruns - p0.underruns, longTasks: p1.lt - p0.lt, outputGlitches: p1.glitch != null && p0.glitch != null ? p1.glitch - p0.glitch : null, longTaskWorstMs: Math.round(p1.worst || 0) };
+  const why = [c.frameGaps ? `${c.frameGaps} gap${c.frameGaps > 1 ? 's' : ''} in the tap (${c.missingFrames} frames)` : '', c.droppedEvents ? `${c.droppedEvents} event${c.droppedEvents > 1 ? 's' : ''} scheduled too late (dropped)` : '', c.reanchors ? `${c.reanchors} clock re-anchor${c.reanchors > 1 ? 's' : ''} (timing jumps)` : '', c.outputGlitches ? `${c.outputGlitches} output glitch${c.outputGlitches > 1 ? 'es' : ''}` : '', c.longTasks > 0 && c.longTaskWorstMs >= 100 ? `${c.longTasks} main-thread long task${c.longTasks > 1 ? 's' : ''} (worst ${c.longTaskWorstMs} ms; voices may be missing)` : ''].filter(Boolean);
   return { ok: !why.length, ...c, why: why.join(', ') || null };
 }
 async function finish(why) {
@@ -396,7 +396,7 @@ async function finish(why) {
       if (FLAG_REC === 'inline') { if (sc.transport.playing) sc.transport.stop(); await new Promise((r) => setTimeout(r, 500)); } /* inline: let live voices end before the offline swap; the host needs neither */
       const out = await renderRecipe(recipe, { sr: rate, calm: true });
       if (out && flagged) rec.replaced = { at: new Date().toISOString(), why: check.why };
-      if (out) { rec.audio.render = { L: out.L, R: out.R, sr: out.sr }; recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr), ...(out.underLoad ? { underLoad: out.underLoad } : {}) }; await store.put(rec); }
+      if (out) { rec.audio.render = { L: out.L, R: out.R, sr: out.sr }; recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr), ...(typeof out.underLoad === 'boolean' ? { underLoad: out.underLoad, load: out.load } : {}) }; await store.put(rec); }
     }
     if (flagged && !rec.replaced) toast(`Live take "${recipe.name}" is flagged: ${check.why}. ${includes.code ? 'Tap to replace it with an offline render' : 'Tick Code-state to allow an offline re-render'}`, { kind: 'error', sticky: includes.code, onClick: includes.code ? () => rerender(recipe.id) : null });
     else if (flagged) toast(`Live take "${recipe.name}" was flagged (${check.why}); it now plays its offline render`, { kind: 'info', ms: 8000 });
@@ -432,9 +432,9 @@ async function renderRecipe(recipe, o = {}) {
   if (own) st.progAbort = ac; setProg(0);
   try {
     const sig = own ? ac.signal : o.signal; let load = null;
-    if (o.calm) { const cm = await waitCalm(sig); if (!cm.calm) load = { gapMs: cm.gapMs, waitedMs: cm.waitedMs }; }
+    if (o.calm) { const cm = await waitCalm(sig); load = { gapMs: cm.gapMs, waitedMs: cm.waitedMs, calm: cm.calm }; }
     const out = await renderRecipe0(recipe, { ...o, signal: sig, onProgress: (p) => { setProg(p); inner && inner(p); } });
-    if (out && load) out.underLoad = load;
+    if (out && o.calm) { out.underLoad = !!(load && !load.calm); out.load = load; }
     return out;
   }
   finally { if (own && st.progAbort === ac) st.progAbort = null; setProg(null); }
@@ -674,7 +674,7 @@ async function rerender(id) {
   const rec = await store.get(id); if (!rec || !rec.recipe.state) { toast('This take has no code-state, so it cannot be re-rendered', { kind: 'error' }); return null; }
   try {
     const out = await renderRecipe(rec.recipe, { sr: rec.recipe.outputs.capture && rec.recipe.outputs.capture.sr, calm: true });
-    rec.audio.render = { L: out.L, R: out.R, sr: out.sr }; rec.recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr), ...(out.underLoad ? { underLoad: out.underLoad } : {}) };
+    rec.audio.render = { L: out.L, R: out.R, sr: out.sr }; rec.recipe.outputs.render = { sha256: await audioHash(out.L, out.R), sr: out.sr, frames: out.L.length, how: 'offline', encoding: 'f32le-interleaved', haps: out.haps, fails: out.fails, envelope: envelope(out.L, out.R, out.sr), ...(typeof out.underLoad === 'boolean' ? { underLoad: out.underLoad, load: out.load } : {}) };
     rec.replaced = { at: new Date().toISOString(), why: rec.recipe.outputs.capture && rec.recipe.outputs.capture.check ? rec.recipe.outputs.capture.check.why : 'manual' };
     await store.put(rec); renderTakes(); toast(`"${rec.recipe.name}" now plays its offline render`, { kind: 'ok' }); return rec;
   } catch (e) { failToast('Re-render', e); return null; }
@@ -985,7 +985,7 @@ async function renderTakes() {
   el.takes.innerHTML = list.length ? list.map(({ recipe: r, audio, remake: rm, imported, replaced }) => {
     const hasAudio = !!(audio.render || audio.capture || audio.remake);
     const ck = r.outputs && r.outputs.capture && r.outputs.capture.check;
-    const ul = r.outputs && r.outputs.render && r.outputs.render.underLoad;
+    const ul = r.outputs && r.outputs.render && r.outputs.render.underLoad ? (r.outputs.render.load || { gapMs: 0, waitedMs: 0 }) : null;
     const chips = ['audio', 'events', 'code'].filter((k) => r.includes[k]).map((k) => `<i class="cap-badge" data-type="${k}">${k === 'code' ? 'code' : k}</i>`).join('')
       + (r.timing.mode === 'offline' ? '<i class="cap-badge" data-type="ok">offline</i>' : '') + (ul ? '<i class="cap-badge" data-type="bad" title="rendered while the main thread was busy; re-render offline recommended">under load</i>' : '') + (ck && !ck.ok ? `<i class="cap-badge" data-type="bad" title="${esc(ck.why)}">${replaced ? "replaced" : "flagged"}</i>` : '');
     const ver = rm ? (rm.match === 'tolerance' ? '<i class="cap-badge" data-type="ok">remake ~ok</i>' : rm.match === true ? '<i class="cap-badge" data-type="ok">remake ok</i>' : rm.match === false ? '<i class="cap-badge" data-type="bad">differs</i>' : '') : imported ? '<i class="cap-badge" data-type="inert">inert</i>' : '';

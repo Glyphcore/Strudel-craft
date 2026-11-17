@@ -36,6 +36,40 @@ ok(("build", 1) in k and ("drop", 9) in k and ("breakdown", 25) in k, "tension: 
 cases = {"Creative Commons (by)": "by", "Creative Commons (by-sa)": "by-sa", "CC0 1.0": "cc0", "Creative Commons (by-nc)": None,
          "Creative Commons (by-nc-sa)": None, "Creative Commons (by-nd)": None, "Copyright": None, "": None, "GNU GPL": "gpl", "Free Art License": "fal"}
 ok(all(common.licence_class(k) == v for k, v in cases.items()), "licence gate %s" % {k: common.licence_class(k) for k in cases})
+# licence refusal on every path (stats, batch, bank append, bank validate): by-nc / unknown / blank / ND refused, an allowed one passes
+import bank as bankmod
+BADLIC = {"by-nc": "Creative Commons (by-nc)", "unknown": "see readme", "blank": "", "nd": "Creative Commons (by-nd)"}
+fxp = os.path.join(tmp, "fx.als"); lt = tempfile.mkdtemp(prefix="dawstudy_lic_")
+def refused_stats(lic):
+    try: dawstudy.stats_file(fxp, dict(prov, licence=lic, licence_class=None)); return False
+    except common.LicenceRefused: return True
+ok(all(refused_stats(v) for v in BADLIC.values()) and not refused_stats("Creative Commons (by)"), "stats: stats_file refuses %s, accepts CC BY" % sorted(BADLIC))
+pf = os.path.join(lt, "p.json"); json.dump(dict(prov, licence=BADLIC["by-nc"], licence_class=None), open(pf, "w"))
+r = subprocess.run([sys.executable, os.path.join(HERE, "dawstudy.py"), "stats", fxp, "--prov", pf], capture_output=True, text=True)
+ok(r.returncode == 3 and "REFUSED" in r.stderr and not r.stdout.strip(), "stats CLI: by-nc exits 3, no output (%s)" % r.stderr.strip()[:60])
+good = dawstudy.stats_file(fxp, prov)
+for name, lic in list(BADLIC.items()) + [("ok-by", "Creative Commons (by)")]:
+    st = json.loads(json.dumps(good)); st["provenance"] = dict(prov, licence=lic, licence_class="by" if name == "ok-by" else prov["licence_class"], sha256=name.ljust(64, "0"))
+    sf = os.path.join(lt, name + ".stats.json"); json.dump(st, open(sf, "w")); bk = os.path.join(lt, name + ".bank.jsonl")
+    r = subprocess.run([sys.executable, os.path.join(HERE, "bank.py"), "from-stats", sf, "--bank", bk, "--genre", "fixture"], capture_output=True, text=True)
+    if name == "ok-by": ok(r.returncode == 0 and os.path.getsize(bk) > 0, "bank append: allowed licence (CC BY) appended")
+    else: ok(r.returncode == 3 and not os.path.exists(bk) and "REFUSED" in r.stderr, "bank append: %s refused, nothing written" % name)
+    if name == "ok-by":
+        v = subprocess.run(["node", os.path.join(HERE, "validate_bank.mjs"), bk], capture_output=True, text=True); ok(v.returncode == 0, "validate: allowed bank passes (%s)" % v.stdout.strip().splitlines()[0])
+        recs = [json.loads(l) for l in open(bk)]
+    else: continue
+for name, lic in BADLIC.items():  # hand-written bank bypassing append: the validator must still reject
+    rr = json.loads(json.dumps(recs[0])); rr["source"]["ref"]["licence"] = lic; rr["source"]["ref"]["licence_class"] = "by"; rr["id"] = bankmod.rid(rr)
+    bf = os.path.join(lt, "v_" + name + ".jsonl"); open(bf, "w").write(bankmod.canon(rr) + "\n")
+    v = subprocess.run(["node", os.path.join(HERE, "validate_bank.mjs"), bf], capture_output=True, text=True)
+    ok(v.returncode == 1 and "licence refused" in v.stdout, "validate: %s rejected (%s)" % (name, [l for l in v.stdout.splitlines() if "licence refused" in l][:1]))
+lm = {"batch": "lic", "out": "lout", "inputs": [{"kind": "daw-project", "files": ["bad.als", "good.mmp"], "genre": "fixture"}]}
+open(os.path.join(lt, "bad.als"), "wb").write(fixtures.ALL[".als"]()); open(os.path.join(lt, "good.mmp"), "wb").write(fixtures.ALL[".mmp"]())
+json.dump(dict(prov, licence=BADLIC["by-nc"], licence_class=None, sha256="1" * 64), open(os.path.join(lt, "bad.als.prov.json"), "w"))
+json.dump(dict(prov, sha256="2" * 64), open(os.path.join(lt, "good.mmp.prov.json"), "w")); json.dump(lm, open(os.path.join(lt, "m.json"), "w"))
+r = subprocess.run(["node", os.path.join(HERE, "batch.mjs"), os.path.join(lt, "m.json"), "--stage", "1"], capture_output=True, text=True)
+ok(r.returncode == 3 and "refused bad.als" in r.stdout and "good.mmp" not in r.stdout.split("REFUSED")[-1] and "stage 1: 1 records" in r.stdout, "batch stage 1: by-nc project named and refused, exit 3, allowed one kept")
+shutil_rm = __import__("shutil").rmtree; shutil_rm(lt, ignore_errors=True)
 # check + forms
 ok(dawstudy.check(tmp) == 0, "check: complete provenance passes")
 bad = dict(json.load(open(os.path.join(tmp, "fx_als.stats.json")))); bad["provenance"] = dict(prov, licence="Creative Commons (by-nc)")

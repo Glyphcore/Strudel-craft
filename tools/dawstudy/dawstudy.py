@@ -17,6 +17,7 @@ def parse_file(path, fmt=None):
     return mod.parse(data)
 
 def stats_file(path, prov=None, fmt=None):
+    if prov is not None: common.require_licence(prov, os.path.basename(path))  # fail closed before the file is parsed
     return common.stats(parse_file(path, fmt), prov)
 
 def _med(xs):
@@ -110,7 +111,8 @@ def main(argv=None):
     o = ap.parse_args(argv)
     if o.cmd == "stats":
         prov = json.load(open(o.prov)) if o.prov else None
-        s = stats_file(o.file, prov, o.format)
+        try: s = stats_file(o.file, prov, o.format)
+        except common.LicenceRefused as e: print("REFUSED " + str(e), file=sys.stderr); return 3
         js = json.dumps(s, indent=1)
         if o.out: open(o.out, "w").write(js + "\n")
         else: print(js)

@@ -20,6 +20,15 @@ automated access. Why NC / ND are excluded although statistics are facts, not ex
 use, and an ND / NC author has said they do not want derived work; we take the conservative reading. A licence the tool cannot classify
 is refused (fail closed).
 
+**The allowlist is one function.** `common.licence_class` in `tools/dawstudy/common.py` is the only allowlist; it returns a class
+(`cc0`, `by`, `by-sa`, `fal`, `gpl`, `artistic`, `permissive`) or `None` (refused). Classes: CC0, CC-BY, CC-BY-SA, Free Art Licence, GPL family,
+Artistic, and MIT / BSD (`permissive`). The issue text (#152) listed a narrower set as a summary; this table is the decision (owner:
+orchestrator, 2026-11-17). Artistic, MIT and BSD are allowed because they permit use, copying and analysis of the work, and we commit no
+project file and no audio, only statistics with attribution and the hash. Enforcement (every path calls it, none keeps its own list):
+`dawstudy.stats_file` (and `dawstudy.py stats`, exit 3), `batch.mjs` stage 1 (names the refused project, exit 3), `bank.py` append (writes
+nothing, exit 3), `fetch.py`, and `validate_bank.mjs` (rejects by-nc, nd, all-rights-reserved, unknown and blank licences with
+`licence refused: ...`, and a `licence_class` that does not match the licence text). Tests: `tools/dawstudy/test_dawstudy.py`.
+
 ## 2. What is extracted and kept
 Structure statistics only (schema in docs/DAW_STUDY.md): tempo, time signature, key when declared, section order and lengths in bars (from
 arrangement markers, or from clip-boundary changes when there are none, labelled `inferred`), track / layer counts per section and per bar

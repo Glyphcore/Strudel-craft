@@ -44,18 +44,27 @@ function renderAndTriage(f, s, h, inp) {
   return { id: t.sha256, kind: 'rendered-project', genre: inp.genre || 'untagged', triage: t, project_id: h }
 }
 
+// Licence gate (docs/RESEARCH_ETHICS.md 1): the single allowlist is common.licence_class; a refused project is named and stage 1 ends non-zero.
+const refused = []
+const licenceOk = (name, prov) => {
+  const e = JSON.parse(execFileSync('python3', [path.join(HERE, 'common.py'), 'licence-check'], { input: JSON.stringify([{ kind: 'daw-project', ref: prov || {} }]), encoding: 'utf8' }))[0]
+  if (e) { refused.push(name); console.log(`refused ${name}: ${e}`) }
+  return !e
+}
+
 function stage1() {
   const recs = []; const seen = new Set()
   const push = r => { if (!seen.has(r.id)) { seen.add(r.id); recs.push(r) } }
   for (const inp of M.inputs || []) {
     const files = [...(inp.files || []).map(R), ...(inp.dirs || []).flatMap(d => walk(R(d), inp.kind === 'audio' ? AUDIO : inp.kind === 'triage' ? /\.triage\.json$/ : inp.kind === 'stats' ? /\.stats\.json$/ : PROJ))]
     for (const f of files) {
-      if (inp.kind === 'stats') { const s = JSON.parse(fs.readFileSync(f, 'utf8')); push({ id: s.provenance?.sha256 || sha(fs.readFileSync(f)), kind: 'daw-project', genre: inp.genre || path.basename(path.dirname(f)), stats: s }); continue }
+      if (inp.kind === 'stats') { const s = JSON.parse(fs.readFileSync(f, 'utf8')); if (!licenceOk(path.basename(f), s.provenance)) continue; push({ id: s.provenance?.sha256 || sha(fs.readFileSync(f)), kind: 'daw-project', genre: inp.genre || path.basename(path.dirname(f)), stats: s }); continue }
       if (inp.kind === 'triage') { const t = JSON.parse(fs.readFileSync(f, 'utf8')); push({ id: t.sha256, kind: t.source_kind, genre: inp.genre || t.genres?.[0] || 'untagged', triage: t }); continue }
       const h = sha(fs.readFileSync(f))
       if (inp.kind === 'daw-project') {
         const side = f + '.prov.json'; const prov = fs.existsSync(side) ? JSON.parse(fs.readFileSync(side, 'utf8')) : inp.provenance ? { ...inp.provenance, sha256: h, bytes: fs.statSync(f).size, format: path.extname(f).slice(1) } : null
         if (!prov) { console.log(`refused ${path.basename(f)}: no provenance (docs/RESEARCH_ETHICS.md 4)`); continue }
+        if (!licenceOk(path.basename(f), prov)) continue
         const pf = path.join(OUT, '.prov.tmp.json'); fs.writeFileSync(pf, JSON.stringify(prov))
         const s = JSON.parse(py('dawstudy.py', ['stats', f, '--prov', pf])); fs.rmSync(pf)
         push({ id: h, kind: 'daw-project', genre: inp.genre || 'untagged', stats: s })
@@ -70,6 +79,7 @@ function stage1() {
   }
   fs.writeFileSync(path.join(OUT, 'records.jsonl'), recs.map(r => JSON.stringify(r)).join('\n') + (recs.length ? '\n' : ''))
   console.log(`stage 1: ${recs.length} records -> ${path.join(OUT, 'records.jsonl')}`)
+  if (refused.length) { console.log(`stage 1 REFUSED ${refused.length} project(s) on licence: ${refused.join(', ')}`); process.exit(3) }
   return recs
 }
 

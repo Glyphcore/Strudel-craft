@@ -24,7 +24,7 @@ and only its summary is committed.
 No audio blobs (no audio / wav / pcm / base64 keys, no RIFF base64, records <= 20 KB); no note data keys (notes, pitch, midi, melody,
 velocity, pattern, step positions); external sources carry licence, licence class, URL, sha256 and access date; `suno-playlist-own`
 records carry an owner handle that is in owners.json (no owners file = refused, fail closed); a method from the four tags; composites list
-`derived_from`; the id equals the content hash. Licences follow docs/RESEARCH_ETHICS.md.
+`derived_from`; the id equals the content hash. Licences follow docs/RESEARCH_ETHICS.md: `bank.py` append refuses a daw-project record whose licence is not allowed (exit 3, nothing written) and `validate_bank.mjs` rejects one (`licence refused`).
 
 ## Commands
 ```

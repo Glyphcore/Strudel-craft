@@ -7,6 +7,8 @@
   bank.py summary --bank BANK.jsonl --out SUMMARY.json                   compact per genre / role / method counts and medians (mirrored read-only)
 Dedup: a record's id is the sha256 of its canonical content (minus id); appending an existing id is a no-op."""
 import argparse, hashlib, json, os, statistics, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import common
 
 ROLES = {"intro", "verse", "chorus", "build", "drop", "breakdown", "bridge", "solo", "transition", "outro", "body", "other"}
 ROLE_MAP = {"peak": "drop", "fill": "transition", "switch": "transition"}
@@ -30,6 +32,9 @@ def load(path):
     return [json.loads(l) for l in open(path) if l.strip()]
 
 def append(path, recs):
+    for r in recs:  # fail closed: nothing is written when any record's source licence is not allowed
+        e = common.source_licence_error(r.get("source"))
+        if e: raise common.LicenceRefused("bank append refused: " + e)
     have = {r["id"] for r in load(path)}; n = 0
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
     with open(path, "a") as f:
@@ -121,7 +126,8 @@ def main(argv=None):
         for p in o.inputs:
             d = json.load(open(p)); g = o.genre or (os.path.basename(os.path.dirname(os.path.abspath(p))) if o.cmd == "from-stats" else None)
             recs += from_stats(d, g) if o.cmd == "from-stats" else from_triage(d, g)
-        print("appended %d of %d records" % (append(o.bank, recs), len(recs))); return 0
+        try: print("appended %d of %d records" % (append(o.bank, recs), len(recs))); return 0
+        except common.LicenceRefused as e: print("REFUSED " + str(e), file=sys.stderr); return 3
     recs = load(o.bank)
     if o.cmd == "composite":
         c = composite(recs, o.genre, o.role); print("appended %d composites" % append(o.bank, c)); return 0

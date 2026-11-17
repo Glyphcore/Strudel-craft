@@ -83,6 +83,32 @@ def licence_class(text):
     if re.search(r"\bmit\b|\bbsd\b", t): return "permissive"
     return None
 
+class LicenceRefused(ValueError):
+    """Raised when a source licence is not on the RESEARCH_ETHICS.md section 1 allowlist (licence_class returns None)."""
+
+def licence_error(prov, who=None):
+    """Single gate for every path (stats, batch, bank, validator): None when the provenance licence is allowed, else a message.
+    The only allowlist is licence_class() above; a stored licence_class must also match the licence text."""
+    p = prov or {}; lic = p.get("licence"); cls = licence_class(lic)
+    name = "%s: " % who if who else ""
+    if cls is None:
+        return "%slicence %r is not allowed (NC, ND, all rights reserved, unknown or blank; docs/RESEARCH_ETHICS.md section 1)" % (name, lic or "")
+    if p.get("licence_class") and p["licence_class"] != cls:
+        return "%slicence_class %r does not match licence text %r (computed %r)" % (name, p["licence_class"], lic, cls)
+    return None
+
+def require_licence(prov, who=None):
+    e = licence_error(prov, who)
+    if e: raise LicenceRefused(e)
+
+def source_licence_error(src):
+    """Bank source objects: external DAW projects (and rendered projects of someone else's work) need an allowed licence."""
+    if not isinstance(src, dict): return None
+    ref = src.get("ref") or {}; kind = src.get("kind")
+    if kind == "daw-project" or (kind == "rendered-project" and (ref.get("licence_class") or ref.get("licence") not in (None, "", "own work"))):
+        return licence_error(ref)
+    return None
+
 # ---------------------------------------------------------------- statistics
 def _median(xs):
     xs = [x for x in xs if x is not None]
@@ -282,3 +308,9 @@ def to_md(s, title):
     p = s.get("provenance") or {}
     if p: L += ["", "Source: %s by %s, licence %s, accessed %s, sha256 %s" % (p.get("page_url"), p.get("author"), p.get("licence"), p.get("accessed"), p.get("sha256"))]
     return "\n".join(L) + "\n"
+
+if __name__ == "__main__":  # licence-check: JSON list of bank source objects on stdin -> JSON list of error|null (used by validate_bank.mjs, batch.mjs)
+    import sys as _sys, json as _json
+    if len(_sys.argv) == 2 and _sys.argv[1] == "licence-check":
+        print(_json.dumps([source_licence_error(x) for x in _json.load(_sys.stdin)]))
+    else: raise SystemExit("usage: common.py licence-check < sources.json")

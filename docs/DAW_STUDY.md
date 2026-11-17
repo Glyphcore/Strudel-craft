@@ -59,7 +59,7 @@ median tracks and sends, projects with sidechain, a 20-point density curve (medi
 node tools/dawstudy/batch.mjs MANIFEST.json [--stage 1|2|3|all]      # suno-track-lab: engine/dawstudy/batch.sh MANIFEST (medium load gate)
 ```
 Manifest: `{ "batch", "out", "bank"?, "inputs": [ { "kind": "daw-project", "files"|"dirs", "genre", "provenance"? (else a FILE.prov.json
-sidecar per project; none = refused), "render"? }, { "kind": "stats", "dirs" }, { "kind": "audio", "files"|"dirs", "genre", "owner",
+sidecar per project; none = refused; a licence outside the RESEARCH_ETHICS.md allowlist (by-nc, nd, all rights reserved, unknown, blank) = refused, named, stage 1 exits 3), "render"? }, { "kind": "stats", "dirs" }, { "kind": "audio", "files"|"dirs", "genre", "owner",
 "source_kind", "bpm"? }, { "kind": "triage", "dirs" } ] }`.
 - Stage 1 collect + hash + normalise: one JSONL record per source in `OUT/records.jsonl` (`{id = sha256, kind, genre, stats | triage}`);
   projects are parsed in place (never copied); audio goes through the triage (section 6). `render: true` on LMMS projects renders with

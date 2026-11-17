@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Form bank validator (docs/FORM_BANK.md): node tools/dawstudy/validate_bank.mjs BANK.jsonl [--owners OWNERS.json]
-// Enforces: schema keys, a method from the four tags, confidence 0..1, form_role, licence for external sources, owner-only for
+// Enforces: schema keys, a method from the four tags, confidence 0..1, form_role, licence for external sources (must be an allowed class: by-nc, nd, all rights reserved, unknown, blank are refused), owner-only for
 // suno-playlist-own (owner in owners.json allowed handles; fail closed), derived_from ids exist, no audio blobs, no note data, id = content hash.
-import fs from 'node:fs'; import crypto from 'node:crypto'
+import fs from 'node:fs'; import crypto from 'node:crypto'; import path from 'node:path'; import { execFileSync } from 'node:child_process'
 const a = process.argv.slice(2); const file = a[0]
 if (!file) { console.error('usage: validate_bank.mjs BANK.jsonl [--owners OWNERS.json]'); process.exit(2) }
 const oi = a.indexOf('--owners'); let owners = null
@@ -15,7 +15,11 @@ const AUDIO = /"(audio|wav|pcm|samples?|blob|b64|base64)"\s*:|data:audio|UklGR/ 
 const canon = v => Array.isArray(v) ? '[' + v.map(canon).join(',') + ']' : v && typeof v === 'object' ? '{' + Object.keys(v).sort().map(k => JSON.stringify(k) + ':' + canon(v[k])).join(',') + '}' : JSON.stringify(v)
 const lines = fs.readFileSync(file, 'utf8').split('\n').filter(Boolean); const ids = new Set(); const errs = []; const recs = []
 lines.forEach((l, i) => { try { const r = JSON.parse(l); recs.push([i + 1, r, l]); ids.add(r.id) } catch (e) { errs.push(`line ${i + 1}: not JSON`) } })
-for (const [n, r, l] of recs) {
+// licence allowlist: one source of truth, common.licence_class in tools/dawstudy/common.py; asked once for all records
+let licErr = []
+try { licErr = JSON.parse(execFileSync('python3', [path.join(path.dirname(new URL(import.meta.url).pathname), 'common.py'), 'licence-check'], { input: JSON.stringify(recs.map(([, r]) => r.source ?? null)), encoding: 'utf8', maxBuffer: 64 << 20 })) }
+catch (x) { errs.push('licence check could not run: ' + String(x.message).split('\n')[0]) }
+for (const [i, [n, r, l]] of recs.entries()) {
   const e = m => errs.push(`line ${n} ${r.id ?? ''}: ${m}`)
   for (const k of ['id', 'source', 'picked', 'method', 'confidence', 'evidence', 'features', 'labels', 'derived_from']) if (!(k in r)) e('missing ' + k)
   if (!METHODS.has(r.method)) e('method not one of the four tags')
@@ -24,6 +28,7 @@ for (const [n, r, l] of recs) {
   if (!ROLES.has(r.labels?.form_role)) e('labels.form_role')
   const ref = r.source?.ref ?? {}
   if (r.source?.kind === 'daw-project' && !(ref.licence && ref.licence_class)) e('external source without licence / licence_class')
+  if (licErr[i]) e('licence refused: ' + licErr[i])
   if (r.source?.kind === 'daw-project' && !(ref.url && ref.sha256 && ref.accessed)) e('external source without url / sha256 / accessed')
   if (r.source?.kind === 'suno-playlist-own') {
     if (!ref.owner) e('suno record without owner handle')

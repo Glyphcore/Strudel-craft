@@ -173,6 +173,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/packs/alias_e2e.mjs     # aliases end to end: atom, hook def, recipe, library on the site modules and the CLI (#120)
     node tests/site/taxonomy.mjs       # folders, tags, appearance (real touch): rules, AA contrast, 390 px tree / chips / filter / search / persist / overrides (#120)
     python3 tests/packs/taxonomy.py    # folder / tag / taxonomy validation (E_PACK_FOLDER, W_PACK_TAG); node tests/packs/aliases.mjs; node tests/packs/cli_taxonomy.mjs
+    node tests/site/packs_offline.mjs  # offline cache of fetched packs (#174): offline reload + standalone launch with zero host requests, revalidation, tampered entry, never-fetched, Packs view actions
     node tests/site/packs.mjs          # pack loader: parity, empty lock, vectors, integrity, shadowing, lazy, offline, security (#67)
     python3 tools/packs/shim.py --check  # the shim pack pins match site/data (rerun without --check after editing data/)
     node tests/site/lighthouse.mjs     # needs `npm i -g lighthouse@12`; mobile perf / a11y scores
@@ -266,6 +267,14 @@ a stale pin is `E_PACK_HASH` and that content is missing (fail closed). `shim.py
 - Cache and offline (`sw.js`): `sc-packs-1` holds verified manifests and entry files and is not deleted on activate. The page registers pack roots with the service worker,
   which serves them cache-first, keeps them out of the shell cache and hash-checks asset files (audio) against the verified `files.sha256` before caching (a mismatch is a 502).
   `packs.offline(id, true)` fetches the whole asset index. Mirrors are tried first, then the source; the hash tree decides. The shim lives in the deploy and uses shell caching.
+- Offline cache for fetched packs (#174, `rescache.js`): bodies stay in Cache Storage, an IndexedDB index (`sc-rescache`: url, ref = lock source, version, hash, size, fetched-at, owner pack) says what is held.
+  A pack loaded once online loads offline from cache with no request attempted; every cached body is hash-checked against the lock on every load, and one that fails is removed from cache and index (never run).
+  Online, 5 s after load, the pack source's manifest is re-read in the background (stale-while-revalidate): a different one is fetched and recorded as `newer`, a toast says so, and nothing in the running session changes;
+  `packs.update(id)` (the pack card's **Update**) applies it on demand (remove + add from the source, code grants dropped). Sample maps (`sc-banks-1`, `*.json`) revalidate the same way in `sw.js` and toast "a newer sample map was fetched" (applies next load).
+  A pack never fetched, opened offline: state `unavailable`, `E_PACK_UNAVAILABLE` naming the file, one toast naming the pack, and the Packs view says "open it once while online".
+  API: `packs.cacheInfo()` -> `{ [pack]: { cached, files, bytes, fetchedAt, ref, version, newer } }`, `refresh(id)` (re-fetch and re-verify every cached file), `uncache(id)`, `update(id)`, `storage()` (usage, quota, persisted), `persist()`,
+  events `cache`, `newer`, `missing`. Packs view: per-card **Offline cache** line with **Refresh**, **Remove from cache**, **Update to vX**, and a storage bar (quota use, persistence, **Keep storage**). `navigator.storage.persist()` is requested on the first cached pack file.
+  Not covered: Strudel modules (unpkg/esm.sh) stay in the deploy's atomic snapshot and are not revalidated; sample audio caches lazily in `sc-banks-1` as before. Check: `node tests/site/packs_offline.mjs`.
 - Pack sheet (`packs-ui.js`, `packs-ui.css`, loaded on first open only): command palette **Packs, licences and credits** (Ctrl+K, or the palette button on
   phones), the **Open packs** button of the empty recipe browser, the **Pack** badge in the Inspector, or the toast a `?pack=` link raises. Tabs: *Packs* (one card per
   pack: id, version, tier, state, authors, licence, licence file, credits, source, manifest hash with its verification, E_PACK_/W_PACK_ errors and warnings,

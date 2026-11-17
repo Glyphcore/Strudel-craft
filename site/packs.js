@@ -5,6 +5,7 @@
 // assets are never fetched by the loader (they stream on first play, the service worker verifies them).
 import { resolve as coreResolve, API, aliasOf, itemIds, verify as coreVerify, pinnedBases } from './engine/packs-core.js';
 import { KINDS, DEFERRED, sanitize, whenHas } from './packs-kinds.js';
+import { createIndex } from './rescache.js';
 
 export { API, sanitize };
 const MAX_ENTRY = 5 * 1024 * 1024, EAGER_ITEM = 256 * 1024, EAGER_PACK = 1024 * 1024;
@@ -28,6 +29,7 @@ export function createPacks(opts = {}) {
   const doFetch = opts.fetch || ((u, o) => globalThis.fetch(u, o));
   const store = 'storage' in opts ? opts.storage : (() => { try { return globalThis.localStorage; } catch (e) { return null; } })();
   const CACHE = opts.cacheName || 'sc-packs-1', SHIPPED = opts.shippedLock || 'packs.lock.json', LS_LOCK = 'sc.packs.lock', LS_PREFER = 'sc.packs.prefer', LS_OFFLINE = 'sc.packs.offline', LS_TRUST = 'sc.packs.trust', LS_CODE = 'sc.packs.code';
+  const index = 'index' in opts ? opts.index : createIndex(); // #174: IndexedDB index of what the cache holds (url, ref, version, hash, size, fetched-at, owner pack)
   const search = 'search' in opts ? opts.search : (typeof location !== 'undefined' ? location.search : '');
   const sc = () => (globalThis.strudelCraft = globalThis.strudelCraft || {});
   const lsGet = (k, d) => { try { return JSON.parse(store.getItem(k)) ?? d; } catch (e) { return d; } };
@@ -69,7 +71,13 @@ export function createPacks(opts = {}) {
     const p = (async () => { const res = await doFetch(url); if (!res.ok) throw Object.assign(new Error('HTTP ' + res.status), { http: res.status }); return { bytes: new Uint8Array(await res.arrayBuffer()), cached: false }; })();
     inflight.set(key, p); try { return await p; } finally { inflight.delete(key); }
   }
-  async function keep(url, bytes) { const c = await cachePromise(); if (c) await c.put(url, new Response(bytes, { headers: { 'content-type': 'application/octet-stream' } })).catch(() => {}); }
+  const kindOf = (rel) => (rel === 'craftpack.json' ? 'manifest' : 'entry');
+  let persistAsked = false; const askPersist = () => { if (persistAsked) return; persistAsked = true; try { navigator.storage && navigator.storage.persist && navigator.storage.persist().then(() => emit('cache', {})).catch(() => {}); } catch (e) { /* the browser may refuse */ } };
+  const told = new Set(); const say = (m, o) => { try { const u = sc().ui; if (u && u.toast) u.toast(m, o); } catch (e) { /* no UI on this host */ } };
+  async function record(pack, url, rel, bytes, hash, fetchedAt) { if (!pack.entry) return; await index.put({ url, pack: pack.id, kind: kindOf(rel), ref: pack.entry.source, version: pack.version ?? pack.entry.version, hash: hash || (await sha(bytes)), size: bytes.length, ...(fetchedAt === null ? { fetchedAt: null } : {}) }); emit('cache', { pack: pack.id }); }
+  async function keep(url, bytes, pack, rel, hash) { const c = await cachePromise(); if (c) await c.put(url, new Response(bytes, { headers: { 'content-type': 'application/octet-stream' } })).catch(() => {}); if (c && pack && pack.entry) { askPersist(); await record(pack, url, rel, bytes, hash); } }
+  async function discard(pack, url) { const c = await cachePromise(); if (c) await c.delete(url).catch(() => {}); await index.del(url); emit('cache', { pack: pack.id }); } // a cached body that fails its hash is rejected and removed
+  let known = null; const isKnown = async (url) => (known ||= index.all().then((r) => new Set(r.map((x) => x.url)))).then((k) => k.has(url));
   // fetch one pack file, verify against `hash`, cache only after the hash matches. Tries every candidate base; the hash tree decides.
   async function getVerified(pack, rel, hash, cap = MAX_ENTRY) {
     let lastErr = null;
@@ -79,16 +87,21 @@ export function createPacks(opts = {}) {
         let r = await fetchBytes(url, pack.immutable);
         if (r.bytes.length > cap) throw Object.assign(new Error(`${rel} is larger than ${cap} bytes`), { code: 'E_PACK_SIZE' });
         if (hash && (await sha(r.bytes)) !== hash) {
-          if (r.cached) { try { r = await fetchBytes(url, false); } catch (e) { /* offline: the cached bytes stay, reported as a mismatch */ } } // cached bytes that do not match: re-read once from the network; a matching read replaces the entry
+          if (r.cached) { // the cached body is not what the lock pins: remove it, then re-read once from the network (offline: it stays gone and the load fails closed)
+            if (pack.entry) await discard(pack, url); // a real pack: the lock's hash is the truth. verify(): the caller's hash may be the wrong one, the cached copy stays
+            try { r = await fetchBytes(url, false); } catch (e) { if (pack.entry) { lastErr = Object.assign(new Error(`${rel}: the cached copy failed its hash and was removed`), { code: 'E_PACK_HASH' }); continue; } }
+          }
           const actual = await sha(r.bytes); if (actual !== hash) { lastErr = Object.assign(new Error(`${rel} does not match its hash`), { code: 'E_PACK_HASH', actual }); continue; }
         }
-        if (pack.immutable && !r.cached) await keep(url, r.bytes);
+        if (pack.immutable && !r.cached) await keep(url, r.bytes, pack, rel, hash);
+        else if (pack.immutable && pack.entry && !(await isKnown(url))) await record(pack, url, rel, r.bytes, hash, null); // cached by an earlier build: index it, fetch time unknown
         pack.base = b; return r.bytes;
       } catch (e) {
         if (e.code === 'E_PACK_SIZE') throw e;
-        if (!lastErr || lastErr.code !== 'E_PACK_HASH') lastErr = Object.assign(e, { code: e.http ? 'E_PACK_UNAVAILABLE' : 'E_PACK_UNAVAILABLE', offline: !e.http });
+        if (!lastErr || lastErr.code !== 'E_PACK_HASH') lastErr = Object.assign(e.http ? e : new Error(`${rel} was never fetched on this device and the network is unreachable`), { code: 'E_PACK_UNAVAILABLE', offline: !e.http, http: e.http });
       }
     }
+    if (lastErr && lastErr.offline && pack.entry && !told.has(pack.id)) { told.add(pack.id); emit('missing', { pack: pack.id, file: rel }); say(`Offline: ${pack.id} was never fetched here (${rel}), so it is unavailable. Open it once while online to keep a copy.`, { kind: 'error' }); }
     throw lastErr || Object.assign(new Error('no source for ' + pack.id), { code: 'E_PACK_SOURCE' });
   }
 
@@ -335,7 +348,7 @@ export function createPacks(opts = {}) {
     packs.delete(id); for (const L of layers) L.packs = L.packs.filter((e) => e.id !== id);
     const l = readUser(); l.packs = l.packs.filter((e) => e.id !== id); if (store) saveUser(l);
     { const t = lsGet(LS_TRUST, {}); if (t[id]) { delete t[id]; lsSet(LS_TRUST, t); } }
-    dirty = true; await evict(); emit('report', {}); emit('state', { pack: id }); return true;
+    dirty = true; await evict(); await index.delPack(id); emit('report', {}); emit('state', { pack: id }); emit('cache', { pack: id }); return true;
   }
   function prefer(id) { // "prefer this pack": priority 10 (9.3 rule 3); written into the user lock entry, or a user-side overlay for a shipped pack
     id = String(id).replace(/:.*$/, ''); const l = readUser(), e = l.packs.find((x) => x.id === id);
@@ -413,6 +426,63 @@ export function createPacks(opts = {}) {
     } catch (e) { /* no service worker: the page cache alone still works */ }
   }
 
+  // ---------------------------------------------------------------- #174: stale-while-revalidate for pack sources, cache state, refresh / remove from cache / update
+  const isOffline = () => typeof navigator !== 'undefined' && navigator.onLine === false;
+  const underBases = (pack, url) => pack.bases.some((b) => url.startsWith(b));
+  async function revalidate(pack) { // served from cache, then ask the source whether its manifest still is the pinned one. A different one is fetched and recorded, never applied: this session does not change.
+    if (!pack.immutable || !pack.base || pack.state !== 'ready' || isOffline()) return null;
+    try {
+      const url = new URL('craftpack.json', pack.base).href, res = await doFetch(url, { cache: 'no-store' }); if (!res.ok) return null;
+      const bytes = new Uint8Array(await res.arrayBuffer()), hash = await sha(bytes), ref = pack.entry.source;
+      if (hash === pack.manifest) { await index.put({ url, pack: pack.id, kind: 'manifest', ref, version: pack.version, hash, size: bytes.length }); await index.del('newer:' + pack.id); emit('cache', { pack: pack.id }); return { current: true }; }
+      let man; try { man = JSON.parse(new TextDecoder().decode(bytes)); } catch (e) { return null; } if (!man || man.id !== pack.id) return null;
+      const c = await cachePromise(); if (c) await c.put(url + '?sc-next=' + hash.slice(7, 19), new Response(bytes, { headers: { 'content-type': 'application/octet-stream' } })).catch(() => {});
+      const prior = (await index.all()).find((r) => r.url === 'newer:' + pack.id);
+      await index.put({ url: 'newer:' + pack.id, pack: pack.id, kind: 'newer', ref, version: man.version, hash, size: bytes.length }); emit('cache', { pack: pack.id });
+      const ev = { pack: pack.id, version: man.version, hash }; emit('newer', ev);
+      if (!prior || prior.hash !== hash) say(`${pack.id}: a newer version (${man.version}) was fetched. It applies when you update it in Packs; this session is unchanged.`, { kind: 'info', action: { label: 'Packs', run: () => import('./packs-ui.js').then((m) => m.open({})).catch(() => {}) } });
+      return ev;
+    } catch (e) { return null; }
+  }
+  async function refetch(pack, rel, hash) { // network copy, verified against the lock before it replaces the cached one; the cached one stays on any failure
+    let last = null;
+    for (const b of pack.bases) {
+      const url = new URL(rel, b).href;
+      try { const res = await doFetch(url, { cache: 'no-store' }); if (!res.ok) throw Object.assign(new Error('HTTP ' + res.status), { http: res.status });
+        const bytes = new Uint8Array(await res.arrayBuffer()); if (hash && (await sha(bytes)) !== hash) { last = Object.assign(new Error(`${rel} does not match its hash`), { code: 'E_PACK_HASH' }); continue; }
+        await keep(url, bytes, pack, rel, hash); return null;
+      } catch (e) { last = last || e; }
+    }
+    return last;
+  }
+  async function refresh(id) { // on demand: re-fetch every cached file of the pack from its source, verified; then look for a newer manifest
+    const pk = packs.get(id); if (!pk || !pk.immutable) return null; if (isOffline()) return { ok: false, offline: true, updated: 0, failed: [], message: 'Offline: nothing to refresh from' };
+    const want = new Map([['craftpack.json', pk.manifest]]); for (const i of pk.ingredients.values()) { want.set(i.path, i.hash); for (const m of i.modules) want.set(m.path, m.hash); }
+    const rows = (await index.byPack(id)).filter((r) => r.kind === 'manifest' || r.kind === 'entry'); let updated = 0; const failed = [];
+    for (const r of rows) { const base = pk.bases.find((b) => r.url.startsWith(b)), rel = base ? r.url.slice(base.length) : null; if (rel == null || rel === 'craftpack.json' || !want.has(rel)) continue; /* the manifest is revalidate()'s: a different one upstream is a newer version, not a failure */
+      const e = await refetch(pk, rel, want.get(rel)); if (e) failed.push({ file: rel, code: e.code || 'E_PACK_UNAVAILABLE', message: e.message }); else updated++; }
+    const newer = await revalidate(pk); emit('cache', { pack: id }); return { ok: !failed.length, updated, failed, newer: newer && newer.version ? newer : null };
+  }
+  async function uncache(id) { // drop this pack's cached bodies and index rows; it stays in the lock and loads again (and is cached again) when online
+    const pk = packs.get(id); if (!pk) return null; const c = await cachePromise(); let n = 0;
+    if (c) for (const r of await c.keys()) if (underBases(pk, r.url)) { await c.delete(r); n++; }
+    await index.delPack(id); const flags = lsGet(LS_OFFLINE, {}); if (flags[id]) { delete flags[id]; lsSet(LS_OFFLINE, flags); }
+    told.delete(id); known = null; emit('cache', { pack: id }); emit('state', { pack: id }); return { removed: n };
+  }
+  async function cacheInfo() { // { [packId]: { cached, files, bytes, fetchedAt, ref, version, newer } }, from the index
+    const rows = await index.all(), out = {};
+    for (const p of packs.values()) { const mine = rows.filter((r) => r.pack === p.id && r.kind !== 'newer'), nw = rows.find((r) => r.url === 'newer:' + p.id);
+      const at = mine.map((r) => r.fetchedAt).filter((x) => x != null);
+      out[p.id] = { cached: mine.length > 0, files: mine.length, bytes: mine.reduce((a, r) => a + (r.size || 0), 0), fetchedAt: at.length ? Math.max(...at) : null, ref: p.entry.source, version: p.version, hash: p.manifest, newer: nw ? { version: nw.version, hash: nw.hash, at: nw.fetchedAt } : null }; }
+    return out;
+  }
+  async function storage() { const n = typeof navigator !== 'undefined' ? navigator.storage : null; let est = {}, persisted = false; try { est = (n && n.estimate && await n.estimate()) || {}; persisted = !!(n && n.persisted && await n.persisted()); } catch (e) { /* unsupported */ } return { usage: est.usage ?? null, quota: est.quota ?? null, persisted, supported: !!(n && n.persist) }; }
+  async function persist() { let ok = false; try { ok = !!(navigator.storage && navigator.storage.persist && await navigator.storage.persist()); } catch (e) { /* refused */ } emit('cache', {}); return ok; }
+  async function update(id) { // apply a fetched newer manifest: the pack is dropped and added again from its source (the add dialog's path), so its pin, version and cache are the new ones; code grants do not carry over
+    const e = (layers.find((L) => L.name === 'user') || { packs: [] }).packs.find((x) => x.id === id), nw = e && (await index.all()).find((r) => r.url === 'newer:' + id); if (!nw) return null;
+    const { source, mirrors, priority } = e; await remove(id); const r = await add(source, { mirrors }); if (r && r.state === 'accepted' && priority) prefer(id); return r;
+  }
+
   // ---------------------------------------------------------------- boot
   async function applyEager() {
     const ings = orderedPacks().filter((p) => p.state === 'ready').flatMap((p) => [...p.ingredients.values()]).filter((i) => i.load === 'eager' && i.state === 'listed');
@@ -430,6 +500,7 @@ export function createPacks(opts = {}) {
     for (const p of new URLSearchParams(search || '').getAll('pack')) proposalList.push({ source: p, mirrors: [], state: 'new', id: null }); // a link only proposes; nothing is fetched until peek()
     if (opts.eagerAfter) await opts.eagerAfter; // site: eager entries are fetched after the first frame (idle time, section 9.4; #59)
     await applyEager(); emit('report', {});
+    setTimeout(() => { for (const p of packs.values()) revalidate(p); }, 5000); // idle time after first paint and the eager entries, never awaited
   }
   let indexedOk; const indexed = new Promise((ok) => { indexedOk = ok; });
   const ready = Promise.resolve().then(boot).catch((e) => { err('E_PACK_SCHEMA', 'loader boot failed: ' + e.message); indexedOk(); });
@@ -443,6 +514,7 @@ export function createPacks(opts = {}) {
     retry: async (kind) => { await ready; for (const i of allIngs()) if (i.kind === kind && ['failed', 'unavailable'].includes(i.state)) { i.promise = null; i.data = null; setState(i, 'listed'); } return get(kind); },
     failure: (kind) => { const i = allIngs().find((x) => x.kind === kind && ['failed', 'unavailable', 'blocked'].includes(x.state)); return i ? { ingredient: ingQ(i.pack, i), state: i.state, ...(i.reason || {}) } : null; },
     ensure: async (kind) => { await ready; await Promise.all(allIngs().filter((i) => i.kind === kind).map(loadIng)); return items(kind); },
+    cacheInfo, storage, persist, refresh, uncache, update, revalidate: (id) => revalidate(packs.get(id) || {}),
     add, remove, prefer, grant, revoke, codeInfo, codeEnabled, setCodeEnabled, trusts, offline, propose, accept, proposals: () => proposalList.map((p) => ({ ...p })), peek: async (source) => { const p = proposalList.find((x) => x.source === source && x.state === 'new'); if (!p) return null; proposalList.splice(proposalList.indexOf(p), 1); return propose(source); },
     on: (type, fn) => { (listeners[type] ||= []).push(fn); return () => { listeners[type] = listeners[type].filter((f) => f !== fn); }; },
     registerKind: (def) => { KINDS[def.kind] = { code: 'never', check: () => null, items: () => [], view: () => [], ...def, formats: def.formats }; return () => { delete KINDS[def.kind]; }; },

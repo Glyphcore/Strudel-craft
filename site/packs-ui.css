@@ -12,6 +12,7 @@ dialog.pk[open]{display:flex}
 .pk-body:focus-visible{outline-offset:-2px}
 .pk-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:14px}
 .pk-bar .pk-hint{flex:1 1 220px;margin:0}
+.pk-store{margin-bottom:8px}.pk-new{color:var(--warn,#e6b450);font-size:.82rem}
 .pk-add,.pk-go{background:var(--sig-2);color:var(--sig-ink);border-color:var(--sig-2)}
 .pk-add span{font-size:1.1rem;line-height:1}
 .pk-hint{color:var(--dim);font-size:.82rem}

@@ -364,7 +364,10 @@ Array order is load order and tie-break order. Three lock layers exist at run ti
 
 - Cache `sc-packs-1`, separate from the per-deploy shell cache, and **not** deleted on activate (today `sw.js` deletes every cache except
   `VERSION`; it must keep `sc-packs-*`). Keys are the fetch URLs; every pack URL contains a commit or manifest-hash segment, so entries are
-  immutable and served cache-first with no revalidation.
+  immutable and served cache-first. A cached body is hash-checked against its pin on every load; one that fails is deleted and, offline, the
+  ingredient stays unavailable (never run). The host also keeps an index (url, ref, version, hash, size, fetched-at, owner pack) so it can show,
+  refresh and remove what a pack holds (#174). Online, a host may re-read a pack source's manifest in the background: a manifest that differs from
+  the lock's pin is fetched and reported as a newer version and is applied only on request (the pin changes, code grants do not carry over).
 - The lock itself is shell (network-first, cached copy offline). The site's deploy (`pages.yml`) regenerates the shim pins from the files it
   deploys, so a first-party data edit can never ship with a stale pin (a stale pin made the loader refuse `data/syntax.json`, `E_PACK_HASH`).
 - A failed or unavailable ingredient can be read again with `packs.retry(kind)`; `packs.failure(kind)` returns `{ingredient, state, code, message}`.

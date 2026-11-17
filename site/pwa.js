@@ -80,7 +80,9 @@ async function launchActions() {
 /* offline notices: sw.js posts {type: 'sc-offline', kind: 'bank'|'pack', url} when a bank file is neither cached nor reachable */
 const told = new Set();
 function onSwMessage(e) {
-  const d = e.data; if (!d || d.type !== 'sc-offline') return;
+  const d = e.data; if (d && d.type === 'sc-updated') { toast('A newer sample map was fetched in the background. It applies the next time the app loads.'); return; }
+  if (!d || d.type !== 'sc-offline') return;
+  if (d.kind === 'pack' && /\.json(\?|$)/.test(d.url)) return; /* pack manifests and entries are reported by the pack loader, by name */
   const host = (() => { try { const u = new URL(d.url); return u.pathname.split('/').slice(0, 4).join('/'); } catch (x) { return d.url; } })();
   if (told.has(host)) return; told.add(host);
   toast(d.kind === 'pack' ? 'Offline: this vocal bank is not cached yet. It loads when you are back online.' : 'Offline: this sample bank is not cached yet. It loads when you are back online.', { kind: 'error' });

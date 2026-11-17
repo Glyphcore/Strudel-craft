@@ -27,7 +27,7 @@ const bytes = (n) => (n == null ? '' : n < 1024 ? n + ' B' : n < 1048576 ? (n / 
 const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 
 /* ---------------------------------------------------------------- state */
-let d = null, body = null, tab = 'packs', raf = 0, unsub = [];
+let d = null, body = null, tab = 'packs', raf = 0, unsub = [], cinfo = {}, store = null; // cinfo / store: the offline cache state (#174), read async and drawn on the next render
 const TABS = [['packs', 'Packs'], ['code', 'Code'], ['credits', 'Credits'], ['report', 'Report']];
 const confirmedHere = new Map(); // qualified id -> code hash, for grants made through the trust dialog in this tab (in memory only)
 /* real user gesture: the last click / key press before a modal resolves must be trusted, recent and inside the site modal (a script's el.click() is not) */
@@ -64,11 +64,12 @@ export async function open(o = {}) {
   if (o.tab) tab = o.tab;
   await loadCss(); if (!d) build(); watchGestures();
   const p = P();
-  if (p && !unsub.length) unsub = ['state', 'report', 'lock'].map((t) => p.on(t, schedule)).concat(p.on('offline', (ev) => { progress[ev.id] = ev; schedule(); }));
+  if (p && !unsub.length) unsub = ['state', 'report', 'lock'].map((t) => p.on(t, schedule)).concat(['cache', 'newer', 'missing'].map((t) => p.on(t, loadCache))).concat(p.on('offline', (ev) => { progress[ev.id] = ev; schedule(); }));
   render(); if (!d.open) d.showModal();
   (d.querySelector(`[data-tab="${tab}"]`) || d.querySelector('#pkClose')).focus();
-  if (p) p.ready.then(schedule);
+  if (p) p.ready.then(schedule).then(loadCache);
 }
+async function loadCache() { const p = P(); if (!p || !p.cacheInfo) return; const [c, s] = await Promise.all([p.cacheInfo(), p.storage()]); const same = JSON.stringify([c, s]) === JSON.stringify([cinfo, store]); cinfo = c; store = s; if (!same && d && d.open) render(); }
 export function close() { if (d && d.open) d.close(); }
 
 /* ---------------------------------------------------------------- render */
@@ -88,6 +89,7 @@ function render() {
 function packsTab(p, list, rep) {
   const out = [];
   const props = p.proposals().filter((x) => !dismissed.has(x.source) && x.state !== 'accepted');
+  out.push(storageBar(p));
   out.push(h('div', { class: 'pk-bar' },
     h('button', { type: 'button', class: 'pk-add', onclick: addBySource }, h('span', { 'aria-hidden': 'true' }, '+'), 'Add pack by source'),
     h('p', { class: 'pk-hint' }, 'A pinned github: folder (owner/repo@40-hex-commit/path) or an https:// folder that holds a craftpack.json.')));
@@ -101,6 +103,21 @@ function packsTab(p, list, rep) {
     out.push(section('Your packs', mine.length ? mine.map((x) => packCard(p, x, rep, list.length)) : [emptyState('No packs added', 'Packs you add are kept in this browser’s lock and load after the shipped ones. Adding a pack never changes the sound of an existing program: a bare name keeps its first owner unless you prefer another pack.')]));
   }
   return out;
+}
+const ago = (t) => (t == null ? 'an earlier visit' : new Date(t).toLocaleString());
+function storageBar(p) { // quota use and persistence (#174): the cache is only as safe as the browser's promise to keep it
+  if (!store) return h('p', { class: 'pk-hint', id: 'pkStore' }, 'Storage: reading');
+  const pct = store.quota ? Math.max(1, Math.round((store.usage / store.quota) * 100)) : null;
+  return h('div', { class: 'pk-bar pk-store', id: 'pkStore' },
+    h('p', { class: 'pk-hint' }, `Offline storage: ${bytes(store.usage) || 'unknown'} used${store.quota ? ' of ' + bytes(store.quota) + ' (' + pct + '%)' : ''} · ${store.persisted ? 'persistent: the browser keeps it' : store.supported ? 'not persistent: the browser may clear it under storage pressure' : 'persistence not supported here'}`),
+    store.supported && !store.persisted ? h('button', { type: 'button', class: 'ghost', id: 'pkPersist', onclick: async () => { const ok = await p.persist(); toast(ok ? 'Storage is persistent' : 'The browser did not grant persistent storage (it may need the app installed or more use)', { kind: ok ? 'ok' : 'info' }); loadCache(); } }, 'Keep storage') : null);
+}
+function cacheField(x) { // per pack: cached or not, version / ref, fetched-at, size
+  const c = cinfo[x.id]; if (!c || /^file:/.test(x.source || '')) return null;
+  const out = [c.cached ? h('span', { class: 'pk-ok', 'data-cache': 'cached' }, `cached: ${plural(c.files, 'file')}, ${bytes(c.bytes) || '0 B'}, fetched ${ago(c.fetchedAt)}`) : h('span', { class: x.state === 'unavailable' ? 'pk-bad' : 'pk-nd', 'data-cache': 'none' }, x.state === 'unavailable' ? 'not cached, and not reachable now: open it once while online' : 'not cached')];
+  out.push(h('span', { class: 'pk-hint' }, ` · v${c.version ?? '?'} · ${c.ref}`));
+  if (c.newer) out.push(h('span', { class: 'pk-new', 'data-newer': c.newer.version }, ` · newer version ${c.newer.version} fetched, not applied`));
+  return field('Offline cache', out);
 }
 const section = (title, kids) => h('section', { class: 'pk-sec' }, h('h3', {}, title), ...kids);
 function crate() { // empty crate: the pack glyph
@@ -146,6 +163,12 @@ function packCard(p, x, rep, count) {
   const acts = [];
   if (count > 1 && x.state === 'ready') acts.push(x.priority >= 10 ? h('span', { class: 'pk-pref' }, 'Preferred') : h('button', { type: 'button', class: 'ghost', onclick: () => doPrefer(p, x) }, 'Prefer'));
   if (!/^file:/.test(x.source || '') && x.state === 'ready') acts.push(h('button', { type: 'button', class: 'ghost', 'aria-pressed': String(!!x.offline), onclick: () => doOffline(p, x) }, x.offline ? 'Offline: kept' : 'Keep offline'));
+  const ci = cinfo[x.id];
+  if (ci && !/^file:/.test(x.source || '')) {
+    if (x.state === 'ready') acts.push(h('button', { type: 'button', class: 'ghost', 'data-act': 'refresh', onclick: () => doRefresh(p, x) }, 'Refresh'));
+    if (ci.newer && x.layer === 'user') acts.push(h('button', { type: 'button', class: 'pk-go', 'data-act': 'update', onclick: () => doUpdate(p, x, ci) }, 'Update to v' + ci.newer.version));
+    if (ci.cached) acts.push(h('button', { type: 'button', class: 'ghost', 'data-act': 'uncache', onclick: () => doUncache(p, x) }, 'Remove from cache'));
+  }
   if (x.layer !== 'shipped') acts.push(h('button', { type: 'button', class: 'ghost pk-danger', onclick: () => doRemove(p, x) }, 'Remove'));
   const issue = x.ingredients.some((i) => i.state === 'failed' || i.state === 'unavailable');
   return h('article', { class: 'pk-card', 'data-pack': x.id, 'data-state': x.state, 'data-issue': issue ? 'yes' : null, 'aria-label': 'Pack ' + x.id },
@@ -162,6 +185,7 @@ function packCard(p, x, rep, count) {
       x.repository ? field('Repository', typeof x.repository === 'string' ? link(x.repository) : link(x.repository.url)) : null,
       field('Source', h('code', {}, x.source || ND)),
       field('Manifest', [h('code', { title: x.manifest || '' }, short(x.manifest)), ' ', verification(x)]),
+      cacheField(x),
       offl ? field('Offline', offl) : null),
     own.length ? h('ul', { class: 'pk-errs', 'aria-label': 'Errors and warnings for ' + x.id }, own.map((e) => h('li', { 'data-kind': /^W_/.test(e.code) ? 'warn' : 'err' }, h('code', {}, e.code), ' ', e.message))) : null,
     x.ingredients.length ? ingredients(p, x) : null,
@@ -256,6 +280,23 @@ async function doRemove(p, x) {
   const ok = await ui().askYesNo({ title: 'Remove ' + x.id + '?', message: 'Removes it from this browser’s lock and drops its cached files. Programs that use its names stop finding them.', okText: 'Remove', danger: true });
   if (!ok) return;
   await p.remove(x.id); toast('Removed ' + x.id, { kind: 'ok' }); await refreshRecipes(); render();
+}
+async function doRefresh(p, x) {
+  toast('Refreshing ' + x.id);
+  const r = await p.refresh(x.id); await loadCache();
+  if (!r) toast('Nothing to refresh for ' + x.id, { kind: 'error' });
+  else if (r.offline) toast('Offline: ' + x.id + ' keeps its cached copy', { kind: 'error' });
+  else if (!r.ok) toast(`${x.id}: ${r.failed.map((f) => f.file + ' ' + f.code).join(', ')} (cached copy kept)`, { kind: 'error' });
+  else toast(`${x.id}: ${plural(r.updated, 'file')} re-fetched and verified${r.newer ? '; version ' + r.newer.version + ' is available' : ''}`, { kind: 'ok' });
+}
+async function doUncache(p, x) {
+  const ok = await ui().askYesNo({ title: 'Remove ' + x.id + ' from the cache?', message: 'Deletes its cached files on this device. The pack stays in your lock, but offline it is unavailable until it is fetched again while online.', okText: 'Remove from cache', danger: true });
+  if (!ok) return; const r = await p.uncache(x.id); await loadCache(); toast(r ? `${x.id}: ${plural(r.removed, 'cached file')} removed` : 'Could not remove ' + x.id + ' from the cache', { kind: r ? 'ok' : 'error' });
+}
+async function doUpdate(p, x, ci) {
+  const ok = await ui().askYesNo({ title: `Update ${x.id} to ${ci.newer.version}?`, message: `Replaces the pinned manifest ${short(x.manifest)} with ${short(ci.newer.hash)}, as if you had removed the pack and added it again. Code grants for it are dropped and must be given again. Programs that use its names may sound different.`, okText: 'Update' });
+  if (!ok) return; const r = await p.update(x.id); await refreshRecipes(); await loadCache();
+  toast(r && r.state === 'accepted' ? `Updated ${x.id} to ${ci.newer.version}` : `Could not update ${x.id}`, { kind: r && r.state === 'accepted' ? 'ok' : 'error' }); render();
 }
 async function doPrefer(p, x) {
   const ok = await ui().askYesNo({ title: 'Prefer ' + x.id + '?', message: 'Bare names it shares with other packs resolve to this pack from now on, which can change how existing programs sound. Qualified ids (author/pack:item) are unaffected.', okText: 'Prefer' });

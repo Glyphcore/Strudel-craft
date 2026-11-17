@@ -1,7 +1,7 @@
 /* Offline cache: app shell from one atomic per-VERSION snapshot (network-first in local dev), pinned CDN module graphs cache-first, sample maps and bank audio lazy in a runtime cache (sc-banks-1) that survives deploys. */
 const VERSION = 'sc-dev'; /* replaced with sc-<sha> by .github/workflows/pages.yml on every deploy */
 const DEV = VERSION === 'sc-' + 'dev'; /* the deploy stamp replaces only the quoted literal above */
-const SHELL = ['./', 'index.html', 'style.css', 'ui.js', 'forms.js', 'app.js', 'build.json', 'intellisense.js', 'hooks-intellisense.js', 'lanes-intellisense.js', 'word-intellisense.js', 'model.js', 'library.js', 'library-store.js', 'vendor/acorn-8.19.0.mjs', 'inline.js', 'literals.js', 'refs.js', 'workspace.css', 'palette.js', 'copycode.js', 'copycode.css', 'workspace.js', 'transport-range.js', 'numfmt.js', 'bgplay.js', 'visuals.js', 'tracker.js', 'engine/index.js', 'engine/controls.js', 'engine/pads.js', 'engine/input.js', 'engine/time.js', 'engine/validate.js', 'engine/hooks.js', 'engine/bind.js', 'engine/settle.js', 'engine/atoms.js', 'engine/lanes.js', 'engine/lanes-data.js', 'engine/lanes-pick.js', 'engine/atoms-migrate.js', 'engine/atoms-consumers.js', 'atoms-site.js', 'data/atoms/types.json', 'data/atoms/positions.json', 'syntax.js', 'organizer.js', 'organizer.css', 'taxonomy.css', 'taxonomy-store.js', 'engine/taxonomy.js', 'engine/aliases.js', 'prelude/word.js', 'packs.js', 'packs-kinds.js', 'engine/packs-core.js', 'packs.lock.json', 'craftpack.json', 'history.js', 'capture.js', 'recipe.js', 'record-length.js', 'capture.css', 'packs-ui.js', 'packs-ui.css',
+const SHELL = ['./', 'index.html', 'style.css', 'ui.js', 'forms.js', 'app.js', 'build.json', 'intellisense.js', 'hooks-intellisense.js', 'lanes-intellisense.js', 'word-intellisense.js', 'model.js', 'library.js', 'library-store.js', 'vendor/acorn-8.19.0.mjs', 'inline.js', 'literals.js', 'refs.js', 'workspace.css', 'palette.js', 'copycode.js', 'copycode.css', 'workspace.js', 'transport-range.js', 'numfmt.js', 'bgplay.js', 'visuals.js', 'tracker.js', 'engine/index.js', 'engine/controls.js', 'engine/pads.js', 'engine/input.js', 'engine/time.js', 'engine/validate.js', 'engine/hooks.js', 'engine/bind.js', 'engine/settle.js', 'engine/atoms.js', 'engine/lanes.js', 'engine/lanes-data.js', 'engine/lanes-pick.js', 'engine/atoms-migrate.js', 'engine/atoms-consumers.js', 'atoms-site.js', 'data/atoms/types.json', 'data/atoms/positions.json', 'syntax.js', 'organizer.js', 'organizer.css', 'taxonomy.css', 'taxonomy-store.js', 'engine/taxonomy.js', 'engine/aliases.js', 'prelude/word.js', 'packs.js', 'packs-kinds.js', 'rescache.js', 'engine/packs-core.js', 'packs.lock.json', 'craftpack.json', 'history.js', 'capture.js', 'recipe.js', 'record-length.js', 'capture.css', 'packs-ui.js', 'packs-ui.css',
   'perform.js', 'perform.css', 'graph.js', 'graph.css', 'atoms-ui.js', 'atoms-ui.css', 'atoms-pop.js', 'lanes-ui.js', 'lanes-ui.css', 'vox-banks.js', 'voxbrowser.js', 'voxbrowser.css', /* lazy views: precached so they open offline */
   'manifest.webmanifest', 'pwa.js', 'pwa.css', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-192.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png',
   'fonts/ChakraPetch-500.woff2', 'fonts/ChakraPetch-700.woff2', 'fonts/JetBrainsMono.woff2'];
@@ -49,9 +49,10 @@ async function assetHash(root, a, url) {
   const rel = url.slice(a.dir.length), line = (await idx.text()).split('\n').find((l) => l.slice(66) === rel); return line ? 'sha256:' + line.slice(0, 64) : null;
 }
 /* offline notice: the page (pwa.js) shows one toast per bank when a bank file is neither cached nor reachable */
+const tellPage = (type, kind, url) => self.clients.matchAll({ type: 'window' }).then((cs) => cs.forEach((c) => c.postMessage({ type, kind, url }))).catch(() => {});
 const tellOffline = (kind, url) => self.clients.matchAll({ type: 'window' }).then((cs) => cs.forEach((c) => c.postMessage({ type: 'sc-offline', kind, url }))).catch(() => {});
 async function packFetch(req, root) {
-  const c = await caches.open(PACKS), hit = await c.match(req); if (hit) return hit;
+  const c = await caches.open(PACKS), hit = req.cache === 'no-store' || req.cache === 'reload' ? null : await c.match(req); if (hit) return hit; /* a revalidation (no-store) asks the source */
   let res; try { res = await fetch(req); } catch (e) { tellOffline('pack', req.url); throw e; }
   if (!res.ok) return res;
   const a = root.assets.find((x) => req.url.startsWith(x.dir) && req.url !== x.index);
@@ -69,9 +70,14 @@ const BANKS = 'sc-banks-1', BANK_MAX = 1500;
 /* Range requests (audio elements, partial reads) go straight to the network: a cached full file must never answer them, and a 206 is never
    cached. Only complete, readable (non-opaque) 200 responses are stored, and storing never delays or fails the response (quota, eviction). */
 const cacheable = (res) => res && res.status === 200 && res.type !== 'opaque' && res.type !== 'opaqueredirect';
+/* stale-while-revalidate for sample maps (#174): the cached map answers now; a changed copy replaces it in the background and the page is told (it applies on the next load) */
+async function revalidateMap(c, req, hit) {
+  if (self.navigator.onLine === false) return; /* offline: no request at all */
+  try { const res = await fetch(req.url, { cache: 'no-cache' }); if (!cacheable(res)) return; const fresh = await res.clone().text(); if (fresh === await hit.clone().text()) return; await c.put(req, res); tellPage('sc-updated', 'bank', req.url); } catch (e) { /* offline or unreachable: the cached map stays */ }
+}
 async function bankFetch(req) {
   if (req.headers.has('range')) return fetch(req);
-  let c = null; try { c = await caches.open(BANKS); const hit = await c.match(req); if (hit) return hit; } catch (e) { c = null; /* storage unavailable: network only */ }
+  let c = null; try { c = await caches.open(BANKS); const hit = await c.match(req); if (hit) { if (/\.json$/.test(new URL(req.url).pathname)) revalidateMap(c, req, hit); return hit; } } catch (e) { c = null; /* storage unavailable: network only */ }
   let res; try { res = await fetch(req); } catch (e) { tellOffline('bank', req.url); return Response.error(); }
   if (c && cacheable(res)) c.put(req, res.clone()).then(() => c.keys()).then((ks) => Promise.all(ks.slice(0, Math.max(0, ks.length - BANK_MAX)).map((k) => c.delete(k)))).catch(() => {});
   return res;

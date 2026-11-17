@@ -135,7 +135,11 @@ Editor choice order: registered providers -> number `scrub` / boolean `toggle` -
 `strudelCraft.literals.registerEditor({ id, match(lit, param) -> editorName|null, render?(host, { lit, param, set, close, view }) })`.
 
 ### Gestures and edits
-- Tap: opens the compact popover (position: fixed, below or above the literal, never in flow, so nothing shifts). Long-press opens
+- Tap: opens the compact popover (position: fixed, never in flow, so nothing shifts). **Placement** (`anchorPop` in `literals.js`, also used by
+  the atom reference popover): below the anchor line, flipped above when it would overflow, clamped to the visual viewport with an 8 px margin
+  (the on-screen keyboard counts), max height with internal scroll when neither side fits, re-placed on scroll, resize and content change.
+  **Drag**: the head strip is a grab handle (mouse, touch, pen); it stays clamped, keeps its offset until it closes, double-click on the strip
+  snaps it back, Alt+arrows nudge it (Shift = 64 px); dragging never touches the editor selection (#169). Long-press opens
   it with focus. Escape or a tap outside closes it.
 - Number literal: horizontal drag scrubs the travel (`scrubPx` per full range), vertical drag adds fine control (`finePx`), two-pointer
   pinch scales the travel (log2 of the pinch ratio * 0.25). A value badge shows during the gesture; the source is rewritten **once**
@@ -231,3 +235,13 @@ an explicit trigger (Ctrl+Space), never on focus alone; the Tab chip lives in th
 `strudelCraft.intellisense.dismissSuggestions()` dismisses programmatically; `intellisense.ghost.show(view, alts)` shows one (tests,
 providers). Test: `node tests/site/binding.mjs` (show + cycle: doc, history length, compile/poke/eval counters, dot and learned list
 unchanged; Tab: one change, one history commit, one compile; tap elsewhere dismisses; typing brings it back).
+
+## 12. Caret and inlay hints (#169)
+- One pointer handler for the code area (`pointerCaret` in `intellisense.js`): `pointerdown` anywhere in it (text, literals, widgets, the ghost Tab chip,
+  padding, empty lines) puts the caret at the nearest position on that event and focuses the editor (Shift/Ctrl/Alt clicks stay native). Cause of the
+  old delayed caret: the selection waited for the compatibility `mousedown` after `touchend`, the number gesture swallowed it, and CodeMirror
+  only painted the caret (`.cm-focused`) when its own focus event landed (~100 ms on touch); the handler dispatches the selection and re-reads
+  focus synchronously. A touch that turns into a scroll (`pointercancel`) restores the previous selection.
+- Inlay hints (`inline.js`, `strudelCraft.intellisense.inlayHints.enabled(on)`): the parameter name from the typed params shown inline right before a
+  literal argument (`frequency: 800`), as VS Code does. The text is a `::before` of an empty widget, so it is not in the document, not
+  selectable, not copied and not a caret stop; smaller muted text on a subtle rounded background; no line-height change. Mini-notation tokens get none.

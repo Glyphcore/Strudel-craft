@@ -16,7 +16,7 @@ function cssReady() {
   return new Promise((res) => { l.addEventListener('load', res, { once: true }); l.addEventListener('error', res, { once: true }); });
 }
 export function close({ refocus = false } = {}) {
-  if (!pop) return; const v = cur && cur.view; pop.remove(); pop = null; cur = null; document.body.classList.remove('ax-popping');
+  if (!pop) return; const v = cur && cur.view; if (pop.__anch) pop.__anch.dispose(); pop.remove(); pop = null; cur = null; document.body.classList.remove('ax-popping');
   document.removeEventListener('pointerdown', outside, true); document.removeEventListener('keydown', onKey, true);
   if (refocus && v) v.focus();
 }
@@ -57,6 +57,8 @@ export async function open(view, site, { focus = true } = {}) {
   return true;
 }
 function place(view, d) {
+  const ap = window.strudelCraft && window.strudelCraft.anchorPop; /* shared placement (literals.js): flip, viewport clamp, re-place on scroll/resize */
+  if (ap) { if (pop.__anch) pop.__anch.dispose(); pop.__anch = ap(pop, () => { const c = view.coordsAtPos(d.from); return c && { left: c.left, top: c.top, bottom: c.bottom }; }); return; }
   const c = view.coordsAtPos(d.from) || { left: 8, top: 60, bottom: 80 }; const w = pop.offsetWidth, ht = pop.offsetHeight, vw = innerWidth, vh = innerHeight;
   pop.style.left = Math.max(6, Math.min(vw - w - 6, c.left - 12)) + 'px';
   const below = c.bottom + 6 + ht < vh - 70; pop.style.top = (below ? c.bottom + 6 : Math.max(6, c.top - ht - 6)) + 'px';

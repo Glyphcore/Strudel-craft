@@ -259,6 +259,26 @@ async function mount() {
       const ids = (v.__wIds = v.__wIds || new WeakMap()); let k = v.__wKeyN || 0; const key = list.map((w) => { if (!ids.has(w.el)) ids.set(w.el, ++k); return w.pos + ':' + ids.get(w.el); }).join(','); v.__wKeyN = k;
       if ((key === v.__wKey && v.__wDoc === v.state.doc) || busy()) return; v.__wKey = key; v.__wDoc = v.state.doc; v.dispatch({ effects: setW.of(list) }); },
   };
+  /* one pointer handler for the code area (#169): pointerdown anywhere in it (text, widgets, ghost chip, padding, empty space) puts the caret at the
+     nearest position on that event, synchronously, for every node type and pointer type; widgets that act on the tap (literals, ghost chip) still do.
+     Native selection waited for the compatibility mousedown (after touchend on touch); the literal gesture even swallowed it on numbers. */
+  function pointerCaret(view) {
+    const sd = view.scrollDOM; let undo = null; const focus = (v) => { if (v.hasFocus) { v.update([]); return; } v.focus(); v.update([]); }; /* update([]) re-reads focus now: .cm-focused (and the caret) otherwise waits for the focus event */
+    sd.addEventListener('pointerdown', (e) => {
+      view.__down = true; undo = null;
+      if (!e.isPrimary || e.button > 0 || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
+      const t = e.target; if (t.closest && (t.closest('input,textarea,select') || t.closest('.cm-gutters,.cm-panels,.cm-tooltip'))) return;
+      const r = sd.getBoundingClientRect(); if (e.clientX > r.left + sd.clientWidth || e.clientY > r.top + sd.clientHeight) return; /* scrollbars */
+      const gw = t.closest && t.closest('.cm-ghost-wrap'); let pos;
+      try { pos = gw ? view.posAtDOM(gw) : view.posAtCoords({ x: e.clientX, y: e.clientY }, false); } catch (err) { return; }
+      if (pos == null) return; const prev = view.state.selection; const cur = prev.main;
+      if (cur.empty && cur.head === pos) { focus(view); return; } /* already there (keeps the ghost chip's tap intact) */
+      undo = prev; view.dispatch({ selection: { anchor: pos }, userEvent: 'select.pointer' });
+      focus(view); /* every pointer type: Chromium focuses the editor on touchstart anyway, but CM only paints the caret (.cm-focused) once its own focus event lands, ~100 ms later on touch */
+    }, true);
+    sd.addEventListener('pointerup', (e) => { view.__down = false; undo = null; }, true);
+    sd.addEventListener('pointercancel', (e) => { view.__down = false; if (undo && e.pointerType === 'touch') view.dispatch({ selection: undo, userEvent: 'select.pointer' }); undo = null; }, true); /* a scroll started: the caret stays where it was */
+  }
   for (const id of ['code', 'stackCode']) {
     const ta = document.getElementById(id); if (!ta) continue;
     const desc = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value'); let view; let syncing = false; let learnT = 0;
@@ -268,7 +288,7 @@ async function mount() {
         EditorView.contentAttributes.of({ 'aria-label': ta.getAttribute('aria-label') || (id === 'code' ? 'Recipe code' : 'Stack program'), autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false' }),
         EditorView.updateListener.of((u) => { if (!u.docChanged || syncing) return; const v = u.state.doc.toString(); desc.set.call(ta, v); ta.dispatchEvent(new Event('input', { bubbles: true })); clearTimeout(learnT); learnT = setTimeout(() => learn(v), 1200); })],
     });
-    ta.after(view.dom);
+    ta.after(view.dom); pointerCaret(view);
     Object.defineProperty(ta, 'value', { configurable: true, get: () => desc.get.call(ta), set: (v) => { desc.set.call(ta, v); if (view.state.doc.toString() !== v) { syncing = true; view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: v } }); syncing = false; } } });
     ta.hidden = true; ta.style.display = 'none'; ta.tabIndex = -1; ta.cmView = view;
     import('./refs.js').then((m) => m.attachEditor(view, id)).catch((e) => console.warn('reference inspector unavailable:', e.message));

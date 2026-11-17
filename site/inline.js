@@ -141,6 +141,37 @@ export function setupInline(api, cm) {
     { key: 'Ctrl-]', run: (v) => cycle(v, 1) }, { key: 'Alt-]', run: (v) => cycle(v, 1) },
     { key: 'Ctrl-[', run: (v) => cycle(v, -1) }, { key: 'Alt-[', run: (v) => cycle(v, -1) },
   ]));
+  /* ---- inlay hints (#169, as VS Code): parameter names inline, immediately before the literal argument they name ("frequency: 800").
+     Text lives in a ::before (data-hint), so it is not in the document, not selectable, not copied and not a caret stop; no line-height change. ---- */
+  const setInlay = StateEffect.define();
+  class Hint extends WidgetType {
+    constructor(t) { super(); this.t = t; }
+    eq(o) { return o.t === this.t; }
+    toDOM() { const e = document.createElement('span'); e.className = 'cm-inlay'; e.setAttribute('data-hint', this.t); e.setAttribute('aria-hidden', 'true'); e.contentEditable = 'false'; return e; }
+    ignoreEvent() { return true; }
+  }
+  const inlayField = StateField.define({
+    create: () => ({ set: Decoration.none, key: '' }),
+    update(v, tr) { for (const e of tr.effects) if (e.is(setInlay)) return e.value; return tr.docChanged ? { set: v.set.map(tr.changes), key: '' } : v; },
+    provide: (f) => EditorView.decorations.from(f, (v) => v.set),
+  });
+  let inlayOn = true; const iseq = new WeakMap();
+  async function inlayCompute(view) {
+    const my = (iseq.get(view) || 0) + 1; iseq.set(view, my); if (!inlayOn) { if (view.state.field(inlayField).key) view.dispatch({ effects: setInlay.of({ set: Decoration.none, key: '' }) }); return; }
+    if (view.__down) { setTimeout(() => inlayCompute(view), 200); return; } /* never a transaction while a pointer is down: it races the tap's selection */
+    let B, P; try { [B, P] = await Promise.all([import('./engine/bind.js'), api.params ? api.params() : {}]); } catch (e) { return; }
+    if (iseq.get(view) !== my || view.__down) return; const doc = view.state.doc; const r = B.literals(doc.toString()); const ds = [];
+    if (r.ok) for (const l of r.literals) {
+      if (l.kind === 'token' || l.param == null || l.arg < 0) continue; const p = (P[l.param] || [])[l.arg];
+      if (!p || !p.name || p.name === 'value' || p.name === l.param) continue; ds.push([l.from, p.name + ':']);
+    }
+    const key = ds.map((d) => d.join('@')).join('|'); if (key === view.state.field(inlayField).key || view.state.doc !== doc) return;
+    view.dispatch({ effects: setInlay.of({ key, set: Decoration.set(ds.map(([at, t]) => Decoration.widget({ widget: new Hint(t), side: -1 }).range(at)), true) }) });
+  }
+  const inlayT = new WeakMap();
+  const inlayListener = EditorView.updateListener.of((u) => { if (!u.docChanged) return; clearTimeout(inlayT.get(u.view)); inlayT.set(u.view, setTimeout(() => inlayCompute(u.view), 250)); });
+  api.inlayHints = { enabled: (on) => { if (on !== undefined) inlayOn = !!on; return inlayOn; }, refresh: (view) => inlayCompute(view) };
+  if (api.params) api.params().then(() => { for (const id of ['code', 'stackCode']) { const t = document.getElementById(id); if (t && t.cmView) inlayCompute(t.cmView); } }).catch(() => {});
   const theme = EditorView.theme({ '.cm-ghost': { opacity: '.45', fontStyle: 'italic' }, '.cm-ghost-tab': { marginLeft: '6px', padding: '0 8px', minHeight: '28px', minWidth: '44px', fontSize: '.68rem', letterSpacing: '.08em', textTransform: 'uppercase', border: '1px solid var(--sig-2)', borderRadius: 'var(--r1)', background: 'transparent', color: 'var(--sig-2)', verticalAlign: 'middle', cursor: 'pointer' } });
   /* auto-dismiss (CONTROL_BINDING section 11): blur, scroll, tap elsewhere, idle 5 s, view/modal switch; always inert (decoration only) */
   const live = new Set(); let idleT = 0, scroll0 = 0;
@@ -153,5 +184,5 @@ export function setupInline(api, cm) {
     window.addEventListener('hashchange', dismissAll); document.addEventListener('toggle', dismissAll, true);
     new MutationObserver(() => { if (live.size && document.querySelector('dialog[open]')) dismissAll(); }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['open'], childList: true }); }
   api.dismissSuggestions = dismissAll;
-  return { extension: [field, trigger, keys, theme, watch, domH], accept, dismiss, ghost: (view) => view.state.field(field), show: (view, alts, pos = view.state.selection.main.head) => view.dispatch({ effects: setGhost.of({ pos, alts: [].concat(alts), i: 0 }) }), mergeAccept };
+  return { extension: [field, trigger, keys, theme, watch, domH, inlayField, inlayListener], accept, dismiss, ghost: (view) => view.state.field(field), show: (view, alts, pos = view.state.selection.main.head) => view.dispatch({ effects: setGhost.of({ pos, alts: [].concat(alts), i: 0 }) }), mergeAccept };
 }

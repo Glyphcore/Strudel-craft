@@ -45,20 +45,56 @@ function setLit(litId, text, viewId) { const v = viewOf(viewId); const l = v && 
 function nudge(litId, steps, viewId) { const v = viewOf(viewId); const l = v && find(v, litId); if (!l || l.kind !== 'number') return false; const p = shapeFor(l); replace(v, l.from, l.to, fmt(fromTravel(p, toTravel(p, l.value) + steps / 100), p)); return true; }
 
 /* ---- popover ---- */
-let pop = null;
-function close() { if (pop) { pop.remove(); pop = null; document.removeEventListener('pointerdown', outside, true); } }
+let pop = null, anch = null;
+function close() { if (pop) { if (anch) anch.dispose(); anch = null; pop.remove(); pop = null; document.removeEventListener('pointerdown', outside, true); } }
 function outside(e) { if (pop && !pop.contains(e.target) && !(e.target.closest && e.target.closest('.cm-scroller'))) close(); } /* taps in the code: the gesture switches or toggles */
+/* One placement for every popover anchored in the editor: below the anchor line, flipped above when it would overflow, clamped to the
+   visual viewport (on-screen keyboard counts) with an 8 px margin, never covering the anchor line when there is room; max height with
+   internal scroll when neither side fits; re-placed on scroll, resize and content change. A drag handle (opts.handle) moves it by an
+   offset that is kept until dispose; double-click on the handle resets, Alt+arrows nudge. getRect() -> { left, top, bottom }. */
+export function anchorPop(el, getRect, { handle = null, margin = 8, gap = 6, maxW = 0 } = {}) {
+  let off = { x: 0, y: 0 }, last = getRect() || { left: 8, top: 60, bottom: 80 }, raf = 0, dead = false;
+  const vp = () => { const v = window.visualViewport; return v ? { x: v.offsetLeft, y: v.offsetTop, w: v.width, h: v.height } : { x: 0, y: 0, w: innerWidth, h: innerHeight }; };
+  const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
+  function update() {
+    if (dead) return; const V = vp(), m = margin; last = getRect() || last;
+    el.style.maxHeight = (V.h - 2 * m) + 'px'; el.style.overflowY = 'auto'; if (maxW) el.style.maxWidth = Math.min(maxW, V.w - 2 * m) + 'px';
+    const w = el.offsetWidth, ht = el.offsetHeight; const below = V.y + V.h - m - (last.bottom + gap), above = last.top - gap - (V.y + m);
+    let top;
+    if (ht <= below) top = last.bottom + gap; else if (ht <= above) top = last.top - gap - ht;
+    else if (Math.max(below, above) >= 120) { const bel = below >= above; const room = bel ? below : above; el.style.maxHeight = room + 'px'; top = bel ? last.bottom + gap : last.top - gap - room; }
+    else top = V.y + m; /* neither side fits: full-height sheet, anchor line may be covered */
+    let x = clamp(last.left - 12, V.x + m, V.x + V.w - m - w) + off.x, y = top + off.y; const h2 = el.offsetHeight;
+    x = clamp(x, V.x + m, V.x + V.w - m - w); y = clamp(y, V.y + m, V.y + V.h - m - h2);
+    if (handle) { off = { x: x - clamp(last.left - 12, V.x + m, V.x + V.w - m - w), y: y - top }; } /* a clamped drag keeps the clamped offset */
+    el.style.left = x + 'px'; el.style.top = y + 'px';
+  }
+  const later = () => { if (!raf && !dead) raf = requestAnimationFrame(() => { raf = 0; update(); }); };
+  const on = [[window, 'scroll'], [window, 'resize'], [document, 'scroll'], [window.visualViewport, 'resize'], [window.visualViewport, 'scroll']].filter((t) => t[0]);
+  for (const [t, k] of on) t.addEventListener(k, later, { capture: true, passive: true });
+  const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(later) : null; if (ro) ro.observe(el);
+  let drag = null;
+  if (handle) {
+    handle.style.touchAction = 'none';
+    handle.addEventListener('pointerdown', (e) => { if (e.button > 0 || (e.target.closest && e.target.closest('button'))) return; e.preventDefault(); e.stopPropagation(); drag = { id: e.pointerId, x: e.clientX, y: e.clientY, o: { ...off } }; handle.setPointerCapture(e.pointerId); handle.classList.add('drag'); });
+    handle.addEventListener('pointermove', (e) => { if (!drag || e.pointerId !== drag.id) return; e.preventDefault(); off = { x: drag.o.x + e.clientX - drag.x, y: drag.o.y + e.clientY - drag.y }; update(); });
+    const end = (e) => { if (!drag || e.pointerId !== drag.id) return; drag = null; handle.classList.remove('drag'); };
+    handle.addEventListener('pointerup', end); handle.addEventListener('pointercancel', end);
+    handle.addEventListener('dblclick', (e) => { if (e.target.closest && e.target.closest('button')) return; off = { x: 0, y: 0 }; update(); });
+    el.addEventListener('keydown', (e) => { if (!e.altKey || !/^Arrow(Left|Right|Up|Down)$/.test(e.key)) return; e.preventDefault(); e.stopPropagation(); const d = e.shiftKey ? 64 : 16; off = { x: off.x + (e.key === 'ArrowLeft' ? -d : e.key === 'ArrowRight' ? d : 0), y: off.y + (e.key === 'ArrowUp' ? -d : e.key === 'ArrowDown' ? d : 0) }; update(); });
+  }
+  update();
+  return { update, offset: () => ({ ...off }), dispose() { dead = true; cancelAnimationFrame(raf); for (const [t, k] of on) t.removeEventListener(k, later, { capture: true }); if (ro) ro.disconnect(); } };
+}
+sc.anchorPop = anchorPop;
 function place(view, l, el) {
-  const c = view.coordsAtPos(l.from) || { left: 8, bottom: 80, top: 60 }; document.body.append(el);
-  const w = el.offsetWidth, ht = el.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
-  const left = Math.max(6, Math.min(vw - w - 6, c.left - 12)); const below = c.bottom + 6 + ht < vh - 70; /* keep clear of the transport bar */
-  el.style.left = left + 'px'; el.style.top = (below ? c.bottom + 6 : Math.max(6, c.top - ht - 6)) + 'px';
+  document.body.append(el); anch = anchorPop(el, () => { const c = view.coordsAtPos(l.from); return c && { left: c.left, top: c.top, bottom: c.bottom }; }, { handle: el.querySelector('.lit-head'), maxW: 320 });
 }
 function open(view, l, { focus = true } = {}) {
   close(); const p = shapeFor(l); const ed = editorFor(l, p); if (!ed) return false;
   const body = h('div', { class: 'lit-body' });
   pop = h('div', { class: 'lit-pop', role: 'dialog', 'aria-label': `Edit ${l.param || 'value'}${p && p.name ? ' ' + p.name : ''}`, 'data-lit': l.id, 'data-editor': ed },
-    h('div', { class: 'lit-head' }, h('b', {}, `${l.param || 'literal'}${p && p.name ? ' · ' + p.name : ''}`), h('span', { class: 'lit-id', title: l.path }, l.id), h('button', { type: 'button', class: 'lit-x', 'aria-label': 'Close', onclick: () => { close(); } }, '×')), body);
+    h('div', { class: 'lit-head', title: 'Drag to move, double-click to reset, Alt+arrows nudge' }, h('b', {}, `${l.param || 'literal'}${p && p.name ? ' · ' + p.name : ''}`), h('span', { class: 'lit-id', title: l.path }, l.id), h('button', { type: 'button', class: 'lit-x', 'aria-label': 'Close', onclick: () => { close(); } }, '×')), body);
   pop.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); view.focus(); } });
   const ctx = { view, lit: l, param: p, set: (text) => setLit(l.id, text, view.__scId), close, items: sc.intellisense ? sc.intellisense.all() : Promise.resolve([]) };
   (custom.get(ed) || EDITORS[ed] || EDITORS.steps)(body, ctx);

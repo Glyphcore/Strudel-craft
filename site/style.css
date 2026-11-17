@@ -423,10 +423,11 @@ dialog.scm{width:min(420px,calc(100vw - 24px))}
 
 /* smart literal editors (CONTROL_BINDING section 7): fixed popover, never in flow */
 .lit-pop{position:fixed;z-index:60;min-width:200px;max-width:min(320px,calc(100vw - 12px));padding:8px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r2);box-shadow:0 10px 30px rgba(0,0,0,.45);font-family:var(--mono);font-size:.78rem;color:var(--text)}
-.lit-head{display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-size:.68rem}
+.lit-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-8px -8px 6px;padding:0 8px;min-height:32px;cursor:grab;user-select:none;-webkit-user-select:none;border-bottom:1px solid var(--line);color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-size:.68rem}
 .lit-head b{color:var(--text)}
+.lit-head.drag{cursor:grabbing}.lit-head::before{content:'';width:14px;height:8px;flex:none;background:radial-gradient(circle,var(--dim) 1px,transparent 1.5px) 0 0/5px 4px;opacity:.7}
 .lit-id{opacity:.6;margin-left:auto}
-.lit-x{min-width:44px;min-height:32px;margin:-6px -8px -6px 0;background:transparent;border:0;color:var(--dim);font:inherit;font-size:1rem;cursor:pointer}
+.lit-x{min-width:44px;min-height:32px;margin:0 -8px 0 0;background:transparent;border:0;color:var(--dim);font:inherit;font-size:1rem;cursor:pointer}
 .lit-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .lit-val{font-size:1rem;color:var(--sig-2);font-variant-numeric:tabular-nums}
 .lit-rng{color:var(--dim)}
@@ -511,3 +512,7 @@ dialog.bg-diag{width:min(520px,calc(100vw - 16px))}
 .rec-load .spin{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;flex:none;animation:recSpin .8s linear infinite}
 @keyframes recSpin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.rec-load .spin{animation:none;border-right-color:currentColor;opacity:.6}}
+
+/* inlay hints (#169): inline parameter names before literal arguments; pseudo-element text = not selectable, not copied, no caret stop */
+.cm-inlay{pointer-events:none;user-select:none;-webkit-user-select:none}
+.cm-inlay::before{content:attr(data-hint);font-size:.8em;line-height:1;color:var(--dim);background:color-mix(in srgb,var(--text) 9%,transparent);border-radius:4px;padding:0 4px;margin-right:3px;font-style:normal;font-weight:400;pointer-events:none;user-select:none;-webkit-user-select:none}

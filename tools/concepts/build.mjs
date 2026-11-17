@@ -8,7 +8,7 @@
 //   --render  renders every catalog recipe headless with the strudel CLI (STRUDEL_CLI) and stores verified / rms_dbfs / centroid_hz / peak;
 //             without it, results of an unchanged recipe code are kept from the current catalog
 //   --changed renders only the recipes whose code changed since the current catalog
-//   --check   writes nothing; exit 1 when any output is stale
+//   --check   writes nothing; exit 1 when any output is stale or any recipe is not verified
 //   --max-bars N  cap the verification render at N bars (worklet-heavy recipes on a loaded host; rms / centroid then describe the first N bars)
 // After a change: node tools/concepts/build.mjs --render, python3 tools/packs/packs.py hash site/data/<pack dir> --write, python3 tools/packs/shim.py,
 // node tools/racks/audit.mjs (hygiene). Families are data only; adding a concept never needs code here (docs/CONVENTIONS.md section 7).
@@ -253,4 +253,4 @@ for (const [rel, text] of outputs) { const f = path.join(ROOT, rel); const cur =
 for (const n of fs.existsSync(path.join(ROOT, 'site/data/recipes')) ? fs.readdirSync(path.join(ROOT, 'site/data/recipes')) : []) { const rel = 'site/data/recipes/' + n; if (!outputs.has(rel)) { stale.push(rel + ' (unused)'); if (!CHECK) fs.unlinkSync(path.join(ROOT, rel)); } } // a family that no recipe uses any more
 const failed = catRecipes.filter((r) => !r.verified).map((r) => r.id);
 console.log(JSON.stringify({ check: CHECK, stale, recipes: catRecipes.length, verified: catRecipes.length - failed.length, failed, syntax: syntax.length, ingredients: ingredients.map((i) => i.id) }));
-process.exit(CHECK && stale.length ? 1 : 0);
+process.exit(CHECK && (stale.length || failed.length) ? 1 : 0); // --check also fails on any unverified recipe (#161: a code change without a re-render left one at verified:false)

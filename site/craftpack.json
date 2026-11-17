@@ -12,9 +12,9 @@
       "format": "recipes@1",
       "version": "1.0.0",
       "path": "data/catalog.json",
-      "hash": "sha256:04f86f2edfb91e22bcc09372bd890185193c0f32ce27ab512ce73aed4856603a",
+      "hash": "sha256:d08f462bbc38e80e48fab5fc75279ffc3e50e77d920fc23cd16089ed220707c8",
       "load": "eager",
-      "bytes": 72338
+      "bytes": 72335
     },
     {
       "id": "bodies-base",
@@ -53,8 +53,8 @@
       "version": "1.0.0",
       "path": "data/recipes/dubstep.json",
       "load": "lazy",
-      "hash": "sha256:151b438284d6b80479d72894ea1de717bcd22c7fb16f9bf167cefc4eee38f276",
-      "bytes": 48748
+      "hash": "sha256:22fcdf6e01232ce846574fe867ef928892a709c9528ad552a43ec7e221146393",
+      "bytes": 48741
     },
     {
       "id": "bodies-edm-core",

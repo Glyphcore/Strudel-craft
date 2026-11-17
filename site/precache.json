@@ -431,6 +431,7 @@
   "engine/time.js",
   "engine/validate.js",
   "engine/waveforms.js",
+  "flags.js",
   "fonts/ChakraPetch-500.woff2",
   "fonts/ChakraPetch-700.woff2",
   "fonts/JetBrainsMono.woff2",

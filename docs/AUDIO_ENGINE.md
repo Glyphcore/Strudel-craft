@@ -253,6 +253,13 @@ latency, and the trial flags in force.
 - `?poly=<n>`: cap of simultaneous voices (superdough `setMaxPolyphony`).
 - Together with `?engine=worker` and `?resync=on` (section 7).
 
+**Validation (site/flags.js, `node tests/site/flags.mjs`).** Every engine and trial flag validates before it is applied, stored by `persist` or listed in the sheet; an invalid value is dropped and
+the site behaves as with no flag. Accepted: `engine` page|worker, `resync` on|off, `sched` strudel|batch, `late` reanchor|drop, `vis` cache|requery|every, `hint` interactive|balanced|playback or
+a plain decimal 0 to 10 (seconds), `session` auto|playback|transient|transient-solo|ambient|play-and-record, `lookahead` a plain decimal 0.2 to 1, `scrollla` on|off, `poly` an integer 1 to 256. A bad URL
+value falls back to a valid stored value, then to none; a bad stored value (an older build, a hand-typed key) is removed on every load; `?persist=1` never stores an invalid value. The `AudioContext`
+wrapper also guards itself: if the context refuses the injected hint, Strudel's own default options are used (a console warning, the hint is not listed), so audio never depends on a trial flag.
+The test covers bad values for every flag (URL, persisted by an older build, with `persist=1`) and a context that refuses the hint, each with Play still making sound.
+
 **Which engine is live, and why the phone may not have run the Worker** (read from the code, not measured on a phone): (1) the installed app starts from `./`, so `?engine=worker`
 is gone unless stored (`?persist=1`); (2) the service worker serves the cached shell and ignores the query for navigations (`sw.js`), so a phone that has not yet picked up the deployed build
 runs the old `bgplay.js` that ignores the flag until a second launch; (3) a program that reads page state or has a callback (section 7) silently stays on the page clock, and a Worker

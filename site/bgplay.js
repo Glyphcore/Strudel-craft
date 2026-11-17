@@ -15,6 +15,7 @@
    It also tracks pauses (segment timeline), applies the background policy, holds a screen wake lock while playing in the
    foreground, publishes Media Session metadata and handlers, and exposes diagnostics. API: window.strudelCraft.bg */
 import * as N from './numfmt.js';
+import { readFlag, persistFlags, sweepFlags } from './flags.js';
 const sc = (window.strudelCraft = window.strudelCraft || {});
 const $ = (s, r = document) => r.querySelector(s);
 const lsGet = (k, d) => { try { const v = localStorage.getItem('sc.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
@@ -25,10 +26,13 @@ const TICK_MS = 50, DURATION = 0.05, MIN_LATENCY = 0.01, LATE_GAP = 0.15, PRECIS
    phonk v2, measured), so Strudel's 20 queries of 0.05 s per second spend most of the scheduler's time on overhead. ?sched=batch (or localStorage
    sc.flag.sched) queries 0.2 s windows instead (5 per second); the audio is scheduled 0.2 to 0.4 s ahead instead of 0.2 to 0.25 s.
    ?sched=strudel keeps Strudel's 0.05 s windows. */
-const FLAG_SCHED = (() => { try { return new URLSearchParams(location.search).get('sched') || localStorage.getItem('sc.flag.sched') || 'strudel'; } catch (e) { return 'strudel'; } })();
+/* every flag is validated (site/flags.js): an invalid value is dropped and the site behaves as with no flag; ?persist=1 stores only valid ones */
+{ const st = (() => { try { return localStorage; } catch (e) { return null; } })(); if (st) { sweepFlags(st); persistFlags(location.search, st); } }
+const qflag = (k) => readFlag(k, location.search, (() => { try { return localStorage; } catch (e) { return null; } })());
+const FLAG_SCHED = qflag('sched') || 'strudel';
 const QSPAN = FLAG_SCHED === 'batch' ? 0.2 : DURATION;
 /* late windows: ?late=reanchor (default) moves the clock so the first onset keeps LATE_GUARD of margin; ?late=drop is Strudel's behaviour (superdough drops them) */
-const FLAG_LATE = (() => { try { return new URLSearchParams(location.search).get('late') || localStorage.getItem('sc.flag.late') || 'reanchor'; } catch (e) { return 'reanchor'; } })();
+const FLAG_LATE = qflag('late') || 'reanchor';
 /* Phone-trial candidates (#180 follow-up), each its own flag (URL or localStorage sc.flag.<name>), all off by default, no UI. They change nothing in Strudel: the AudioContext constructor is
    wrapped before Strudel creates its context, the rest uses documented Web APIs.
    ?hint=playback|<seconds>  AudioContext latencyHint (Strudel's own context is opened with the default "interactive": the smallest output buffer, 10 ms base latency)
@@ -37,13 +41,10 @@ const FLAG_LATE = (() => { try { return new URLSearchParams(location.search).get
    ?scrollla=on              while the page scrolls or is touched, schedule as far ahead as when hidden (1 s)
    ?poly=<n>                 cap on simultaneous voices (superdough setMaxPolyphony)
    ?persist=1                keep the flags of this URL in localStorage (an installed app starts without a query); ?persist=clear removes them */
-/* ?persist=1 stores every trial flag named in this URL in localStorage (sc.flag.<name>), so an installed app, which starts from "./" without a query, keeps them; ?persist=clear removes them all */
-try { const u = new URLSearchParams(location.search), P = u.get('persist'), NAMES = ['engine', 'resync', 'hint', 'session', 'lookahead', 'scrollla', 'poly', 'sched', 'late', 'vis'];
-  if (P === 'clear') for (const k of NAMES) localStorage.removeItem('sc.flag.' + k); else if (P) for (const k of NAMES) if (u.has(k)) localStorage.setItem('sc.flag.' + k, u.get(k)); } catch (e) { /* private mode */ }
-const qflag = (k) => { try { return new URLSearchParams(location.search).get(k) || localStorage.getItem('sc.flag.' + k) || ''; } catch (e) { return ''; } };
 const FLAG_HINT = qflag('hint'), FLAG_SESSION = qflag('session'), FLAG_LA = +qflag('lookahead') || 0, FLAG_SCROLLLA = qflag('scrollla') === 'on', FLAG_POLY = +qflag('poly') || 0;
 if (FLAG_LA > 0) LOOKAHEAD.base = Math.min(1, Math.max(0.2, FLAG_LA));
-if (FLAG_HINT && window.AudioContext && !window.AudioContext.__scHint) { const AC = window.AudioContext, hint = isNaN(+FLAG_HINT) ? FLAG_HINT : +FLAG_HINT; window.AudioContext = class extends AC { constructor(o) { super({ ...(o || {}), latencyHint: hint }); } }; window.AudioContext.__scHint = hint; }
+if (FLAG_HINT && window.AudioContext && !window.AudioContext.__scHint) { const AC = window.AudioContext, hint = isNaN(+FLAG_HINT) ? FLAG_HINT : +FLAG_HINT; /* a constructor that rejects the injected hint falls back to Strudel's own options: audio must never depend on a trial flag */
+  window.AudioContext = class extends AC { constructor(o) { let c; try { c = new AC({ ...(o || {}), latencyHint: hint }); } catch (e) { console.warn('latency hint ' + FLAG_HINT + ' refused (' + e.message + '); default context'); window.AudioContext.__scHint = null; c = new AC(o); } return c; } }; window.AudioContext.__scHint = hint; }
 let scrollAt = 0; const scrolling = () => FLAG_SCROLLLA && performance.now() - scrollAt < 1000;
 if (FLAG_SCROLLLA) for (const ev of ['scroll', 'touchmove', 'wheel']) addEventListener(ev, () => { scrollAt = performance.now(); }, { capture: true, passive: true });
 function playFlags() { try { if (FLAG_SESSION && navigator.audioSession) navigator.audioSession.type = FLAG_SESSION; } catch (e) { /* unsupported */ } try { if (FLAG_POLY && window.setMaxPolyphony) window.setMaxPolyphony(FLAG_POLY); } catch (e) { /* not ready */ } }
@@ -188,7 +189,7 @@ function makeClock(S, getTime, onTrigger, latency) {
   };
 }
 /* engine Worker (#180 stage 1, flag): ?engine=worker or localStorage sc.flag.engine. Off by default; the page-thread clock above is the fallback and the default. */
-const FLAG_ENGINE = (() => { try { return new URLSearchParams(location.search).get('engine') || localStorage.getItem('sc.flag.engine') || 'page'; } catch (e) { return 'page'; } })();
+const FLAG_ENGINE = qflag('engine') || 'page';
 async function attachWorker(S, repl) {
   const m = await import('./engine-worker-host.js');
   const ctl = { fire: () => B.fire, note, scrolling, laFg: FLAG_LA > 0 ? FLAG_LA : 0.6, stats: B.stats, skipped: () => { PF.skipped++; },
@@ -282,7 +283,7 @@ function stats() {
     lookaheadMs: Math.round(B.lookahead * 1000), lookaheadBounds: { baseMs: LOOKAHEAD.base * 1000, hiddenMs: LOOKAHEAD.hidden * 1000, maxMs: LOOKAHEAD.max * 1000 },
     ...B.stats, underrunEstimate: B.stats.underruns, playedSec: +B.played.toFixed(2), pausedSec: +(B.paused + (B.seg && (B.seg.kind === 'paused' || B.seg.kind === 'interrupted') ? (now() - B.seg.t0) / 1000 : 0)).toFixed(2),
     segment: B.seg ? B.seg.kind : null,
-    sched: FLAG_SCHED, late: FLAG_LATE, querySpanMs: Math.round(QSPAN * 1000), engineMode: B.worker ? B.worker.state().mode : 'page', engineWorkerAttached: !!B.worker, flags: { hint: FLAG_HINT || null, session: FLAG_SESSION || null, lookahead: FLAG_LA || null, scrollla: FLAG_SCROLLLA, poly: FLAG_POLY || null },
+    sched: FLAG_SCHED, late: FLAG_LATE, querySpanMs: Math.round(QSPAN * 1000), engineMode: B.worker ? B.worker.state().mode : 'page', engineWorkerAttached: !!B.worker, flags: { hint: (FLAG_HINT && window.AudioContext && window.AudioContext.__scHint != null) ? FLAG_HINT : null, session: FLAG_SESSION || null, lookahead: FLAG_LA || null, scrollla: FLAG_SCROLLLA, poly: FLAG_POLY || null },
     audio: c ? { sampleRate: c.sampleRate, baseLatencyMs: Math.round((c.baseLatency || 0) * 1000), outputLatencyMs: Math.round((c.outputLatency || 0) * 1000), hint: (window.AudioContext && window.AudioContext.__scHint) || 'interactive (default)' } : null,
     perf: { tickMs: Math.round(PF.tickMs), tickMaxMs: +PF.tickMax.toFixed(1), queryMs: Math.round(PF.queryMs), queryMaxMs: +PF.queryMax.toFixed(1), voiceMs: Math.round(PF.voiceMs), voiceMaxMs: +PF.voiceMax.toFixed(1),
       voicesInFlight: inFlight(), longTasks: LT.na ? null : LT.n, longTaskWorstMs: Math.round(LT.worst), longTaskMs: Math.round(LT.total),

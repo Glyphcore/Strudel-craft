@@ -4,6 +4,7 @@
    default and the fallback: a program that needs page state in its queries (hooks, ctl(), pads, taps, lanes, buses, capture) is not eligible and runs on it unchanged.
    Known limits, stage 1: the pattern is still evaluated once on the page (visuals, highlights, lane captures read it; they do not read the Worker's stream: the mirror is a follow-up);
    live event captures (the scheduler's own queries) record nothing while the Worker drives; a live edit, a seek or a tempo change is heard up to the lookahead later. */
+import { readFlag } from './flags.js';
 const PRELUDE = 'prelude/word.js';
 /* Callbacks and side effects (.onTrigger(fn), .log(), .midi(), .osc()) run where the pattern is queried; in the Worker they would never fire (functions do not cross the port), so they stay on the page clock.
    page state a query could read: anything here keeps the program on the page-thread engine. The text tested is what the page hands to evaluate (the lanes pass has already
@@ -25,7 +26,7 @@ export async function attach(env) {
   const LA_FG = ctl.laFg || 0.6, LA_BG = 2.0;
   /* default: a late delivered event is handed to superdough, which drops it (a hole); the position never pauses against the clock. ?resync=on (or localStorage sc.flag.resync = on) is opt-in:
      the Worker resumes from the first late event with a 1 s margin (nothing dropped, the position pauses about 1.1 s per stall) */
-  const RESYNC = (() => { try { return (new URLSearchParams(location.search).get('resync') || localStorage.getItem('sc.flag.resync') || 'off') === 'on'; } catch (e) { return false; } })();
+  const RESYNC = readFlag('resync', location.search, (() => { try { return localStorage; } catch (e) { return null; } })()) === 'on';
   const la = () => (document.hidden || (ctl.scrolling && ctl.scrolling()) ? LA_BG : LA_FG); let laSent = 0; setInterval(() => { if (st.mode === 'worker' && la() !== laSent) { laSent = la(); w.postMessage({ t: 'la', la: laSent }); } }, 250);
   const anchor = () => [getTime(), performance.timeOrigin + performance.now()];
   w.onerror = (e) => { st.errors.push('worker: ' + e.message); (window.errorLogger || console.warn)('engine worker: ' + e.message); };

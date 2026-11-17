@@ -867,6 +867,29 @@
        "modules"
       ]
      }
+    },
+    {
+     "if": {
+      "properties": {
+       "kind": {
+        "const": "sample-source"
+       }
+      },
+      "required": [
+       "kind"
+      ]
+     },
+     "then": {
+      "properties": {
+       "format": {
+        "pattern": "^sample-source@"
+       },
+       "code": {
+        "const": false
+       },
+       "modules": false
+      }
+     }
     }
    ]
   },

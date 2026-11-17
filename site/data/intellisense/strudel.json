@@ -1198,6 +1198,104 @@
    "detail": "model() -> { refs, missing, counts } | null",
    "info": "The reference model of the open panel: [{ id, kind, name, status[], source{pack, version, license}, desc, params, uses[{line}], fix }]. The CLI prints the same: strudel refs IN --json.",
    "category": "site api"
+  },
+  {
+   "label": "marimba",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VCSL marimba (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "vibraphone",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VCSL vibraphone (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "harp",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VCSL concert harp (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "glockenspiel",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VCSL glockenspiel (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "tubularbells",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VCSL tubular bells (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "kalimba",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VCSL kalimba (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "timpani",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VCSL timpani (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "bassdrum1",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VCSL bass drum (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "snare_modern",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VCSL snare (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "hihat",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VCSL hi-hat (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "cajon",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "VCSL cajon (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "fp_harp",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "FreePats concert harp (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "fp_organ",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "FreePats drawbar organ (CC0); loads when a program names it",
+   "category": "sounds"
+  },
+  {
+   "label": "fp_xylophone",
+   "string": true,
+   "detail": "instrument sound",
+   "info": "FreePats xylophone (CC0); loads when a program names it",
+   "category": "sounds"
   }
  ],
  "params": {

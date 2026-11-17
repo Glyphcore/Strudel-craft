@@ -1,0 +1,46 @@
+{
+  "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+  "craftpack": "1.0.0",
+  "id": "glyphcore/salamander-piano",
+  "version": "1.0.0",
+  "title": "Salamander Grand Piano (referenced)",
+  "description": "Salamander Grand Piano V3 by Alexander Holm, referenced through Strudel's own piano map (mp3); CC BY 3.0, attribution required; no audio in this repo.",
+  "license": "CC0-1.0",
+  "licenseFile": "LICENSE.md",
+  "attribution": [
+    {
+      "name": "Salamander Grand Piano V3, Alexander Holm",
+      "url": "https://sfzinstruments.github.io/pianos/salamander",
+      "license": "CC-BY-3.0",
+      "text": "Salamander Grand Piano V3 by Alexander Holm, licensed CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/); mp3 renditions fetched via Strudel's piano map."
+    }
+  ],
+  "ingredients": [
+    {
+      "id": "sources",
+      "kind": "sample-source",
+      "format": "sample-source@1",
+      "version": "1.0.0",
+      "path": "sources/sources.json",
+      "title": "Salamander Grand Piano (referenced) (referenced)",
+      "description": "remote map, not hosted here; loaded when a program names one of its sounds",
+      "hash": "sha256:38926324af261aacc2e911f6373aa88a34530e5dc7b90b02ccaa268210c8159e",
+      "load": "manual",
+      "bytes": 622
+    },
+    {
+      "id": "recipes",
+      "kind": "recipes",
+      "format": "recipes@1",
+      "version": "1.0.0",
+      "path": "recipes/recipes.json",
+      "title": "Salamander Grand Piano (referenced) recipes",
+      "hash": "sha256:fe21a66920ac2115dc878dbedaaedf893d65dc971ad8449c3350d09ce959b1ec",
+      "load": "manual",
+      "requires": [
+        "sources"
+      ],
+      "bytes": 1067
+    }
+  ]
+}

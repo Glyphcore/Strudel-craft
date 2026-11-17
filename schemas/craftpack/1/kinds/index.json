@@ -135,6 +135,14 @@
    "schema": "kinds/prelude.1.schema.json",
    "code": "always",
    "about": "module evaluated into the Strudel eval context (defines pattern functions)"
+  },
+  "sample-source": {
+   "formats": [
+    "sample-source@1"
+   ],
+   "schema": "kinds/sample-source.1.schema.json",
+   "code": "never",
+   "about": "referenced (not hosted) sample maps: remote index URLs plus per-source licence, attribution and terms_url; nothing is fetched until a program uses one of the source's sound names"
   }
  },
  "ops": [

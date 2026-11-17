@@ -123,6 +123,14 @@ export const KINDS = {
       const map = {}; for (const [k, v] of Object.entries(d)) { if (k === '_base') continue; if (ctx.wins('sounds', k)) map[k] = v; map[ctx.alias(k)] = v; }
       ctx.track(ctx.samples(map, ctx.assetDir(ing.path, d._base)));
     } },
+  'sample-source': { formats: ['sample-source@1'], code: 'never', // referenced remote sample maps (#183): no audio in the pack, nothing fetched until a program uses one of a source's sound names
+    check: (d) => (Array.isArray(d.sources) && d.sources.every((x) => isObj(x) && /^https:\/\//.test(x.index_url || '') && Array.isArray(x.sounds) && x.sounds.length) ? null : 'sample-source needs sources[] with an https index_url and sounds[]'),
+    items: (d) => d.sources.flatMap((x) => x.sounds.map((n) => [n, { source: x.id, license: x.license, terms_url: x.terms_url }])),
+    view: (entries) => entries.flatMap((e) => e.data.sources.map((x) => ({ pack: e.pack, ingredient: e.ingredient, ...x }))),
+    apply(ing, d, ctx) { // registers nothing yet: activate(names) fetches a source's map (samples(index_url)) the first time a program names one of its sounds
+      const done = new Set(); ing.sources = d.sources;
+      ing.activate = async (names) => { const hit = []; for (const x of d.sources) { if (done.has(x.id) || !x.sounds.some((n) => names.has(n))) continue; done.add(x.id); try { await ctx.samples(x.index_url); hit.push({ id: x.id, license: x.license, terms_url: x.terms_url, pack: ctx.pack }); } catch (e) { done.delete(x.id); throw e; } } return hit; };
+    } },
   'vox-bank': { formats: ['vox-bank@1'], code: 'never',
     check: (d) => (isObj(d) && isObj(d.maps) ? null : 'a vox bank needs maps'),
     items: (d) => Object.entries({ ...(d.maps.flat || {}), ...(d.maps.pitched || {}) }).filter(([k]) => k !== '_base'),

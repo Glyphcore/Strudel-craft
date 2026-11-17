@@ -1,0 +1,44 @@
+{
+ "version": 1,
+ "categories": [
+  {
+   "id": "instruments",
+   "title": "Real instruments"
+  }
+ ],
+ "labels": [
+  {
+   "id": "instruments",
+   "title": "Real instruments (referenced samples)",
+   "category": "instruments"
+  }
+ ],
+ "recipes": [
+  {
+   "id": "salamander-piano-chords",
+   "title": "Salamander piano chords",
+   "intent": "Grand piano chords; Salamander Grand Piano V3 (CC BY 3.0, Alexander Holm), referenced and fetched on play.",
+   "code": "setcpm(70/4)\n$: note(\"<[c3,e3,g3,c4] [a2,e3,a3,c4] [f2,c3,f3,a3] [g2,d3,g3,b3]>\").s(\"piano\").gain(0.9)",
+   "labels": [
+    "instruments"
+   ],
+   "needs": [
+    "glyphcore/salamander-piano:sources"
+   ],
+   "verified": false
+  },
+  {
+   "id": "salamander-piano-melody",
+   "title": "Salamander piano melody",
+   "intent": "A short piano line (CC BY 3.0, Alexander Holm).",
+   "code": "setcpm(90/4)\n$: note(\"e4 g4 c5 b4 a4 g4 e4 d4\").s(\"piano\").gain(0.9).room(0.25)",
+   "labels": [
+    "instruments"
+   ],
+   "needs": [
+    "glyphcore/salamander-piano:sources"
+   ],
+   "verified": false
+  }
+ ]
+}

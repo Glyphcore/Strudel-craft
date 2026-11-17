@@ -148,7 +148,7 @@ const errs = [];
     p.prefer('testco/collide-b'); const second = p.resolve('recipes', 'thump');
     return { first: first && first.pack, second: second && second.pack, qa: !!p.resolve('recipes', 'testco/collide-a:thump'), qb: !!p.resolve('recipes', 'testco/collide-b:thump'), calls }; });
   check('shadowing: collide-a wins, prefer flips it, both resolvable by qualified id', s.first === 'testco/collide-a' && s.second === 'testco/collide-b' && s.qa && s.qb, JSON.stringify(s));
-  check('shadowing: the loser sound key is registered only as <author>_<pack>__<key>', s.calls.length === 2 && s.calls[0] === 'testco_collide_a__tkick,tkick' && s.calls[1] === 'testco_collide_b__tkick', JSON.stringify(s.calls));
+  let c; check('shadowing: the loser sound key is registered only as <author>_<pack>__<key>', (c = s.calls.filter((x) => !/fp_/.test(x))).length === 2 && c[0] === 'testco_collide_a__tkick,tkick' && c[1] === 'testco_collide_b__tkick', JSON.stringify(s.calls)); /* the shipped glyphcore/freepats sounds (#181) also register fp_* keys */
   await ctx.close();
 }
 

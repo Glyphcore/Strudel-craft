@@ -1,0 +1,25 @@
+{
+ "sources": [
+  {
+   "id": "salamander",
+   "title": "Salamander piano via Strudel's piano.json",
+   "index_url": "https://strudel.b-cdn.net/piano.json",
+   "sounds": [
+    "piano"
+   ],
+   "license": "CC-BY-3.0",
+   "attribution": {
+    "name": "Alexander Holm",
+    "url": "https://sfzinstruments.github.io/pianos/salamander",
+    "text": "Salamander Grand Piano V3 by Alexander Holm, CC BY 3.0"
+   },
+   "terms_url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/master/LICENSE",
+   "check": {
+    "cors": true,
+    "stable": true,
+    "checked": "2026-11-17",
+    "status": 200
+   }
+  }
+ ]
+}

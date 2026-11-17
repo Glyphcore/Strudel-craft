@@ -1,0 +1,46 @@
+{
+  "$schema": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/manifest.schema.json",
+  "craftpack": "1.0.0",
+  "id": "glyphcore/vcsl",
+  "version": "1.0.0",
+  "title": "VCSL instruments (referenced)",
+  "description": "Versilian Community Sample Library, 128 sounds (mallets, harps, winds, organs, drums, percussion), referenced through Strudel's own map; no audio in this repo.",
+  "license": "CC0-1.0",
+  "licenseFile": "LICENSE.md",
+  "attribution": [
+    {
+      "name": "Versilian Community Sample Library (VCSL), Versilian Studios LLC / Sam Gossner",
+      "url": "https://github.com/sgossner/VCSL",
+      "license": "CC0-1.0",
+      "text": "VCSL samples, CC0 1.0 (public domain, no credit required), fetched from raw.githubusercontent.com via Strudel's vcsl.json map; credited anyway."
+    }
+  ],
+  "ingredients": [
+    {
+      "id": "sources",
+      "kind": "sample-source",
+      "format": "sample-source@1",
+      "version": "1.0.0",
+      "path": "sources/sources.json",
+      "title": "VCSL instruments (referenced) (referenced)",
+      "description": "remote map, not hosted here; loaded when a program names one of its sounds",
+      "hash": "sha256:3d8d36905661beb86cab42f445604925a3971c630ffa1e5f984d92f48ef9c0d5",
+      "load": "manual",
+      "bytes": 2949
+    },
+    {
+      "id": "recipes",
+      "kind": "recipes",
+      "format": "recipes@1",
+      "version": "1.0.0",
+      "path": "recipes/recipes.json",
+      "title": "VCSL instruments (referenced) recipes",
+      "hash": "sha256:0f82b132505ec5d11c0781417510cc502fc56295966cdde3a3ab01e0b4de6cd9",
+      "load": "manual",
+      "requires": [
+        "sources"
+      ],
+      "bytes": 1386
+    }
+  ]
+}

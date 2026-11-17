@@ -1,7 +1,7 @@
 // Drawn/computed instruments (#182 stage 1): `node tests/site/waveforms.mjs`
 // Needs Playwright with Chrome/Chromium and Strudel. Env: STRUDEL_WEB_DIR = a folder holding dist/index.mjs of @strudel/web (default: unpkg 1.3.0),
 // PLAYWRIGHT_DIR (default /opt/node-tools/node_modules/playwright), CHROME_PATH (optional executable).
-// Checks: (1) schema caps and the no-copy rule on fixtures, (2) seeded variation, (3) each mechanism plays through unmodified Strudel with the
+// Checks: (1) fixtures valid (caps: tests/site/waveforms_caps.mjs), (2) seeded variation, (3) each mechanism plays through unmodified Strudel with the
 // destination peak between -40 and -1 dBFS, the one-shot (46 ms class) measured with a poll shorter than its length, (4) two shapes give
 // different spectra on every route, (5) no audio file is tracked in the repo.
 import http from 'http'; import fs from 'fs'; import path from 'path'; import { createRequire } from 'module'; import { fileURLToPath } from 'url'; import { execSync } from 'child_process';
@@ -14,12 +14,9 @@ const sine = { id: 'sine-ish', family: 'test', origin: 'drawn', license: 'CC0-1.
 const saw = { ...sine, id: 'saw-ish', cycle: { points: [[0, -0.9], [0.45, 0], [0.9, 0.9], [0.92, -0.9]], interp: 'linear' } };
 const morph = { id: 'morph-ish', family: 'test', origin: 'drawn', license: 'CC0-1.0', morph: { frames: [{ pos: 0, points: sine.cycle.points }, { pos: 1, points: saw.cycle.points }] } };
 
-// (1) schema caps
+// (1) fixtures valid (the cap and bypass cases live in tests/site/waveforms_caps.mjs, which runs schema and validate() together)
 ok(WF.validate({ instruments: [sine, saw, morph] }).length === 0, 'fixtures (single cycle, morph) validate');
-const many = { ...sine, cycle: { points: Array.from({ length: 300 }, (_, i) => [i / 300, 0]) } };
-ok(WF.validate({ instruments: [many] }).some((e) => e.code === 'E_WF_POINTS'), 'a 300-point curve is rejected (cap 256)');
 ok(WF.validate({ instruments: [{ ...sine, descriptors: { note: 'data:audio/wav;base64,AAAA' } }] }).some((e) => e.code === 'E_WF_AUDIO'), 'a data:audio string is rejected');
-ok(WF.validate({ instruments: [{ ...sine, extra: Array.from({ length: 4096 }, () => 0) }] }).some((e) => e.code === 'E_WF_ARRAY'), 'a 4096-number array is rejected');
 const sch = JSON.parse(fs.readFileSync(path.join(ROOT, 'schemas/craftpack/1/kinds/waveforms.1.schema.json'), 'utf8')), idx = JSON.parse(fs.readFileSync(path.join(ROOT, 'schemas/craftpack/1/kinds/index.json'), 'utf8'));
 ok(sch.title === 'waveforms@1' && idx.kinds.waveforms?.code === 'never' && idx.kinds.waveforms.schema === 'kinds/waveforms.1.schema.json', 'schema parses and the kinds index lists waveforms (code: never)');
 
@@ -61,11 +58,11 @@ const res = await page.evaluate(async (progs) => {
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms)), td = new Float32Array(4096), fd = new Float32Array(2048);
   // poll every 8 ms (window 4096 samples is ~85 ms), so even a 46 ms burst is seen; keep the spectrum of the loudest poll
   async function meas(code, ms) {
-    W.hush(); await sleep(900); let peak = 0, best = null; const t0 = performance.now();
+    W.hush(); await sleep(900); let peak = 0, best = null; const prof = []; const t0 = performance.now();
     W.evaluate('setcps(2);' + code); // 0.5 s cycles: the wavetable voice skips a first hit while it decodes, the next one plays
-    while (performance.now() - t0 < ms) { an.getFloatTimeDomainData(td); let m = 0; for (const v of td) m = Math.max(m, Math.abs(v)); if (m > peak) { peak = m; an.getFloatFrequencyData(fd); best = Array.from(fd); } await sleep(8); }
+    while (performance.now() - t0 < ms) { an.getFloatTimeDomainData(td); let m = 0, e = 0; for (const v of td) { m = Math.max(m, Math.abs(v)); e += v * v; } prof.push([Math.round(performance.now() - t0), +Math.sqrt(e / td.length).toFixed(5)]); if (m > peak) { peak = m; an.getFloatFrequencyData(fd); best = Array.from(fd); } await sleep(8); }
     let num = 0, den = 0; if (best) best.forEach((db, i) => { const mg = 10 ** (db / 20); num += mg * i * ac.sampleRate / 4096; den += mg; });
-    W.hush(); return { peak: +peak.toFixed(4), centroid: Math.round(num / (den || 1)) };
+    W.hush(); return { prof, peak: +peak.toFixed(4), centroid: Math.round(num / (den || 1)) };
   }
   const out = {}; const urls = {};
   for (const [name, p] of Object.entries(progs)) {
@@ -76,8 +73,19 @@ const res = await page.evaluate(async (progs) => {
   return out;
 }, progs);
 await browser.close(); srv.close();
-console.log(JSON.stringify(res));
+console.log(JSON.stringify(Object.fromEntries(Object.entries(res).map(([k, v]) => [k, { peak: v.peak, centroid: v.centroid }]))));
 for (const k of ['sineA', 'sineB', 'sineC', 'sawA', 'sawB', 'sawC']) ok(res[k].peak > 0.01 && res[k].peak < 0.891, `${k} plays: peak ${res[k].peak} (${(20 * Math.log10(res[k].peak)).toFixed(1)} dBFS) within -40..-1`);
+// Sustain, not just presence: the longest stretch where the 85 ms RMS stays above 15% of its own maximum. A mute after 9 of 64 cycles must fail it.
+const runMs = (prof, frac = 0.15) => { const mx = Math.max(...prof.map((q) => q[1])), thr = mx * frac; let best = 0, start = null, last = null; for (const [t, r] of prof) { if (r >= thr && mx > 0) { if (start === null) start = t; last = t; best = Math.max(best, last - start); } else start = null; } return best; };
+for (const k of ['sineA', 'sineB', 'sineC', 'sawA', 'sawB', 'sawC']) ok(runMs(res[k].prof) >= 300, `${k} sustains: ${runMs(res[k].prof)} ms above 15% of its RMS peak (needs >= 300; the one-shot is ${Math.round(64 * 256 / 44.1)} ms long plus the 85 ms window)`);
+{ // the check can fail: the same one-shot muted after 9 of 64 cycles, run through a sliding 4096-sample RMS at an 8 ms hop
+  const rmsProfile = (x, sr = 44100) => { const o = []; for (let i = 0; i + 4096 <= x.length + 4096; i += Math.round(sr * 0.008)) { let e = 0; for (let j = Math.max(0, i - 4096); j < Math.min(x.length, i); j++) e += x[j] * x[j]; o.push([Math.round(i / sr * 1000), Math.sqrt(e / 4096)]); } return o; };
+  const shot = WF.oneShot(saw), cut = shot.slice(); cut.fill(0, 9 * 256);
+  const full = runMs(rmsProfile(shot)), muted = runMs(rmsProfile(cut));
+  ok(full >= 300 && muted < 300, `sustain check discriminates: full one-shot ${full} ms, muted after 9 of 64 cycles ${muted} ms`);
+  const q = (a, b) => Math.sqrt(shot.slice(a, b).reduce((e, v) => e + v * v, 0) / (b - a)), n = shot.length;
+  ok(q(n - n / 8, n) > 0.1 * q(0, n / 8), `one-shot data: last eighth RMS ${q(n - n / 8, n).toFixed(3)} vs first eighth ${q(0, n / 8).toFixed(3)} (no silent tail)`);
+}
 ok(res.silent.peak < 0.001, `silence stays silent (peak ${res.silent.peak})`);
 for (const m of ['A', 'B', 'C']) { const s = res['sine' + m].centroid, w = res['saw' + m].centroid; ok(Math.abs(w - s) / Math.min(w, s) > 0.2, `route ${m}: two shapes, different spectra (centroid sine ${s} Hz, saw ${w} Hz)`); }
 console.log(fails ? `${fails} FAILED` : 'ALL PASS'); process.exit(fails ? 1 : 0);

@@ -2,14 +2,14 @@
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/waveforms.1.schema.json",
  "title": "waveforms@1",
- "description": "drawn and computed instruments (docs/DRAWN_WAVEFORMS.md). Control points and parameters only: no audio data. Caps keep a recording from riding along: every curve has at most 256 points, no array holds more than 256 numbers, and no string value may carry audio (data: URLs, RIFF).",
+ "description": "drawn and computed instruments (docs/DRAWN_WAVEFORMS.md). Control points and parameters only, no audio. Closed world: every object lists its fields and sets additionalProperties false; every array, string and key has a length cap; every free string must match $defs/safe (no data:, blob:, ://, base64, RIFF/RIFX); map keys match a short name pattern. With these caps a schema-valid file is at most about 3.3 MB with 20-character numbers (32 instruments, about 5300 numbers each; measured 3.3 MB with 20-character numbers by tests/site/waveforms_caps.mjs), under the 5 MB entry-file limit (PACK_SPEC 10.2); a schema cannot count bytes, so validate() also checks the 5 MB size directly. site/engine/waveforms.js validate() enforces the same rules and is the check the site trusts (plus the one cross-field rule a schema cannot state: a param default lies within its min..max); tests/site/waveforms_caps.mjs runs both over the same bypass fixtures.",
  "type": "object",
  "required": ["instruments"],
  "additionalProperties": false,
  "properties": {
   "instruments": {
    "type": "array",
-   "maxItems": 256,
+   "maxItems": 32,
    "items": {
     "type": "object",
     "required": ["id", "family", "origin", "license"],
@@ -17,15 +17,16 @@
     "additionalProperties": false,
     "properties": {
      "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,47}$"},
-     "title": {"type": "string", "maxLength": 80},
+     "title": {"$ref": "#/$defs/safe80"},
      "family": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"},
      "origin": {"enum": ["drawn", "computed"]},
      "realism": {"enum": ["stand-in", "usable", "good"]},
-     "license": {"type": "string", "maxLength": 40},
+     "license": {"allOf": [{"$ref": "#/$defs/safe"}, {"maxLength": 40}]},
      "descriptors": {
       "type": "object",
       "maxProperties": 12,
-      "additionalProperties": {"type": ["string", "number"], "maxLength": 60}
+      "propertyNames": {"$ref": "#/$defs/name"},
+      "additionalProperties": {"oneOf": [{"allOf": [{"$ref": "#/$defs/safe"}, {"maxLength": 60}]}, {"type": "number", "minimum": -100000, "maximum": 100000}]}
      },
      "cycle": {"$ref": "#/$defs/curve"},
      "morph": {
@@ -68,13 +69,15 @@
      },
      "params": {
       "type": "object", "maxProperties": 16,
-      "propertyNames": {"pattern": "^[a-z][a-z0-9_]{0,23}$"},
+      "propertyNames": {"$ref": "#/$defs/name"},
       "additionalProperties": {
        "type": "object", "required": ["min", "max", "default"], "additionalProperties": false,
        "properties": {
-        "min": {"type": "number"}, "max": {"type": "number"}, "default": {"type": "number"},
+        "min": {"type": "number", "minimum": -1000000, "maximum": 1000000},
+        "max": {"type": "number", "minimum": -1000000, "maximum": 1000000},
+        "default": {"type": "number", "minimum": -1000000, "maximum": 1000000},
         "to": {"type": "string", "pattern": "^[a-z][a-z0-9]{0,15}$"},
-        "unit": {"type": "string", "maxLength": 8}
+        "unit": {"type": "string", "pattern": "^[a-z%]{0,8}$"}
        }
       }
      },
@@ -82,7 +85,11 @@
       "type": "object", "additionalProperties": false,
       "properties": {
        "seed": {"type": "integer", "minimum": 0, "maximum": 4294967295},
-       "spread": {"type": "object", "maxProperties": 16, "additionalProperties": {"type": "number", "minimum": 0, "maximum": 1}}
+       "spread": {
+        "type": "object", "maxProperties": 16,
+        "propertyNames": {"$ref": "#/$defs/name"},
+        "additionalProperties": {"type": "number", "minimum": 0, "maximum": 1}
+       }
       }
      }
     }
@@ -90,6 +97,9 @@
   }
  },
  "$defs": {
+  "safe": {"type": "string", "pattern": "^(?![\\s\\S]*(?:[Dd][Aa][Tt][Aa]:|[Bb][Ll][Oo][Bb]:|://|[Bb][Aa][Ss][Ee]64|RIFF|RIFX))[\\s\\S]*$"},
+  "safe80": {"allOf": [{"$ref": "#/$defs/safe"}, {"maxLength": 80}]},
+  "name": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,23}$"},
   "points": {
    "type": "array", "minItems": 4, "maxItems": 256,
    "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number", "minimum": -1, "maximum": 1}}
@@ -103,7 +113,7 @@
    "properties": {
     "points": {
      "type": "array", "minItems": 2, "maxItems": 64,
-     "items": {"type": "array", "minItems": 2, "maxItems": 3, "items": {"type": ["number", "string"], "maxLength": 8}}
+     "items": {"type": "array", "minItems": 2, "maxItems": 3, "items": {"anyOf": [{"type": "number", "minimum": -100, "maximum": 100}, {"enum": ["lin", "exp", "step", "hold"]}]}}
     },
     "adsr": {"type": "boolean"}
    }

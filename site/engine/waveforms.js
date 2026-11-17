@@ -1,7 +1,7 @@
 // Drawn and computed instruments (docs/DRAWN_WAVEFORMS.md, #182 stage 1). Pure ES module: no DOM, no Node, no imports.
 // A `waveforms@1` instrument is control points and parameters; this module turns it into Strudel program text plus, where needed, an
 // in-memory WAV (mechanism B/C of the doc). Nothing here reads or writes an audio file; the caller turns bytes into a blob: URL.
-//   validate(doc)            -> [{code, path, msg}]   (schema caps, the no-copy rule; schemas/craftpack/1/kinds/waveforms.1.schema.json is the full schema)
+//   validate(doc)            -> [{code, path, msg}]   (closed-world caps and the no-copy rule; the trusted check, mirrored by schemas/craftpack/1/kinds/waveforms.1.schema.json)
 //   cycleOf(inst, pos?)      -> Float32Array(N)        one period from the drawn points (morph: frame at pos 0..1)
 //   partialsOf(cycle, H)     -> {mag[], phase[]}       DFT, for `s("user").partials().phases()` (mechanism A)
 //   wavetable(inst, n)       -> Float32Array(n*2048)   n frames through spectral interpolation (mechanism B)
@@ -10,37 +10,80 @@
 //   vary(inst, seed)         -> {name: value}          seeded parameter draw (same seed, same values)
 //   program(inst, o)         -> {code, key, wav?}      Strudel code for one note; `wav` is what must be registered with samples({[key]: [url]})
 
-export const FRAME = 2048, MAX_POINTS = 256, MAX_ARRAY = 256;
-const ID_RE = /^[a-z0-9][a-z0-9_-]{0,47}$/;
+export const FRAME = 2048, MAX_POINTS = 256, MAX_BYTES = 5 * 1024 * 1024, MAX_INSTRUMENTS = 32, MAX_NUMBERS = 200000;
+// Same rule as `$defs/safe` in the schema: a free string or a key may not carry audio or a URL.
+export const UNSAFE_RE = /data:|blob:|:\/\/|base64|RIFF|RIFX/i;
 
+// validate(doc): the check the site trusts (the JSON schema is the published mirror of it; tests/site/waveforms_caps.mjs runs both over
+// the same fixtures). Closed world: every object lists its fields, anything else is E_WF_UNKNOWN. Every array, string and key is capped.
 export function validate(doc) {
-  const out = [], bad = (code, path, msg) => out.push({ code, path, msg });
-  if (!doc || !Array.isArray(doc.instruments)) { bad('E_WF_SHAPE', '', 'instruments[] required'); return out; }
-  const walk = (v, p) => {
-    if (typeof v === 'string') {
-      if (/^data:|RIFF|base64,/i.test(v)) bad('E_WF_AUDIO', p, 'string looks like audio data');
-    } else if (Array.isArray(v)) {
-      if (v.length > MAX_ARRAY && v.every((x) => typeof x === 'number')) bad('E_WF_ARRAY', p, `array of ${v.length} numbers exceeds ${MAX_ARRAY}`);
-      v.forEach((x, i) => walk(x, `${p}[${i}]`));
-    } else if (v && typeof v === 'object') for (const k of Object.keys(v)) walk(v[k], `${p}.${k}`);
+  const out = [], bad = (code, path, msg) => { if (out.length < 200) out.push({ code, path, msg }); };
+  const isObj = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+  let size = 0;
+  try { size = JSON.stringify(doc)?.length ?? 0; } catch { bad('E_WF_SHAPE', '', 'not plain JSON'); return out; }
+  if (size > MAX_BYTES) { bad('E_WF_SIZE', '', `document is ${size} bytes, cap ${MAX_BYTES}`); return out; }
+  let numbers = 0;
+  const str = (v, p, max, re) => {
+    if (typeof v !== 'string') return bad('E_WF_TYPE', p, 'string expected');
+    if (v.length > max) bad('E_WF_LEN', p, `string longer than ${max}`);
+    if (UNSAFE_RE.test(v)) bad('E_WF_AUDIO', p, 'string looks like audio data or a URL');
+    if (re && !re.test(v)) bad('E_WF_PATTERN', p, 'does not match ' + re);
   };
-  doc.instruments.forEach((it, i) => {
-    const p = `instruments[${i}]`;
-    if (!ID_RE.test(it.id || '')) bad('E_WF_ID', p + '.id', 'bad id');
-    if (!it.family) bad('E_WF_FAMILY', p + '.family', 'family required');
-    if (!['drawn', 'computed'].includes(it.origin)) bad('E_WF_ORIGIN', p + '.origin', 'origin is drawn or computed');
-    if (!it.license) bad('E_WF_LICENSE', p + '.license', 'license required');
-    if (!it.cycle && !it.morph) bad('E_WF_SHAPE', p, 'cycle or morph required');
-    const pts = (a, q) => { if (!Array.isArray(a) || a.length < 4 || a.length > MAX_POINTS) bad('E_WF_POINTS', q, `points: 4..${MAX_POINTS}`); };
-    if (it.cycle) pts(it.cycle.points, p + '.cycle.points');
-    if (it.morph) {
-      const f = it.morph.frames || [];
-      if (f.length < 2 || f.length > 8) bad('E_WF_FRAMES', p + '.morph.frames', 'keyframes: 2..8');
-      f.forEach((fr, j) => pts(fr.points, `${p}.morph.frames[${j}].points`));
+  const num = (v, p, lo, hi) => { numbers++; if (typeof v !== 'number' || !Number.isFinite(v)) return bad('E_WF_TYPE', p, 'number expected'); if (v < lo || v > hi) bad('E_WF_RANGE', p, `${v} outside ${lo}..${hi}`); };
+  const int = (v, p, lo, hi) => { num(v, p, lo, hi); if (!Number.isInteger(v)) bad('E_WF_TYPE', p, 'integer expected'); };
+  const en = (v, p, list) => { if (!list.includes(v)) bad('E_WF_ENUM', p, 'one of ' + list.join(', ')); };
+  const arr = (v, p, lo, hi, each) => { if (!Array.isArray(v)) return bad('E_WF_TYPE', p, 'array expected'); if (v.length < lo || v.length > hi) bad('E_WF_ARRAY', p, `${v.length} items, allowed ${lo}..${hi}`); else v.forEach((x, i) => each(x, `${p}[${i}]`)); };
+  // obj: spec = {field: checker}; required = names; any other key is unknown and its name is itself checked for audio-looking text
+  const obj = (v, p, spec, required = []) => {
+    if (!isObj(v)) return bad('E_WF_TYPE', p, 'object expected');
+    for (const k of Object.keys(v)) { if (k.length > 48 || UNSAFE_RE.test(k)) bad('E_WF_KEY', p, 'key too long or audio-looking'); else if (!Object.hasOwn(spec, k)) bad('E_WF_UNKNOWN', `${p}.${k}`, 'unknown field'); else spec[k](v[k], `${p}.${k}`); }
+    for (const r of required) if (!(r in v)) bad('E_WF_REQUIRED', `${p}.${r}`, 'required');
+  };
+  const map = (v, p, maxProps, keyRe, each) => {
+    if (!isObj(v)) return bad('E_WF_TYPE', p, 'object expected');
+    const ks = Object.keys(v); if (ks.length > maxProps) bad('E_WF_ARRAY', p, `${ks.length} keys, cap ${maxProps}`);
+    for (const k of ks) { if (k.length > 24 || UNSAFE_RE.test(k) || !keyRe.test(k)) bad('E_WF_KEY', `${p}.${k}`, 'bad key'); else each(v[k], `${p}.${k}`); }
+  };
+  const NAME = /^[a-z][a-z0-9_]{0,23}$/, NOTE = /^[a-g][#bs]?-?[0-9]$/;
+  const points = (v, p) => arr(v, p, 4, MAX_POINTS, (pt, q) => arr(pt, q, 2, 2, (x, r) => num(x, r, -1, 1)));
+  const curve = (v, p) => obj(v, p, { points, interp: (x, q) => en(x, q, ['spline', 'linear']), res: (x, q) => en(x, q, [256, 512, 1024, 2048]) }, ['points']);
+  const env = (v, p) => obj(v, p, {
+    points: (x, q) => arr(x, q, 2, 64, (pt, r) => arr(pt, r, 2, 3, (y, s) => (typeof y === 'string' ? en(y, s, ['lin', 'exp', 'step', 'hold']) : num(y, s, -100, 100)))),
+    adsr: (x, q) => { if (typeof x !== 'boolean') bad('E_WF_TYPE', q, 'boolean expected'); },
+  }, ['points']);
+  const inst = (v, p) => obj(v, p, {
+    id: (x, q) => str(x, q, 48, /^[a-z0-9][a-z0-9_-]{0,47}$/),
+    title: (x, q) => str(x, q, 80),
+    family: (x, q) => str(x, q, 32, /^[a-z0-9][a-z0-9-]{0,31}$/),
+    origin: (x, q) => en(x, q, ['drawn', 'computed']),
+    realism: (x, q) => en(x, q, ['stand-in', 'usable', 'good']),
+    license: (x, q) => str(x, q, 40),
+    descriptors: (x, q) => map(x, q, 12, NAME, (y, r) => (typeof y === 'string' ? str(y, r, 60) : num(y, r, -100000, 100000))),
+    cycle: curve,
+    morph: (x, q) => obj(x, q, {
+      frames: (y, r) => arr(y, r, 2, 8, (f, s) => obj(f, s, { pos: (z, t) => num(z, t, 0, 1), points }, ['pos', 'points'])),
+      interp: (y, r) => en(y, r, ['spectral', 'linear']),
+      out: (y, r) => int(y, r, 2, 64),
+    }, ['frames']),
+    env: (x, q) => obj(x, q, { amp: env, pitch: env, filter: env }),
+    registers: (x, q) => arr(x, q, 0, 8, (r, s) => obj(r, s, {
+      from: (a, t) => str(a, t, 4, NOTE), to: (a, t) => str(a, t, 4, NOTE), use: (a, t) => en(a, t, ['cycle', 'morph']),
+      gain: (a, t) => num(a, t, 0, 2), tilt: (a, t) => num(a, t, -12, 12),
+    }, ['from', 'to'])),
+    params: (x, q) => map(x, q, 16, NAME, (c, r) => obj(c, r, {
+      min: (a, t) => num(a, t, -1e6, 1e6), max: (a, t) => num(a, t, -1e6, 1e6), default: (a, t) => num(a, t, -1e6, 1e6),
+      to: (a, t) => str(a, t, 16, /^[a-z][a-z0-9]{0,15}$/), unit: (a, t) => str(a, t, 8, /^[a-z%]{0,8}$/),
+    }, ['min', 'max', 'default'])),
+    vary: (x, q) => obj(x, q, { seed: (y, r) => int(y, r, 0, 4294967295), spread: (y, r) => map(y, r, 16, NAME, (z, s) => num(z, s, 0, 1)) }),
+  }, ['id', 'family', 'origin', 'license']);
+  obj(doc, '', { instruments: (v, p) => arr(v, p, 0, MAX_INSTRUMENTS, (it, q) => {
+    inst(it, q);
+    if (isObj(it)) {
+      if (!it.cycle && !it.morph) bad('E_WF_SHAPE', q, 'cycle or morph required');
+      for (const [k, c] of Object.entries(it.params || {})) if (isObj(c) && !(c.min <= c.default && c.default <= c.max)) bad('E_WF_PARAM', `${q}.params.${k}`, 'default outside min..max');
     }
-    for (const [k, c] of Object.entries(it.params || {})) if (!(c.min <= c.default && c.default <= c.max)) bad('E_WF_PARAM', `${p}.params.${k}`, 'default outside min..max');
-    walk(it, p);
-  });
+  }) }, ['instruments']);
+  if (numbers > MAX_NUMBERS) bad('E_WF_NUMBERS', '', `${numbers} numbers in the document, cap ${MAX_NUMBERS}`);
   return out;
 }
 

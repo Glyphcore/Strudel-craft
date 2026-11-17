@@ -100,10 +100,15 @@ Consistent with PACK_SPEC section 5: a new row in `schemas/craftpack/1/kinds/ind
   "vary":   { "seed": 7, "spread": { "vowel": 0.15, "detune": 0.3 } } }
 ```
 
-Caps (proposed): `points` 4 to 256 per curve, `frames` 2 to 8 keyframes drawn (computed up to 64), `registers` up to 8, partial list up to 64.
-Points are numbers rounded to 4 decimals; no strings carrying audio; a schema rule rejects arrays of more than 2048 numbers in any field and any
-`data:` string (this is the machine check behind the no-copy rule). Family names: the closed list in section 6 plus `drum-*` families of
-#182; unknown family is a warning, not an error.
+Caps (built, #182 stage 1; the same rules in `validate()` of `site/engine/waveforms.js`, which the site trusts, and in the JSON schema):
+closed world (every object lists its fields, any other field is `E_WF_UNKNOWN`); at most 32 instruments; `points` 4 to 256 per curve, each
+point a 2-number pair in -1..1; 2 to 8 keyframes; envelope 2 to 64 points; `registers` up to 8; at most 12 descriptors, 16 params, 16 spread
+entries; every string capped (title 80, license 40, descriptor value 60, ids 48) and every map key matching `^[a-z][a-z0-9_]{0,23}$`; no string or
+key may contain `data:`, `blob:`, `://`, `base64`, `RIFF` or `RIFX` (`E_WF_AUDIO`/`E_WF_KEY`); the document is at most 5 MB (`E_WF_SIZE`,
+checked first) and at most 200000 numbers. A schema-valid file measures 3.3 MB at the ceiling (32 instruments, every array full, 20-character
+numbers), so the schema alone keeps under 5 MB, and `validate()` checks the bytes anyway. One rule only `validate()` can state: a param
+default lies in its min..max. `tests/site/waveforms_caps.mjs` runs 36 bypass fixtures through both and fails if either accepts one. Family
+names: the closed list in section 6 plus `drum-*` families of #182; unknown family is a warning, not an error.
 
 Under #180: each family model exposes its parameter set with ranges as the device adapter contract's declared parameters, so the same
 `waveforms@1` instrument is addressable by the engine worker (events `{s, n, onset, value}`) and by a rack. Under #91: the kind is data-only, so
@@ -184,7 +189,7 @@ Each stage is one issue; boxes are observable, one minimal check each (test budg
 
 **Stage 1: data format and renderers (no UI).**
 - [x] `schemas/craftpack/1/kinds/waveforms.1.schema.json` plus an index row; a fixture with a single-cycle and a morph instrument validates, and a
-      fixture with a `data:` string or a 4096-number array fails.
+      fixture with a `data:` string, a 4096-number array, an unknown field or an oversized curve fails in both the schema and `validate()` (`tests/site/waveforms_caps.mjs`).
 - [x] (engine module `site/engine/waveforms.js`, test `tests/site/waveforms.mjs`; wiring into Play via `packs.registerKind` stays coming) An adapter turns `cycle` into A and `morph` into B/C (in-memory WAV, `blob:` URL) at Play; a
       committed headless check (the section 2.1 script, generalised) plays each and the destination peak is above -40 dBFS and below -1 dBFS.
 - [x] Seeded variation: the same seed gives byte-identical parameter sets twice; two seeds differ in at least 3 parameters.

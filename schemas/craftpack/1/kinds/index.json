@@ -8,6 +8,14 @@
    "code": "never",
    "about": "strudel.json-compatible sound map; keys are sound names, values are file lists or note->file maps"
   },
+  "waveforms": {
+   "formats": [
+    "waveforms@1"
+   ],
+   "schema": "kinds/waveforms.1.schema.json",
+   "code": "never",
+   "about": "drawn and computed instruments: control points and parameters, no audio (docs/DRAWN_WAVEFORMS.md)"
+  },
   "vox-bank": {
    "formats": [
     "vox-bank@1"

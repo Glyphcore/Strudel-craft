@@ -1,7 +1,7 @@
 # Drawn and computed waveforms as instruments (design note, #182)
 
-Status: **design note only. Nothing in this file is built** (every feature below is "coming"), except the Strudel mechanisms in section 2, which
-exist in unmodified Strudel and are verified there. The draw surface is ui-designer work (section 8, stage 3); this note has no UI.
+Status: design accepted (#182). **Stage 1 is built**: the `waveforms@1` schema, `site/engine/waveforms.js` and `tests/site/waveforms.mjs`. Everything else below stays "coming"
+(pack adapter and Play activation, instruments, drum models, draw surface, code models); the Strudel mechanisms in section 2 exist in unmodified Strudel and are verified there. The draw surface is ui-designer work (section 8, stage 3); this note has no UI.
 
 Aim (#182): sounds in the families the reference catalogues cover, made by our own engine from data and parameters, so no recording is copied or
 shipped. Variation comes from parameter ranges and a seed, never from a file per sound. Related: #180 (device adapter contract), #183
@@ -58,8 +58,8 @@ the peak off an `AnalyserNode` tapped on the destination:
 
 First partials: 0.533, 0.373, 0.041, 0.022, 0.043, 0.009 (the drawn shape is mostly fundamental plus second harmonic). Exports present in the
 bundle: `registerSound registerWaveTable samples tables getAudioContext initStrudel soundMap evaluate hush`. The proof script lived in the
-session scratchpad (not in the repo); stage 1 adds a committed version under `tests/` (section 8). Level here is a presence check, not the rack
-measurement of stage 1.
+session scratchpad (not in the repo); stage 1 committed the generalised version as `tests/site/waveforms.mjs` (section 8), which polls every 8 ms so the 46 ms one-shot class is seen and also
+compares spectra of two shapes. Level here is a presence check, not the rack measurement of later stages.
 
 ## 3. Instrument model (what a drawn instrument is made of)
 
@@ -76,14 +76,14 @@ One instrument = one `id` + these parts, each optional except `cycle` or `morph`
 5. **Parameters** (`params{}`): the declared knobs with ranges (section 5), each mapped to a Strudel control or to a model constant.
 6. **Variation** (`vary{}`): seed and per-parameter spread (section 5).
 
-## 4. Pack kind `waveforms` (coming)
+## 4. Pack kind `waveforms` (schema and engine module built, #182 stage 1; pack adapter coming)
 
 Consistent with PACK_SPEC section 5: a new row in `schemas/craftpack/1/kinds/index.json`, schema `kinds/waveforms.1.schema.json`, adapter
 `packs.registerKind('waveforms', ...)`.
 
 | kind | entry file holds | goes into | code | hosts | today |
 |---|---|---|---|---|---|
-| `waveforms` (coming) | `{instruments[{id, title, family, origin, descriptors, license, cycle?, morph?, env?, registers?, params, vary?, notes?}]}` (the `waveforms@1` document) | at Play, for each instrument a program names: mechanism A emits `.partials/.phases`; B and C register an in-memory WAV with `ctx.samples(map)` under a `wt_<id>` or `<id>` key (the same activation point as `sample-source`, `packs.activateSources`); sound names go into intellisense | never (pure data) | site, cli | none |
+| `waveforms` (schema + engine module built; adapter coming) | `{instruments[{id, title, family, origin, descriptors, license, cycle?, morph?, env?, registers?, params, vary?, notes?}]}` (the `waveforms@1` document) | at Play, for each instrument a program names: mechanism A emits `.partials/.phases`; B and C register an in-memory WAV with `ctx.samples(map)` under a `wt_<id>` or `<id>` key (the same activation point as `sample-source`, `packs.activateSources`); sound names go into intellisense | never (pure data) | site, cli | none |
 
 `waveforms@1` instrument, fields (sizes are caps checked by the schema, on top of section 10.2 limits; entry file well under 5 MB):
 
@@ -142,6 +142,30 @@ For the bowed and choir cases the licensed route (#181 soundfonts, the `sample-s
 note's instruments are the "our own sound" option, labelled as such (`origin`, `family`, and a realism field so the browser never oversells one).
 `realism: "stand-in" | "usable" | "good"` is a proposed informative field on each instrument (coming).
 
+### 6.1 Numeric parameter table per family (coming; ranges are starting values, tuned by ear and by measurement in stage 2/4)
+
+Ranges are `min..max` with the default first. Units: Hz, s, cents, 0..1 unless stated. "Control" is the Strudel control the adapter emits (or the
+model constant for family models of mechanism D). Drum families are computed (no drawing); the drawn ones take a `cycle`/`morph`.
+
+| family | parameters (default; range) | control / model |
+|---|---|---|
+| kick (D) | start_hz (180; 100..400), end_hz (48; 35..70), sweep_s (0.08; 0.02..0.25), body_decay_s (0.35; 0.12..0.9), click (0.25; 0..0.6), drive (0.2; 0..0.8), level (0.9; 0.5..1) | pitch envelope on a sine, a short noise click, `distort` |
+| snare (D) | tone_hz (190; 150..260), tone_decay_s (0.12; 0.05..0.3), noise_decay_s (0.2; 0.08..0.45), noise_hp_hz (1500; 800..4000), snap (0.5; 0..1), level | sine plus filtered noise, two envelopes |
+| closed hat (D) | tone_hz (330; 250..450), metal (0.7; 0..1), hp_hz (7000; 5000..10000), decay_s (0.05; 0.02..0.1) | six inharmonic square partials ratio set (2, 3, 4.16, 5.43, 6.79, 8.21), high-pass |
+| open hat (D) | as closed hat, decay_s (0.35; 0.2..0.9), choke (1; 0/1) | same, `cut` group with the closed hat |
+| clap (D) | bursts (4; 2..6), burst_gap_s (0.012; 0.006..0.025), tail_decay_s (0.18; 0.08..0.4), bp_hz (1200; 800..2500), bp_q (1.2; 0.5..3) | gated noise bursts plus tail, band-pass |
+| tom (D) | start_hz (140; 70..300), end_hz (90; 50..180), sweep_s (0.12; 0.04..0.3), decay_s (0.4; 0.15..0.9), click (0.15; 0..0.4) | pitch-enveloped sine |
+| percussion (D) | pitch_hz (800; 200..3000), fm_ratio (1.5; 0.5..5), fm_index (2; 0..8), decay_s (0.15; 0.03..0.6) | FM pair, `fm fmh` |
+| bass guitar | decay (0.7; 0.2..1.6) s, pluck_cutoff (900; 300..3000) Hz, pluck_env (3; 0..6) octaves, harm_tilt (-6; -12..0) dB/oct, click (0.2; 0..0.6) | `decay`, `lpf`, `lpenv`, shape transform "tilt" |
+| choir pad | vowel (0.3; 0..1), unison (6; 2..8), detune (12; 0..40) cents, vib_hz (5.2; 3.5..6.5), vib_depth (0.15; 0..0.5), attack (0.25; 0.1..0.6) s, breath (0.05; 0..0.2) | `wt`, `unison`, `detune`, `vib`, `vibmod`, `attack` |
+| electric guitar | drive (0.4; 0..1), pick_cutoff (2500; 800..6000) Hz, decay (0.5; 0.1..1.2) s, mute (0; 0..1) | `distort`, `lpf`, `lpenv`, `decay` |
+| steel guitar (D) | brightness (0.5; 0..1), decay_s (1.8; 0.6..4), inharm (0.0005; 0..0.003), body_hz (220; 150..320), glide_semi (0; 0..2) | Karplus-Strong loop, stretch, body filter |
+| viola / cello | vib_hz (5.5; 4.5..6.5), vib_depth (0.2; 0..0.5), bow_noise (0.08; 0..0.25), attack (0.12; 0.04..0.4) s, formant_hz (1100 / 700; 500..1800), swell (0.3; 0..1) | `vib`, `vibmod`, `attack`, shape transform "formant", `wtattack` |
+| synthetic space (room) | size (0.8; 0.1..3), fade_s (2; 0.2..8) , lp_hz (8000; 1000..16000), dim_hz (3000; 500..10000), mix (0.25; 0..1) | `room`, `roomsize`, `roomfade`, `roomlp`, `roomdim`; Strudel builds the impulse algorithmically (superdough `reverbGen.mjs`), so no recorded impulse response is involved |
+
+Shape transforms (section 5) have fixed ranges: tilt -12..+12 dB/oct, odd_even -1..1, stretch 0..0.01 (partial k at k*(1+stretch*k)), phase_scramble
+0..1, wavefold 0..1, symmetry -0.5..0.5, formant_shift 0.5..2 (ratio).
+
 ## 7. How each part maps (summary)
 
 | part | Strudel mechanism | pack kind |
@@ -159,13 +183,13 @@ note's instruments are the "our own sound" option, labelled as such (`origin`, `
 Each stage is one issue; boxes are observable, one minimal check each (test budget in `docs/ISSUES_PROTOCOL.md`).
 
 **Stage 1: data format and renderers (no UI).**
-- [ ] `schemas/craftpack/1/kinds/waveforms.1.schema.json` plus an index row; a fixture with a single-cycle and a morph instrument validates, and a
+- [x] `schemas/craftpack/1/kinds/waveforms.1.schema.json` plus an index row; a fixture with a single-cycle and a morph instrument validates, and a
       fixture with a `data:` string or a 4096-number array fails.
-- [ ] An adapter (`site/engine/`, tests in `tests/waveforms/`) turns `cycle` into A and `morph` into B/C (in-memory WAV, `blob:` URL) at Play; a
+- [x] (engine module `site/engine/waveforms.js`, test `tests/site/waveforms.mjs`; wiring into Play via `packs.registerKind` stays coming) An adapter turns `cycle` into A and `morph` into B/C (in-memory WAV, `blob:` URL) at Play; a
       committed headless check (the section 2.1 script, generalised) plays each and the destination peak is above -40 dBFS and below -1 dBFS.
-- [ ] Seeded variation: the same seed gives byte-identical parameter sets twice; two seeds differ in at least 3 parameters.
-- [ ] No audio file added to the repo (`git diff --stat` shows none), and a grep for `RIFF`, `data:audio` finds nothing in packs.
-- [ ] Docs follow code: `syntax.json` example, intellisense (`wt_` and `user` names, `waveforms` param shapes), `site/README.md`, PACK_SPEC row, #56.
+- [x] Seeded variation: the same seed gives byte-identical parameter sets twice; two seeds differ in at least 3 parameters.
+- [x] No audio file added to the repo (`git diff --stat` shows none), and a grep for `RIFF`, `data:audio` finds nothing in packs.
+- [x] Docs follow code: `syntax.json` example, intellisense (`partials`, `phases`; `waveforms` param shapes stay coming), `site/README.md`, PACK_SPEC row, #56.
 
 **Stage 2: first instruments from #183.**
 - [ ] Bass guitar and choir pad as `waveforms@1` instruments in a first-party pack (`glyphcore/drawn-core`, coming), each with `descriptors`,

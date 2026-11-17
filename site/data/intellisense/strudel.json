@@ -1004,6 +1004,20 @@
    "category": "filter"
   },
   {
+   "label": "partials",
+   "method": true,
+   "detail": "partials([mags])",
+   "info": "Harmonic magnitudes for s(\"user\"): a drawn cycle as a spectrum (waveforms kind, #182)",
+   "category": "synth"
+  },
+  {
+   "label": "phases",
+   "method": true,
+   "detail": "phases([radians])",
+   "info": "Phase of each partial for s(\"user\") (pairs with partials)",
+   "category": "synth"
+  },
+  {
    "label": "hpenv",
    "method": true,
    "detail": "hpenv(octaves)",

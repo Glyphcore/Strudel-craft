@@ -1,0 +1,112 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://glyphcore.github.io/Strudel-craft/schemas/craftpack/1/kinds/waveforms.1.schema.json",
+ "title": "waveforms@1",
+ "description": "drawn and computed instruments (docs/DRAWN_WAVEFORMS.md). Control points and parameters only: no audio data. Caps keep a recording from riding along: every curve has at most 256 points, no array holds more than 256 numbers, and no string value may carry audio (data: URLs, RIFF).",
+ "type": "object",
+ "required": ["instruments"],
+ "additionalProperties": false,
+ "properties": {
+  "instruments": {
+   "type": "array",
+   "maxItems": 256,
+   "items": {
+    "type": "object",
+    "required": ["id", "family", "origin", "license"],
+    "anyOf": [{"required": ["cycle"]}, {"required": ["morph"]}],
+    "additionalProperties": false,
+    "properties": {
+     "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,47}$"},
+     "title": {"type": "string", "maxLength": 80},
+     "family": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"},
+     "origin": {"enum": ["drawn", "computed"]},
+     "realism": {"enum": ["stand-in", "usable", "good"]},
+     "license": {"type": "string", "maxLength": 40},
+     "descriptors": {
+      "type": "object",
+      "maxProperties": 12,
+      "additionalProperties": {"type": ["string", "number"], "maxLength": 60}
+     },
+     "cycle": {"$ref": "#/$defs/curve"},
+     "morph": {
+      "type": "object",
+      "required": ["frames"],
+      "additionalProperties": false,
+      "properties": {
+       "frames": {
+        "type": "array", "minItems": 2, "maxItems": 8,
+        "items": {
+         "type": "object", "required": ["pos", "points"], "additionalProperties": false,
+         "properties": {"pos": {"type": "number", "minimum": 0, "maximum": 1}, "points": {"$ref": "#/$defs/points"}}
+        }
+       },
+       "interp": {"enum": ["spectral", "linear"]},
+       "out": {"type": "integer", "minimum": 2, "maximum": 64}
+      }
+     },
+     "env": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "amp": {"$ref": "#/$defs/env"},
+       "pitch": {"$ref": "#/$defs/env"},
+       "filter": {"$ref": "#/$defs/env"}
+      }
+     },
+     "registers": {
+      "type": "array", "maxItems": 8,
+      "items": {
+       "type": "object", "required": ["from", "to"], "additionalProperties": false,
+       "properties": {
+        "from": {"type": "string", "pattern": "^[a-g][#bs]?-?[0-9]$"},
+        "to": {"type": "string", "pattern": "^[a-g][#bs]?-?[0-9]$"},
+        "use": {"enum": ["cycle", "morph"]},
+        "gain": {"type": "number", "minimum": 0, "maximum": 2},
+        "tilt": {"type": "number", "minimum": -12, "maximum": 12}
+       }
+      }
+     },
+     "params": {
+      "type": "object", "maxProperties": 16,
+      "propertyNames": {"pattern": "^[a-z][a-z0-9_]{0,23}$"},
+      "additionalProperties": {
+       "type": "object", "required": ["min", "max", "default"], "additionalProperties": false,
+       "properties": {
+        "min": {"type": "number"}, "max": {"type": "number"}, "default": {"type": "number"},
+        "to": {"type": "string", "pattern": "^[a-z][a-z0-9]{0,15}$"},
+        "unit": {"type": "string", "maxLength": 8}
+       }
+      }
+     },
+     "vary": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+       "seed": {"type": "integer", "minimum": 0, "maximum": 4294967295},
+       "spread": {"type": "object", "maxProperties": 16, "additionalProperties": {"type": "number", "minimum": 0, "maximum": 1}}
+      }
+     }
+    }
+   }
+  }
+ },
+ "$defs": {
+  "points": {
+   "type": "array", "minItems": 4, "maxItems": 256,
+   "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number", "minimum": -1, "maximum": 1}}
+  },
+  "curve": {
+   "type": "object", "required": ["points"], "additionalProperties": false,
+   "properties": {"points": {"$ref": "#/$defs/points"}, "interp": {"enum": ["spline", "linear"]}, "res": {"enum": [256, 512, 1024, 2048]}}
+  },
+  "env": {
+   "type": "object", "required": ["points"], "additionalProperties": false,
+   "properties": {
+    "points": {
+     "type": "array", "minItems": 2, "maxItems": 64,
+     "items": {"type": "array", "minItems": 2, "maxItems": 3, "items": {"type": ["number", "string"], "maxLength": 8}}
+    },
+    "adsr": {"type": "boolean"}
+   }
+  }
+ }
+}

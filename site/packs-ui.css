@@ -51,6 +51,8 @@ dialog.pk[open]{display:flex}
 .pk-errs li{padding:6px 8px;border-left:3px solid var(--bad);background:var(--panel);border-radius:var(--r1);overflow-wrap:anywhere}
 .pk-errs li[data-kind="warn"]{border-left-color:var(--warn)}
 .pk-errs li:not([data-kind]){border-left-color:var(--line-2)}
+.pk-errs .pk-plain{margin:0;color:var(--text)}
+.pk-errs .pk-tech{margin:2px 0 0;font-size:.72rem;color:var(--faint)}
 .pk-errs code{color:var(--text);font-weight:700}
 .pk-errs .pk-ing-k{margin-left:6px}
 .pk-ings{margin-top:10px;border-top:1px solid var(--line);padding-top:4px}

@@ -67,7 +67,19 @@ export async function open(o = {}) {
   if (p && !unsub.length) unsub = ['state', 'report', 'lock'].map((t) => p.on(t, schedule)).concat(['cache', 'newer', 'missing'].map((t) => p.on(t, loadCache))).concat(p.on('offline', (ev) => { progress[ev.id] = ev; schedule(); }));
   render(); if (!d.open) d.showModal();
   (d.querySelector(`[data-tab="${tab}"]`) || d.querySelector('#pkClose')).focus();
-  if (p) p.ready.then(schedule).then(loadCache);
+  if (p) p.ready.then(schedule).then(loadCache).then(() => { // #183: a user pack's sample-source entry (small JSON, never audio) is read when the sheet opens, so its source warnings show before first play
+    for (const x of p.list()) if (x.layer !== 'shipped' && x.state === 'ready') for (const i of x.ingredients) if (i.kind === 'sample-source' && i.state === 'listed') p.load(i.qualified).then(schedule, () => {});
+  });
+}
+/* #183: the source warnings a user pack can carry, in plain words (what it means for the user), the code and the technical message kept below */
+const PLAIN = {
+  W_PACK_SOURCE_PIN: (src) => `Sounds can change under you: ${src} reads its files from a moving branch, not a fixed version, so a recipe may sound different later or break if the files move.`,
+  W_PACK_SOURCE_HOST: (src, host) => `Not available offline: ${src} loads its files from ${host}, which this app does not keep on the device. Playing it needs the network.`,
+};
+function warnItem(e) {
+  const f = PLAIN[e.code]; if (!f) return h('li', { 'data-kind': /^W_/.test(e.code) ? 'warn' : 'err' }, h('code', {}, e.code), ' ', e.message);
+  const src = (/source ([^:]+):/.exec(e.message) || [])[1] || 'a source', host = (/base host (\S+)/.exec(e.message) || [])[1] || 'another site';
+  return h('li', { 'data-kind': 'warn', 'data-code': e.code }, h('p', { class: 'pk-plain' }, f(src, host)), h('p', { class: 'pk-tech' }, h('code', {}, e.code), ' ', e.message));
 }
 async function loadCache() { const p = P(); if (!p || !p.cacheInfo) return; const [c, s] = await Promise.all([p.cacheInfo(), p.storage()]); const same = JSON.stringify([c, s]) === JSON.stringify([cinfo, store]); cinfo = c; store = s; if (!same && d && d.open) render(); }
 export function close() { if (d && d.open) d.close(); }
@@ -187,7 +199,7 @@ function packCard(p, x, rep, count) {
       field('Manifest', [h('code', { title: x.manifest || '' }, short(x.manifest)), ' ', verification(x)]),
       cacheField(x),
       offl ? field('Offline', offl) : null),
-    own.length ? h('ul', { class: 'pk-errs', 'aria-label': 'Errors and warnings for ' + x.id }, own.map((e) => h('li', { 'data-kind': /^W_/.test(e.code) ? 'warn' : 'err' }, h('code', {}, e.code), ' ', e.message))) : null,
+    own.length ? h('ul', { class: 'pk-errs', 'aria-label': 'Errors and warnings for ' + x.id }, own.map(warnItem)) : null,
     x.ingredients.length ? ingredients(p, x) : null,
     acts.length ? h('div', { class: 'pk-acts' }, acts) : null);
 }

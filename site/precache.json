@@ -502,6 +502,7 @@
   "resources-ui.js",
   "resources.css",
   "resources.js",
+  "sound-load.js",
   "style-atoms.js",
   "style.css",
   "syntax.js",

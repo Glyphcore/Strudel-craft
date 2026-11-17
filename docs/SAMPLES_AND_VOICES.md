@@ -79,5 +79,7 @@ Pack `glyphcore/freepats` (`site/data/freepats/`): `fp_harp`, `fp_organ`, `fp_xy
 ## Referenced instrument packs (#183 stage A)
 Kind `sample-source@1` (PACK_SPEC section 5): `glyphcore/vcsl` (VCSL, CC0, 128 sounds via `strudel.b-cdn.net/vcsl.json`) and `glyphcore/salamander-piano` (Salamander Grand Piano V3, Alexander Holm, CC BY 3.0 credit required, via `piano.json`). Audio is referenced, not hosted; a map is fetched when a program names one of its sounds. Survey, licences and CORS checks: issue #183. Not yet: VSCO-2 CE, CC0 drum kits, `gm_` presets (licence audit), choir/bass/guitar gaps.
 
+Cold loads are announced: `site/sound-load.js` shows one "Loading sounds" toast (source names, files done of total, MB) while referenced files are still arriving after 120 ms, then "Sounds ready"; a warm cache shows nothing, and an offline device or an HTTP failure gets one error toast naming the source. A user pack whose source base is unpinned or on a host the service worker does not cache shows `W_PACK_SOURCE_PIN` / `W_PACK_SOURCE_HOST` in plain words on its pack-sheet card. Test: `tests/site/sound_loading.mjs`.
+
 ### Box 3 packs (#183)
 `glyphcore/vsco` (VSCO 2 CE, CC0: violin, viola, cello, contrabass, trumpet, horn, trombone, tuba, flute, oboe, clarinet, bassoon) and `glyphcore/drumkits` (Big Rusty Drums and Gogodze Phu Vol II, CC0). Inline maps (`map` + `base`, pinned commits) built by `tools/instruments/build_sources.py`; licences read from each repository's LICENSE at the pinned commit. `gm_` presets held pending the FluidR3 / GeneralUser GS terms.

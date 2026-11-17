@@ -323,6 +323,8 @@ function knob({ label, min, max, step, value, def, fmt, onChange, cls }) {
 const Viz = {
   colors: {}, frames: [], cost: [], last: 0, raf: 0, running: false, laneCache: { key: '', haps: [], lanes: [] }, peaks: [-Infinity, -Infinity], hold: [-Infinity, -Infinity],
   readColors() { const cs = getComputedStyle(document.documentElement); for (const k of ['sig', 'sig-2', 'text', 'dim', 'faint', 'line', 'line-2', 'panel', 'panel-2', 'warn', 'bad', 'ok']) this.colors[k] = cs.getPropertyValue('--' + k).trim(); this.ver = (this.ver || 0) + 1; },
+  /* readouts that change every frame write the data of one persistent text node: replacing the child with textContent measured about 350 ms/s of main thread at 20 writes a second (#180) */
+  setText(el, s) { let n = el.firstChild; if (n && n.nodeType === 3 && !n.nextSibling) n.data = s; else el.textContent = s; },
   fit(c) { const dpr = Math.min(2, window.devicePixelRatio || 1); const w = Math.round(c.clientWidth * dpr), h = Math.round(c.clientHeight * dpr); if (c.width !== w || c.height !== h) { c.width = w; c.height = h; } return dpr; },
   init() {
     this.viz = $('#viz'); this.lanes = $('#lanes'); this.meter = $('#meter'); this.cycleOut = $('#cycleOut'); this.cpsOut = $('#cpsOut'); this.peakOut = $('#peakOut');
@@ -409,7 +411,7 @@ const Viz = {
     const c = this.lanes, dpr = this.fit(c), g = c.getContext('2d'), W = c.width, H = c.height, C = this.colors;
     const gutter = 64 * dpr; const sch = Engine.scheduler; const playing = S.playing && Engine.started;
     const now = playing ? sch.now() : 0; const c0 = Math.floor(now); const frac = now - c0;
-    if (this.cycleOut) { const a = playing ? now.toFixed(2) : '0.00', b = sch ? (sch.cps * 60 * 4).toFixed(0) + ' bpm' : '-'; if (a !== this.txtA) { this.txtA = a; this.cycleOut.textContent = a; } if (b !== this.txtB) { this.txtB = b; this.cpsOut.textContent = b; } }
+    if (this.cycleOut) { const a = playing ? now.toFixed(2) : '0.00', b = sch ? (sch.cps * 60 * 4).toFixed(0) + ' bpm' : '-'; if (a !== this.txtA) { this.txtA = a; this.setText(this.cycleOut, a); } if (b !== this.txtB) { this.txtB = b; this.setText(this.cpsOut, b); } }
     const { haps, lanes } = playing ? this.queryLanes(c0) : { haps: [], lanes: [] };
     const px = Math.round(gutter + frac * (W - gutter)); let act = ''; for (const h of haps) act += frac >= h.b && frac < h.e ? '1' : '0';
     const sig = [W, H, this.ver, playing, this.laneCache.key, px, act].join('|'); if (playing && sig === this.laneSig) return; if (!playing && sig === this.laneSig) return; this.laneSig = sig;
@@ -436,7 +438,7 @@ const Viz = {
       this.hold[ch] = Math.max(pk, (this.hold[ch] === -Infinity ? -70 : this.hold[ch]) - 0.25 * k);
       ws.push(fx(this.peaks[ch])); hs.push(this.hold[ch] > -60 ? Math.round(fx(this.hold[ch])) : -1);
     }
-    const p = Math.max(this.hold[0], this.hold[1]); const pt = p > -60 ? p.toFixed(1) + ' dB' : '-inf dB'; if (pt !== this.txtP) { this.txtP = pt; this.peakOut.textContent = pt; }
+    const p = Math.max(this.hold[0], this.hold[1]); const pt = p > -60 ? p.toFixed(1) + ' dB' : '-inf dB'; if (pt !== this.txtP) { this.txtP = pt; this.setText(this.peakOut, pt); }
     const sig = [W, H, this.ver, ws[0] | 0, ws[1] | 0, hs[0], hs[1]].join('|'); if (sig === this.meterSig) return; this.meterSig = sig; /* same pixels: no repaint */
     g.clearRect(0, 0, W, H);
     for (let ch = 0; ch < 2; ch++) {

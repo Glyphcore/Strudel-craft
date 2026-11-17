@@ -1,0 +1,30 @@
+/* #180 1b-render: the visuals loop is capped (20 draws/s at rest) and drops to about half while the page scrolls (synthetic scroll events every 50 ms; a real wheel scroll is also driven, for the log). Usage: node tests/site/visuals_budget.mjs [program] [query, e.g. engine=worker] */
+import { createRequire } from 'module'; import http from 'http'; import fs from 'fs'; import path from 'path';
+const require = createRequire(import.meta.url); const { chromium } = require('playwright');
+import { fileURLToPath } from 'url';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'), PROG = process.argv[2] || path.join(ROOT, 'docs/tracks/velvet-static/track.standalone.strudel.js'), QUERY = process.argv[3] || '', SITE = path.join(ROOT, 'site');
+const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.webmanifest': 'application/manifest+json' };
+const server = http.createServer((req, res) => { let p = decodeURIComponent(new URL(req.url, 'http://x').pathname); if (p.endsWith('/')) p += 'index.html'; const f = path.join(SITE, p);
+  if (!f.startsWith(SITE) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); return res.end(); } res.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(res); });
+await new Promise((r) => server.listen(0, '127.0.0.1', r)); const BASE = `http://127.0.0.1:${server.address().port}/${QUERY ? '?' + QUERY : ''}`;
+const PROXY = process.env.HTTPS_PROXY; const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'], ...(PROXY ? { proxy: { server: PROXY, bypass: '127.0.0.1,localhost' } } : {}) });
+const ctx = await browser.newContext({ ignoreHTTPSErrors: !!PROXY, viewport: { width: 360, height: 780 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+await ctx.route(/api\.github\.com/, (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: r.request().url().includes('/issues/') ? JSON.stringify({ title: 'T', body: '## S\n- [x] d' }) : '[]' }));
+await ctx.addInitScript((mode) => { if (!mode) return; const g = HTMLCanvasElement.prototype.getContext; HTMLCanvasElement.prototype.getContext = function (t, o) { if (t === '2d' && (mode === 'all' || this.id === mode)) o = { ...(o || {}), willReadFrequently: true }; return g.call(this, t, o); }; }, process.env.WRF || '');
+const page = await ctx.newPage(); await page.goto(BASE); await page.waitForSelector('#list li[data-id]'); await page.waitForTimeout(1000);
+const ed = page.locator('.view[data-for=rack] .cm-content:visible').first(); await ed.click(); await page.keyboard.press('Control+a'); await page.keyboard.insertText(fs.readFileSync(PROG, 'utf8')); await page.waitForTimeout(1500);
+await page.evaluate(() => document.activeElement && document.activeElement.blur()); await page.evaluate(() => window.__sc.play());
+await page.waitForFunction(() => window.__sc.S.playing && window.__sc.Engine.started, null, { timeout: 180000 }); await page.waitForTimeout(10000);
+const cdp = await ctx.newCDPSession(page);
+const n = () => page.evaluate(() => window.__viz.frames.length + 0);
+const cnt = async (ms) => { const a = await page.evaluate(() => window.__viz.cost.length); await page.waitForTimeout(ms); return (await page.evaluate(() => window.__viz.cost.length)) - a; };
+console.log('scrollable', await page.evaluate(() => [document.scrollingElement.scrollHeight, innerHeight]));
+const rest = await cnt(4000); console.log('draw ticks at rest per 4s', rest);
+await page.evaluate(() => { window.__sev = 0; window.__ymax = 0; addEventListener('scroll', () => { window.__sev++; window.__ymax = Math.max(window.__ymax, scrollY); }, true); });
+let y0 = await page.evaluate(() => scrollY); const t0 = Date.now(); let ticks0 = await page.evaluate(() => window.__viz.cost.length);
+await page.mouse.move(180, 400); let dir = 1; while (Date.now() - t0 < 4000) { await page.mouse.wheel(0, 60 * dir); if (Math.random() < 0.05) dir = -dir; await page.waitForTimeout(30); }
+const ticks1 = await page.evaluate(() => window.__viz.cost.length); console.log('draw ticks while scrolling per', (Date.now() - t0) / 1000, 's', ticks1 - ticks0, 'scrollY moved', await page.evaluate(() => scrollY) - y0);
+await page.evaluate(() => window.scrollTo(0, 0)); await page.waitForTimeout(500);
+await page.evaluate(() => { window.__si = setInterval(() => document.dispatchEvent(new Event('scroll')), 50); }); const syn = await cnt(4000); await page.evaluate(() => clearInterval(window.__si)); console.log('draw ticks per 4s with scroll events every 50 ms', syn); const rest2 = await cnt(4000); console.log('rest again', rest2);
+console.log(JSON.stringify(await page.evaluate(() => [window.__sev, window.__ymax])));
+const ok = rest >= 55 && rest <= 90 && syn < rest * 0.7; console.log((ok ? 'PASS' : 'FAIL') + ' visuals loop: ' + rest + ' draws per 4 s at rest (cap 20/s), ' + syn + ' with scroll events (about 10/s)'); await browser.close(); server.close(); process.exit(ok ? 0 : 1);

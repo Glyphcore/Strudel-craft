@@ -142,7 +142,7 @@ function installLoop(s) {
     else raw = x;
   } });
 }
-const put = (id, t) => { const e = document.getElementById(id); if (e && e.textContent !== t) e.textContent = t; };
+const put = (id, t) => { const e = document.getElementById(id); if (!e || e.textContent === t) return; const n = e.firstChild; if (n && n.nodeType === 3 && !n.nextSibling) n.data = t; else e.textContent = t; }; /* text node data, not a child replacement (#180) */
 function setLimit(min) { st.maxMin = min; set('range.maxMin', min); }
 sc.range = { state: st, setLimit, extend, tick, seek, parsePos };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build); else build();

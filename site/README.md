@@ -144,7 +144,7 @@ CPU x4 gave 127 skipped queries and 25 dropped haps; a 2.5 s main-thread stall g
   (`visuals.js`) run at most 20 times a second (10 while the page scrolls or with reduced motion), never while hidden; a canvas that is off screen
   (IntersectionObserver) is not drawn and redraws when it scrolls back; the lanes keep their static layer (beat grid, lane names) in an offscreen canvas and
   draw nothing in a frame whose pixels would be identical (same playhead pixel and active haps); the meter skips unchanged frames and its fall is scaled by
-  elapsed time (same dB per second as at 60 fps). At rest the pixels are unchanged. Measured in docs/AUDIO_ENGINE.md section 7.
+  elapsed time (same dB per second as at 60 fps). Per-frame readouts write the data of one text node (`setText`), not `textContent` (about 350 ms/s cheaper). Check: `node tests/site/visuals_budget.mjs`. At rest the pixels are unchanged. Measured in docs/AUDIO_ENGINE.md section 7.
 - Coming: the engine worker (evaluate, compile passes and pattern queries in a Worker, the main thread only schedules voices;
   tests/site/engine_worker.mjs).
 - API: `strudelCraft.bg = { stats(), segments(), gapsBetween(a, b), events(), setPolicy('continue' | 'pause'), setWake(bool),

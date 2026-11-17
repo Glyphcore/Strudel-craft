@@ -1,8 +1,8 @@
 {
-  "date": "2026-11-16T18:52:33.532Z",
-  "base": "http://127.0.0.1:41563/Strudel-craft/",
+  "date": "2026-11-17T16:08:48.861Z",
+  "base": "http://127.0.0.1:42331/Strudel-craft/",
   "cdnModules": 66,
-  "files": 452,
+  "files": 505,
   "checks": [
     {
       "name": "site/precache.json is fresh (node tools/pwa/precache.mjs --check)",
@@ -12,7 +12,7 @@
     {
       "name": "install (first visit, no Play): every precache.json file is in the sc-offline-1 snapshot",
       "ok": true,
-      "detail": "452 files; missing: "
+      "detail": "505 files; missing: "
     },
     {
       "name": "install: every pinned CDN entry and its import graph is cached (Strudel bundle, CodeMirror, jsdiff)",
@@ -22,12 +22,12 @@
     {
       "name": "install: default sample maps in sc-banks-1",
       "ok": true,
-      "detail": "https://raw.githubusercontent.com/felixroos/dough-samples/main/tidal-drum-machines.json, https://raw.githubusercontent.com/tidalcycles/dirt-samples/main/strudel.json"
+      "detail": "https://raw.githubusercontent.com/tidalcycles/dirt-samples/main/strudel.json, https://raw.githubusercontent.com/felixroos/dough-samples/main/tidal-drum-machines.json"
     },
     {
       "name": "offline reload: app, recipes and CodeMirror editor",
       "ok": true,
-      "detail": "{\"rows\":182,\"editor\":\"cm6\",\"title\":\"Four-on-the-floor\",\"controlled\":true}"
+      "detail": "{\"rows\":237,\"editor\":\"cm6\",\"title\":\"Four-on-the-floor\",\"controlled\":true}"
     },
     {
       "name": "offline Play: engine loads from the snapshot, audio runs on the bgplay worker clock",

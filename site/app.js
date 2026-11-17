@@ -719,7 +719,16 @@ function renderPending(r, updateHash, failed) {
   syncTransport();
   if (!failed) hydrate(r).then(() => { if (cur() === r) renderSelection(false); }, (e) => { if (cur() === r) renderPending(r, updateHash, e.message); });
 }
+/* #185: pack recipes (fp-*, vcsl-*, drawn-*, vsco-*, brd-*) carry no `source`: no Source line then, never an exception */
+const srcLine = (r) => (typeof r.source === 'string' && r.source ? el('p', { class: 'src' }, 'Source: ', el('a', { href: r.source, rel: 'noopener', target: '_blank' }, r.source.replace(/^https?:\/\//, ''))) : null);
+/* #185: an exception while building one entry's inspector must neither leave the previous entry's inspector on screen nor read as a catalog load failure */
 function renderSelection(updateHash) {
+  try { renderSelection1(updateHash); } catch (e) {
+    const r = cur(); console.error('[inspector]', e); const ins = $('#inspector');
+    if (ins) ins.replaceChildren(el('h2', {}, 'Inspector'), el('p', { class: 'title' }, r ? r.title : ''), el('div', { class: 'rec-load err', role: 'alert' }, el('span', {}, 'Could not show this entry: ' + (e && e.message ? e.message : e))));
+  }
+}
+function renderSelection1(updateHash) {
   const r = cur(); const code = $('#code'); const ins = $('#inspector');
   if (!r) { code.value = ''; ins.replaceChildren(el('p', {}, 'Nothing selected.')); syncTransport(); return; }
   if (!bodyReady(r)) return renderPending(r, updateHash);
@@ -745,7 +754,7 @@ function renderSelection(updateHash) {
       el('a', { class: 'btn ghost', href: strudelUrl(strudelForm(r)), target: '_blank', rel: 'noopener', title: 'Opens the plain Strudel form' }, 'strudel.cc ', el('kbd', {}, 'O')),
       r.expr ? el('button', { type: 'button', class: 'ghost', onclick: () => toggleStack(r.id) }, inStack ? 'Unstack' : 'Stack', ' ', el('kbd', {}, 'A')) : null),
     formsBlock(r),
-    el('p', { class: 'src' }, 'Source: ', el('a', { href: r.source, rel: 'noopener', target: '_blank' }, r.source.replace(/^https?:\/\//, '')))].filter(Boolean));
+    srcLine(r)].filter(Boolean));
   if (updateHash && S.view === 'rack') history.replaceState(null, '', '#r/' + r.id);
   syncTransport();
 }

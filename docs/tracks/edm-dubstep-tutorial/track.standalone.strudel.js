@@ -21,10 +21,11 @@ setcpm(140/4)
 const dry = (v) => { const o = { ...v }; delete o.shape; delete o.distort; delete o.distortvol; return o }   // drop the worklet drive stages
 const FADE = "<1!88 .5 .44 .38 .32 .26 .2 .14 .08 1!8>"   // outro drums: half level, then fading out (bars 89-96), as data
 // LESSON 0b - dynamics: the drop is only big if the rest is smaller. REL is a per-bar gain table for every lane that plays outside the
-// drops: intro and outro at 0.5 (-6 dB), builds 0.35 (-9 dB), breakdown 0.4 (-8 dB), drops 1. The master limiter flattens loud parts, so the
-// contrast is written into the mix, not left to the master.
-const REL = "<.5!16 .35!8 1!16 .4!16 .35!8 1!24 .5!16>"
-const SHAKE = "<.5!16 .35!8 .4!16 .4!16 .35!8 1!24 .5 .44 .38 .32 .26 .2 .14 .08 0!8>"   // REL, -8 dB under drop A (it only adds air there), outro fade
+// drops: intro and outro 0.35 (-9 dB), builds 0.25 (-12 dB), breakdown 0.22 (-13 dB), drops 1. Why so low: loudness is measured
+// with a gate (BS.1770 ignores blocks more than 10 LU under the mean), so reliefs mixed more than 10 LU down no longer pull the
+// master's gain up, and a loud club master keeps them below the drops instead of limiting the drops into them (#168).
+const REL = "<.35!16 .25!8 1!16 .22!16 .25!8 1!24 .35!16>"
+const SHAKE = "<.35!16 .25!8 .4!16 .22!16 .25!8 1!24 .5 .44 .38 .32 .26 .2 .14 .08 0!8>"   // REL, -8 dB under drop A (it only adds air there), outro fade
 const WIDE = (x) => x.s("sawtooth").layer((v) => v.add(note(-0.15)).pan(0.25), (v) => v, (v) => v.add(note(0.15)).pan(0.75))   // a 3-saw supersaw
 // LESSON 1 (bars 1-16, intro) - start with the key, not the drop. A slow pad states the chords; its low-pass is automated bar by
 // bar (500 Hz -> 1.7 kHz) so the intro brightens without getting louder, and the drop still has room above it.
@@ -41,7 +42,7 @@ chops: note("<[g4 ~ g4 ~ ~ bb4 ~ c5] [~ eb5 ~ d5 c5 ~ ~ ~]>").hpf(150).lpf(8000)
 // LESSON 3 (bars 17-24, build) - tension is three rising curves and one gap: density (the roll steps through 4, 4, 8, 8, 16, 16,
 // 16 and 32 hits per bar, ec.roll8), brightness (the chord low-pass opens x1.5 per bar, ec.open8, while the high-pass empties the low end,
 // ec.thin8) and level (a noise riser fades in for 8 bars). Then the breath: the last beat before the drop is silent (ec.gapMask).
-roll: s("<x*4!2 x*8!2 x*16!3 x*32>").velocity("<.35 .42 .5 .58 .66 .76 .88 1>").hpf(120).lpf(10000).ftype("24db").s("triangle, white").note("e3").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55).postgain(0.63).mask("<0!16 1!8 0!32 1!8 0!40>")   // 1.8 x REL 0.35
+roll: s("<x*4!2 x*8!2 x*16!3 x*32>").velocity("<.35 .42 .5 .58 .66 .76 .88 1>").hpf(120).lpf(10000).ftype("24db").s("triangle, white").note("e3").attack(0.001).decay(0.12).sustain(0).hpf(170).lpf(7000).gain(0.55).postgain(0.45).mask("<0!16 1!8 0!32 1!8 0!40>")   // 1.8 x REL 0.25
   .mask("<1!23 [1 1 1 0] 1!80>")                            // the gap: ec.gapMask, here only before drop A
 buildChords: WIDE(note("<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>").segment(8).hpf(100).lpf(9000).s("supersaw").unison(7).detune(0.3).spread(0.6).attack(0.01).sustain(0.8).release(0.4).hpf(180).lpf(6000).gain(0.16)).release(0.15).gain(0.06).postgain(REL).orbit(3).room(0.35).roomsize(4)
   .lpf("<300 450 700 1000 1500 2300 3600 6000>").hpf("<30 50 80 130 200 320 500 800>").mask("<0!16 1!8 0!32 1!8 0!40>").mask("<1!23 [1 1 1 0] 1!80>")
@@ -78,7 +79,7 @@ laser: note("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ c6 ~ ~ ~").hpf(300).lpf(10000).s("sawtooth"
 down: s("x").hpf(150).lpf(12500).ftype("24db").s("white").attack(0.005).decay(2).sustain(0).hpf(300).lpf(1000).lpenv(3.5).lpattack(0.001).lpdecay(1.8).lpsustain(0).gain(0.3).postgain(REL).mask("<0!40 1 0!47 1 0!15>")
 pumpTrig: s("x ~ ~ ~ x ~ ~ ~ x ~ ~ ~ x ~ ~ ~").s("sine").gain(0).duckorbit(3).duckdepth(0.45).duckattack(0.3).mask("<0!40 1!16 0!48>")   // ducks orbit 3 to -9.6 dB
 breakChords: WIDE(note("<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [eb3,g3,bb3,d4] [bb2,d3,f3,ab3]>").hpf(100).lpf(9000).s("supersaw").unison(7).detune(0.35).spread(0.7).attack(0.02).sustain(0.8).release(0.5).hpf(200).lpf(7000).gain(0.15)).gain(0.07).postgain(REL).orbit(3).room(0.35).roomsize(4).mask("<0!40 1!16 0!48>")
-arp: note("<[c4 eb4 g4 c5]*4 [ab3 c4 eb4 ab4]*4 [eb4 g4 bb4 eb5]*4 [bb3 d4 f4 bb4]*4>").hpf(150).lpf(8000).s("triangle").attack(0.003).decay(0.15).sustain(0).lpf(3000).lpenv(2).lpdecay(0.12).gain(0.35).orbit(3).room(0.35).roomsize(4).postgain(0.64).mask("<0!40 1!16 0!48>")   // 1.6 x REL 0.4
+arp: note("<[c4 eb4 g4 c5]*4 [ab3 c4 eb4 ab4]*4 [eb4 g4 bb4 eb5]*4 [bb3 d4 f4 bb4]*4>").hpf(150).lpf(8000).s("triangle").attack(0.003).decay(0.15).sustain(0).lpf(3000).lpenv(2).lpdecay(0.12).gain(0.35).orbit(3).room(0.35).roomsize(4).postgain(0.35).mask("<0!40 1!16 0!48>")   // 1.6 x REL 0.22
 lead: WIDE(note("<[c5 ~ bb4 g4 ~ g4 bb4 c5] [eb5 ~ d5 c5 ~ bb4 g4 ~] [g5 ~ f5 eb5 ~ d5 eb5 ~] [f5 ~ eb5 d5 ~ bb4 ~ ~]>").hpf(150).lpf(8000).s("supersaw").unison(3).detune(0.15).spread(0.4).attack(0.015).sustain(0.7).release(0.3).lpf(3500).lpenv(1).lpdecay(0.3).vib(5).vibmod(0.12).gain(0.22)).gain(0.12).postgain(REL).orbit(3).room(0.35).roomsize(4).mask("<0!48 1!8 0!8 1!12 0!28>")   // breakdown from 49, and back in drop B: the melody returns
 // LESSON 8 (bars 57-64, build 2) - never build the same way twice. The roll and filter return, but the riser is a white-noise
 // build (the high-pass climbs four octaves, so it thins while it rises) plus a pitch riser, and instead of a gap a reverse swell

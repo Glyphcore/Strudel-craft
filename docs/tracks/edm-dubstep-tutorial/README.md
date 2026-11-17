@@ -47,34 +47,37 @@ Published listenable copy: `suno-track-lab/audio/edm-dubstep-tutorial/` (mp3 + i
 
 
 
-## Measured (dynamics pass, #161 round 2, 2026-11-17; numbers from the files, not asserted)
-Render: `chunk_render.py` 4 x 26 bars, pre-roll 2, under `engine/load/gate.sh heavy`; raw mix -21.6 LUFS with the contrast written in
-(`REL`, lesson 0b): per-section LUFS of the raw mix intro -29.8, build -24.7, drop A -19.2, breakdown -27.3, build 2 -23.8, drop B -18.1,
-switch -19.2, outro -30.1 (drop B was 6 LU over drop A at wobble postgain 3, now 1.2).
 
-| section | club mp3 LUFS before | club mp3 LUFS after | stream master LUFS | onsets / bar | centroid Hz | energy < 150 Hz |
-|---|---|---|---|---|---|---|
-| intro | -9.8 | -11.8 | -21.0 | 7.3 | 1574 | 0.11 |
-| build | -8.2 | -10.1 | -16.0 | 12.9 | 1817 | 0.08 |
-| drop1 | -9.2 | -9.1 | -11.7 | 13.9 | 528 | 0.73 |
-| break | -8.2 | -9.9 | -18.7 | 0.1 | 432 | 0.03 |
-| build2 | -7.3 | -9.1 | -15.0 | 6.4 | 2522 | 0.03 |
-| drop2 | -8.4 | -9.1 | -10.6 | 14.0 | 510 | 0.60 |
-| switch | -9.5 | -9.1 | -11.9 | 14.5 | 442 | 0.82 |
-| outro | -10.8 | -12.8 | -21.2 | 7.4 | 1378 | 0.21 |
+## Measured (club relief pass, #168, 2026-11-17; numbers from the files, not asserted)
+Render: `chunk_render.py` 4 x 26 bars, pre-roll 2, under `engine/load/gate.sh heavy`. Raw mix -20.9 LUFS with the contrast written in
+(`REL`, lesson 0b): intro -32.9, build -27.0, drop A -19.2, breakdown -32.4, build 2 -26.7, drop B -18.1, switch -19.2, outro -31.3 LUFS.
+The reliefs sit 13 LU under drop A on purpose: BS.1770 gating ignores blocks more than 10 LU under the gated mean, so they no longer
+pull the integrated loudness down, the master's gain follows the drops, and the limiter keeps the reliefs below the drops instead of
+squashing the drops into them (round 2 had the breakdown 8 LU down: the club master then kept 1.3 LU).
 
-What loudness costs (measured on this mix, `master.py --preset dubstep --ceiling -2.0`, drop A minus breakdown): club target -10 LUFS
-1.3 LU, -11 2.8 LU, -12 4.6 LU, streaming -14 7.0 LU. The limiter takes 10-16 dB off the drops at club loudness and nothing off the
-breakdown, so a club master and a 6 LU drop-to-relief contrast exclude each other here. Choice: the club master stays inside the genre
-loudness range (-9.7 LUFS, the breakdown now under drop A and both builds under the drops they lead into), and the -14 LUFS
-streaming master is the dynamics reference (drop A -11.7 vs breakdown -18.7 LUFS: 7.0 LU; builds 4-5 LU under the drops).
-Club master: WAV -9.69 LUFS, -2.01 dBTP, genre score 11/13 (misses: whole-track centroid 3413 Hz, breakdown onsets);
-decoded club mp3 -9.95 LUFS, -1.49 dBTP, 11/13; LRA 4.48 LU (was 2.95). Streaming master (`--target-lufs -14
---ceiling -2.0`): -14.0 LUFS, -2.01 dBTP, decoded mp3 -1.29 dBTP; `tools/racks/measure.mjs --score docs/genres/dubstep.json`: 9 pass, 3 miss
-(PLR 11.9, loudness range 12.4: the dynamics this master keeps; low-band share 73.8 % vs 50-70: with the reliefs lower the drops' sub
-weighs more), 1 skipped. Bitrates: `publish_audio.sh` escalates until the decoded mp3 is <= -1.0 dBTP: club 192k (-1.49), stream 160k (-1.29).
-Centroid: lowering the drop A shaker (SHAKE 0.4) brought drop A from about 4,985 to 528 Hz; the whole-track figure is a frame mean that the
-noise builds, hats and outro still pull up (build 2 2522 Hz). No low-mid pad was added for it.
+Per-section LUFS of the decoded mp3s (club: `master.py --preset dubstep --target-lufs -10.5 --ceiling -2.0`; stream: `--target-lufs -14 --ceiling -2.0`):
+
+| section | club mp3 #161 r1 | club mp3 #161 r2 | club mp3 now | stream mp3 now | onsets / bar | centroid Hz | energy < 150 Hz |
+|---|---|---|---|---|---|---|---|
+| intro | -9.8 | -11.8 | -14.1 | -24.3 | 7.4 | 1739 | 0.13 |
+| build | -8.2 | -10.1 | -10.5 | -18.4 | 11.4 | 2209 | 0.06 |
+| drop1 | -9.2 | -9.1 | -9.2 | -12.0 | 13.9 | 528 | 0.73 |
+| break | -8.2 | -9.9 | -13.5 | -24.0 | 0.1 | 423 | 0.03 |
+| build2 | -7.3 | -9.1 | -10.2 | -18.2 | 9.2 | 2413 | 0.02 |
+| drop2 | -8.4 | -9.1 | -9.1 | -10.9 | 14.0 | 510 | 0.60 |
+| switch | -9.5 | -9.1 | -9.1 | -12.1 | 14.5 | 443 | 0.82 |
+| outro | -10.8 | -12.8 | -14.1 | -22.6 | 7.4 | 1935 | 0.30 |
+
+Drop A minus breakdown: club mp3 4.4 LU (was 0.8 decoded in round 2), stream mp3 12.0 LU. Builds rise toward the drop they lead into
+(club build -10.5 vs drop A -9.2). The trade, stated: the club master is -10.83 LUFS decoded (WAV -10.57), 0.5-0.8 LU under the
+dubstep-ukf range (-10..-6, a guess in that file), because that is what keeps 3-5 LU of relief here (measured: -10 LUFS kept 3.0 LU, -11
+kept 5.9). #161 first said -8 to -9 LUFS; round 2 moved it to -9.6 (decoded -10.0); this pass to -10.5 (decoded -10.8). Decoded true peaks:
+club -1.51, stream -1.54 dBTP (both 192k after `publish_audio.sh`'s bitrate escalation).
+Genre score, club WAV 10/13, decoded club mp3 10/13 (misses: LUFS -10.8 as above, whole-track centroid, breakdown onsets); LRA 7.37 LU.
+Stream master vs `docs/genres/dubstep.json` (`tools/racks/measure.mjs --score`): 9 pass, 3 miss (PLR 11.95 vs 7-10, loudness range 15.3 LU vs 3-8, low-band share 75.9 % vs 50-70: the dynamics and the drop sub this master keeps), 1 skipped.
+
+Known gaps (kept as measured): whole-track spectral centroid 3485 Hz vs the 700-2800 Hz target: the noise builds, hats and the outro pull the
+frame mean up (drop A 528 Hz, build 2 2413 Hz); no low-mid pad was added to game it. Breakdown onsets 0.06 / bar: see the onset note.
 
 Onsets: librosa onset detection on the mixed master (`score.py`). The breakdown's arps and chops do not rise above the detector under
 the pumped chords and the room (0.1 / bar). The score's build value (9.6 / bar) is the mean of build (bars 17-24, 12.9 / bar) and build 2 (bars 57-64,

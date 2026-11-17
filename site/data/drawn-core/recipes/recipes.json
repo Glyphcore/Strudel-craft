@@ -18,7 +18,7 @@
    "id": "drawn-bass-line",
    "title": "Drawn bass line",
    "intent": "A bass voice built from a computed single cycle (control points, no audio): per-register shapes, plucked with the decay control.",
-   "code": "setcpm(100/4)\n$: note(\"e1 e1 g1 a1 e1 d2 b1 g1\").s(\"wt_drawn_bass\").decay(0.5).sustain(0).release(0.1).lpf(1400).gain(0.83)",
+   "code": "setcpm(100/4)\n$: note(\"e1 e1 g1 a1 e1 d2 b1 g1\").s(\"wt_drawn_bass\").attack(0.004).decay(0.5).sustain(0).release(0.1).hpf(25).lpf(1400).gain(0.83)",
    "labels": [
     "drawn"
    ],
@@ -44,7 +44,7 @@
    "id": "drawn-kit-basic",
    "title": "Drawn drum kit (computed)",
    "intent": "Kick, snare, closed and open hat, clap and tom from the computed drum models; four seeded variants of each (s(\"dr_kick:2\")). Electronic drum voices, not an acoustic kit.",
-   "code": "setcpm(110/4)\n$: s(\"dr_kick:0 ~ [~ dr_kick:2] ~, ~ dr_snare:1 ~ dr_snare:2, ~ ~ dr_clap:0 ~\").gain(0.43)\n$: s(\"dr_hat_closed*8\").n(\"<0 1 2 3>\").gain(0.26)\n$: s(\"~ ~ ~ dr_hat_open:1, ~ ~ ~ ~ ~ ~ ~ dr_tom:3\").gain(0.34)",
+   "code": "setcpm(110/4)\n$: s(\"dr_kick:0 ~ [~ dr_kick:2] ~, ~ dr_snare:1 ~ dr_snare:2, ~ ~ dr_clap:0 ~\").gain(0.56)\n$: s(\"dr_hat_closed*8\").n(\"<0 1 2 3>\").gain(0.34)\n$: s(\"~ ~ ~ dr_hat_open:1, ~ ~ ~ ~ ~ ~ ~ dr_tom:3\").gain(0.44)",
    "labels": [
     "drawn"
    ],
@@ -58,7 +58,7 @@
    "id": "drawn-guitar-chords",
    "title": "Drawn electric guitar chords",
    "intent": "Power chords from a computed bright cycle with distortion. A stand-in tuned for distorted playing; clean parts are thin.",
-   "code": "setcpm(100/4)\n$: note(\"<[e2,b2,e3] [g2,d3,g3] [a2,e3,a3] [g2,d3,g3]>\").s(\"wt_drawn_electric\").decay(0.4).sustain(0.2).release(0.15).distort(0.5).lpf(4500).gain(0.8)",
+   "code": "setcpm(100/4)\n$: note(\"<[e2,b2,e3] [g2,d3,g3] [a2,e3,a3] [g2,d3,g3]>\").s(\"wt_drawn_electric\").attack(0.004).decay(0.4).sustain(0.2).release(0.15).distort(0.5).lpf(4500).gain(0.8)",
    "labels": [
     "drawn"
    ],
@@ -79,6 +79,51 @@
    "needs": [
     "glyphcore/drawn-core:instruments",
     "glyphcore/drawn-core:drums"
+   ],
+   "verified": false
+  },
+  {
+   "id": "drawn-steel-pluck",
+   "title": "Drawn steel guitar pluck (computed)",
+   "intent": "A plucked-string line from the Karplus-Strong model: per-note tables from c2 to c4, repitched between. No bends or slides: a stand-in.",
+   "code": "setcpm(90/4)\n$: note(\"<[c3 e3 g3 c4] [a2 c3 e3 a3] [f2 a2 c3 f3] [g2 b2 d3 g3]>\").s(\"dr_steel_guitar\").gain(0.6)",
+   "labels": [
+    "drawn"
+   ],
+   "needs": [
+    "glyphcore/drawn-core:instruments",
+    "glyphcore/drawn-core:drums",
+    "glyphcore/drawn-core:models"
+   ],
+   "verified": false
+  },
+  {
+   "id": "drawn-fm-perc",
+   "title": "Drawn FM percussion",
+   "intent": "Clave, bell and conga from the two-operator FM model, four seeded variants each.",
+   "code": "setcpm(105/4)\n$: s(\"dr_fm_clave:0*2 dr_fm_clave:1 dr_fm_clave:2\").gain(0.66)\n$: s(\"~ dr_fm_conga:0 dr_fm_conga:1 ~, dr_fm_bell:0 ~ ~ dr_fm_bell:2\").gain(0.66)",
+   "labels": [
+    "drawn"
+   ],
+   "needs": [
+    "glyphcore/drawn-core:instruments",
+    "glyphcore/drawn-core:drums",
+    "glyphcore/drawn-core:models"
+   ],
+   "verified": false
+  },
+  {
+   "id": "drawn-room-hall",
+   "title": "Drawn hall space on the kit",
+   "intent": "The drawn-core `room-hall` preset (synthetic space: Strudel's algorithmic reverb, no recorded impulse response) on a kick and clap loop.",
+   "code": "setcpm(100/4)\n$: s(\"dr_kick:0 ~ ~ ~, ~ ~ dr_clap:1 ~\").gain(1).room(0.3).roomsize(2.2).roomfade(5).roomlp(7000).roomdim(2500)",
+   "labels": [
+    "drawn"
+   ],
+   "needs": [
+    "glyphcore/drawn-core:instruments",
+    "glyphcore/drawn-core:drums",
+    "glyphcore/drawn-core:models"
    ],
    "verified": false
   }

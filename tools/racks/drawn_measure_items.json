@@ -1,0 +1,6 @@
+[
+  { "id": "steel-guitar", "sound": "dr_steel_guitar", "class": "pluck", "code": "setcpm(90/4)\n$: note(\"<[c3 e3 g3 c4] [a3 c4 e4 a4]>\").s(\"dr_steel_guitar\").gain(1)" },
+  { "id": "fm-clave", "sound": "dr_fm_clave", "class": "perc", "code": "setcpm(105/4)\n$: s(\"dr_fm_clave:0*2 dr_fm_clave:1 dr_fm_clave:2\").gain(0.66)" },
+  { "id": "fm-bell", "sound": "dr_fm_bell", "class": "bell", "code": "setcpm(105/4)\n$: s(\"dr_fm_bell:0 ~ dr_fm_bell:1 ~ dr_fm_bell:2 ~ dr_fm_bell:3 ~\").gain(0.66)" },
+  { "id": "fm-conga", "sound": "dr_fm_conga", "class": "perc", "code": "setcpm(105/4)\n$: s(\"~ dr_fm_conga:0 dr_fm_conga:1 ~ dr_fm_conga:2 dr_fm_conga:3 ~ ~\").gain(0.66)" }
+]

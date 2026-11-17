@@ -17,7 +17,7 @@ const server = http.createServer((req, res) => {
 });
 await new Promise((ok) => server.listen(0, ok)); const BASE = `http://localhost:${server.address().port}${PREFIX}`;
 let fail = 0; const check = (n, ok, d = '') => { console.log((ok ? 'PASS ' : 'FAIL ') + n + (d ? ' :: ' + d : '')); if (!ok) fail++; };
-const IDS = (process.env.IDS || 'drawn-bass-line,drawn-choir-pad,drawn-kit-basic,drawn-guitar-chords,drawn-bowed-duo').split(','), [REF, TOL] = (process.env.RMS || '-28.7,2').split(',').map(Number), PEAKMAX = +(process.env.PEAKMAX || 0.5);
+const IDS = (process.env.IDS || 'drawn-bass-line,drawn-choir-pad,drawn-kit-basic,drawn-guitar-chords,drawn-bowed-duo,drawn-steel-pluck,drawn-fm-perc,drawn-room-hall').split(','), [REF, TOL] = (process.env.RMS || '-28.7,2').split(',').map(Number), PEAKMAX = +(process.env.PEAKMAX || 0.5);
 const BODIES = {}; for (const f of fs.readdirSync(path.join(SITE, 'data/recipes'))) Object.assign(BODIES, JSON.parse(fs.readFileSync(path.join(SITE, 'data/recipes', f), 'utf8')).bodies || {}); // stock site recipes (synth references) are read from their body files
 const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] }); const errors = [];
 for (const id of IDS) {
@@ -36,19 +36,19 @@ for (const id of IDS) {
   await page.goto(BASE, { waitUntil: 'load' }); await page.waitForFunction(() => window.strudelCraft && window.strudelCraft.packs, null, { timeout: 60000 }); await page.evaluate(async () => { await window.strudelCraft.packs.ready; await window.strudelCraft.packs.ensure('recipes'); });
   for (const phase of ['cold', 'warm']) {
     const r = await page.evaluate(async ([id, stock]) => {
-      const E = window.__sc.Engine; await E.load(); await window.getAudioContext().resume(); const sm = () => (window.soundMap && window.soundMap.get ? Object.keys(window.soundMap.get()) : []); const pre = sm().filter((k) => /^(wt_drawn_|dr_(kick|snare|hat_|clap|tom))/.test(k));
+      const E = window.__sc.Engine; await E.load(); await window.getAudioContext().resume(); const sm = () => (window.soundMap && window.soundMap.get ? Object.keys(window.soundMap.get()) : []); const pre = sm().filter((k) => /^(wt_drawn_|dr_(kick|snare|hat_|clap|tom|steel|fm_))/.test(k));
       const rr = stock ? { value: { code: stock } } : window.strudelCraft.packs.resolve('recipes', id); if (!rr) throw new Error('no recipe ' + id);
       window.__tap.st = { t0: performance.now(), clip: 0, w: [], off: 0 }; await E.play(rr.value.code, false, () => {}); await new Promise((ok) => setTimeout(ok, 12000));
       const t = window.__tap.st; window.__tap.st = null; E.stop(); await new Promise((ok) => setTimeout(ok, 1500));
       const mx = (a, b) => Math.max(0, ...t.w.filter((x) => x[0] >= a && x[0] < b).map((x) => x[1]));
       const st = t.w.filter((x) => x[0] >= 6000 && x[0] < 12000), sq = st.reduce((a, x) => a + x[2], 0), nn = st.reduce((a, x) => a + x[3], 0);
-      const post = sm().filter((k) => /^(wt_drawn_|dr_(kick|snare|hat_|clap|tom))/.test(k)); const thirds = (a) => { const w = t.w.filter((x) => x[0] >= a && x[0] < a + 3000); return 10 * Math.log10(w.reduce((q, x) => q + x[2], 0) / Math.max(1, w.reduce((q, x) => q + x[3], 0)) + 1e-12); };
+      const post = sm().filter((k) => /^(wt_drawn_|dr_(kick|snare|hat_|clap|tom|steel|fm_))/.test(k)); const thirds = (a) => { const w = t.w.filter((x) => x[0] >= a && x[0] < a + 3000); return 10 * Math.log10(w.reduce((q, x) => q + x[2], 0) / Math.max(1, w.reduce((q, x) => q + x[3], 0)) + 1e-12); };
       return { pre, post, head3: thirds(1000), tail3: thirds(9000), first2: mx(0, 2000), steady: mx(6000, 12000), rmsDb: 10 * Math.log10(sq / Math.max(1, nn) + 1e-12), clip: t.clip, blocks: t.w.length, offlinePeak: t.off };
     }, [id, BODIES[id] ? BODIES[id].code : null]);
     console.log(`INFO ${id} ${phase}: realtime first 2 s peak=${r.first2.toFixed(3)} steady peak=${r.steady.toFixed(3)} rms=${r.rmsDb.toFixed(1)} dBFS clipped=${r.clip}; offline reverb-IR render peak=${r.offlinePeak.toFixed(2)} (not audible)`);
     check(`${id} ${phase}: lazy (wt_drawn sound absent before Play: ${JSON.stringify(r.pre)}; registered after: ${JSON.stringify(r.post)})`, (phase === 'warm' || r.pre.length === 0) && r.post.length > 0);
     check(`${id} ${phase}: sustained (rms ${r.head3.toFixed(1)} dB in 1-4 s, ${r.tail3.toFixed(1)} dB in 9-12 s)`, r.tail3 > r.head3 - 12);
-    if (/kit/.test(id)) check(`${id} ${phase}: hits, not a drone (crest peak/rms ${(r.steady / Math.pow(10, r.rmsDb / 20)).toFixed(1)} >= 3; the one-shots are ${r.post.filter((k) => /^dr_(kick|snare|hat_|clap|tom)/.test(k)).length} registered)`, r.steady / Math.pow(10, r.rmsDb / 20) >= 3 && r.post.filter((k) => /^dr_(kick|snare|hat_|clap|tom)/.test(k)).length >= 5);
+    if (/kit|fm-perc/.test(id)) check(`${id} ${phase}: hits, not a drone (crest peak/rms ${(r.steady / Math.pow(10, r.rmsDb / 20)).toFixed(1)} >= 3; the one-shots are ${r.post.filter((k) => /^dr_(kick|snare|hat_|clap|tom|steel|fm_)/.test(k)).length} registered)`, r.steady / Math.pow(10, r.rmsDb / 20) >= 3 && r.post.filter((k) => /^dr_(kick|snare|hat_|clap|tom|steel|fm_)/.test(k)).length >= (/kit/.test(id) ? 5 : 3));
     check(`${id} ${phase}: no realtime clipped sample, rms within ${TOL} dB of the stock synth reference ${REF} dBFS, peak <= ${PEAKMAX}, first 2 s within 3 dB of steady`, r.blocks > 200 && r.clip === 0 && Math.abs(r.rmsDb - REF) <= TOL && r.steady > 0.05 && r.steady <= PEAKMAX && r.first2 <= r.steady * 1.4142, JSON.stringify(r));
   }
   await ctx.close();

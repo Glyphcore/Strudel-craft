@@ -11,7 +11,7 @@
 //   soundName(inst), tables(inst)  the `wt_<id>` name and its WAV tables per register (what the pack adapter registers)
 //   program(inst, o)         -> {code, key, wav?}      Strudel code for one note; `wav` is what must be registered with samples({[key]: [url]})
 
-import { FAMILIES, fill, render as renderDrum } from './drums.js';
+import { FAMILIES, PITCHED, fill, render as renderDrum, roomControls } from './drums.js';
 
 export const FRAME = 2048, MAX_POINTS = 256, MAX_BYTES = 5 * 1024 * 1024, MAX_INSTRUMENTS = 32, MAX_NUMBERS = 200000;
 // Same rule as `$defs/safe` in the schema: data:, blob:, ://, base64 in any case; RIFF and RIFX as written (the binary headers are upper case, and "riff" is a music
@@ -71,6 +71,7 @@ export function validate(doc) {
       kind: (y, r) => en(y, r, Object.keys(FAMILIES)),
       params: (y, r) => map(y, r, 8, NAME, (z, t) => { num(z, t, -100000, 100000); const k = t.slice(t.lastIndexOf('.') + 1), f = FAMILIES[x && x.kind]; if (f && Object.hasOwn(f, k) && typeof z === 'number' && (z < f[k][1] || z > f[k][2])) bad('E_WF_PARAM', t, `${k} outside ${f[k][1]}..${f[k][2]}`); else if (f && !Object.hasOwn(f, k)) bad('E_WF_UNKNOWN', t, `${k} is not a parameter of ${x.kind}`); }),
       variants: (y, r) => int(y, r, 1, 16),
+      notes: (y, r) => arr(y, r, 1, 8, (z, t) => str(z, t, 4, NOTE)),
     }, ['kind']),
     morph: (x, q) => obj(x, q, {
       frames: (y, r) => arr(y, r, 2, 8, (f, s) => obj(f, s, { pos: (z, t) => num(z, t, 0, 1), points }, ['pos', 'points'])),
@@ -196,20 +197,23 @@ export const soundName = (inst) => (inst.model ? 'dr_' : 'wt_') + inst.id.replac
 // The WAV tables a pack adapter registers for one instrument: {name, map} where map is `[wav]` or, with registers, `{note: [wav]}` (Strudel picks the closest
 // note key and repitches from it). Pure data in, bytes out; the caller makes blob URLs. Registers use the cycle or the morph, with their own gain and tilt.
 export function tables(inst) {
-  if (inst.model) { // computed one-shots: `variants` related hits from one parameter set; s("dr_kick:2") picks variant 2 (n)
-    const m = inst.model, n = m.variants ?? 1, base = fill(m.kind, m.params), seed0 = inst.vary?.seed ?? 0, spread = inst.vary?.spread || {}, out = [];
-    for (let v = 0; v < n; v++) {
+  if (inst.model) { // computed one-shots: `variants` related hits from one parameter set; s("dr_kick:2") picks variant 2 (n). A pitched family (pluck) is rendered once per note of `notes`.
+    const m = inst.model; if (m.kind === 'room') return { name: null, map: null }; // a room is reverb controls (spaceControls), not a sound
+    const n = m.variants ?? 1, base = fill(m.kind, m.params), seed0 = inst.vary?.seed ?? 0, spread = inst.vary?.spread || {}, notes = PITCHED.has(m.kind) ? (m.notes || ['c2', 'c3', 'c4']) : null;
+    const hzOf = (nt) => { const q = /^([a-g])([#bs]?)(-?\d)$/.exec(nt), pc = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 }[q[1]] + (q[2] ? (q[2] === 'b' ? -1 : 1) : 0); return 440 * Math.pow(2, (pc + 12 * (+q[3] + 1) - 69) / 12); };
+    const one = (hz) => { const out = []; for (let v = 0; v < n; v++) {
       const p = { ...base }, r = mulberry32((seed0 + v * 101) >>> 0);
       for (const k of Object.keys(FAMILIES[m.kind]).sort()) { const u = r() * 2 - 1, [, lo, hi] = FAMILIES[m.kind][k], sp = v === 0 ? 0 : (spread[k] ?? 0); p[k] = Math.min(hi, Math.max(lo, base[k] + u * sp * (hi - lo))); }
-      out.push(wavBytes(renderDrum(m.kind, p, seed0 + v), 44100));
-    }
-    return { name: soundName(inst), map: out };
+      out.push(wavBytes(renderDrum(m.kind, p, seed0 + v, hz), 44100)); } return out; };
+    return { name: soundName(inst), map: notes ? Object.fromEntries(notes.map((nt) => [nt, one(hzOf(nt))])) : one() };
   }
   const name = soundName(inst), out = inst.morph?.out ?? 16, mk = (o) => wavBytes(wavetable(inst, (o.use === 'cycle' && inst.cycle) || !inst.morph ? 1 : out, FRAME, o));
   if (!inst.registers || !inst.registers.length) return { name, map: [mk({})] };
   const map = {}; for (const r of inst.registers) (map[r.from] ||= []).push(mk({ use: r.use, gain: r.gain, tilt: r.tilt }));
   return { name, map };
 }
+
+export const spaceControls = (inst) => (inst.model && inst.model.kind === 'room' ? roomControls(fill('room', inst.model.params)) : null); // `.room(..).roomsize(..)...` for a space entry
 
 export function program(inst, { mechanism = 'A', note = 'c3', seed, gain = 0.5 } = {}) {
   const v = vary(inst, seed), ctl = Object.entries(inst.params || {}).filter(([, c]) => c.to).map(([k, c]) => `.${c.to}(${v[k]})`).join('');

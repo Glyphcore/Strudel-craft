@@ -4,7 +4,7 @@
   "id": "glyphcore/drawn-core",
   "version": "1.0.0",
   "title": "Drawn instruments (our own)",
-  "description": "Original instruments as control points and parameters, no audio: a bass guitar, an electric guitar, a viola and a cello (single cycles with per-register shapes), a vowel-morphing choir pad (three keyframes) and a computed drum kit (kick, snare, closed and open hat, clap, tom; seeded variants). Wavetables and one-shots are built in the page when a program names a wt_drawn_* or dr_* sound. CC0-1.0.",
+  "description": "Original instruments as control points and parameters, no audio: wavetable instruments (bass guitar, electric guitar, viola, cello, choir pad), a computed drum kit (kick, snare, closed and open hat, clap, tom), a Karplus-Strong steel guitar pluck, FM percussion, and three synthetic room presets, with seeded variants. Wavetables and one-shots are built in the page when a program names a wt_drawn_* or dr_* sound. CC0-1.0.",
   "license": "CC0-1.0",
   "licenseFile": "LICENSE.md",
   "ingredients": [
@@ -33,19 +33,32 @@
       "bytes": 3631
     },
     {
+      "id": "models",
+      "kind": "waveforms",
+      "format": "waveforms@1",
+      "version": "1.0.0",
+      "path": "instruments/models.json",
+      "title": "Steel guitar, FM percussion, synthetic spaces",
+      "description": "a Karplus-Strong pluck per note, three FM percussion voices (4 seeded variants each), and three room presets (reverb controls, no audio)",
+      "hash": "sha256:554c32389c1c292a42bdd04814ee3ec86999a839d5b4a3f2ba361fe557d39c10",
+      "load": "manual",
+      "bytes": 3568
+    },
+    {
       "id": "recipes",
       "kind": "recipes",
       "format": "recipes@1",
       "version": "1.0.0",
       "path": "recipes/recipes.json",
       "title": "Drawn instruments recipes",
-      "hash": "sha256:24170ebaa401f64c9e1c451f26ac10b9e2842f0eec83953cae3b95936dc70beb",
+      "hash": "sha256:96c34a9d1f3c24042d52f7eaead446db7f9d49a39ca281c7f6c369df01217595",
       "load": "manual",
       "requires": [
         "instruments",
-        "drums"
+        "drums",
+        "models"
       ],
-      "bytes": 3123
+      "bytes": 4800
     }
   ]
 }

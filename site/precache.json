@@ -42,6 +42,7 @@
   "data/dnb-electro/racks-dnb-electro.json",
   "data/drawn-core/craftpack.json",
   "data/drawn-core/instruments/drums.json",
+  "data/drawn-core/instruments/models.json",
   "data/drawn-core/instruments/waveforms.json",
   "data/drawn-core/recipes/recipes.json",
   "data/edm/atoms-dubstep.json",

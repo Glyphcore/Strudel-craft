@@ -1368,6 +1368,34 @@
    "category": "sounds"
   },
   {
+   "label": "dr_steel_guitar",
+   "string": true,
+   "detail": "computed pluck",
+   "info": "Our own Karplus-Strong steel guitar pluck (stand-in; per-note tables c2 to c4), CC0",
+   "category": "sounds"
+  },
+  {
+   "label": "dr_fm_clave",
+   "string": true,
+   "detail": "computed percussion",
+   "info": "Our own FM clave, four seeded variants, CC0",
+   "category": "sounds"
+  },
+  {
+   "label": "dr_fm_conga",
+   "string": true,
+   "detail": "computed percussion",
+   "info": "Our own FM conga, four seeded variants, CC0",
+   "category": "sounds"
+  },
+  {
+   "label": "dr_fm_bell",
+   "string": true,
+   "detail": "computed percussion",
+   "info": "Our own FM bell, four seeded variants, CC0",
+   "category": "sounds"
+  },
+  {
    "label": "fp_harp",
    "string": true,
    "detail": "instrument sound",

@@ -1,0 +1,200 @@
+{
+ "instruments": [
+  {
+   "id": "steel-guitar",
+   "title": "Steel guitar pluck (computed)",
+   "family": "steel-guitar",
+   "origin": "computed",
+   "realism": "stand-in",
+   "license": "CC0-1.0",
+   "descriptors": {
+    "pitch": "c2-c5",
+    "decay_s": 2.2,
+    "brightness": "mid",
+    "note": "Karplus-Strong pluck; no bends or slides"
+   },
+   "model": {
+    "kind": "pluck",
+    "params": {
+     "brightness": 0.55,
+     "decay_s": 2.2,
+     "inharm": 0.0008,
+     "body_hz": 230,
+     "glide_semi": 0,
+     "level": 0.9
+    },
+    "variants": 2,
+    "notes": [
+     "c2",
+     "g2",
+     "c3",
+     "g3",
+     "c4"
+    ]
+   },
+   "vary": {
+    "seed": 707,
+    "spread": {
+     "brightness": 0.2,
+     "decay_s": 0.2
+    }
+   }
+  },
+  {
+   "id": "fm-clave",
+   "title": "FM clave (computed)",
+   "family": "percussion",
+   "origin": "computed",
+   "realism": "stand-in",
+   "license": "CC0-1.0",
+   "descriptors": {
+    "kind": "short wood-block-like FM tick"
+   },
+   "model": {
+    "kind": "fm-perc",
+    "params": {
+     "pitch_hz": 2400,
+     "fm_ratio": 1.41,
+     "fm_index": 1.5,
+     "decay_s": 0.06,
+     "level": 0.9
+    },
+    "variants": 4
+   },
+   "vary": {
+    "seed": 811,
+    "spread": {
+     "pitch_hz": 0.1,
+     "fm_ratio": 0.1,
+     "decay_s": 0.2
+    }
+   }
+  },
+  {
+   "id": "fm-bell",
+   "title": "FM bell (computed)",
+   "family": "percussion",
+   "origin": "computed",
+   "realism": "usable",
+   "license": "CC0-1.0",
+   "descriptors": {
+    "kind": "inharmonic FM bell"
+   },
+   "model": {
+    "kind": "fm-perc",
+    "params": {
+     "pitch_hz": 900,
+     "fm_ratio": 3.5,
+     "fm_index": 4,
+     "decay_s": 0.55,
+     "level": 0.9
+    },
+    "variants": 4
+   },
+   "vary": {
+    "seed": 822,
+    "spread": {
+     "pitch_hz": 0.1,
+     "fm_ratio": 0.08,
+     "fm_index": 0.2
+    }
+   }
+  },
+  {
+   "id": "fm-conga",
+   "title": "FM conga (computed)",
+   "family": "percussion",
+   "origin": "computed",
+   "realism": "stand-in",
+   "license": "CC0-1.0",
+   "descriptors": {
+    "kind": "pitched FM hand drum"
+   },
+   "model": {
+    "kind": "fm-perc",
+    "params": {
+     "pitch_hz": 320,
+     "fm_ratio": 1.2,
+     "fm_index": 2.5,
+     "decay_s": 0.25,
+     "level": 0.9
+    },
+    "variants": 4
+   },
+   "vary": {
+    "seed": 833,
+    "spread": {
+     "pitch_hz": 0.1,
+     "fm_index": 0.2,
+     "decay_s": 0.2
+    }
+   }
+  },
+  {
+   "id": "room-small",
+   "title": "Small room (synthetic space)",
+   "family": "room",
+   "origin": "computed",
+   "realism": "usable",
+   "license": "CC0-1.0",
+   "descriptors": {
+    "kind": "small dry room",
+    "tail_s": 0.6
+   },
+   "model": {
+    "kind": "room",
+    "params": {
+     "size": 0.3,
+     "fade_s": 0.6,
+     "lp_hz": 9000,
+     "dim_hz": 4000,
+     "mix": 0.2
+    }
+   }
+  },
+  {
+   "id": "room-hall",
+   "title": "Hall (synthetic space)",
+   "family": "room",
+   "origin": "computed",
+   "realism": "usable",
+   "license": "CC0-1.0",
+   "descriptors": {
+    "kind": "large dark hall",
+    "tail_s": 5
+   },
+   "model": {
+    "kind": "room",
+    "params": {
+     "size": 2.2,
+     "fade_s": 5,
+     "lp_hz": 7000,
+     "dim_hz": 2500,
+     "mix": 0.3
+    }
+   }
+  },
+  {
+   "id": "room-plate",
+   "title": "Plate (synthetic space)",
+   "family": "room",
+   "origin": "computed",
+   "realism": "usable",
+   "license": "CC0-1.0",
+   "descriptors": {
+    "kind": "bright plate-like tail",
+    "tail_s": 2.5
+   },
+   "model": {
+    "kind": "room",
+    "params": {
+     "size": 1.0,
+     "fade_s": 2.5,
+     "lp_hz": 12000,
+     "dim_hz": 6000,
+     "mix": 0.25
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,1692 @@
+{
+ "about": "tools/racks/drawn_measure.mjs: every instrument of glyphcore/drawn-core rendered through the site offline recorder, raw and (for the classes that have one) through the rack hygiene hook, judged against its class in tools/racks/standard.json (#182)",
+ "date": "2026-11-17",
+ "results": [
+  {
+   "id": "kick",
+   "sound": "dr_kick",
+   "class": "kick",
+   "band": [
+    28,
+    6000
+   ],
+   "bars": 2,
+   "render": {
+    "haps": 12,
+    "fails": 0
+   },
+   "loudness": {
+    "lufs": -26.22,
+    "true_peak_dbtp": -12.85,
+    "crest_db": 16.13,
+    "centroid_hz": 114,
+    "tilt_db_oct": -10
+   },
+   "bands": {
+    "peak_db": -12.9,
+    "clipped": 0,
+    "dc_db": -79.2,
+    "sub20_db": -35,
+    "ultra_db": -49,
+    "below_db": -33.1,
+    "above_db": -40,
+    "inband_pct": 99.9
+   },
+   "checks": [
+    {
+     "name": "below_db",
+     "value": -33.1,
+     "limit": "<= -30",
+     "ok": true
+    },
+    {
+     "name": "above_db",
+     "value": -40,
+     "limit": "<= -30",
+     "ok": true
+    },
+    {
+     "name": "ultra_db",
+     "value": -49,
+     "limit": "<= -45",
+     "ok": true
+    },
+    {
+     "name": "sub20_db",
+     "value": -35,
+     "limit": "<= -40",
+     "ok": false
+    },
+    {
+     "name": "peak_db",
+     "value": -12.9,
+     "limit": "<= -3",
+     "ok": true
+    },
+    {
+     "name": "dc_db",
+     "value": -79.2,
+     "limit": "<= -60",
+     "ok": true
+    },
+    {
+     "name": "clipped",
+     "value": 0,
+     "limit": "<= 0",
+     "ok": true
+    },
+    {
+     "name": "peak_min_db",
+     "value": -12.9,
+     "limit": ">= -36",
+     "ok": true
+    }
+   ],
+   "pass": false,
+   "with_hygiene": {
+    "hook": "hygiene-kick",
+    "bars": 2,
+    "render": {
+     "haps": 12,
+     "fails": 0
+    },
+    "loudness": {
+     "lufs": -26,
+     "true_peak_dbtp": -12.38,
+     "crest_db": 16.03,
+     "centroid_hz": 110,
+     "tilt_db_oct": -9.88
+    },
+    "bands": {
+     "peak_db": -12.4,
+     "clipped": 0,
+     "dc_db": -144.3,
+     "sub20_db": -46.2,
+     "ultra_db": -87.8,
+     "below_db": -40.1,
+     "above_db": -43.8,
+     "inband_pct": 100
+    },
+    "checks": [
+     {
+      "name": "below_db",
+      "value": -40.1,
+      "limit": "<= -30",
+      "ok": true
+     },
+     {
+      "name": "above_db",
+      "value": -43.8,
+      "limit": "<= -30",
+      "ok": true
+     },
+     {
+      "name": "ultra_db",
+      "value": -87.8,
+      "limit": "<= -45",
+      "ok": true
+     },
+     {
+      "name": "sub20_db",
+      "value": -46.2,
+      "limit": "<= -40",
+      "ok": true
+     },
+     {
+      "name": "peak_db",
+      "value": -12.4,
+      "limit": "<= -3",
+      "ok": true
+     },
+     {
+      "name": "dc_db",
+      "value": -144.3,
+      "limit": "<= -60",
+      "ok": true
+     },
+     {
+      "name": "clipped",
+      "value": 0,
+      "limit": "<= 0",
+      "ok": true
+     },
+     {
+      "name": "peak_min_db",
+      "value": -12.4,
+      "limit": ">= -36",
+      "ok": true
+     }
+    ],
+    "pass": true
+   }
+  },
+  {
+   "id": "snare",
+   "sound": "dr_snare",
+   "class": "snare",
+   "band": [
+    100,
+    12000
+   ],
+   "bars": 2,
+   "render": {
+    "haps": 12,
+    "fails": 0
+   },
+   "loudness": {
+    "lufs": -31.17,
+    "true_peak_dbtp": -12.84,
+    "crest_db": 22.97,
+    "centroid_hz": 688,
+    "tilt_db_oct": -3.6
+   },
+   "bands": {
+    "peak_db": -12.9,
+    "clipped": 0,
+    "dc_db": -82.1,
+    "sub20_db": -33.1,
+    "ultra_db": -76.9,
+    "below_db": -22.5,
+    "above_db": -53.5,
+    "inband_pct": 99.4
+   },
+   "checks": [
+    {
+     "name": "below_db",
+     "value": -22.5,
+     "limit": "<= -24",
+     "ok": false
+    },
+    {
+     "name": "above_db",
+     "value": -53.5,
+     "limit": "<= -24",
+     "ok": true
+    },
+    {
+     "name": "ultra_db",
+     "value": -76.9,
+     "limit": "<= -45",
+     "ok": true
+    },
+    {
+     "name": "sub20_db",
+     "value": -33.1,
+     "limit": "<= -40",
+     "ok": false
+    },
+    {
+     "name": "peak_db",
+     "value": -12.9,
+     "limit": "<= -3",
+     "ok": true
+    },
+    {
+     "name": "dc_db",
+     "value": -82.1,
+     "limit": "<= -60",
+     "ok": true
+    },
+    {
+     "name": "clipped",
+     "value": 0,
+     "limit": "<= 0",
+     "ok": true
+    },
+    {
+     "name": "peak_min_db",
+     "value": -12.9,
+     "limit": ">= -36",
+     "ok": true
+    }
+   ],
+   "pass": false,
+   "with_hygiene": {
+    "hook": "hygiene-snare",
+    "bars": 2,
+    "render": {
+     "haps": 12,
+     "fails": 0
+    },
+    "loudness": {
+     "lufs": -28.87,
+     "true_peak_dbtp": -10.61,
+     "crest_db": 22.69,
+     "centroid_hz": 574,
+     "tilt_db_oct": -3.54
+    },
+    "bands": {
+     "peak_db": -10.6,
+     "clipped": 0,
+     "dc_db": -180,
+     "sub20_db": -100.6,
+     "ultra_db": -135.3,
+     "below_db": -36.6,
+     "above_db": -64.8,
+     "inband_pct": 100
+    },
+    "checks": [
+     {
+      "name": "below_db",
+      "value": -36.6,
+      "limit": "<= -24",
+      "ok": true
+     },
+     {
+      "name": "above_db",
+      "value": -64.8,
+      "limit": "<= -24",
+      "ok": true
+     },
+     {
+      "name": "ultra_db",
+      "value": -135.3,
+      "limit": "<= -45",
+      "ok": true
+     },
+     {
+      "name": "sub20_db",
+      "value": -100.6,
+      "limit": "<= -40",
+      "ok": true
+     },
+     {
+      "name": "peak_db",
+      "value": -10.6,
+      "limit": "<= -3",
+      "ok": true
+     },
+     {
+      "name": "dc_db",
+      "value": -180,
+      "limit": "<= -60",
+      "ok": true
+     },
+     {
+      "name": "clipped",
+      "value": 0,
+      "limit": "<= 0",
+      "ok": true
+     },
+     {
+      "name": "peak_min_db",
+      "value": -10.6,
+      "limit": ">= -36",
+      "ok": true
+     }
+    ],
+    "pass": true
+   }
+  },
+  {
+   "id": "hat-closed",
+   "sound": "dr_hat_closed",
+   "class": "hat",
+   "band": [
+    3000,
+    16000
+   ],
+   "bars": 2,
+   "render": {
+    "haps": 24,
+    "fails": 0
+   },
+   "loudness": {
+    "lufs": -40.22,
+    "true_peak_dbtp": -18.22,
+    "crest_db": 28.34,
+    "centroid_hz": 6954,
+    "tilt_db_oct": 8.36
+   },
+   "bands": {
+    "peak_db": -18.2,
+    "clipped": 0,
+    "dc_db": -131.4,
+    "sub20_db": -74.9,
+    "ultra_db": -66.1,
+    "below_db": -35.4,
+    "above_db": -61.6,
+    "inband_pct": 100
+   },
+   "checks": [
+    {
+     "name": "below_db",
+     "value": -35.4,
+     "limit": "<= -30",
+     "ok": true
+    },
+    {
+     "name": "above_db",
+     "value": -61.6,
+     "limit": "<= -15",
+     "ok": true
+    },
+    {
+     "name": "ultra_db",
+     "value": -66.1,
+     "limit": "<= -15",
+     "ok": true
+    },
+    {
+     "name": "sub20_db",
+     "value": -74.9,
+     "limit": "<= -40",
+     "ok": true
+    },
+    {
+     "name": "peak_db",
+     "value": -18.2,
+     "limit": "<= -6",
+     "ok": true
+    },
+    {
+     "name": "dc_db",
+     "value": -131.4,
+     "limit": "<= -60",
+     "ok": true
+    },
+    {
+     "name": "clipped",
+     "value": 0,
+     "limit": "<= 0",
+     "ok": true
+    },
+    {
+     "name": "peak_min_db",
+     "value": -18.2,
+     "limit": ">= -36",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "with_hygiene": {
+    "hook": "hygiene-hat",
+    "bars": 2,
+    "render": {
+     "haps": 24,
+     "fails": 0
+    },
+    "loudness": {
+     "lufs": -35.82,
+     "true_peak_dbtp": -13.98,
+     "crest_db": 28.18,
+     "centroid_hz": 7053,
+     "tilt_db_oct": 27.64
+    },
+    "bands": {
+     "peak_db": -14,
+     "clipped": 0,
+     "dc_db": -180,
+     "sub20_db": -174.2,
+     "ultra_db": -101.4,
+     "below_db": -59.9,
+     "above_db": -76.1,
+     "inband_pct": 100
+    },
+    "checks": [
+     {
+      "name": "below_db",
+      "value": -59.9,
+      "limit": "<= -30",
+      "ok": true
+     },
+     {
+      "name": "above_db",
+      "value": -76.1,
+      "limit": "<= -15",
+      "ok": true
+     },
+     {
+      "name": "ultra_db",
+      "value": -101.4,
+      "limit": "<= -15",
+      "ok": true
+     },
+     {
+      "name": "sub20_db",
+      "value": -174.2,
+      "limit": "<= -40",
+      "ok": true
+     },
+     {
+      "name": "peak_db",
+      "value": -14,
+      "limit": "<= -6",
+      "ok": true
+     },
+     {
+      "name": "dc_db",
+      "value": -180,
+      "limit": "<= -60",
+      "ok": true
+     },
+     {
+      "name": "clipped",
+      "value": 0,
+      "limit": "<= 0",
+      "ok": true
+     },
+     {
+      "name": "peak_min_db",
+      "value": -14,
+      "limit": ">= -36",
+      "ok": true
+     }
+    ],
+    "pass": true
+   }
+  },
+  {
+   "id": "hat-open",
+   "sound": "dr_hat_open",
+   "class": "hat",
+   "band": [
+    3000,
+    16000
+   ],
+   "bars": 2,
+   "render": {
+    "haps": 12,
+    "fails": 0
+   },
+   "loudness": {
+    "lufs": -33.09,
+    "true_peak_dbtp": -17.81,
+    "crest_db": 22.83,
+    "centroid_hz": 7092,
+    "tilt_db_oct": 11.15
+   },
+   "bands": {
+    "peak_db": -18.3,
+    "clipped": 0,
+    "dc_db": -141.6,
+    "sub20_db": -87.4,
+    "ultra_db": -77.7,
+    "below_db": -34.4,
+    "above_db": -62.1,
+    "inband_pct": 100
+   },
+   "checks": [
+    {
+     "name": "below_db",
+     "value": -34.4,
+     "limit": "<= -30",
+     "ok": true
+    },
+    {
+     "name": "above_db",
+     "value": -62.1,
+     "limit": "<= -15",
+     "ok": true
+    },
+    {
+     "name": "ultra_db",
+     "value": -77.7,
+     "limit": "<= -15",
+     "ok": true
+    },
+    {
+     "name": "sub20_db",
+     "value": -87.4,
+     "limit": "<= -40",
+     "ok": true
+    },
+    {
+     "name": "peak_db",
+     "value": -18.3,
+     "limit": "<= -6",
+     "ok": true
+    },
+    {
+     "name": "dc_db",
+     "value": -141.6,
+     "limit": "<= -60",
+     "ok": true
+    },
+    {
+     "name": "clipped",
+     "value": 0,
+     "limit": "<= 0",
+     "ok": true
+    },
+    {
+     "name": "peak_min_db",
+     "value": -18.3,
+     "limit": ">= -36",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "with_hygiene": {
+    "hook": "hygiene-hat",
+    "bars": 2,
+    "render": {
+     "haps": 12,
+     "fails": 0
+    },
+    "loudness": {
+     "lufs": -28.7,
+     "true_peak_dbtp": -12.74,
+     "crest_db": 23.02,
+     "centroid_hz": 7171,
+     "tilt_db_oct": 27.83
+    },
+    "bands": {
+     "peak_db": -13.7,
+     "clipped": 0,
+     "dc_db": -180,
+     "sub20_db": -175.4,
+     "ultra_db": -111.3,
+     "below_db": -56.8,
+     "above_db": -73.6,
+     "inband_pct": 100
+    },
+    "checks": [
+     {
+      "name": "below_db",
+      "value": -56.8,
+      "limit": "<= -30",
+      "ok": true
+     },
+     {
+      "name": "above_db",
+      "value": -73.6,
+      "limit": "<= -15",
+      "ok": true
+     },
+     {
+      "name": "ultra_db",
+      "value": -111.3,
+      "limit": "<= -15",
+      "ok": true
+     },
+     {
+      "name": "sub20_db",
+      "value": -175.4,
+      "limit": "<= -40",
+      "ok": true
+     },
+     {
+      "name": "peak_db",
+      "value": -13.7,
+      "limit": "<= -6",
+      "ok": true
+     },
+     {
+      "name": "dc_db",
+      "value": -180,
+      "limit": "<= -60",
+      "ok": true
+     },
+     {
+      "name": "clipped",
+      "value": 0,
+      "limit": "<= 0",
+      "ok": true
+     },
+     {
+      "name": "peak_min_db",
+      "value": -13.7,
+      "limit": ">= -36",
+      "ok": true
+     }
+    ],
+    "pass": true
+   }
+  },
+  {
+   "id": "clap",
+   "sound": "dr_clap",
+   "class": "perc",
+   "band": [
+    80,
+    9000
+   ],
+   "bars": 2,
+   "render": {
+    "haps": 12,
+    "fails": 0
+   },
+   "loudness": {
+    "lufs": -27.82,
+    "true_peak_dbtp": -12.84,
+    "crest_db": 20.9,
+    "centroid_hz": 1475,
+    "tilt_db_oct": 1.56
+   },
+   "bands": {
+    "peak_db": -12.9,
+    "clipped": 0,
+    "dc_db": -117.7,
+    "sub20_db": -55.2,
+    "ultra_db": -68,
+    "below_db": -48.8,
+    "above_db": -36.8,
+    "inband_pct": 100
+   },
+   "checks": [
+    {
+     "name": "below_db",
+     "value": -48.8,
+     "limit": "<= -24",
+     "ok": true
+    },
+    {
+     "name": "above_db",
+     "value": -36.8,
+     "limit": "<= -24",
+     "ok": true
+    },
+    {
+     "name": "ultra_db",
+     "value": -68,
+     "limit": "<= -45",
+     "ok": true
+    },
+    {
+     "name": "sub20_db",
+     "value": -55.2,
+     "limit": "<= -40",
+     "ok": true
+    },
+    {
+     "name": "peak_db",
+     "value": -12.9,
+     "limit": "<= -3",
+     "ok": true
+    },
+    {
+     "name": "dc_db",
+     "value": -117.7,
+     "limit": "<= -60",
+     "ok": true
+    },
+    {
+     "name": "clipped",
+     "value": 0,
+     "limit": "<= 0",
+     "ok": true
+    },
+    {
+     "name": "peak_min_db",
+     "value": -12.9,
+     "limit": ">= -36",
+     "ok": true
+    }
+   ],
+   "pass": true
+  },
+  {
+   "id": "tom",
+   "sound": "dr_tom",
+   "class": "kick",
+   "band": [
+    28,
+    6000
+   ],
+   "bars": 2,
+   "render": {
+    "haps": 12,
+    "fails": 0
+   },
+   "loudness": {
+    "lufs": -25.81,
+    "true_peak_dbtp": -12.86,
+    "crest_db": 15.56,
+    "centroid_hz": 114,
+    "tilt_db_oct": -10.32
+   },
+   "bands": {
+    "peak_db": -12.9,
+    "clipped": 0,
+    "dc_db": -83.5,
+    "sub20_db": -36.5,
+    "ultra_db": -53.1,
+    "below_db": -33.7,
+    "above_db": -43.6,
+    "inband_pct": 99.9
+   },
+   "checks": [
+    {
+     "name": "below_db",
+     "value": -33.7,
+     "limit": "<= -30",
+     "ok": true
+    },
+    {
+     "name": "above_db",
+     "value": -43.6,
+     "limit": "<= -30",
+     "ok": true
+    },
+    {
+     "name": "ultra_db",
+     "value": -53.1,
+     "limit": "<= -45",
+     "ok": true
+    },
+    {
+     "name": "sub20_db",
+     "value": -36.5,
+     "limit": "<= -40",
+     "ok": false
+    },
+    {
+     "name": "peak_db",
+     "value": -12.9,
+     "limit": "<= -3",
+     "ok": true
+    },
+    {
+     "name": "dc_db",
+     "value": -83.5,
+     "limit": "<= -60",
+     "ok": true
+    },
+    {
+     "name": "clipped",
+     "value": 0,
+     "limit": "<= 0",
+     "ok": true
+    },
+    {
+     "name": "peak_min_db",
+     "value": -12.9,
+     "limit": ">= -36",
+     "ok": true
+    }
+   ],
+   "pass": false,
+   "with_hygiene": {
+    "hook": "hygiene-kick",
+    "bars": 2,
+    "render": {
+     "haps": 12,
+     "fails": 0
+    },
+    "loudness": {
+     "lufs": -25.43,
+     "true_peak_dbtp": -12.41,
+     "crest_db": 15.62,
+     "centroid_hz": 113,
+     "tilt_db_oct": -10.2
+    },
+    "bands": {
+     "peak_db": -12.4,
+     "clipped": 0,
+     "dc_db": -136.6,
+     "sub20_db": -46.2,
+     "ultra_db": -92.7,
+     "below_db": -39.1,
+     "above_db": -46.6,
+     "inband_pct": 100
+    },
+    "checks": [
+     {
+      "name": "below_db",
+      "value": -39.1,
+      "limit": "<= -30",
+      "ok": true
+     },
+     {
+      "name": "above_db",
+      "value": -46.6,
+      "limit": "<= -30",
+      "ok": true
+     },
+     {
+      "name": "ultra_db",
+      "value": -92.7,
+      "limit": "<= -45",
+      "ok": true
+     },
+     {
+      "name": "sub20_db",
+      "value": -46.2,
+      "limit": "<= -40",
+      "ok": true
+     },
+     {
+      "name": "peak_db",
+      "value": -12.4,
+      "limit": "<= -3",
+      "ok": true
+     },
+     {
+      "name": "dc_db",
+      "value": -136.6,
+      "limit": "<= -60",
+      "ok": true
+     },
+     {
+      "name": "clipped",
+      "value": 0,
+      "limit": "<= 0",
+      "ok": true
+     },
+     {
+      "name": "peak_min_db",
+      "value": -12.4,
+      "limit": ">= -36",
+      "ok": true
+     }
+    ],
+    "pass": true
+   }
+  },
+  {
+   "id": "drawn-bass",
+   "sound": "wt_drawn_bass",
+   "class": "bass",
+   "band": [
+    30,
+    2500
+   ],
+   "bars": 2,
+   "render": {
+    "haps": 24,
+    "fails": 0
+   },
+   "loudness": {
+    "lufs": -28.94,
+    "true_peak_dbtp": -17.31,
+    "crest_db": 10.21,
+    "centroid_hz": 55,
+    "tilt_db_oct": -16.75
+   },
+   "bands": {
+    "peak_db": -17.3,
+    "clipped": 0,
+    "dc_db": -145.5,
+    "sub20_db": -32.4,
+    "ultra_db": -135.5,
+    "below_db": -26.5,
+    "above_db": -70.1,
+    "inband_pct": 99.4
+   },
+   "checks": [
+    {
+     "name": "below_db",
+     "value": -26.5,
+     "limit": "<= -30",
+     "ok": false
+    },
+    {
+     "name": "above_db",
+     "value": -70.1,
+     "limit": "<= -24",
+     "ok": true
+    },
+    {
+     "name": "ultra_db",
+     "value": -135.5,
+     "limit": "<= -45",
+     "ok": true
+    },
+    {
+     "name": "sub20_db",
+     "value": -32.4,
+     "limit": "<= -40",
+     "ok": false
+    },
+    {
+     "name": "peak_db",
+     "value": -17.3,
+     "limit": "<= -6",
+     "ok": true
+    },
+    {
+     "name": "dc_db",
+     "value": -145.5,
+     "limit": "<= -60",
+     "ok": true
+    },
+    {
+     "name": "clipped",
+     "value": 0,
+     "limit": "<= 0",
+     "ok": true
+    },
+    {
+     "name": "peak_min_db",
+     "value": -17.3,
+     "limit": ">= -36",
+     "ok": true
+    }
+   ],
+   "pass": false,
+   "with_hygiene": {
+    "hook": "hygiene-bass",
+    "bars": 2,
+    "render": {
+     "haps": 24,
+     "fails": 0
+    },
+    "loudness": {
+     "lufs": -28.49,
+     "true_peak_dbtp": -17,
+     "crest_db": 10.23,
+     "centroid_hz": 56,
+     "tilt_db_oct": -13.61
+    },
+    "bands": {
+     "peak_db": -17,
+     "clipped": 0,
+     "dc_db": -153.1,
+     "sub20_db": -41.4,
+     "ultra_db": -129.1,
+     "below_db": -34.7,
+     "above_db": -58.1,
+     "inband_pct": 99.9
+    },
+    "checks": [
+     {
+      "name": "below_db",
+      "value": -34.7,
+      "limit": "<= -30",
+      "ok": true
+     },
+     {
+      "name": "above_db",
+      "value": -58.1,
+      "limit": "<= -24",
+      "ok": true
+     },
+     {
+      "name": "ultra_db",
+      "value": -129.1,
+      "limit": "<= -45",
+      "ok": true
+     },
+     {
+      "name": "sub20_db",
+      "value": -41.4,
+      "limit": "<= -40",
+      "ok": true
+     },
+     {
+      "name": "peak_db",
+      "value": -17,
+      "limit": "<= -6",
+      "ok": true
+     },
+     {
+      "name": "dc_db",
+      "value": -153.1,
+      "limit": "<= -60",
+      "ok": true
+     },
+     {
+      "name": "clipped",
+      "value": 0,
+      "limit": "<= 0",
+      "ok": true
+     },
+     {
+      "name": "peak_min_db",
+      "value": -17,
+      "limit": ">= -36",
+      "ok": true
+     }
+    ],
+    "pass": true
+   }
+  },
+  {
+   "id": "drawn-choir",
+   "sound": "wt_drawn_choir",
+   "class": "pad",
+   "band": [
+    100,
+    8000
+   ],
+   "bars": 4,
+   "render": {
+    "haps": 20,
+    "fails": 0
+   },
+   "loudness": {
+    "lufs": -26.77,
+    "true_peak_dbtp": -15.02,
+    "crest_db": 13.81,
+    "centroid_hz": 277,
+    "tilt_db_oct": -10.37
+   },
+   "bands": {
+    "peak_db": -15,
+    "clipped": 0,
+    "dc_db": -115,
+    "sub20_db": -88.4,
+    "ultra_db": -151.1,
+    "below_db": -55.2,
+    "above_db": -61,
+    "inband_pct": 100
+   },
+   "checks": [
+    {
+     "name": "below_db",
+     "value": -55.2,
+     "limit": "<= -30",
+     "ok": true
+    },
+    {
+     "name": "above_db",
+     "value": -61,
+     "limit": "<= -30",
+     "ok": true
+    },
+    {
+     "name": "ultra_db",
+     "value": -151.1,
+     "limit": "<= -45",
+     "ok": true
+    },
+    {
+     "name": "sub20_db",
+     "value": -88.4,
+     "limit": "<= -40",
+     "ok": true
+    },
+    {
+     "name": "peak_db",
+     "value": -15,
+     "limit": "<= -6",
+     "ok": true
+    },
+    {
+     "name": "dc_db",
+     "value": -115,
+     "limit": "<= -60",
+     "ok": true
+    },
+    {
+     "name": "clipped",
+     "value": 0,
+     "limit": "<= 0",
+     "ok": true
+    },
+    {
+     "name": "peak_min_db",
+     "value": -15,
+     "limit": ">= -36",
+     "ok": true
+    }
+   ],
+   "pass": true
+  },
+  {
+   "id": "drawn-electric",
+   "sound": "wt_drawn_electric",
+   "class": "guitar",
+   "band": [
+    70,
+    8000
+   ],
+   "bars": 2,
+   "render": {
+    "haps": 9,
+    "fails": 0
+   },
+   "loudness": {
+    "lufs": -26.61,
+    "true_peak_dbtp": -10.07,
+    "crest_db": 18.06,
+    "centroid_hz": 232,
+    "tilt_db_oct": -11.57
+   },
+   "bands": {
+    "peak_db": -10.1,
+    "clipped": 0,
+    "dc_db": -75.9,
+    "sub20_db": -45.3,
+    "ultra_db": -113.2,
+    "below_db": -34.6,
+    "above_db": -78.8,
+    "inband_pct": 100
+   },
+   "checks": [
+    {
+     "name": "below_db",
+     "value": -34.6,
+     "limit": "<= -24",
+     "ok": true
+    },
+    {
+     "name": "above_db",
+     "value": -78.8,
+     "limit": "<= -20",
+     "ok": true
+    },
+    {
+     "name": "ultra_db",
+     "value": -113.2,
+     "limit": "<= -40",
+     "ok": true
+    },
+    {
+     "name": "sub20_db",
+     "value": -45.3,
+     "limit": "<= -40",
+     "ok": true
+    },
+    {
+     "name": "peak_db",
+     "value": -10.1,
+     "limit": "<= -6",
+     "ok": true
+    },
+    {
+     "name": "dc_db",
+     "value": -75.9,
+     "limit": "<= -60",
+     "ok": true
+    },
+    {
+     "name": "clipped",
+     "value": 0,
+     "limit": "<= 0",
+     "ok": true
+    },
+    {
+     "name": "peak_min_db",
+     "value": -10.1,
+     "limit": ">= -36",
+     "ok": true
+    }
+   ],
+   "pass": true
+  },
+  {
+   "id": "drawn-viola",
+   "sound": "wt_drawn_viola",
+   "class": "lead",
+   "band": [
+    150,
+    10000
+   ],
+   "bars": 2,
+   "render": {
+    "haps": 3,
+    "fails": 0
+   },
+   "loudness": {
+    "lufs": -30.17,
+    "true_peak_dbtp": -22.5,
+    "crest_db": 10.1,
+    "centroid_hz": 451,
+    "tilt_db_oct": -0.34
+   },
+   "bands": {
+    "peak_db": -22.5,
+    "clipped": 0,
+    "dc_db": -128.1,
+    "sub20_db": -91.9,
+    "ultra_db": -131.9,
+    "below_db": -82.1,
+    "above_db": -75.5,
+    "inband_pct": 100
+   },
+   "checks": [
+    {
+     "name": "below_db",
+     "value": -82.1,
+     "limit": "<= -30",
+     "ok": true
+    },
+    {
+     "name": "above_db",
+     "value": -75.5,
+     "limit": "<= -30",
+     "ok": true
+    },
+    {
+     "name": "ultra_db",
+     "value": -131.9,
+     "limit": "<= -45",
+     "ok": true
+    },
+    {
+     "name": "sub20_db",
+     "value": -91.9,
+     "limit": "<= -40",
+     "ok": true
+    },
+    {
+     "name": "peak_db",
+     "value": -22.5,
+     "limit": "<= -6",
+     "ok": true
+    },
+    {
+     "name": "dc_db",
+     "value": -128.1,
+     "limit": "<= -60",
+     "ok": true
+    },
+    {
+     "name": "clipped",
+     "value": 0,
+     "limit": "<= 0",
+     "ok": true
+    },
+    {
+     "name": "peak_min_db",
+     "value": -22.5,
+     "limit": ">= -36",
+     "ok": true
+    }
+   ],
+   "pass": true
+  },
+  {
+   "id": "drawn-cello",
+   "sound": "wt_drawn_cello",
+   "class": "keys",
+   "band": [
+    80,
+    8000
+   ],
+   "bars": 2,
+   "render": {
+    "haps": 3,
+    "fails": 0
+   },
+   "loudness": {
+    "lufs": -29.15,
+    "true_peak_dbtp": -21.88,
+    "crest_db": 8.74,
+    "centroid_hz": 138,
+    "tilt_db_oct": -14.3
+   },
+   "bands": {
+    "peak_db": -21.9,
+    "clipped": 0,
+    "dc_db": -124,
+    "sub20_db": -79.2,
+    "ultra_db": -103.5,
+    "below_db": -34.2,
+    "above_db": -97.9,
+    "inband_pct": 98.2
+   },
+   "checks": [
+    {
+     "name": "below_db",
+     "value": -34.2,
+     "limit": "<= -30",
+     "ok": true
+    },
+    {
+     "name": "above_db",
+     "value": -97.9,
+     "limit": "<= -30",
+     "ok": true
+    },
+    {
+     "name": "ultra_db",
+     "value": -103.5,
+     "limit": "<= -45",
+     "ok": true
+    },
+    {
+     "name": "sub20_db",
+     "value": -79.2,
+     "limit": "<= -40",
+     "ok": true
+    },
+    {
+     "name": "peak_db",
+     "value": -21.9,
+     "limit": "<= -6",
+     "ok": true
+    },
+    {
+     "name": "dc_db",
+     "value": -124,
+     "limit": "<= -60",
+     "ok": true
+    },
+    {
+     "name": "clipped",
+     "value": 0,
+     "limit": "<= 0",
+     "ok": true
+    },
+    {
+     "name": "peak_min_db",
+     "value": -21.9,
+     "limit": ">= -36",
+     "ok": true
+    }
+   ],
+   "pass": true
+  },
+  {
+   "id": "steel-guitar",
+   "sound": "dr_steel_guitar",
+   "class": "pluck",
+   "band": [
+    120,
+    9000
+   ],
+   "bars": 2,
+   "render": {
+    "haps": 12,
+    "fails": 0
+   },
+   "loudness": {
+    "lufs": -20.69,
+    "true_peak_dbtp": -7.52,
+    "crest_db": 17.49,
+    "centroid_hz": 1707,
+    "tilt_db_oct": -1.55
+   },
+   "bands": {
+    "peak_db": -7.5,
+    "clipped": 0,
+    "dc_db": -116.7,
+    "sub20_db": -41,
+    "ultra_db": -56.8,
+    "below_db": -35,
+    "above_db": -31.6,
+    "inband_pct": 99.9
+   },
+   "checks": [
+    {
+     "name": "below_db",
+     "value": -35,
+     "limit": "<= -30",
+     "ok": true
+    },
+    {
+     "name": "above_db",
+     "value": -31.6,
+     "limit": "<= -30",
+     "ok": true
+    },
+    {
+     "name": "ultra_db",
+     "value": -56.8,
+     "limit": "<= -45",
+     "ok": true
+    },
+    {
+     "name": "sub20_db",
+     "value": -41,
+     "limit": "<= -40",
+     "ok": true
+    },
+    {
+     "name": "peak_db",
+     "value": -7.5,
+     "limit": "<= -6",
+     "ok": true
+    },
+    {
+     "name": "dc_db",
+     "value": -116.7,
+     "limit": "<= -60",
+     "ok": true
+    },
+    {
+     "name": "clipped",
+     "value": 0,
+     "limit": "<= 0",
+     "ok": true
+    },
+    {
+     "name": "peak_min_db",
+     "value": -7.5,
+     "limit": ">= -36",
+     "ok": true
+    }
+   ],
+   "pass": true
+  },
+  {
+   "id": "fm-clave",
+   "sound": "dr_fm_clave",
+   "class": "perc",
+   "band": [
+    80,
+    9000
+   ],
+   "bars": 2,
+   "render": {
+    "haps": 12,
+    "fails": 0
+   },
+   "loudness": {
+    "lufs": -31.11,
+    "true_peak_dbtp": -11.24,
+    "crest_db": 26.53,
+    "centroid_hz": 2395,
+    "tilt_db_oct": 1.62
+   },
+   "bands": {
+    "peak_db": -11.4,
+    "clipped": 0,
+    "dc_db": -85.7,
+    "sub20_db": -34.6,
+    "ultra_db": -71.5,
+    "below_db": -29.3,
+    "above_db": -40.7,
+    "inband_pct": 99.9
+   },
+   "checks": [
+    {
+     "name": "below_db",
+     "value": -29.3,
+     "limit": "<= -24",
+     "ok": true
+    },
+    {
+     "name": "above_db",
+     "value": -40.7,
+     "limit": "<= -24",
+     "ok": true
+    },
+    {
+     "name": "ultra_db",
+     "value": -71.5,
+     "limit": "<= -45",
+     "ok": true
+    },
+    {
+     "name": "sub20_db",
+     "value": -34.6,
+     "limit": "<= -40",
+     "ok": false
+    },
+    {
+     "name": "peak_db",
+     "value": -11.4,
+     "limit": "<= -3",
+     "ok": true
+    },
+    {
+     "name": "dc_db",
+     "value": -85.7,
+     "limit": "<= -60",
+     "ok": true
+    },
+    {
+     "name": "clipped",
+     "value": 0,
+     "limit": "<= 0",
+     "ok": true
+    },
+    {
+     "name": "peak_min_db",
+     "value": -11.4,
+     "limit": ">= -36",
+     "ok": true
+    }
+   ],
+   "pass": false
+  },
+  {
+   "id": "fm-bell",
+   "sound": "dr_fm_bell",
+   "class": "bell",
+   "band": [
+    300,
+    9000
+   ],
+   "bars": 2,
+   "render": {
+    "haps": 12,
+    "fails": 0
+   },
+   "loudness": {
+    "lufs": -21.75,
+    "true_peak_dbtp": -11.2,
+    "crest_db": 16,
+    "centroid_hz": 2938,
+    "tilt_db_oct": 5.69
+   },
+   "bands": {
+    "peak_db": -11.4,
+    "clipped": 0,
+    "dc_db": -92.4,
+    "sub20_db": -51.8,
+    "ultra_db": -79,
+    "below_db": -44.3,
+    "above_db": -31.9,
+    "inband_pct": 99.9
+   },
+   "checks": [
+    {
+     "name": "below_db",
+     "value": -44.3,
+     "limit": "<= -30",
+     "ok": true
+    },
+    {
+     "name": "above_db",
+     "value": -31.9,
+     "limit": "<= -24",
+     "ok": true
+    },
+    {
+     "name": "ultra_db",
+     "value": -79,
+     "limit": "<= -45",
+     "ok": true
+    },
+    {
+     "name": "sub20_db",
+     "value": -51.8,
+     "limit": "<= -40",
+     "ok": true
+    },
+    {
+     "name": "peak_db",
+     "value": -11.4,
+     "limit": "<= -6",
+     "ok": true
+    },
+    {
+     "name": "dc_db",
+     "value": -92.4,
+     "limit": "<= -60",
+     "ok": true
+    },
+    {
+     "name": "clipped",
+     "value": 0,
+     "limit": "<= 0",
+     "ok": true
+    },
+    {
+     "name": "peak_min_db",
+     "value": -11.4,
+     "limit": ">= -36",
+     "ok": true
+    }
+   ],
+   "pass": true
+  },
+  {
+   "id": "fm-conga",
+   "sound": "dr_fm_conga",
+   "class": "perc",
+   "band": [
+    80,
+    9000
+   ],
+   "bars": 2,
+   "render": {
+    "haps": 12,
+    "fails": 0
+   },
+   "loudness": {
+    "lufs": -25.91,
+    "true_peak_dbtp": -11.42,
+    "crest_db": 19.05,
+    "centroid_hz": 687,
+    "tilt_db_oct": -9.51
+   },
+   "bands": {
+    "peak_db": -11.4,
+    "clipped": 0,
+    "dc_db": -86.5,
+    "sub20_db": -34.9,
+    "ultra_db": -76.6,
+    "below_db": -10.3,
+    "above_db": -67.3,
+    "inband_pct": 88.7
+   },
+   "checks": [
+    {
+     "name": "below_db",
+     "value": -10.3,
+     "limit": "<= -24",
+     "ok": false
+    },
+    {
+     "name": "above_db",
+     "value": -67.3,
+     "limit": "<= -24",
+     "ok": true
+    },
+    {
+     "name": "ultra_db",
+     "value": -76.6,
+     "limit": "<= -45",
+     "ok": true
+    },
+    {
+     "name": "sub20_db",
+     "value": -34.9,
+     "limit": "<= -40",
+     "ok": false
+    },
+    {
+     "name": "peak_db",
+     "value": -11.4,
+     "limit": "<= -3",
+     "ok": true
+    },
+    {
+     "name": "dc_db",
+     "value": -86.5,
+     "limit": "<= -60",
+     "ok": true
+    },
+    {
+     "name": "clipped",
+     "value": 0,
+     "limit": "<= 0",
+     "ok": true
+    },
+    {
+     "name": "peak_min_db",
+     "value": -11.4,
+     "limit": ">= -36",
+     "ok": true
+    }
+   ],
+   "pass": false
+  }
+ ]
+}

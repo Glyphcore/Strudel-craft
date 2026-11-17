@@ -19,10 +19,13 @@ const full = inst({
   registers: [{ from: 'c2', to: 'b3', use: 'morph', gain: 1, tilt: -2 }],
   params: { detune: { min: 0, max: 40, default: 12, to: 'detune', unit: 'cent' } }, vary: { seed: 7, spread: { detune: 0.3 } },
 });
-const good = { 'single cycle': inst({}), 'morph only': { instruments: [{ id: 'm', family: 'f', origin: 'computed', license: 'CC0-1.0', morph: full.instruments[0].morph }] }, 'all optional fields': full, 'empty list': { instruments: [] }, '256 points': inst({ cycle: { points: pts(256) } }), 'Latin titles and credits (Latin-1, Latin Extended-A/B)': inst({ title: 'Caf\u00e9 \u00fcber na\u00efve \u00f1and\u00fa \u0141\u00f3d\u017a Dvo\u0159\u00e1k', descriptors: { credit: 'M\u00fcller & S\u00f8ren' } }),
+const mdl = (model) => ({ instruments: [{ id: 'm1', family: 'x', origin: 'computed', license: 'CC0-1.0', model }] });
+const good = {
+  'model pluck with notes': mdl({ kind: 'pluck', notes: ['c2', 'c3'], variants: 2, params: { decay_s: 2 } }), 'model room': mdl({ kind: 'room', params: { size: 1 } }), 'model fm-perc': mdl({ kind: 'fm-perc', variants: 4 }), 'single cycle': inst({}), 'morph only': { instruments: [{ id: 'm', family: 'f', origin: 'computed', license: 'CC0-1.0', morph: full.instruments[0].morph }] }, 'all optional fields': full, 'empty list': { instruments: [] }, '256 points': inst({ cycle: { points: pts(256) } }), 'Latin titles and credits (Latin-1, Latin Extended-A/B)': inst({ title: 'Caf\u00e9 \u00fcber na\u00efve \u00f1and\u00fa \u0141\u00f3d\u017a Dvo\u0159\u00e1k', descriptors: { credit: 'M\u00fcller & S\u00f8ren' } }),
   'lowercase riff is a music word (RIFF is the header)': inst({ title: 'bass riff', descriptors: { style: 'riffy' } }) };
 const big = (n, v = 0) => Array.from({ length: n }, () => v);
 const bad = {
+  'model with 9 notes': mdl({ kind: 'pluck', notes: Array.from({ length: 9 }, () => 'c3') }), 'model note not a note': mdl({ kind: 'pluck', notes: ['zz9'] }), 'model unknown kind': mdl({ kind: 'cowbell' }), 'model with 9 params': mdl({ kind: 'kick', params: Object.fromEntries(Array.from({ length: 9 }, (_, i) => ['p' + i, 1])) }), 'model with samples array': mdl({ kind: 'kick', samples: [0, 1] }),
   'unknown field with 5000 [x,y] pairs': inst({ extra: pts(5000) }),
   'unknown field, 20 arrays of 200 numbers': inst({ extra: Array.from({ length: 20 }, () => big(200)) }),
   'env.amp.points with 100000 pairs': inst({ env: { amp: { points: Array.from({ length: 100000 }, (_, i) => [i % 50, 0]) } } }),

@@ -344,7 +344,7 @@
     },
     {
       "id": "drawn-waves", "title": "Drawn waves as partials (data, no audio file)", "needs": "none",
-      "explain": "A wave you draw is stored as control points and turned into harmonic partials: s(\"user\").partials([...]).phases([...]) plays it on plain Strudel. The waveforms pack kind (#182) is built: the pack glyphcore/drawn-core ships original instruments you play by name: wavetable voices wt_drawn_bass, wt_drawn_choir, wt_drawn_electric, wt_drawn_viola, wt_drawn_cello, and a computed drum kit dr_kick, dr_snare, dr_hat_closed, dr_hat_open, dr_clap, dr_tom (four seeded variants each, for example s(\"dr_kick:2\")) (wavetables and one-shots built in the page when the program names them, no audio file). The draw surface to make your own is coming (stage 3).",
+      "explain": "A wave you draw is stored as control points and turned into harmonic partials: s(\"user\").partials([...]).phases([...]) plays it on plain Strudel. The waveforms pack kind (#182) is built: the pack glyphcore/drawn-core ships original instruments you play by name: wavetable voices wt_drawn_bass, wt_drawn_choir, wt_drawn_electric, wt_drawn_viola, wt_drawn_cello, and a computed drum kit dr_kick, dr_snare, dr_hat_closed, dr_hat_open, dr_clap, dr_tom, a steel guitar pluck dr_steel_guitar, FM percussion dr_fm_clave, dr_fm_conga, dr_fm_bell, and three synthetic room presets (room-small, room-hall, room-plate: Strudel's own reverb controls) (four seeded variants each, for example s(\"dr_kick:2\")) (wavetables and one-shots built in the page when the program names them, no audio file). The draw surface to make your own is coming (stage 3).",
       "examples": [
         {
           "title": "A hand-shaped wave (partials from a drawn cycle)",
@@ -352,7 +352,7 @@
         },
         {
           "title": "A drawn instrument by name (glyphcore/drawn-core)",
-          "code": "setcpm(100/4)\n$: note(\"e1 e1 g1 a1 e1 d2 b1 g1\").s(\"wt_drawn_bass\").decay(0.5).sustain(0).release(0.1).lpf(1400).gain(0.83)"
+          "code": "setcpm(100/4)\n$: note(\"e1 e1 g1 a1 e1 d2 b1 g1\").s(\"wt_drawn_bass\").attack(0.004).decay(0.5).sustain(0).release(0.1).hpf(25).lpf(1400).gain(0.83)"
         },
         {
           "title": "A morphing pad: .wt() moves through the keyframes",
@@ -360,15 +360,27 @@
         },
         {
           "title": "A computed drum kit with seeded variants",
-          "code": "setcpm(110/4)\n$: s(\"dr_kick:0 ~ [~ dr_kick:2] ~, ~ dr_snare:1 ~ dr_snare:2, ~ ~ dr_clap:0 ~\").gain(0.43)\n$: s(\"dr_hat_closed*8\").n(\"<0 1 2 3>\").gain(0.26)\n$: s(\"~ ~ ~ dr_hat_open:1, ~ ~ ~ ~ ~ ~ ~ dr_tom:3\").gain(0.34)"
+          "code": "setcpm(110/4)\n$: s(\"dr_kick:0 ~ [~ dr_kick:2] ~, ~ dr_snare:1 ~ dr_snare:2, ~ ~ dr_clap:0 ~\").gain(0.56)\n$: s(\"dr_hat_closed*8\").n(\"<0 1 2 3>\").gain(0.34)\n$: s(\"~ ~ ~ dr_hat_open:1, ~ ~ ~ ~ ~ ~ ~ dr_tom:3\").gain(0.44)"
         },
         {
           "title": "Drawn electric guitar chords (distorted)",
-          "code": "setcpm(100/4)\n$: note(\"<[e2,b2,e3] [g2,d3,g3] [a2,e3,a3] [g2,d3,g3]>\").s(\"wt_drawn_electric\").decay(0.4).sustain(0.2).release(0.15).distort(0.5).lpf(4500).gain(0.8)"
+          "code": "setcpm(100/4)\n$: note(\"<[e2,b2,e3] [g2,d3,g3] [a2,e3,a3] [g2,d3,g3]>\").s(\"wt_drawn_electric\").attack(0.004).decay(0.4).sustain(0.2).release(0.15).distort(0.5).lpf(4500).gain(0.8)"
         },
         {
           "title": "Viola over cello (bowed-string stand-ins)",
           "code": "setcpm(72/4)\n$: note(\"<c4 e4 g4 e4>\").s(\"wt_drawn_viola\").attack(0.12).release(0.4).vib(5.5).vibmod(0.3).lpf(4000).gain(0.5)\n$: note(\"<c2 g1 a1 f1>\").s(\"wt_drawn_cello\").attack(0.16).release(0.5).vib(5).vibmod(0.3).gain(0.6)"
+        },
+        {
+          "title": "Steel guitar pluck (Karplus-Strong, a stand-in)",
+          "code": "setcpm(90/4)\n$: note(\"<[c3 e3 g3 c4] [a2 c3 e3 a3] [f2 a2 c3 f3] [g2 b2 d3 g3]>\").s(\"dr_steel_guitar\").gain(0.6)"
+        },
+        {
+          "title": "FM percussion: clave, conga and bell, four seeded variants",
+          "code": "setcpm(105/4)\n$: s(\"dr_fm_clave:0*2 dr_fm_clave:1 dr_fm_clave:2\").gain(0.66)\n$: s(\"~ dr_fm_conga:0 dr_fm_conga:1 ~, dr_fm_bell:0 ~ ~ dr_fm_bell:2\").gain(0.66)"
+        },
+        {
+          "title": "A synthetic space (the drawn-core room-hall preset, Strudel's own reverb controls)",
+          "code": "setcpm(100/4)\n$: s(\"dr_kick:0 ~ ~ ~, ~ ~ dr_clap:1 ~\").gain(1).room(0.3).roomsize(2.2).roomfade(5).roomlp(7000).roomdim(2500)"
         }
       ]
     }

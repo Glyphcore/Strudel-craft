@@ -627,6 +627,8 @@ if (HOST) {
     try {
       const T = sc.transport, code = d.recipe.state && d.recipe.state.source ? d.recipe.state.source.code : '';
       if (d.o.maps) for (const m of d.o.maps) await T.loadSampleMap(m); else if (T.ensureSamples) await T.ensureSamples(code);
+      /* #182, #183: the host registers the sounds the program names (drawn wavetables, computed one-shots, referenced sample sources), as Play does on the page; a source that cannot be activated leaves its sound out and that hap is counted as failed */
+      try { const P = window.strudelCraft && window.strudelCraft.packs; if (P && P.activateSources) await P.activateSources(code); } catch (err) { /* reported through the render's fails count */ }
       if (d.o.vox && window.voxBank) for (const u of d.o.vox) await window.voxBank(u);
       let last = 0; const out = await renderRecipe(d.recipe, { sr: d.o.sr, chunk: d.o.chunk, dbg: d.o.dbg, signal: ac.signal, onProgress: (p) => { const now = performance.now(); if (p >= 1 || now - last > 200) { last = now; post({ type: 'sc-host-progress', id: d.id, p }); } } });
       post({ type: 'sc-host-done', id: d.id, out }, [out.L.buffer, out.R.buffer]);

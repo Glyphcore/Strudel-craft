@@ -1,9 +1,9 @@
 # Drawn and computed waveforms as instruments (design note, #182)
 
-Status: design accepted (#182). **Stages 1, 2 and 4 are built** (stage 3, the draw surface, is ui-designer's and on hold): the `waveforms@1` schema, `site/engine/waveforms.js`, the pack adapter (`site/packs-kinds.js`, activation through `packs.activateSources` on Play),
+Status: design accepted (#182). **Stages 1, 2 and 4 are built, and the measured pass and stage 5 (steel guitar, FM percussion, synthetic spaces) too** (stage 3, the draw surface, is ui-designer's and on hold): the `waveforms@1` schema, `site/engine/waveforms.js`, the pack adapter (`site/packs-kinds.js`, activation through `packs.activateSources` on Play),
 the example pack `glyphcore/drawn-core` (`wt_drawn_bass`, `wt_drawn_choir`, `wt_drawn_electric`, `wt_drawn_viola`, `wt_drawn_cello`, and the computed kit `dr_kick`, `dr_snare`, `dr_hat_closed`,
 `dr_hat_open`, `dr_clap`, `dr_tom`) and their tests. Everything else below stays "coming"
-(CLI render path, steel guitar, FM percussion, synthetic-room presets, code models, draw surface); the Strudel mechanisms in section 2 exist in unmodified Strudel and are verified there. The draw surface is ui-designer work (section 8, stage 3); this note has no UI.
+(the CLI render path, the code-bearing `instrument-models` kind, the draw surface); the Strudel mechanisms in section 2 exist in unmodified Strudel and are verified there. The draw surface is ui-designer work (section 8, stage 3); this note has no UI.
 
 Aim (#182): sounds in the families the reference catalogues cover, made by our own engine from data and parameters, so no recording is copied or
 shipped. Variation comes from parameter ranges and a seed, never from a file per sound. Related: #180 (device adapter contract), #183
@@ -145,7 +145,7 @@ real instrument, not against a spectrum match (which would need the copying this
 | choir | morph (formant-like frames: ah, oh, oo) plus unison and slow vibrato | 3 to 5 keyframes drawn for vowel shapes, `.wt` sweeps vowel, `unison` 4 to 8, `detune`, `vib`, slow `attack` 0.15 to 0.4, a little noise breath | pad-like "choir ahh" is achievable and usable behind a mix; it will not sing words or give a close solo voice (no consonants, no natural formant motion). `voxBank` (the vox pack) stays the route for words | decent as a pad, not as a voice |
 | bass guitar (electric) | single cycle plus pitch and filter envelopes, per-register shapes | drawn cycle with strong 2nd and 3rd harmonic, `lpenv` pluck sweep, short decay, `penv` tiny drop on attack, a click layer; separate register shape below E2 | plucked finger or pick bass is close enough to sit in a mix; slides, ghost notes and fret noise are not modelled | good (the most real of the list) |
 | electric guitar | drawn cycle plus `distort`, or Karplus-Strong in model D | bright cycle, `distort` amount as a parameter, filter envelope for pick, per-string register shapes, palm-mute as a short-decay variant | distorted rhythm chunks read well; clean arpeggios and bends are thin; chords need separate voices | fair distorted, weak clean |
-| steel guitar (acoustic or pedal) | Karplus-Strong or modal partial model (D), inharmonic stretch via section 5 | a plucked-string model with decay per partial, body resonance as a fixed filter pair; for pedal steel a slow glide via `penv` | a convincing pluck needs the string physics of model D (code kind, later stage); with drawn cycles alone it is a plastic pluck | weak until stage 5 |
+| steel guitar (acoustic or pedal) | Karplus-Strong or modal partial model (D), inharmonic stretch via section 5 | a plucked-string model with decay per partial, body resonance as a fixed filter pair; for pedal steel a slow glide via `penv` | a convincing pluck needs the string physics of model D (code kind, later stage); with drawn cycles alone it is a plastic pluck | built (stage 4) as a per-note Karplus-Strong one-shot, rated stand-in: no bends or slides |
 | solo viola | single cycle with per-register shapes plus vibrato and bow-attack noise | saw-like cycle with a drawn nasal formant, vibrato rate/depth (`vib`, `vibmod`), slow attack, a bow-noise burst layer, expressive swell via `wtattack` | the bowed attack and sustain character are the hard part: a drawn wave plus vibrato reads as "synth strings", not a solo viola | weak, lead-synth strings at best |
 | solo cello | as viola, lower register shape, slower vibrato, stronger low formant | same recipe, lower registers, bow noise higher | as viola; low sustained notes are more forgiving than high ones | weak to fair in the low register |
 
@@ -153,7 +153,7 @@ For the bowed and choir cases the licensed route (#181 soundfonts, the `sample-s
 note's instruments are the "our own sound" option, labelled as such (`origin`, `family`, and a realism field so the browser never oversells one).
 `realism: "stand-in" | "usable" | "good"` is a proposed informative field on each instrument (coming).
 
-### 6.1 Numeric parameter table per family (ranges are starting values; **built** for the six drum families in `site/engine/drums.js`, coming for the rest)
+### 6.1 Numeric parameter table per family (ranges are starting values; **built** in `site/engine/drums.js` for the drums, the steel-guitar pluck, FM percussion and the room; the wavetable families use the generic parameters of section 3)
 
 Ranges are `min..max` with the default first. Units: Hz, s, cents, 0..1 unless stated. "Control" is the Strudel control the adapter emits (or the
 model constant for family models of mechanism D). Drum families are computed (no drawing); the drawn ones take a `cycle`/`morph`.
@@ -176,6 +176,41 @@ model constant for family models of mechanism D). Drum families are computed (no
 
 Shape transforms (section 5) have fixed ranges: tilt -12..+12 dB/oct, odd_even -1..1, stretch 0..0.01 (partial k at k*(1+stretch*k)), phase_scramble
 0..1, wavefold 0..1, symmetry -0.5..0.5, formant_shift 0.5..2 (ratio).
+
+### 6.2 Measured: rack spectral pass (built, 2026-11-17)
+
+`node tools/racks/drawn_measure.mjs` renders one short phrase per instrument through the site's offline recorder (`tools/racks/render_track.cjs`, so the sound takes the real pack load
+path and the render host), measures the WAV with `tools/racks/measure.mjs` (loudness, true peak, centroid) and with the rack audit's band definitions (energy below and above the class band
+relative to in-band energy, ultrasonic and sub-20 Hz share, DC, clipping), and judges it against the limits of its class in `tools/racks/standard.json`. For the classes that have one (kick,
+snare, hat, bass) it renders a second time through the rack hygiene hook (`site/engine/hygiene.js`), the band scope every rack chain starts with. Result file: `docs/data/drawn-measure.json`
+(numbers only, no audio); `node tests/site/drawn_measure_check.mjs` checks it against the pack (no dropped haps, and an instrument that misses its class limits both raw and with the hygiene hook
+may not be rated usable or good).
+
+| instrument | class | rating | raw | centroid Hz | peak dBFS | misses (raw) | with rack hygiene hook |
+|---|---|---|---|---|---|---|---|
+| kick | kick | usable | miss | 114 | -12.9 | sub20_db -35 (limit -40) | pass (hygiene-kick) |
+| snare | snare | usable | miss | 688 | -12.9 | below_db -22.5 (limit -24), sub20_db -33.1 (limit -40) | pass (hygiene-snare) |
+| hat-closed | hat | usable | pass | 6954 | -18.2 | - | pass (hygiene-hat) |
+| hat-open | hat | usable | pass | 7092 | -18.3 | - | pass (hygiene-hat) |
+| clap | perc | usable | pass | 1475 | -12.9 | - | - |
+| tom | kick | usable | miss | 114 | -12.9 | sub20_db -36.5 (limit -40) | pass (hygiene-kick) |
+| drawn-bass | bass | usable | miss | 55 | -17.3 | below_db -26.5 (limit -30), sub20_db -32.4 (limit -40) | pass (hygiene-bass) |
+| drawn-choir | pad | stand-in | pass | 277 | -15 | - | - |
+| drawn-electric | guitar | usable | pass | 232 | -10.1 | - | - |
+| drawn-viola | lead | stand-in | pass | 451 | -22.5 | - | - |
+| drawn-cello | keys | stand-in | pass | 138 | -21.9 | - | - |
+| steel-guitar | pluck | stand-in | pass | 1707 | -7.5 | - | - |
+| fm-clave | perc | stand-in | miss | 2395 | -11.4 | sub20_db -34.6 (limit -40) | - |
+| fm-bell | bell | usable | pass | 2938 | -11.4 | - | - |
+| fm-conga | perc | stand-in | miss | 687 | -11.4 | below_db -10.3 (limit -24), sub20_db -34.9 (limit -40) | - |
+
+Reading the table. The first run exposed real defects in the models, fixed before this table: the hats were too bright and aliased (naive square waves; now band-limited), the snare and
+hat noise had no top roll-off, kick and tom carried DC and sub-20 Hz skirts, and the steel guitar and FM voices ran well above their class band (now low-passed). What remains is mix hygiene,
+not sound: kick, snare, tom and bass leave 2 to 20 Hz energy (the repetition of the pattern) and low-end spill above the standard until the class hygiene hook is applied, and then pass; the
+percussion class has no hygiene hook, so the FM clave (sub-20 Hz share) and the FM conga (its modulation difference tone lands near 64 Hz, below the class band) miss and are rated `stand-in` on the numbers.
+The class assigned to each instrument is a judgment (tom against the `kick` class because its fundamental sits at the `perc` band edge; viola `lead`; cello `keys`), and the alias check of
+the standard was not run. Ratings that stayed: bass guitar, electric guitar, drums `usable` (they pass with the hook, or raw), choir pad, viola, cello, steel guitar `stand-in` (they pass the
+spectral limits but the ear test of section 6 is what rates them; a measurement cannot show that a viola reads as synth strings).
 
 ## 7. How each part maps (summary)
 
@@ -219,7 +254,11 @@ program names a `wt_<id>` sound, then builds the WAV tables in memory and calls 
 - [x] Electric guitar, viola and cello as instruments with honest ratings: electric guitar `usable` (distorted chords only), viola `stand-in`, cello `stand-in`; bass guitar `usable`, choir pad `stand-in`.
 - [x] Drum models as parameter sets with seeded variants: kick, snare, closed hat, open hat, clap, tom, rated `usable` (electronic drum voices, not an acoustic kit). `tests/site/waveforms_drums.mjs`: length, peak, decay, spectral centroid band, ordering kick 201 < snare 6334 < hat 13131 Hz, same seed identical, another seed differs, 4 distinct variants each, range/foreign-parameter refusals.
 - [x] Played through the real load path with levels per the `instruments_level.mjs` convention (`tests/site/drawn_pack.mjs`, 5 recipes) plus, for the kit, a crest check (peak/rms >= 3, so hits and not a drone) and all six `dr_` sounds registered.
-- [ ] Not built, stays coming: steel guitar (Karplus-Strong, needs the code-bearing kind of stage 5), FM percussion, synthetic-room presets (a recipe of `room`/`roomsize`/`roomlp`/`roomdim` controls needs no model; no instrument entry yet), the CLI render path, the `tools/racks/measure.mjs` spectral pass.
+- [x] Rack spectral pass over every instrument (section 6.2): `tools/racks/drawn_measure.mjs`, results in `docs/data/drawn-measure.json`, `tests/site/drawn_measure_check.mjs`. Two renderer fixes came out of it: the offline render host now activates the sounds a program names (`packs.activateSources` in `site/capture.js`; it also fixes referenced sample sources offline), and the drum models were corrected as described in 6.2.
+
+**Stage 4 (continued): steel guitar, FM percussion, synthetic spaces (built).** The model families `pluck` (Karplus-Strong: two detuned strings, damping from `brightness`, a body resonance, optional glide; rendered once per note of `model.notes`, up to 8, so `note()` picks the nearest table and repitches), `fm-perc` (two-operator FM, the index decays faster than the level) and `room` (a parameter set for Strudel's own reverb controls `room roomsize roomfade roomlp roomdim`; Strudel generates the impulse algorithmically, no recorded response; the entry registers no sound and `spaceControls(inst)` returns the control chain) in `site/engine/drums.js`. Pack ingredient `models`: `dr_steel_guitar` (stand-in), `dr_fm_clave` and `dr_fm_conga` (stand-ins on the measured numbers), `dr_fm_bell` (usable), and `room-small`, `room-hall`, `room-plate`. Recipes `drawn-steel-pluck`, `drawn-fm-perc`, `drawn-room-hall`.
+- [x] Pitch of the pluck within 1.5% at c2, c3, c4 (autocorrelation), it rings and decays, `brightness` and `fm_index` move the spectrum, rooms are not sounds, model ranges and notes are validated (`tests/site/waveforms_drums.mjs`); load-path levels and crest per the `instruments_level` convention (`tests/site/drawn_pack.mjs`, 8 recipes).
+- [ ] The CLI render path stays coming, and cannot be built from this repository: `engine/strudel-cli` lives in another repository (not present here), node has no `blob:` URLs, so the CLI would need a file-URL variant of the `samples()` registration written there. The browser offline path (`render_track.cjs` and the site's render host) now renders these sounds and is the measured path.
 
 **Stage 5: code-bearing models (needs a decision on trust tier first).**
 - [ ] `instrument-models` kind (`registerSound`, Karplus-Strong steel guitar) in the sandbox host (PACK_SPEC 10.4).

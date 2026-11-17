@@ -112,6 +112,10 @@ CPU x4 gave 127 skipped queries and 25 dropped haps; a 2.5 s main-thread stall g
   main-thread timers, continuous touch scrolling, CPU x4. Result: the site has 0 late events and 0 gaps in all four; upstream has 482 drop logs
   and 26 holes in the hidden case and is clean in the other three. Both open the AudioContext with the default `latencyHint` ("interactive"),
   so that is not a deviation from upstream. Not covered: heavy programs (see docs/AUDIO_ENGINE.md), real phones (iOS Safari, Android screen off).
+- Heavy-program load (#178): `node tests/site/background_audio_load.mjs --prog docs/tracks/velvet-static/track.standalone.strudel.js [--throttle N] [--hidden] [--scroll]`
+  reports scheduler lateness, audio-thread underruns (`playbackStats`) and main-thread cost per second (query passes, tick, voice build, nodes created, long tasks).
+  velvet-static at x1 on the phone profile: 0 late haps, query passes 380 ms/s, voice build 4 ms/s, 306 nodes/s, 32 long tasks (worst 382 ms): the main-thread cost is pattern
+  querying, not voice building. The throttled variants do not complete in the sandbox (the page closes under CDP throttling with this program); see docs/AUDIO_ENGINE.md for the x4/x6 numbers.
 - Play-time clamp: counts played time only (audio-clock time while the context runs), not wall time; the transport readout shows
   "N left · played m:ss · paused m:ss".
 - Background citizen: no drawing while hidden (stage scope, lanes, meter, inline `_scope` / `_pianoroll` widgets, graph playhead), the

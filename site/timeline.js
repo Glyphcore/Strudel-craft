@@ -65,10 +65,12 @@ function init() {
   const isPlaying = () => !!(sc.transport && sc.transport.playing);
   const latency = () => { const c = sc.transport && sc.transport.bus && sc.transport.bus.ctx; const l = c ? (c.outputLatency || 0) : 0; return l > 0 && l < 1 ? l : 0; };
   const cps = () => { const s = sched(); return (s && s.cps) || (sc.transport && sc.transport.cps) || 0.5; };
-  function clockNow() { const s = sched(); if (!s) return T.t; let c = 0; try { c = s.now(); } catch (e) { c = 0; } return Math.max(0, (c || 0) - latency() * cps()); } /* #167: never negative */
+  function clockNow() { const sk = sc.transport && sc.transport.seekingTo; if (sk != null) return sk; /* #207: during a seek the playhead already shows the target */ const s = sched(); if (!s) return T.t; let c = 0; try { c = s.now(); } catch (e) { c = 0; } return Math.max(0, (c || 0) - latency() * cps()); } /* #167: never negative */
 
   function laneIndex(name) { let i = T.lanes.indexOf(name); if (i < 0) { if (T.lanes.length >= 24) return 23; T.lanes.push(name); i = T.lanes.length - 1; layoutWorld(); } return i; }
   function queryCycle(c) {
+    /* #199: a rendered chunk carries the event list its audio was made from; the lanes draw that (what you see is what you hear) */
+    { let ev = null; try { ev = sc.ahead && sc.ahead.cycleEvents ? sc.ahead.cycleEvents(c) : null; } catch (e) { ev = null; } if (ev) { T.cyc.set(c, ev.map((x) => ({ b: x.b, e: x.e, li: laneIndex(x.lane), note: x.note }))); T.evBuf = (T.evBuf || 0) + 1; if (c > T.cycMax) T.cycMax = c; return true; } }
     const s = sched(), pat = s && s.pattern; if (!pat) return false;
     let haps; const bg = sc.bg;
     try { const mh = bg && bg.cycleHaps ? bg.cycleHaps(c) : undefined; if (mh === 'pending') return false; haps = (mh || pat.queryArc(c, c + 1)).filter((h) => h.hasOnset && h.hasOnset()); } catch (e) { haps = []; }
@@ -218,7 +220,7 @@ function init() {
   const laneName = (i) => (i === 0 ? 'Mix' : T.lanes[i - 1]);
   function select(i) { T.sel = i; selOut.textContent = i >= 0 ? laneName(i) : ''; invalidate(); if (i >= 0) window.dispatchEvent(new CustomEvent('sc-lane-select', { detail: { lane: laneName(i), index: i, mix: i === 0 } })); }
   function seek(c) {
-    c = Math.max(0, c); T.cursor = c; if (isPlaying() && sc.range && sc.range.seek) sc.range.seek(c); else { T.t = c; }
+    c = Math.max(0, c); T.cursor = c; if (isPlaying() && sc.transport && sc.transport.seek && sc.transport.seek(c)) { T.t = c; } /* #207: old position halted, restart at c */ else if (isPlaying() && sc.range && sc.range.seek) sc.range.seek(c); else { T.t = c; }
     if (!T.playing) T.t = c; layoutWorld(); invalidate();
   }
   const pt = (e) => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
@@ -414,13 +416,15 @@ function init() {
   /* #196: a fresh feed (recipe switch) empties the lane model, cycle cache, live waveform and playhead state so nothing of the previous recipe stays */
   function reset() { T.cursor = 0; T.t = 0; T.key = null; T.cyc.clear(); T.cycMax = 0; T.lanes = []; LV.m.clear(); LV.k = -1; T.dirty = true; refreshSpec(); invalidate(); }
   sc.timeline = { reset, ping, state: () => ({ mode: T.mode, suspended: T.suspended, follow: root.dataset.follow, ppb: T.ppb, sx: T.sx, scrollLeft: scr.scrollLeft, t: T.t, cursor: T.cursor, playheadX: T.px, gutter: T.GUT, width: T.W, height: T.H, fix: T.fix, lanes: T.lanes.slice(), rowH: ROW, ruler: RULER, sel: T.sel, playing: T.playing, total: T.total, audio: T.audio ? { name: T.audio.name, done: T.audio.p.done, n: T.audio.p.n, start: T.audio.start, cycles: T.audio.cycles } : null, frames: T.frames,
-      specEnd: T.spec, endRule: T.rule, look: T.look, ghostFrom: T.G === Infinity ? null : T.G, totalSec: T.total / cps(), steps: T.steps, scrollWidth: scr.scrollWidth, wave: { ...T.wv }, liveCycles: LV.m.size, labels: T.labels.map((l) => ({ k: l.k, text: l.text })), ahead: sc.ahead ? sc.ahead.state() : null }),
+      specEnd: T.spec, endRule: T.rule, look: T.look, ghostFrom: T.G === Infinity ? null : T.G, totalSec: T.total / cps(), steps: T.steps, scrollWidth: scr.scrollWidth, wave: { ...T.wv }, cyclesFromRender: T.evBuf || 0, liveCycles: LV.m.size, labels: T.labels.map((l) => ({ k: l.k, text: l.text })), ahead: sc.ahead ? sc.ahead.state() : null }),
     setMode, refollow, zoom: zoomBy, setZoom: (p) => setPpb(p), fit, seek, select, setAudio, useTake, setKey, invalidate, rects: () => { const o = []; for (const [c, ev] of T.cyc) for (const e of ev) o.push({ lane: T.lanes[e.li], b: e.b, e: e.e, c, ghost: e.b >= T.G }); return o; }, extend, refresh: refreshSpec, clearLive: () => { LV.m.clear(); LV.k = -1; invalidate(); }, pos: () => (T.playing ? T.t : T.cursor), cost: T.cost, peakCount: () => T.peaks.size, MINPPB, MAXPPB };
   window.__tl = { cost: T.cost };
   /* render-ahead (#195): the module loads only when a lead is set (audio dot sheet, ?ahead=S, localStorage sc.ahead.lead); never in the render host */
-  const aheadLead = () => { try { const q = new URLSearchParams(location.search); if (q.get('host') === 'render') return 0; const v = q.get('ahead'); return Math.max(0, +(v != null ? v : localStorage.getItem('sc.ahead.lead')) || 0); } catch (e) { return 0; } };
+  /* #199: with nothing set, precompute is on by default and the module loads at the first Play of the session (no cost at page load); an explicit lead loads it at once; 0 = off */
+  const aheadLead = () => { try { const q = new URLSearchParams(location.search); if (q.get('host') === 'render') return 0; let v = q.get('ahead'); if (v == null) v = localStorage.getItem('sc.ahead.lead'); if (v == null) return -1; return v === 'full' ? 600 : Math.max(0, +v || 0); } catch (e) { return 0; } };
   const loadAhead = () => import('./renderahead.js').catch(() => null);
   addEventListener('sc-ahead', (e) => { if (!sc.ahead && e.detail && e.detail.lead > 0) loadAhead().then(() => sc.ahead && sc.ahead.configure({ lead: e.detail.lead })); });
   if (aheadLead() > 0) loadAhead();
+  else if (aheadLead() < 0) { const first = (e) => { if (!(e.detail && e.detail.started) || sc.ahead) return; removeEventListener('strudel:state', first); loadAhead(); }; addEventListener('strudel:state', first); }
   setTimeout(refreshSpec, 0); invalidate();
 }

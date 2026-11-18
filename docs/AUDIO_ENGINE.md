@@ -273,13 +273,14 @@ start failure only writes a console warning and a note. Until now no screen show
 **Interface for the notice (no UI in the module).** `window.strudelCraft.soundPrep.state()` and the window event `sc:soundprep` (detail): `{ phase: idle | loading | ready | timeout | skipped | offline | save-data | failed, reason, total, done, failed, bytes, ms, sounds[], program }`. `sound-load.js` (ui-designer) can read it; the fetches are also counted by its fetch wrapper.
 **Measured** (`tests/site/sound_prep.mjs`, 360x780 touch): drum kit cold on a 600 kB/s, 120 ms link: before skipped notes 4, first sound 2.5 s after Play press; after 0 skipped, first sound 111 ms after Play returned (Play returns after the 3.8 s preparation). Orchestral woodwinds cold, unthrottled: before first sound 4.6 s after Play press with 4 skipped; after 1.5 s, 0 skipped (7 files, 10.3 MB). Warm Play: Play returns in 6 ms. Test switch: `window.__scSoundPrep = false`.
 
-## 10. Render-ahead buffers and lane stems (#195, `site/renderahead.js`; default off)
+## 10. Render-ahead buffers and lane stems (#195, `site/renderahead.js`; since #199 on by default and played, section 13)
 
-Goal: precompute instead of just-in-time. With a lead set (audio dot sheet "Render ahead lead", `?ahead=S`, `localStorage sc.ahead.lead`) the program is
-rendered ahead of the playhead in the render host of section 6, never in the live context.
+Goal: precompute instead of just-in-time. The program is rendered ahead of the playhead in the render host of section 6, never in the live context.
+Lead (seconds ahead): audio dot sheet "Precompute", `?ahead=S` (`?ahead=0` off, `?ahead=full`), `localStorage sc.ahead.lead`; default 600 s bounded by the program's
+specified end, 32 s for an open-ended program (section 13).
 
 - Chunk: 2^k cycles nearest 4 s (1 to 8 cycles). Pre-roll: about 2 s in whole cycles (none for chunk 0), rendered and dropped, so tails of earlier notes
-  are in the chunk (the `chunk_render.py` idea; its 20 ms cross-fade belongs to playback, which is not built).
+  are in the chunk (the `chunk_render.py` idea; the 20 ms cross-fade is done at playback, section 13).
 - Chunk hash (cyrb53): the onset haps of [chunk start - pre-roll, chunk end) with times relative to the chunk start and their values (functions by
   source hash), plus cps, sample rate, master level, the controls model and the seed. Consequences: an edit dirties only the chunks whose events
   changed; identical chunks (a loop) share one render; an undo finds the old buffers. Programs whose sound depends on things the haps do not carry
@@ -288,13 +289,11 @@ rendered ahead of the playhead in the render host of section 6, never in the liv
 - Order: mix chunks from the playhead (cursor when stopped) until the contiguous ready extent is `lead` seconds ahead (one extra chunk), then one stem
   per lane and chunk, nearest first (`capture.renderRange(c0, c1, { lane })`: the same render with only that lane's haps voiced; lane = the sound name).
   A stem's hash covers only its lane's haps. A one-lane chunk uses its mix as the stem. A render whose hash is no longer wanted is cancelled.
-- Memory: peaks (min / max per 256 frames) for every chunk and stem; PCM only for mix chunks, newest first, up to 48 MB.
+- Memory: peaks (min / max per 256 frames) for every chunk and stem; PCM only for mix chunks, 16-bit, up to 64 MB (section 13).
 - `capture.renderRange` stores no take, shows no toast and does not hold the Record panel's `rendering` state; it queues in the host like any render,
   and render-ahead waits while the panel renders or records.
 - Timeline: buffered extent on the ruler, Mix and lane waveforms from the same buffers (site/README.md, Stage).
-- Play does not use the buffers yet: the live scheduler plays, and `ahead.state().live` / `liveShare` say whether the chunk under the playhead was
-  ready. Routing playback through the buffers needs a separate live path on the master bus (app.js `Bus`: every node lands in one gain), buffer
-  sources locked to the scheduler clock through seek / loop / tempo changes and a cross-fade to live for a chunk that is not ready (follow-up issue).
+- Play uses the buffers since #199: section 13.
 
 Measured (stress: 6 layers, 16ths, reverb + delay, 140 bpm; lead target 12 s; 4-core container, headless Chromium, `tests/site/renderahead.mjs`, 40 s of play):
 
@@ -318,3 +317,89 @@ Test `tests/site/recipe_switch.mjs`: A (220 Hz, release 3 s) at -26 dB before th
 Transport: `<` (`#startBtn`, "Return to start", key Home) returns to cycle 0: a fresh feed (`Engine.cut()` then play) when playing, stays stopped at 0 when stopped. Play / pause stays; there is no `>` and no previous / next recipe on the transport. Up / Down / J / K step the recipe only while the recipe list has focus. Selecting a recipe resets the position and does not start playback unless already playing.
 Root causes: (1) the timeline kept a stopped resume cursor (`T.cursor`) that a recipe select never cleared, so the next Play began at the old stop position; `timeline.reset()` now zeroes cursor and clock and a stopped select calls it (`rewind()` in app.js, with `visuals.reset()`). (2) At 390 px the `#lanes` canvas is below the fold, its IntersectionObserver flag stopped `Viz.drawLanes()`, and that function also writes the cycle readout and pings the timeline loop: both stayed at 0.00 while `scheduler.now()` ran. `drawLanes` (no canvas work) is now never gated.
 Test `tests/site/transport_reset.mjs` runs the select / Play / readout-advances flow at 390 and 1280 px.
+
+## 13. Playback from precomputed audio (#199; default for Play)
+User direction 2026-11-18: sound made from syntax on the fly, in a loop driven by ticks, lags and then has to catch up; precompute to completion and play it as plain audio.
+
+**Compute is time-independent.** A chunk is a pure function of the program and a cycle range: one `queryArc` per cycle over [chunk start - pre-roll, chunk end)
+(`capture.js renderRecipeCore`), synthesized in an `OfflineAudioContext` in the render host. No wall clock and no tick loop take part; the hash (section 10) names the result.
+The event list of the chunk comes out of the same pass as its audio (`hapInfo`: time, duration, value per hap) and is kept on the chunk (`ahead.cycleEvents(c)`); the timeline lanes
+draw rendered cycles from it (`timeline.state().cyclesFromRender`), the Mix and lane waveforms from the chunk peaks and stems. Window: `lead` seconds from the playhead (cursor when
+stopped), not past the program's specified end (`capture.resolveEnd`: gates, marker "end", `// @daw bars=N`, loop end); an open-ended program gets 32 s ahead. Default lead 600 s,
+so a program with an end is rendered whole. Nothing loads at page load: with no stored setting `renderahead.js` loads at the first Play of the session (that first Play is live);
+after that every change is recomputed while stopped or playing. Renders are serial: one render host, one chunk at a time. Parallel hosts are not built (each host is a full page
+with its own engine, and the fixed per-chunk work runs on the page's main thread; see the cold-start numbers below).
+
+**Bug found on the way (render-ahead chunks only, fixed for them):** `capture.js emulateTimers` could not put a suspend point at or after the end of an offline render, and ran
+such a source's `ended` handler at the next due pass instead: every voice whose stop time (with release) reached the chunk end was torn down before it sounded. In a 2-cycle chunk
+that was the last 1/8 note and the cycle-long note of the last cycle (level: -54 dB and -120 dB in the last 250 ms instead of -40 dB). `renderRange` now passes `keepEnd`; such a
+handler never runs. Record renders (exact N cycles, no fold) still have the old behaviour, because stored take hashes depend on it: #208.
+
+**Playback is position-based** (`renderahead.js` "playback from the buffers", `bgplay.js makeClock`, `app.js Bus`):
+- Bus: every live connection lands on `Bus.live`, buffer sources on `Bus.buf`; both feed the master gain, so taps, analysers, the master level and Stop work for both.
+- A ready chunk is one `AudioBufferSourceNode` started at `time(c) = (c - cycle0) / cps + t0` of the clock's mapping, at the matching buffer offset. Sources are created up to 30 s
+  ahead as a chain, so they are in the audio thread's hands long before a stall. Joins: 20 ms linear cross-fade (the chunk carries the last 20 ms of its pre-roll as a head).
+  Level: gain 1 / master-gain-at-render (renders include the master level).
+- The clock does no work for a buffered window: `ahead.covers(a, b)` says the query window lies in buffer-played chunks and the tick only advances `lastBegin / lastEnd / lastTick`
+  (no `queryArc`, no events, no voices; counted in `bg.stats().skippedQueries`). When ticks stop (blocked main thread, hidden page) and a buffer is sounding, the clock does not
+  re-anchor: on return it moves its position forward arithmetically. Nothing is replayed or burst. The playhead (`scheduler.now()`) is the same arithmetic on the audio clock.
+- Seek by the user: section 14. Loop wrap, tempo change, re-anchor of the live path: a new mapping; the sources of the old one fade out at its start, new ones start there.
+- Stop and `Engine.cut()` (#196) call `ahead.cut()`: every buffer source stops with the master ramp, and nothing is scheduled until the clock starts again.
+- Edit while playing: only the dirty chunks render again. A chunk that is sounding or scheduled keeps its old buffer (no live fallback, no gap); when the new render is ready a
+  source that has not started is replaced, a sounding one is cross-faded (20 ms) at the next bar line (whole cycle) at least 150 ms away. The old buffer is reused only within
+  continuous play, never across Stop, a recipe switch or a tempo change. The audio dot sheet row "Render ahead" shows `rendering N of M` or `ready`, the chunks still on old audio,
+  and the source (`buffer` or `live` with the reason).
+- Live is the fallback: a chunk that is not ready when the clock reaches it plays live to its end (hand-over to the buffer at the next chunk boundary: `Bus.live` ramps to 0 over
+  the same 20 ms, then superdough `resetGlobalEffects()` drops the old live tails, which are in the buffer through its pre-roll, and the sub-bus re-opens).
+- Memory: PCM is kept as 16-bit, 4 bytes per stereo frame, cap 64 MB = 333 s at 48 kHz (363 s at 44.1 kHz). 128 bars at 120 bpm (256 s) = 49.2 MB at 48 kHz; 5 minutes = 57.6 MB.
+  Over the cap the chunks farthest behind the playhead lose their PCM first (their peaks stay; they play live if reached again). The scheduled `AudioBuffer`s (float) cover at most
+  30 s: about 11.5 MB more. No compressed chunks: the browser has no offline encoder fast enough (MediaRecorder is realtime).
+
+**What still plays live** (state().why names it):
+- the first Play of a session, and any chunk whose render is not ready (cold start, after a tempo change, after a recipe switch until its chunks exist);
+- the chunk a user seek lands in (section 14), unless it is chunk 0;
+- Perform view open; 3 s after a pads journal change; Quick play auditions themselves (own scheduler; the main program stays on its buffers, Solo mutes `Bus.buf` too, and no live -> buffer hand-over starts while an audition runs); while a take records; `?engine=worker`;
+- chunks with custom `onTrigger` haps (midi, osc) or a superdough analyser (`_scope`, `_spectrum` inline visuals: they read live voices);
+- chunks whose PCM was trimmed (over 64 MB), renders made with the master at -inf; `?aheadplay=off` or the sheet checkbox (buffers drawn only).
+Known limits: a note longer than the pre-roll (about 2 s) that began before it is missing from a chunk (#195 design); an edited chunk is heard one to two bars late (render time,
+then the bar line); a control move (`ctl`, sliders) outside the Perform view also re-renders before it is heard; a loop wrap plays the loop-start chunk with the tails of the
+bars before the loop start, not of the loop end; the lanes show the new events while an edited chunk still plays its old audio; during a buffered stretch the live lane taps are
+silent (the lanes use the stems).
+
+Measured (`tests/site/bufferplay.mjs`, numbers in `docs/screens/bufferplay.json`; 4-core container, headless Chromium, taps = AudioWorklets on the master gain and on `Bus.live`):
+
+| check | result |
+|---|---|
+| live sub-bus while buffered chunks play | -120 dBFS (master -40 dBFS), 0 voices triggered |
+| buffer vs live, same bars, level per 100 ms window | max 0.01 dB, median 0.000 dB (80 windows) |
+| null test of one bar (buffer minus live, lag 0) | -46 dB (16-bit PCM, two contexts) |
+| largest sample step at chunk joins | 0.018 buffer, 0.018 live (limit 0.1) |
+| onset on the master minus position arithmetic | 0.45 ms on every tick, buffer and live, also after loop wraps and after a tempo change (limit 10 ms) |
+| edit while playing | 0 live voices, spliced at a bar line, longest gap 5 ms (all-live control 5 ms), step at the splice 0.017 |
+| **main thread blocked 0.5 / 1 / 2 s, then page hidden (1 s timers) + 1.5 s block; 16 bars precomputed (0 of 8 chunks not ready)** | **buffer: 11 of 11 ticks within 10 ms of position, longest gap 5 ms, 0 position jumps, 0 underruns, 0 voices triggered. Live scheduler, same stalls: 1 of 11 ticks on position, longest gap 350 to 390 ms, 3 re-anchors, 0.75 to 0.81 s paused** |
+| stress program, CPU x4 + main-thread bursts (350 to 1400 ms every 2.4 s), 12.5 s, against an offline reference | buffer: onsets 116 / 116, 0 dropouts, 0 underruns. Live: 2 to 3 re-anchors, onsets 60 to 114 / 116 over three runs, 0 to 3 dropouts (up to 410 ms) |
+| the same with the page hidden | buffer: 116 / 116, 0 underruns. Live: 1 re-anchor, 111 to 115 / 116 (the hidden-tab lookahead of 1 s already covers most of it) |
+| cold start under CPU x4 (stress program, Play right after a change that dirties everything) | renders run at 0.8 to 1.25x realtime; first buffered chunk after 15 s to more than 40 s; the render work costs the live path 21 to 34 late ticks in 40 s against 1 to 3 without render-ahead |
+
+So the hypothesis holds: with the audio precomputed, stalls and background throttling do not reach the sound; the live tick loop glitches under the same stalls. The cost is the
+cold start on a slow device: until the chunks exist play is live, and rendering on the page's main thread makes that live stretch worse (last row). Moving the render host off the
+main thread, or several hosts, is the open follow-up.
+
+Tests of the live scheduler itself now open the page with `?ahead=0`: `background.mjs` (lookahead, re-anchor, paused segments), `recipe_switch.mjs` (live voice counts) and
+`record_offline.mjs` (a stalled live take must be flagged); `renderahead.mjs` sets its own 12 s window. With the default, a stall is covered by the buffer and those premises do not hold.
+
+Media element output (#209, not built): both sub-buses end in one node, the master gain (`app.js ensureBus`: gain -> analyser -> destination). An `<audio>` element can take that one
+connection through a `MediaStreamAudioDestinationNode` (live and buffer alike), or play a WAV blob made from the chunk PCM (already 16-bit, `ahead` cache) for a fully rendered program.
+
+Default lead: 600 s (whole program up to its end; 32 s ahead when open-ended), decided by the stall and background numbers above; `?ahead=0` or the sheet turns it off.
+
+## 14. Seek halts the old position (#207)
+A seek by hand used to move the clock only: voices and tails of the old position kept sounding, and the new position started when the next tick came.
+`transport.seek(c)` (`app.js seekTo`; timeline ruler / menu / Home, transport range slider and "Go to") while playing: `Engine.cut({ keepLanes: true })` (master ramp 15 ms, scheduler
+stopped, `resetGlobalEffects()`, buffer sources dropped), then `Engine.startAt(c)` starts the same pattern at `c` (no evaluate; `Cyclist.start()` anchors its first tick at `lastEnd`).
+Scrubbing coalesces: one cut, later positions only replace the target, the restart waits until the target is still for 40 ms. The playhead shows the target during the seek
+(`transport.seekingTo`). Stopped: only the cursor moves. Buffer playback: the chunk the seek lands in plays live (a chunk's audio carries the tails of the bars before it), the next
+chunk is on the buffer again. `transport-range.js seek()` stays the clock-level position set (run start, loop).
+Measured (`tests/site/seek.mjs`, `docs/screens/seek.json`; 220 Hz in cycles 0-3, 659 Hz in 4-7, release 1.5 s): old tone -22 dBFS before, -60 dBFS (floor) from 100 ms after the
+seek, live and buffer; new tone 160 ms after the call, 11 to 20 ms from the moment the playhead reaches the position (20 ms analysis step; limit one 50 ms tick); 8 seeks in 200 ms
+give 1 cut and 1 start; Stop right after a seek stays stopped.

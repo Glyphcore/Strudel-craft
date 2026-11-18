@@ -1,0 +1,42 @@
+{
+ "live": {
+  "sourceBefore": "live",
+  "sourceAfter": "live",
+  "sourceNextChunk": "live",
+  "playheadShownRightAfterSeek": 4,
+  "oldToneBeforeDb": -21.5,
+  "oldToneAfter100msDb": -60,
+  "newToneOnsetAfterSeekMs": 160,
+  "onsetMinusPlayheadMs": -20,
+  "cuts": 1,
+  "starts": 1,
+  "scrub": {
+   "calls": 8,
+   "cuts": 1,
+   "starts": 1,
+   "e5MaxAfter350msDb": -60,
+   "a3MaxDb": -26.8,
+   "positionNow": 1.81
+  }
+ },
+ "buffer": {
+  "sourceBefore": "buffer",
+  "sourceAfter": "live",
+  "sourceNextChunk": "buffer",
+  "playheadShownRightAfterSeek": 4,
+  "oldToneBeforeDb": -21.9,
+  "oldToneAfter100msDb": -60,
+  "newToneOnsetAfterSeekMs": 160,
+  "onsetMinusPlayheadMs": -20,
+  "cuts": 1,
+  "starts": 1,
+  "scrub": {
+   "calls": 8,
+   "cuts": 1,
+   "starts": 1,
+   "e5MaxAfter350msDb": -54.4,
+   "a3MaxDb": -21.4,
+   "positionNow": 1.81
+  }
+ }
+}

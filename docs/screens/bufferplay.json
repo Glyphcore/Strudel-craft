@@ -1,0 +1,662 @@
+{
+ "level": {
+  "windows": 80,
+  "maxDb": 0.32,
+  "medianDb": 0.001
+ },
+ "null": {
+  "bar": "cycle 1",
+  "residualDb": -30.9,
+  "lagSamples": 0
+ },
+ "joins": [
+  {
+   "cycle": 2,
+   "bufferStep": 0.0175,
+   "liveStep": 0.0178
+  },
+  {
+   "cycle": 4,
+   "bufferStep": 0.0171,
+   "liveStep": 0.0176
+  }
+ ],
+ "onset": {
+  "bufferMs": [
+   0.45,
+   0.45,
+   0.45
+  ],
+  "liveMs": [
+   0.45,
+   0.45,
+   0.45
+  ]
+ },
+ "edit": {
+  "chunks": [
+   {
+    "i": 0,
+    "path": "buf > stale > spliced@2"
+   },
+   {
+    "i": 1,
+    "path": "buf > stale > spliced@4"
+   }
+  ],
+  "liveHaps": 0,
+  "splices": 5,
+  "splicedAtCycle": 2,
+  "oldAudioHeldSec": 6.26,
+  "longestGapMs": 5,
+  "liveControlGapMs": 5,
+  "stepAtSplice": 0.0167,
+  "cycle3": {
+   "a2Db": -60.6,
+   "f2Db": -72.2
+  }
+ },
+ "seekLoop": {
+  "cycles": [
+   1,
+   4,
+   5,
+   4,
+   5,
+   4
+  ],
+  "errMs": [
+   0.45,
+   0.46,
+   0.46,
+   0.46,
+   0.46,
+   0.46
+  ],
+  "buffered": [
+   true,
+   false,
+   false,
+   true,
+   true,
+   true
+  ],
+  "resyncs": 4,
+  "bufUnderruns": 0
+ },
+ "tempo": {
+  "cps": 0.625,
+  "bufferedTicksAtNewTempo": 4,
+  "worstMs": 0.45,
+  "worstLiveMs": 0.45,
+  "errMs": [
+   0.45,
+   0.45,
+   0.45,
+   0.45,
+   0.45,
+   0.45,
+   0.45
+  ],
+  "buffered": [
+   true,
+   true,
+   false,
+   true,
+   true,
+   true,
+   true
+  ]
+ },
+ "stress": {
+  "hidden": {
+   "buffer": {
+    "label": "buffer, hidden tab",
+    "clock": {
+     "lateTicks": 7,
+     "underruns": 0,
+     "covered": 1,
+     "pausedSec": 0,
+     "maxGapMs": 1603,
+     "lateHaps": 0,
+     "gatedHaps": 0,
+     "haps": 0
+    },
+    "resyncs": 1,
+    "released": 0,
+    "segs": [
+     {
+      "i": 0,
+      "mode": "buf",
+      "from": 0,
+      "tS": 118.4302,
+      "tE": 121.85877,
+      "late": 0
+     },
+     {
+      "i": 1,
+      "mode": "buf",
+      "from": 2,
+      "tS": 121.85877,
+      "tE": 125.28734,
+      "late": 0
+     },
+     {
+      "i": 2,
+      "mode": "buf",
+      "from": 4,
+      "tS": 125.28734,
+      "tE": 128.71591,
+      "late": 0
+     },
+     {
+      "i": 3,
+      "mode": "buf",
+      "from": 6,
+      "tS": 128.71591,
+      "tE": 132.14449,
+      "late": 0
+     },
+     {
+      "i": 4,
+      "mode": "buf",
+      "from": 8,
+      "tS": 132.14449,
+      "tE": 135.57306,
+      "late": 0
+     },
+     {
+      "i": 5,
+      "mode": "buf",
+      "from": 10,
+      "tS": 135.57306,
+      "tE": 139.00163,
+      "late": 0
+     },
+     {
+      "i": 6,
+      "mode": "buf",
+      "from": 12,
+      "tS": 139.00163,
+      "tE": 142.4302,
+      "late": 0
+     },
+     {
+      "i": 7,
+      "mode": "buf",
+      "from": 14,
+      "tS": 142.4302,
+      "tE": 145.85877,
+      "late": 0
+     }
+    ],
+    "bufferSec": 13.63,
+    "bufUnderruns": 0,
+    "lateStarts": [],
+    "liveDecisions": [],
+    "liveHaps": 0,
+    "positionJumps": 0,
+    "skippedQueries": 313,
+    "audio": {
+     "refOnsets": 116,
+     "matched": 115,
+     "missingOnsets": 1,
+     "dropouts": 0,
+     "dropoutMs": 0,
+     "clicks": 0,
+     "lagMs": 0,
+     "levelWithin3dB50ms": 0.988,
+     "driftMsPerS": 0.147,
+     "tapCover": 1
+    }
+   },
+   "live": {
+    "label": "live, hidden tab",
+    "clock": {
+     "lateTicks": 8,
+     "underruns": 1,
+     "covered": 0,
+     "pausedSec": 0.22,
+     "maxGapMs": 1603,
+     "lateHaps": 0,
+     "gatedHaps": 0,
+     "haps": 582
+    },
+    "resyncs": 2,
+    "released": 0,
+    "segs": [
+     {
+      "i": 0,
+      "mode": "live",
+      "from": 0,
+      "why": "buffer play off"
+     },
+     {
+      "i": 0,
+      "mode": "live",
+      "from": 0.11666666666666005,
+      "why": "buffer play off"
+     },
+     {
+      "i": 1,
+      "mode": "live",
+      "from": 2,
+      "why": "buffer play off"
+     },
+     {
+      "i": 2,
+      "mode": "live",
+      "from": 4,
+      "why": "buffer play off"
+     },
+     {
+      "i": 3,
+      "mode": "live",
+      "from": 6,
+      "why": "buffer play off"
+     },
+     {
+      "i": 4,
+      "mode": "live",
+      "from": 8,
+      "why": "buffer play off"
+     }
+    ],
+    "bufferSec": 0,
+    "bufUnderruns": 0,
+    "lateStarts": [],
+    "liveDecisions": [
+     "0:live:buffer play off",
+     "0:live:buffer play off",
+     "1:live:buffer play off",
+     "2:live:buffer play off",
+     "3:live:buffer play off",
+     "4:live:buffer play off"
+    ],
+    "liveHaps": 582,
+    "positionJumps": 0,
+    "skippedQueries": 0,
+    "audio": {
+     "refOnsets": 116,
+     "matched": 115,
+     "missingOnsets": 1,
+     "dropouts": 0,
+     "dropoutMs": 0,
+     "clicks": 0,
+     "lagMs": 0,
+     "levelWithin3dB50ms": 0.9839,
+     "driftMsPerS": -0.035,
+     "tapCover": 1
+    }
+   }
+  },
+  "program": "stress: 6 layers, 16ths, reverb + delay, 140 bpm",
+  "cpuThrottle": 4,
+  "mainThreadBlocksMs": [
+   350,
+   900,
+   500,
+   1400,
+   700
+  ],
+  "every": 2400,
+  "seconds": 12.5,
+  "buffer": {
+   "label": "buffer",
+   "clock": {
+    "lateTicks": 10,
+    "underruns": 0,
+    "covered": 2,
+    "pausedSec": 0,
+    "maxGapMs": 1511,
+    "lateHaps": 0,
+    "gatedHaps": 0,
+    "haps": 0
+   },
+   "resyncs": 1,
+   "released": 0,
+   "segs": [
+    {
+     "i": 0,
+     "mode": "buf",
+     "from": 0,
+     "tS": 87.4228,
+     "tE": 90.85137,
+     "late": 0
+    },
+    {
+     "i": 1,
+     "mode": "buf",
+     "from": 2,
+     "tS": 90.85137,
+     "tE": 94.27994,
+     "late": 0
+    },
+    {
+     "i": 2,
+     "mode": "buf",
+     "from": 4,
+     "tS": 94.27994,
+     "tE": 97.70851,
+     "late": 0
+    },
+    {
+     "i": 3,
+     "mode": "buf",
+     "from": 6,
+     "tS": 97.70851,
+     "tE": 101.13709,
+     "late": 0
+    },
+    {
+     "i": 4,
+     "mode": "buf",
+     "from": 8,
+     "tS": 101.13709,
+     "tE": 104.56566,
+     "late": 0
+    },
+    {
+     "i": 5,
+     "mode": "buf",
+     "from": 10,
+     "tS": 104.56566,
+     "tE": 107.99423,
+     "late": 0
+    },
+    {
+     "i": 6,
+     "mode": "buf",
+     "from": 12,
+     "tS": 107.99423,
+     "tE": 111.4228,
+     "late": 0
+    },
+    {
+     "i": 7,
+     "mode": "buf",
+     "from": 14,
+     "tS": 111.4228,
+     "tE": 114.85137,
+     "late": 0
+    }
+   ],
+   "bufferSec": 13.57,
+   "bufUnderruns": 0,
+   "lateStarts": [],
+   "liveDecisions": [],
+   "liveHaps": 0,
+   "positionJumps": 0,
+   "skippedQueries": 310,
+   "audio": {
+    "refOnsets": 116,
+    "matched": 116,
+    "missingOnsets": 0,
+    "dropouts": 0,
+    "dropoutMs": 0,
+    "clicks": 0,
+    "lagMs": 0,
+    "levelWithin3dB50ms": 1,
+    "driftMsPerS": -0.035,
+    "tapCover": 1
+   }
+  },
+  "live": {
+   "label": "live",
+   "clock": {
+    "lateTicks": 12,
+    "underruns": 2,
+    "covered": 0,
+    "pausedSec": 0.31,
+    "maxGapMs": 1603,
+    "lateHaps": 0,
+    "gatedHaps": 0,
+    "haps": 597
+   },
+   "resyncs": 3,
+   "released": 0,
+   "segs": [
+    {
+     "i": 0,
+     "mode": "live",
+     "from": 0,
+     "why": "buffer play off"
+    },
+    {
+     "i": 0,
+     "mode": "live",
+     "from": 0.11666666666666833,
+     "why": "buffer play off"
+    },
+    {
+     "i": 1,
+     "mode": "live",
+     "from": 2,
+     "why": "buffer play off"
+    },
+    {
+     "i": 1,
+     "mode": "live",
+     "from": 3.879166666666662,
+     "why": "buffer play off"
+    },
+    {
+     "i": 2,
+     "mode": "live",
+     "from": 4,
+     "why": "buffer play off"
+    },
+    {
+     "i": 3,
+     "mode": "live",
+     "from": 6,
+     "why": "buffer play off"
+    },
+    {
+     "i": 4,
+     "mode": "live",
+     "from": 8,
+     "why": "buffer play off"
+    }
+   ],
+   "bufferSec": 0,
+   "bufUnderruns": 0,
+   "lateStarts": [],
+   "liveDecisions": [
+    "0:live:buffer play off",
+    "0:live:buffer play off",
+    "1:live:buffer play off",
+    "1:live:buffer play off",
+    "2:live:buffer play off",
+    "3:live:buffer play off",
+    "4:live:buffer play off"
+   ],
+   "liveHaps": 600,
+   "positionJumps": 1,
+   "skippedQueries": 0,
+   "audio": {
+    "refOnsets": 116,
+    "matched": 62,
+    "missingOnsets": 54,
+    "dropouts": 1,
+    "dropoutMs": 190,
+    "clicks": 0,
+    "lagMs": 0,
+    "levelWithin3dB50ms": 0.7309,
+    "driftMsPerS": -0.364,
+    "tapCover": 1
+   }
+  }
+ },
+ "leadStudy": [
+  {
+   "lead": 0,
+   "seconds": 40,
+   "renderSpeedX": null,
+   "renders": 0,
+   "chunkSec": 3.429,
+   "fillMs": null,
+   "leadMedian": null,
+   "leadMin": null,
+   "firstBufferAfterS": null,
+   "bufferShare": 0,
+   "bufferShareAfterFirst": 0,
+   "bufSec": 0,
+   "bufUnderruns": 0,
+   "clock": {
+    "lateTicks": 3,
+    "underruns": 1,
+    "covered": 0,
+    "pausedSec": 0.03,
+    "maxGapMs": 1511,
+    "lateHaps": 0,
+    "gatedHaps": 0,
+    "haps": 1668
+   }
+  },
+  {
+   "lead": 16,
+   "seconds": 40,
+   "renderSpeedX": 0.78,
+   "renders": 9,
+   "chunkSec": 3.429,
+   "fillMs": null,
+   "leadMedian": null,
+   "leadMin": null,
+   "firstBufferAfterS": null,
+   "bufferShare": 0,
+   "bufferShareAfterFirst": 0,
+   "bufSec": 0,
+   "bufUnderruns": 0,
+   "clock": {
+    "lateTicks": 22,
+    "underruns": 2,
+    "covered": 0,
+    "pausedSec": 0.24,
+    "maxGapMs": 1511,
+    "lateHaps": 0,
+    "gatedHaps": 0,
+    "haps": 1749
+   }
+  },
+  {
+   "lead": 600,
+   "seconds": 40,
+   "renderSpeedX": 0.86,
+   "renders": 10,
+   "chunkSec": 3.429,
+   "fillMs": null,
+   "leadMedian": null,
+   "leadMin": null,
+   "firstBufferAfterS": null,
+   "bufferShare": 0,
+   "bufferShareAfterFirst": 0,
+   "bufSec": 0,
+   "bufUnderruns": 0,
+   "clock": {
+    "lateTicks": 29,
+    "underruns": 1,
+    "covered": 0,
+    "pausedSec": 0.27,
+    "maxGapMs": 1511,
+    "lateHaps": 0,
+    "gatedHaps": 0,
+    "haps": 1709
+   }
+  }
+ ],
+ "hypothesis": {
+  "program": "16 bars, 2 layers, 0.5 cps",
+  "stallsMs": [
+   500,
+   1000,
+   2000,
+   "hidden + 1500"
+  ],
+  "chunksNotReady": 0,
+  "chunks": 8,
+  "buffer": {
+   "label": "buffer",
+   "ticksExpected": 11,
+   "ticksOnPosition": 11,
+   "tickErrMs": [
+    0.45,
+    0.45,
+    0.45,
+    0.45,
+    0.45,
+    0.45,
+    0.45,
+    0.45,
+    0.45,
+    0.45,
+    0.45
+   ],
+   "longestGapMs": 5,
+   "positionJumps": 0,
+   "clock": {
+    "lateTicks": 4,
+    "underruns": 0,
+    "covered": 3,
+    "pausedSec": 0,
+    "maxGapMs": 2026,
+    "lateHaps": 0,
+    "gatedHaps": 0,
+    "haps": 0
+   },
+   "bufUnderruns": 0,
+   "voicesTriggered": 0,
+   "skippedQueries": 478,
+   "sourceAtEnd": "buffer",
+   "tapCover": 1
+  },
+  "live": {
+   "label": "live",
+   "ticksExpected": 11,
+   "ticksOnPosition": 1,
+   "tickErrMs": [
+    0.45,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "longestGapMs": 360,
+   "positionJumps": 3,
+   "clock": {
+    "lateTicks": 4,
+    "underruns": 3,
+    "covered": 0,
+    "pausedSec": 0.73,
+    "maxGapMs": 2047,
+    "lateHaps": 0,
+    "gatedHaps": 0,
+    "haps": 108
+   },
+   "bufUnderruns": 0,
+   "voicesTriggered": 108,
+   "skippedQueries": 0,
+   "sourceAtEnd": "live",
+   "tapCover": 1
+  }
+ },
+ "default": {
+  "loadedAtPageLoad": false,
+  "lead": 600,
+  "programEndCycle": 16,
+  "chunks": 8,
+  "renders": 5,
+  "renderSpeedX": 2.99,
+  "pcmBytes": 3528000,
+  "memCapBytes": 64000000,
+  "firstPlaySource": "live",
+  "secondPlaySource": "buffer",
+  "sheetRow": "ready, 29.6 s ahead (program end at cycle 16), 8 chunks of 4 s ready, renders at 2.99x, source buffer, 2 s played from buffers"
+ }
+}

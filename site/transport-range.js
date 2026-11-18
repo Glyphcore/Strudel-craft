@@ -54,8 +54,8 @@ function build() {
   const pts = () => { let a = fromU(el.start.value), b = fromU(el.end.value); if (!isFinite(a)) a = st.start; if (!isFinite(b)) b = st.end; a = Math.max(0, a); if (b <= a) b = a + 1; st.start = a; st.end = b; set('range.start', a); set('range.end', b); sync(); };
   el.start.onchange = pts; el.end.onchange = pts;
   el.loop.onclick = () => { st.loop = !st.loop; set('range.loop', st.loop); sync(); sc.ui && sc.ui.toast(st.loop ? `Looping ${st.unit} ${u(st.start)} to ${u(st.end)}` : 'Loop off'); };
-  el.pos.addEventListener('input', () => seek(+el.pos.value));
-  el.out.onclick = async () => { if (!sc.ui) return; const v = await sc.ui.ask({ title: 'Go to', label: 'Cycle (e.g. 12) or time m:ss (e.g. 0:24)', value: cyc(sch() && playing() ? sch().now() : 0), okText: 'Go' }); if (v == null) return; const c = parsePos(v, /:/.test(v) ? 'time' : 'cycle'); if (!isFinite(c)) { sc.ui.toast('Enter a cycle or m:ss', { kind: 'error' }); return; } if (!seek(c)) sc.ui.toast('Press Play first, then seek'); };
+  el.pos.addEventListener('input', () => userSeek(+el.pos.value));
+  el.out.onclick = async () => { if (!sc.ui) return; const v = await sc.ui.ask({ title: 'Go to', label: 'Cycle (e.g. 12) or time m:ss (e.g. 0:24)', value: cyc(sch() && playing() ? sch().now() : 0), okText: 'Go' }); if (v == null) return; const c = parsePos(v, /:/.test(v) ? 'time' : 'cycle'); if (!isFinite(c)) { sc.ui.toast('Enter a cycle or m:ss', { kind: 'error' }); return; } if (!userSeek(c)) sc.ui.toast('Press Play first, then seek'); };
   el.sync = sync;
   el.more.onclick = () => extend(300);
   $('#trSet').onclick = settings;
@@ -68,6 +68,8 @@ function build() {
    each tick queries [lastEnd, num_cycles_at_cps_change + ticks*dur*cps], and when num_ticks_since_cps_change is 0 the
    next tick re-anchors num_cycles_at_cps_change = lastEnd at the current clock time. So setting lastEnd and zeroing the
    tick count makes the next query start exactly at cycle c (sample-accurate at the next clock tick, about 50 ms). */
+/* #207: a seek by the user while playing goes through the transport (old position cut, restart at c); seek() below stays the clock-level position set (run start, loop) */
+const userSeek = (c) => (sc.transport && sc.transport.seek && sc.transport.seek(c)) || seek(c);
 function seek(c) {
   const s = sch(); if (!s || !playing()) return false; c = Math.max(0, +c || 0);
   try {

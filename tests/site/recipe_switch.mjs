@@ -1,5 +1,7 @@
 /* #196: choosing another recipe while playing starts a fresh audio feed. After the switch nothing of recipe A sounds (event level: no A hap triggered after the
    switch; audio level: no A energy on the master), the live source-node count returns to baseline over N switches, and the timeline lanes hold only B.
+   ?ahead=0 (#199): the counts and levels here are those of live voices; with precomputed playback a playing recipe has no voices at all (the buffer side of the switch is
+   tests/site/bufferplay.mjs section 5: Engine.cut drops the buffer sources).
    Usage (repo root): node tests/site/recipe_switch.mjs   (wrap in engine/load/gate.sh medium) */
 import { createRequire } from 'module'; import http from 'http'; import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 const require = createRequire(import.meta.url);
@@ -20,7 +22,7 @@ await ctx.addInitScript(() => { /* count live source nodes: started and not yet 
   P.start = function (...a) { this.__start = a[0]; live.add(this); this.addEventListener('ended', () => live.delete(this)); return st.apply(this, a); };
 });
 const page = await ctx.newPage(); page.on('pageerror', (e) => errors.push(e.message)); const wait = (ms) => page.waitForTimeout(ms); const T = (f, a) => page.evaluate(f, a);
-await page.goto(`http://127.0.0.1:${server.address().port}/index.html#rack`); await page.waitForSelector('#list li[data-id]', { timeout: 60000 }); await page.waitForFunction(() => window.strudelCraft.timeline, null, { timeout: 30000 });
+await page.goto(`http://127.0.0.1:${server.address().port}/index.html?ahead=0#rack`); await page.waitForSelector('#list li[data-id]', { timeout: 60000 }); await page.waitForFunction(() => window.strudelCraft.timeline, null, { timeout: 30000 });
 await T(async ([a, b]) => { const sc = window.__sc; const rs = sc.S.filtered.slice(0, 2); for (const r of rs) await sc.hydrate(r); sc.S.edits[rs[0].id] = a; sc.S.edits[rs[1].id] = b; sc.select(0, { audition: false }); }, [A, B]);
 const start = async () => { await T(() => window.__sc.play()); await page.waitForFunction(() => window.__sc.S.playing && window.__sc.Engine.started, null, { timeout: 60000 }); await wait(2500); };
 await start(); await T(() => window.__sc.stop()); await T(async () => { const c = window.__sc.Bus.ctx, t = c.currentTime + 4; while (c.currentTime < t) await new Promise((r) => setTimeout(r, 100)); }); const base = await T(() => window.__live.size); /* engine-lifetime sources (orbit helpers) after one play/stop */

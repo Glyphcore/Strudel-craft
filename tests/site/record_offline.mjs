@@ -44,7 +44,8 @@ await ctx.route(/api\.github\.com/, (r) => r.fulfill({ status: 200, contentType:
 if (!process.argv.includes('--no-pin')) await ctx.addInitScript(() => { setInterval(() => { try { const m = window.soundMap && window.soundMap.get(); if (m && m.sawtooth && m.supersaw && m.supersaw !== m.sawtooth) window.soundMap.setKey('supersaw', m.sawtooth); } catch (e) { /* not loaded yet */ } }, 50); });
 const page = await ctx.newPage(); const errors = [];
 page.on('pageerror', (e) => errors.push(e.message.slice(0, 200))); page.on('console', (m) => { if (m.type() === 'error' && !/favicon|404/.test(m.text())) errors.push('console.error: ' + m.text().slice(0, 200)); });
-await page.goto(BASE); await page.waitForFunction(() => window.__sc && window.strudelCraft && window.strudelCraft.packs && window.strudelCraft.capture, null, { timeout: 90000 });
+/* ?ahead=0 (#199): the live takes here are takes of the live scheduler (a stalled main thread must flag them); with precomputed playback a stall does not reach the sound */
+await page.goto(BASE + '?ahead=0'); await page.waitForFunction(() => window.__sc && window.strudelCraft && window.strudelCraft.packs && window.strudelCraft.capture, null, { timeout: 90000 });
 await page.evaluate(async () => { const P = window.strudelCraft.packs; await P.ready; await P.load('glyphcore/phonk:atoms'); await P.load('glyphcore/phonk:presets'); window.__sc.setView('syntax'); });
 await runSyntaxEntry(page, 'tracks', 1);
 await page.waitForFunction(() => window.__sc.S.playing && !window.__sc.S.busy && window.__sc.Engine.started, null, { timeout: 120000 }); await page.waitForTimeout(5000);

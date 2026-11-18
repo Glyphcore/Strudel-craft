@@ -74,7 +74,7 @@ function workerTimer(ms, fn) {
 const B = {
   installed: false, clockKind: 'strudel', policy: lsGet('bg.policy', 'continue'), wake: lsGet('bg.wake', true),
   lookahead: LOOKAHEAD.base, boost: 0, lastWall: 0, lastT: 0, lastLate: 0,
-  stats: { ticks: 0, lateTicks: 0, maxGapMs: 0, underruns: 0, haps: 0 },
+  stats: { ticks: 0, lateTicks: 0, maxGapMs: 0, underruns: 0, haps: 0, bufferCovered: 0 },
   played: 0, paused: 0, segs: [], log: [], trace: null, seg: null, playing: false, wakeLock: null,
 };
 const now = () => performance.now();
@@ -84,7 +84,7 @@ const now = () => performance.now();
 const VF = []; const inFlight = () => { const c = ctx(); if (!c) return 0; const t = c.currentTime; let n = 0; for (let i = VF.length - 1; i >= 0; i--) if (VF[i] > t) n++; return n; };
 /* main-thread long tasks while playing (PerformanceObserver 'longtask'): count and worst, reset on Play */
 const LT = { n: 0, worst: 0, total: 0 }; try { new PerformanceObserver((l) => { if (!B.playing) return; for (const e of l.getEntries()) { LT.n++; LT.total += e.duration; if (e.duration > LT.worst) LT.worst = e.duration; } }).observe({ type: 'longtask' }); } catch (e) { LT.na = true; }
-const PF = {}; function resetPerf() { VF.length = 0; Object.assign(LT, { n: 0, worst: 0, total: 0 }); Object.assign(PF, { tickMs: 0, tickMax: 0, queryMs: 0, queryMax: 0, voiceMs: 0, voiceMax: 0, late: 0, tight: 0, haps: 0, rescued: 0, skipped: 0, minMargin: Infinity }); } resetPerf();
+const PF = {}; function resetPerf() { VF.length = 0; Object.assign(LT, { n: 0, worst: 0, total: 0 }); Object.assign(PF, { tickMs: 0, tickMax: 0, queryMs: 0, queryMax: 0, voiceMs: 0, voiceMax: 0, late: 0, tight: 0, gated: 0, haps: 0, rescued: 0, skipped: 0, minMargin: Infinity }); } resetPerf();
 const ctx = () => { try { return window.getAudioContext ? window.getAudioContext() : null; } catch (e) { return null; } };
 const sched = () => { const s = sc.engineState && sc.engineState(); return s && s.scheduler; };
 const cycleNow = () => { const s = sched(); try { return s && s.started ? +s.now().toFixed(3) : (s ? +(+s.lastEnd || 0).toFixed(3) : 0); } catch (e) { return 0; } };
@@ -126,24 +126,35 @@ function makeClock(S, getTime, onTrigger, latency) {
   let tick = 0, phase = 0;
   const logErr = (e) => { try { (window.errorLogger || console.warn)(e); } catch (x) { /* ignore */ } };
   let shift = 0; /* seconds the clock moved forward while re-anchoring late windows inside this tick */
+  /* #199 buffer playback (renderahead.js): AH.sync() after every change of the cycle -> time mapping (first tick, seek, loop wrap, cps change, late shift),
+     AH.gate(hap, target) per onset hap (true = its chunk is played from a buffer, the voice is not triggered), AH.sounding(t) = a buffer source is audible at t. */
+  const ahead = () => (sc.ahead && sc.ahead.gate ? sc.ahead : null);
   const cb = (ph, dur) => {
-    if (S.num_ticks_since_cps_change === 0) { S.num_cycles_at_cps_change = S.lastEnd; S.seconds_at_cps_change = ph; }
+    const AH = ahead(); let anchored = false;
+    if (S.num_ticks_since_cps_change === 0) { S.num_cycles_at_cps_change = S.lastEnd; S.seconds_at_cps_change = ph; anchored = true; }
     S.num_ticks_since_cps_change++;
     const P = (ph + dur - S.seconds_at_cps_change) * S.cps; /* = ticks * dur * cps for a constant dur (Strudel's form); exact for batched windows too */
     try {
+      if (AH) AH.sync(S, latency, anchored, S.lastEnd);
       const A = S.lastEnd; S.lastBegin = A;
       const x = S.num_cycles_at_cps_change + P; S.lastEnd = x; S.lastTick = ph;
+      /* #199 position-based playback: a window inside buffer-played chunks is not queried at all; the clock only moves its position */
+      if (AH && AH.covers && AH.covers(+A, +x)) { B.stats.skippedQueries = (B.stats.skippedQueries || 0) + 1; return; }
       const q0 = now(); const hs = S.pattern.queryArc(A, x, { _cps: S.cps, cyclist: 'cyclist' }); const q1 = now(); PF.queryMs += q1 - q0; if (q1 - q0 > PF.queryMax) PF.queryMax = q1 - q0;
       /* a late window is re-anchored, not dropped (flag late=reanchor, default): when the window's first onset would already be in the past (the query
          or a stall ate the margin), the clock moves by that much (the musical position pauses, as after an underrun) and every hap keeps its place
          relative to the others; superdough would otherwise drop each late voice, a hole in the rhythm and in every bus reader */
-      if (FLAG_LATE === 'reanchor') { let first = Infinity; for (const h of hs) if (h.hasOnset()) { const tg = (h.whole.begin - S.num_cycles_at_cps_change) / S.cps + S.seconds_at_cps_change + latency; if (tg < first) first = tg; }
-        const nowT = getTime(); if (first < nowT + LATE_GUARD) { const dl = nowT + LATE_GUARD - first; S.seconds_at_cps_change += dl; S.lastTick = ph + dl; shift += dl; PF.rescued++; B.stats.underruns++; note('reanchor-late', { shift: +dl.toFixed(3), cycle: +(+A).toFixed(3) }); if (dl > 0.02) gapSegment(dl, 'late window re-anchored'); } }
+      /* #199: haps of a buffer-played chunk trigger no voice, so they are never late; and while a buffer is sounding the clock is not moved (it would tear the buffer) */
+      let gated = null; if (AH) { gated = new Map(); for (const h of hs) if (h.hasOnset()) gated.set(h, AH.gate(h, (h.whole.begin - S.num_cycles_at_cps_change) / S.cps + S.seconds_at_cps_change + latency)); }
+      if (FLAG_LATE === 'reanchor') { let first = Infinity; for (const h of hs) if (h.hasOnset() && !(gated && gated.get(h))) { const tg = (h.whole.begin - S.num_cycles_at_cps_change) / S.cps + S.seconds_at_cps_change + latency; if (tg < first) first = tg; }
+        const nowT = getTime(); if (first < nowT + LATE_GUARD && !(AH && AH.sounding(nowT))) { const dl = nowT + LATE_GUARD - first; S.seconds_at_cps_change += dl; S.lastTick = ph + dl; shift += dl; PF.rescued++; B.stats.underruns++; note('reanchor-late', { shift: +dl.toFixed(3), cycle: +(+A).toFixed(3) }); if (dl > 0.02) gapSegment(dl, 'late window re-anchored'); if (AH) { AH.sync(S, latency, true, A); gated = null; } } }
       hs.forEach((h) => {
         if (!h.hasOnset()) return;
         const target = (h.whole.begin - S.num_cycles_at_cps_change) / S.cps + S.seconds_at_cps_change + latency;
         const d = h.duration / S.cps;
-        B.stats.haps++; if (B.trace) { let jv = ''; try { jv = JSON.stringify(h.value); } catch (e) { /* unserialisable */ } B.trace.push([+h.whole.begin, +target.toFixed(5), jv]); if (B.trace.length > 20000) B.trace.shift(); }
+        const buffered = AH ? (gated ? gated.get(h) : AH.gate(h, target)) : false;
+        B.stats.haps++; if (B.trace) { let jv = ''; try { jv = JSON.stringify(h.value); } catch (e) { /* unserialisable */ } B.trace.push([+h.whole.begin, +target.toFixed(5), jv, buffered ? 1 : 0]); if (B.trace.length > 20000) B.trace.shift(); }
+        if (buffered) { PF.gated++; if (h.value.cps !== undefined && S.cps != h.value.cps) { S.cps = h.value.cps; S.num_ticks_since_cps_change = 0; } return; }
         /* late-hap accounting: superdough 1.3.0 drops a voice whose target is already in the past ("cannot schedule sounds in the past") */
         PF.haps++; const m = target - getTime(); if (m < 0) PF.late++; else if (m < 0.02) PF.tight++; if (m < PF.minMargin) PF.minMargin = m;
         VF.push(target + d + 0.25); if (VF.length > 4096) VF.splice(0, 2048);
@@ -170,14 +181,16 @@ function makeClock(S, getTime, onTrigger, latency) {
     if (!document.hidden && w - B.lastLate > 5000) B.boost = Math.max(0, B.boost * 0.97 - 0.002);
     B.lookahead = Math.min(LOOKAHEAD.max, Math.max(LOOKAHEAD.base, document.hidden || scrolling() ? LOOKAHEAD.hidden : 0, B.boost));
     if (phase === 0) phase = t + MIN_LATENCY;
-    if (phase < t) { /* the window ran dry (frozen page, a stall beyond the lookahead): same cycle, from now; no catch-up, no skipped cycles */
+    const AH = ahead(), covered = !!(AH && phase !== 0 && phase < t && AH.sounding(t)); /* #199: the window ran dry but a buffer source kept sounding: the music did not stop, so the clock catches up instead of pausing */
+    if (covered) { B.stats.bufferCovered = (B.stats.bufferCovered || 0) + 1; note('covered-by-buffer', { gap: +(t - phase).toFixed(3), cycle: +(+S.lastEnd).toFixed(3) }); }
+    else if (phase < t) { /* the window ran dry (frozen page, a stall beyond the lookahead): same cycle, from now; no catch-up, no skipped cycles */
       const gap = t - phase; B.stats.underruns++; if (B.lastT && phase > B.lastT) B.played += phase - B.lastT; B.lastT = t; /* played only up to where the scheduled audio ran out */ note('reanchor', { gap: +gap.toFixed(3), cycle: +(+S.lastEnd).toFixed(3) });
       phase = t + MIN_LATENCY; S.num_ticks_since_cps_change = 0;
       if (B.resumedAt && now() - B.resumedAt < 3000) B.resumedAt = 0; /* freeze/resume already recorded this pause */ else gapSegment(gap, 'audio clock ran past the lookahead');
     }
     const c = ctx(); if (c && c.state === 'running' && B.lastT && t > B.lastT) B.played += Math.min(t - B.lastT, LOOKAHEAD.max + 0.5);
     B.lastT = t;
-    while (phase < t + B.lookahead) { phase = Math.round(phase * PRECISION) / PRECISION; shift = 0; cb(phase, QSPAN); phase += QSPAN + shift; tick++; }
+    while (phase < t + B.lookahead) { phase = Math.round(phase * PRECISION) / PRECISION; shift = 0; const span = covered && phase < t - QSPAN ? Math.min(1, Math.max(QSPAN, Math.round((t - phase) * PRECISION) / PRECISION)) : QSPAN; cb(phase, span); phase += span + shift; tick++; }
   };
   const timer = workerTimer(TICK_MS, onTick);
   B.clockKind = timer.kind === 'worker' ? 'worker' : 'main-thread (no Worker)';
@@ -287,7 +300,7 @@ function stats() {
     audio: c ? { sampleRate: c.sampleRate, baseLatencyMs: Math.round((c.baseLatency || 0) * 1000), outputLatencyMs: Math.round((c.outputLatency || 0) * 1000), hint: (window.AudioContext && window.AudioContext.__scHint) || 'interactive (default)' } : null,
     perf: { tickMs: Math.round(PF.tickMs), tickMaxMs: +PF.tickMax.toFixed(1), queryMs: Math.round(PF.queryMs), queryMaxMs: +PF.queryMax.toFixed(1), voiceMs: Math.round(PF.voiceMs), voiceMaxMs: +PF.voiceMax.toFixed(1),
       voicesInFlight: inFlight(), longTasks: LT.na ? null : LT.n, longTaskWorstMs: Math.round(LT.worst), longTaskMs: Math.round(LT.total),
-      haps: PF.haps, voiceMsPerHap: PF.haps ? +(PF.voiceMs / PF.haps).toFixed(3) : 0, lateHaps: PF.late, skippedHaps: PF.skipped, tightHaps: PF.tight, rescuedWindows: PF.rescued, minMarginMs: PF.minMargin === Infinity ? null : Math.round(PF.minMargin * 1000) } };
+      haps: PF.haps, voiceMsPerHap: PF.haps ? +(PF.voiceMs / PF.haps).toFixed(3) : 0, gatedHaps: PF.gated, lateHaps: PF.late, skippedHaps: PF.skipped, tightHaps: PF.tight, rescuedWindows: PF.rescued, minMarginMs: PF.minMargin === Infinity ? null : Math.round(PF.minMargin * 1000) } };
 }
 function segments() { const t = now(); return B.segs.map((s) => ({ kind: s.kind, why: s.why, cycle: s.cycle, audio: s.audio, wall: s.wall, ms: s.ms != null ? s.ms : Math.round(t - s.t0) })); }
 /* gaps between two audio-clock times (for capture takes): paused / interrupted segments that overlap [a, b] */
@@ -303,14 +316,17 @@ function settingsHtml() {
   return flagsHtml() + `<section class="bg-set" aria-labelledby="bgSetH"><h3 id="bgSetH">Background playback</h3>
     <label class="bg-row"><span>When the app is hidden</span><select id="bgPolicy">${Object.entries(POLICIES).map(([k, v]) => `<option value="${k}"${k === B.policy ? ' selected' : ''}>${v}</option>`).join('')}</select></label>
     <label class="bg-row bg-check"><input type="checkbox" id="bgWake"${B.wake ? ' checked' : ''}> <span>Keep the screen on while playing (foreground)</span></label>
-    <label class="bg-row"><span>Render ahead lead (seconds, 0 = off)</span><input type="number" id="bgAhead" min="0" max="120" step="1" inputmode="numeric" value="${aheadLead()}"></label></section>`;
+    <label class="bg-row"><span>Precompute (seconds ahead, up to the program end; 0 = off)</span><input type="number" id="bgAhead" min="0" max="3600" step="1" inputmode="numeric" value="${aheadLead()}"></label>
+    <label class="bg-row bg-check"><input type="checkbox" id="bgAheadPlay"${aheadPlay() ? ' checked' : ''}> <span>Play from the render-ahead buffers (live while a chunk is not ready)</span></label></section>`;
 }
 /* render-ahead (#195): the lead is stored here; timeline.js loads renderahead.js when it is > 0 */
-function aheadLead() { if (sc.ahead) return sc.ahead.state().lead; try { return Math.max(0, +localStorage.getItem('sc.ahead.lead') || 0); } catch (e) { return 0; } }
-function aheadRow() { const a = sc.ahead && sc.ahead.state(); if (!a || !a.on) return 'off'; return N.span(a.leadSec.toFixed(1), 5) + ' s of ' + a.lead + ' s, ' + a.ready.length + ' chunks of ' + a.chunkSec + ' s ready' + (a.speed ? ', renders at ' + a.speed + 'x' : '') + (a.live ? ', playhead on live' : ', playhead inside the buffer') + (a.error ? ' (' + a.error + ')' : ''); }
+function aheadLead() { if (sc.ahead) return sc.ahead.state().lead; try { const v = localStorage.getItem('sc.ahead.lead'); return v == null ? 600 : Math.max(0, +v || 0); } catch (e) { return 0; } }
+function aheadPlay() { if (sc.ahead && sc.ahead.state().play != null) return sc.ahead.state().play; try { return localStorage.getItem('sc.ahead.play') !== 'off'; } catch (e) { return true; } }
+function aheadRow() { const a = sc.ahead && sc.ahead.state(); if (!a) return aheadLead() > 0 ? 'starts at the first Play' : 'off'; if (!a.on) return 'off'; return a.status + (a.staleChunks ? ' (' + a.staleChunks + ' edited, old audio until ready)' : '') + ', ' + N.span(a.leadSec.toFixed(1), 5) + ' s ahead' + (a.programEnd != null ? ' (program end at cycle ' + a.programEnd + ')' : '') + ', ' + a.ready.length + ' chunks of ' + a.chunkSec + ' s ready' + (a.speed ? ', renders at ' + a.speed + 'x' : '') + ', source ' + (a.source === 'buffer' ? 'buffer' : 'live' + (a.why ? ' (' + a.why + ')' : '')) + (a.bufSec ? ', ' + a.bufSec.toFixed(0) + ' s played from buffers' : '') + (a.error ? ' (' + a.error + ')' : ''); }
 function bindSettings(root) {
   const p = $('#bgPolicy', root), w = $('#bgWake', root), ah = $('#bgAhead', root);
-  if (ah) ah.onchange = () => { const lead = Math.max(0, Math.min(120, +ah.value || 0)); ah.value = String(lead); try { localStorage.setItem('sc.ahead.lead', String(lead)); } catch (e) { /* private mode */ } dispatchEvent(new CustomEvent('sc-ahead', { detail: { lead } })); sc.ui && sc.ui.toast(lead ? 'Render ahead: ' + lead + ' s' : 'Render ahead: off', { kind: 'ok' }); };
+  if (ah) ah.onchange = () => { const lead = Math.max(0, Math.min(3600, +ah.value || 0)); ah.value = String(lead); try { localStorage.setItem('sc.ahead.lead', String(lead)); } catch (e) { /* private mode */ } dispatchEvent(new CustomEvent('sc-ahead', { detail: { lead } })); sc.ui && sc.ui.toast(lead ? 'Precompute: ' + lead + ' s ahead' : 'Precompute: off, play is live', { kind: 'ok' }); };
+  const ap = $('#bgAheadPlay', root); if (ap) ap.onchange = () => { try { localStorage.setItem('sc.ahead.play', ap.checked ? 'on' : 'off'); } catch (e) { /* private mode */ } if (sc.ahead) sc.ahead.configure({ play: ap.checked }); sc.ui && sc.ui.toast(ap.checked ? 'Ready chunks play from the buffers' : 'Buffers are drawn only; play is live', { kind: 'ok' }); };
   if (p) p.onchange = () => { setPolicy(p.value); sc.ui && sc.ui.toast('Background: ' + POLICIES[p.value], { kind: 'ok' }); };
   if (w) w.onchange = () => setWake(w.checked);
   for (const sel of (root || document).querySelectorAll('select[data-flag]')) sel.onchange = () => { try { localStorage.setItem('sc.flag.' + sel.dataset.flag, sel.value); } catch (e) { /* private mode */ } sc.ui && sc.ui.toast(FLAGS[sel.dataset.flag].label + ': ' + FLAGS[sel.dataset.flag].opts[sel.value] + ' after reload', { kind: 'info' }); };

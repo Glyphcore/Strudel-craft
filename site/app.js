@@ -35,8 +35,10 @@ function strudelUrl(code) { code = plain(code); const b = new TextEncoder().enco
 /* ---------- audio tap ----------
    Strudel connects its output to AudioContext.destination. We wrap AudioNode.prototype.connect so that
    connection lands on our master GainNode instead, which feeds analysers and then the real destination.
-   The Strudel bundle itself is not modified. */
-const Bus = { ctx: null, gain: null, an: null, anL: null, anR: null, own: new WeakSet(), db: MASTER.def };
+   The Strudel bundle itself is not modified.
+   #199: two sub-buses feed the master gain. Bus.live takes every redirected connection (all live voices), Bus.buf the render-ahead
+   buffer sources (renderahead.js), so live voices can be faded while a buffered chunk plays; taps, analysers and the master level sit after both. */
+const Bus = { ctx: null, gain: null, live: null, buf: null, an: null, anL: null, anR: null, own: new WeakSet(), db: MASTER.def };
 /* render host page (index.html?host=render, capture.js): no service worker registration, no tracker polling, no visuals loops */
 const HOST_PAGE = /[?&]host=render\b/.test(location.search);
 const nativeConnect = AudioNode.prototype.connect;
@@ -47,23 +49,25 @@ function ensureBus(ctx) {
   const an = new AnalyserNode(ctx, { fftSize: 2048, smoothingTimeConstant: 0.78, minDecibels: SPEC.min, maxDecibels: SPEC.max });
   const sp = new ChannelSplitterNode(ctx, { numberOfOutputs: 2 });
   const anL = new AnalyserNode(ctx, { fftSize: 1024 }); const anR = new AnalyserNode(ctx, { fftSize: 1024 });
-  for (const n of [g, an, sp, anL, anR]) Bus.own.add(n);
+  const live = new GainNode(ctx), buf = new GainNode(ctx);
+  for (const n of [g, an, sp, anL, anR, live, buf]) Bus.own.add(n);
+  nativeConnect.call(live, g); nativeConnect.call(buf, g);
   nativeConnect.call(g, an); nativeConnect.call(an, ctx.destination);
   nativeConnect.call(g, sp); nativeConnect.call(sp, anL, 0); nativeConnect.call(sp, anR, 1);
-  Object.assign(Bus, { gain: g, an, anL, anR, fbuf: new Uint8Array(an.frequencyBinCount), tbuf: new Float32Array(an.fftSize), lbuf: new Float32Array(1024), rbuf: new Float32Array(1024) });
+  Object.assign(Bus, { gain: g, live, buf, an, anL, anR, fbuf: new Uint8Array(an.frequencyBinCount), tbuf: new Float32Array(an.fftSize), lbuf: new Float32Array(1024), rbuf: new Float32Array(1024) });
 }
 AudioNode.prototype.connect = function (dest, ...rest) {
   if (dest instanceof AudioDestinationNode && !Bus.own.has(this) && !(typeof OfflineAudioContext !== 'undefined' && dest.context instanceof OfflineAudioContext)) {
-    ensureBus(dest.context); nativeConnect.call(this, Bus.gain, ...rest); return dest;
+    ensureBus(dest.context); nativeConnect.call(this, Bus.live, ...rest); return dest;
   }
   return nativeConnect.call(this, dest, ...rest);
 };
 /* #92 (docs/KNOWN_ISSUES.md): superdough's noise mix teardown (un -> zn) calls noiseNode.disconnect(gain) after the noise source's own end callback already ran disconnect() (or, for the
    destination, connected to our master gain instead), which throws InvalidAccessError as an uncaught page error under load. A targeted
-   disconnect of a connection that is already gone is a no-op here; a disconnect from the destination goes to the master gain we redirected to. */
+   disconnect of a connection that is already gone is a no-op here; a disconnect from the destination goes to the live sub-bus we redirected to. */
 const nativeDisconnect = AudioNode.prototype.disconnect;
 AudioNode.prototype.disconnect = function (...a) {
-  if (a[0] instanceof AudioDestinationNode && Bus.gain && Bus.ctx === a[0].context && !Bus.own.has(this)) a = [Bus.gain, ...a.slice(1)];
+  if (a[0] instanceof AudioDestinationNode && Bus.gain && Bus.ctx === a[0].context && !Bus.own.has(this)) a = [Bus.live, ...a.slice(1)];
   try { return nativeDisconnect.apply(this, a); } catch (e) { if (a.length && e && e.name === 'InvalidAccessError') return undefined; throw e; }
 };
 /* ---------- audio status (#56 "Fix: no audio or waveforms") ----------
@@ -164,6 +168,8 @@ async function loadSampleMaps(say) {
   return !failed.length;
 }
 function loadPreludes() { return Promise.all(PRELUDES.map((src) => new Promise((ok) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => { console.warn('prelude failed: ' + src); ok(); }; document.head.append(s); }))); }
+/* #199: Stop and the fresh feed (#196) also drop the render-ahead buffer sources (they do not pass through superdough) */
+function dropAhead() { try { const a = window.strudelCraft.ahead; a && a.cut && a.cut(); } catch (e) { /* optional */ } }
 const Engine = {
   ready: null, repl: null, samplesLoaded: false, mapsLoaded: new Set(), state: {}, selfCheck: { engine: 'idle', samples: 'idle' },
   load() {
@@ -229,16 +235,18 @@ const Engine = {
     await window.evaluate(protectCode(code));
     if (this.state.evalError) throw this.state.evalError;
   },
-  stop() { muteBus(); try { if (this.repl) this.repl.stop(); else if (window.hush) window.hush(); } catch (e) { /* not started */ } },
+  stop() { muteBus(); dropAhead(); try { if (this.repl) this.repl.stop(); else if (window.hush) window.hush(); } catch (e) { /* not started */ } },
   /* #196: a fresh audio feed for the next recipe. Stopping only halts the scheduler; voices already triggered (and the reverb / delay tails in the orbits) would keep sounding into the
      next recipe. So: ramp the master down, halt the scheduler (its queue is flushed), then superdough's resetGlobalEffects() disconnects every orbit / bus and builds a new output stage
-     (old voices end into nothing), and the timeline lanes and visuals hap cache are emptied. Play re-opens the master. */
-  async cut() {
-    S.swapGen++; muteBus(); await new Promise((r) => setTimeout(r, 25));
+     (old voices end into nothing), and the timeline lanes and visuals hap cache are emptied. Play re-opens the master. The render-ahead buffer sources are stopped too (#199). */
+  async cut({ keepLanes = false } = {}) {
+    S.swapGen++; muteBus(); dropAhead(); await new Promise((r) => setTimeout(r, 25));
     try { if (this.repl) this.repl.stop(); else if (window.hush) window.hush(); } catch (e) { /* not started */ }
     try { if (window.resetGlobalEffects) window.resetGlobalEffects(); } catch (e) { console.warn('fresh feed: ' + (e && e.message)); }
-    try { const sc = window.strudelCraft; sc.timeline && sc.timeline.reset && sc.timeline.reset(); sc.visuals && sc.visuals.reset && sc.visuals.reset(); } catch (e) { /* optional */ }
+    if (!keepLanes) try { const sc = window.strudelCraft; sc.timeline && sc.timeline.reset && sc.timeline.reset(); sc.visuals && sc.visuals.reset && sc.visuals.reset(); } catch (e) { /* optional */ }
   },
+  /* #207: start the stopped scheduler at cycle c with the pattern it already has (no evaluate): Cyclist.start() anchors its first tick at lastEnd */
+  async startAt(c) { const sch = this.scheduler; if (!sch || !sch.pattern) return false; unmuteBus(); try { const a = window.strudelCraft.ahead; a && a.cleanStart && a.cleanStart(); sch.lastEnd = c; sch.lastBegin = c; await sch.start(); return true; } catch (e) { return false; } },
   get started() { return !!(this.scheduler && this.scheduler.started); },
 };
 
@@ -500,6 +508,21 @@ async function play(src = currentSource()) {
 }
 function stop() { S.swapGen++; select.tok = (select.tok || 0) + 1; /* #196: a pending hot-swap or recipe switch must not restart the scheduler after Stop */ try { window.strudelCraft.quickplay && window.strudelCraft.quickplay.stop('fast'); } catch (e) { /* optional */ } Engine.stop(); S.playing = false; S.playingId = null; clearInterval(AudioSt.watch); try { window.strudelCraft.bg && window.strudelCraft.bg.onStop(); } catch (e) { /* optional */ } say('Stopped'); Viz.stopSoon(); syncTransport(); syncAudioState(); }
 function toggle() { if (S.playing) stop(); else play(); }
+/* #207 seek while playing: the old position is halted at once with the same cut as a recipe switch (master ramp 15 ms, scheduler stopped, effect buses reset so voices and tails end into nothing,
+   render-ahead buffer sources dropped), then the same program starts at the new position. Scrubbing coalesces: the cut runs once, positions that arrive during it only replace the target, and the
+   restart waits until the target has been still for 40 ms, so only the last position starts. Stopped: nothing here (the caller moves the cursor). Returns true when it took the seek. */
+const Seek = { to: null, busy: false, n: { cuts: 0, starts: 0, calls: 0 } };
+function seekTo(c) {
+  c = Math.max(0, +c || 0); if (!S.playing || S.busy || !Engine.started && !Seek.busy) return false;
+  Seek.to = c; Seek.n.calls++; if (Seek.busy) return true; Seek.busy = true; select.tok = (select.tok || 0) + 1;
+  (async () => {
+    try { Seek.n.cuts++; await Engine.cut({ keepLanes: true }); const gen = S.swapGen;
+      for (let last = NaN; last !== Seek.to;) { last = Seek.to; await new Promise((r) => setTimeout(r, 40)); }
+      if (S.playing && gen === S.swapGen) { const pos = Seek.to; if (await Engine.startAt(pos)) { Seek.n.starts++; try { window.strudelCraft.visuals && window.strudelCraft.visuals.reset && window.strudelCraft.visuals.reset(); } catch (e) { /* optional */ } } else stop(); }
+    } finally { Seek.busy = false; Seek.to = null; }
+  })();
+  return true;
+}
 function syncTransport() {
   if ($('#liveChip')) syncLiveChip();
   const b = $('#playBtn'); b.setAttribute('aria-pressed', S.playing); $('#playLabel').textContent = S.playing ? 'Stop' : 'Play';
@@ -1020,9 +1043,10 @@ async function boot() {
   }
 }
 /* transport hook for transport-range.js / palette.js */
-window.strudelCraft.transport = { play: () => play(), stop: () => stop(), toggle: () => toggle(), get playing() { return S.playing; }, setMaster: (db) => setMaster(db), get masterDb() { return S.master; },
+window.strudelCraft.transport = { play: () => play(), stop: () => stop(), toggle: () => toggle(), seek: (c) => seekTo(c), get seekingTo() { return Seek.busy ? Seek.to : null; }, get seekStats() { return { ...Seek.n }; }, get playing() { return S.playing; }, setMaster: (db) => setMaster(db), get masterDb() { return S.master; },
   /* capture.js hooks: master bus (post master level, what is heard), the source the transport plays, and an idle compile for offline renders */
-  get bus() { return Bus.ctx ? { ctx: Bus.ctx, node: Bus.gain, own: Bus.own } : null; },
+  get bus() { return Bus.ctx ? { ctx: Bus.ctx, node: Bus.gain, own: Bus.own, live: Bus.live, buf: Bus.buf } : null; },
+  ensureBus() { try { const c = Bus.ctx || (window.getAudioContext && window.getAudioContext()); if (c) ensureBus(c); } catch (e) { /* no context yet */ } return this.bus; },
   get scheduler() { return Engine.scheduler; },
   source: () => { const s = S.playing ? currentSource(S.srcView || 'rack') : currentSource(); return s && { kind: s.kind, id: s.id, title: s.title, code: s.code, samples: !!s.samples, empty: !!s.empty }; },
   async compile() {

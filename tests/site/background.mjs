@@ -29,7 +29,8 @@ const server = http.createServer((req, res) => {
   res.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(res);
 });
 await new Promise((r) => server.listen(0, '127.0.0.1', r));
-const BASE = `http://127.0.0.1:${server.address().port}/${BASELINE ? '?bgclock=off' : ''}`;
+/* ?ahead=0 (#199): this test is about the live scheduler clock (lookahead, re-anchor, paused segments); with precomputed playback a stall is covered by the buffer and no underrun happens (tests/site/bufferplay.mjs section 9) */
+const BASE = `http://127.0.0.1:${server.address().port}/${BASELINE ? '?bgclock=off&ahead=0' : '?ahead=0'}`;
 const checks = []; const errors = [];
 const check = (name, ok, detail = '') => { checks.push({ name, ok: !!ok, detail }); console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? '  -- ' + detail : ''}`); };
 const info = (name, detail) => console.log(`INFO  ${name}  -- ${detail}`);

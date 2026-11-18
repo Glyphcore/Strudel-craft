@@ -24,14 +24,16 @@ const T = (f, a) => page.evaluate(f, a); const ah = () => T(() => window.strudel
 const setCode = (c) => T((c) => { window.__sc.setView('rack'); const ta = document.getElementById('code'); const v = ta.cmView; if (v) v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: c } }); else { ta.value = c; ta.dispatchEvent(new Event('input', { bubbles: true })); } }, c);
 const playStop = async (ms) => { await T(() => window.__sc.play()); await page.waitForFunction(() => window.__sc.S.playing && window.__sc.Engine.started, null, { timeout: 60000 }); await wait(ms); await T(() => window.__sc.stop()); await wait(400); await T(() => { const t = window.strudelCraft.timeline; t.setMode('off'); t.seek(0); t.setZoom(60); document.getElementById('tlScroll').scrollLeft = 0; }); };
 await page.goto(`http://127.0.0.1:${server.address().port}/index.html#rack`); await page.waitForSelector('#list li[data-id]', { timeout: 60000 }); await page.waitForFunction(() => window.strudelCraft.timeline && window.strudelCraft.bg && window.strudelCraft.capture, null, { timeout: 30000 });
-check('off by default: renderahead.js is not loaded', await T(() => !window.strudelCraft.ahead));
+check('nothing at page load: renderahead.js loads at the first Play (#199) or with an explicit lead', await T(() => !window.strudelCraft.ahead));
+/* this test sets its own 12 s window in the sheet below; the default (whole program from the first Play, #199) is tests/site/bufferplay.mjs section 8 */
+await T(() => localStorage.setItem('sc.ahead.lead', '0'));
 await setCode(INV('c3')); await wait(500); await playStop(1500);
 /* the lead is set in the audio dot sheet */
 await T(() => window.strudelCraft.bg.openDiagnostics()); await page.fill('#bgDiag #bgAhead', String(LEAD)); await page.dispatchEvent('#bgDiag #bgAhead', 'change');
 await page.waitForFunction(() => window.strudelCraft.ahead && window.strudelCraft.ahead.state().on, null, { timeout: 15000 });
 let a = await ah(); check(`audio dot sheet: "Render ahead lead" sets the lead (${LEAD} s) and loads the module`, a.lead === LEAD && a.on && (await T(() => localStorage.getItem('sc.ahead.lead'))) === String(LEAD), `chunk ${a.chunkCycles} cycles = ${a.chunkSec} s, pre-roll ${a.preCycles}`);
 await T(() => document.activeElement && document.activeElement.blur()); await wait(1300); const row = await T(() => { const dt = [...document.querySelectorAll('#bgDiag dt')].find((x) => x.textContent === 'Render ahead'); return dt ? dt.nextElementSibling.textContent : null; });
-check('audio dot sheet: a live "Render ahead" row', !!row && /s of 12 s/.test(row), String(row)); await T(() => document.getElementById('bgDiag').close());
+check('audio dot sheet: a live "Render ahead" row', !!row && /(ready|rendering \d+ of \d+).* s ahead/.test(row), String(row)); await T(() => document.getElementById('bgDiag').close());
 /* chunks 0..4 render while stopped (precompute, cursor at 0) */
 await page.waitForFunction(() => { const s = window.strudelCraft.ahead.state(); return [0, 1, 2, 3].every((i) => s.ready.includes(i)) && s.rendering == null; }, null, { timeout: 180000 }).catch(() => {});
 a = await ah(); check('precompute while stopped: chunks 0-3 ready, lead reaches the target', [0, 1, 2, 3].every((i) => a.ready.includes(i)) && a.leadSec >= LEAD, `ready ${a.ready.join()}, lead ${a.leadSec} s, ${a.renders} renders at ${a.speed}x, error "${a.error}"`);

@@ -189,4 +189,4 @@ function registerIntellisense() {
 }
 if (!registerIntellisense()) { const iv = setInterval(() => { if (registerIntellisense()) clearInterval(iv); }, 300); setTimeout(() => clearInterval(iv), 20000); }
 
-sc.visuals = { flag: FLAG_VIS, cacheStats: () => ({ queries: VC.queries, cycles: VC.cycles.size }), budget: () => ({ ran: VB.ran, skipped: VB.skipped, costMs: +VB.cost.toFixed(1), gapMs: +VB.gap.toFixed(1), stressed: VB.stressed }), list: VIS, attach(api) { cmApi = api; const es = sc.engineState && sc.engineState(); if (lastIdle && !(es && es.playing)) idlePaint(lastIdle); }, canvas: (id) => widgetCanvases.get(id) };
+sc.visuals = { reset: () => { VC.pat = null; VC.cycles.clear(); }, flag: FLAG_VIS, cacheStats: () => ({ queries: VC.queries, cycles: VC.cycles.size }), budget: () => ({ ran: VB.ran, skipped: VB.skipped, costMs: +VB.cost.toFixed(1), gapMs: +VB.gap.toFixed(1), stressed: VB.stressed }), list: VIS, attach(api) { cmApi = api; const es = sc.engineState && sc.engineState(); if (lastIdle && !(es && es.playing)) idlePaint(lastIdle); }, canvas: (id) => widgetCanvases.get(id) };

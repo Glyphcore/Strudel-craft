@@ -252,6 +252,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/site/organizer_layout.mjs   # organizer layout (#179): Recipes and Syntax at 1440x900, 1024x700, 768x1024, 390x844, 360x740 with the tree and 8 tags expanded: bounded filter region, list/entries >= 45% of the viewport, no intersection, toggle persists, last row reachable
     node tests/site/standalone.mjs     # installed app (standalone, SW in control): sound peak, scope pixels, Syntax examples; upgrade from older builds; Range pass-through; Syntax error state + Retry
     node tests/site/pwa_offline.mjs    # installed app offline: first-visit snapshot (files, CDN graph, sample maps), offline editor + Play, bank toast, atomic VERSION swap (#73)
+    node tests/site/recipe_switch.mjs  # fresh audio feed per recipe selection (#196): no recipe A audio after the switch, source nodes back to baseline over 12 switches, timeline lanes only the new recipe
     node tests/site/renderahead.mjs    # Render-ahead (#195): lead set in the audio dot sheet, chunks + lane stems, edit dirties one chunk, lead seconds under a stress program
     node tests/site/quickplay.mjs      # Quick play (#150): in-place audition from Recipes rows and Syntax examples at 390px, peak while playing / 0 after stop, nothing else touched
     node tests/site/pwa.mjs            # installable PWA at /Strudel-craft/: installability errors (CDP), icons, precache, offline reload, offline bank toast, update toast, standalone (#73)

@@ -230,6 +230,15 @@ const Engine = {
     if (this.state.evalError) throw this.state.evalError;
   },
   stop() { muteBus(); try { if (this.repl) this.repl.stop(); else if (window.hush) window.hush(); } catch (e) { /* not started */ } },
+  /* #196: a fresh audio feed for the next recipe. Stopping only halts the scheduler; voices already triggered (and the reverb / delay tails in the orbits) would keep sounding into the
+     next recipe. So: ramp the master down, halt the scheduler (its queue is flushed), then superdough's resetGlobalEffects() disconnects every orbit / bus and builds a new output stage
+     (old voices end into nothing), and the timeline lanes and visuals hap cache are emptied. Play re-opens the master. */
+  async cut() {
+    S.swapGen++; muteBus(); await new Promise((r) => setTimeout(r, 25));
+    try { if (this.repl) this.repl.stop(); else if (window.hush) window.hush(); } catch (e) { /* not started */ }
+    try { if (window.resetGlobalEffects) window.resetGlobalEffects(); } catch (e) { console.warn('fresh feed: ' + (e && e.message)); }
+    try { const sc = window.strudelCraft; sc.timeline && sc.timeline.reset && sc.timeline.reset(); sc.visuals && sc.visuals.reset && sc.visuals.reset(); } catch (e) { /* optional */ }
+  },
   get started() { return !!(this.scheduler && this.scheduler.started); },
 };
 
@@ -489,7 +498,7 @@ async function play(src = currentSource()) {
     if (!Engine.started) S.playing = false;
   } finally { btn.classList.remove('busy'); S.busy = false; syncTransport(); }
 }
-function stop() { try { window.strudelCraft.quickplay && window.strudelCraft.quickplay.stop('fast'); } catch (e) { /* optional */ } Engine.stop(); S.playing = false; S.playingId = null; clearInterval(AudioSt.watch); try { window.strudelCraft.bg && window.strudelCraft.bg.onStop(); } catch (e) { /* optional */ } say('Stopped'); Viz.stopSoon(); syncTransport(); syncAudioState(); }
+function stop() { S.swapGen++; select.tok = (select.tok || 0) + 1; /* #196: a pending hot-swap or recipe switch must not restart the scheduler after Stop */ try { window.strudelCraft.quickplay && window.strudelCraft.quickplay.stop('fast'); } catch (e) { /* optional */ } Engine.stop(); S.playing = false; S.playingId = null; clearInterval(AudioSt.watch); try { window.strudelCraft.bg && window.strudelCraft.bg.onStop(); } catch (e) { /* optional */ } say('Stopped'); Viz.stopSoon(); syncTransport(); syncAudioState(); }
 function toggle() { if (S.playing) stop(); else play(); }
 function syncTransport() {
   if ($('#liveChip')) syncLiveChip();
@@ -656,7 +665,7 @@ function select(i, { scroll = true, audition = true } = {}) {
   if (scroll) { const li = $$('#list li')[S.sel]; if (li) li.scrollIntoView({ block: 'nearest', behavior: reducedMotion.matches ? 'auto' : 'smooth' }); }
   renderSelection(true);
   { const r = cur(); if (r && bodyReady(r)) earlyPrep(recipeCode(r)); }
-  if (audition && S.playing && S.view === 'rack') play();
+  if (audition && S.playing && S.view === 'rack') { const tok = (select.tok = (select.tok || 0) + 1); Engine.cut().then(() => { if (tok === select.tok) return play(); }); }
 }
 /* the plain Strudel form of a recipe as it stands: the generated lowering for the catalog text, else the editor text with atoms inlined (an edit has no stored lowering) */
 function strudelForm(r) { return S.edits[r.id] != null ? plain(S.edits[r.id]) : (r.lowered || plain(r.code || '')); }

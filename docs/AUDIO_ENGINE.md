@@ -304,3 +304,12 @@ Measured (stress: 6 layers, 16ths, reverb + delay, 140 bpm; lead target 12 s; 4-
 
 The host shares the page's main thread: each render costs about a second of fixed work (compile, context) on top of the voices, so stems of a
 many-lane program arrive after the mix (the lanes show the live tap until then).
+
+## 11. Fresh feed per recipe selection (#196)
+Choosing another recipe while playing used to evaluate the new pattern into the running scheduler: voices already triggered (and orbit reverb / delay tails) kept sounding into the new recipe,
+and a pending hot swap (`Engine.swap`, editor settle) could even restart the scheduler after Stop. Root cause: Stop and swap only halt scheduling; nothing disconnected the old voices.
+`Engine.cut()` (site/app.js) now runs on every audition-select and does: ramp the master down (25 ms), stop the scheduler (queue flushed), superdough `resetGlobalEffects()` (disconnects every orbit and bus,
+builds a new output stage, so old voices end into nothing), `timeline.reset()` (lane model, cycle cache, key) and `visuals.reset()` (hap cache). Play re-opens the master. `stop()` and `cut()` bump `S.swapGen`
+and the select token so a pending swap or switch cannot restart the scheduler. Cost: a switch restarts the new recipe from cycle 0 (live edits still hot-swap on the cycle boundary).
+Test `tests/site/recipe_switch.mjs`: A (220 Hz, release 3 s) at -26 dB before the switch is -58 dB 0.7 s after it (without the fix -28 dB); live source nodes 0 after stop over 12 switches.
+

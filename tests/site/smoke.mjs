@@ -77,7 +77,8 @@ metrics.chromium = browser.version();
   await page.keyboard.press('Shift+Slash'); check('? opens cheat sheet', await page.evaluate(() => document.querySelector('#help').open));
   check('cheat sheet lists >= 12 shortcuts', (await page.locator('#keys dt').count()) >= 12);
   await page.keyboard.press('Escape'); check('Esc closes cheat sheet', !(await page.evaluate(() => document.querySelector('#help').open)));
-  // arrows move selection
+  // arrows move selection (#206: only while the recipe list has focus)
+  await page.evaluate(() => { const r = document.querySelectorAll('#list .row')[window.__sc.S.sel]; if (r) r.focus(); });
   const sel0 = await page.evaluate(() => window.__sc.S.sel); await page.keyboard.press('ArrowDown'); await page.keyboard.press('ArrowDown');
   const sel1 = await page.evaluate(() => window.__sc.S.sel); check('ArrowDown moves selection', sel1 === sel0 + 2, `${sel0} -> ${sel1}`);
   await page.keyboard.press('ArrowUp'); check('ArrowUp moves selection', (await page.evaluate(() => window.__sc.S.sel)) === sel0 + 1);

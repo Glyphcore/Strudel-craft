@@ -273,10 +273,10 @@ start failure only writes a console warning and a note. Until now no screen show
 **Interface for the notice (no UI in the module).** `window.strudelCraft.soundPrep.state()` and the window event `sc:soundprep` (detail): `{ phase: idle | loading | ready | timeout | skipped | offline | save-data | failed, reason, total, done, failed, bytes, ms, sounds[], program }`. `sound-load.js` (ui-designer) can read it; the fetches are also counted by its fetch wrapper.
 **Measured** (`tests/site/sound_prep.mjs`, 360x780 touch): drum kit cold on a 600 kB/s, 120 ms link: before skipped notes 4, first sound 2.5 s after Play press; after 0 skipped, first sound 111 ms after Play returned (Play returns after the 3.8 s preparation). Orchestral woodwinds cold, unthrottled: before first sound 4.6 s after Play press with 4 skipped; after 1.5 s, 0 skipped (7 files, 10.3 MB). Warm Play: Play returns in 6 ms. Test switch: `window.__scSoundPrep = false`.
 
-## 10. Render-ahead buffers and lane stems (#195, `site/renderahead.js`; since #199 on by default and played, section 13)
+## 10. Render-ahead buffers and lane stems (#195, `site/renderahead.js`; #199 played them; default OFF again since the phone report: live scheduler by default, opt in with `?ahead=1`, section 13)
 
 Goal: precompute instead of just-in-time. The program is rendered ahead of the playhead in the render host of section 6, never in the live context.
-Lead (seconds ahead): audio dot sheet "Precompute", `?ahead=S` (`?ahead=0` off, `?ahead=full`), `localStorage sc.ahead.lead`; default 600 s bounded by the program's
+Lead (seconds ahead): audio dot sheet "Precompute", `?ahead=S` (`?ahead=0` off, `?ahead=full`, `?ahead=1` = full), `localStorage sc.ahead.lead`; default **0 (off)** since the hotfix; when on 600 s bounded by the program's
 specified end, 32 s for an open-ended program (section 13).
 
 - Chunk: 2^k cycles nearest 4 s (1 to 8 cycles). Pre-roll: about 2 s in whole cycles (none for chunk 0), rendered and dropped, so tails of earlier notes
@@ -318,7 +318,9 @@ Transport: `<` (`#startBtn`, "Return to start", key Home) returns to cycle 0: a 
 Root causes: (1) the timeline kept a stopped resume cursor (`T.cursor`) that a recipe select never cleared, so the next Play began at the old stop position; `timeline.reset()` now zeroes cursor and clock and a stopped select calls it (`rewind()` in app.js, with `visuals.reset()`). (2) At 390 px the `#lanes` canvas is below the fold, its IntersectionObserver flag stopped `Viz.drawLanes()`, and that function also writes the cycle readout and pings the timeline loop: both stayed at 0.00 while `scheduler.now()` ran. `drawLanes` (no canvas work) is now never gated.
 Test `tests/site/transport_reset.mjs` runs the select / Play / readout-advances flow at 390 and 1280 px.
 
-## 13. Playback from precomputed audio (#199; default for Play)
+## 13. Playback from precomputed audio (#199; OPT-IN since the phone report, see below)
+
+**Hotfix (2026-11-18):** on a real 390 px phone (slow CPU, renders 0.8 to 1.25x realtime) buffer playback overlapped sources, flapped on seek and kept the old recipe's audio after a recipe switch. Default is now the live scheduler with render-ahead off (lead 0, nothing loads, no render work competes with the live path). Opt in with `?ahead=1` (or `full`, or a lead in seconds) or the audio dot sheet "Precompute" field; `?aheadplay=off` keeps buffers drawn only. Buffer mode returns to default only after the throttled tests of the follow-up (CPU x6) pass.
 User direction 2026-11-18: sound made from syntax on the fly, in a loop driven by ticks, lags and then has to catch up; precompute to completion and play it as plain audio.
 
 **Compute is time-independent.** A chunk is a pure function of the program and a cycle range: one `queryArc` per cycle over [chunk start - pre-roll, chunk end)

@@ -320,7 +320,7 @@ function settingsHtml() {
     <label class="bg-row bg-check"><input type="checkbox" id="bgAheadPlay"${aheadPlay() ? ' checked' : ''}> <span>Play from the render-ahead buffers (live while a chunk is not ready)</span></label></section>`;
 }
 /* render-ahead (#195): the lead is stored here; timeline.js loads renderahead.js when it is > 0 */
-function aheadLead() { if (sc.ahead) return sc.ahead.state().lead; try { const v = localStorage.getItem('sc.ahead.lead'); return v == null ? 600 : Math.max(0, +v || 0); } catch (e) { return 0; } }
+function aheadLead() { if (sc.ahead) return sc.ahead.state().lead; try { const v = localStorage.getItem('sc.ahead.lead'); return v == null ? 0 : v === '1' ? 600 : Math.max(0, +v || 0); } catch (e) { return 0; } }
 function aheadPlay() { if (sc.ahead && sc.ahead.state().play != null) return sc.ahead.state().play; try { return localStorage.getItem('sc.ahead.play') !== 'off'; } catch (e) { return true; } }
 function aheadRow() { const a = sc.ahead && sc.ahead.state(); if (!a) return aheadLead() > 0 ? 'starts at the first Play' : 'off'; if (!a.on) return 'off'; return a.status + (a.staleChunks ? ' (' + a.staleChunks + ' edited, old audio until ready)' : '') + ', ' + N.span(a.leadSec.toFixed(1), 5) + ' s ahead' + (a.programEnd != null ? ' (program end at cycle ' + a.programEnd + ')' : '') + ', ' + a.ready.length + ' chunks of ' + a.chunkSec + ' s ready' + (a.speed ? ', renders at ' + a.speed + 'x' : '') + ', source ' + (a.source === 'buffer' ? 'buffer' : 'live' + (a.why ? ' (' + a.why + ')' : '')) + (a.bufSec ? ', ' + a.bufSec.toFixed(0) + ' s played from buffers' : '') + (a.error ? ' (' + a.error + ')' : ''); }
 function bindSettings(root) {

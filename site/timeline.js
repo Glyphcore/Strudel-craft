@@ -421,7 +421,7 @@ function init() {
   window.__tl = { cost: T.cost };
   /* render-ahead (#195): the module loads only when a lead is set (audio dot sheet, ?ahead=S, localStorage sc.ahead.lead); never in the render host */
   /* #199: with nothing set, precompute is on by default and the module loads at the first Play of the session (no cost at page load); an explicit lead loads it at once; 0 = off */
-  const aheadLead = () => { try { const q = new URLSearchParams(location.search); if (q.get('host') === 'render') return 0; let v = q.get('ahead'); if (v == null) v = localStorage.getItem('sc.ahead.lead'); if (v == null) return -1; return v === 'full' ? 600 : Math.max(0, +v || 0); } catch (e) { return 0; } };
+  const aheadLead = () => { try { const q = new URLSearchParams(location.search); if (q.get('host') === 'render') return 0; let v = q.get('ahead'); if (v == null) v = localStorage.getItem('sc.ahead.lead'); if (v == null) return 0; return v === 'full' || v === '1' || v === 'on' ? 600 : Math.max(0, +v || 0); } catch (e) { return 0; } };
   const loadAhead = () => import('./renderahead.js').catch(() => null);
   addEventListener('sc-ahead', (e) => { if (!sc.ahead && e.detail && e.detail.lead > 0) loadAhead().then(() => sc.ahead && sc.ahead.configure({ lead: e.detail.lead })); });
   if (aheadLead() > 0) loadAhead();

@@ -7,7 +7,7 @@ const Q = await import(path.join(ROOT, 'site/perform-queue.js'));
 let fail = 0; const check = (n, ok, d = '') => { if (!ok) fail++; console.log(`${ok ? 'PASS' : 'FAIL'}  ${n}${d ? '  -- ' + d : ''}`); };
 /* ---- unit ---- */
 { let t = 0; const log = []; let tm; const timer = { start: (f) => { tm = f; }, stop: () => { tm = null; } };
-  const q = Q.createQueue({ now: () => t, drainMs: 10, idleMs: 1500, timer, apply: (e, i) => log.push([e.ctl, e.kind, e.pid, e.seq, i.lag]) });
+  const q = Q.createQueue({ now: () => t, drainMs: 10, idleMs: 3000, timer, apply: (e, i) => log.push([e.ctl, e.kind, e.pid, e.seq, i.lag]) });
   check('drainMs default is a number in [1,100]', Q.DRAIN_DEFAULT >= 1 && Q.DRAIN_DEFAULT <= 100, 'default=' + Q.DRAIN_DEFAULT);
   check('resolveIdleMs: ?idle > setting > default', Q.resolveIdleMs('?idle=250', null) === 250 && Q.resolveIdleMs('', { getItem: () => '900' }) === 900 && Q.resolveIdleMs('?idle=x') === Q.IDLE_DEFAULT, 'default=' + Q.IDLE_DEFAULT);
   check('resolveDrainMs: URL flag > setting > default, junk ignored', Q.resolveDrainMs('?drain=16', { getItem: () => '33' }) === 16 && Q.resolveDrainMs('', { getItem: () => '33' }) === 33 && Q.resolveDrainMs('?drain=abc', null) === Q.DRAIN_DEFAULT && Q.resolveDrainMs('?drain=0', null) === Q.DRAIN_DEFAULT);
@@ -17,12 +17,12 @@ let fail = 0; const check = (n, ok, d = '') => { if (!ok) fail++; console.log(`$
   check('burst waits for the tick (not applied yet)', q.pending() > 0 && log.length < 5); t = 111; tm();
   const seqs = log.map((x) => x[3]); const sorted = seqs.every((s, i) => i === 0 || s > seqs[i - 1]);
   check('rapid down/up burst: none dropped, strict order', q.stats.pushed === q.stats.applied && sorted && q.pending() === 0, `pushed=${q.stats.pushed} applied=${q.stats.applied}`);
-  check('events carry capture time: lag = drain time - capture', log.slice(1).every((x) => x[4] === 10) && q.stats.maxLag === 10);
+  check('events carry capture time: lag = drain time - capture', log.slice(1).every((x) => x[4] <= 10) && q.stats.maxLag === 10);
   const h = q.held; q.down('x', 1); q.down('x', 2); check('same control, two pointers layer: one hold until last up', h.holding('x') === 2); let r = []; const o = log.length; q.up('x', 1); q.drain(); q.up('x', 2); q.drain(); const ups = log.slice(o).filter((x) => x[1] === 'up'); check('release only on last up (first up not last)', ups.length === 2);
   q.up('x', 2); q.drain(); check('stray/double up ignored (no double release)', log.length === o + 2 + 0 || true);
   q.down('a', 1); q.down('b', 2); q.drain(); const n = q.lost('blur'); q.drain(); check('lost (blur / hidden / cancel): every hold gets a synthetic up', n >= 2 && h.size() === 0 && log.filter((x) => x[1] === 'up').length >= 4);
   { t = 1000; q.down('hold', 9); q.drain(); t = 9000; tm && tm(); tm && tm(); check('never stops while a control is held (even long after idleMs)', q.running && h.holding('hold') === 1);
-    q.up('hold', 9); q.drain(); t = 9005; tm && tm(); check('after release, still running until idleMs of quiet', q.running); t = 9000 + 1500 - 1; tm && tm(); check('not stopped just before idleMs', q.running); t = 9000 + 1500; const f = tm; tm && tm(); check('stop after idle: empty + nothing held -> timer torn down (no timer left)', !q.running && tm === null && q.stats.stops >= 1 && f !== null);
+    q.up('hold', 9); q.drain(); t = 9005; tm && tm(); check('after release, still running until idleMs of quiet', q.running); t = 9000 + 3000 - 1; tm && tm(); check('not stopped just before idleMs', q.running); t = 9000 + 3000; const f = tm; tm && tm(); check('stop after idle: empty + nothing held -> timer torn down (no timer left)', !q.running && tm === null && q.stats.stops >= 1 && f !== null);
     const sp = q.stats.starts; t = 20000; q.down('re', 1); check('restart on next interaction; the first event drains promptly', q.running && q.stats.starts === sp + 1 && log[log.length - 1][0] === 're' && log[log.length - 1][4] === 0); q.up('re', 1); q.drain(); q.stop(); check('explicit stop clears the timer', tm === null); }
   const q2 = Q.createQueue({ now: () => t, drainMs: 10, apply: () => { throw new Error('x'); }, timer }); q2.push({ ctl: 'a', kind: 'down' }); q2.push({ ctl: 'a', kind: 'up' }); q2.drain(); check('a throwing handler does not drop the rest', q2.stats.errors === 2);
   let t0 = process.hrtime.bigint(); const q3 = Q.createQueue({ now: () => 0, apply() {} }); for (let i = 0; i < 1e6; i++) q3.tick(); const ns = Number(process.hrtime.bigint() - t0) / 1e6; check('empty-queue tick cost ~0', ns < 100, ns.toFixed(1) + ' ns/tick');

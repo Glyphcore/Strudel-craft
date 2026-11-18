@@ -1379,7 +1379,7 @@
   }
  },
  "perform": {
-  "date": "2026-11-16T06:50:34.875Z",
+  "date": "2026-11-18T06:45:38.413Z",
   "take": {
    "events": 4,
    "record": {
@@ -1389,23 +1389,23 @@
    }
   },
   "lane": {
-   "points": 12,
+   "points": 16,
    "events_next_cycle": [
     [
-     960,
-     960
+     3514,
+     3514
     ],
     [
-     3050,
-     3050
+     2784,
+     2784
     ],
     [
-     2659,
-     2659
+     1188,
+     1188
     ],
     [
-     3367,
-     3367
+     2029,
+     2029
     ]
    ]
   },
@@ -1417,7 +1417,7 @@
     "small": []
    },
    "board": {
-    "n": 32,
+    "n": 35,
     "min_w": 44,
     "min_h": 44,
     "small": []
@@ -1431,7 +1431,7 @@
    },
    "board": {
     "min": 10.25,
-    "n": 45,
+    "n": 51,
     "worst": "button. \"↶ Lane\" rgb(195, 202, 211) on rgb(24,29,36)"
    }
   },
@@ -1453,29 +1453,29 @@
   "latency_phone": {
    "work": {
     "n": 40,
-    "mean_ms": 0.898,
-    "p95_ms": 1.3,
-    "max_ms": 1.4
+    "mean_ms": 1.11,
+    "p95_ms": 1.8,
+    "max_ms": 2
    },
    "from_event": {
     "n": 40,
-    "mean_ms": 27.115,
-    "p95_ms": 31.4,
-    "max_ms": 41.7
+    "mean_ms": 13.658,
+    "p95_ms": 27.4,
+    "max_ms": 41.2
    }
   },
   "latency_phone_cpu4x": {
    "work": {
     "n": 20,
-    "mean_ms": 6.54,
-    "p95_ms": 9.4,
-    "max_ms": 9.4
+    "mean_ms": 9.565,
+    "p95_ms": 43,
+    "max_ms": 43
    },
    "from_event": {
     "n": 20,
-    "mean_ms": 79.015,
-    "p95_ms": 107.5,
-    "max_ms": 107.5
+    "mean_ms": 111.1,
+    "p95_ms": 255.9,
+    "max_ms": 255.9
    }
   },
   "shell_growth": {
@@ -1525,7 +1525,7 @@
    {
     "name": "perform: looper records a 1-bar take, Save stores a performance record, the loaded take replays",
     "ok": true,
-    "detail": "{\"events\":4,\"kind\":\"performance\",\"want\":[4.09375,4.239583333333333],\"replayed\":[4.09375,4.239583333333333]}"
+    "detail": "{\"events\":4,\"kind\":\"performance\",\"want\":[5.114583333333333,5.25],\"replayed\":[5.114583333333333,5.25]}"
    },
    {
     "name": "perform: declared-only type (encoder) renders its fallback with the \"basic view\" note",
@@ -1555,7 +1555,7 @@
    {
     "name": "perform: a 1-bar control move records a lane into the model and the control follows it on replay",
     "ok": true,
-    "detail": "{\"points\":12,\"follow\":[[960,960],[3050,3050],[2659,2659],[3367,3367]]}"
+    "detail": "{\"points\":16,\"follow\":[[3514,3514],[2784,2784],[1188,1188],[2029,2029]]}"
    },
    {
     "name": "perform: board edit mode resizes and moves a cell to another board; board saved to the library",
@@ -1575,7 +1575,7 @@
    {
     "name": "perform: pointerdown handler -> journal entry, main-thread work p95 <= 10 ms (phone profile); #55 adds <= 5 kB (gzip) to the shell",
     "ok": true,
-    "detail": "{\"phone\":{\"work\":{\"n\":40,\"mean_ms\":0.898,\"p95_ms\":1.3,\"max_ms\":1.4},\"from_event\":{\"n\":40,\"mean_ms\":27.115,\"p95_ms\":31.4,\"max_ms\":41.7}},\"cpu4x\":{\"work\":{\"n\":20,\"mean_ms\":6.54,\"p95_ms\":9.4,\"max_ms\":9.4},\"from_event\":{\"n\":20,\"mean_ms\":79.015,\"p95_ms\":107.5,\"max_ms\":107.5}},\"shell_gzip_bytes\":3456}"
+    "detail": "{\"phone\":{\"work\":{\"n\":40,\"mean_ms\":1.11,\"p95_ms\":1.8,\"max_ms\":2},\"from_event\":{\"n\":40,\"mean_ms\":13.658,\"p95_ms\":27.4,\"max_ms\":41.2}},\"cpu4x\":{\"work\":{\"n\":20,\"mean_ms\":9.565,\"p95_ms\":43,\"max_ms\":43},\"from_event\":{\"n\":20,\"mean_ms\":111.1,\"p95_ms\":255.9,\"max_ms\":255.9}},\"shell_gzip_bytes\":3456}"
    },
    {
     "name": "perform: zero console errors / page errors",

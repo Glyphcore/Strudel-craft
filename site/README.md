@@ -15,6 +15,10 @@ Published at https://glyphcore.github.io/Strudel-craft/ by `.github/workflows/pa
   `aria-haspopup="menu"`, e.g. the copy button) owns Enter, Space, the arrows, Home / End and Esc; any other focused button, link or
   summary owns Enter (and Space, except links) for its own activation. Those keys never also reach the global shortcuts, so a key on a
   control never starts playback or swaps the editor code. Library rows keep Enter / Space as the play shortcuts.
+  Transport (#206): `<` (`#startBtn`, aria-label "Return to start", key `Home`) returns to cycle 0 (a fresh feed when playing, stays stopped at 0 when stopped);
+  there is no `>` and no previous / next recipe on the transport. Up / Down / J / K step the recipe only while the recipe list has focus (`/` then Down, or Tab
+  into the list); elsewhere they scroll. Selecting a recipe resets the transport readout, the timeline clock / resume cursor and the visuals cache to 0 (stopped
+  too, so the next Play starts at 0, not at the old stop position); it starts playback only when already playing.
 
 ## Audio and licences
 - `@strudel/web` 1.3.0 (AGPL-3.0-or-later) is loaded **unmodified** from unpkg on the first Play; it is not vendored.
@@ -253,6 +257,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/site/standalone.mjs     # installed app (standalone, SW in control): sound peak, scope pixels, Syntax examples; upgrade from older builds; Range pass-through; Syntax error state + Retry
     node tests/site/pwa_offline.mjs    # installed app offline: first-visit snapshot (files, CDN graph, sample maps), offline editor + Play, bank toast, atomic VERSION swap (#73)
     node tests/site/recipe_switch.mjs  # fresh audio feed per recipe selection (#196): no recipe A audio after the switch, source nodes back to baseline over 12 switches, timeline lanes only the new recipe
+    node tests/site/transport_reset.mjs # position reset on recipe select and `<` return to start (#206): readout, scheduler, timeline clock / cursor, no `>`, 44px, 390px
     node tests/site/renderahead.mjs    # Render-ahead (#195): lead set in the audio dot sheet, chunks + lane stems, edit dirties one chunk, lead seconds under a stress program
     node tests/site/quickplay.mjs      # Quick play (#150): in-place audition from Recipes rows and Syntax examples at 390px, peak while playing / 0 after stop, nothing else touched
     node tests/site/pwa.mjs            # installable PWA at /Strudel-craft/: installability errors (CDP), icons, precache, offline reload, offline bank toast, update toast, standalone (#73)

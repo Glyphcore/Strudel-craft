@@ -90,7 +90,7 @@ try {
 
   // 3 Switching recipes leaves only the new one running
   await pick(ids[0]); await page.click('#playBtn'); await sleep(1500);
-  await page.click('#nextBtn'); await sleep(2500);
+  await page.evaluate(() => window.__sc.select(window.__sc.S.sel + 1)); await sleep(2500);
   const sw = await page.evaluate(() => { const { S, Engine } = window.__sc; return { id: S.playingId, sel: S.filtered[S.sel].id, started: Engine.started, ctx: window.__ctxCount, playing: S.playing }; });
   note('Switching recipes: single scheduler, only new recipe active', sw.playing && sw.id === sw.sel && sw.id !== ids[0] && sw.started && sw.ctx === 1 && maxDb(await last(page, 300)) > -50, `playing=${sw.id} contexts=${sw.ctx} started=${sw.started}`);
   const t1 = await page.evaluate(() => { const t = performance.now(); document.querySelector('#playBtn').click(); return t; }); await sleep(300); void t1;

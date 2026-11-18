@@ -665,7 +665,15 @@ function select(i, { scroll = true, audition = true } = {}) {
   if (scroll) { const li = $$('#list li')[S.sel]; if (li) li.scrollIntoView({ block: 'nearest', behavior: reducedMotion.matches ? 'auto' : 'smooth' }); }
   renderSelection(true);
   { const r = cur(); if (r && bodyReady(r)) earlyPrep(recipeCode(r)); }
+  if (!(audition && S.playing && S.view === 'rack') && !S.playing) rewind(); /* #206: a stopped selection starts from 0 too: the timeline resume cursor kept the old recipe's stop position, so the next Play began mid-way */
   if (audition && S.playing && S.view === 'rack') { const tok = (select.tok = (select.tok || 0) + 1); Engine.cut().then(() => { if (tok === select.tok) return play(); }); }
+}
+/* #206: position back to 0 with no audio running: transport readout (drawLanes reads 0 while stopped), timeline resume cursor and clock, visuals hap cache */
+function rewind() { try { const sc = window.strudelCraft; sc.timeline && sc.timeline.reset && sc.timeline.reset(); sc.visuals && sc.visuals.reset && sc.visuals.reset(); } catch (e) { /* optional */ } }
+/* #206: return to start: playing = a fresh feed from cycle 0 (same cut as a recipe switch); stopped = stay stopped at 0 */
+function toStart() {
+  if (S.playing && !S.busy) { const tok = (select.tok = (select.tok || 0) + 1); say('Return to start'); Engine.cut().then(() => { if (tok === select.tok) return play(); }); return; }
+  if (!S.playing) { rewind(); say('At start'); }
 }
 /* the plain Strudel form of a recipe as it stands: the generated lowering for the catalog text, else the editor text with atoms inlined (an edit has no stored lowering) */
 function strudelForm(r) { return S.edits[r.id] != null ? plain(S.edits[r.id]) : (r.lowered || plain(r.code || '')); }
@@ -866,7 +874,7 @@ function route() {
 
 /* ---------- keyboard ---------- */
 const KEYS = [
-  ['Space', 'Play / stop'], ['↑ ↓  or  K J', 'Previous / next recipe (auditions while playing)'], ['Enter', 'Play the selected recipe'],
+  ['Space', 'Play / stop'], ['Home', 'Return to start (keeps playing if playing)'], ['↑ ↓  or  K J', 'Previous / next recipe, only while the recipe list has focus (auditions while playing; Home in the list scrolls)'], ['Enter', 'Play the selected recipe'],
   ['[  ]', 'Tempo −1 / +1 BPM (Shift: ±10)'], ['−  =', 'Master −1 / +1 dB'], ['A', 'Add / remove selected recipe in the stack'],
   ['1 - 7', 'Rack / Stack / Ref / Practice / Perform / Syntax / Graph'], ['/', 'Search recipes'], ['Esc', 'Clear search, close dialog, leave a field'],
   ['Ctrl/⌘ + Enter', 'Run the code in the editor'], ['Ctrl/⌘ + Z', 'Undo (in the code box: text edits; elsewhere: knob or stack change)'], ['Ctrl + Y, Ctrl/⌘ + Shift + Z', 'Redo (same scope as undo)'], ['Alt + Z, Alt + Shift + Z', 'Step the version history back / forward (not while typing in a field)'],
@@ -904,9 +912,11 @@ function onKey(e) {
   }
   if (mod || e.altKey) return;
   const k = e.key;
+  const inList = !!(t && t.closest && t.closest('#list'));
   const act = {
     ' ': toggle, Enter: () => play(),
-    ArrowDown: () => moveSel(1), ArrowUp: () => moveSel(-1), j: () => moveSel(1), k: () => moveSel(-1),
+    Home: () => (t && t.closest && t.closest('#list') ? 'native' : toStart()),
+    ArrowDown: () => (inList ? moveSel(1) : 'native'), ArrowUp: () => (inList ? moveSel(-1) : 'native'), j: () => (inList ? moveSel(1) : 'native'), k: () => (inList ? moveSel(-1) : 'native'), /* #206: recipe prev / next lives in the recipe browser only (list focused), not on the transport or globally */
     '[': () => tempoK.nudge(e.shiftKey ? -10 : -1), ']': () => tempoK.nudge(e.shiftKey ? 10 : 1), '{': () => tempoK.nudge(-10), '}': () => tempoK.nudge(10),
     '-': () => masterK.nudge(-1), '=': () => masterK.nudge(1), '+': () => masterK.nudge(1), _: () => masterK.nudge(-1),
     a: () => cur() && toggleStack(cur().id), A: () => cur() && toggleStack(cur().id),
@@ -948,7 +958,7 @@ async function boot() {
 
   // events
   $('#playBtn').addEventListener('click', toggle);
-  $('#prevBtn').addEventListener('click', () => select(S.sel - 1)); $('#nextBtn').addEventListener('click', () => select(S.sel + 1));
+  $('#startBtn').addEventListener('click', toStart);
   $('#themeBtn').addEventListener('click', toggleTheme); $('#helpBtn').addEventListener('click', openHelp); $('#helpClose').addEventListener('click', () => $('#help').close());
   $('#help').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); });
   $('#list').addEventListener('click', (e) => {

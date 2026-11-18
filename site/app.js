@@ -494,9 +494,10 @@ async function play(src = currentSource()) {
   S.linkHold = false; /* an explicit Play / Run is the user's consent to evaluate shared-link code */
   if (src.empty) { say('Stack is empty. Add layers with + or A, or type a program.', true); return; }
   const btn = $('#playBtn'); btn.classList.add('busy'); S.busy = true;
-  const pv = playView(); const prep = bindPrep(src.kind === 'stack' ? 'stack' : pv, src.code);
+  const pv = playView(); const prep = bindPrep(src.kind === 'stack' ? 'stack' : pv, src.code); const sg = S.stopGen || 0;
   try {
     await Engine.play(prep.ok ? prep.code : src.code, src.samples, (m) => say(m + '…'));
+    if (sg !== (S.stopGen || 0)) { Engine.stop(); S.playing = false; return; } /* #215: Stop pressed while this Play was loading: the scheduler it just started is stopped, Stop is not undone */
     if (prep.ok) bindApply(src.kind === 'stack' ? 'stack' : pv, prep);
     Engine.evalCount++;
     S.playing = true; S.playingId = src.id; S.playingSource = src.kind; S.srcView = src.kind === 'stack' ? 'stack' : pv;
@@ -506,7 +507,7 @@ async function play(src = currentSource()) {
     if (!Engine.started) S.playing = false;
   } finally { btn.classList.remove('busy'); S.busy = false; syncTransport(); }
 }
-function stop() { S.swapGen++; select.tok = (select.tok || 0) + 1; /* #196: a pending hot-swap or recipe switch must not restart the scheduler after Stop */ try { window.strudelCraft.quickplay && window.strudelCraft.quickplay.stop('fast'); } catch (e) { /* optional */ } Engine.stop(); S.playing = false; S.playingId = null; clearInterval(AudioSt.watch); try { window.strudelCraft.bg && window.strudelCraft.bg.onStop(); } catch (e) { /* optional */ } say('Stopped'); Viz.stopSoon(); syncTransport(); syncAudioState(); }
+function stop() { S.stopGen = (S.stopGen || 0) + 1; S.swapGen++; select.tok = (select.tok || 0) + 1; /* #196: a pending hot-swap or recipe switch must not restart the scheduler after Stop */ try { window.strudelCraft.quickplay && window.strudelCraft.quickplay.stop('fast'); } catch (e) { /* optional */ } Engine.stop(); S.playing = false; S.playingId = null; clearInterval(AudioSt.watch); try { window.strudelCraft.bg && window.strudelCraft.bg.onStop(); } catch (e) { /* optional */ } say('Stopped'); Viz.stopSoon(); syncTransport(); syncAudioState(); }
 function toggle() { if (S.playing) stop(); else play(); }
 /* #207 seek while playing: the old position is halted at once with the same cut as a recipe switch (master ramp 15 ms, scheduler stopped, effect buses reset so voices and tails end into nothing,
    render-ahead buffer sources dropped), then the same program starts at the new position. Scrubbing coalesces: the cut runs once, positions that arrive during it only replace the target, and the
@@ -682,6 +683,7 @@ function renderList(keepId) {
 }
 function select(i, { scroll = true, audition = true } = {}) {
   if (!S.filtered.length) return;
+  if (audition && S.playing && S.view === 'rack') { muteBus(); dropAhead(); } /* phone report: the old recipe is cut before the slow work below (renderSelection, prep), not after it */
   S.linkHold = false;
   S.sel = (i + S.filtered.length) % S.filtered.length;
   $$('#list li').forEach((li, j) => li.setAttribute('aria-current', j === S.sel ? 'true' : 'false'));
@@ -695,7 +697,7 @@ function select(i, { scroll = true, audition = true } = {}) {
 function rewind() { try { const sc = window.strudelCraft; sc.timeline && sc.timeline.reset && sc.timeline.reset(); sc.visuals && sc.visuals.reset && sc.visuals.reset(); } catch (e) { /* optional */ } }
 /* #206: return to start: playing = a fresh feed from cycle 0 (same cut as a recipe switch); stopped = stay stopped at 0 */
 function toStart() {
-  if (S.playing && !S.busy) { const tok = (select.tok = (select.tok || 0) + 1); say('Return to start'); Engine.cut().then(() => { if (tok === select.tok) return play(); }); return; }
+  if (S.playing && !S.busy) { const tok = (select.tok = (select.tok || 0) + 1); say('Return to start'); muteBus(); dropAhead(); Engine.cut().then(() => { if (tok === select.tok) return play(); }); return; }
   if (!S.playing) { rewind(); say('At start'); }
 }
 /* the plain Strudel form of a recipe as it stands: the generated lowering for the catalog text, else the editor text with atoms inlined (an edit has no stored lowering) */

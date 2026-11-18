@@ -7,7 +7,7 @@
   "sourceNextChunk": "live",
   "playheadShownRightAfterSeek": 4,
   "oldToneBeforeDb": -13.9,
-  "oldToneAfter100msDb": -55.9,
+  "oldToneAfter100msDb": -56,
   "newToneOnsetAfterSeekMs": 160,
   "onsetMinusPlayheadMs": -20,
   "cuts": 1,
@@ -16,9 +16,9 @@
    "calls": 8,
    "cuts": 1,
    "starts": 1,
-   "e5MaxAfter350msDb": -48.4,
-   "a3MaxDb": -14.9,
-   "positionNow": 1.81
+   "e5MaxAfter350msDb": -48.6,
+   "a3MaxDb": -15.1,
+   "positionNow": 1.8
   }
  },
  "buffer": {
@@ -29,16 +29,16 @@
   "sourceNextChunk": "buffer",
   "playheadShownRightAfterSeek": 4,
   "oldToneBeforeDb": -14.2,
-  "oldToneAfter100msDb": -55.8,
+  "oldToneAfter100msDb": -56,
   "newToneOnsetAfterSeekMs": 160,
-  "onsetMinusPlayheadMs": -28,
+  "onsetMinusPlayheadMs": -23,
   "cuts": 1,
   "starts": 1,
   "scrub": {
    "calls": 8,
    "cuts": 1,
    "starts": 1,
-   "e5MaxAfter350msDb": -47.4,
+   "e5MaxAfter350msDb": -47.2,
    "a3MaxDb": -14,
    "positionNow": 1.81
   }
@@ -51,7 +51,7 @@
   "sourceNextChunk": "buffer",
   "playheadShownRightAfterSeek": 4,
   "oldToneBeforeDb": -13.9,
-  "oldToneAfter100msDb": -55.8,
+  "oldToneAfter100msDb": -55.9,
   "newToneOnsetAfterSeekMs": 160,
   "onsetMinusPlayheadMs": -28,
   "cuts": 1,
@@ -60,9 +60,9 @@
    "calls": 8,
    "cuts": 1,
    "starts": 1,
-   "e5MaxAfter350msDb": -47.2,
+   "e5MaxAfter350msDb": -47.5,
    "a3MaxDb": -14,
-   "positionNow": 1.81
+   "positionNow": 1.8
   }
  }
 }

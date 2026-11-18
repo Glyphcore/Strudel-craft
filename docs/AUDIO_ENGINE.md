@@ -344,6 +344,9 @@ handler never runs. Record renders (exact N cycles, no fold) still have the old 
   (no `queryArc`, no events, no voices; counted in `bg.stats().skippedQueries`). When ticks stop (blocked main thread, hidden page) and a buffer is sounding, the clock does not
   re-anchor: on return it moves its position forward arithmetically. Nothing is replayed or burst. The playhead (`scheduler.now()`) is the same arithmetic on the audio clock.
 - Seek by the user: section 14. Loop wrap, tempo change, re-anchor of the live path: a new mapping; the sources of the old one fade out at its start, new ones start there.
+- A chunk is only kept when it was made from the program its hash names (#214): no render starts while the transport's code differs from the code the scheduler's pattern was
+  evaluated from (a recipe just chosen, text not compiled yet), and each render's own event list must give the same sound-and-note signature as the pattern's chunk. Before, a chunk
+  rendered between a recipe choice and its evaluation put the new recipe's audio under the old recipe's hash, and that recipe then played the other one's sound from its buffer.
 - Stop and `Engine.cut()` (#196) call `ahead.cut()`: every buffer source stops with the master ramp, and nothing is scheduled until the clock starts again.
 - Edit while playing: only the dirty chunks render again. A chunk that is sounding or scheduled keeps its old buffer (no live fallback, no gap); when the new render is ready a
   source that has not started is replaced, a sounding one is cross-faded (20 ms) at the next bar line (whole cycle) at least 150 ms away. The old buffer is reused only within

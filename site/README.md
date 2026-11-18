@@ -245,7 +245,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     STRUDEL_MODULES=... node tests/vocals/formant_helper.mjs  # word().formant(true) on a synthetic bank (#57)
     node tests/site/capture.mjs        # Record panel audio at 360px: 2-cycle take, WAV 16/24 header + length, file name, quota, rename/delete modals, tab switch, exact render (#72)
     node tests/site/record_hooks.mjs   # Record hooks for lanes capture: capture.addTake (meta.from) and capture.beforeRender (#76)
-    node tests/site/record_offline.mjs --ref REF/mix.wav   # offline Record while playing vs the CLI render, determinism, Cancel, live self-check (#104); REF from tests/site/ref_render.sh REF v2 16 8
+    node tests/site/record_offline.mjs --ref REF/mix.wav   # offline Record while playing vs the CLI render, determinism, Cancel, live self-check (#104); REF: `PIN_SUPERSAW=1 bash tests/site/ref_render.sh REF v2 16 8 128.8` (needs the strudel CLI); a take outside that window is rendered on demand into REF/win-*
     node tests/site/engine_perf.mjs --prog v2 --throttle 4  # audio engine measurements: long tasks, LoAF sources, profile, scheduler lateness, late haps (#102); matrix: tests/site/engine_perf_matrix.sh OUT
     node tests/site/record_length_unit.mjs  # Record length model: bars/cycles/seconds, end of track, clamp, recipe compat (#139)
     node tests/site/record_length_parity.mjs  # end-of-track parity, site resolver vs CLI --to-end (#139)
@@ -260,7 +260,7 @@ open recipe `.json` files with the installed app (file handler -> Record panel `
     node tests/site/recipe_switch.mjs  # fresh audio feed per recipe selection (#196): no recipe A audio after the switch, source nodes back to baseline over 12 switches, timeline lanes only the new recipe
     node tests/site/transport_reset.mjs # position reset on recipe select and `<` return to start (#206): readout, scheduler, timeline clock / cursor, no `>`, 44px, 390px
     node tests/site/bufferplay.mjs [--lead]  # Precomputed playback (#199): buffer vs live level / null / joins, edit splice at a bar line, seek / loop / tempo alignment, Stop and recipe switch, stalls and hidden page (buffer vs live scheduler), default path
-    node tests/site/seek.mjs           # Seek (#207): old-position tone gone within 100 ms, new position aligned with the playhead, scrub bursts coalesce; live and buffer playback
+    node tests/site/seek.mjs           # Seek (#207): old-position tone gone within 100 ms, new position aligned with the playhead, scrub bursts coalesce; live, buffer, and buffer with real clicks (Play button, timeline ruler) at 1440x900
     node tests/site/renderahead.mjs    # Render-ahead (#195): lead set in the audio dot sheet, chunks + lane stems, edit dirties one chunk, lead seconds under a stress program
     node tests/site/quickplay.mjs      # Quick play (#150): in-place audition from Recipes rows and Syntax examples at 390px, peak while playing / 0 after stop, nothing else touched
     node tests/site/pwa.mjs            # installable PWA at /Strudel-craft/: installability errors (CDP), icons, precache, offline reload, offline bank toast, update toast, standalone (#73)

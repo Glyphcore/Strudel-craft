@@ -25,7 +25,7 @@ const PB = 256, SEED = 0x195a11, MEM = 64e6, TICK = 100, MAXLEAD = 3600, DEF_LEA
 const HOSTED = /[?&]host=render\b/.test(location.search);
 const A = { lead: 0, on: false, timer: 0, g: '', pat: null, chunkC: 2, pre: 1, cps: 0.5, rel: true, memo: new Map(), idx: new Map(), prev: new Map(), end: null, endAt: 0, cache: new Map(), job: null, want: [], leadSec: 0, head: 0,
   err: '', retryAt: 0, dirty: [], leads: [], armed: false, fillMs: null, t0: 0, sig: '',
-  n: { renders: 0, stemRenders: 0, reused: 0, invalidated: 0, aborted: 0, errors: 0, audioSec: 0, wallMs: 0, ticks: 0, liveTicks: 0 } };
+  n: { renders: 0, stemRenders: 0, reused: 0, invalidated: 0, aborted: 0, errors: 0, rendersHeld: 0, rendersRefused: 0, audioSec: 0, wallMs: 0, ticks: 0, liveTicks: 0 } };
 
 function cyrb53(str, seed = 0) {
   let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
@@ -50,17 +50,22 @@ function hapsOf(a, b) {
   return out;
 }
 const laneOf = (v) => (typeof v === 'object' && v ? String(v.s != null ? v.s : (v.note != null || v.n != null ? 'synth' : 'event')) : 'event');
+/* What a chunk is made of, as the render host can report it back: the sorted list of sound and note of every hap. A render is kept only when the events it was made from give the
+   same signature as the pattern's chunk (#214): between choosing a recipe (or typing) and its evaluation the transport's code and the scheduler's pattern are two programs, and a
+   chunk rendered then would put one program's audio under the other's hash. */
+const noteOf = (v) => (v && typeof v === 'object' ? String(v.note != null ? v.note : v.n != null ? v.n : '') : '');
+const sigOf = (vals) => cyrb53(vals.map((v) => laneOf(v) + ':' + noteOf(v)).sort().join(','));
 /* { h: mix hash, ls: [[lane, stem hash], ...] } of chunk i, or null while the pattern is not known */
 function hashChunk(i) {
   if (A.memo.has(i)) return A.memo.get(i);
   const c0 = i * A.chunkC, pre = preOf(i), haps = hapsOf(c0 - pre, c0 + A.chunkC); if (!haps) return null;
   const by = new Map(), parts = [], head = A.g + '|' + pre + '|' + (A.rel ? '' : i) + '|';
   for (const h of haps) { const p = (Number(h.whole.begin) - c0).toFixed(5) + ',' + (Number(h.whole.end) - c0).toFixed(5) + ',' + ser(h.value); parts.push(p); const l = laneOf(h.value); if (!by.has(l)) by.set(l, []); by.get(l).push(p); }
-  const o = { ext: !!haps.ext, h: cyrb53(head + parts.join(';')) + '-' + parts.length, ls: [...by].slice(0, 24).map(([l, ps]) => [l, cyrb53(head + l + '|' + ps.join(';')) + '~' + ps.length]) }; A.memo.set(i, o); return o;
+  const o = { ext: !!haps.ext, sig: sigOf(haps.map((h) => h.value)), h: cyrb53(head + parts.join(';')) + '-' + parts.length, ls: [...by].slice(0, 24).map(([l, ps]) => [l, cyrb53(head + l + '|' + ps.join(';')) + '~' + ps.length]) }; A.memo.set(i, o); return o;
 }
 const hOf = (i) => { const o = A.idx.get(i); return o ? o.h : null; };
 const ready = (h) => { const e = h && A.cache.get(h); return !!(e && e.st === 'ready'); };
-const canRender = () => { const c = sc.capture; return !!(c && c.renderRange && c.state && !c.state.rendering && c.state.phase === 'idle') && performance.now() >= A.retryAt; };
+const canRender = () => { if (A.codeOk === false) { A.n.rendersHeld++; return false; } const c = sc.capture; return !!(c && c.renderRange && c.state && !c.state.rendering && c.state.phase === 'idle') && performance.now() >= A.retryAt; };
 
 function globals() {
   const k = cpsNow(), T = sc.transport || {}; let code = '', ctl = '';
@@ -68,7 +73,7 @@ function globals() {
   try { const C = sc.perform && sc.perform.controls; ctl = C ? JSON.stringify(C.toModel()) : ''; } catch (e) { ctl = ''; }
   const rel = !/\bhooks\b|\.hook\(|\.use\(|\bctl\(|\bslider\(/.test(code);
   const sr = (T.bus && T.bus.ctx && T.bus.ctx.sampleRate) || 0;
-  return { k, rel, mdb: T.masterDb, g: [k.toFixed(6), sr, SEED, T.masterDb, cyrb53(ctl), rel ? '' : cyrb53(code)].join('|') };
+  return { k, rel, mdb: T.masterDb, code: cyrb53(code), g: [k.toFixed(6), sr, SEED, T.masterDb, cyrb53(ctl), rel ? '' : cyrb53(code)].join('|') };
 }
 
 function plan() {
@@ -77,7 +82,7 @@ function plan() {
   const chunkC = Math.max(1, Math.min(8, 2 ** Math.round(Math.log2(4 * G.k)))), pre = Math.max(1, Math.min(chunkC, Math.round(2 * G.k)));
   if (G.g !== A.g || pat !== A.pat || chunkC !== A.chunkC) {
     /* the program, the controls or the tempo changed: re-hash the known chunks; the ones whose hash moved are dirty */
-    const geo = chunkC !== A.chunkC; A.g = G.g; A.mdb = G.mdb; A.pat = pat; A.rel = G.rel; A.cps = G.k; A.chunkC = chunkC; A.pre = pre; A.memo.clear(); const dirty = [];
+    const geo = chunkC !== A.chunkC; if (pat !== A.pat) A.patCode = G.code; /* the code this pattern was evaluated from */ A.g = G.g; A.mdb = G.mdb; A.pat = pat; A.rel = G.rel; A.cps = G.k; A.chunkC = chunkC; A.pre = pre; A.memo.clear(); const dirty = [];
     const keepOld = P.cont && !geo && G.k === A.cps; /* an edit during continuous play: the old buffer of a dirty chunk stays usable until its new render is ready (never across Stop, a recipe switch or a tempo change) */
     if (geo) A.idx.clear(); if (!keepOld) A.prev.clear(); A.endAt = 0;
     for (const [i, old] of [...A.idx]) { const o = hashChunk(i); if (o == null) { A.idx.delete(i); continue; } A.idx.set(i, o); if (o.h === old.h) continue; if (keepOld) { const pe = A.cache.get(old.h); if (pe && pe.st === 'ready' && pe.L) A.prev.set(i, old.h); } dirty.push(i); A.n.invalidated++; if (ready(o.h)) A.n.reused++; }
@@ -93,6 +98,7 @@ function plan() {
   A.head = r * A.chunkC; A.leadSec = Math.max(0, Math.min(A.head - t, n * A.chunkC) / A.cps);
   if (playing()) { A.n.ticks++; if (!ready(hOf(i0))) A.n.liveTicks++; if (!A.armed && A.leadSec >= Math.min(A.lead, (n - 1) * A.chunkC / A.cps) * 0.9) { A.armed = true; A.fillMs = Math.round(performance.now() - A.t0); } if (A.armed) { A.leads.push(+A.leadSec.toFixed(2)); if (A.leads.length > 2000) A.leads.splice(0, 1000); } }
   else { A.t0 = performance.now(); }
+  A.codeOk = A.patCode == null || G.code === A.patCode; /* the transport's code is not what the scheduler holds (a recipe was just chosen, text typed but not compiled): no render until it is */
   if (A.job) { if (!want.some((w) => w.h === A.job.h || w.o.ls.some((l) => l[1] === A.job.h))) { A.job.ac.abort(); } }
   else {
     /* #199: while playing, a chunk the playhead is already in (and that plays live) cannot be used any more: the next chunks come first, so a cold start reaches the buffer one chunk in */
@@ -108,9 +114,10 @@ function plan() {
 }
 
 function start(i, h, lane) {
-  const c0 = i * A.chunkC, pre = preOf(i), k = A.cps, ac = new AbortController(), e = { h, st: 'rendering', at: performance.now(), stem: lane != null }, t0 = performance.now(), mdb = A.mdb;
+  const c0 = i * A.chunkC, pre = preOf(i), k = A.cps, ac = new AbortController(), e = { h, st: 'rendering', at: performance.now(), stem: lane != null }, t0 = performance.now(), mdb = A.mdb, sig0 = (A.idx.get(i) || {}).sig;
   A.cache.set(h, e); A.job = { h, i, ac, lane };
-  Promise.resolve().then(() => sc.capture.renderRange(c0 - pre, c0 + A.chunkC, { seed: SEED, signal: ac.signal, cps: k, lane, list: lane == null })).then((out) => {
+  Promise.resolve().then(() => sc.capture.renderRange(c0 - pre, c0 + A.chunkC, { seed: SEED, signal: ac.signal, cps: k, lane, list: true })).then((out) => {
+    if (sig0 && out.hapInfo && sigOf(out.hapInfo.map((x) => x.v)) !== sig0) { A.cache.delete(h); A.n.rendersRefused++; A.retryAt = performance.now() + 500; return; } /* made from another program than the pattern's chunk: not kept */
     /* #199: the event list of the chunk comes out of the same pass as its audio (one queryArc over the cycle range, no clock involved); kept for the timeline */
     if (lane == null && out.hapInfo) { const r4 = (x) => Math.round(x * 1e4) / 1e4; e.ev = out.hapInfo.map((x) => { const b = r4(x.t * k - pre), v = x.v, /* cycles relative to the chunk start: identical chunks share one render */ nt = v && typeof v === 'object' ? (v.note != null ? v.note : v.n) : null; return { b, e: r4(b + (x.d || 0) * k), lane: laneOf(v), note: typeof nt === 'number' ? nt : null }; }).filter((x) => x.b >= -1e-6); }
     const f0 = Math.min(out.L.length, Math.round(pre / k * out.sr)), L = out.L.subarray(f0), R = (out.R || out.L).subarray(f0), n = Math.ceil(L.length / PB), lo = new Float32Array(n), hi = new Float32Array(n);
@@ -150,7 +157,7 @@ function trim() {
    Dirty (edit, control move, pads journal, tempo) or no longer eligible: haps from the scheduler horizon on are live at once; the stale source fades out
    at the first live onset (no gap), at the latest one cycle (max 1 s) after the horizon.
    Never buffer-played: Perform view open, 3 s after a pads journal change, a Quick play audition, a recording, the engine Worker, chunks with custom
-   onTrigger haps (midi, osc), chunks whose PCM was trimmed (48 MB cap), a master at -inf when rendered. */
+   onTrigger haps (midi, osc), chunks whose PCM was trimmed (64 MB cap), a master at -inf when rendered. */
 const XF = 0.02, HORIZON = 30, NEAR = 1.5, HOLD = 3000;
 const P = { play: true, dec: new Map(), segs: [], S: null, lat: 0.1, key: null, kcps: 0, from: 0, liveSince: false, lastLiveT: -1, mute: null, holdUntil: 0, why: 'stopped', log: [], anchors: [], done: 0,
   n: { bufSegs: 0, bufUnderruns: 0, splices: 0, staleSec: 0, released: 0, resyncs: 0, tailResets: 0, liveHaps: 0, gatedHaps: 0 } };

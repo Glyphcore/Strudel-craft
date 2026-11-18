@@ -1,24 +1,24 @@
 {
  "level": {
   "windows": 80,
-  "maxDb": 0.32,
+  "maxDb": 0.28,
   "medianDb": 0.001
  },
  "null": {
   "bar": "cycle 1",
-  "residualDb": -30.9,
+  "residualDb": -42.6,
   "lagSamples": 0
  },
  "joins": [
   {
    "cycle": 2,
-   "bufferStep": 0.0175,
-   "liveStep": 0.0178
+   "bufferStep": 0.0174,
+   "liveStep": 0.0179
   },
   {
    "cycle": 4,
    "bufferStep": 0.0171,
-   "liveStep": 0.0176
+   "liveStep": 0.0178
   }
  ],
  "onset": {
@@ -47,10 +47,10 @@
   "liveHaps": 0,
   "splices": 5,
   "splicedAtCycle": 2,
-  "oldAudioHeldSec": 6.26,
+  "oldAudioHeldSec": 5.27,
   "longestGapMs": 5,
   "liveControlGapMs": 5,
-  "stepAtSplice": 0.0167,
+  "stepAtSplice": 0.0169,
   "cycle3": {
    "a2Db": -60.6,
    "f2Db": -72.2
@@ -599,14 +599,14 @@
     "underruns": 0,
     "covered": 3,
     "pausedSec": 0,
-    "maxGapMs": 2026,
+    "maxGapMs": 2039,
     "lateHaps": 0,
     "gatedHaps": 0,
     "haps": 0
    },
    "bufUnderruns": 0,
    "voicesTriggered": 0,
-   "skippedQueries": 478,
+   "skippedQueries": 480,
    "sourceAtEnd": "buffer",
    "tapCover": 1
   },
@@ -627,20 +627,20 @@
     null,
     null
    ],
-   "longestGapMs": 360,
+   "longestGapMs": 345,
    "positionJumps": 3,
    "clock": {
     "lateTicks": 4,
     "underruns": 3,
     "covered": 0,
-    "pausedSec": 0.73,
-    "maxGapMs": 2047,
+    "pausedSec": 0.77,
+    "maxGapMs": 2041,
     "lateHaps": 0,
     "gatedHaps": 0,
-    "haps": 108
+    "haps": 107
    },
    "bufUnderruns": 0,
-   "voicesTriggered": 108,
+   "voicesTriggered": 107,
    "skippedQueries": 0,
    "sourceAtEnd": "live",
    "tapCover": 1
@@ -652,11 +652,11 @@
   "programEndCycle": 16,
   "chunks": 8,
   "renders": 5,
-  "renderSpeedX": 2.99,
+  "renderSpeedX": 3.18,
   "pcmBytes": 3528000,
   "memCapBytes": 64000000,
   "firstPlaySource": "live",
   "secondPlaySource": "buffer",
-  "sheetRow": "ready, 29.6 s ahead (program end at cycle 16), 8 chunks of 4 s ready, renders at 2.99x, source buffer, 2 s played from buffers"
+  "sheetRow": "ready, 29.6 s ahead (program end at cycle 16), 8 chunks of 4 s ready, renders at 3.18x, source buffer, 2 s played from buffers"
  }
 }

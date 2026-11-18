@@ -9,8 +9,13 @@
    5. a live take with a forced 700 ms main-thread stall is flagged (clock re-anchor), and its offline re-render (rerender) matches the CLI render;
    6. no page errors.
    Usage: node tests/site/record_offline.mjs --ref REF_DIR/mix.wav [--ref-from 15] [--throttle 4] [--json OUT.json]
-   (REF: tests/site/ref_render.sh REF_DIR v2 16 8 renders cycles 15..23.) PASS/FAIL lines, exit 1 on any FAIL. */
-import { createRequire } from 'module'; import http from 'http'; import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
+   Reference, exact command (needs the strudel CLI, STRUDEL_CLI or /home/user/suno-track-lab/engine/strudel-cli):
+     PIN_SUPERSAW=1 engine/load/gate.sh heavy -- bash tests/site/ref_render.sh REF_DIR v2 16 8 128.8     (bar 16 = cycle 15: cycles 15..23, the window of the offline take at cycle 17)
+     engine/load/gate.sh heavy -- node tests/site/record_offline.mjs --ref REF_DIR/mix.wav
+   The two live takes start at cycle 17 as well (range Start 15, resume cursor cleared). Should a take still begin outside --ref, the test renders that window with the same
+   command into REF_DIR/win-<cycle>-<bars>/ (kept, reused on the next run) and compares against it, and prints a `ref:` line saying so.
+   PASS/FAIL lines, exit 1 on any FAIL. */
+import { createRequire } from 'module'; import { execFileSync } from 'child_process'; import http from 'http'; import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 import { compare as compare0, features, highpass, mono, onsets, readWav } from './lib/glitch.mjs';
 import { runSyntaxEntry } from './lib/syntax.mjs';
 /* broadband numbers plus the same level metric above 120 Hz (hi) and the sub band's own offset (subOffsetDb = broadband offset of what is left below 120 Hz) */
@@ -21,7 +26,7 @@ const require = createRequire(import.meta.url); const { chromium } = require('pl
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'), PREFIX = '/Strudel-craft/';
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
 const SITE = path.resolve(arg('--site', path.join(ROOT, 'site'))), REF = arg('--ref', null), REF_FROM = +arg('--ref-from', 15), THR = +arg('--throttle', 4), AT = 17, N = 4, THR_MS = +arg('--throttle-ms', 6000);
-if (!REF) { console.log('FAIL  --ref REF.wav is required (tests/site/ref_render.sh DIR v2 16 8)'); process.exit(1); }
+if (!REF) { console.log('FAIL  --ref REF.wav is required: PIN_SUPERSAW=1 bash tests/site/ref_render.sh DIR v2 16 8 128.8, then --ref DIR/mix.wav'); process.exit(1); }
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.ogg': 'audio/ogg', '.wav': 'audio/wav', '.mp3': 'audio/mpeg', '.webmanifest': 'application/manifest+json' };
 const server = http.createServer((req, res) => { let p = decodeURIComponent(new URL(req.url, 'http://x').pathname); if (!p.startsWith(PREFIX)) { res.writeHead(404); return res.end(); }
   p = p.slice(PREFIX.length - 1); if (p.endsWith('/')) p += 'index.html'; const f = path.join(SITE, p);
@@ -34,6 +39,12 @@ const bail = async (what, ms) => { check(what, false, `no result after ${ms} ms 
 const ev = async (what, ms, fn, a) => { let t; const r = await Promise.race([page.evaluate(fn, a), new Promise((res) => { t = setTimeout(() => res(ev.TIMEOUT), ms); })]); clearTimeout(t); if (r === ev.TIMEOUT) await bail(what, ms); return r; }; ev.TIMEOUT = Symbol('timeout');
 const W = readWav(fs.readFileSync(REF)); const CPS = +arg('--cps', 128.8 / 240); /* the program's own setcpm(128.8 / 4) wins on the site; ref_render.sh keeps it too */
 const refWin = (c0, frames, sr) => { const a = Math.round((c0 - REF_FROM) / CPS * W.sr), b = a + Math.round(frames / sr * W.sr); return { x: mono(W.L.subarray(a, b), W.R.subarray(a, b)), sr: W.sr }; };
+const refFor = (c0, frames, sr) => { /* the --ref window when it covers [c0, c0 + frames); else the same CLI reference rendered for that window */
+  const a = Math.round((c0 - REF_FROM) / CPS * W.sr); if (a >= 0 && a + Math.round(frames / sr * W.sr) <= W.L.length) return refWin(c0, frames, sr);
+  const from = Math.floor(c0), bars = Math.ceil(c0 - from + frames / sr * CPS) + 1, dir = path.join(path.dirname(path.resolve(REF)), `win-${from}-${bars}`), f = path.join(dir, 'mix.wav');
+  if (!fs.existsSync(f)) { console.log(`ref: cycles ${from}..${from + bars} are outside --ref; rendering them: ref_render.sh ${dir} v2 ${from + 1} ${bars} ${+(CPS * 240).toFixed(3)}`);
+    execFileSync('bash', [path.join(ROOT, 'tests/site/ref_render.sh'), dir, 'v2', String(from + 1), String(bars), String(+(CPS * 240).toFixed(3))], { env: { ...process.env, ...(process.argv.includes('--no-pin') ? {} : { PIN_SUPERSAW: '1' }) }, stdio: ['ignore', 'ignore', 'inherit'], timeout: 900000 }); }
+  const w = readWav(fs.readFileSync(f)), b = Math.round((c0 - from) / CPS * w.sr), e = b + Math.round(frames / sr * w.sr); return { x: mono(w.L.subarray(b, e), w.R.subarray(b, e)), sr: w.sr }; };
 let MG = 1; /* the site's master level (default -6 dB): a take is post master, the CLI render is not; candidates are brought back to unity before comparing */
 const fromB64 = (b64) => { const x = new Float32Array(Uint8Array.from(Buffer.from(b64, 'base64')).buffer); if (MG !== 1) for (let i = 0; i < x.length; i++) x[i] *= MG; return x; };
 const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
@@ -86,6 +97,9 @@ const cdp = await ctx.newCDPSession(page);
 /* the take starts at cycle LAT = AT (2 cycles after the seek point, inside the reference's 15..23); Record starts the transport itself */
 const LAT = AT; /* the same window the offline render is validated on; the seek starts the run at LAT - 2 (transport-range.js honours Start on every fresh run, #108) */
 const live = async (stall) => { await page.evaluate(() => { const T = window.strudelCraft.transport; if (T.playing) T.stop(); }); await page.waitForTimeout(800);
+  /* the timeline keeps a resume cursor at the stop position (#175) and Play starts there, past LAT on a slow run; the take then began at a later cycle outside the reference
+     (refOnsets 0). Cursor back to 0, so the fresh run begins at the range Start (LAT - 2) and the take at LAT on every machine. */
+  await page.evaluate(() => { const t = window.strudelCraft.timeline; if (t && t.seek) t.seek(0); });
   await page.evaluate((c) => Object.assign(window.strudelCraft.range.state, { start: c }), LAT - 2); await page.evaluate(() => window.strudelCraft.transport.play());
   await page.waitForFunction(() => window.__sc.S.playing && !window.__sc.S.busy, null, { timeout: 120000 });
   /* x4 for the first THR_MS of the take only (the node-side timer still fires on a starved page): the take then finishes and is self-checked; a whole-take x4 saturates the main-thread scheduler (#176) */
@@ -98,17 +112,17 @@ const live = async (stall) => { await page.evaluate(() => { const T = window.str
   return r; };
 const L4 = await live(false); if (arg('--dump', null) && L4.cap) fs.writeFileSync(arg('--dump', null) + '/live_x4.f32', Buffer.from(fromB64(L4.cap.b64).buffer)); if (arg('--dump', null)) fs.writeFileSync(arg('--dump', null) + '/live_x4.json', JSON.stringify({ start: L4.start, check: L4.check, recipe: L4.recipe }));
 if (L4.error) check(`live take under x${THR} throttling`, false, L4.error);
-else { const gl = compare(refWin(L4.start, L4.cap.frames, L4.cap.sr), { x: fromB64(L4.cap.b64), sr: L4.cap.sr }); report.liveThrottled = { check: L4.check, glitch: gl };
+else { const gl = compare(refFor(L4.start, L4.cap.frames, L4.cap.sr), { x: fromB64(L4.cap.b64), sr: L4.cap.sr }); report.liveThrottled = { check: L4.check, glitch: gl };
   const bad = gl.dropouts > 0 || gl.refOnsets - gl.matchedSoft > 0.15 * gl.refOnsets || Math.abs(gl.driftMsPerS) > 0.5; report.liveThrottledWindow = L4.start;
   check(`live take under x${THR} throttling carries a self-check with no false negative (flagged whenever the glitch metric shows dropouts, > 15 % missing onsets by the soft rule (the strict detector alone misses 17-23 % on a clean take) or drift)`, !!L4.check && (!bad || !L4.check.ok), JSON.stringify({ check: L4.check, glitch: gl }));
   if (L4.render && arg('--dump', null)) fs.writeFileSync(arg('--dump', null) + '/live_render.f32', Buffer.from(fromB64(L4.render.b64).buffer));
-  if (L4.render) { const gr = compare(refWin(L4.start, L4.render.frames, L4.render.sr), { x: fromB64(L4.render.b64), sr: L4.render.sr }); report.liveThrottledRender = gr; check('its attached reference render either waited for a calm main thread and matches the CLI render, or is flagged underLoad (rendered under load, Re-render offline recommended)', typeof L4.underLoad === 'boolean' && ((L4.underLoad === false && SAME(gr)) || (L4.underLoad === true && L4.load && L4.load.waitedMs >= 9000)), JSON.stringify({ underLoad: L4.underLoad, gr })); } }
+  if (L4.render) { const gr = compare(refFor(L4.start, L4.render.frames, L4.render.sr), { x: fromB64(L4.render.b64), sr: L4.render.sr }); report.liveThrottledRender = gr; check('its attached reference render either waited for a calm main thread and matches the CLI render, or is flagged underLoad (rendered under load, Re-render offline recommended)', typeof L4.underLoad === 'boolean' && ((L4.underLoad === false && SAME(gr)) || (L4.underLoad === true && L4.load && L4.load.waitedMs >= 9000)), JSON.stringify({ underLoad: L4.underLoad, gr })); } }
 const LS = await live(true);
 if (LS.error) check('live take with a forced stall', false, LS.error);
-else { const gl = compare(refWin(LS.start, LS.cap.frames, LS.cap.sr), { x: fromB64(LS.cap.b64), sr: LS.cap.sr }); report.liveStall = { check: LS.check, glitch: gl };
+else { const gl = compare(refFor(LS.start, LS.cap.frames, LS.cap.sr), { x: fromB64(LS.cap.b64), sr: LS.cap.sr }); report.liveStall = { check: LS.check, glitch: gl };
   check('a live take with a 700 ms main-thread stall is flagged (re-anchor or dropped events)', LS.check && !LS.check.ok && (LS.check.reanchors > 0 || LS.check.droppedEvents > 0), JSON.stringify(LS.check));
   const rr = await ev('offline re-render of the stalled take', 240000, async ({ id, PCM }) => { const pcm = eval(PCM); const rec = await window.strudelCraft.capture.rerender(id); return rec ? { replaced: !!rec.replaced, pcm: pcm(rec, 'render') } : null; }, { id: LS.id, PCM });
-  const gr = rr ? compare(refWin(LS.start, rr.pcm.frames, rr.pcm.sr), { x: fromB64(rr.pcm.b64), sr: rr.pcm.sr }) : null; report.liveStallRerender = gr;
+  const gr = rr ? compare(refFor(LS.start, rr.pcm.frames, rr.pcm.sr), { x: fromB64(rr.pcm.b64), sr: rr.pcm.sr }) : null; report.liveStallRerender = gr;
   check('its offline re-render replaces it and matches the CLI render (clean)', rr && rr.replaced && SAME(gr), JSON.stringify(gr)); }
 check('no page errors', errors.length === 0, errors.slice(0, 4).join(' | '));
 const J = arg('--json', null); if (J) fs.writeFileSync(J, JSON.stringify(report, null, 1));

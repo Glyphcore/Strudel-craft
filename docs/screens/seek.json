@@ -1,11 +1,13 @@
 {
  "live": {
+  "viewport": "1280x800, API calls",
+  "seekLandedOnCycle": 4,
   "sourceBefore": "live",
   "sourceAfter": "live",
   "sourceNextChunk": "live",
   "playheadShownRightAfterSeek": 4,
-  "oldToneBeforeDb": -21.5,
-  "oldToneAfter100msDb": -60,
+  "oldToneBeforeDb": -13.9,
+  "oldToneAfter100msDb": -55.9,
   "newToneOnsetAfterSeekMs": 160,
   "onsetMinusPlayheadMs": -20,
   "cuts": 1,
@@ -14,28 +16,52 @@
    "calls": 8,
    "cuts": 1,
    "starts": 1,
-   "e5MaxAfter350msDb": -60,
-   "a3MaxDb": -26.8,
+   "e5MaxAfter350msDb": -48.4,
+   "a3MaxDb": -14.9,
    "positionNow": 1.81
   }
  },
  "buffer": {
+  "viewport": "1280x800, API calls",
+  "seekLandedOnCycle": 4,
   "sourceBefore": "buffer",
   "sourceAfter": "live",
   "sourceNextChunk": "buffer",
   "playheadShownRightAfterSeek": 4,
-  "oldToneBeforeDb": -21.9,
-  "oldToneAfter100msDb": -60,
+  "oldToneBeforeDb": -14.2,
+  "oldToneAfter100msDb": -55.8,
   "newToneOnsetAfterSeekMs": 160,
-  "onsetMinusPlayheadMs": -20,
+  "onsetMinusPlayheadMs": -28,
   "cuts": 1,
   "starts": 1,
   "scrub": {
    "calls": 8,
    "cuts": 1,
    "starts": 1,
-   "e5MaxAfter350msDb": -54.4,
-   "a3MaxDb": -21.4,
+   "e5MaxAfter350msDb": -47.4,
+   "a3MaxDb": -14,
+   "positionNow": 1.81
+  }
+ },
+ "buffer, real clicks at 1440x900": {
+  "viewport": "1440x900, real clicks",
+  "seekLandedOnCycle": 4,
+  "sourceBefore": "buffer",
+  "sourceAfter": "live",
+  "sourceNextChunk": "buffer",
+  "playheadShownRightAfterSeek": 4,
+  "oldToneBeforeDb": -13.9,
+  "oldToneAfter100msDb": -55.8,
+  "newToneOnsetAfterSeekMs": 160,
+  "onsetMinusPlayheadMs": -28,
+  "cuts": 1,
+  "starts": 1,
+  "scrub": {
+   "calls": 8,
+   "cuts": 1,
+   "starts": 1,
+   "e5MaxAfter350msDb": -47.2,
+   "a3MaxDb": -14,
    "positionNow": 1.81
   }
  }

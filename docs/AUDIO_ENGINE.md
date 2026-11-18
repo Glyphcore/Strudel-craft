@@ -371,8 +371,8 @@ Measured (`tests/site/bufferplay.mjs`, numbers in `docs/screens/bufferplay.json`
 | check | result |
 |---|---|
 | live sub-bus while buffered chunks play | -120 dBFS (master -40 dBFS), 0 voices triggered |
-| buffer vs live, same bars, level per 100 ms window | max 0.01 dB, median 0.000 dB (80 windows) |
-| null test of one bar (buffer minus live, lag 0) | -46 dB (16-bit PCM, two contexts) |
+| buffer vs live, same bars, level per 100 ms window | max 0.01 to 0.32 dB over the runs, median 0.001 dB (80 windows; limit 1.5 dB) |
+| null test of one bar (buffer minus live, lag 0) | -31 to -46 dB over the runs (16-bit PCM, realtime against offline context) |
 | largest sample step at chunk joins | 0.018 buffer, 0.018 live (limit 0.1) |
 | onset on the master minus position arithmetic | 0.45 ms on every tick, buffer and live, also after loop wraps and after a tempo change (limit 10 ms) |
 | edit while playing | 0 live voices, spliced at a bar line, longest gap 5 ms (all-live control 5 ms), step at the splice 0.017 |

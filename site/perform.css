@@ -8,7 +8,8 @@
 .pf-tools,.pf-row{display:flex;flex-wrap:wrap;gap:6px}.pf-tools button,.pf-row button{min-height:44px;min-width:44px}
 .pf-mode[aria-pressed=true]{border-color:var(--sig);color:var(--sig)}
 .pf-hint{margin:0;color:var(--dim);font-size:.8rem}
-.pp-grid{display:grid;gap:8px;touch-action:none;user-select:none;-webkit-user-select:none}
+.pp-grid{display:grid;gap:8px;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;overscroll-behavior:contain}
+.pc-toggle,.pc-xy{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .pp-row{display:grid;grid-template-columns:repeat(var(--cols,4),minmax(44px,1fr));gap:8px}
 .pp-pad{--pc:var(--sig-2);position:relative;aspect-ratio:1;min-height:64px;display:grid;align-content:space-between;justify-items:start;padding:8px;border-radius:var(--r2);background:var(--panel-2);border:1px solid var(--line-2);text-align:left;overflow:hidden;touch-action:none}
 .pp-pad[data-state=empty]{border-style:dashed;color:var(--faint)}

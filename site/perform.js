@@ -8,6 +8,7 @@ import * as N from './numfmt.js';
 import * as PP from './perform-presets.js';
 import * as PO from './perform-outputs.js';
 import * as PA from './perform-audition.js';
+import { createQueue, resolveDrainMs, resolveIdleMs } from './perform-queue.js';
 const sc = window.strudelCraft;
 const $ = (s, r = document) => r.querySelector(s);
 const h = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (v == null || v === false) continue; if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? '' : v); } e.append(...kids.flat().filter((x) => x != null)); return e; };
@@ -199,7 +200,7 @@ const R = {
   slider: numberish('slider'), fader: numberish('fader'), knob: numberish('knob'),
   number: (host, name, s) => { const el = h('input', { type: 'number', class: 'pc-number', 'data-ctl': name, 'aria-label': name, min: s.min, max: s.max, step: s.step || 'any' }); el.__sync = () => { el.value = cur(name); }; el.addEventListener('change', () => setVal(name, +el.value)); el.__sync(); host.append(el); return el; },
   toggle: (host, name) => { const el = h('button', { type: 'button', class: 'pc-toggle', 'data-ctl': name, 'aria-label': name }); el.__sync = () => { const on = !!cur(name); el.setAttribute('aria-pressed', String(on)); el.textContent = on ? 'ON' : 'OFF'; }; el.addEventListener('click', () => setVal(name, controls.get(name) ? 0 : 1)); el.__sync(); host.append(el); return el; },
-  button: (host, name) => { const el = h('button', { type: 'button', class: 'pc-toggle', 'data-ctl': name, 'aria-label': name }, 'HOLD'); el.__sync = () => el.setAttribute('aria-pressed', String(!!cur(name))); el.addEventListener('pointerdown', () => setVal(name, 1)); const up = () => setVal(name, 0); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); el.__sync(); host.append(el); return el; },
+  button: (host, name) => { const el = h('button', { type: 'button', class: 'pc-toggle', 'data-ctl': name, 'aria-label': name }, 'HOLD'); el.__sync = () => el.setAttribute('aria-pressed', String(!!cur(name))); el.addEventListener('pointerdown', (e) => { e.preventDefault(); try { el.setPointerCapture(e.pointerId); } catch (x) { /* synthetic */ } setVal(name, 1); }); const up = () => { if (cur(name)) setVal(name, 0); }; ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((t) => el.addEventListener(t, up)); window.addEventListener('blur', up); document.addEventListener('visibilitychange', () => { if (document.hidden) up(); }); /* #198: a hold can never stick */ el.__sync(); host.append(el); return el; },
   select: (host, name, s) => { const el = h('select', { class: 'pc-select', 'data-ctl': name, 'aria-label': name }, ...(s.options || []).map((o) => h('option', { value: o }, o))); el.__sync = () => { el.value = cur(name); }; el.addEventListener('change', () => setVal(name, el.value)); el.__sync(); host.append(el); return el; },
   xy: (host, name, s) => {
     const el = h('div', { class: 'pc-xy', role: 'slider', tabindex: 0, 'aria-label': name + ' (x/y)', 'data-ctl': name }); const dot = h('i'); el.append(dot);
@@ -322,6 +323,11 @@ const player = PA.createPlayer({ sd: () => window.superdough, ctx: () => { try {
 let auditionOn = true;
 // no toast: a toast sits over the pad rows on a phone and swallowed the taps (#116); the pad label (♪ voice), the ∅ mark and Outputs say it instead
 function warnOrphan() { /* kept as a hook; see above */ }
+/* #198 queue: apply = the pad handlers; the held box makes up/cancel release exactly once, lost ups (blur, hidden tab, lost capture) synthesise one */
+const LS = () => { try { return localStorage; } catch (e) { return null; } };
+const PQ = createQueue({ drainMs: resolveDrainMs(location.search, LS()), idleMs: resolveIdleMs(location.search, LS()), apply: (ev) => { const i = ev.ctl.lastIndexOf('/'); const bank = M.banks[ev.ctl.slice(0, i)], pos = ev.ctl.slice(i + 1); if (!bank || !M.perform) return;
+  if (ev.kind === 'down') press(bank, pos, ev.value === 1 ? undefined : ev.value, ev.t); else if (ev.kind === 'up' && ev.last) release(bank, pos); } });
+/* no timer until the first interaction (push starts it; it stops itself after idleMs with nothing queued or held) */ window.addEventListener('blur', () => PQ.lost('blur')); document.addEventListener('visibilitychange', () => { if (document.hidden) PQ.lost('hidden'); });
 function renderBank(host, bank) {
   if (auditionOn && M.perform && bank.pads.some((p) => auditionOf(bank, p))) (window.requestIdleCallback || setTimeout)(() => player.prewarm()); // load the engine ahead of the first tap (no sound, no gesture needed)
   const scenes = bank.scenes === 'row' || bank.scenes === 'col' ? bank.scenes : null;
@@ -343,11 +349,15 @@ function renderBank(host, bank) {
     grid.append(row);
   }
   if (scenes === 'col') grid.append(h('div', { role: 'row', class: 'pp-row pp-srow' }, ...Array.from({ length: bank.cols }, (_, c) => h('span', { role: 'gridcell', class: 'pp-scell' }, sceneBtn(c, 'column')))));
-  grid.addEventListener('pointerdown', (e) => { const b = e.target.closest('.pp-pad'); if (!b) return; e.preventDefault(); if (!M.perform) return; b.setPointerCapture(e.pointerId); press(bank, b.dataset.pos, e.pressure && e.pressure !== 0.5 ? e.pressure : undefined, e.timeStamp); b.__pid = e.pointerId; });
-  const rel = (e) => { const b = e.target.closest('.pp-pad'); if (!b || !M.perform) return; release(bank, b.dataset.pos); };
-  grid.addEventListener('pointerup', rel); grid.addEventListener('pointercancel', rel);
+  /* #198: every pad interaction is stamped, queued (perform-queue.js) and applied in order by the 30 Hz handler; up/cancel/lost capture release the hold */
+  const ctlOf = (pos) => `${bank.id}/${pos}`;
+  grid.addEventListener('pointerdown', (e) => { const b = e.target.closest('.pp-pad'); if (!b) return; e.preventDefault(); if (!M.perform) return; b.setPointerCapture(e.pointerId); PQ.down(ctlOf(b.dataset.pos), e.pointerId, { value: e.pressure && e.pressure !== 0.5 ? e.pressure : undefined, t: e.timeStamp }); });
+  const rel = (e) => { const b = e.target.closest('.pp-pad'); if (!b || !M.perform) return; PQ.up(ctlOf(b.dataset.pos), e.pointerId, { t: e.timeStamp }); };
+  ['pointerup', 'pointercancel', 'lostpointercapture', 'pointerleave'].forEach((t) => grid.addEventListener(t, (e) => { if (t === 'pointerleave' && !(e.target.closest && e.target.closest('.pp-pad'))) return; rel(e); }));
+  ['contextmenu', 'selectstart', 'dragstart', 'gesturestart', 'gesturechange', 'wheel', 'touchmove'].forEach((t) => grid.addEventListener(t, (e) => e.preventDefault(), { passive: false }));
   grid.addEventListener('click', (e) => { const s = e.target.closest('.pp-scene'); if (s) { pads.launchScene(bank.id, +s.dataset.scene, nowCycle()); journalChanged(); return; } const b = e.target.closest('.pp-pad'); if (!b) return; if (!M.perform || !bank.pads.find((p) => p.pos === b.dataset.pos)) padSheet(bank, b.dataset.pos); });
-  grid.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.pp-pad')) { e.preventDefault(); e.stopPropagation(); const pos = e.target.closest('.pp-pad').dataset.pos; if (M.perform && bank.pads.find((p) => p.pos === pos)) { press(bank, pos); release(bank, pos); } else padSheet(bank, pos); } });
+  grid.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.pp-pad')) { e.preventDefault(); e.stopPropagation(); if (e.repeat) return; const pos = e.target.closest('.pp-pad').dataset.pos; if (M.perform && bank.pads.find((p) => p.pos === pos)) PQ.down(ctlOf(pos), 'key', { t: e.timeStamp }); else padSheet(bank, pos); } });
+  grid.addEventListener('keyup', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.pp-pad')) { e.preventDefault(); if (M.perform) PQ.up(ctlOf(e.target.closest('.pp-pad').dataset.pos), 'key', { t: e.timeStamp }); } });
   host.append(grid);
 }
 /* Live tap-pad reader latency (#119). The scheduler has already queried and scheduled ~0.25 s ahead of the sound, so a press written to the journal at
@@ -751,7 +761,7 @@ setInterval(() => {
 
 /* ---------------- boot ---------------- */
 rebuildPads();
-sc.perform = { model: () => M, render, renderInline, controls, sites: (v) => SITES[v] || [], pads: () => pads, journal: [], latency: lat, work, glue: bindStrudel, looper: () => Tk.looper, take: Tk, lanes: A, applyLane, applyTake,
+sc.perform = { model: () => M, render, renderInline, controls, sites: (v) => SITES[v] || [], pads: () => pads, journal: [], queue: PQ, latency: lat, work, glue: bindStrudel, looper: () => Tk.looper, take: Tk, lanes: A, applyLane, applyTake,
   capturing: (e) => isPerformView() && !e.ctrlKey && !e.metaKey && !e.altKey && ('kbd:' + e.code) in keyMap() && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) && !e.target.isContentEditable };
 sc.perform.audition = { player, voices: PA.voiceNames, voiceFor: PA.voiceFor, set enabled(v) { auditionOn = !!v; }, get enabled() { return auditionOn; } };
 sc.perform.presets = { list: () => allPresets().map(({ id, title, about, builtin }) => ({ id, title, about, builtin: !!builtin })), apply: (p) => applyPreset(typeof p === 'string' ? allPresets().find((x) => x.id === p) || { id: p } : p),

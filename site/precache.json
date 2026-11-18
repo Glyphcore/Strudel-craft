@@ -498,6 +498,7 @@
   "recipe.js",
   "record-length.js",
   "refs.js",
+  "renderahead.js",
   "rescache.js",
   "resources-ui.js",
   "resources.css",

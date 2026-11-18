@@ -273,3 +273,34 @@ start failure only writes a console warning and a note. Until now no screen show
 **Interface for the notice (no UI in the module).** `window.strudelCraft.soundPrep.state()` and the window event `sc:soundprep` (detail): `{ phase: idle | loading | ready | timeout | skipped | offline | save-data | failed, reason, total, done, failed, bytes, ms, sounds[], program }`. `sound-load.js` (ui-designer) can read it; the fetches are also counted by its fetch wrapper.
 **Measured** (`tests/site/sound_prep.mjs`, 360x780 touch): drum kit cold on a 600 kB/s, 120 ms link: before skipped notes 4, first sound 2.5 s after Play press; after 0 skipped, first sound 111 ms after Play returned (Play returns after the 3.8 s preparation). Orchestral woodwinds cold, unthrottled: before first sound 4.6 s after Play press with 4 skipped; after 1.5 s, 0 skipped (7 files, 10.3 MB). Warm Play: Play returns in 6 ms. Test switch: `window.__scSoundPrep = false`.
 
+## 10. Render-ahead buffers and lane stems (#195, `site/renderahead.js`; default off)
+
+Goal: precompute instead of just-in-time. With a lead set (audio dot sheet "Render ahead lead", `?ahead=S`, `localStorage sc.ahead.lead`) the program is
+rendered ahead of the playhead in the render host of section 6, never in the live context.
+
+- Chunk: 2^k cycles nearest 4 s (1 to 8 cycles). Pre-roll: about 2 s in whole cycles (none for chunk 0), rendered and dropped, so tails of earlier notes
+  are in the chunk (the `chunk_render.py` idea; its 20 ms cross-fade belongs to playback, which is not built).
+- Chunk hash (cyrb53): the onset haps of [chunk start - pre-roll, chunk end) with times relative to the chunk start and their values (functions by
+  source hash), plus cps, sample rate, master level, the controls model and the seed. Consequences: an edit dirties only the chunks whose events
+  changed; identical chunks (a loop) share one render; an undo finds the old buffers. Programs whose sound depends on things the haps do not carry
+  (`hooks`, `.hook(`, `.use(`, `ctl(`, `slider(`) also hash the program text and the absolute chunk index: every edit dirties every chunk, nothing is
+  shared. Not covered by the hash: a sample map that changes under the same name.
+- Order: mix chunks from the playhead (cursor when stopped) until the contiguous ready extent is `lead` seconds ahead (one extra chunk), then one stem
+  per lane and chunk, nearest first (`capture.renderRange(c0, c1, { lane })`: the same render with only that lane's haps voiced; lane = the sound name).
+  A stem's hash covers only its lane's haps. A one-lane chunk uses its mix as the stem. A render whose hash is no longer wanted is cancelled.
+- Memory: peaks (min / max per 256 frames) for every chunk and stem; PCM only for mix chunks, newest first, up to 48 MB.
+- `capture.renderRange` stores no take, shows no toast and does not hold the Record panel's `rendering` state; it queues in the host like any render,
+  and render-ahead waits while the panel renders or records.
+- Timeline: buffered extent on the ruler, Mix and lane waveforms from the same buffers (site/README.md, Stage).
+- Play does not use the buffers yet: the live scheduler plays, and `ahead.state().live` / `liveShare` say whether the chunk under the playhead was
+  ready. Routing playback through the buffers needs a separate live path on the master bus (app.js `Bus`: every node lands in one gain), buffer
+  sources locked to the scheduler clock through seek / loop / tempo changes and a cross-fade to live for a chunk that is not ready (follow-up issue).
+
+Measured (stress: 6 layers, 16ths, reverb + delay, 140 bpm; lead target 12 s; 4-core container, headless Chromium, `tests/site/renderahead.mjs`, 40 s of play):
+
+| lead median | lead min | first full lead | mix render speed | chunk | mix renders | stems ready / missing (renders) | playhead on live | late ticks / underruns |
+|---|---|---|---|---|---|---|---|---|
+| 13.87 s | 10.71 s | 5457 ms | 2.73x realtime | 3.429 s | 16 | 74 / 6 (18) | 0.014 | 0 / 0 |
+
+The host shares the page's main thread: each render costs about a second of fixed work (compile, context) on top of the voices, so stems of a
+many-lane program arrive after the mix (the lanes show the live tap until then).

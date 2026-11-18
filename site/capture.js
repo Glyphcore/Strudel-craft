@@ -474,6 +474,7 @@ async function renderRecipeInline(recipe, o = {}) {
    chunk boundary), never all at once, and the main thread yields every ~8 ms of voice construction, so a long render neither freezes the page nor
    holds every voice of the take in memory. Superdough's polyphony cap (128 voices) sees voices end as the render advances, as in live play.
    onProgress(fraction), signal (AbortSignal: stops between chunks; the render rejects with AbortError). */
+const laneOfValue = (v) => (typeof v === 'object' && v ? String(v.s != null ? v.s : (v.note != null || v.n != null ? 'synth' : 'event')) : 'event'); /* as timeline.js queryCycle */
 const yieldNow = () => (globalThis.scheduler && typeof globalThis.scheduler.yield === 'function' ? globalThis.scheduler.yield() : new Promise((r) => setTimeout(r, 0)));
 const abortErr = () => Object.assign(new Error('Render cancelled'), { name: 'AbortError' });
 export const CHUNK_S = 2, LEAD_S = 0.25;
@@ -521,6 +522,7 @@ async function renderRecipeCore(recipe, { sr: rateIn, onProgress = null, signal 
     const hapInfo = dbg && dbg.list ? items.map(({ h, i, t }) => ({ i, t: +t.toFixed(4), v: JSON.parse(JSON.stringify(h.value, (k, x) => (typeof x === 'function' ? undefined : x))) })) : null;
     if (dbg && dbg.strip) for (const x of items) { x.h = Object.create(x.h); const v = { ...x.h.value }; for (const k of dbg.strip) delete v[k]; Object.defineProperty(x.h, 'value', { value: v }); } /* leave parameters out (find the one that varies) */
     if (dbg && dbg.only) { const keep = new Set(dbg.only); items = items.filter((x) => keep.has(x.i)); }
+    if (dbg && dbg.lane != null) items = items.filter((x) => laneOfValue(x.h.value) === dbg.lane); /* #195: a stem = only the haps of one timeline lane (the sound name) */
     let f = 0, r = 0, idx = 0;
     const voice = async (h, t) => {
       for (let k = 0; ; k++) {
@@ -670,6 +672,18 @@ async function recordOffline(ru) {
     return rec;
   } catch (e) { toast(e.name === 'AbortError' ? 'Offline render cancelled' : 'Offline render: ' + (e.message || e), { kind: e.name === 'AbortError' ? 'info' : 'error' }); return null; }
   finally { st.phase = 'idle'; st.abort = null; st.progress = 0; sync(); }
+}
+/* Render-ahead (#195, renderahead.js): cycles [c0, c1) of the current program as PCM { L, R, sr, haps, fails }, rendered by the host. No take is stored,
+   nothing is toasted and the panel's `rendering` state is not held; the request waits its turn in the host queue like every other render.
+   o: { seed, cps, sr, signal, lane }: lane = a timeline lane name (the sound), then only that lane's haps are voiced (a stem). Rejects when the host cannot be used (inline renders, a page-only before-render hook). */
+async function renderRange(c0, c1, o = {}) {
+  const T = sc.transport, src = T && T.source(); if (!src || src.empty || !src.code) throw new Error('Nothing to render');
+  if (HOST || FLAG_REC === 'inline' || [...beforeHooks].some((f) => !hostHooks.has(f))) throw new Error('Render ahead needs the offline render host');
+  const state = await codeState(src), C = sc.perform && sc.perform.controls;
+  const recipe = { format: FORMAT, version: VERSION, id: 'ahead-' + c0, name: 'render-ahead', created: new Date().toISOString(), includes: { audio: true, events: true, code: true },
+    timing: { cps: +(+(o.cps || lenEnv().cps)).toFixed(6), start: c0, stop: c1, cycles: c1 - c0, loop: false, mode: 'offline', exact: true, fold: false, preRoll: 0 }, random: { seed: (o.seed >>> 0) || 1 },
+    state, events: { pads: padEvents(c0, c1), hooks: hookPadEntries(c1), controls: controlEvents(c0, c1), lanes: C ? (C.toModel().automation || {}) : {} }, deps: null, outputs: {} };
+  const job = (HS.queue || Promise.resolve()).catch(() => {}).then(() => renderViaHost0(recipe, { signal: o.signal, sr: o.sr, dbg: o.lane != null ? { lane: String(o.lane) } : null })); HS.queue = job; return job;
 }
 /* re-render a flagged live take from its recipe; the render becomes the take's audio (Play, WAV) and the live capture stays as outputs.capture */
 async function rerender(id) {
@@ -1089,6 +1103,6 @@ function init() {
     P.register({ id: 'record.import', group: 'Record', title: 'Import recipe', run: () => { open(); $('#capFile').click(); } });
   }
 }
-sc.capture = { open, close, toggle: toggleSheet, configure, record, stop, toggleRec, renderExact, remake, rerender, putTake: (rec) => store.put(rec).then(renderTakes), recordOffline: (n, o = {}) => { const lp = n == null && !o.at ? takePlan() : { ...takePlan({ unit: 'cycles', value: Math.max(1, n | 0 || opts.n), toEnd: false, startBar: '' }), explicitStart: false }; if (!lp.ok) { toast('Render: ' + lp.error, { kind: 'error' }); return Promise.resolve(null); } return recordOffline({ plan: lp, n: lp.cycles, name: o.name || opts.name, at: o.at }); }, plan: takePlan, resolveEnd: () => endInfo(lenEnv()), host: { warm: () => hostFrame().then(() => HS.bootMs), get bootMs() { return HS.bootMs; }, get frame() { return HS.frame; } }, flag: FLAG_REC, isHost: HOST, importRecipe, webmSupported: () => WEBM_MIME, beforeRender, addTake, exportRecipe: async (id) => exportRecipe(await store.get(id)), renderRecipe,
+sc.capture = { open, close, toggle: toggleSheet, configure, record, stop, toggleRec, renderExact, renderRange, remake, rerender, putTake: (rec) => store.put(rec).then(renderTakes), recordOffline: (n, o = {}) => { const lp = n == null && !o.at ? takePlan() : { ...takePlan({ unit: 'cycles', value: Math.max(1, n | 0 || opts.n), toEnd: false, startBar: '' }), explicitStart: false }; if (!lp.ok) { toast('Render: ' + lp.error, { kind: 'error' }); return Promise.resolve(null); } return recordOffline({ plan: lp, n: lp.cycles, name: o.name || opts.name, at: o.at }); }, plan: takePlan, resolveEnd: () => endInfo(lenEnv()), host: { warm: () => hostFrame().then(() => HS.bootMs), get bootMs() { return HS.bootMs; }, get frame() { return HS.frame; } }, flag: FLAG_REC, isHost: HOST, importRecipe, webmSupported: () => WEBM_MIME, beforeRender, addTake, exportRecipe: async (id) => exportRecipe(await store.get(id)), renderRecipe,
   download, list: () => store.list().then((l) => l.map((x) => ({ ...x.recipe, remake: x.remake || null, imported: x.imported || null, audio: Object.keys(x.audio) }))), get: (id) => store.get(id), remove: (id) => store.remove(id).then(renderTakes), rename, encodeWav, opts, state: st };
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

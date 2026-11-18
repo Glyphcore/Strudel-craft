@@ -472,6 +472,7 @@ dialog.scm{width:min(420px,calc(100vw - 24px))}
 .bg-set{padding:8px 16px 14px;border-top:1px solid var(--line)}
 .bg-set h3{margin:6px 0 8px;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
 .bg-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;min-height:44px;font-size:.82rem}
+.bg-row input[type=number]{width:88px;min-height:44px;background:var(--bg);color:var(--text);border:1px solid var(--line-2);border-radius:var(--r1);padding:0 8px;font:inherit}
 .bg-row select{flex:1 1 220px;min-height:44px;max-width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line-2);border-radius:var(--r1);padding:0 8px;font:inherit}
 .bg-check input{width:22px;height:22px;accent-color:var(--sig-2)}
 dialog.bg-diag{width:min(520px,calc(100vw - 16px))}

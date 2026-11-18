@@ -302,10 +302,15 @@ function flagsHtml() { return `<section class="bg-set" aria-labelledby="bgFlagH"
 function settingsHtml() {
   return flagsHtml() + `<section class="bg-set" aria-labelledby="bgSetH"><h3 id="bgSetH">Background playback</h3>
     <label class="bg-row"><span>When the app is hidden</span><select id="bgPolicy">${Object.entries(POLICIES).map(([k, v]) => `<option value="${k}"${k === B.policy ? ' selected' : ''}>${v}</option>`).join('')}</select></label>
-    <label class="bg-row bg-check"><input type="checkbox" id="bgWake"${B.wake ? ' checked' : ''}> <span>Keep the screen on while playing (foreground)</span></label></section>`;
+    <label class="bg-row bg-check"><input type="checkbox" id="bgWake"${B.wake ? ' checked' : ''}> <span>Keep the screen on while playing (foreground)</span></label>
+    <label class="bg-row"><span>Render ahead lead (seconds, 0 = off)</span><input type="number" id="bgAhead" min="0" max="120" step="1" inputmode="numeric" value="${aheadLead()}"></label></section>`;
 }
+/* render-ahead (#195): the lead is stored here; timeline.js loads renderahead.js when it is > 0 */
+function aheadLead() { if (sc.ahead) return sc.ahead.state().lead; try { return Math.max(0, +localStorage.getItem('sc.ahead.lead') || 0); } catch (e) { return 0; } }
+function aheadRow() { const a = sc.ahead && sc.ahead.state(); if (!a || !a.on) return 'off'; return N.span(a.leadSec.toFixed(1), 5) + ' s of ' + a.lead + ' s, ' + a.ready.length + ' chunks of ' + a.chunkSec + ' s ready' + (a.speed ? ', renders at ' + a.speed + 'x' : '') + (a.live ? ', playhead on live' : ', playhead inside the buffer') + (a.error ? ' (' + a.error + ')' : ''); }
 function bindSettings(root) {
-  const p = $('#bgPolicy', root), w = $('#bgWake', root);
+  const p = $('#bgPolicy', root), w = $('#bgWake', root), ah = $('#bgAhead', root);
+  if (ah) ah.onchange = () => { const lead = Math.max(0, Math.min(120, +ah.value || 0)); ah.value = String(lead); try { localStorage.setItem('sc.ahead.lead', String(lead)); } catch (e) { /* private mode */ } dispatchEvent(new CustomEvent('sc-ahead', { detail: { lead } })); sc.ui && sc.ui.toast(lead ? 'Render ahead: ' + lead + ' s' : 'Render ahead: off', { kind: 'ok' }); };
   if (p) p.onchange = () => { setPolicy(p.value); sc.ui && sc.ui.toast('Background: ' + POLICIES[p.value], { kind: 'ok' }); };
   if (w) w.onchange = () => setWake(w.checked);
   for (const sel of (root || document).querySelectorAll('select[data-flag]')) sel.onchange = () => { try { localStorage.setItem('sc.flag.' + sel.dataset.flag, sel.value); } catch (e) { /* private mode */ } sc.ui && sc.ui.toast(FLAGS[sel.dataset.flag].label + ': ' + FLAGS[sel.dataset.flag].opts[sel.value] + ' after reload', { kind: 'info' }); };
@@ -319,7 +324,7 @@ function openDiagnostics() {
     d.innerHTML = `<div class="help-head"><h2 id="bgDiagH">Audio and background</h2><button type="button" class="icon bg-close" aria-label="Close">&times;</button></div>
       <dl class="bg-stats">${[['Clock', s.clock], ['Audio context', s.context], ['Lookahead in use', N.span(N.ms(s.lookaheadMs), 7) + ' ms (' + N.span(N.ms(s.lookaheadBounds.baseMs), 7) + ' foreground, ' + N.span(N.ms(s.lookaheadBounds.hiddenMs), 7) + ' hidden, max ' + N.span(N.ms(s.lookaheadBounds.maxMs), 7) + ')'],
         ['Ticks / late ticks', N.span(s.ticks, 8) + ' / ' + N.span(s.lateTicks, 6)], ['Max tick gap', N.span(N.ms(s.maxGapMs), 7) + ' ms'], ['Underruns (re-anchored)', N.span(s.underruns, 6)], ['Engine', s.engineWorkerAttached ? 'engine Worker, now on the ' + s.engineMode + ' clock' : 'page thread (' + s.clock + ', flag ' + s.engine + ')'], ['Output', s.audio ? s.audio.sampleRate + ' Hz, latency hint ' + s.audio.hint + ', base ' + s.audio.baseLatencyMs + ' ms, output ' + s.audio.outputLatencyMs + ' ms' : 'no context'], ['Trial flags', Object.entries(s.flags).filter(([, v]) => v).map(([k, v]) => k + '=' + v).join(', ') || 'none'], ['Long tasks / worst', (s.perf.longTasks == null ? 'n/a' : N.span(s.perf.longTasks, 6)) + ' / ' + N.span(N.ms(s.perf.longTaskWorstMs), 6) + ' ms'],
-        ['Late haps (dropped) / skipped / tight', N.span(s.perf.lateHaps, 6) + ' / ' + N.span(s.perf.skippedHaps, 6) + ' / ' + N.span(s.perf.tightHaps, 6)], ['Voices in flight', N.span(s.perf.voicesInFlight, 5)], ['Query / voice time', N.span(N.ms(s.perf.queryMs), 7) + ' / ' + N.span(N.ms(s.perf.voiceMs), 7) + ' ms'], ['Played / paused', N.span(fmt(s.playedSec), 7) + ' / ' + N.span(fmt(s.pausedSec), 7)], ['Wake lock', s.wakeLock ? 'held' : 'off']]
+        ['Late haps (dropped) / skipped / tight', N.span(s.perf.lateHaps, 6) + ' / ' + N.span(s.perf.skippedHaps, 6) + ' / ' + N.span(s.perf.tightHaps, 6)], ['Voices in flight', N.span(s.perf.voicesInFlight, 5)], ['Query / voice time', N.span(N.ms(s.perf.queryMs), 7) + ' / ' + N.span(N.ms(s.perf.voiceMs), 7) + ' ms'], ['Render ahead', aheadRow()], ['Played / paused', N.span(fmt(s.playedSec), 7) + ' / ' + N.span(fmt(s.pausedSec), 7)], ['Wake lock', s.wakeLock ? 'held' : 'off']]
         .map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
       <h3>Segments</h3><ol class="bg-segs">${segs.length ? segs.map((g) => `<li data-kind="${g.kind}"><b>${g.kind}</b> c ${N.span(N.cyc(+g.cycle), 6)} · ${N.span(fmt(g.ms / 1000), 7)} <span>${g.why || ''}</span></li>`).join('') : '<li>Nothing yet: press Play</li>'}</ol>
       ${settingsHtml()}`;

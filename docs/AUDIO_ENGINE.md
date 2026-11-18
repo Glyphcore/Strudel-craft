@@ -347,6 +347,7 @@ handler never runs. Record renders (exact N cycles, no fold) still have the old 
 - A chunk is only kept when it was made from the program its hash names (#214): no render starts while the transport's code differs from the code the scheduler's pattern was
   evaluated from (a recipe just chosen, text not compiled yet), and each render's own event list must give the same sound-and-note signature as the pattern's chunk. Before, a chunk
   rendered between a recipe choice and its evaluation put the new recipe's audio under the old recipe's hash, and that recipe then played the other one's sound from its buffer.
+  Test hook `ahead.drop(i)` (forgets chunk i's render, then replans; ~90 bytes): `tests/site/recipe_switch.mjs` restarts A (playhead in chunk 0), clicks B, holds `Engine.prepare` 1500 ms and drops chunk 0 inside the gap, so the only possible render is chunk 0 (deterministic: fails 3/3 with renderahead.js from a6fa2dd^, passes 3/3 after).
 - Stop and `Engine.cut()` (#196) call `ahead.cut()`: every buffer source stops with the master ramp, and nothing is scheduled until the clock starts again.
 - Edit while playing: only the dirty chunks render again. A chunk that is sounding or scheduled keeps its old buffer (no live fallback, no gap); when the new render is ready a
   source that has not started is replaced, a sounding one is cross-faded (20 ms) at the next bar line (whole cycle) at least 150 ms away. The old buffer is reused only within

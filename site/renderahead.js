@@ -16,7 +16,7 @@
    mapping; its haps are gated in the clock (bgplay.js makeClock: no voice is triggered, the live sub-bus is silent for that chunk). The live scheduler is the
    fallback for a chunk that is not ready. Joins are 20 ms cross-fades (the chunk's pre-roll supplies the 20 ms before its start). See "playback from the buffers" below.
    Lazy: loaded by timeline.js only when the lead is > 0 (audio dot sheet "Render ahead lead", ?ahead=S, localStorage sc.ahead.lead). Off = 0.
-   API: window.strudelCraft.ahead = { state, configure({ lead, play }), replan, view(c0, c1), chunks, reset, segments, cut; clock hooks: sync, gate, sounding }.
+   API: window.strudelCraft.ahead = { drop(i) (test hook, #214: forgets chunk i's render), state, configure({ lead, play }), replan, view(c0, c1), chunks, reset, segments, cut; clock hooks: sync, gate, sounding }.
    Event in: sc-ahead { lead }. Flags: ?ahead=S (lead), ?aheadplay=off|on (localStorage sc.ahead.play). */
 const sc = (window.strudelCraft = window.strudelCraft || {});
 /* #199: the default is to precompute the whole program: lead DEF_LEAD s, bounded by the program's specified end (capture.resolveEnd); an open-ended program gets OPEN_LEAD s ahead.
@@ -329,5 +329,5 @@ function configure(o = {}) {
   return state();
 }
 addEventListener('sc-ahead', (e) => { if (e.detail && e.detail.lead != null && +e.detail.lead !== A.lead) configure({ lead: e.detail.lead }); });
-sc.ahead = { state, configure, replan: plan, view, chunks, reset, cyrb53, sync, gate, covers, sounding, cut, cycleEvents, cleanStart: () => { P.clean = true; }, segments: () => P.log.slice(), anchors: () => P.anchors.slice() };
+sc.ahead = { state, configure, replan: plan, view, chunks, reset, cyrb53, sync, gate, covers, sounding, cut, drop: (i) => { const o = A.idx.get(i); if (o) A.cache.delete(o.h); plan(); }, cycleEvents, cleanStart: () => { P.clean = true; }, segments: () => P.log.slice(), anchors: () => P.anchors.slice() };
 { let lead = 0; try { const u = new URLSearchParams(location.search), q = u.get('ahead'), pl = u.get('aheadplay'), st = q != null ? q : localStorage.getItem('sc.ahead.lead'); lead = st == null || st === 'full' ? DEF_LEAD : +st || 0; const v = pl === 'on' || pl === 'off' ? pl : localStorage.getItem('sc.ahead.play'); P.play = v !== 'off'; } catch (e) { lead = 0; } if (lead > 0) configure({ lead, persist: false }); }

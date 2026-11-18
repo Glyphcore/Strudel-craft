@@ -313,3 +313,8 @@ builds a new output stage, so old voices end into nothing), `timeline.reset()` (
 and the select token so a pending swap or switch cannot restart the scheduler. Cost: a switch restarts the new recipe from cycle 0 (live edits still hot-swap on the cycle boundary).
 Test `tests/site/recipe_switch.mjs`: A (220 Hz, release 3 s) at -26 dB before the switch is -58 dB 0.7 s after it (without the fix -28 dB); live source nodes 0 after stop over 12 switches.
 
+
+## 12. Transport position and recipe selection (#206)
+Transport: `<` (`#startBtn`, "Return to start", key Home) returns to cycle 0: a fresh feed (`Engine.cut()` then play) when playing, stays stopped at 0 when stopped. Play / pause stays; there is no `>` and no previous / next recipe on the transport. Up / Down / J / K step the recipe only while the recipe list has focus. Selecting a recipe resets the position and does not start playback unless already playing.
+Root causes: (1) the timeline kept a stopped resume cursor (`T.cursor`) that a recipe select never cleared, so the next Play began at the old stop position; `timeline.reset()` now zeroes cursor and clock and a stopped select calls it (`rewind()` in app.js, with `visuals.reset()`). (2) At 390 px the `#lanes` canvas is below the fold, its IntersectionObserver flag stopped `Viz.drawLanes()`, and that function also writes the cycle readout and pings the timeline loop: both stayed at 0.00 while `scheduler.now()` ran. `drawLanes` (no canvas work) is now never gated.
+Test `tests/site/transport_reset.mjs` runs the select / Play / readout-advances flow at 390 and 1280 px.

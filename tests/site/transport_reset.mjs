@@ -2,6 +2,9 @@
    Usage (repo root): node tests/site/transport_reset.mjs   (wrap in engine/load/gate.sh medium) */
 import { createRequire } from 'module'; import http from 'http'; import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 const require = createRequire(import.meta.url);
+if (!process.env.VW) { /* runs the full flow at 390 (phone: the lanes canvas is below the fold) and 1280 */
+  const { spawnSync } = require('child_process'); let bad = 0; for (const w of ['390', '1280']) { console.log('== viewport ' + w); const r = spawnSync(process.execPath, [fileURLToPath(import.meta.url)], { env: { ...process.env, VW: w }, stdio: 'inherit' }); if (r.status) bad++; } process.exit(bad ? 1 : 0);
+}
 let chromium; try { ({ chromium } = require('playwright')); } catch { ({ chromium } = require(process.env.PLAYWRIGHT_DIR || '/opt/node-tools/node_modules/playwright')); }
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'); const SITE = path.join(ROOT, 'site');
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.webmanifest': 'application/json' };
@@ -11,7 +14,7 @@ let fails = 0; const errors = []; const check = (n, ok, d = '') => { if (!ok) fa
 const A = 'setcpm(120/4)\nvoiceA: note("a3 a3 a3 a3").s("sine").release(0.2).gain(0.2)\n';
 const B = 'setcpm(120/4)\nvoiceB: note("e5 ~ e5 ~").s("triangle").release(0.1).gain(0.2)\n';
 const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
-const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, serviceWorkers: 'block' });
+const ctx = await browser.newContext({ viewport: { width: +(process.env.VW || 1280), height: +(process.env.VW || 1280) < 600 ? 844 : 800 }, serviceWorkers: 'block' });
 await ctx.route(/api\.github\.com/, (r) => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '[]' }));
 const page = await ctx.newPage(); page.on('pageerror', (e) => errors.push(e.message)); const wait = (ms) => page.waitForTimeout(ms); const T = (f, a) => page.evaluate(f, a);
 await page.goto(`http://127.0.0.1:${server.address().port}/index.html#rack`); await page.waitForSelector('#list li[data-id]', { timeout: 60000 }); await page.waitForFunction(() => window.strudelCraft.timeline, null, { timeout: 30000 });
@@ -20,13 +23,14 @@ const pos = () => T(() => { const sc = window.__sc, tl = window.strudelCraft.tim
 const playing = async () => { await T(() => window.__sc.play()); await page.waitForFunction(() => window.__sc.S.playing && window.__sc.Engine.started, null, { timeout: 60000 }); };
 // 1. recipe select while playing
 await playing(); await wait(4000); const p0 = await pos(); check('position advanced before switch (readout > 1 cycle)', p0.readout > 1, JSON.stringify(p0));
-await T(() => window.__sc.select(1)); await wait(700); const p1 = await pos();
+await T(() => window.__sc.select(1)); await wait(700); const p1 = await pos(); const vc = await T(() => window.strudelCraft.visuals.cacheStats().cycles); check('select while playing: visuals clock restarted (cache only cycles near 0, <= 6)', vc <= 6, 'cycles ' + vc);
 check('select while playing: transport readout back near 0 (< 0.8)', p1.readout < 0.8, JSON.stringify(p1));
 check('select while playing: scheduler.now() near 0 (< 0.8)', p1.now != null && p1.now < 0.8, JSON.stringify(p1));
 check('select while playing: timeline clock near 0 (< 0.8)', p1.tlT < 0.8, JSON.stringify(p1));
 // 2. recipe select while stopped after play
 await wait(2500); await T(() => window.__sc.stop()); await wait(300); await T(() => window.__sc.select(0)); await wait(300); const p2 = await pos();
 check('select while stopped: readout 0', p2.readout === 0, JSON.stringify(p2));
+check('select while stopped: visuals hap cache emptied (cycles 0)', await T(() => window.strudelCraft.visuals.cacheStats().cycles === 0));
 check('select while stopped: timeline cursor/clock 0', (p2.cursor || 0) === 0 && (p2.tlT || 0) === 0, JSON.stringify(p2));
 // 2b. play after a stopped select begins at 0, not at the old stop position
 await playing(); await wait(600); const p3 = await pos(); check('play after a stopped select starts near 0 (< 1.2)', p3.readout < 1.2, JSON.stringify(p3)); await T(() => window.__sc.stop()); await wait(300);

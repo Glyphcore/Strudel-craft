@@ -363,7 +363,7 @@ const Viz = {
     if (!S.playing && this.stopAt && t > this.stopAt) { this.running = false; this.stopAt = 0; this.drawAll(t); return; }
     this.raf = requestAnimationFrame((tt) => this.tick(tt));
   },
-  drawAll(t) { if (!this.colors.sig) this.readColors(); const v = this.vis || {}; if (v.viz !== false) this.drawViz(); if (v.lanes !== false) this.drawLanes(); if (v.meter !== false) this.drawMeter(t); },
+  drawAll(t) { if (!this.colors.sig) this.readColors(); const v = this.vis || {}; if (v.viz !== false) this.drawViz(); this.drawLanes(); /* #206: readout text + timeline ping, no canvas: never gated by #lanes visibility (at 390px that canvas is below the fold, so the readout and timeline clock froze at 0 while playing) */ if (v.meter !== false) this.drawMeter(t); },
   drawViz() {
     const c = this.viz, dpr = this.fit(c), g = c.getContext('2d'), W = c.width, H = c.height, C = this.colors;
     g.clearRect(0, 0, W, H);
